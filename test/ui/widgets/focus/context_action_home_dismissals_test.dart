@@ -172,6 +172,22 @@ void main() {
     expect(prefs.getHiddenContinueWatchingItems().keys, ['series-1']);
   });
 
+  testWidgets('a card that names no server is hidden in this device\'s '
+      'list, not on the server', (tester) async {
+    // Only a card naming this server, by id or address, uses the server's hide.
+    final api = _DismissingItemsApi();
+    when(() => client.itemsApi).thenReturn(api);
+
+    await select(
+      tester,
+      (l) => l.contextMenuHideFromContinueWatching,
+      item: _episode(serverId: ''),
+    );
+
+    expect(api.hidden, isEmpty);
+    expect(prefs.getHiddenContinueWatchingItems().keys, ['series-1']);
+  });
+
   testWidgets('a refused hide falls back to this device, history kept', (
     tester,
   ) async {

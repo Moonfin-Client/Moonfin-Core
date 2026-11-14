@@ -63,6 +63,8 @@ class _FakeItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     requestedStartIndexes.add(startIndex ?? 0);
     final page = _pageCursor < pages.length ? pages[_pageCursor] : const <int>[];

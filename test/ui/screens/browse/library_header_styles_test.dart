@@ -19,12 +19,14 @@ class _Calls {
   int display = 0;
   int toggleAlphabet = 0;
   int exitRight = 0;
+  int refresh = 0;
 }
 
 LibraryHeaderModel _model(
   _Calls calls, {
   bool alphabetOn = true,
   bool alphabetApplies = true,
+  LibraryHeaderRefresh? refresh,
 }) {
   final nodes = [for (var i = 0; i < 4; i++) FocusNode()];
   final controller = TextEditingController();
@@ -58,8 +60,25 @@ LibraryHeaderModel _model(
     alphabetOn: alphabetOn,
     onToggleAlphabet: () => calls.toggleAlphabet++,
     onLetter: (_) {},
+    refresh: refresh,
   );
 }
+
+/// With [busy], part way through a read of two servers.
+LibraryHeaderRefresh _refresh(_Calls calls, {bool busy = false}) {
+  final node = FocusNode(debugLabel: 'refresh');
+  addTearDown(node.dispose);
+  return LibraryHeaderRefresh(
+    focusNode: node,
+    onRefresh: () => calls.refresh++,
+    busy: busy,
+    showProgress: busy,
+    progressText: '1/2',
+    progressSemanticsLabel: '1 of 2 servers up to date',
+  );
+}
+
+final _refreshButton = find.byTooltip('Refresh');
 
 Future<void> _pump(WidgetTester tester, Widget child) async {
   await tester.pumpWidget(
@@ -184,6 +203,158 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
       expect(calls.exitRight, 1, reason: 'nothing to the right of a row');
+    });
+  });
+
+  group('the Refresh button of a merged library', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
+    Map<String, Widget Function(LibraryHeaderModel)> headers(
+      FocusScopeNode scope,
+    ) => {
+      'Modern': (model) =>
+          Column(children: [ModernLibraryHeader(model: model, compact: false)]),
+      'Modern on a phone': (model) =>
+          Column(children: [ModernLibraryHeader(model: model, compact: true)]),
+      'Docked on a phone': (model) => Column(
+        children: [CompactLibraryHeader(model: model, showControls: false)],
+      ),
+      'Docked': (model) => Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DockedLibraryPanel(
+            model: model,
+            scopeNode: scope,
+            onExitRight: () {},
+          ),
+        ],
+      ),
+    };
+
+    Future<void> pumpHeader(
+      WidgetTester tester,
+      String name,
+      LibraryHeaderModel model,
+    ) async {
+      tester.view.physicalSize = name.endsWith('phone')
+          ? const Size(400, 800)
+          : const Size(1600, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final scope = FocusScopeNode();
+      addTearDown(scope.dispose);
+      await _pump(tester, headers(scope)[name]!(model));
+    }
+
+    for (final name in [
+      'Modern',
+      'Modern on a phone',
+      'Docked on a phone',
+      'Docked',
+    ]) {
+      testWidgets('$name has none for one server\'s library', (tester) async {
+        await pumpHeader(tester, name, _model(_Calls()));
+
+        expect(_refreshButton, findsNothing);
+        expect(find.byType(LibraryRefreshAction), findsNothing);
+      });
+
+      testWidgets('$name draws it in the row of its Back button', (
+        tester,
+      ) async {
+        final calls = _Calls();
+        final model = _model(calls, refresh: _refresh(calls));
+        await pumpHeader(tester, name, model);
+
+        expect(_refreshButton, findsOneWidget);
+        expect(find.byKey(LibrarySyncProgress.statusKey), findsNothing);
+        final back = tester.getRect(
+          find.byWidgetPredicate(
+            (widget) => widget is Focus && widget.focusNode == model.homeFocusNode,
+          ),
+        );
+        final refresh = tester.getRect(_refreshButton);
+        expect(refresh.top < back.bottom && refresh.bottom > back.top, isTrue);
+
+        await tester.tap(_refreshButton);
+        expect(calls.refresh, 1);
+
+        // With the focus on it, Enter presses it as a tap does.
+        model.refresh!.focusNode.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        expect(calls.refresh, 2);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('$name switches it off while a read runs', (tester) async {
+        final calls = _Calls();
+        final model = _model(calls, refresh: _refresh(calls, busy: true));
+        await pumpHeader(tester, name, model);
+
+        await tester.tap(_refreshButton, warnIfMissed: false);
+        model.refresh!.focusNode.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+
+        expect(calls.refresh, 0);
+        expect(model.refresh!.focusNode.hasFocus, isTrue);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics &&
+                widget.properties.button == true &&
+                widget.properties.enabled == false,
+          ),
+          findsOneWidget,
+        );
+        // The docked header is too narrow for the progress, so the page
+        // shows it instead.
+        expect(
+          find.text('1/2'),
+          name == 'Docked' ? findsNothing : findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('keeps its focus as a read starts and ends', (tester) async {
+      final calls = _Calls();
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      LibraryHeaderRefresh refresh({required bool busy}) =>
+          LibraryHeaderRefresh(
+            focusNode: node,
+            onRefresh: () => calls.refresh++,
+            busy: busy,
+            showProgress: busy,
+            progressText: '1/2',
+            progressSemanticsLabel: '1 of 2 servers up to date',
+          );
+      Widget action(bool busy) => Center(
+        child: LibraryRefreshAction(
+          refresh: refresh(busy: busy),
+          size: 44,
+          iconSize: 22,
+        ),
+      );
+
+      await _pump(tester, action(false));
+      node.requestFocus();
+      await tester.pump();
+      expect(node.hasFocus, isTrue);
+
+      await _pump(tester, action(true));
+      expect(node.hasFocus, isTrue);
+      expect(find.text('1/2'), findsOneWidget);
+
+      await _pump(tester, action(false));
+      expect(node.hasFocus, isTrue);
+      expect(find.text('1/2'), findsNothing);
     });
   });
 

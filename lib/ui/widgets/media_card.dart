@@ -173,6 +173,11 @@ class MediaCard extends StatefulWidget {
   /// favorite heart shifts down, like it does for the Seerr badge.
   final bool overlayOccupiesTopLeft;
 
+  /// A badge for the poster's bottom-left corner. Unlike [imageOverlays]
+  /// entries it is kept clear of the progress bar, and that corner's poster
+  /// badges stack above it.
+  final Widget? bottomLeftBadge;
+
   const MediaCard({
     super.key,
     this.title,
@@ -211,6 +216,7 @@ class MediaCard extends StatefulWidget {
     this.imageUnderlays = const [],
     this.imageSourceAspectRatio,
     this.overlayOccupiesTopLeft = false,
+    this.bottomLeftBadge,
     this.isGenreFallback = false,
     this.isBanner = false,
     this.showLabel = true,
@@ -491,6 +497,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       imageUnderlays: widget.imageUnderlays,
                       imageSourceAspectRatio: widget.imageSourceAspectRatio,
                       overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
+                      bottomLeftBadge: widget.bottomLeftBadge,
                       animeMarkerItemId: widget.animeMarkerItemId,
                       posterBadgeItemId: widget.posterBadgeItemId,
                       recordingItemId: widget.recordingItemId,
@@ -749,6 +756,7 @@ class _CardImage extends StatelessWidget {
   final List<Widget> imageUnderlays;
   final double? imageSourceAspectRatio;
   final bool overlayOccupiesTopLeft;
+  final Widget? bottomLeftBadge;
   final bool isGenreFallback;
   final String? animeMarkerItemId;
   final String? posterBadgeItemId;
@@ -776,6 +784,7 @@ class _CardImage extends StatelessWidget {
     this.imageUnderlays = const [],
     this.imageSourceAspectRatio,
     this.overlayOccupiesTopLeft = false,
+    this.bottomLeftBadge,
     this.isGenreFallback = false,
     this.animeMarkerItemId,
     this.posterBadgeItemId,
@@ -1018,6 +1027,21 @@ class _CardImage extends StatelessWidget {
                       bottom: playedPercentage != null && playedPercentage! > 0
                           ? 18
                           : 6,
+                      bottomLeftBadge: bottomLeftBadge,
+                    ),
+                  )
+                else if (bottomLeftBadge != null)
+                  Positioned(
+                    left: 6,
+                    right: 6,
+                    bottom: playedPercentage != null && playedPercentage! > 0
+                        ? 18
+                        : 6,
+                    child: IgnorePointer(
+                      child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: bottomLeftBadge,
+                      ),
                     ),
                   ),
                 ...imageOverlays,

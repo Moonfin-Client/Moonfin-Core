@@ -10,7 +10,10 @@ import '../../auth/repositories/user_repository.dart';
 import '../../data/services/connectivity_service.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
+import '../../data/services/unified_catalog_query.dart';
+import '../../data/services/unified_catalog_service.dart';
 import '../../di/injection.dart';
+import '../../l10n/app_localizations.dart';
 import '../../playback/apple_player_ui.dart';
 import '../../playback/external_player_policy.dart';
 import '../../preference/user_preferences.dart';
@@ -122,6 +125,28 @@ bool _isOfflineBlocked(String path) {
       path.startsWith('/admin') ||
       path.startsWith('/games');
 }
+
+/// Redirect target for a merged-library link, or null when the link can open.
+/// Needed because a restored URL or saved shortcut can outlive the setting
+/// that enables merged libraries.
+@visibleForTesting
+String? unifiedLibraryRedirect(String? kindName) {
+  if (UnifiedLibraryKind.fromName(kindName) == null) return Destinations.home;
+  final getIt = GetIt.instance;
+  if (!getIt.isRegistered<UnifiedCatalogService>() ||
+      !getIt.isRegistered<UserPreferences>()) {
+    return Destinations.home;
+  }
+  return getIt<UserPreferences>().effectiveMergeLibrariesByType
+      ? null
+      : Destinations.home;
+}
+
+/// Same as [unifiedLibraryRedirect], for a merged genre. A null [kindName] is
+/// valid: the page then lists both movies and series.
+@visibleForTesting
+String? unifiedGenreRedirect(String? kindName) =>
+    unifiedLibraryRedirect(kindName ?? UnifiedLibraryKind.movies.name);
 
 bool _shouldRedirectVideoToExternalPlayer(String path) {
   if (path != Destinations.videoPlayer) {
@@ -354,6 +379,28 @@ final appRouter = GoRouter(
 
     // Browsing
     GoRoute(
+      path: Destinations.unifiedLibraryBrowse,
+      redirect: (context, state) =>
+          unifiedLibraryRedirect(state.pathParameters['kind']),
+      builder: (context, state) {
+        final kind = UnifiedLibraryKind.fromName(state.pathParameters['kind'])!;
+        final l10n = AppLocalizations.of(context);
+        return LibraryBrowseScreen(
+          // The screen creates its view model once, so each kind needs its
+          // own key; otherwise switching between Movies and TV Shows would
+          // keep showing the previous grid.
+          key: ValueKey('unified-${kind.name}'),
+          libraryId: '',
+          includeItemTypes: [kind.itemType],
+          unifiedKind: kind,
+          unifiedTitle: switch (kind) {
+            UnifiedLibraryKind.movies => l10n.movies,
+            UnifiedLibraryKind.series => l10n.tvShows,
+          },
+        );
+      },
+    ),
+    GoRoute(
       path: Destinations.libraryBrowse,
       builder: (context, state) {
         final libraryId = state.pathParameters['libraryId']!;
@@ -484,6 +531,24 @@ final appRouter = GoRouter(
           genreId: genreId,
           genreName: genreName,
           includeItemTypes: includeType != null ? [includeType] : null,
+        );
+      },
+    ),
+    GoRoute(
+      path: Destinations.unifiedGenreBrowse,
+      redirect: (context, state) =>
+          unifiedGenreRedirect(state.uri.queryParameters['kind']),
+      builder: (context, state) {
+        final genreName = state.pathParameters['genreName']!;
+        final kind = UnifiedLibraryKind.fromName(
+          state.uri.queryParameters['kind'],
+        );
+        return LibraryBrowseScreen(
+          key: ValueKey('unified-genre-${kind?.name}-$genreName'),
+          libraryId: '',
+          genreName: genreName,
+          includeItemTypes: kind == null ? null : [kind.itemType],
+          unifiedGenreKinds: kind == null ? UnifiedLibraryKind.values : [kind],
         );
       },
     ),

@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/viewmodels/library_browse_view_model.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,6 +69,8 @@ class _FakeItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     pageRequests++;
     searchTerms.add(searchTerm);
@@ -155,6 +158,8 @@ class _IndexedItemsApi extends _FakeItemsApi implements LetterPositionApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
+    bool? enableImages,
   }) async {
     final start = startIndex ?? 0;
     requests.add((start: start, limit: limit));
@@ -258,6 +263,34 @@ void main() {
       expect(_names(vm), <String>['The Matrix']);
     });
 
+    test('outside a merged library, a title is matched by its name and the '
+        'one it is sorted under, not by its other names', () async {
+      final api = _FakeItemsApi([
+        [
+          {
+            ..._movie('Selwick Fold', sortName: 'Selwick Fold'),
+            'OriginalTitle': 'Hoshi to Tolvane',
+            'UnifiedVersions': [
+              {'ServerId': 'b', 'ItemId': 'b1', 'Name': 'Le Verger de Tolvane'},
+            ],
+          },
+          _movie('The Morvent', sortName: 'Morvent, The'),
+        ],
+      ]);
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      vm.setSearchQuery('tolvane');
+      expect(_names(vm), isEmpty);
+
+      vm.setSearchQuery('the morvent');
+      expect(_names(vm), ['The Morvent']);
+
+      vm.setSearchQuery('morvent, the');
+      expect(_names(vm), ['The Morvent']);
+    });
+
     test('finds an accented name typed without its accents', () async {
       final api = _FakeItemsApi([
         [_movie('Cançó'), _movie('Titanic')],
@@ -356,6 +389,37 @@ void main() {
       // A term on the request would leave the loaded items and the fetch
       // offset describing two different result sets.
       expect(api.searchTerms, everyElement(isNull));
+    });
+  });
+
+  group('a search stays over the whole list', () {
+    test('when the list is loaded again with the query still typed', () async {
+      final api = _IndexedItemsApi();
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      // Nothing is loaded yet, so this starts no page walk of its own.
+      vm.setSearchQuery('m 399');
+      await vm.load();
+      await pumpEventQueue();
+      expect(_names(vm), ['M 399']);
+
+      await vm.setSortDirection(SortDirection.descending);
+      await pumpEventQueue();
+
+      expect(_names(vm), ['M 399']);
+    });
+
+    test('and no query means no walk', () async {
+      final api = _IndexedItemsApi();
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      vm.setSearchQuery('  ');
+
+      await vm.load();
+      await pumpEventQueue();
+
+      expect(api.requests, hasLength(1));
+      expect(vm.hasMore, isTrue);
     });
   });
 

@@ -38,11 +38,15 @@ class LocalSearchField extends StatefulWidget {
 class _LocalSearchFieldState extends State<LocalSearchField> {
   final GlobalKey<CustomTVTextFieldState> _fallbackTvFieldKey = GlobalKey();
   late final UserPreferences _prefs = GetIt.instance<UserPreferences>();
-  late String _lastReportedText = widget.controller.text;
+  // Read when the field mounts. A lazy initializer would first run inside the
+  // listener, after the text had changed, and swallow that first change, which
+  // is all a keyboard that hands its text over in one piece ever sends.
+  late String _lastReportedText;
 
   @override
   void initState() {
     super.initState();
+    _lastReportedText = widget.controller.text;
     widget.controller.addListener(_handleControllerChanged);
     if (PlatformDetection.isTV) {
       widget.focusNode.addListener(_handleFocusChanged);
@@ -55,6 +59,7 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_handleControllerChanged);
       widget.controller.addListener(_handleControllerChanged);
+      _lastReportedText = widget.controller.text;
     }
     if (oldWidget.focusNode != widget.focusNode && PlatformDetection.isTV) {
       oldWidget.focusNode.removeListener(_handleFocusChanged);

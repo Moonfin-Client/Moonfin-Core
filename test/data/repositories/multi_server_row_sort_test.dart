@@ -351,14 +351,40 @@ void main() {
     expect(items.map((item) => item.name), interleavedThenOld);
   });
 
-  test('a failed load more keeps the playlists the first row left out', () async {
+  test('a load more one server fails still brings the other server\'s page, '
+      'and the next one asks the failed server again', () async {
     final firstPage = await interleavedFirstPage();
 
     // Server b drops out on the first try, after server a has answered.
     stubItems('a', 'Playlist', [('a-old', '2024-01-01')], total: 16);
     when(() => itemsCall(itemsApis['b']!)).thenThrow(Exception('b is down'));
-    await expectLater(multiServer.loadMore(row: firstPage), throwsException);
+    final (partial, _) = await multiServer.loadMore(row: firstPage);
 
+    final partialNames = partial.map((item) => item.name);
+    expect(partialNames, contains('a-old'));
+    expect(partialNames, isNot(contains('b-old')));
+
+    stubItems('a', 'Playlist', [], total: 16);
+    stubItems('b', 'Playlist', [('b-old', '2024-01-02')], total: 16);
+    final (items, _) = await multiServer.loadMore(
+      row: firstPage.copyWith(items: partial),
+    );
+
+    expect(startIndexesAskedOf('a'), [null, 15, 30]);
+    expect(startIndexesAskedOf('b'), [null, 15, 15]);
+    expect(items.map((item) => item.name), interleavedThenOld);
+  });
+
+  test('a load more every server fails throws and keeps the playlists the '
+      'first row left out', () async {
+    final firstPage = await interleavedFirstPage();
+
+    for (final id in ['a', 'b']) {
+      when(() => itemsCall(itemsApis[id]!)).thenThrow(Exception('$id is down'));
+    }
+    await expectLater(multiServer.loadMore(row: firstPage), throwsStateError);
+
+    stubItems('a', 'Playlist', [('a-old', '2024-01-01')], total: 16);
     stubItems('b', 'Playlist', [('b-old', '2024-01-02')], total: 16);
     final (items, _) = await multiServer.loadMore(row: firstPage);
 

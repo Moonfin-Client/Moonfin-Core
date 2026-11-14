@@ -1,5 +1,8 @@
 import 'package:server_core/server_core.dart';
 
+import '../models/aggregated_item.dart';
+import '../services/unified_catalog_query.dart';
+
 /// Every item type a genre row can be built from, across all the libraries
 /// that have one. Callers that only want part of this pass their own list,
 /// which [normalizeBrowsableGenreItemTypes] narrows against this.
@@ -29,6 +32,29 @@ const List<String> kDirectoryItemTypes = [
   'UserView',
   'PhotoAlbum',
 ];
+
+/// Folds the [genres] of [mergedServerIds] that share a name into the first
+/// one listed, marked to open the merged genre. Other servers' are untouched.
+List<AggregatedItem> foldGenresByName(
+  List<AggregatedItem> genres,
+  Set<String> mergedServerIds,
+) {
+  if (mergedServerIds.isEmpty) return genres;
+  final seen = <String>{};
+  return [
+    for (final genre in genres)
+      if (!mergedServerIds.contains(genre.serverId))
+        genre
+      else if (seen.add(genreNameKey(genre.name)))
+        genre.rawData[unifiedGenreTileKey] == true
+            ? genre
+            : AggregatedItem(
+                id: genre.id,
+                serverId: genre.serverId,
+                rawData: {...genre.rawData, unifiedGenreTileKey: true},
+              ),
+  ];
+}
 
 List<String> normalizeBrowsableGenreItemTypes(List<String>? includeItemTypes) {
   final requested =

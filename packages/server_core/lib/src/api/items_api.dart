@@ -46,6 +46,11 @@ abstract class ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+
+    /// Pass false for a light answer when only ids or the total are wanted.
+    /// Jellyfin and Emby honour them; Plex and Silo ignore them.
+    bool? enableUserData,
+    bool? enableImages,
   });
 
   /// The values a library actually holds for the facet filters, so the picker

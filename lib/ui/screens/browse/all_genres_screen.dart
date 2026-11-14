@@ -7,9 +7,14 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../auth/repositories/session_repository.dart';
 import '../../../auth/repositories/user_repository.dart';
+import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/log_service.dart';
+import '../../../data/services/unified_catalog_query.dart';
+import '../../../data/services/unified_catalog_service.dart';
+import '../../../data/utils/blocked_ratings.dart';
 import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -66,17 +71,141 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   List<GenreCardData> _genres = [];
   bool _isLoading = true;
   bool _lastGroupCollections = false;
+
+  /// Merge mode decides where tiles come from and what they open.
+  bool _lastMergeLibraries = false;
+  String _lastBlockedRatings = '';
   final Set<String> _usedArtworkIds = {};
 
   /// A grouping toggle starts a second load, so the first stops writing.
   int _loadToken = 0;
 
+  /// True when the active server's genres are merged with other servers';
+  /// tiles then open the unified genre page.
+  bool _opensUnifiedGenres = false;
+
+  /// Tiles were built from the unified catalog (count and artwork included),
+  /// not from the active server's genre list.
+  bool _fromCatalog = false;
+
+  /// How many genres the unified catalog held when the tiles were built.
+  int _catalogGenreCount = 0;
+  int _catalogTitlesRevision = 0;
+
+  UnifiedCatalogService? _watchedCatalog;
+
+  /// A first sync fills the catalog after the screen opened, and the tiles
+  /// would otherwise stay the active server's own until it is reopened.
+  void _onCatalogChanged() {
+    final catalog = _watchedCatalog;
+    if (catalog == null || !mounted || _isLoading || !_opensUnifiedGenres) {
+      return;
+    }
+    // Progress and watched-state changes notify too, and leave genres alone.
+    if (catalog.titlesRevision == _catalogTitlesRevision) return;
+    _catalogTitlesRevision = catalog.titlesRevision;
+    _load();
+  }
+
+  Future<bool> _activeServerMergesGenres() async {
+    final getIt = GetIt.instance;
+    if (!getIt.isRegistered<UnifiedCatalogService>() ||
+        !getIt.isRegistered<MultiServerRepository>() ||
+        !getIt.isRegistered<SessionRepository>()) {
+      return false;
+    }
+    try {
+      final mergedServerIds = await getIt<MultiServerRepository>()
+          .mergedGenreServerIds();
+      return mergedServerIds.contains(
+        getIt<SessionRepository>().activeServerId,
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Null when the unified catalog has no genres yet.
+  Future<List<GenreCardData>?> _loadCatalogGenreCards() async {
+    final catalog = GetIt.instance<UnifiedCatalogService>();
+    await catalog.ensureLoaded();
+    // The screen can be left while the catalog loads, and the card width
+    // below is read from its context.
+    if (!mounted) return null;
+    final genres = catalog.genres(UnifiedLibraryKind.values);
+    _catalogGenreCount = genres.length;
+    _catalogTitlesRevision = catalog.titlesRevision;
+    if (genres.isEmpty) return null;
+    final maxWidth = _genreCardRequestMaxWidth();
+    // The catalog holds every title. As in the merged library, one blocked
+    // copy hides a title, so it gives a tile neither a count nor artwork. A
+    // catalog with only blocked titles still answers, with no tiles: the
+    // server's own list would count them again.
+    return [
+      for (final genre in genres)
+        if ([
+              for (final item in genre.items)
+                if (!isAnyCopyBlocked(item)) item,
+            ]
+            case final allowed when allowed.isNotEmpty)
+          _buildCatalogGenreCard(genre.name, allowed, maxWidth),
+    ];
+  }
+
+  /// [items] is never empty.
+  GenreCardData _buildCatalogGenreCard(
+    String name,
+    List<Map<String, dynamic>> items,
+    int maxWidth,
+  ) {
+    final shuffled = [...items]..shuffle();
+    // Both image URLs are built with one server's image API, so the tile's
+    // image and backdrop must come from items on the same server.
+    final serverId = shuffled.first[unifiedServerIdKey];
+    final (imageUrl, backdropUrl, usedId) = resolveGenreFallbackArtwork(
+      items: [
+        for (final item
+            in shuffled
+                .where((item) => item[unifiedServerIdKey] == serverId)
+                .take(4))
+          {
+            ...item,
+            if (item['ImageTags'] case {'Primary': final String tag})
+              'PrimaryImageTag': tag,
+          },
+      ],
+      imageApi: GetIt.instance<MultiServerRepository>().getImageApiForServer(
+        serverId.toString(),
+      ),
+      maxWidth: maxWidth,
+      avoidIds: _usedArtworkIds,
+    );
+    if (usedId != null) _usedArtworkIds.add(usedId);
+    return GenreCardData(
+      id: '',
+      name: name,
+      itemCount: items.length,
+      imageUrl: imageUrl,
+      backdropUrl: backdropUrl,
+      isGenreFallback: true,
+    );
+  }
+
   void _onChanged() {
     if (!mounted) return;
     final currentGroup =
         _prefs.get(UserPreferences.groupItemsIntoCollections);
-    if (_lastGroupCollections != currentGroup) {
+    final currentMerge = _prefs.effectiveMergeLibrariesByType;
+    final currentBlocked = _prefs.get(UserPreferences.blockedParentalRatings);
+    final blockedChanged = _lastBlockedRatings != currentBlocked;
+    _lastBlockedRatings = currentBlocked;
+    if (_lastGroupCollections != currentGroup ||
+        _lastMergeLibraries != currentMerge) {
       _lastGroupCollections = currentGroup;
+      _lastMergeLibraries = currentMerge;
+      _load();
+    } else if (blockedChanged && _fromCatalog) {
+      // Catalog tiles count and show only titles no blocked rating covers.
       _load();
     } else {
       setState(() {});
@@ -88,11 +217,17 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     super.initState();
     _lastGroupCollections =
         _prefs.get(UserPreferences.groupItemsIntoCollections);
+    _lastMergeLibraries = _prefs.effectiveMergeLibrariesByType;
+    _lastBlockedRatings = _prefs.get(UserPreferences.blockedParentalRatings);
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
       if (mounted) setState(() => _backdropUrl = url);
     });
     _backdropUrl = _backgroundService.currentUrl;
     _prefs.addListener(_onChanged);
+    if (GetIt.instance.isRegistered<UnifiedCatalogService>()) {
+      _watchedCatalog = GetIt.instance<UnifiedCatalogService>()
+        ..addListener(_onCatalogChanged);
+    }
     _load();
   }
 
@@ -101,6 +236,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     _disposed = true;
     _backgroundSub?.cancel();
     _prefs.removeListener(_onChanged);
+    _watchedCatalog?.removeListener(_onCatalogChanged);
     _scrollController.dispose();
     super.dispose();
   }
@@ -109,11 +245,26 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     final token = ++_loadToken;
     try {
       _usedArtworkIds.clear();
+      final isMerged = await _activeServerMergesGenres();
+      List<GenreCardData>? fromCatalog;
+      if (isMerged) {
+        try {
+          fromCatalog = await _loadCatalogGenreCards();
+        } catch (_) {
+          // Fall back to the active server's genre list below; its tiles
+          // still open the unified genre pages.
+        }
+      }
+      // A screen left meanwhile must not start asking the server for genres.
+      if (!mounted || token != _loadToken) return;
+      _opensUnifiedGenres = isMerged;
+      _fromCatalog = fromCatalog != null;
+
       final items = <dynamic>[];
       var startIndex = 0;
       int? total;
 
-      while (true) {
+      while (fromCatalog == null) {
         final response = await _client.itemsApi.getGenres(
           sortBy: 'SortName',
           sortOrder: 'Ascending',
@@ -149,7 +300,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
           .where((x) => x.itemCount > 0 || !genreReportsCounts(x.data))
           .toList();
 
-      _genres = temp.map((x) {
+      _genres = fromCatalog ?? temp.map((x) {
         final data = x.data;
         final (imageUrl, backdropUrl, hasOwnArtwork) = resolveGenreOwnArtwork(
           genreData: data,
@@ -187,6 +338,9 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   Future<void> _loadGenreArtwork(int token) async {
+    // Catalog tiles already have their count and artwork, and have no
+    // server genre id to query with.
+    if (_fromCatalog) return;
     final groupCollections = _lastGroupCollections;
 
     // A genre with its own artwork only needs a query when grouping changes
@@ -360,7 +514,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
       return;
     }
 
-    if (previousImageType != _imageType) {
+    if (previousImageType != _imageType && !_fromCatalog) {
       for (final genre in _genres) {
         genre.imageUrl = null;
       }
@@ -499,9 +653,11 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
                 UserPreferences.cardFocusExpansion,
               ),
               onTap: () => context.push(
-                Destinations.genre(genre.name, genreId: genre.id),
+                _opensUnifiedGenres
+                    ? Destinations.unifiedGenre(genre.name)
+                    : Destinations.genre(genre.name, genreId: genre.id),
               ),
-              onLongPress: () {
+              onLongPress: _fromCatalog ? null : () {
                 final serverId = GetIt.instance<UserRepository>().currentUser?.serverId ?? '';
                 final aggregatedItem = AggregatedItem(
                   id: genre.id,

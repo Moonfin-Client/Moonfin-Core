@@ -196,6 +196,102 @@ void main() {
       expect(kept.map((l) => l.id), ['shown']);
     });
 
+    AggregatedLibrary merged(List<String> ids) => AggregatedLibrary.merged(
+      name: 'Movies',
+      unifiedKindName: 'movies',
+      libraries: [for (final id in ids) _library(id, 'movies')],
+    );
+
+    test('a merged tile stays when the library it drew its artwork from is '
+        'hidden', () async {
+      when(
+        () => views.getMyMediaExcludes(),
+      ).thenAnswer((_) async => {'first'});
+      final kept = await scope.withoutHiddenLibraries([
+        merged(['first', 'second', 'third']),
+      ]);
+
+      expect(kept.single.unifiedKindName, 'movies');
+      expect(kept.single.name, 'Movies');
+      // The artwork comes from the first library still shown.
+      expect(kept.single.id, 'second');
+      expect(kept.single.mergedFrom.map((l) => l.id), ['second', 'third']);
+    });
+
+    test('a merged tile keeps its artwork when a later library is '
+        'hidden', () async {
+      when(
+        () => views.getMyMediaExcludes(),
+      ).thenAnswer((_) async => {'second'});
+      final kept = await scope.withoutHiddenLibraries([
+        merged(['first', 'second']),
+      ]);
+      expect(kept.single.id, 'first');
+    });
+
+    test('a merged tile is removed once every library it stands for is '
+        'hidden', () async {
+      when(
+        () => views.getMyMediaExcludes(),
+      ).thenAnswer((_) async => {'first', 'second'});
+      final kept = await scope.withoutHiddenLibraries([
+        merged(['first', 'second']),
+        _library('shown', 'music'),
+      ]);
+      expect(kept.map((l) => l.id), ['shown']);
+    });
+
+    group('with a library id two servers share', () {
+      AggregatedLibrary on(String serverId, String id) => AggregatedLibrary(
+        id: id,
+        name: '$id on $serverId',
+        collectionType: 'movies',
+        serverId: serverId,
+      );
+
+      setUp(() {
+        scope = LibraryScopeService(_MockClient(), views, () => 'srv1');
+        when(() => views.getMyMediaExcludes()).thenAnswer((_) async => {'1'});
+      });
+
+      test('only the active server loses the library it hid', () async {
+        final kept = await scope.withoutHiddenLibraries([
+          on('srv1', '1'),
+          on('srv1', '2'),
+          on('srv2', '1'),
+        ]);
+        expect(kept.map((l) => (l.serverId, l.id)), [
+          ('srv1', '2'),
+          ('srv2', '1'),
+        ]);
+      });
+
+      test("a merged tile keeps the other server's library", () async {
+        final kept = await scope.withoutHiddenLibraries([
+          AggregatedLibrary.merged(
+            name: 'Movies',
+            unifiedKindName: 'movies',
+            libraries: [on('srv1', '1'), on('srv2', '1'), on('srv2', '3')],
+          ),
+        ]);
+        expect(kept.single.mergedFrom.map((l) => (l.serverId, l.id)), [
+          ('srv2', '1'),
+          ('srv2', '3'),
+        ]);
+        // The artwork comes from the first library still shown.
+        expect((kept.single.serverId, kept.single.id), ('srv2', '1'));
+      });
+
+      test('a merged tile of other servers only is left as it is', () async {
+        final tile = AggregatedLibrary.merged(
+          name: 'Movies',
+          unifiedKindName: 'movies',
+          libraries: [on('srv2', '1'), on('srv3', '1')],
+        );
+        expect(await scope.withoutHiddenLibraries([tile]), [tile]);
+      });
+    });
+
     test('keeps everything when the excludes cant be read', () async {
       when(() => views.getMyMediaExcludes()).thenThrow(Exception('offline'));
       final libraries = [_library('a', 'movies')];

@@ -11,6 +11,9 @@ class SearchRepository {
       'AlbumArtist,Album,ImageTags,BackdropImageTags,ParentBackdropItemId,'
       'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag,OfficialRating';
 
+  // Search uses ProviderIds to fold a title that two servers hold into one.
+  static const _searchFieldsWithProviderIds = '$_searchFields,ProviderIds';
+
   SearchRepository(this._client);
 
   Future<List<String>> suggest(
@@ -137,19 +140,25 @@ class SearchRepository {
   /// full, each group that didn't get [perGroup] items is searched again on
   /// its own. The page names no types to include, since Jellyfin only finds
   /// Live TV programs when it's asked for every type.
+  ///
+  /// [withProviderIds] also reads the external ids shared titles fold on.
   Future<List<AggregatedItem>> searchGroups(
     String query,
     List<List<String>> groups, {
     required int perGroup,
     required int limit,
+    bool withProviderIds = false,
   }) async {
     if (_client.serverType != ServerType.jellyfin) {
-      return search(query, limit: limit);
+      return withoutBlockedItems(
+        await _search(query, limit: limit, withProviderIds: withProviderIds),
+      );
     }
     final page = await _search(
       query,
       excludeItemTypes: _ungroupedTypes,
       limit: limit,
+      withProviderIds: withProviderIds,
     );
     if (page.length < limit) return withoutBlockedItems(page);
     final refills = await Future.wait([
@@ -159,6 +168,7 @@ class SearchRepository {
             query,
             includeItemTypes: group,
             limit: perGroup,
+            withProviderIds: withProviderIds,
           ).catchError((Object _) => <AggregatedItem>[]),
     ]);
     final seen = {for (final item in page) item.id};
@@ -175,6 +185,7 @@ class SearchRepository {
     List<String>? excludeItemTypes,
     String? parentId,
     int? limit,
+    bool withProviderIds = false,
   }) async {
     final isStudioQuery = query.toLowerCase().startsWith('studio:');
     final searchTerm = isStudioQuery ? null : query;
@@ -187,7 +198,7 @@ class SearchRepository {
       excludeItemTypes: excludeItemTypes,
       limit: limit ?? 24,
       recursive: true,
-      fields: _searchFields,
+      fields: withProviderIds ? _searchFieldsWithProviderIds : _searchFields,
       studios: studios,
     );
 

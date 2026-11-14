@@ -2013,6 +2013,871 @@ class AutoDownloadSubscriptionsCompanion
   }
 }
 
+class $CatalogEntriesTable extends CatalogEntries
+    with TableInfo<$CatalogEntriesTable, CatalogEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CatalogEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _metadataJsonMeta = const VerificationMeta(
+    'metadataJson',
+  );
+  @override
+  late final GeneratedColumn<String> metadataJson = GeneratedColumn<String>(
+    'metadata_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    serverId,
+    userId,
+    itemId,
+    kind,
+    metadataJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'catalog_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CatalogEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_serverIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('metadata_json')) {
+      context.handle(
+        _metadataJsonMeta,
+        metadataJson.isAcceptableOrUnknown(
+          data['metadata_json']!,
+          _metadataJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_metadataJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {serverId, userId, itemId};
+  @override
+  CatalogEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CatalogEntry(
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      metadataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata_json'],
+      )!,
+    );
+  }
+
+  @override
+  $CatalogEntriesTable createAlias(String alias) {
+    return $CatalogEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class CatalogEntry extends DataClass implements Insertable<CatalogEntry> {
+  final String serverId;
+  final String userId;
+  final String itemId;
+
+  /// The item type the row was listed as, `Movie` or `Series`.
+  final String kind;
+
+  /// The item as the server sent it, with the fields the grid shows.
+  final String metadataJson;
+  const CatalogEntry({
+    required this.serverId,
+    required this.userId,
+    required this.itemId,
+    required this.kind,
+    required this.metadataJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['server_id'] = Variable<String>(serverId);
+    map['user_id'] = Variable<String>(userId);
+    map['item_id'] = Variable<String>(itemId);
+    map['kind'] = Variable<String>(kind);
+    map['metadata_json'] = Variable<String>(metadataJson);
+    return map;
+  }
+
+  CatalogEntriesCompanion toCompanion(bool nullToAbsent) {
+    return CatalogEntriesCompanion(
+      serverId: Value(serverId),
+      userId: Value(userId),
+      itemId: Value(itemId),
+      kind: Value(kind),
+      metadataJson: Value(metadataJson),
+    );
+  }
+
+  factory CatalogEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CatalogEntry(
+      serverId: serializer.fromJson<String>(json['serverId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      itemId: serializer.fromJson<String>(json['itemId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      metadataJson: serializer.fromJson<String>(json['metadataJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'serverId': serializer.toJson<String>(serverId),
+      'userId': serializer.toJson<String>(userId),
+      'itemId': serializer.toJson<String>(itemId),
+      'kind': serializer.toJson<String>(kind),
+      'metadataJson': serializer.toJson<String>(metadataJson),
+    };
+  }
+
+  CatalogEntry copyWith({
+    String? serverId,
+    String? userId,
+    String? itemId,
+    String? kind,
+    String? metadataJson,
+  }) => CatalogEntry(
+    serverId: serverId ?? this.serverId,
+    userId: userId ?? this.userId,
+    itemId: itemId ?? this.itemId,
+    kind: kind ?? this.kind,
+    metadataJson: metadataJson ?? this.metadataJson,
+  );
+  CatalogEntry copyWithCompanion(CatalogEntriesCompanion data) {
+    return CatalogEntry(
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      metadataJson: data.metadataJson.present
+          ? data.metadataJson.value
+          : this.metadataJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CatalogEntry(')
+          ..write('serverId: $serverId, ')
+          ..write('userId: $userId, ')
+          ..write('itemId: $itemId, ')
+          ..write('kind: $kind, ')
+          ..write('metadataJson: $metadataJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(serverId, userId, itemId, kind, metadataJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CatalogEntry &&
+          other.serverId == this.serverId &&
+          other.userId == this.userId &&
+          other.itemId == this.itemId &&
+          other.kind == this.kind &&
+          other.metadataJson == this.metadataJson);
+}
+
+class CatalogEntriesCompanion extends UpdateCompanion<CatalogEntry> {
+  final Value<String> serverId;
+  final Value<String> userId;
+  final Value<String> itemId;
+  final Value<String> kind;
+  final Value<String> metadataJson;
+  final Value<int> rowid;
+  const CatalogEntriesCompanion({
+    this.serverId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.metadataJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CatalogEntriesCompanion.insert({
+    required String serverId,
+    required String userId,
+    required String itemId,
+    required String kind,
+    required String metadataJson,
+    this.rowid = const Value.absent(),
+  }) : serverId = Value(serverId),
+       userId = Value(userId),
+       itemId = Value(itemId),
+       kind = Value(kind),
+       metadataJson = Value(metadataJson);
+  static Insertable<CatalogEntry> custom({
+    Expression<String>? serverId,
+    Expression<String>? userId,
+    Expression<String>? itemId,
+    Expression<String>? kind,
+    Expression<String>? metadataJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (serverId != null) 'server_id': serverId,
+      if (userId != null) 'user_id': userId,
+      if (itemId != null) 'item_id': itemId,
+      if (kind != null) 'kind': kind,
+      if (metadataJson != null) 'metadata_json': metadataJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CatalogEntriesCompanion copyWith({
+    Value<String>? serverId,
+    Value<String>? userId,
+    Value<String>? itemId,
+    Value<String>? kind,
+    Value<String>? metadataJson,
+    Value<int>? rowid,
+  }) {
+    return CatalogEntriesCompanion(
+      serverId: serverId ?? this.serverId,
+      userId: userId ?? this.userId,
+      itemId: itemId ?? this.itemId,
+      kind: kind ?? this.kind,
+      metadataJson: metadataJson ?? this.metadataJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (metadataJson.present) {
+      map['metadata_json'] = Variable<String>(metadataJson.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CatalogEntriesCompanion(')
+          ..write('serverId: $serverId, ')
+          ..write('userId: $userId, ')
+          ..write('itemId: $itemId, ')
+          ..write('kind: $kind, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CatalogSyncStatesTable extends CatalogSyncStates
+    with TableInfo<$CatalogSyncStatesTable, CatalogSyncState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CatalogSyncStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemCountMeta = const VerificationMeta(
+    'itemCount',
+  );
+  @override
+  late final GeneratedColumn<int> itemCount = GeneratedColumn<int>(
+    'item_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _serverTotalMeta = const VerificationMeta(
+    'serverTotal',
+  );
+  @override
+  late final GeneratedColumn<int> serverTotal = GeneratedColumn<int>(
+    'server_total',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastFullSyncAtMeta = const VerificationMeta(
+    'lastFullSyncAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastFullSyncAt =
+      GeneratedColumn<DateTime>(
+        'last_full_sync_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    serverId,
+    userId,
+    kind,
+    lastSyncedAt,
+    itemCount,
+    serverTotal,
+    lastFullSyncAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'catalog_sync_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CatalogSyncState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_serverIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastSyncedAtMeta);
+    }
+    if (data.containsKey('item_count')) {
+      context.handle(
+        _itemCountMeta,
+        itemCount.isAcceptableOrUnknown(data['item_count']!, _itemCountMeta),
+      );
+    }
+    if (data.containsKey('server_total')) {
+      context.handle(
+        _serverTotalMeta,
+        serverTotal.isAcceptableOrUnknown(
+          data['server_total']!,
+          _serverTotalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_full_sync_at')) {
+      context.handle(
+        _lastFullSyncAtMeta,
+        lastFullSyncAt.isAcceptableOrUnknown(
+          data['last_full_sync_at']!,
+          _lastFullSyncAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {serverId, userId, kind};
+  @override
+  CatalogSyncState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CatalogSyncState(
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      )!,
+      itemCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}item_count'],
+      )!,
+      serverTotal: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_total'],
+      ),
+      lastFullSyncAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_full_sync_at'],
+      ),
+    );
+  }
+
+  @override
+  $CatalogSyncStatesTable createAlias(String alias) {
+    return $CatalogSyncStatesTable(attachedDatabase, alias);
+  }
+}
+
+class CatalogSyncState extends DataClass
+    implements Insertable<CatalogSyncState> {
+  final String serverId;
+  final String userId;
+  final String kind;
+
+  /// When the server last confirmed the rows held, by a check that found
+  /// its counts unchanged or patched what differed, or by a full read.
+  final DateTime lastSyncedAt;
+
+  /// How many rows of this kind the account holds.
+  final int itemCount;
+
+  /// Sum of the totals the server reported for its libraries of this kind
+  /// when the rows last matched it. Null when that isn't known, which has
+  /// the next check list the server's ids instead of comparing counts.
+  final int? serverTotal;
+
+  /// When every row was last read again in full. Null until one has been.
+  final DateTime? lastFullSyncAt;
+  const CatalogSyncState({
+    required this.serverId,
+    required this.userId,
+    required this.kind,
+    required this.lastSyncedAt,
+    required this.itemCount,
+    this.serverTotal,
+    this.lastFullSyncAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['server_id'] = Variable<String>(serverId);
+    map['user_id'] = Variable<String>(userId);
+    map['kind'] = Variable<String>(kind);
+    map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    map['item_count'] = Variable<int>(itemCount);
+    if (!nullToAbsent || serverTotal != null) {
+      map['server_total'] = Variable<int>(serverTotal);
+    }
+    if (!nullToAbsent || lastFullSyncAt != null) {
+      map['last_full_sync_at'] = Variable<DateTime>(lastFullSyncAt);
+    }
+    return map;
+  }
+
+  CatalogSyncStatesCompanion toCompanion(bool nullToAbsent) {
+    return CatalogSyncStatesCompanion(
+      serverId: Value(serverId),
+      userId: Value(userId),
+      kind: Value(kind),
+      lastSyncedAt: Value(lastSyncedAt),
+      itemCount: Value(itemCount),
+      serverTotal: serverTotal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverTotal),
+      lastFullSyncAt: lastFullSyncAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastFullSyncAt),
+    );
+  }
+
+  factory CatalogSyncState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CatalogSyncState(
+      serverId: serializer.fromJson<String>(json['serverId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      lastSyncedAt: serializer.fromJson<DateTime>(json['lastSyncedAt']),
+      itemCount: serializer.fromJson<int>(json['itemCount']),
+      serverTotal: serializer.fromJson<int?>(json['serverTotal']),
+      lastFullSyncAt: serializer.fromJson<DateTime?>(json['lastFullSyncAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'serverId': serializer.toJson<String>(serverId),
+      'userId': serializer.toJson<String>(userId),
+      'kind': serializer.toJson<String>(kind),
+      'lastSyncedAt': serializer.toJson<DateTime>(lastSyncedAt),
+      'itemCount': serializer.toJson<int>(itemCount),
+      'serverTotal': serializer.toJson<int?>(serverTotal),
+      'lastFullSyncAt': serializer.toJson<DateTime?>(lastFullSyncAt),
+    };
+  }
+
+  CatalogSyncState copyWith({
+    String? serverId,
+    String? userId,
+    String? kind,
+    DateTime? lastSyncedAt,
+    int? itemCount,
+    Value<int?> serverTotal = const Value.absent(),
+    Value<DateTime?> lastFullSyncAt = const Value.absent(),
+  }) => CatalogSyncState(
+    serverId: serverId ?? this.serverId,
+    userId: userId ?? this.userId,
+    kind: kind ?? this.kind,
+    lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+    itemCount: itemCount ?? this.itemCount,
+    serverTotal: serverTotal.present ? serverTotal.value : this.serverTotal,
+    lastFullSyncAt: lastFullSyncAt.present
+        ? lastFullSyncAt.value
+        : this.lastFullSyncAt,
+  );
+  CatalogSyncState copyWithCompanion(CatalogSyncStatesCompanion data) {
+    return CatalogSyncState(
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      itemCount: data.itemCount.present ? data.itemCount.value : this.itemCount,
+      serverTotal: data.serverTotal.present
+          ? data.serverTotal.value
+          : this.serverTotal,
+      lastFullSyncAt: data.lastFullSyncAt.present
+          ? data.lastFullSyncAt.value
+          : this.lastFullSyncAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CatalogSyncState(')
+          ..write('serverId: $serverId, ')
+          ..write('userId: $userId, ')
+          ..write('kind: $kind, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('itemCount: $itemCount, ')
+          ..write('serverTotal: $serverTotal, ')
+          ..write('lastFullSyncAt: $lastFullSyncAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    serverId,
+    userId,
+    kind,
+    lastSyncedAt,
+    itemCount,
+    serverTotal,
+    lastFullSyncAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CatalogSyncState &&
+          other.serverId == this.serverId &&
+          other.userId == this.userId &&
+          other.kind == this.kind &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.itemCount == this.itemCount &&
+          other.serverTotal == this.serverTotal &&
+          other.lastFullSyncAt == this.lastFullSyncAt);
+}
+
+class CatalogSyncStatesCompanion extends UpdateCompanion<CatalogSyncState> {
+  final Value<String> serverId;
+  final Value<String> userId;
+  final Value<String> kind;
+  final Value<DateTime> lastSyncedAt;
+  final Value<int> itemCount;
+  final Value<int?> serverTotal;
+  final Value<DateTime?> lastFullSyncAt;
+  final Value<int> rowid;
+  const CatalogSyncStatesCompanion({
+    this.serverId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.itemCount = const Value.absent(),
+    this.serverTotal = const Value.absent(),
+    this.lastFullSyncAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CatalogSyncStatesCompanion.insert({
+    required String serverId,
+    required String userId,
+    required String kind,
+    required DateTime lastSyncedAt,
+    this.itemCount = const Value.absent(),
+    this.serverTotal = const Value.absent(),
+    this.lastFullSyncAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : serverId = Value(serverId),
+       userId = Value(userId),
+       kind = Value(kind),
+       lastSyncedAt = Value(lastSyncedAt);
+  static Insertable<CatalogSyncState> custom({
+    Expression<String>? serverId,
+    Expression<String>? userId,
+    Expression<String>? kind,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<int>? itemCount,
+    Expression<int>? serverTotal,
+    Expression<DateTime>? lastFullSyncAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (serverId != null) 'server_id': serverId,
+      if (userId != null) 'user_id': userId,
+      if (kind != null) 'kind': kind,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (itemCount != null) 'item_count': itemCount,
+      if (serverTotal != null) 'server_total': serverTotal,
+      if (lastFullSyncAt != null) 'last_full_sync_at': lastFullSyncAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CatalogSyncStatesCompanion copyWith({
+    Value<String>? serverId,
+    Value<String>? userId,
+    Value<String>? kind,
+    Value<DateTime>? lastSyncedAt,
+    Value<int>? itemCount,
+    Value<int?>? serverTotal,
+    Value<DateTime?>? lastFullSyncAt,
+    Value<int>? rowid,
+  }) {
+    return CatalogSyncStatesCompanion(
+      serverId: serverId ?? this.serverId,
+      userId: userId ?? this.userId,
+      kind: kind ?? this.kind,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      itemCount: itemCount ?? this.itemCount,
+      serverTotal: serverTotal ?? this.serverTotal,
+      lastFullSyncAt: lastFullSyncAt ?? this.lastFullSyncAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (itemCount.present) {
+      map['item_count'] = Variable<int>(itemCount.value);
+    }
+    if (serverTotal.present) {
+      map['server_total'] = Variable<int>(serverTotal.value);
+    }
+    if (lastFullSyncAt.present) {
+      map['last_full_sync_at'] = Variable<DateTime>(lastFullSyncAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CatalogSyncStatesCompanion(')
+          ..write('serverId: $serverId, ')
+          ..write('userId: $userId, ')
+          ..write('kind: $kind, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('itemCount: $itemCount, ')
+          ..write('serverTotal: $serverTotal, ')
+          ..write('lastFullSyncAt: $lastFullSyncAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$OfflineDatabase extends GeneratedDatabase {
   _$OfflineDatabase(QueryExecutor e) : super(e);
   $OfflineDatabaseManager get managers => $OfflineDatabaseManager(this);
@@ -2021,6 +2886,9 @@ abstract class _$OfflineDatabase extends GeneratedDatabase {
   );
   late final $AutoDownloadSubscriptionsTable autoDownloadSubscriptions =
       $AutoDownloadSubscriptionsTable(this);
+  late final $CatalogEntriesTable catalogEntries = $CatalogEntriesTable(this);
+  late final $CatalogSyncStatesTable catalogSyncStates =
+      $CatalogSyncStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2028,6 +2896,8 @@ abstract class _$OfflineDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     downloadedItems,
     autoDownloadSubscriptions,
+    catalogEntries,
+    catalogSyncStates,
   ];
 }
 
@@ -2958,6 +3828,471 @@ typedef $$AutoDownloadSubscriptionsTableProcessedTableManager =
       AutoDownloadSubscription,
       PrefetchHooks Function()
     >;
+typedef $$CatalogEntriesTableCreateCompanionBuilder =
+    CatalogEntriesCompanion Function({
+      required String serverId,
+      required String userId,
+      required String itemId,
+      required String kind,
+      required String metadataJson,
+      Value<int> rowid,
+    });
+typedef $$CatalogEntriesTableUpdateCompanionBuilder =
+    CatalogEntriesCompanion Function({
+      Value<String> serverId,
+      Value<String> userId,
+      Value<String> itemId,
+      Value<String> kind,
+      Value<String> metadataJson,
+      Value<int> rowid,
+    });
+
+class $$CatalogEntriesTableFilterComposer
+    extends Composer<_$OfflineDatabase, $CatalogEntriesTable> {
+  $$CatalogEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CatalogEntriesTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $CatalogEntriesTable> {
+  $$CatalogEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CatalogEntriesTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $CatalogEntriesTable> {
+  $$CatalogEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => column,
+  );
+}
+
+class $$CatalogEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $CatalogEntriesTable,
+          CatalogEntry,
+          $$CatalogEntriesTableFilterComposer,
+          $$CatalogEntriesTableOrderingComposer,
+          $$CatalogEntriesTableAnnotationComposer,
+          $$CatalogEntriesTableCreateCompanionBuilder,
+          $$CatalogEntriesTableUpdateCompanionBuilder,
+          (
+            CatalogEntry,
+            BaseReferences<
+              _$OfflineDatabase,
+              $CatalogEntriesTable,
+              CatalogEntry
+            >,
+          ),
+          CatalogEntry,
+          PrefetchHooks Function()
+        > {
+  $$CatalogEntriesTableTableManager(
+    _$OfflineDatabase db,
+    $CatalogEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CatalogEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CatalogEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CatalogEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> serverId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> itemId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> metadataJson = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CatalogEntriesCompanion(
+                serverId: serverId,
+                userId: userId,
+                itemId: itemId,
+                kind: kind,
+                metadataJson: metadataJson,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String serverId,
+                required String userId,
+                required String itemId,
+                required String kind,
+                required String metadataJson,
+                Value<int> rowid = const Value.absent(),
+              }) => CatalogEntriesCompanion.insert(
+                serverId: serverId,
+                userId: userId,
+                itemId: itemId,
+                kind: kind,
+                metadataJson: metadataJson,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CatalogEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $CatalogEntriesTable,
+      CatalogEntry,
+      $$CatalogEntriesTableFilterComposer,
+      $$CatalogEntriesTableOrderingComposer,
+      $$CatalogEntriesTableAnnotationComposer,
+      $$CatalogEntriesTableCreateCompanionBuilder,
+      $$CatalogEntriesTableUpdateCompanionBuilder,
+      (
+        CatalogEntry,
+        BaseReferences<_$OfflineDatabase, $CatalogEntriesTable, CatalogEntry>,
+      ),
+      CatalogEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$CatalogSyncStatesTableCreateCompanionBuilder =
+    CatalogSyncStatesCompanion Function({
+      required String serverId,
+      required String userId,
+      required String kind,
+      required DateTime lastSyncedAt,
+      Value<int> itemCount,
+      Value<int?> serverTotal,
+      Value<DateTime?> lastFullSyncAt,
+      Value<int> rowid,
+    });
+typedef $$CatalogSyncStatesTableUpdateCompanionBuilder =
+    CatalogSyncStatesCompanion Function({
+      Value<String> serverId,
+      Value<String> userId,
+      Value<String> kind,
+      Value<DateTime> lastSyncedAt,
+      Value<int> itemCount,
+      Value<int?> serverTotal,
+      Value<DateTime?> lastFullSyncAt,
+      Value<int> rowid,
+    });
+
+class $$CatalogSyncStatesTableFilterComposer
+    extends Composer<_$OfflineDatabase, $CatalogSyncStatesTable> {
+  $$CatalogSyncStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get itemCount => $composableBuilder(
+    column: $table.itemCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverTotal => $composableBuilder(
+    column: $table.serverTotal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastFullSyncAt => $composableBuilder(
+    column: $table.lastFullSyncAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CatalogSyncStatesTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $CatalogSyncStatesTable> {
+  $$CatalogSyncStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get itemCount => $composableBuilder(
+    column: $table.itemCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverTotal => $composableBuilder(
+    column: $table.serverTotal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastFullSyncAt => $composableBuilder(
+    column: $table.lastFullSyncAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CatalogSyncStatesTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $CatalogSyncStatesTable> {
+  $$CatalogSyncStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get itemCount =>
+      $composableBuilder(column: $table.itemCount, builder: (column) => column);
+
+  GeneratedColumn<int> get serverTotal => $composableBuilder(
+    column: $table.serverTotal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastFullSyncAt => $composableBuilder(
+    column: $table.lastFullSyncAt,
+    builder: (column) => column,
+  );
+}
+
+class $$CatalogSyncStatesTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $CatalogSyncStatesTable,
+          CatalogSyncState,
+          $$CatalogSyncStatesTableFilterComposer,
+          $$CatalogSyncStatesTableOrderingComposer,
+          $$CatalogSyncStatesTableAnnotationComposer,
+          $$CatalogSyncStatesTableCreateCompanionBuilder,
+          $$CatalogSyncStatesTableUpdateCompanionBuilder,
+          (
+            CatalogSyncState,
+            BaseReferences<
+              _$OfflineDatabase,
+              $CatalogSyncStatesTable,
+              CatalogSyncState
+            >,
+          ),
+          CatalogSyncState,
+          PrefetchHooks Function()
+        > {
+  $$CatalogSyncStatesTableTableManager(
+    _$OfflineDatabase db,
+    $CatalogSyncStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CatalogSyncStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CatalogSyncStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CatalogSyncStatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> serverId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<DateTime> lastSyncedAt = const Value.absent(),
+                Value<int> itemCount = const Value.absent(),
+                Value<int?> serverTotal = const Value.absent(),
+                Value<DateTime?> lastFullSyncAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CatalogSyncStatesCompanion(
+                serverId: serverId,
+                userId: userId,
+                kind: kind,
+                lastSyncedAt: lastSyncedAt,
+                itemCount: itemCount,
+                serverTotal: serverTotal,
+                lastFullSyncAt: lastFullSyncAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String serverId,
+                required String userId,
+                required String kind,
+                required DateTime lastSyncedAt,
+                Value<int> itemCount = const Value.absent(),
+                Value<int?> serverTotal = const Value.absent(),
+                Value<DateTime?> lastFullSyncAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CatalogSyncStatesCompanion.insert(
+                serverId: serverId,
+                userId: userId,
+                kind: kind,
+                lastSyncedAt: lastSyncedAt,
+                itemCount: itemCount,
+                serverTotal: serverTotal,
+                lastFullSyncAt: lastFullSyncAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CatalogSyncStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $CatalogSyncStatesTable,
+      CatalogSyncState,
+      $$CatalogSyncStatesTableFilterComposer,
+      $$CatalogSyncStatesTableOrderingComposer,
+      $$CatalogSyncStatesTableAnnotationComposer,
+      $$CatalogSyncStatesTableCreateCompanionBuilder,
+      $$CatalogSyncStatesTableUpdateCompanionBuilder,
+      (
+        CatalogSyncState,
+        BaseReferences<
+          _$OfflineDatabase,
+          $CatalogSyncStatesTable,
+          CatalogSyncState
+        >,
+      ),
+      CatalogSyncState,
+      PrefetchHooks Function()
+    >;
 
 class $OfflineDatabaseManager {
   final _$OfflineDatabase _db;
@@ -2969,4 +4304,8 @@ class $OfflineDatabaseManager {
         _db,
         _db.autoDownloadSubscriptions,
       );
+  $$CatalogEntriesTableTableManager get catalogEntries =>
+      $$CatalogEntriesTableTableManager(_db, _db.catalogEntries);
+  $$CatalogSyncStatesTableTableManager get catalogSyncStates =>
+      $$CatalogSyncStatesTableTableManager(_db, _db.catalogSyncStates);
 }

@@ -27,6 +27,34 @@ double _uiScale() => GetIt.instance<UserPreferences>()
     .get(UserPreferences.desktopUiScale)
     .scaleFactor;
 
+/// The refresh button shown in a merged library's header, plus its sync
+/// progress.
+@immutable
+class LibraryHeaderRefresh {
+  const LibraryHeaderRefresh({
+    required this.focusNode,
+    required this.onRefresh,
+    required this.busy,
+    required this.showProgress,
+    required this.progressSemanticsLabel,
+    this.progressText,
+  });
+
+  final FocusNode focusNode;
+  final VoidCallback onRefresh;
+
+  final bool busy;
+
+  /// False when no sync is running. Also hidden until the first titles
+  /// arrive; the strip under the header shows the full sync line instead.
+  final bool showProgress;
+
+  /// Null before the server counts are known.
+  final String? progressText;
+
+  final String progressSemanticsLabel;
+}
+
 /// Everything the Modern and Docked headers show and do. The screen builds
 /// one per frame, so the headers share it instead of each taking every value.
 @immutable
@@ -56,6 +84,7 @@ class LibraryHeaderModel {
     this.displayLabel,
     this.onDisplay,
     this.onShuffle,
+    this.refresh,
     this.hud,
   });
 
@@ -91,6 +120,9 @@ class LibraryHeaderModel {
   final String? displayLabel;
   final VoidCallback? onDisplay;
   final VoidCallback? onShuffle;
+
+  /// Set for a library merged across servers.
+  final LibraryHeaderRefresh? refresh;
 
   /// Whether the current sort can jump by letter at all.
   final bool alphabetApplies;
@@ -235,6 +267,15 @@ class ModernLibraryHeader extends StatelessWidget {
                                 onTap: m.onDisplay!,
                               ),
                             ],
+                            if (m.refresh != null) ...[
+                              gap,
+                              LibraryRefreshAction(
+                                refresh: m.refresh!,
+                                size: 44 * scale,
+                                iconSize: 22 * scale,
+                                scale: scale,
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -305,6 +346,15 @@ class CompactLibraryHeader extends StatelessWidget {
                   size: 40,
                   iconSize: 22,
                   onTap: m.onDisplay!,
+                ),
+              // The docked style keeps its other controls in the bottom bar,
+              // so refresh sits in this row with the Back button.
+              if (m.refresh != null)
+                LibraryRefreshAction(
+                  refresh: m.refresh!,
+                  size: 40,
+                  iconSize: 22,
+                  progressLeads: true,
                 ),
             ],
           ),
@@ -435,6 +485,16 @@ class DockedLibraryPanel extends StatelessWidget {
                       stacked: true,
                     ),
                   ),
+                  // The panel is too narrow to show progress beside the
+                  // title; the page shows it in the strip under the header.
+                  if (m.refresh != null)
+                    LibraryRefreshAction(
+                      refresh: m.refresh!,
+                      size: 44 * scale,
+                      iconSize: 22 * scale,
+                      scale: scale,
+                      showProgress: false,
+                    ),
                 ],
               ),
               SizedBox(height: 16 * scale),
@@ -582,6 +642,293 @@ class DockedLibraryBar extends StatelessWidget {
               onTap: m.onDisplay!,
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// The Refresh button of a merged library, shared by every header style.
+class LibraryRefreshAction extends StatelessWidget {
+  const LibraryRefreshAction({
+    super.key,
+    required this.refresh,
+    required this.size,
+    required this.iconSize,
+    this.scale = 1.0,
+    this.unfocusedIconAlpha = 179,
+    this.onUpKey,
+    this.progressLeads = false,
+    this.showProgress = true,
+  });
+
+  final LibraryHeaderRefresh refresh;
+  final double size;
+  final double iconSize;
+  final double scale;
+  final int unfocusedIconAlpha;
+  final VoidCallback? onUpKey;
+
+  /// Shows the progress before the button; for a button at the end of its
+  /// row.
+  final bool progressLeads;
+
+  /// False where the header has no room for the progress.
+  final bool showProgress;
+
+  @override
+  Widget build(BuildContext context) {
+    final button = FocusableToolbarButton(
+      // Keyed so the button keeps its focus while the progress comes and goes.
+      key: const ValueKey('library-refresh'),
+      focusNode: refresh.focusNode,
+      icon: Icons.refresh,
+      tooltip: AppLocalizations.of(context).refresh,
+      size: size,
+      iconSize: iconSize,
+      unfocusedIconAlpha: unfocusedIconAlpha,
+      enabled: !refresh.busy,
+      onTap: refresh.onRefresh,
+      onUpKey: onUpKey,
+    );
+    final progress = showProgress && refresh.showProgress
+        ? [
+            LibrarySyncProgress(
+              text: refresh.progressText,
+              semanticsLabel: refresh.progressSemanticsLabel,
+              scale: scale,
+            ),
+            SizedBox(width: 6 * scale),
+          ]
+        : const <Widget>[];
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: progressLeads
+          ? [...progress, button]
+          : [button, ...progress.reversed],
+    );
+  }
+}
+
+class LibrarySyncProgress extends StatelessWidget {
+  const LibrarySyncProgress({
+    super.key,
+    required this.text,
+    required this.semanticsLabel,
+    this.scale = 1.0,
+  });
+
+  /// Key for finding the progress indicator, whether the header or the strip
+  /// shows it.
+  static const statusKey = ValueKey('catalog-sync-status');
+
+  final String? text;
+
+  final String semanticsLabel;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      key: statusKey,
+      label: semanticsLabel,
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 12 * scale,
+              height: 12 * scale,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColorScheme.accent,
+              ),
+            ),
+            if (text != null) ...[
+              SizedBox(width: 6 * scale),
+              Flexible(
+                child: Text(
+                  text!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12 * scale,
+                    color: AppColorScheme.onSurface.withAlpha(153),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown under a merged library's header: the sync line before the first
+/// titles arrive, the unreachable-servers warning, and the button that
+/// applies pending catalog changes.
+class LibraryCatalogStrip extends StatelessWidget {
+  const LibraryCatalogStrip({
+    super.key,
+    required this.updateFocusNode,
+    required this.onKeyEvent,
+    required this.horizontalPadding,
+    this.progressText,
+    this.progressSemanticsLabel,
+    this.unreachableServerCount = 0,
+    this.onUpdate,
+  });
+
+  final FocusNode updateFocusNode;
+
+  /// Handled by the page, which routes focus between the header and the grid.
+  final FocusOnKeyEventCallback onKeyEvent;
+  final double horizontalPadding;
+
+  final String? progressText;
+  final String? progressSemanticsLabel;
+
+  /// Number of servers whose last sync failed. Shown only when no sync is
+  /// running.
+  final int unreachableServerCount;
+
+  /// Non-null while there are catalog changes not yet applied to the list on
+  /// screen.
+  final VoidCallback? onUpdate;
+
+  bool get _showsUnreachable =>
+      progressSemanticsLabel == null && unreachableServerCount > 0;
+
+  bool get isEmpty =>
+      progressSemanticsLabel == null && !_showsUnreachable && onUpdate == null;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scale = _uiScale();
+    final warning = AppColorScheme.statusPending;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(horizontalPadding, 4, horizontalPadding, 0),
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onKeyEvent: onKeyEvent,
+        child: Row(
+          children: [
+            if (progressSemanticsLabel != null)
+              Flexible(
+                child: LibrarySyncProgress(
+                  text: progressText,
+                  semanticsLabel: progressSemanticsLabel!,
+                  scale: scale,
+                ),
+              )
+            else if (_showsUnreachable)
+              Flexible(
+                child: Row(
+                  key: const ValueKey('catalog-unreachable'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 14 * scale,
+                      color: warning,
+                    ),
+                    SizedBox(width: 4 * scale),
+                    Flexible(
+                      child: Text(
+                        l10n.unifiedCatalogServersUnreachable(
+                          unreachableServerCount,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12 * scale, color: warning),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (onUpdate != null) ...[
+              if (progressSemanticsLabel != null || _showsUnreachable)
+                SizedBox(width: 12 * scale),
+              Flexible(
+                child: _CatalogUpdateChip(
+                  focusNode: updateFocusNode,
+                  scale: scale,
+                  onTap: onUpdate!,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Never requests focus itself, so appearing doesn't pull D-pad focus out of
+/// the grid.
+class _CatalogUpdateChip extends StatelessWidget {
+  const _CatalogUpdateChip({
+    required this.focusNode,
+    required this.scale,
+    required this.onTap,
+  });
+
+  final FocusNode focusNode;
+  final double scale;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final accent = AppColorScheme.accent;
+    final onSurface = AppColorScheme.onSurface;
+
+    return _Pressable(
+      focusNode: focusNode,
+      onTap: onTap,
+      builder: (focused, highlighted, focusColor) => AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.symmetric(
+          horizontal: 10 * scale,
+          vertical: 4 * scale,
+        ),
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: highlighted ? 0.45 : 0.18),
+          borderRadius: AppRadius.circular(14),
+          border: Border.all(
+            color: highlighted ? focusColor : accent.withValues(alpha: 0.6),
+            // The same width either way, so focus doesn't resize the chip.
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.sync, size: 14 * scale, color: onSurface),
+            SizedBox(width: 6 * scale),
+            Flexible(
+              child: Text(
+                l10n.unifiedCatalogChanged,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12 * scale, color: onSurface),
+              ),
+            ),
+            SizedBox(width: 8 * scale),
+            Text(
+              l10n.update,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 12 * scale,
+                fontWeight: FontWeight.w700,
+                color: onSurface,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

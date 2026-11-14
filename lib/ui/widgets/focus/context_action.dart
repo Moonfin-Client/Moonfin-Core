@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../auth/models/server.dart';
 import '../../../auth/repositories/user_repository.dart';
+import '../../../auth/store/authentication_store.dart';
+import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/unified_catalog_query.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../../data/offline/offline_catalog.dart';
@@ -29,6 +34,9 @@ import '../adaptive/adaptive_dialog.dart';
 import '../change_artwork_dialog.dart';
 import '../identify_dialog.dart';
 import '../overlay_sheet.dart';
+import '../unified_server_picker.dart';
+
+final _log = Logger();
 
 class ItemContextAction {
   final IconData icon;
@@ -100,6 +108,152 @@ Future<void> _hideFromResumeOrReset(
   } catch (_) {}
 }
 
+/// Applies [change] to every server's copy of [item]. Returns how many copies
+/// changed and the names of the servers it failed on. For an item with a
+/// single copy the error is rethrown rather than returned.
+///
+/// [shownCopyMutations] is null when the shown copy's server has no client
+/// loaded. That copy is then left alone and reported under
+/// [shownServerName]: sent to any other server, its id could name an
+/// unrelated item there.
+///
+/// Every copy is changed because a merged card shows as watched or favorite
+/// when any copy is; changing one copy alone would leave the card as it was.
+Future<({int changed, List<String> failedServers})> _applyToEveryCopy(
+  AggregatedItem item,
+  ItemMutationRepository? shownCopyMutations,
+  Future<void> Function(ItemMutationRepository mutations, String itemId)
+  change, {
+  String? shownServerName,
+}) async {
+  final copies = unifiedCopiesOf(item.rawData);
+  if (copies.length < 2 ||
+      !GetIt.instance.isRegistered<MediaServerClientFactory>()) {
+    if (shownCopyMutations == null) {
+      _log.w(
+        'Context action: no client for server ${item.serverId}, the item '
+        'is left as it was',
+      );
+      return (changed: 0, failedServers: [?shownServerName]);
+    }
+    await change(shownCopyMutations, item.id);
+    return (changed: 1, failedServers: const <String>[]);
+  }
+  final clients = GetIt.instance<MediaServerClientFactory>();
+  final seen = <String>{};
+  final failedServers = <String>{};
+  var changed = 0;
+  await Future.wait([
+    for (final copy in copies)
+      if (seen.add(copy.key))
+        () async {
+          final isShown =
+              copy.serverId == item.serverId && copy.itemId == item.id;
+          final client = clients.getClientIfExists(copy.serverId);
+          final mutations = isShown
+              ? shownCopyMutations
+              : client == null
+              ? null
+              : ItemMutationRepository(client);
+          if (mutations == null) {
+            _log.w(
+              'Context action: no client for server ${copy.serverId}, '
+              'its copy is left as it was',
+            );
+            failedServers.add(copy.serverName);
+            return;
+          }
+          try {
+            await change(mutations, copy.itemId);
+            changed++;
+          } catch (error) {
+            _log.w(
+              'Context action: copy on server ${copy.serverId} not '
+              'changed: $error',
+            );
+            failedServers.add(copy.serverName);
+          }
+        }(),
+  ]);
+  return (changed: changed, failedServers: failedServers.toList());
+}
+
+/// Runs [_applyToEveryCopy], shows a snackbar naming the servers that
+/// failed, and calls [onChanged] if at least one copy changed.
+Future<void> _applyToEveryCopyAndReport(
+  BuildContext context,
+  AppLocalizations l10n,
+  AggregatedItem item,
+  ItemMutationRepository? shownCopyMutations,
+  Future<void> Function(ItemMutationRepository mutations, String itemId)
+  change, {
+  String? shownServerName,
+  required VoidCallback? onChanged,
+}) async {
+  final outcome = await _applyToEveryCopy(
+    item,
+    shownCopyMutations,
+    change,
+    shownServerName: shownServerName,
+  );
+  if (outcome.failedServers.isNotEmpty && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          l10n.unifiedCopiesNotChanged(outcome.failedServers.join(', ')),
+        ),
+      ),
+    );
+  }
+  if (outcome.changed > 0) onChanged?.call();
+}
+
+/// The name of the server [item] is on, when that is known to be a server
+/// other than the active one. Null when nothing says so.
+///
+/// An id no loaded client goes by is not enough to tell. Search results and
+/// some other lists carry the id the server gives itself, which the app does
+/// not know its own active server by. So only a merged library's stamp or a
+/// stored server counts.
+String? _otherServerNameOf(
+  AggregatedItem item, {
+  required String activeServerId,
+  required String activeBaseUrl,
+}) {
+  final stored = _storedServerOf(item.serverId);
+  if (stored != null &&
+      (stored.id == activeServerId ||
+          isStoredServer(
+            stored.address,
+            serverId: activeServerId,
+            baseUrl: activeBaseUrl,
+          ))) {
+    return null;
+  }
+  final stamp = item.rawData[unifiedServerIdKey]?.toString();
+  if (stored == null && (stamp == null || stamp != item.serverId)) return null;
+  for (final copy in unifiedCopiesOf(item.rawData)) {
+    if (copy.serverId == item.serverId && copy.serverName.isNotEmpty) {
+      return copy.serverName;
+    }
+  }
+  return stored?.name ?? '';
+}
+
+/// The stored server an item's [serverId] names, by id or by address.
+Server? _storedServerOf(String serverId) {
+  if (!GetIt.instance.isRegistered<AuthenticationStore>()) return null;
+  final store = GetIt.instance<AuthenticationStore>();
+  final byId = store.getServer(serverId);
+  if (byId != null || !serverId.contains('://')) return byId;
+  for (final server in store.getServers()) {
+    if (isStoredServer(serverId, serverId: server.id, baseUrl: server.address)) {
+      return server;
+    }
+  }
+  return null;
+}
+
 /// The types that get the play, watched, playlist and collection actions.
 bool isContextMediaType(String? type) =>
     type == 'Movie' ||
@@ -120,10 +274,58 @@ List<ItemContextAction> contextActionsFor(
   List<ItemCollectionMembership>? collectionMemberships,
 }) {
   final l10n = AppLocalizations.of(context);
-  final mutations = GetIt.instance<ItemMutationRepository>();
   final client = GetIt.instance<MediaServerClient>();
+  final itemClient = GetIt.instance.isRegistered<MediaServerClientFactory>()
+      ? GetIt.instance<MediaServerClientFactory>().getClientIfExists(
+          item.serverId,
+        )
+      : null;
   final currentUser = GetIt.instance<UserRepository>().currentUser;
-  final isAdminUser = currentUser?.isAdministrator ?? false;
+  // An item's serverId may be a base URL, the app's server id, or empty
+  // (meaning the active server). Clients are compared by their underlying
+  // online client, because the active client and the factory's client are
+  // separate wrappers around it.
+  final isActiveServerItem =
+      item.serverId.isEmpty ||
+      item.serverId == currentUser?.serverId ||
+      (itemClient != null &&
+          identical(onlineClientOf(itemClient), onlineClientOf(client))) ||
+      (item.serverId.contains('://') &&
+          isStoredServer(
+            item.serverId,
+            serverId: currentUser?.serverId ?? '',
+            baseUrl: client.baseUrl,
+          ));
+  // Set when the item is another server's and that server has no client
+  // loaded. Empty when the server's name is not known.
+  final unloadedServerName = isActiveServerItem || itemClient != null
+      ? null
+      : _otherServerNameOf(
+          item,
+          activeServerId: currentUser?.serverId ?? '',
+          activeBaseUrl: client.baseUrl,
+        );
+  // Another server's item must be changed through that server's client; the
+  // active server doesn't know its id, and on a server with small numeric
+  // ids it could be another item's. With no client for that server the item
+  // is left alone.
+  final ItemMutationRepository? mutations = unloadedServerName != null
+      ? null
+      : isActiveServerItem || itemClient == null
+      ? GetIt.instance<ItemMutationRepository>()
+      : ItemMutationRepository(itemClient);
+  final shownServerName = unloadedServerName == null ||
+          unloadedServerName.isEmpty
+      ? null
+      : unloadedServerName;
+  // Admin rights and the admin dialogs apply to the active server only. Used
+  // on another server's item they would fail, or act on an unrelated item
+  // that happens to share the id.
+  final isAdminUser =
+      (currentUser?.isAdministrator ?? false) && isActiveServerItem;
+  // Deliberately the plain id comparison, not [isActiveServerItem]: an item
+  // whose serverId is a base URL needs no collection permission, and one
+  // with an empty serverId never reaches the server's own hide.
   final isSameServerItem = currentUser?.serverId == item.serverId;
   final requiresCollectionPermission =
       client.features.collectionsNeedPermission && isSameServerItem;
@@ -165,12 +367,16 @@ List<ItemContextAction> contextActionsFor(
         label: l10n.goToDetailsScreen,
         onSelect: () async {
           if (!context.mounted) return;
-          context.push(
-            Destinations.itemOrPhoto(
-              item.id,
-              serverId: item.serverId,
-              type: item.type,
-              channelId: item.channelId,
+          await openOnPickedServer(
+            context,
+            item,
+            open: (itemId, serverId) => context.push(
+              Destinations.itemOrPhoto(
+                itemId,
+                serverId: serverId,
+                type: item.type,
+                channelId: item.channelId,
+              ),
             ),
           );
         },
@@ -179,13 +385,20 @@ List<ItemContextAction> contextActionsFor(
       // First so a remote lands on it with no extra presses. The detail screen
       // does the playing, which keeps the next episode lookup for a series and
       // the external player preference working the way the Play button does.
+      // For a title on several servers, show the server picker first: the
+      // progress on the card may come from a different copy than the one the
+      // card links to.
       actions.add(ItemContextAction(
         icon: Icons.play_arrow,
         label: watchStateOf(item).hasProgress ? l10n.resume : l10n.play,
         onSelect: () async {
           if (!context.mounted) return;
-          context.push(
-            Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
+          await openOnPickedServer(
+            context,
+            item,
+            open: (itemId, serverId) => context.push(
+              Destinations.item(itemId, serverId: serverId, autoPlay: true),
+            ),
           );
         },
       ));
@@ -213,8 +426,17 @@ List<ItemContextAction> contextActionsFor(
           ? l10n.contextMenuMarkUnwatched
           : l10n.contextMenuMarkWatched,
       onSelect: () async {
-        await mutations.setPlayed(item.id, isPlayed: !item.isPlayed);
-        onChanged?.call();
+        final isPlayed = !item.isPlayed;
+        await _applyToEveryCopyAndReport(
+          context,
+          l10n,
+          item,
+          mutations,
+          (mutations, itemId) =>
+              mutations.setPlayed(itemId, isPlayed: isPlayed),
+          shownServerName: shownServerName,
+          onChanged: onChanged,
+        );
       },
     ));
 
@@ -241,7 +463,9 @@ List<ItemContextAction> contextActionsFor(
           } else {
             await prefs.hideFromContinueWatching(item.id);
           }
-          if (server == null) await _hideFromResumeOrReset(mutations, item);
+          if (server == null && mutations != null) {
+            await _hideFromResumeOrReset(mutations, item);
+          }
           onChanged?.call();
         },
       ));
@@ -264,7 +488,9 @@ List<ItemContextAction> contextActionsFor(
           final prefs = GetIt.instance<UserPreferences>();
           await prefs.hideFromNextUp(item.seriesId!);
           await prefs.hideFromContinueWatching(item.seriesId!);
-          if (server == null) await _hideFromResumeOrReset(mutations, item);
+          if (server == null && mutations != null) {
+            await _hideFromResumeOrReset(mutations, item);
+          }
           onChanged?.call();
         },
       ));
@@ -276,8 +502,17 @@ List<ItemContextAction> contextActionsFor(
           ? l10n.contextMenuRemoveFromFavorites
           : l10n.contextMenuAddToFavorites,
       onSelect: () async {
-        await mutations.setFavorite(item.id, isFavorite: !item.isFavorite);
-        onChanged?.call();
+        final isFavorite = !item.isFavorite;
+        await _applyToEveryCopyAndReport(
+          context,
+          l10n,
+          item,
+          mutations,
+          (mutations, itemId) =>
+              mutations.setFavorite(itemId, isFavorite: isFavorite),
+          shownServerName: shownServerName,
+          onChanged: onChanged,
+        );
       },
     ));
 
@@ -377,7 +612,9 @@ List<ItemContextAction> contextActionsFor(
         label: l10n.adminRefreshMetadata,
         onSelect: () async {
           try {
-            await mutations.refreshMetadata(item.id);
+            await GetIt.instance<ItemMutationRepository>().refreshMetadata(
+              item.id,
+            );
             refreshHomeRows(followUp: true);
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(

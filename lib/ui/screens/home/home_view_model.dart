@@ -23,6 +23,9 @@ import '../../../data/services/home_row_cache_store.dart';
 import '../../../data/services/row_data_source.dart';
 import '../../../data/services/topshelf_service.dart';
 import '../../../data/services/tv_channels_service.dart';
+import '../../../data/services/unified_catalog_query.dart';
+import '../../../data/services/unified_catalog_service.dart';
+import '../../../data/services/unified_genre_row.dart';
 import '../../../data/services/watch_next_service.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
@@ -199,17 +202,32 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  /// Merging by type only matters with multi-server libraries on, so it stays
+  /// out of the key otherwise and a single-server cache is unaffected.
+  @visibleForTesting
+  static String multiServerCacheToken({
+    required bool multiServerEnabled,
+    required bool mergeLibrariesByType,
+  }) =>
+      '$multiServerEnabled'
+      '${multiServerEnabled && mergeLibrariesByType ? '+merged' : ''}';
+
   String _homeCacheKey() {
     final userId = _ownerUserId;
     final sections = _prefs.get(UserPreferences.homeSectionsJson);
-    final multiServer = _prefs.get(UserPreferences.enableMultiServerLibraries);
+    final multiServerToken = multiServerCacheToken(
+      multiServerEnabled: _prefs.get(
+        UserPreferences.enableMultiServerLibraries,
+      ),
+      mergeLibrariesByType: _prefs.get(UserPreferences.mergeLibrariesByType),
+    );
     final merge = _prefs.effectiveMergeContinueWatchingNextUp;
     final blocked = _prefs.get(UserPreferences.blockedParentalRatings);
     // Offline rows are cached separately so cached online rows never hydrate
     // an offline home (and vice versa).
     final offline = _isOffline;
     final shape = RowDataSource.fieldShapeToken;
-    return '$_serverId|$userId|$sections|$multiServer|$merge|$blocked|offline:$offline|fields:$shape';
+    return '$_serverId|$userId|$sections|$multiServerToken|$merge|$blocked|offline:$offline|fields:$shape';
   }
 
   /// Called again when the resume and next up rows refresh on their own, or
@@ -1151,6 +1169,11 @@ class HomeViewModel extends ChangeNotifier {
     if (rowIndex < 0) return;
     final row = _rows[rowIndex];
     if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
+    if (_mergedGenreRows.containsKey(row.id) ||
+        (_isGenreItemsRow(row) && hasCatalogCards(row.items))) {
+      await _loadMoreMergedGenre(row);
+      return;
+    }
 
     _inFlightPagingRowIds.add(row.id);
     _rowsPagedThisLoad.add(row.id);
@@ -1265,9 +1288,230 @@ class HomeViewModel extends ChangeNotifier {
         pluginSource: cfg.pluginSource,
         forceRefresh: forceRefresh,
       );
+      final genreId = cfg.pluginAdditionalData?.trim() ?? '';
+      if (cfg.pluginSource == HomeSectionPluginSource.genres &&
+          other == null &&
+          genreId.isNotEmpty) {
+        return [await _withMergedGenre(row, genreId)];
+      }
       return [row];
     }
     return _loadSection(cfg.type, forceRefresh: forceRefresh);
+  }
+
+  static const _mergedGenreRowMaxItems = 100;
+
+  final Map<String, UnifiedGenreRow> _mergedGenreRows = {};
+
+  // Counts loads per row, so a catalog that finishes loading late only
+  // completes the row load that waited for it.
+  final Map<String, int> _genreRowLoadTokens = {};
+
+  static bool _isGenreItemsRow(HomeRow row) =>
+      row.rowType == HomeRowType.genres && row.id.startsWith('pluginDynamic:');
+
+  static UnifiedCatalogService? _unifiedCatalogOrNull() =>
+      GetIt.instance.isRegistered<UnifiedCatalogService>()
+      ? GetIt.instance<UnifiedCatalogService>()
+      : null;
+
+  /// Null outside merge mode: the row stays as its server answered it.
+  Future<UnifiedGenreRow?> _mergedGenreOf(HomeRow live, String genreId) async {
+    if (_isOffline ||
+        !_prefs.effectiveMergeLibrariesByType ||
+        _unifiedCatalogOrNull() == null) {
+      return null;
+    }
+    try {
+      final mergedServerIds = await _multiServerRepo.mergedGenreServerIds();
+      if (mergedServerIds.isEmpty) return null;
+      final active = (await _multiServerRepo.getLoggedInServers())
+          .firstWhereOrNull((s) => _isThisServer(s.client.baseUrl))
+          ?.server
+          .id;
+      if (active == null || !mergedServerIds.contains(active)) return null;
+      final name = genreNameOf(live.items, genreId, title: live.title);
+      final itemTypes = _prefs
+          .get(UserPreferences.genresRowItemFilter)
+          .includeItemTypes;
+      final kinds = [
+        for (final kind in UnifiedLibraryKind.values)
+          if (itemTypes.contains(kind.itemType)) kind,
+      ];
+      if (name == null || kinds.isEmpty) return null;
+      return UnifiedGenreRow(
+        name: name,
+        kinds: kinds,
+        sortBy: _prefs.get(UserPreferences.genresRowSortBy).apiValue,
+        descending:
+            _prefs.get(UserPreferences.genresRowSortOrder) ==
+            SortDirection.descending,
+        activeServerId: active,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// [live] with the merged catalog's cards of its genre. The catalog gets
+  /// [UnifiedCatalogService.loadGrace] to load; past that the row keeps the
+  /// catalog cards it already shows, else shows [live]. A load that finishes
+  /// later completes the row, or puts [live] back if it failed.
+  Future<HomeRow> _withMergedGenre(HomeRow live, String genreId) async {
+    final loadToken = _genreRowLoadTokens[live.id] =
+        (_genreRowLoadTokens[live.id] ?? 0) + 1;
+    final genre = await _mergedGenreOf(live, genreId);
+    final catalog = _unifiedCatalogOrNull();
+    if (genre == null || catalog == null) {
+      _mergedGenreRows.remove(live.id);
+      return live;
+    }
+    // A catalog slower than the grace completes the row once it is loaded.
+    final catalogLoad = catalog.tryEnsureLoaded();
+    var loadedInTime = await catalogLoad.timeout(
+      UnifiedCatalogService.loadGrace,
+      onTimeout: () => false,
+    );
+    // An empty row is removed, which would leave a late catalog nowhere to
+    // put its cards, and there is nothing to show meanwhile anyway.
+    if (!loadedInTime && filterEmptyElements(live.items).isEmpty) {
+      loadedInTime = await catalogLoad;
+    }
+    if (loadedInTime) {
+      final cards = genre.cards(catalog);
+      if (cards == null) {
+        _mergedGenreRows.remove(live.id);
+        return live;
+      }
+      // A genre of blocked titles only stays empty: [live] can still hold a
+      // copy that another server's copy blocks.
+      if (cards.isEmpty) {
+        _mergedGenreRows.remove(live.id);
+        return live.copyWith(items: const [], totalCount: 0);
+      }
+      _mergedGenreRows[live.id] = genre;
+      return live.copyWith(
+        items: cards.take(_rowPageSize).toList(),
+        totalCount: cards.length,
+      );
+    }
+    final shown = _rows.firstWhereOrNull((row) => row.id == live.id);
+    final isShowingCatalogCards =
+        shown != null && !shown.isLoading && hasCatalogCards(shown.items);
+    if (isShowingCatalogCards) {
+      _mergedGenreRows[live.id] = genre;
+    } else {
+      _mergedGenreRows.remove(live.id);
+    }
+    unawaited(
+      catalogLoad.then((loaded) {
+        // A Home whose user was switched away is dropped without a dispose.
+        if (_disposed || (_client.userId ?? '') != _ownerUserId) return;
+        if (loadToken != _genreRowLoadTokens[live.id]) return;
+        _completeGenreRow(
+          genre,
+          loaded ? catalog : null,
+          live: live,
+          restoreLiveOnFailure: isShowingCatalogCards,
+        );
+      }),
+    );
+    return isShowingCatalogCards ? shown : live;
+  }
+
+  void _completeGenreRow(
+    UnifiedGenreRow genre,
+    UnifiedCatalogService? catalog, {
+    required HomeRow live,
+    required bool restoreLiveOnFailure,
+  }) {
+    final index = _rows.indexWhere((row) => row.id == live.id);
+    if (index < 0 || _rows[index].isLoading) return;
+    final shown = _rows[index];
+    final mergedPage = catalog == null
+        ? null
+        : genre.complete(shown.items, catalog, limit: _rowPageSize);
+    final HomeRow row;
+    if (mergedPage != null) {
+      // A row left with no card is removed below, and pages no more.
+      if (mergedPage.items.isEmpty) {
+        _mergedGenreRows.remove(live.id);
+      } else {
+        _mergedGenreRows[live.id] = genre;
+      }
+      row = shown.copyWith(
+        items: mergedPage.items,
+        totalCount: mergedPage.total,
+      );
+    } else {
+      _mergedGenreRows.remove(live.id);
+      if (!restoreLiveOnFailure) return;
+      row = live.copyWith(items: filterEmptyElements(live.items));
+    }
+    if (_sameCards(shown, row)) return;
+    _rows = List.of(_rows);
+    if (row.items.isEmpty) {
+      _rows.removeAt(index);
+    } else {
+      _rows[index] = row;
+    }
+    notifyListeners();
+    if (!_isLoading) _saveRowCache();
+  }
+
+  /// Whether [a] and [b] show the same cards with the same details. The ids
+  /// alone miss a title renamed, watched, or with a copy gone unreachable
+  /// since the row was cached.
+  static bool _sameCards(HomeRow a, HomeRow b) {
+    if (a.totalCount != b.totalCount || a.items.length != b.items.length) {
+      return false;
+    }
+    const sameData = DeepCollectionEquality();
+    for (var i = 0; i < a.items.length; i++) {
+      final ours = a.items[i];
+      final theirs = b.items[i];
+      if (ours.serverId != theirs.serverId ||
+          ours.id != theirs.id ||
+          !sameData.equals(ours.rawData, theirs.rawData)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<void> _loadMoreMergedGenre(HomeRow row) async {
+    final genre = _mergedGenreRows[row.id];
+    final catalog = _unifiedCatalogOrNull();
+    // Catalog cards restored from the row cache can't be paged until this
+    // session's load has put the row's genre in [_mergedGenreRows].
+    if (genre == null ||
+        catalog == null ||
+        _isOffline ||
+        !_prefs.effectiveMergeLibrariesByType) {
+      return;
+    }
+    _inFlightPagingRowIds.add(row.id);
+    try {
+      if (!await catalog.tryEnsureLoaded() || _disposed) return;
+      // The row can be loaded again during the wait, with the merge turned
+      // off or as another genre, and this page is no longer its next one.
+      if (!identical(_mergedGenreRows[row.id], genre) ||
+          !_prefs.effectiveMergeLibrariesByType) {
+        return;
+      }
+      final page = genre.nextPage(
+        row.items,
+        catalog,
+        pageSize: _rowPageSize,
+        maxItems: _mergedGenreRowMaxItems,
+      );
+      _rowsPagedThisLoad.add(row.id);
+      _replaceRowById(
+        row.copyWith(items: page.items, totalCount: page.total),
+      );
+    } finally {
+      _inFlightPagingRowIds.remove(row.id);
+    }
   }
 
   /// Kept per server so a collection the user can't open isn't asked for
@@ -3663,8 +3907,11 @@ class HomeViewModel extends ChangeNotifier {
     });
   }
 
+  bool _disposed = false;
+
   @override
   void dispose() {
+    _disposed = true;
     _watchingNowTimer?.cancel();
     super.dispose();
   }

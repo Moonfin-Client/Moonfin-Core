@@ -22,6 +22,41 @@ void _watchTheme(BuildContext context) {
   context.dependOnInheritedWidgetOfExactType<AppThemeScope>();
 }
 
+/// Dark rounded background for a small label over a card's artwork. Text and
+/// icons in [child] inherit the badge's colour and size.
+class MediaLabelBadge extends StatelessWidget {
+  final Widget child;
+
+  const MediaLabelBadge({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    _watchTheme(context);
+    final foreground = AppColorScheme.onBadge;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColorScheme.scrim.withValues(alpha: 0.75),
+        borderRadius: AppRadius.circular(4),
+        boxShadow: kMediaBadgeShadow,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: IconTheme.merge(
+          data: IconThemeData(color: foreground, size: 11),
+          child: DefaultTextStyle.merge(
+            style: TextStyle(
+              color: foreground,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The circular checkmark badge indicating an item has been watched/finished.
 class MediaWatchedBadge extends StatelessWidget {
   final double size;
