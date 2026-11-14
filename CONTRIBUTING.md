@@ -56,4 +56,4 @@ Using an AI assistant to help write a change is fine. Say so in the pull request
 
 ## License
 
-Moonfin is licensed under the GNU GPL, version 2 or later. By opening a pull request you agree that your contribution is licensed the same way. See [LICENSE](LICENSE).
+Moonfin is licensed under the GNU GPL, version 3 or later. By opening a pull request you agree that your contribution is licensed the same way. See [LICENSE](LICENSE).

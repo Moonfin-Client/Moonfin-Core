@@ -163,4 +163,4 @@ class _PlaybackCategoryScreen extends StatelessWidget {
 /// switch and cores aren't offered when no signed-in server could have it
 /// (all Silo, say). Downloaded games stay manageable either way.
 bool get _gamesOnAnyServer =>
-    anySignedInServerSupports((f) => f.supportsFullMoonfinPlugin);
+    anySignedInServerSupports((f) => f.supportsRetroGames);

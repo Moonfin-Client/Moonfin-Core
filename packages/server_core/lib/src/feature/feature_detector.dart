@@ -88,9 +88,12 @@ class FeatureDetector {
       _isJellyfin || _isEmby || _isSilo || _isPlex;
 
   /// The rest of the Moonfin plugin's routes (`/Moonfin/*` at the server
-  /// root: Seerr proxy, games, anime markers, custom rows, bookmarks...),
-  /// which only the Jellyfin and Emby plugins have.
+  /// root: bookmarks, personal ratings...), which only the Jellyfin and Emby
+  /// plugins have.
   bool get supportsFullMoonfinPlugin => _isJellyfin || _isEmby;
+
+  /// Moonbase's retro games, which Moonbase for Plex serves too.
+  bool get supportsRetroGames => supportsFullMoonfinPlugin || _isPlex;
 
   /// Remote control: listing the account's other sessions and sending them
   /// play, pause and navigation commands (the Jellyfin/Emby Sessions API).
@@ -143,8 +146,11 @@ class FeatureDetector {
   bool get supportsAchievements => _isJellyfin;
 
   /// Moonbase's server-sent settings stream. Emby sends plugin events over
-  /// the session websocket, and Moonbase for Silo and Plex can't stream.
-  bool get supportsPluginSettingsStream => _isJellyfin;
+  /// the session websocket, and Moonbase for Silo can't stream.
+  bool get supportsPluginSettingsStream => _isJellyfin || _isPlex;
+
+  /// Phone pushes from Moonbase. Moonbase for Silo sends none.
+  bool get supportsPushNotifications => _isJellyfin || _isEmby || _isPlex;
 
   /// Installing Moonbase from the app, through the admin plugins API.
   bool get supportsMoonbaseInstall => _isJellyfin;

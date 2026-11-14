@@ -15,15 +15,18 @@ class EmbyItemsApi implements ItemsApi {
 
   static String? _knownFields(String? fields) {
     if (fields == null) return null;
-    if (!_unknownToEmbyFields.any(fields.contains)) return fields;
     final kept = fields
         .split(',')
         .map((field) => field.trim())
         .where(
           (field) => field.isNotEmpty && !_unknownToEmbyFields.contains(field),
         )
-        .join(',');
-    return kept.isEmpty ? null : kept;
+        .toList();
+    // Emby leaves LastPlayedDate out of UserData unless it's asked for by name.
+    if (kept.contains('UserData') && !kept.contains('UserDataLastPlayedDate')) {
+      kept.add('UserDataLastPlayedDate');
+    }
+    return kept.isEmpty ? null : kept.join(',');
   }
 
   bool _shouldRetryCollectionFallback(int statusCode) {
@@ -334,6 +337,7 @@ class EmbyItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     final userId = _getUserId();
     final response = await _dio.get(
@@ -343,6 +347,7 @@ class EmbyItemsApi implements ItemsApi {
         if (recursive) 'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
+        if (hideWatched == true) 'Filters': 'IsUnplayed',
         if (limit != null) 'Limit': limit,
         'Fields': ?_knownFields(fields),
         if (enableImageTypes != null) 'EnableImageTypes': enableImageTypes,

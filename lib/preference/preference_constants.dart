@@ -157,6 +157,10 @@ enum FavoritesViewStyle {
 enum HomeRowsStyle {
   v1,
   v2,
+  carousel;
+
+  /// Carousel rows are Modern rows with a details panel under the cards.
+  bool get usesModernCards => this != v1;
 }
 
 enum DesktopUiScale {
@@ -577,6 +581,27 @@ enum HomeSectionType {
   tmdbTrendingTvWeekly('tmdb_trending_tv_weekly'),
   tmdbTrendingAllWeekly('tmdb_trending_all_weekly'),
   mdblistWatchingNow('mdblist_watching_now'),
+  mdblistMostWatchedWeekMovies('mdblist_most_watched_week_movies'),
+  mdblistMostWatchedWeekShows('mdblist_most_watched_week_shows'),
+  mdblistMostWatchedYearMovies('mdblist_most_watched_year_movies'),
+  mdblistMostWatchedYearShows('mdblist_most_watched_year_shows'),
+  mdblistAnticipatedMovies('mdblist_anticipated_movies'),
+  mdblistAnticipatedShows('mdblist_anticipated_shows'),
+  mdblistStreamingChartsMovies('mdblist_streaming_charts_movies'),
+  mdblistStreamingChartsShows('mdblist_streaming_charts_shows'),
+  justwatchTopMovies('justwatch_top_movies'),
+  justwatchTopShows('justwatch_top_shows'),
+  tmdbTrendingAllDaily('tmdb_trending_all_daily'),
+  tmdbKoreanDramas('tmdb_korean_dramas'),
+  tmdbAnime('tmdb_anime'),
+  tmdbNewDigitalMovies('tmdb_new_digital_movies'),
+  tmdbHiddenGems('tmdb_hidden_gems'),
+  tmdbNetflix('tmdb_netflix'),
+  tmdbPrimeVideo('tmdb_prime_video'),
+  tmdbDisneyPlus('tmdb_disney_plus'),
+  tmdbHboMax('tmdb_hbo_max'),
+  tmdbAppleTv('tmdb_apple_tv'),
+  tmdbParamountPlus('tmdb_paramount_plus'),
   radarrCalendar('radarr_calendar'),
   sonarrCalendar('sonarr_calendar'),
   sinceYouWatched1('sinceyouwatched1'),
@@ -637,6 +662,131 @@ const tmdbChartPaths = {
   HomeSectionType.tmdbTrendingTvDaily: 'trending/tv/day',
   HomeSectionType.tmdbTrendingTvWeekly: 'trending/tv/week',
   HomeSectionType.tmdbTrendingAllWeekly: 'trending/all/week',
+};
+
+/// A Home row Moonbase fills from an outside chart through its custom rows
+/// endpoint, asked for by [source], [type] and [params].
+class ExternalChart {
+  const ExternalChart(
+    this.title,
+    this.label,
+    this.source,
+    this.type, {
+    this.params = const {},
+    this.regional = false,
+  });
+
+  final String title;
+
+  /// Where the row comes from, shown under its name in the row picker.
+  final String label;
+  final String source;
+  final String type;
+  final Map<String, String> params;
+
+  /// Whether the chart depends on the viewer's country, which goes along as
+  /// the `region` param.
+  final bool regional;
+
+  /// Whether MDBList fills the row, so it needs an MDBList key rather than a
+  /// TMDB one.
+  bool get usesMdblist => source == 'mdblist' || source == 'justwatch';
+
+  /// Whether the row needs a Moonbase that announces `discoverChartsSupported`.
+  /// MDBList's official lists and plain TMDB charts work on any Moonbase.
+  bool get needsDiscoverCharts =>
+      source == 'justwatch' || source == 'tmdb_discover';
+}
+
+const _mdblistLabel = 'MDBList Lists';
+const _tmdbLabel = 'TMDB Lists';
+
+ExternalChart _official(String title, String list, String mediaType) =>
+    ExternalChart(
+      title,
+      _mdblistLabel,
+      'mdblist',
+      'list',
+      params: {'username': 'official', 'listname': list, 'mediatype': mediaType},
+    );
+
+ExternalChart _service(String name, String type) => ExternalChart(
+  'Popular on $name',
+  _tmdbLabel,
+  'tmdb_discover',
+  type,
+  regional: true,
+);
+
+/// The outside chart rows, by section.
+final externalCharts = <HomeSectionType, ExternalChart>{
+  HomeSectionType.mdblistMostWatchedWeekMovies:
+      _official('Most Watched Movies This Week', 'most-watched-week', 'movie'),
+  HomeSectionType.mdblistMostWatchedWeekShows:
+      _official('Most Watched Shows This Week', 'most-watched-week', 'show'),
+  HomeSectionType.mdblistMostWatchedYearMovies:
+      _official('Most Watched Movies This Year', 'most-watched', 'movie'),
+  HomeSectionType.mdblistMostWatchedYearShows:
+      _official('Most Watched Shows This Year', 'most-watched', 'show'),
+  HomeSectionType.mdblistAnticipatedMovies:
+      _official('Most Anticipated Movies', 'anticipated', 'movie'),
+  HomeSectionType.mdblistAnticipatedShows:
+      _official('Most Anticipated Shows', 'anticipated', 'show'),
+  HomeSectionType.mdblistStreamingChartsMovies:
+      _official('Streaming Chart Movies', 'streaming-charts', 'movie'),
+  HomeSectionType.mdblistStreamingChartsShows:
+      _official('Streaming Chart Shows', 'streaming-charts', 'show'),
+  HomeSectionType.justwatchTopMovies: const ExternalChart(
+    'Top Streaming Movies Today',
+    'JustWatch',
+    'justwatch',
+    'movie',
+    regional: true,
+  ),
+  HomeSectionType.justwatchTopShows: const ExternalChart(
+    'Top Streaming Shows Today',
+    'JustWatch',
+    'justwatch',
+    'show',
+    regional: true,
+  ),
+  HomeSectionType.tmdbTrendingAllDaily: const ExternalChart(
+    'Trending All (Daily)',
+    _tmdbLabel,
+    'tmdb_chart',
+    'trending/all/day',
+  ),
+  HomeSectionType.tmdbKoreanDramas: const ExternalChart(
+    'Korean Dramas',
+    _tmdbLabel,
+    'tmdb_discover',
+    'korean_dramas',
+  ),
+  HomeSectionType.tmdbAnime: const ExternalChart(
+    'Popular Anime',
+    _tmdbLabel,
+    'tmdb_discover',
+    'anime',
+  ),
+  HomeSectionType.tmdbNewDigitalMovies: const ExternalChart(
+    'New Digital Releases',
+    _tmdbLabel,
+    'tmdb_discover',
+    'new_digital_movies',
+    regional: true,
+  ),
+  HomeSectionType.tmdbHiddenGems: const ExternalChart(
+    'Hidden Gems',
+    _tmdbLabel,
+    'tmdb_discover',
+    'hidden_gems',
+  ),
+  HomeSectionType.tmdbNetflix: _service('Netflix', 'provider_netflix'),
+  HomeSectionType.tmdbPrimeVideo: _service('Prime Video', 'provider_prime_video'),
+  HomeSectionType.tmdbDisneyPlus: _service('Disney+', 'provider_disney_plus'),
+  HomeSectionType.tmdbHboMax: _service('HBO Max', 'provider_hbo_max'),
+  HomeSectionType.tmdbAppleTv: _service('Apple TV', 'provider_apple_tv'),
+  HomeSectionType.tmdbParamountPlus: _service('Paramount+', 'provider_paramount_plus'),
 };
 
 /// Every sort ends on SortName so items the server ranks equally keep a stable

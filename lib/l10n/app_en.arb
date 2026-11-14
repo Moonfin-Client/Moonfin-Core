@@ -5281,13 +5281,9 @@
   "@upcomingCalendars": {
     "description": "Settings screen for the Radarr and Sonarr calendar home rows"
   },
-  "upcomingCalendarsDescription": "Toggle Upcoming Calendars from Radarr/Sonarr.",
+  "upcomingCalendarsDescription": "Choose what the Radarr and Sonarr rows show.",
   "@upcomingCalendarsDescription": {
     "description": "Subtitle of the Upcoming Calendars settings entry"
-  },
-  "enableRadarrCalendar": "Enable Radarr's Upcoming Calendar",
-  "@enableRadarrCalendar": {
-    "description": "Turns on the Radarr calendar home row"
   },
   "radarrCalendarShowCinema": "Show Upcoming Cinema Releases",
   "@radarrCalendarShowCinema": {
@@ -5308,10 +5304,6 @@
   "radarrCalendarHideDownloaded": "Hide Movies Already on the Server",
   "@radarrCalendarHideDownloaded": {
     "description": "Leaves out movies Radarr already downloaded from the calendar row"
-  },
-  "enableSonarrCalendar": "Enable Sonarr's Upcoming Calendar",
-  "@enableSonarrCalendar": {
-    "description": "Turns on the Sonarr calendar home row"
   },
   "sonarrCalendarShowEpisodeInfo": "Display Episode Information",
   "@sonarrCalendarShowEpisodeInfo": {
@@ -6386,6 +6378,18 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "recentlyAddedAndReleased": "Recently Added and Released",
+  "@recentlyAddedAndReleased": {
+    "description": "Section title for Recently Added and Recently Released home row settings"
+  },
+  "hideWatchedInRecentRows": "Hide Watched",
+  "@hideWatchedInRecentRows": {
+    "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+  },
+  "hideWatchedInRecentRowsDescription": "Hide watched content from Recently Added and Recently Released home rows.",
+  "@hideWatchedInRecentRowsDescription": {
+    "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+  },
   "mergeRecentRowsByType": "Merge Recent Rows by Type",
   "@mergeRecentRowsByType": {
     "description": "Setting for merging recently added and recently released libraries by media type"
@@ -6923,7 +6927,11 @@
   },
   "homeRowsExternalLists": "External Lists",
   "@homeRowsExternalLists": {
-    "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    "description": "Home Rows editor: heading of the group of disabled rows from custom lists a user set up, such as their own MDBList, TMDB or Letterboxd lists"
+  },
+  "homeRowsStreamingServices": "Streaming Services",
+  "@homeRowsStreamingServices": {
+    "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
   },
   "perRowSettings": "Per-Row Settings",
   "@perRowSettings": {
@@ -7226,10 +7234,6 @@
   "mdblistWatchingNow": "Watching on MDBList",
   "@mdblistWatchingNow": {
     "description": "Title of the Watching on MDBList home row"
-  },
-  "mdblistWatchingNowDescription": "Show what MDBList users are currently watching",
-  "@mdblistWatchingNowDescription": {
-    "description": "Description for the Watching on MDBList setting"
   },
   "watchingNowWatchersCount": "{count} watching",
   "@watchingNowWatchersCount": {
@@ -7778,6 +7782,58 @@
   "seerrImportingStatus": "Importing",
   "@seerrImportingStatus": {
     "description": "Label when a Seerr download has finished and is importing"
+  },
+  "seerrWaitingForImport": "Downloaded, waiting for import",
+  "@seerrWaitingForImport": {
+    "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+  },
+  "seerrDownloadStalled": "Stalled",
+  "@seerrDownloadStalled": {
+    "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+  },
+  "seerrDownloadFailed": "Download failed",
+  "@seerrDownloadFailed": {
+    "description": "Label on the Seerr download bar when the download client reports the download as failed"
+  },
+  "seerrImportBlocked": "Import blocked",
+  "@seerrImportBlocked": {
+    "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+  },
+  "seerrNotFoundYet": "Not found yet",
+  "@seerrNotFoundYet": {
+    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+  },
+  "seerrGetDifferentRelease": "Get a different release",
+  "@seerrGetDifferentRelease": {
+    "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+  },
+  "seerrGetDifferentReleaseConfirm": "{service} will remove {release} from the download client, block it so it isn't grabbed again, and search for another release.",
+  "@seerrGetDifferentReleaseConfirm": {
+    "description": "Body of the confirm dialog for Get a different release",
+    "placeholders": {
+      "service": {
+        "type": "String",
+        "example": "Radarr"
+      },
+      "release": {
+        "type": "String",
+        "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+      }
+    }
+  },
+  "seerrGetDifferentReleaseDone": "Removed. {service} is searching for another release.",
+  "@seerrGetDifferentReleaseDone": {
+    "description": "Short confirmation after Get a different release removed the stuck download",
+    "placeholders": {
+      "service": {
+        "type": "String",
+        "example": "Radarr"
+      }
+    }
+  },
+  "seerrGetDifferentReleaseFailed": "Couldn't remove the download",
+  "@seerrGetDifferentReleaseFailed": {
+    "description": "Error shown when Get a different release could not remove the stuck download"
   },
   "itemsCount": "{count} Items",
   "@itemsCount": {
@@ -10614,6 +10670,15 @@
   "@kidsModeExitSubtitle": {
     "description": "Explanation under the Exit Kids Mode entry"
   },
+  "kidsModePinToSwitchUser": "Enter the Kids Mode PIN to switch to {name}",
+  "@kidsModePinToSwitchUser": {
+    "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pinIncorrect": "Incorrect PIN",
   "pinTryAgainIn": "Too many attempts. Try again in {wait}.",
   "@pinTryAgainIn": {
@@ -11460,9 +11525,13 @@
   "bottomBar": "Bottom Bar",
   "homeRowsStyleClassic": "Classic",
   "homeRowsStyleModern": "Modern",
+  "homeRowsStyleCarousel": "Carousel",
+  "@homeRowsStyleCarousel": {
+    "description": "Name of the home row style that shows a large details panel under each row's posters"
+  },
   "homeRowsSection": "Home Rows",
   "rowsType": "Row Type",
-  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
+  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows. Carousel adds a details panel under each row.",
   "modernCardsOnMyMediaRow": "Modern cards on My Media row",
   "modernCardsOnMyMediaRowDescription": "Display customizable posters that expand on focus. Disable to always show landscape thumbnail.",
   "sortOrder": "Sort Order",
@@ -14343,6 +14412,10 @@
   "@setupRowsModernHint": {
     "description": "What the modern home row style gives you"
   },
+  "setupRowsCarouselHint": "Posters with a large details panel underneath.",
+  "@setupRowsCarouselHint": {
+    "description": "What the carousel home row style gives you"
+  },
   "setupDetailClassicHint": "Everything centred in one stack.",
   "@setupDetailClassicHint": {
     "description": "What the classic detail screen style gives you"
@@ -15329,6 +15402,38 @@
   "settingsAdvancedSection": "Advanced",
   "@settingsAdvancedSection": {
     "description": "Section header on the Playback settings screen"
+  },
+  "settingsDecodingAndRenderingSection": "Decoding & Rendering",
+  "@settingsDecodingAndRenderingSection": {
+    "description": "Section header on the Quality & Decoding settings screen"
+  },
+  "settingsAudioStreamSection": "Audio Stream",
+  "@settingsAudioStreamSection": {
+    "description": "Section header on the Audio settings screen for the default audio track choices"
+  },
+  "settingsAudioOutputSection": "Audio Output",
+  "@settingsAudioOutputSection": {
+    "description": "Section header on the Audio settings screen for the passthrough mode"
+  },
+  "settingsPassthroughSettingsSection": "Passthrough Settings",
+  "@settingsPassthroughSettingsSection": {
+    "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+  },
+  "settingsSeerrHomePageRowsSection": "Seerr Home Page Rows",
+  "@settingsSeerrHomePageRowsSection": {
+    "description": "Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page"
+  },
+  "settingsSavedCustomHomeRowsSection": "Saved Custom Home Rows",
+  "@settingsSavedCustomHomeRowsSection": {
+    "description": "Section header on the Custom Rows settings screen over the rows the user already saved"
+  },
+  "settingsRewatchSection": "Rewatch",
+  "@settingsRewatchSection": {
+    "description": "Section header on the Home Sections settings screen for the Rewatch row"
+  },
+  "favoritesSwitchViewSection": "Switch View",
+  "@favoritesSwitchViewSection": {
+    "description": "Section header in the Favorites display options for choosing between Home and Library view"
   },
   "playerSettingsSubtitle": "Controls, seeking, player buttons, and trick play",
   "@playerSettingsSubtitle": {

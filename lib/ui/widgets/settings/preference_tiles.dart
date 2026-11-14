@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
+import '../../../preference/user_preferences.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -1083,6 +1084,17 @@ class _StringPickerPreferenceTileState
       widget.preference,
       oldWidget.preference,
     );
+    // Several tiles can write one preference (the media segment actions),
+    // so re-read it when a sibling changed it rather than keep the value
+    // read in initState.
+    if (_binding.value !=
+        GetIt.instance<UserPreferences>().get(widget.preference)) {
+      _binding.dispose();
+      _binding = PreferenceBinding(
+        GetIt.instance<PreferenceStore>(),
+        widget.preference,
+      );
+    }
   }
 
   @override

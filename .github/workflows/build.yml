@@ -142,21 +142,11 @@ jobs:
           print(out)
           EOF
 
-  # Android APK + AAB, with mobile and TV on their own runners
+  # Android APK + AAB, one package for phones, tablets and TVs
   android:
     needs: plan
     if: needs.plan.outputs.android == 'true'
-    name: android (${{ matrix.target }})
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: mobile
-            artifact: android
-            files: Moonfin_Android_v*.*
-          - target: tv
-            artifact: android-tv
-            files: Moonfin_AndroidTV_v*.*
+    name: android
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
@@ -236,18 +226,19 @@ jobs:
       - name: Build
         run: |
           chmod +x build-android.sh
-          ./build-android.sh ${{ matrix.target }}
+          ./build-android.sh
 
       - uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.artifact }}
-          path: ${{ matrix.files }}
+          name: android
+          path: Moonfin_Android_v*.*
 
-  # iOS: an unsigned IPA for releases, or a TestFlight upload
+  # iOS: an unsigned IPA for releases, or a TestFlight upload. It builds with
+  # the iOS 27 SDK so the app fills an iPhone Duo's screen and gets its hinge.
   ios:
     needs: plan
     if: needs.plan.outputs.ios == 'true'
-    runs-on: macos-26
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v5
 
@@ -255,8 +246,8 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Select Xcode 26.3
-        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
 
       - name: Resolve dependencies
         run: |
@@ -960,7 +951,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Build web
-        run: flutter build web --wasm --release
+        run: flutter build web --wasm --release --no-web-resources-cdn
 
       - uses: actions/upload-artifact@v6
         with:
@@ -973,7 +964,7 @@ jobs:
   apple-tests:
     needs: plan
     if: needs.plan.outputs.apple_tests == 'true'
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
@@ -982,8 +973,8 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Select Xcode 26.3
-        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
 
       # No libretro cores are fetched here, so the game host pod vendors none
       # and the app links for the simulator.

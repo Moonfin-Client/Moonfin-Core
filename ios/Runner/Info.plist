@@ -42,6 +42,10 @@
 	     only reach DeepLinkService. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
+	<!-- The app asks for an FCM token itself, only when the server can push
+	     and notifications are allowed. -->
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIBackgroundModes</key>
@@ -106,17 +110,11 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Moonfin uses your local network to discover Jellyfin, Emby and Silo servers.</string>
+	<string>Moonfin uses your local network to find your media servers and the devices you can cast to.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Moonfin needs microphone access for voice search.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Moonfin needs access to your photo library so you can choose images to upload for media artwork and metadata.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Moonfin needs camera access to let you capture images for media artwork and metadata.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Moonfin does not track your location; this access is only used to read location metadata stored in images you choose for media artwork.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Moonfin does not track your location; this access is only used to read location metadata stored in images you choose for media artwork.</string>
+	<string>Moonfin only uses photos you pick yourself, like artwork you upload for your media.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Moonfin needs speech recognition access for voice search.</string>
 	<key>NSBonjourServices</key>

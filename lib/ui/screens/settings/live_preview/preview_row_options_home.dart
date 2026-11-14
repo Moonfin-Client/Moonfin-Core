@@ -21,6 +21,8 @@ import '../../../../util/platform_detection.dart';
 import '../../../../util/tv_ui_scale.dart';
 import '../../../util/home_row_title_localizer.dart';
 import '../../../widgets/bounded_network_image.dart';
+import '../../../widgets/carousel_panel.dart';
+import '../../../widgets/home_row_spacing.dart';
 import '../../../widgets/info_area.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/modern_row.dart';
@@ -173,9 +175,9 @@ class _HomeSnapshot {
     prefs.get(UserPreferences.enableMultiServerLibraries),
     prefs.get(UserPreferences.mergeContinueWatchingNextUp),
     prefs.get(UserPreferences.mergeRecentRowsByType),
+    prefs.get(UserPreferences.hideWatchedInRecentRows),
     prefs.get(UserPreferences.displayRewatchRow),
     prefs.get(UserPreferences.displaySinceYouWatchedRows),
-    prefs.get(UserPreferences.seasonalRowEnabled),
     for (final group in RowOptionsGroup.values) prefs.get(group.display),
   ].join('|');
 
@@ -805,7 +807,7 @@ class _HomeFrame {
     final tv = PlatformDetection.useLeanbackUi;
     // Read straight from the saved settings, since none of these is tried in
     // a picker.
-    final modern = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+    final modern = prefs.get(UserPreferences.homeRowsStyle).usesModernCards;
     final desktopScale = prefs.get(UserPreferences.desktopUiScale).scaleFactor;
     final navbarTop =
         prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
@@ -873,7 +875,8 @@ class _HomeFrame {
   /// Everything the cards are drawn from, so rows kept between builds are
   /// built again once one of them changes.
   String look(List<HomeRow> rows) => [
-    modern,
+    prefs.get(UserPreferences.homeRowsStyle),
+    prefs.get(UserPreferences.hideHomeMediaDescription),
     desktopScale,
     posterSize,
     cardExpansion,
@@ -904,6 +907,22 @@ class _HomeFrame {
   }
 
   bool isModern(HomeRow row) => isHomeRowModern(row, prefs);
+
+  bool isCarousel(HomeRow row) => isHomeRowCarousel(row, prefs);
+
+  /// The Carousel panel for [row]'s first card, which is the one Home shows
+  /// before the row is focused.
+  Widget carouselPanel(HomeRow row) {
+    final item = row.items.first;
+    final api = _apiFor(item);
+    return CarouselPanel(
+      item: item,
+      desktopScale: desktopScale,
+      backdropUrl: api == null ? null : carouselBackdropUrl(item, api),
+      ratings: CarouselPanel.homeRatings(item, prefs),
+      showOverview: !prefs.get(UserPreferences.hideHomeMediaDescription),
+    );
+  }
 
   /// Live TV, Watch Parties and the small library tiles, which Home draws
   /// as squares under a fixed label band.
@@ -1023,6 +1042,9 @@ class _HomeFrame {
   double metadataHeight(HomeRow row) {
     if (isSquareRow(row)) return 56.0 * _metadataScale;
     if (!isModern(row)) return 50.0 * _metadataScale;
+    if (isCarousel(row)) {
+      return carouselPanelGap(desktopScale) + carouselPanelHeight(desktopScale);
+    }
     final budget = row.rowType == HomeRowType.libraryTiles
         ? 38.0
         : modernMetadataBudget(prefs, UserPreferences.homeRowsRatings);
@@ -1046,6 +1068,7 @@ class _HomeFrame {
   /// Classic library row from the Classic one.
   double modernTrailing(HomeRow row) {
     if (!phone && prefs.get(UserPreferences.fullScreenRows)) return 0;
+    if (isCarousel(row)) return carouselRowPadding(prefs, desktopScale);
     if (!isModern(row)) {
       if (!_isLibraryRow(row)) return 0;
       final padding = prefs
@@ -1284,6 +1307,7 @@ class _Row extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final modern = frame.isModern(row);
+    final carousel = frame.isCarousel(row) && row.items.isNotEmpty;
     final rowPadding = _rowPadding(frame);
     final topPadding = rowPadding + frame.headroom(row);
     final spacing = frame.spacing(row);
@@ -1300,7 +1324,12 @@ class _Row extends StatelessWidget {
           padding: EdgeInsetsDirectional.only(end: spacing),
           child: focused
               ? _focusedRowCard(context, item, image, isFocused, x, rightEdge)
-              : _LightCard(item: item, image: image, classicLabel: !modern),
+              : _LightCard(
+                  item: item,
+                  image: image,
+                  classicLabel: !modern,
+                  showLabel: !carousel,
+                ),
         ),
       );
       x += image.width + spacing;
@@ -1371,6 +1400,16 @@ class _Row extends StatelessWidget {
               ),
             ),
           ),
+          if (carousel) ...[
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 16, end: 20),
+              child: SizedBox(
+                height: carouselPanelHeight(frame.desktopScale),
+                child: frame.carouselPanel(row),
+              ),
+            ),
+            SizedBox(height: frame.modernTrailing(row)),
+          ],
         ],
       ),
     );
@@ -1389,14 +1428,16 @@ class _Row extends StatelessWidget {
     final subtitle = modern && isFocused && !row.isAudio
         ? homeRowModernMetadataLine(item)
         : item.subtitle;
+    final carousel = frame.isCarousel(row);
     final card = MediaCard(
-      title: item.name,
+      title: carousel ? null : item.name,
       subtitle: subtitle,
       imageUrl: image.url,
       width: image.width,
       aspectRatio: image.aspectRatio,
       isBanner: image.aspectRatio == kBannerAspectRatio,
       classicHomeLabel: !modern,
+      showLabel: !carousel,
       isFavorite: item.isFavorite,
       isPlayed: item.isPlayed,
       unplayedCount: prefs.get(UserPreferences.hideHomeUnwatchedCount)
@@ -1426,7 +1467,7 @@ class _Row extends StatelessWidget {
     // scroll for as long as the setting has focus, redrawing the preview
     // every frame, so it holds still.
     final still = TickerMode(enabled: false, child: card);
-    if (!modern || !isFocused) return still;
+    if (!modern || !isFocused || carousel) return still;
     return ModernExpandingCard(
       card: still,
       prefs: prefs,
@@ -1452,11 +1493,13 @@ class _LightCard extends StatelessWidget {
   final AggregatedItem item;
   final HomeRowCardImage image;
   final bool classicLabel;
+  final bool showLabel;
 
   const _LightCard({
     required this.item,
     required this.image,
     required this.classicLabel,
+    this.showLabel = true,
   });
 
   @override
@@ -1505,20 +1548,22 @@ class _LightCard extends StatelessWidget {
                     ),
             ),
           ),
-          SizedBox(height: classicLabel ? tvPx(16) : 6),
-          Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: titleStyle,
-          ),
-          if (item.subtitle case final subtitle? when subtitle.isNotEmpty)
+          if (showLabel) ...[
+            SizedBox(height: classicLabel ? tvPx(16) : 6),
             Text(
-              subtitle,
+              item.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: subtitleStyle,
+              style: titleStyle,
             ),
+            if (item.subtitle case final subtitle? when subtitle.isNotEmpty)
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: subtitleStyle,
+              ),
+          ],
         ],
       ),
     );

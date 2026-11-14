@@ -127,4 +127,18 @@ void main() {
     expect(loads, hasLength(2));
     viewModel.dispose();
   });
+
+  test('seeding hideWatchedInRecentRows reloads the media bar when changed', () async {
+    final viewModel = create();
+    unawaited(viewModel.load());
+    loads.first.complete(const MediaBarReady([]));
+    await pumpEventQueue();
+    expect(loads, hasLength(1));
+
+    prefs.seedHideWatchedFromServer(const UserConfiguration(hidePlayedInLatest: true));
+    await pumpEventQueue();
+
+    expect(loads, hasLength(2));
+    viewModel.dispose();
+  });
 }

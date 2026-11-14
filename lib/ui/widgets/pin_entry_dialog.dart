@@ -37,6 +37,11 @@ class PinEntryDialog extends StatefulWidget {
   /// opens, so a reopen doesn't hand back a fresh set of free guesses.
   final Duration Function()? lockoutRemaining;
 
+  /// Says what the PIN is for when verifying, in place of the generic
+  /// "Enter PIN" wording, for a dialog the person didn't open themselves.
+  final String? title;
+  final String? subtitle;
+
   const PinEntryDialog({
     super.key,
     required this.mode,
@@ -47,6 +52,8 @@ class PinEntryDialog extends StatefulWidget {
     this.pinLength = 4,
     this.onFailedAttempt,
     this.lockoutRemaining,
+    this.title,
+    this.subtitle,
   });
 
   /// How long a wait is said to be in the dialog.
@@ -66,6 +73,8 @@ class PinEntryDialog extends StatefulWidget {
     int pinLength = 4,
     Future<Duration> Function()? onFailedAttempt,
     Duration Function()? lockoutRemaining,
+    String? title,
+    String? subtitle,
   }) async {
     final result = await showFocusRestoringDialog<bool>(
       context: context,
@@ -79,6 +88,8 @@ class PinEntryDialog extends StatefulWidget {
         pinLength: pinLength,
         onFailedAttempt: onFailedAttempt,
         lockoutRemaining: lockoutRemaining,
+        title: title,
+        subtitle: subtitle,
       ),
     );
     return result ?? false;
@@ -110,7 +121,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
     if (widget.mode == PinEntryMode.set) {
       return _isConfirming ? l10n.pinConfirmTitle : l10n.pinSetTitle;
     }
-    return l10n.pinEnterTitle;
+    return widget.title ?? l10n.pinEnterTitle;
   }
 
   String _subtitle(AppLocalizations l10n) {
@@ -119,7 +130,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
           ? l10n.pinReenterToConfirm
           : l10n.pinEnterNDigit(widget.pinLength);
     }
-    return l10n.pinEnterYourNDigit(widget.pinLength);
+    return widget.subtitle ?? l10n.pinEnterYourNDigit(widget.pinLength);
   }
 
   void _onDigitPressed(int digit) {

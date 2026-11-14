@@ -650,12 +650,38 @@ class SiloWatchPartyManager extends ChangeNotifier {
     final token = _roomToken;
     final backend = _backend;
     if (room == null || backend == null) return;
+    // A create or join can swap in another room while the close is out, and
+    // that room stays.
     try {
       await backend.close(room.roomId, token ?? '');
+      if (_room?.roomId == room.roomId) _dropStoredRoom();
     } catch (e) {
       _logger.w('Watch Party: closing the room failed', error: e);
     }
-    _leaveRoom(null);
+    if (_room?.roomId == room.roomId) _leaveRoom(null);
+  }
+
+  /// Silo: drops what Moonbase keeps for the room (subtitles, avatars) once
+  /// it ends, so it stops counting toward the account's rooms for the day.
+  /// Moonbase lets only the host, or the account that stored it when nobody
+  /// set subtitles, do that. Anyone else is refused, which is fine.
+  void _dropStoredRoom() {
+    final room = _room;
+    final client = _client;
+    if (room == null || client == null || isMoonbase) return;
+    unawaited(() async {
+      try {
+        final ep = await moonbaseEndpoint(client, _dio);
+        if (ep == null) return;
+        await _dio.delete<dynamic>(
+          '${ep.base}/Moonfin/WatchParty/${room.roomId}',
+          options: Options(headers: ep.headers),
+        );
+      } catch (e) {
+        // Not ours to end, or an older Moonbase: it expires in a day.
+        _logger.d('Watch Party: ending the stored room failed', error: e);
+      }
+    }());
   }
 
   /// Leaves without ending the room. On Silo a host's room closes on its
@@ -808,7 +834,8 @@ class SiloWatchPartyManager extends ChangeNotifier {
       final link = mine?.json['avatar_url'];
       if (link is! String || link.isEmpty) return;
       final ep = await moonbaseEndpoint(client, _dio);
-      if (ep == null) return;
+      // A room that ended meanwhile would be stored again.
+      if (ep == null || _room?.roomId != room.roomId) return;
       await _dio.put<dynamic>(
         '${ep.base}/Moonfin/WatchParty/${room.roomId}/Avatar',
         data: {'url': link},
@@ -1089,7 +1116,9 @@ class SiloWatchPartyManager extends ChangeNotifier {
       if (generation != _socketGeneration) return;
       final status = e.response?.statusCode;
       // Refused for good: the room is gone or this proof no longer admits us.
+      // Only a 404 says the room ended, so only then is it dropped.
       if (status == 403 || status == 404 || status == 409) {
+        if (status == 404) _dropStoredRoom();
         _leaveRoom('closed');
         return;
       }
@@ -1189,6 +1218,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
       case 'error':
         final code = message['code'];
         if (code == 'not_found' || code == 'gone') {
+          _dropStoredRoom();
           _leaveRoom('closed');
         } else {
           _logger.d('Watch Party: $code ${message['message'] ?? ''}');
@@ -1270,6 +1300,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
       final host = room.members.where((m) => m.isHost).firstOrNull;
       _toast(WatchPartyToastKind.ended, name: host?.displayName);
     }
+    _dropStoredRoom();
     _leaveRoom('closed');
   }
 

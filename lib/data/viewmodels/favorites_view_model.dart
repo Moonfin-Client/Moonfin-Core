@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -9,8 +11,10 @@ import '../../util/network_errors.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/seerr_repository.dart';
+import '../services/seerr/seerr_api_models.dart';
 import '../services/user_data_sync.dart';
 import '../utils/blocked_ratings.dart';
+import '../utils/bounded_concurrency.dart';
 
 enum FavoritesState { loading, ready, error }
 
@@ -91,6 +95,12 @@ class FavoritesViewModel extends ChangeNotifier {
   final Map<FavoriteTypeFilter, int> _rowFetchedCounts = {};
   int _watchlistPages = 0;
 
+  /// Watchlist request cards waiting for their detail, which is read once
+  /// they're in the row so the screen doesn't wait on it.
+  List<AggregatedItem> _requestCardsToEnrich = const [];
+  int _loadGeneration = 0;
+  bool _disposed = false;
+
   bool get hasMoreGrid => _gridFetchedCount < _gridTotalCount;
 
   final Map<FavoriteTypeFilter, int> _rowTotalCounts = {};
@@ -146,6 +156,7 @@ class FavoritesViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     userDataSync.removeListener(_onUserDataChanged);
     super.dispose();
   }
@@ -182,6 +193,8 @@ class FavoritesViewModel extends ChangeNotifier {
     _rowTotalCounts.clear();
     _rowFetchedCounts.clear();
     _watchlistPages = 0;
+    _requestCardsToEnrich = const [];
+    final generation = ++_loadGeneration;
     _gridItems = const [];
     _gridTotalCount = 0;
     _gridFetchedCount = 0;
@@ -192,6 +205,9 @@ class FavoritesViewModel extends ChangeNotifier {
         final results = await Future.wait(
           rowTypes.map((type) => _fetchRowItems(type, startIndex: 0)),
         );
+        // A load started while this one waited has its own rows, and this
+        // one's Watchlist stopped short when it saw that.
+        if (generation != _loadGeneration) return;
         final map = <FavoriteTypeFilter, List<AggregatedItem>>{};
         for (var i = 0; i < rowTypes.length; i++) {
           if (results[i].$1.isNotEmpty) {
@@ -200,11 +216,13 @@ class FavoritesViewModel extends ChangeNotifier {
           }
         }
         _rowItems = map;
+        _enrichRequestCards();
       } else {
         await _fetchGridPage(0);
       }
       _state = FavoritesState.ready;
     } catch (e) {
+      if (generation != _loadGeneration) return;
       _error = e;
       _isNetworkError = isNetworkException(e);
       _state = FavoritesState.error;
@@ -273,9 +291,12 @@ class FavoritesViewModel extends ChangeNotifier {
 
   /// The next page of the watchlist. Silo's first page leads with the
   /// titles the library has; the rest come from the requests watchlist
-  /// (Seerr's, or Silo's titles the library lacks) as request cards.
+  /// (Seerr's, or Silo's titles the library lacks) as request cards. A
+  /// reload while it waits leaves the paging state to the new load.
   Future<(List<AggregatedItem>, int)> _fetchWatchlist() async {
     final type = FavoriteTypeFilter.watchlist;
+    final generation = _loadGeneration;
+    bool stale() => generation != _loadGeneration;
     final library = <AggregatedItem>[];
     if (_client.serverType == ServerType.silo && _watchlistPages == 0) {
       try {
@@ -305,6 +326,7 @@ class FavoritesViewModel extends ChangeNotifier {
           if (raws.length < pageSize) break;
         }
       } catch (_) {}
+      if (stale()) return (library, library.length);
       _rowFetchedCounts[type] = library.length;
     }
     try {
@@ -312,29 +334,154 @@ class FavoritesViewModel extends ChangeNotifier {
       await repo.ensureInitialized();
       if (!repo.isAvailable) return (library, library.length);
       final page = await repo.getWatchlist(page: _watchlistPages + 1);
+      if (stale()) return (library, library.length);
       _watchlistPages = page.page;
       final fetched = (_rowFetchedCounts[type] ?? 0) + page.results.length;
       _rowFetchedCounts[type] = fetched;
-      final items = [
-        ...library,
-        for (final item in page.results)
-          AggregatedItem(
-            id: item.id.toString(),
-            serverId: 'seerr',
-            rawData: {
-              'Name': item.displayTitle,
-              'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
-              'PosterPath': item.posterPath ?? '',
-              'BackdropPath': item.backdropPath ?? '',
-              'SeerrMediaType': item.mediaType,
-            },
-          ),
-      ];
-      return (items, page.page < page.totalPages ? fetched + 1 : fetched);
+      final requestCards = withoutUnratedOrBlockedItems([
+        for (final item in page.results) _requestCard(item),
+      ]);
+      _requestCardsToEnrich = requestCards;
+      return (
+        [...library, ...requestCards],
+        page.page < page.totalPages ? fetched + 1 : fetched,
+      );
     } catch (_) {
       return (library, library.length);
     }
   }
+
+  /// Each lookup waits out its own request, so no more than this many hold
+  /// Silo's six request slots at once and the rest stay free for the screen.
+  static const _requestCardConcurrency = 3;
+
+  /// A Watchlist card for a title the library lacks, from what the watchlist
+  /// lists. Silo's includes the age rating, so the card is filtered right
+  /// away, and one with no rating stays out while any rating is blocked. The
+  /// backdrop and runtime come later from [_enrichRequestCards].
+  AggregatedItem _requestCard(SeerrDiscoverItem item) {
+    final date = _text(item.releaseDate) ?? _text(item.firstAirDate);
+    final voteAverage = item.voteAverage;
+    return AggregatedItem(
+      id: item.id.toString(),
+      serverId: 'seerr',
+      rawData: {
+        'Name': item.displayTitle,
+        'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+        'Overview': item.overview ?? '',
+        'PosterPath': item.posterPath ?? '',
+        'BackdropPath': item.backdropPath ?? '',
+        'SeerrMediaType': item.mediaType,
+        'ProductionYear': ?_year(date),
+        'OfficialRating': ?_text(item.contentRating),
+        if (voteAverage != null && voteAverage > 0)
+          'CommunityRating': voteAverage,
+      },
+    );
+  }
+
+  /// Reads each waiting request card's detail and swaps the filled-in card
+  /// into the Watchlist row as soon as it arrives, so a slow lookup only holds
+  /// back its own card. A reload drops the rest of the batch, and a failed
+  /// lookup leaves the card as it was.
+  void _enrichRequestCards() {
+    final cards = _requestCardsToEnrich;
+    _requestCardsToEnrich = const [];
+    if (cards.isEmpty) return;
+    final generation = _loadGeneration;
+    bool stale() => _disposed || generation != _loadGeneration;
+    unawaited(() async {
+      try {
+        final repo = await GetIt.instance.getAsync<SeerrRepository>();
+        await mapBounded(cards, _requestCardConcurrency, (card) async {
+          if (stale()) return null;
+          final filled = await _withDetail(repo, card);
+          if (filled != null && !stale()) _swapRequestCard(filled);
+          return filled;
+        });
+      } catch (_) {}
+    }());
+  }
+
+  void _swapRequestCard(AggregatedItem filled) {
+    const type = FavoriteTypeFilter.watchlist;
+    final row = _rowItems[type];
+    if (row == null) return;
+    final key = _requestCardKey(filled);
+    _rowItems[type] = withoutBlockedItems([
+      for (final item in row)
+        item.serverId == 'seerr' && _requestCardKey(item) == key
+            ? filled
+            : item,
+    ]);
+    notifyListeners();
+  }
+
+  /// [card] with the backdrop, overview, date, age rating and (for a movie)
+  /// runtime its detail adds, keeping what the watchlist already gave.
+  Future<AggregatedItem?> _withDetail(
+    SeerrRepository repo,
+    AggregatedItem card,
+  ) async {
+    final tmdbId = int.tryParse(card.id) ?? 0;
+    if (tmdbId <= 0) return null;
+    final raw = card.rawData;
+    String? backdropPath;
+    String? overview;
+    String? date;
+    String? contentRating;
+    int? runtimeMinutes;
+    double? voteAverage;
+    try {
+      if (raw['SeerrMediaType'] == 'tv') {
+        final d = await repo.getTvDetails(tmdbId);
+        backdropPath = d.backdropPath;
+        overview = d.overview;
+        date = d.firstAirDate;
+        contentRating = d.contentRating;
+        voteAverage = d.voteAverage;
+      } else {
+        final d = await repo.getMovieDetails(tmdbId);
+        backdropPath = d.backdropPath;
+        overview = d.overview;
+        date = d.releaseDate;
+        contentRating = d.contentRating;
+        voteAverage = d.voteAverage;
+        runtimeMinutes = d.runtime;
+      }
+    } catch (_) {
+      return null;
+    }
+    return AggregatedItem(
+      id: card.id,
+      serverId: card.serverId,
+      rawData: {
+        ...raw,
+        'BackdropPath':
+            _text(raw['BackdropPath'] as String?) ?? backdropPath ?? '',
+        'Overview': _text(raw['Overview'] as String?) ?? overview ?? '',
+        'ProductionYear': ?(raw['ProductionYear'] ?? _year(_text(date))),
+        'OfficialRating':
+            ?(_text(raw['OfficialRating'] as String?) ?? _text(contentRating)),
+        if (runtimeMinutes != null && runtimeMinutes > 0)
+          'RunTimeTicks': runtimeMinutes * 60 * 10000000,
+        if (raw['CommunityRating'] == null &&
+            voteAverage != null &&
+            voteAverage > 0)
+          'CommunityRating': voteAverage,
+      },
+    );
+  }
+
+  static String _requestCardKey(AggregatedItem card) =>
+      '${card.rawData['SeerrMediaType'] ?? ''}:${card.id}';
+
+  static String? _text(String? value) =>
+      value == null || value.isEmpty ? null : value;
+
+  static int? _year(String? date) => date != null && date.length >= 4
+      ? int.tryParse(date.substring(0, 4))
+      : null;
 
   Future<void> loadMoreForType(FavoriteTypeFilter type) async {
     final items = _rowItems[type];
@@ -345,17 +492,23 @@ class FavoritesViewModel extends ChangeNotifier {
     if (_inFlightPagingRowTypes.contains(type)) return;
 
     _inFlightPagingRowTypes.add(type);
+    final generation = _loadGeneration;
     try {
       final currentOffset = fetched;
       final (newItems, totalCount) = await _fetchRowItems(
         type,
         startIndex: currentOffset,
       );
+      // A reload while this page loaded has its own rows and counts.
+      if (generation != _loadGeneration) return;
       _rowTotalCounts[type] = totalCount;
 
       if (newItems.isNotEmpty) {
-        _rowItems[type] = [...items, ...newItems];
+        // The row as it is now, since filling in request cards can change it
+        // while the page loads.
+        _rowItems[type] = [...(_rowItems[type] ?? items), ...newItems];
         notifyListeners();
+        if (type == FavoriteTypeFilter.watchlist) _enrichRequestCards();
       } else {
         _rowTotalCounts[type] = items.length;
       }

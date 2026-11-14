@@ -18,6 +18,14 @@ class _PrimaryImageApi implements ImageApi {
   }) => 'http://fake/$itemId/Primary?tag=${tag ?? ''}';
 
   @override
+  String getBackdropImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? index,
+    String? tag,
+  }) => 'http://fake/$itemId/Backdrop?tag=${tag ?? ''}';
+
+  @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -215,6 +223,57 @@ void main() {
       expect(lookups.single.imageType, ImageType.thumb);
       expect(lookups.single.useSeriesThumbs, isFalse);
       expect(lookups.single.isMyMediaRow, isTrue);
+    });
+  });
+
+  group('Carousel rows', () {
+    const myMedia = HomeRow(
+      id: 'libraryTiles',
+      title: 'My Media',
+      rowType: HomeRowType.libraryTiles,
+    );
+
+    test('use Modern cards', () async {
+      final prefs = await createPreferences(HomeRowsStyle.carousel);
+      final card = image(row, _item('m1', 'Movie'), prefs);
+
+      expect(isHomeRowModern(row, prefs), isTrue);
+      expect(card.aspectRatio, 2 / 3);
+      expect(lookups.single.imageType, ImageType.poster);
+    });
+
+    test('draw the panel only for media rows', () async {
+      final prefs = await createPreferences(HomeRowsStyle.carousel);
+
+      expect(isHomeRowCarousel(row, prefs), isTrue);
+      expect(isHomeRowCarousel(audioRow, prefs), isFalse);
+      expect(isHomeRowCarousel(myMedia, prefs), isFalse);
+    });
+
+    test('Modern and Classic rows draw no panel', () async {
+      for (final style in [HomeRowsStyle.v1, HomeRowsStyle.v2]) {
+        final prefs = await createPreferences(style);
+        expect(isHomeRowCarousel(row, prefs), isFalse);
+      }
+    });
+
+    test('the panel takes the item backdrop, else its parent, else none', () {
+      final own = _item('m1', 'Movie', extra: {'BackdropImageTags': ['b1']});
+      final episode = _item(
+        'e1',
+        'Episode',
+        extra: {
+          'ParentBackdropItemId': 'series1',
+          'ParentBackdropImageTags': ['sb1'],
+        },
+      );
+
+      expect(carouselBackdropUrl(own, api), 'http://fake/m1/Backdrop?tag=b1');
+      expect(
+        carouselBackdropUrl(episode, api),
+        'http://fake/series1/Backdrop?tag=sb1',
+      );
+      expect(carouselBackdropUrl(_item('v1', 'Video'), api), isNull);
     });
   });
 

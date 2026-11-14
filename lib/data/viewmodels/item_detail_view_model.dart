@@ -968,6 +968,7 @@ class ItemDetailViewModel extends ChangeNotifier {
                 'Type': 'Season',
                 'IndexNumber': season.seasonNumber,
                 'ChildCount': season.episodeCount,
+                'PosterPath': season.posterPath,
               },
             ),
       ];

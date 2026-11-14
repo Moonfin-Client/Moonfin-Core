@@ -6,6 +6,7 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import org.json.JSONObject
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
@@ -48,19 +49,38 @@ class MoonfinArtProvider : ContentProvider() {
         val dir = File(ctx.cacheDir, "carart").apply { mkdirs() }
         val file = File(dir, hashName(remote))
         if (!file.exists() || file.length() == 0L) {
-            download(url, file)
+            download(withToken(url), file)
         }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 
+    // shared_preferences stores its keys under the flutter. prefix.
+    private fun flutterPref(key: String): String? = context
+        ?.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        ?.getString("flutter.$key", null)
+
     private fun allowedHosts(): Set<String> {
-        val ctx = context ?: return emptySet()
-        // shared_preferences stores its keys under the flutter. prefix.
-        val raw = ctx
-            .getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-            .getString("flutter.moonfin_art_hosts", "")
-            ?: ""
+        val raw = flutterPref("moonfin_art_hosts") ?: ""
         return raw.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+    }
+
+    // The app keeps the server token out of the URI, so it's added back here.
+    // URIs saved by older builds still carry it and are left as they are.
+    private fun withToken(url: URL): URL {
+        val raw = flutterPref("moonfin_art_tokens") ?: return url
+        val port = if (url.port == -1) url.defaultPort else url.port
+        val token = runCatching {
+            JSONObject(raw).optString("${url.protocol}://${url.host.lowercase()}:$port")
+        }.getOrNull()
+        if (token.isNullOrEmpty()) return url
+        val name = token.substringBefore('=')
+        val query = url.query
+        if (query != null &&
+            query.split('&').any { it.substringBefore('=').equals(name, ignoreCase = true) }
+        ) {
+            return url
+        }
+        return URL("$url${if (query == null) "?" else "&"}$token")
     }
 
     private fun download(url: URL, dest: File) {

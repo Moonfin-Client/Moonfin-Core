@@ -1863,27 +1863,27 @@ class AppLocalizationsCa extends AppLocalizations {
   String get writers => 'GUIONISTES';
 
   @override
-  String get episodeDirector => 'Episode Director';
+  String get episodeDirector => 'Director de l\'episodi';
 
   @override
   String episodeDirectorWithRole(String role) {
-    return '$role (Episode Director)';
+    return '$role (Director de l\'episodi)';
   }
 
   @override
-  String get episodeWriter => 'Episode Writer';
+  String get episodeWriter => 'Escriptor de l\'episodi';
 
   @override
   String episodeWriterWithRole(String role) {
-    return '$role (Episode Writer)';
+    return '$role (Escriptor de l\'episodi)';
   }
 
   @override
-  String get guestStar => 'Guest Star';
+  String get guestStar => 'Estrella convidada';
 
   @override
   String guestStarWithRole(String role) {
-    return '$role (Guest Star)';
+    return '$role (Estrella convidada)';
   }
 
   @override
@@ -3973,11 +3973,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Activa o desactiva els calendaris de properes estrenes de Radarr/Sonarr.';
-
-  @override
-  String get enableRadarrCalendar =>
-      'Activa el calendari de properes estrenes de Radarr';
+      'Tria què mostren les files de Radarr i Sonarr.';
 
   @override
   String get radarrCalendarShowCinema =>
@@ -3998,10 +3994,6 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get radarrCalendarHideDownloaded =>
       'Amaga les pel·lícules que ja són al servidor';
-
-  @override
-  String get enableSonarrCalendar =>
-      'Activa el calendari de properes estrenes de Sonarr';
 
   @override
   String get sonarrCalendarShowEpisodeInfo =>
@@ -4027,7 +4019,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get buttonShownInSyncPlayGroup =>
-      'Només es mostra quan ets en un grup de SyncPlay';
+      'Només es mostra quan ets en una Watch Party';
 
   @override
   String get orientationLock => 'Bloqueig d\'orientació';
@@ -4884,6 +4876,16 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra les biblioteques de tots els servidors connectats';
 
   @override
+  String get recentlyAddedAndReleased => 'Recently Added and Released';
+
+  @override
+  String get hideWatchedInRecentRows => 'Hide Watched';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Hide watched content from Recently Added and Recently Released home rows.';
+
+  @override
   String get mergeRecentRowsByType => 'Fusiona les files recents per tipus';
 
   @override
@@ -5337,6 +5339,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeRowsExternalLists => 'Llistes externes';
 
   @override
+  String get homeRowsStreamingServices => 'Streaming Services';
+
+  @override
   String get perRowSettings => 'Configuració per fila';
 
   @override
@@ -5572,10 +5577,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get mdblistWatchingNow => 'Ara es mira a MDBList';
-
-  @override
-  String get mdblistWatchingNowDescription =>
-      'Mostra què miren ara mateix els usuaris de MDBList';
 
   @override
   String watchingNowWatchersCount(int count) {
@@ -5992,6 +5993,37 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get seerrImportingStatus => 'S\'està important';
+
+  @override
+  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+
+  @override
+  String get seerrDownloadStalled => 'Stalled';
+
+  @override
+  String get seerrDownloadFailed => 'Ha fallat la baixada';
+
+  @override
+  String get seerrImportBlocked => 'Import blocked';
+
+  @override
+  String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrGetDifferentRelease => 'Get a different release';
+
+  @override
+  String seerrGetDifferentReleaseConfirm(String service, String release) {
+    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+  }
+
+  @override
+  String seerrGetDifferentReleaseDone(String service) {
+    return 'Removed. $service is searching for another release.';
+  }
+
+  @override
+  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
 
   @override
   String itemsCount(int count) {
@@ -11476,6 +11508,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Introdueix el PIN per recuperar l\'aplicació completa';
 
   @override
+  String kidsModePinToSwitchUser(String name) {
+    return 'Enter the Kids Mode PIN to switch to $name';
+  }
+
+  @override
   String get pinIncorrect => 'PIN incorrecte';
 
   @override
@@ -12185,7 +12222,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsSyncplaySubtitle =>
-      'Lògica de sincronització per a sessions de grup';
+      'Mira contingut amb amics d\'aquest servidor, tots sincronitzats';
 
   @override
   String get settingsSkipIntrosAndOutros => 'Ometeu introduccions i altres?';
@@ -12398,53 +12435,53 @@ class AppLocalizationsCa extends AppLocalizations {
       'Activa la reproducció directa per a la televisió en directe';
 
   @override
-  String get settingsOpenGroups => 'Grups oberts';
+  String get settingsOpenGroups => 'Watch Parties obertes';
 
   @override
   String get settingsOpenGroupsSubtitle =>
-      'Crea, uneix-te o gestiona grups de SyncPlay';
+      'Inicia\'n una o uneix-te a una que ja hagi començat';
 
   @override
-  String get settingsSyncplayEnabled => 'SyncPlay habilitat';
+  String get settingsSyncplayEnabled => 'Watch Parties';
 
   @override
   String get settingsSyncplayEnabledSubtitle =>
-      'Activa les funcions de visualització en grup';
+      'Mira contingut amb amics d\'aquest servidor, tots sincronitzats';
 
   @override
-  String get settingsSyncplayButton => 'Botó SyncPlay';
+  String get settingsSyncplayButton => 'Botó de Watch Parties';
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Mostra el botó SyncPlay a la barra de navegació';
+      'Mostra el botó de Watch Parties a la barra de navegació';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Correcció avançada';
 
   @override
   String get settingsSyncplayAdvancedCorrectionSubtitle =>
-      'Activa la lògica de sincronització detallada';
+      'Retards i desplaçament addicional';
 
   @override
   String get settingsSyncplaySyncCorrection => 'Correcció de sincronització';
 
   @override
   String get settingsSyncplaySyncCorrectionSubtitle =>
-      'Ajusta automàticament la reproducció per mantenir-se sincronitzat';
+      'Mantén aquest dispositiu sincronitzat amb la sala';
 
   @override
   String get settingsSyncplaySpeedToSync => 'Velocitat per sincronitzar';
 
   @override
   String get settingsSyncplaySpeedToSyncSubtitle =>
-      'Utilitzeu l\'ajust de velocitat de reproducció per sincronitzar';
+      'Reprodueix una mica més ràpid o més lent per posar-te al dia';
 
   @override
-  String get settingsSyncplaySkipToSync => 'Passeu a la sincronització';
+  String get settingsSyncplaySkipToSync => 'Salta per sincronitzar';
 
   @override
   String get settingsSyncplaySkipToSyncSubtitle =>
-      'Utilitzeu la cerca de sincronització';
+      'Salta endavant quan vagi massa desfasat';
 
   @override
   String get settingsSyncplayMinimumSpeedDelay => 'Retard de velocitat mínima';
@@ -12670,6 +12707,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get homeRowsStyleModern => 'Modern';
+
+  @override
+  String get homeRowsStyleCarousel => 'Carousel';
 
   @override
   String get homeRowsSection => 'Files d\'inici';
@@ -13455,7 +13495,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get watchPartyResumeYours =>
-      'Where you left off. Everyone starts from there.';
+      'On ho vas deixar. Tothom comença des d\'aquí.';
 
   @override
   String watchPartyResumeNotStarted(int count) {
@@ -13476,7 +13516,7 @@ class AppLocalizationsCa extends AppLocalizations {
       'Els convidats poden reproduir i posar en pausa';
 
   @override
-  String get watchPartyEnd => 'Finalitza la Watch Party';
+  String get watchPartyEnd => 'Finalitza per a tothom';
 
   @override
   String get watchPartyEnded => 'La Watch Party ha finalitzat.';
@@ -13493,151 +13533,152 @@ class AppLocalizationsCa extends AppLocalizations {
   String get watchParties => 'Watch Parties';
 
   @override
-  String get watchPartyStartWith => 'Start parties with';
+  String get watchPartyStartWith => 'Inicia les festes amb';
 
   @override
   String get watchPartyServiceMoonbaseHint =>
-      'Chat, reactions and voting. Runs on Moonbase.';
+      'Xat, reaccions i votacions. Funciona amb Moonbase.';
 
   @override
   String get watchPartyServiceSyncPlayHint =>
-      'Jellyfin\'s own. Friends on other Jellyfin apps can join.';
+      'El de Jellyfin. Els amics que facin servir altres apps de Jellyfin s\'hi poden unir.';
 
   @override
   String get watchPartyServiceNote =>
-      'You can join rooms of both kinds. This only picks what you start.';
+      'Pots unir-te a sales de tots dos tipus. Això només tria el que inicies tu.';
 
   @override
-  String get watchPartyDuringParty => 'During a party';
+  String get watchPartyDuringParty => 'Durant una festa';
 
   @override
-  String get watchPartyChatOverlay => 'Show chat over the video';
+  String get watchPartyChatOverlay => 'Mostra el xat sobre el vídeo';
 
   @override
   String get watchPartyChatOverlaySubtitle =>
-      'New messages show for a few seconds';
+      'Els missatges nous es mostren uns segons';
 
   @override
-  String get watchPartyAlerts => 'Party alerts';
+  String get watchPartyAlerts => 'Alertes de festes';
 
   @override
   String get watchPartyAlertsSubtitle =>
-      'Tell me when someone on this server starts one';
+      'Avisa\'m quan algú d\'aquest servidor n\'iniciï una';
 
   @override
-  String get watchPartyJoinWithCode => 'Join with a code';
+  String get watchPartyJoinWithCode => 'Uneix-te amb un codi';
 
   @override
-  String get watchPartyOnThisServer => 'On this server';
+  String get watchPartyOnThisServer => 'En aquest servidor';
 
   @override
   String watchPartyCountOnServer(int count) {
-    return '$count on this server';
+    return '$count en aquest servidor';
   }
 
   @override
   String get watchPartyRoomsHint =>
-      'You need access to the item to join. A room closes when its last person leaves.';
+      'Necessites accés a l\'element per unir-t\'hi. Una sala es tanca quan en surt l\'última persona.';
 
   @override
   String get watchPartyRoomsEmpty =>
-      'Parties you can watch show up here. Got a code from someone? Pick Join with a code.';
+      'Aquí apareixen les Watch Parties que pots veure. T\'han passat un codi? Tria «Uneix-te amb un codi».';
 
   @override
   String get watchPartyPasteHint =>
-      'Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.';
+      'També hi pots enganxar un enllaç d\'invitació. En un telèfon, l\'enllaç obre Moonfin directament a la Watch Party.';
 
   @override
   String watchPartyWatchingCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count watching',
-      one: '$count watching',
+      other: '$count espectadors',
+      one: '$count espectador',
     );
     return '$_temp0';
   }
 
   @override
   String watchPartyHostsParty(String name) {
-    return '$name\'s party';
+    return 'Watch Party de $name';
   }
 
   @override
-  String get watchPartyEveryoneControlsShort => 'Everyone controls';
+  String get watchPartyEveryoneControlsShort => 'Tothom controla';
 
   @override
-  String get watchPartyVotingNow => 'Voting on what to watch';
+  String get watchPartyVotingNow => 'Es vota què veure';
 
   @override
   String get watchPartyNeedsMoonbase =>
-      'Watch Parties need Moonbase on this server';
+      'Les Watch Parties necessiten Moonbase en aquest servidor';
 
   @override
   String get watchPartyNeedsMoonbaseHint =>
-      'Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.';
+      'Demana a qui gestiona el servidor que instal·li el connector Moonbase. A Jellyfin, SyncPlay funciona igualment sense aquest connector.';
 
   @override
-  String get watchPartyWrongPin => 'That PIN didn\'t work. Try again.';
+  String get watchPartyWrongPin =>
+      'Aquest PIN no ha funcionat. Torna-ho a provar.';
 
   @override
-  String get watchPartyTooManyTries => 'Too many tries. Wait a minute.';
+  String get watchPartyTooManyTries => 'Massa intents. Espera un minut.';
 
   @override
-  String get watchPartyFull => 'This party is full.';
+  String get watchPartyFull => 'Aquesta Watch Party és plena.';
 
   @override
-  String get watchPartyNoSuchCode => 'No room has that code.';
+  String get watchPartyNoSuchCode => 'Cap sala no té aquest codi.';
 
   @override
-  String get watchPartyNoAccess =>
-      'You don\'t have access to what they\'re watching.';
+  String get watchPartyNoAccess => 'No tens accés al que estan veient.';
 
   @override
-  String get watchPartyRemoved => 'The host removed you from the party.';
+  String get watchPartyRemoved =>
+      'L\'amfitrió t\'ha expulsat de la Watch Party.';
 
   @override
-  String get watchPartyYours => 'Your watch party';
+  String get watchPartyYours => 'La teva Watch Party';
 
   @override
   String get watchPartyInviteHint =>
-      'Paste it in any chat. It opens a page on this server with an Open in Moonfin button.';
+      'Enganxa\'l a qualsevol xat. Obre una pàgina d\'aquest servidor amb un botó «Obre a Moonfin».';
 
   @override
-  String get watchPartySendInvite => 'Send the invite';
+  String get watchPartySendInvite => 'Envia la invitació';
 
   @override
   String get watchPartyScanInvite =>
-      'Scan with your phone to get the invite link, then send it from there. Or just share the code.';
+      'Escaneja-ho amb el telèfon per obtenir l\'enllaç d\'invitació i envia\'l des d\'allà. O simplement comparteix el codi.';
 
   @override
   String get watchPartyStartsTogether =>
-      'Play waits for everyone\'s player, 10 seconds at most, then counts down 3, 2, 1.';
+      'La reproducció espera que el reproductor de tothom estigui a punt, 10 segons com a màxim, i després fa un compte enrere 3, 2, 1.';
 
   @override
-  String get watchPartyStatusInSync => 'In sync';
+  String get watchPartyStatusInSync => 'Sincronitzat';
 
   @override
-  String get watchPartyStatusCatchingUp => 'Catching up';
+  String get watchPartyStatusCatchingUp => 'Posant-se al dia';
 
   @override
-  String get watchPartyStatusBuffering => 'Buffering';
+  String get watchPartyStatusBuffering => 'Carregant';
 
   @override
-  String get watchPartyStatusNotWatching => 'Not watching';
+  String get watchPartyStatusNotWatching => 'No està mirant';
 
   @override
-  String get watchPartyStatusReady => 'Ready';
+  String get watchPartyStatusReady => 'A punt';
 
   @override
-  String get watchPartyStatusJoining => 'Joining';
+  String get watchPartyStatusJoining => 'Unint-se';
 
   @override
-  String get watchPartyHost => 'Host';
+  String get watchPartyHost => 'Amfitrió';
 
   @override
   String watchPartyWaitingFor(String name) {
-    return 'Waiting for $name\'s player';
+    return 'S\'està esperant el reproductor de $name';
   }
 
   @override
@@ -13645,156 +13686,159 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Waiting for $count players',
-      one: 'Waiting for $count player',
+      other: 'S\'estan esperant $count reproductors',
+      one: 'S\'està esperant $count reproductor',
     );
     return '$_temp0';
   }
 
   @override
   String watchPartyStartingAnyway(int seconds) {
-    return 'Starting anyway in $seconds s';
+    return 'Començarà igualment d\'aquí a $seconds s';
   }
 
   @override
-  String get watchPartyStartingTogether => 'Starting together';
+  String get watchPartyStartingTogether => 'Comencem tots alhora';
 
   @override
   String watchPartyToastPaused(String name) {
-    return '$name paused';
+    return '$name ha posat en pausa';
   }
 
   @override
   String watchPartyToastResumed(String name) {
-    return '$name resumed';
+    return '$name ha reprès la reproducció';
   }
 
   @override
   String watchPartyToastSkipped(String name, String time) {
-    return '$name skipped to $time';
+    return '$name ha saltat a $time';
   }
 
   @override
   String watchPartyToastJoined(String name) {
-    return '$name joined';
+    return '$name s\'ha unit';
   }
 
   @override
   String watchPartyToastLeft(String name) {
-    return '$name left';
+    return '$name ha marxat';
   }
 
   @override
   String watchPartyToastSwitched(String name, String title) {
-    return '$name switched to $title';
+    return '$name ha canviat a $title';
   }
 
   @override
-  String get watchPartyToastYouAreHost => 'You\'re the host now';
+  String get watchPartyToastYouAreHost => 'Ara ets l\'amfitrió';
 
   @override
   String watchPartyToastNewHost(String name) {
-    return '$name is the host now';
+    return 'Ara $name és l\'amfitrió';
   }
 
   @override
   String get watchPartyToastEveryoneControls =>
-      'Everyone can control playback now';
+      'Ara tothom pot controlar la reproducció';
 
   @override
   String get watchPartyToastHostControls =>
-      'Only the host controls playback now';
+      'Ara només l\'amfitrió controla la reproducció';
 
   @override
   String get watchPartyOnlyHostControls =>
-      'Only the host can control playback.';
+      'Només l\'amfitrió pot controlar la reproducció.';
 
   @override
-  String get watchPartyToastReconnecting => 'Reconnecting to the party...';
+  String get watchPartyToastReconnecting =>
+      'S\'està tornant a connectar a la Watch Party...';
 
   @override
-  String get watchPartyToastReconnected => 'Back in the party';
+  String get watchPartyToastReconnected => 'Has tornat a la Watch Party';
 
   @override
   String watchPartyToastEnded(String name) {
-    return '$name ended the party';
+    return '$name ha finalitzat la Watch Party';
   }
 
   @override
-  String get watchPartyChat => 'Chat';
+  String get watchPartyChat => 'Xat';
 
   @override
-  String get watchPartySendToParty => 'Send to the party';
+  String get watchPartySendToParty => 'Envia a la Watch Party';
 
   @override
-  String get watchPartyBackToClose => 'Back to close';
+  String get watchPartyBackToClose => 'Prem Enrere per tancar';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'Escriu';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
 
   @override
-  String get watchPartyReplyNoWay => 'No way';
+  String get watchPartyReplyNoWay => 'No pot ser';
 
   @override
-  String get watchPartyReplyPausePlease => 'Pause please';
+  String get watchPartyReplyPausePlease => 'Pausa, si us plau';
 
   @override
-  String get watchPartyReplyBrb => 'Brb';
+  String get watchPartyReplyBrb => 'Ara torno';
 
   @override
-  String get watchPartyReplyAgain => 'Again!';
+  String get watchPartyReplyAgain => 'Un altre cop!';
 
   @override
-  String get watchPartyReactionLove => 'Love';
+  String get watchPartyReactionLove => 'M\'encanta';
 
   @override
   String get watchPartyReactionHaha => 'Haha';
 
   @override
-  String get watchPartyReactionWow => 'Wow';
+  String get watchPartyReactionWow => 'Uau';
 
   @override
-  String get watchPartyReactionSad => 'Sad';
+  String get watchPartyReactionSad => 'Trist';
 
   @override
-  String get watchPartyReactionFire => 'Fire';
+  String get watchPartyReactionFire => 'Foc';
 
   @override
-  String get watchPartyReactionPopcorn => 'Popcorn';
+  String get watchPartyReactionPopcorn => 'Crispetes';
 
   @override
-  String get watchPartyMakeHost => 'Make host';
+  String get watchPartyMakeHost => 'Fes amfitrió';
 
   @override
-  String get watchPartyEveryoneControls => 'Everyone can control playback';
+  String get watchPartyEveryoneControls =>
+      'Tothom pot controlar la reproducció';
 
   @override
   String get watchPartyEveryoneControlsHint =>
-      'Anyone can play, pause and skip';
+      'Tothom pot reproduir, posar en pausa i saltar';
 
   @override
-  String get watchPartyRoomPin => 'Room PIN';
+  String get watchPartyRoomPin => 'PIN de la sala';
 
   @override
-  String get watchPartyRoomPinHint => 'Ask for a PIN before anyone joins';
+  String get watchPartyRoomPinHint =>
+      'Demana un PIN abans que algú s\'hi uneixi';
 
   @override
-  String get watchPartyPinDigits => '4 to 8 digits';
+  String get watchPartyPinDigits => 'De 4 a 8 dígits';
 
   @override
-  String get watchPartyLeave => 'Leave';
+  String get watchPartyLeave => 'Surt';
 
   @override
   String watchPartyLeaveHandsOver(String name) {
-    return 'Leave · $name hosts';
+    return 'Surt · $name fa d\'amfitrió';
   }
 
   @override
   String watchPartyStartedBy(String name) {
-    return '$name started a watch party';
+    return '$name ha iniciat una Watch Party';
   }
 
   @override
@@ -13802,18 +13846,19 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$title · $count in the lobby',
-      one: '$title · $count in the lobby',
+      other: '$title · $count a la sala d\'espera',
+      one: '$title · $count a la sala d\'espera',
     );
     return '$_temp0';
   }
 
   @override
-  String get watchPartyFirstOnHome => 'It\'s first in Watch Parties on Home';
+  String get watchPartyFirstOnHome =>
+      'És la primera de la fila Watch Parties de l\'inici';
 
   @override
   String watchPartyAddServerQuestion(String address) {
-    return 'This invite is for a server you have not added yet, $address. Add it and sign in to join.';
+    return 'Aquesta invitació és per a un servidor que encara no has afegit, $address. Afegeix-lo i inicia la sessió per unir-t\'hi.';
   }
 
   @override
@@ -15862,6 +15907,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get setupRowsModernHint => 'Targetes més grans amb títols a sota.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => 'Tot està centrat en una sola columna.';
 
   @override
@@ -16631,7 +16680,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsPlaybackSubtitle =>
-      'Reproductor, qualitat, àudio, subtítols, salts i SyncPlay';
+      'Reproductor, qualitat, àudio, subtítols, salts i Watch Parties';
 
   @override
   String get settingsStorageSubtitle =>
@@ -16671,10 +16720,36 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsSkippingAndQueueSection => 'Salts i cua';
 
   @override
-  String get settingsWatchTogetherSection => 'Veure junts';
+  String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
   String get settingsAdvancedSection => 'Avançat';
+
+  @override
+  String get settingsDecodingAndRenderingSection =>
+      'Descodificació i renderització';
+
+  @override
+  String get settingsAudioStreamSection => 'Flux d\'àudio';
+
+  @override
+  String get settingsAudioOutputSection => 'Sortida d\'àudio';
+
+  @override
+  String get settingsPassthroughSettingsSection =>
+      'Configuració del passthrough';
+
+  @override
+  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+
+  @override
+  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
+
+  @override
+  String get settingsRewatchSection => 'Torna a veure';
+
+  @override
+  String get favoritesSwitchViewSection => 'Switch View';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17403,7 +17478,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get siloPinUnlock => 'Desbloqueja';
 
   @override
-  String get siloPinRemember => 'Remember PIN on this device';
+  String get siloPinRemember => 'Recorda el PIN en aquest dispositiu';
 
   @override
   String get siloPinWrong => 'Aquest PIN no és correcte.';
@@ -17720,6 +17795,71 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsPreviewNotShown => 'No es mostra a la vista prèvia';
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
+    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String settingsPreviewAudioRowsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRows(
+    String group,
+    String disabled,
+  ) {
+    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String settingsPreviewCollectionsOffInHomeRowsSwitchOff(
+    String setting,
+    String group,
+    String disabled,
+  ) {
+    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+  }
+
+  @override
+  String get settingsPreviewRowsOffInKidsMode =>
+      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+
+  @override
+  String settingsPreviewNeedsRowInRows(String disabled) {
+    return 'Turn on a row in Rows, under $disabled';
+  }
+
+  @override
+  String settingsPreviewNeedsSwitchAndRow(String setting) {
+    return 'Turn on $setting, then turn on a row in Rows';
+  }
+
+  @override
+  String get settingsPreviewKeptOffByKidsMode =>
+      'Kids Mode keeps this off Home';
+
+  @override
+  String get settingsPreviewAudioRowsEmpty =>
+      'There\'s no music to show, so Home leaves these rows out.';
+
+  @override
+  String get settingsPreviewRowsEmpty =>
+      'There\'s nothing to show in these rows, so Home leaves them out.';
+
+  @override
+  String get settingsPreviewCollectionsEmpty =>
+      'There are no collections to show, so Home leaves this row out.';
+
+  @override
+  String get settingsPreviewShowEpisodesNote =>
+      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
 
   @override
   String get settingsPreviewSaved => 'Desat';

@@ -70,11 +70,12 @@ abs_files.each do |abs|
 end
 
 # --- AetherEngine ---
-# Pinned to a revision of the fork, which carries client certificate support
-# upstream doesn't have yet. An engine bump is a deliberate change rather than
+# Pinned to a revision of the fork, which carries client certificate support,
+# a frame timing fix and the Dolby Vision FEL curve fold that upstream doesn't
+# ship. An engine bump is a deliberate change rather than
 # something a resolve should pick up on its own.
 aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
-aether_revision = '93a024a5b72a735c996ca289e7dc0ed8d09dc787'
+aether_revision = '34f149ba2dd483f490dca13a5a3027d58a9956f5'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 

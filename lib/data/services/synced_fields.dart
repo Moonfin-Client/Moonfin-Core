@@ -164,6 +164,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('mergeContinueWatchingNextUp', UserPreferences.mergeContinueWatchingNextUp, SyncCodec.boolean),
   SyncedField('continueWatchingDefaultAction', UserPreferences.continueWatchingDefaultAction, SyncCodec.enumName, enumValues: prefs.ContinueWatchingDefaultAction.values),
   SyncedField('mergeRecentRowsByType', UserPreferences.mergeRecentRowsByType, SyncCodec.boolean),
+  SyncedField('hideWatchedInRecentRows', UserPreferences.hideWatchedInRecentRows, SyncCodec.boolean),
   SyncedField('nextUpMaxDays', UserPreferences.nextUpMaxDays, SyncCodec.integer),
   SyncedField('enableMultiServerLibraries', UserPreferences.enableMultiServerLibraries, SyncCodec.boolean),
   SyncedField('seasonalSurprise', UserPreferences.seasonalSurprise, SyncCodec.text, normalize: UserPreferences.parseSeasonalSurprise),
