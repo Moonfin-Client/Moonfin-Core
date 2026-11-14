@@ -93,6 +93,7 @@ void main() {
     bool nouveauStyle = false,
     int? buttonLimit,
     bool hostNodes = false,
+    double? rowWidth,
   }) async {
     // The Modern page hands in its own nodes for the row's right end and the
     // first button of the second line.
@@ -134,18 +135,51 @@ void main() {
       supportedLocales: const [Locale('en')],
       home: Scaffold(
         body: SingleChildScrollView(
-          child: DetailActionButtons(
-            viewModel: vm,
-            itemId: 'movie-1',
-            onSelectedMediaSourceChanged: (_) {},
-            modernStyle: modernStyle,
-            nouveauStyle: nouveauStyle,
-            actionRowRightFocusNode: hostNodes ? rightNode : null,
-            extraFirstFocusNode: hostNodes ? extraFirstNode : null,
+          child: SizedBox(
+            width: rowWidth,
+            child: DetailActionButtons(
+              viewModel: vm,
+              itemId: 'movie-1',
+              onSelectedMediaSourceChanged: (_) {},
+              modernStyle: modernStyle,
+              nouveauStyle: nouveauStyle,
+              actionRowRightFocusNode: hostNodes ? rightNode : null,
+              extraFirstFocusNode: hostNodes ? extraFirstNode : null,
+            ),
           ),
         ),
       ),
     );
+
+    final focusedButton = find.byElementPredicate(
+      (e) => identical(e, FocusManager.instance.primaryFocus?.context),
+    );
+    Finder inFocus(Finder matching) =>
+        find.descendant(of: focusedButton, matching: matching);
+
+    // A scrolling row animates to the focused button over a few frames.
+    Future<void> settle() async {
+      for (var i = 0; i < 6; i++) {
+        await tester.pump(const Duration(milliseconds: 60));
+      }
+    }
+
+    void expectFocusedInView() {
+      final viewport = tester.getRect(
+        find.descendant(
+          of: find.byType(DetailActionButtons),
+          matching: find.byType(SingleChildScrollView),
+        ),
+      );
+      // The pill's border leaves the viewport a hair narrower than a button,
+      // so the button's middle is what has to be in view.
+      final button = tester.getRect(focusedButton);
+      expect(
+        viewport.left <= button.center.dx && button.center.dx <= viewport.right,
+        isTrue,
+        reason: 'the focused button is outside the scrolling row',
+      );
+    }
 
     await tester.pumpWidget(app());
     // Let the page hand its initial focus to Play first.
@@ -165,45 +199,31 @@ void main() {
     final watched = find.byIcon(Icons.check_circle_outline);
     expect(watched, findsOneWidget);
     Focus.of(tester.element(watched)).requestFocus();
-    await tester.pump();
-    expect(
-      find.descendant(
-        of: find.byElementPredicate(
-          (e) => identical(e, FocusManager.instance.primaryFocus?.context),
-        ),
-        matching: watched,
-      ),
-      findsOneWidget,
-    );
+    await settle();
+    expect(inFocus(watched), findsOneWidget);
+    if (rowWidth != null) expectFocusedInView();
 
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     verify(() => vm.togglePlayed()).called(1);
     // The view model notifies the page, which rebuilds the row.
     await tester.pumpWidget(app());
-    await tester.pump();
+    await settle();
     expect(find.byIcon(Icons.restart_alt), findsNothing);
-
-    final focusedContext = FocusManager.instance.primaryFocus?.context;
-    expect(
-      find.descendant(
-        of: find.byElementPredicate((e) => identical(e, focusedContext)),
-        matching: find.byIcon(Icons.check_circle),
-      ),
-      findsOneWidget,
-    );
+    expect(inFocus(find.byIcon(Icons.check_circle)), findsOneWidget);
+    if (rowWidth != null) expectFocusedInView();
 
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     verify(() => vm.togglePlayed()).called(1);
     verifyNever(() => vm.toggleFavorite());
 
-    // Restart's node outlives its button. The d-pad must move between the
-    // buttons still on screen and come back to Watched.
+    // Restart's node outlives its button, so Left has to skip it and land on
+    // Play, and Right comes back to Watched.
     await tester.pumpWidget(app());
     await tester.pump();
     final watchedNode = FocusManager.instance.primaryFocus;
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
     await tester.pump();
-    expect(FocusManager.instance.primaryFocus?.context?.mounted, isTrue);
+    expect(inFocus(find.byIcon(Icons.play_arrow)), findsOneWidget);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
     expect(FocusManager.instance.primaryFocus, same(watchedNode));
@@ -221,6 +241,13 @@ void main() {
 
   testWidgets('focus stays on Watched in the scrolling row', (tester) async {
     await run(tester, buttonLimit: -1);
+  });
+
+  testWidgets('a scrolling row keeps Watched in view when Restart leaves', (
+    tester,
+  ) async {
+    // One button wide, so Watched is the only one showing when it's pressed.
+    await run(tester, buttonLimit: -1, rowWidth: 200);
   });
 
   testWidgets('focus stays on Watched in the second line', (tester) async {

@@ -5828,6 +5828,7 @@ class _HorizontalActionRowState extends State<_HorizontalActionRow> {
   bool _hasOverflow = false;
   int _fitCount = 1;
   double _effectiveButtonWidth = 108.0;
+  Key? _focusedChildKey;
 
   @override
   void initState() {
@@ -5839,7 +5840,15 @@ class _HorizontalActionRowState extends State<_HorizontalActionRow> {
   @override
   void didUpdateWidget(covariant _HorizontalActionRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScrollMetrics();
+      // A focused button shifts when the ones before it come and go, and it's
+      // only scrolled to when focus moves, so it could slide out of view.
+      final key = _focusedChildKey;
+      if (key == null) return;
+      final index = widget.children.indexWhere((child) => child.key == key);
+      if (index >= 0) _scrollToIndex(index);
+    });
   }
 
   @override
@@ -5952,8 +5961,12 @@ class _HorizontalActionRowState extends State<_HorizontalActionRow> {
                   canRequestFocus: false,
                   skipTraversal: true,
                   onFocusChange: (focused) {
+                    final key = widget.children[i].key;
                     if (focused) {
+                      _focusedChildKey = key;
                       _scrollToIndex(i);
+                    } else if (_focusedChildKey == key) {
+                      _focusedChildKey = null;
                     }
                   },
                   child: widget.children[i],
