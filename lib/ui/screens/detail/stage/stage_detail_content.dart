@@ -219,10 +219,20 @@ class _StageDetailContentState extends State<StageDetailContent>
       if (!mounted || ctx == null || !ctx.mounted || offScreen(ctx) == 0) {
         return;
       }
-      final box = ctx.findRenderObject();
-      if (box == null || !pageScroll.hasClients) return;
+      if (node == section) {
+        Scrollable.ensureVisible(
+          ctx,
+          alignment: 0.3,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+        );
+        return;
+      }
       // Only the page scrolls, so a card back in the middle of its row
       // doesn't pull the row sideways.
+      final box = ctx.findRenderObject();
+      if (box == null || !pageScroll.hasClients) return;
       pageScroll.position.ensureVisible(
         box,
         alignment: 0.3,
@@ -291,10 +301,11 @@ class _StageDetailContentState extends State<StageDetailContent>
   }
 
   /// The stops beside the poster that can take focus. The overview only has
-  /// one once its text runs long enough to open up.
+  /// one once its text runs long enough to open up, and a row only while the
+  /// card it's entered by is built.
   List<FocusNode> get _besideStops => [
     for (final node in _beside)
-      if (node.context?.mounted == true) node,
+      if (entryFor(node).context?.mounted == true) node,
   ];
 
   /// The stop under [node], or null at the bottom of the page.

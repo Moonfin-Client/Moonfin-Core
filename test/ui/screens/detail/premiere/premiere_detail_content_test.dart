@@ -362,4 +362,44 @@ void main() {
     expect(find.byKey(const ValueKey('premiere-hero')), findsOneWidget);
     expect(find.byType(StageTrackChips), findsOneWidget);
   });
+
+  testWidgets('down from the buttons goes back to the card a row scrolled '
+      'past its first card was left from', (tester) async {
+    final films = [
+      for (var i = 0; i < 30; i++)
+        {'Id': 'film-$i', 'Type': 'Movie', 'Name': 'Film $i'},
+    ];
+    when(
+      () => itemsApi.getItems(
+        parentId: 'item-1',
+        startIndex: any(named: 'startIndex'),
+        limit: any(named: 'limit'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {'Items': films, 'TotalRecordCount': films.length},
+    );
+    final play = FocusNode(debugLabel: 'play');
+    addTearDown(play.dispose);
+    await pumpContent(tester, viewModel('BoxSet'), playNode: play);
+    await tester.pump();
+
+    Focus.of(tester.element(find.text('Film 0'))).requestFocus();
+    await tester.pump();
+    for (var i = 0; i < films.length - 1; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+    }
+    final last = Focus.of(tester.element(find.text('Film 29')));
+    expect(last.hasPrimaryFocus, isTrue);
+    expect(find.text('Film 0'), findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(play.hasPrimaryFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(last.hasPrimaryFocus, isTrue);
+  });
 }
