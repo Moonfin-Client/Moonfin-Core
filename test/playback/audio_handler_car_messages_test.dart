@@ -69,6 +69,7 @@ class _FailingManager extends PlaybackManager {
     bool enableTranscoding = true,
     bool autoPlay = true,
     bool carryTrackSelections = false,
+    bool stopCurrentAsFinished = false,
   }) async =>
       throw error;
 }

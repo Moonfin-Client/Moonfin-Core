@@ -67,6 +67,9 @@ void main() {
       () => manager.sessionEndedStream,
     ).thenAnswer((_) => const Stream<void>.empty());
     when(
+      () => manager.finishedItemStopStream,
+    ).thenAnswer((_) => const Stream<dynamic>.empty());
+    when(
       () => manager.reconnectingStream,
     ).thenAnswer((_) => const Stream<bool>.empty());
     when(() => manager.state).thenReturn(playerState);
