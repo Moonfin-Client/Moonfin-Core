@@ -8944,10 +8944,10 @@ abstract class AppLocalizations {
   /// **'Random'**
   String get mediaBarSourceRandom;
 
-  /// Media bar source: series with episodes that aired recently
+  /// Media bar source: series with episodes that aired recently, and new movies
   ///
   /// In en, this message translates to:
-  /// **'New Seasons & Episodes'**
+  /// **'New Releases'**
   String get mediaBarSourceNewReleases;
 
   /// Setting that flags series in the media bar when new episodes aired recently
@@ -8959,13 +8959,13 @@ abstract class AppLocalizations {
   /// No description provided for @mediaBarNewReleaseBannerDescription.
   ///
   /// In en, this message translates to:
-  /// **'Flag series with a new season or new episodes that aired recently.'**
+  /// **'Flag new series, seasons, episodes and movies.'**
   String get mediaBarNewReleaseBannerDescription;
 
   /// Setting for how many days an episode counts as new in the media bar
   ///
   /// In en, this message translates to:
-  /// **'New Release Window'**
+  /// **'New Episode Window'**
   String get mediaBarNewReleaseDays;
 
   /// No description provided for @mediaBarNewReleaseDaysDescription.
@@ -8991,6 +8991,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Episodes'**
   String get mediaBarNewEpisodes;
+
+  /// Description of the Random media bar source
+  ///
+  /// In en, this message translates to:
+  /// **'Any title from your libraries, picked at random.'**
+  String get mediaBarSourceRandomDescription;
+
+  /// Description of the Recently Added media bar source
+  ///
+  /// In en, this message translates to:
+  /// **'The latest arrivals on the server, like the home row.'**
+  String get mediaBarSourceRecentlyAddedDescription;
+
+  /// Description of the Recently Released media bar source
+  ///
+  /// In en, this message translates to:
+  /// **'The latest releases, like the home row: no time limit, and series follow its Series, Season or Episode setting.'**
+  String get mediaBarSourceRecentlyReleasedDescription;
+
+  /// Description of the New Releases media bar source
+  ///
+  /// In en, this message translates to:
+  /// **'Only what\'s new, within the windows and minimum rating below. When nothing qualifies, random titles fill in.'**
+  String get mediaBarSourceNewReleasesDescription;
+
+  /// Media bar label on a movie that came out or reached the server recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Movie'**
+  String get mediaBarNewMovie;
+
+  /// Media bar settings section for the new release labels and the new releases source
+  ///
+  /// In en, this message translates to:
+  /// **'New Releases'**
+  String get mediaBarNewReleasesSection;
+
+  /// Setting that picks which titles get a new release label in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get mediaBarNewReleaseKinds;
+
+  /// Setting for which date makes a movie new in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'New Movie Based On'**
+  String get mediaBarNewMovieBasis;
+
+  /// Description of the new movie date setting
+  ///
+  /// In en, this message translates to:
+  /// **'Which date makes a movie new: its release, or its arrival on your server.'**
+  String get mediaBarNewMovieBasisDescription;
+
+  /// Description of the new movie setting when the release date is picked
+  ///
+  /// In en, this message translates to:
+  /// **'A movie stays new for the window below after it comes out. Streaming releases show up right away. Theatrical movies only count if they reach your server while still in the window.'**
+  String get mediaBarNewMovieByReleaseDescription;
+
+  /// Description of the new movie setting when the date added is picked
+  ///
+  /// In en, this message translates to:
+  /// **'A movie stays new for the window below after it reaches your server, however it was released. Movies released before the release limit don\'t count, so an old film added today isn\'t new.'**
+  String get mediaBarNewMovieByAddedDescription;
+
+  /// New movie date option: the movie's release date
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date'**
+  String get mediaBarNewMovieByRelease;
+
+  /// New movie date option: the day the movie reached the server
+  ///
+  /// In en, this message translates to:
+  /// **'Date Added'**
+  String get mediaBarNewMovieByAdded;
+
+  /// Setting for how many days a movie counts as new in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'New Movie Window'**
+  String get mediaBarNewMovieDays;
+
+  /// Description of the new movie window setting
+  ///
+  /// In en, this message translates to:
+  /// **'How long a movie stays new. Theatrical movies often reach servers a while after they come out, so give it longer than for episodes.'**
+  String get mediaBarNewMovieDaysDescription;
+
+  /// Setting for how recently a movie added to the server must have come out to count as new
+  ///
+  /// In en, this message translates to:
+  /// **'Release Limit'**
+  String get mediaBarNewMovieMaxAge;
+
+  /// Description of the new movie release limit setting
+  ///
+  /// In en, this message translates to:
+  /// **'An older movie that just arrived doesn\'t count as new.'**
+  String get mediaBarNewMovieMaxAgeDescription;
+
+  /// A number of months back from today
+  ///
+  /// In en, this message translates to:
+  /// **'Last {months} months'**
+  String mediaBarLastMonths(int months);
+
+  /// Setting for whether the New Movie label has a second line
+  ///
+  /// In en, this message translates to:
+  /// **'Show Tagline'**
+  String get mediaBarNewMovieDetail;
+
+  /// Description of the New Movie second line setting
+  ///
+  /// In en, this message translates to:
+  /// **'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.'**
+  String get mediaBarNewMovieDetailDescription;
+
+  /// Setting that leaves new movies with no tagline out of the New Releases source
+  ///
+  /// In en, this message translates to:
+  /// **'Only Movies With a Tagline'**
+  String get mediaBarNewMovieTaglineOnly;
+
+  /// Description of the tagline only setting
+  ///
+  /// In en, this message translates to:
+  /// **'In the New Releases source, leave out new movies that have no tagline.'**
+  String get mediaBarNewMovieTaglineOnlyDescription;
+
+  /// Setting for the rating a movie needs to count as new in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Movie Rating'**
+  String get mediaBarNewMovieMinRating;
+
+  /// Description of the minimum movie rating setting
+  ///
+  /// In en, this message translates to:
+  /// **'Only movies rated this high count as new. Uses the MDBList score your server keeps, or its own rating.'**
+  String get mediaBarNewMovieMinRatingDescription;
+
+  /// A minimum rating out of 10, already formatted, like 6.5
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} and above'**
+  String mediaBarRatingAtLeast(String rating);
+
+  /// Setting that makes movies and series take turns in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Mix Movies and Series'**
+  String get mediaBarMixTypes;
+
+  /// Description of the Mix Movies and Series media bar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Movies and series take turns, as long as each has titles.'**
+  String get mediaBarMixTypesDescription;
+
+  /// Media bar label on a series whose next episode comes out soon
+  ///
+  /// In en, this message translates to:
+  /// **'New Episode'**
+  String get mediaBarUpcomingEpisode;
+
+  /// Media bar label on a series whose next season starts soon
+  ///
+  /// In en, this message translates to:
+  /// **'New Season {season}'**
+  String mediaBarUpcomingSeason(int season);
+
+  /// Media bar label on a movie Radarr expects on the server soon
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get mediaBarUpcomingMovie;
+
+  /// When something upcoming comes out later this week. The day is the weekday name
+  ///
+  /// In en, this message translates to:
+  /// **'This {day}'**
+  String mediaBarThisWeekday(String day);
+
+  /// When something upcoming comes out more than a week from now. The date is already formatted, like Nov 21
+  ///
+  /// In en, this message translates to:
+  /// **'{date}'**
+  String mediaBarOnDate(String date);
+
+  /// Setting that labels series with an episode coming out soon, from the Sonarr calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Episodes'**
+  String get mediaBarUpcomingEpisodes;
+
+  /// Description of the upcoming episodes setting
+  ///
+  /// In en, this message translates to:
+  /// **'Shows when the next episode airs, from the Sonarr calendar. With New Releases, returning series join the bar too.'**
+  String get mediaBarUpcomingEpisodesDescription;
+
+  /// Setting that shows movies Radarr expects soon in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Movies'**
+  String get mediaBarUpcomingMovies;
+
+  /// Description of the upcoming movies setting
+  ///
+  /// In en, this message translates to:
+  /// **'With New Releases, up to two movies Radarr expects soon join the bar. They open in Seerr.'**
+  String get mediaBarUpcomingMoviesDescription;
+
+  /// Setting for how many days ahead the media bar looks for upcoming episodes and movies
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Horizon'**
+  String get mediaBarUpcomingDays;
+
+  /// Description of the upcoming horizon setting
+  ///
+  /// In en, this message translates to:
+  /// **'How many days ahead to look for what\'s coming.'**
+  String get mediaBarUpcomingDaysDescription;
+
+  /// Setting that puts series the user has started at the front of the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Followed Series First'**
+  String get mediaBarFollowedFirst;
+
+  /// Description of the followed series first setting
+  ///
+  /// In en, this message translates to:
+  /// **'Series you\'ve started come first.'**
+  String get mediaBarFollowedFirstDescription;
 
   /// Content type: movies and TV shows
   ///

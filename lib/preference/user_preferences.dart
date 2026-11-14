@@ -757,6 +757,18 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarItemCount',
     'mediaBarNewReleaseBanner',
     'mediaBarNewReleaseDays',
+    'mediaBarNewReleaseKinds',
+    'mediaBarNewMovieBasis',
+    'mediaBarNewMovieDays',
+    'mediaBarNewMovieMaxAgeMonths',
+    'mediaBarNewMovieMinRating',
+    'mediaBarNewMovieDetail',
+    'mediaBarNewMovieTaglineOnly',
+    'mediaBarFollowedFirst',
+    'mediaBarMixTypes',
+    'mediaBarUpcomingEpisodes',
+    'mediaBarUpcomingMovies',
+    'mediaBarUpcomingDays',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
     'navbarOpacity',
@@ -3237,6 +3249,94 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarNewReleaseDays = Preference(
     key: 'mediaBarNewReleaseDays',
     defaultValue: 30,
+  );
+
+  static const mediaBarNewSeries = 'newSeries';
+  static const mediaBarNewSeason = 'newSeason';
+  static const mediaBarNewEpisodes = 'newEpisodes';
+  static const mediaBarNewMovie = 'newMovie';
+
+  /// Which labels the banner puts on, comma separated. The banner switch above
+  /// still turns them all off, since older apps only read that.
+  static final mediaBarNewReleaseKinds = Preference(
+    key: 'mediaBarNewReleaseKinds',
+    defaultValue:
+        '$mediaBarNewSeries,$mediaBarNewSeason,$mediaBarNewEpisodes,$mediaBarNewMovie',
+  );
+
+  static const mediaBarNewMovieByRelease = 'releaseDate';
+  static const mediaBarNewMovieByAdded = 'dateAdded';
+
+  /// What makes a movie new: its release date, or the day it reached the
+  /// server.
+  static final mediaBarNewMovieBasis = Preference(
+    key: 'mediaBarNewMovieBasis',
+    defaultValue: mediaBarNewMovieByRelease,
+  );
+
+  /// How many days a movie stays new. Longer than for series, since a cinema
+  /// release reaches servers months after it opens.
+  static final mediaBarNewMovieDays = Preference(
+    key: 'mediaBarNewMovieDays',
+    defaultValue: 120,
+  );
+
+  /// With the date added, how many months after its release a movie can still
+  /// be new, so an old film added today isn't.
+  static final mediaBarNewMovieMaxAgeMonths = Preference(
+    key: 'mediaBarNewMovieMaxAgeMonths',
+    defaultValue: 12,
+  );
+
+  /// The rating a new movie needs, in tenths of a point out of 10, so 65 is
+  /// 6.5 and a slider can step by halves. 0 means no minimum.
+  static final mediaBarNewMovieMinRating = Preference(
+    key: 'mediaBarNewMovieMinRating',
+    defaultValue: 0,
+  );
+
+  /// Whether the new movie label shows the movie's tagline under it.
+  static final mediaBarNewMovieDetail = Preference(
+    key: 'mediaBarNewMovieDetail',
+    defaultValue: true,
+  );
+
+  /// The New Releases source leaves out new movies with no tagline.
+  static final mediaBarNewMovieTaglineOnly = Preference(
+    key: 'mediaBarNewMovieTaglineOnly',
+    defaultValue: false,
+  );
+
+  /// Series the user has started go to the front of the bar.
+  static final mediaBarFollowedFirst = Preference(
+    key: 'mediaBarFollowedFirst',
+    defaultValue: false,
+  );
+
+  /// Movies and series take turns on the bar, as long as each has titles.
+  /// Only means something when the bar shows both.
+  static final mediaBarMixTypes = Preference(
+    key: 'mediaBarMixTypes',
+    defaultValue: false,
+  );
+
+  /// Series on the server get a label when the Sonarr calendar has an episode
+  /// within the horizon, and the new releases source takes returning series.
+  static final mediaBarUpcomingEpisodes = Preference(
+    key: 'mediaBarUpcomingEpisodes',
+    defaultValue: false,
+  );
+
+  /// The new releases source shows movies Radarr expects within the horizon.
+  static final mediaBarUpcomingMovies = Preference(
+    key: 'mediaBarUpcomingMovies',
+    defaultValue: false,
+  );
+
+  /// How many days ahead the upcoming labels and movies look.
+  static final mediaBarUpcomingDays = Preference(
+    key: 'mediaBarUpcomingDays',
+    defaultValue: 7,
   );
 
   static final navbarOpacity = Preference(

@@ -6676,16 +6676,16 @@
   "@mediaBarSourceRandom": {
     "description": "Media bar source: any eligible title"
   },
-  "mediaBarSourceNewReleases": "New Seasons & Episodes",
+  "mediaBarSourceNewReleases": "New Releases",
   "@mediaBarSourceNewReleases": {
-    "description": "Media bar source: series with episodes that aired recently"
+    "description": "Media bar source: series with episodes that aired recently, and new movies"
   },
   "mediaBarNewReleaseBanner": "New Release Banner",
   "@mediaBarNewReleaseBanner": {
     "description": "Setting that flags series in the media bar when new episodes aired recently"
   },
-  "mediaBarNewReleaseBannerDescription": "Flag series with a new season or new episodes that aired recently.",
-  "mediaBarNewReleaseDays": "New Release Window",
+  "mediaBarNewReleaseBannerDescription": "Flag new series, seasons, episodes and movies.",
+  "mediaBarNewReleaseDays": "New Episode Window",
   "@mediaBarNewReleaseDays": {
     "description": "Setting for how many days an episode counts as new in the media bar"
   },
@@ -6701,6 +6701,191 @@
   "mediaBarNewEpisodes": "New Episodes",
   "@mediaBarNewEpisodes": {
     "description": "Media bar label on a series with one or more episodes that aired recently"
+  },
+  "mediaBarSourceRandomDescription": "Any title from your libraries, picked at random.",
+  "@mediaBarSourceRandomDescription": {
+    "description": "Description of the Random media bar source"
+  },
+  "mediaBarSourceRecentlyAddedDescription": "The latest arrivals on the server, like the home row.",
+  "@mediaBarSourceRecentlyAddedDescription": {
+    "description": "Description of the Recently Added media bar source"
+  },
+  "mediaBarSourceRecentlyReleasedDescription": "The latest releases, like the home row: no time limit, and series follow its Series, Season or Episode setting.",
+  "@mediaBarSourceRecentlyReleasedDescription": {
+    "description": "Description of the Recently Released media bar source"
+  },
+  "mediaBarSourceNewReleasesDescription": "Only what's new, within the windows and minimum rating below. When nothing qualifies, random titles fill in.",
+  "@mediaBarSourceNewReleasesDescription": {
+    "description": "Description of the New Releases media bar source"
+  },
+  "mediaBarNewMovie": "New Movie",
+  "@mediaBarNewMovie": {
+    "description": "Media bar label on a movie that came out or reached the server recently"
+  },
+  "mediaBarNewReleasesSection": "New Releases",
+  "@mediaBarNewReleasesSection": {
+    "description": "Media bar settings section for the new release labels and the new releases source"
+  },
+  "mediaBarNewReleaseKinds": "Labels",
+  "@mediaBarNewReleaseKinds": {
+    "description": "Setting that picks which titles get a new release label in the media bar"
+  },
+  "mediaBarNewMovieBasis": "New Movie Based On",
+  "@mediaBarNewMovieBasis": {
+    "description": "Setting for which date makes a movie new in the media bar"
+  },
+  "mediaBarNewMovieBasisDescription": "Which date makes a movie new: its release, or its arrival on your server.",
+  "@mediaBarNewMovieBasisDescription": {
+    "description": "Description of the new movie date setting"
+  },
+  "mediaBarNewMovieByReleaseDescription": "A movie stays new for the window below after it comes out. Streaming releases show up right away. Theatrical movies only count if they reach your server while still in the window.",
+  "@mediaBarNewMovieByReleaseDescription": {
+    "description": "Description of the new movie setting when the release date is picked"
+  },
+  "mediaBarNewMovieByAddedDescription": "A movie stays new for the window below after it reaches your server, however it was released. Movies released before the release limit don't count, so an old film added today isn't new.",
+  "@mediaBarNewMovieByAddedDescription": {
+    "description": "Description of the new movie setting when the date added is picked"
+  },
+  "mediaBarNewMovieByRelease": "Release Date",
+  "@mediaBarNewMovieByRelease": {
+    "description": "New movie date option: the movie's release date"
+  },
+  "mediaBarNewMovieByAdded": "Date Added",
+  "@mediaBarNewMovieByAdded": {
+    "description": "New movie date option: the day the movie reached the server"
+  },
+  "mediaBarNewMovieDays": "New Movie Window",
+  "@mediaBarNewMovieDays": {
+    "description": "Setting for how many days a movie counts as new in the media bar"
+  },
+  "mediaBarNewMovieDaysDescription": "How long a movie stays new. Theatrical movies often reach servers a while after they come out, so give it longer than for episodes.",
+  "@mediaBarNewMovieDaysDescription": {
+    "description": "Description of the new movie window setting"
+  },
+  "mediaBarNewMovieMaxAge": "Release Limit",
+  "@mediaBarNewMovieMaxAge": {
+    "description": "Setting for how recently a movie added to the server must have come out to count as new"
+  },
+  "mediaBarNewMovieMaxAgeDescription": "An older movie that just arrived doesn't count as new.",
+  "@mediaBarNewMovieMaxAgeDescription": {
+    "description": "Description of the new movie release limit setting"
+  },
+  "mediaBarLastMonths": "Last {months} months",
+  "@mediaBarLastMonths": {
+    "description": "A number of months back from today",
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaBarNewMovieDetail": "Show Tagline",
+  "@mediaBarNewMovieDetail": {
+    "description": "Setting for whether the New Movie label has a second line"
+  },
+  "mediaBarNewMovieDetailDescription": "Under New Movie, show the movie's tagline. With none, the label stays on its own.",
+  "@mediaBarNewMovieDetailDescription": {
+    "description": "Description of the New Movie second line setting"
+  },
+  "mediaBarNewMovieTaglineOnly": "Only Movies With a Tagline",
+  "@mediaBarNewMovieTaglineOnly": {
+    "description": "Setting that leaves new movies with no tagline out of the New Releases source"
+  },
+  "mediaBarNewMovieTaglineOnlyDescription": "In the New Releases source, leave out new movies that have no tagline.",
+  "@mediaBarNewMovieTaglineOnlyDescription": {
+    "description": "Description of the tagline only setting"
+  },
+  "mediaBarNewMovieMinRating": "Minimum Movie Rating",
+  "@mediaBarNewMovieMinRating": {
+    "description": "Setting for the rating a movie needs to count as new in the media bar"
+  },
+  "mediaBarNewMovieMinRatingDescription": "Only movies rated this high count as new. Uses the MDBList score your server keeps, or its own rating.",
+  "@mediaBarNewMovieMinRatingDescription": {
+    "description": "Description of the minimum movie rating setting"
+  },
+  "mediaBarRatingAtLeast": "{rating} and above",
+  "@mediaBarRatingAtLeast": {
+    "description": "A minimum rating out of 10, already formatted, like 6.5",
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaBarMixTypes": "Mix Movies and Series",
+  "@mediaBarMixTypes": {
+    "description": "Setting that makes movies and series take turns in the media bar"
+  },
+  "mediaBarMixTypesDescription": "Movies and series take turns, as long as each has titles.",
+  "@mediaBarMixTypesDescription": {
+    "description": "Description of the Mix Movies and Series media bar setting"
+  },
+  "mediaBarUpcomingEpisode": "New Episode",
+  "@mediaBarUpcomingEpisode": {
+    "description": "Media bar label on a series whose next episode comes out soon"
+  },
+  "mediaBarUpcomingSeason": "New Season {season}",
+  "@mediaBarUpcomingSeason": {
+    "description": "Media bar label on a series whose next season starts soon",
+    "placeholders": {
+      "season": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaBarUpcomingMovie": "Coming Soon",
+  "@mediaBarUpcomingMovie": {
+    "description": "Media bar label on a movie Radarr expects on the server soon"
+  },
+  "mediaBarThisWeekday": "This {day}",
+  "@mediaBarThisWeekday": {
+    "description": "When something upcoming comes out later this week. The day is the weekday name",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaBarOnDate": "{date}",
+  "@mediaBarOnDate": {
+    "description": "When something upcoming comes out more than a week from now. The date is already formatted, like Nov 21",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaBarUpcomingEpisodes": "Upcoming Episodes",
+  "@mediaBarUpcomingEpisodes": {
+    "description": "Setting that labels series with an episode coming out soon, from the Sonarr calendar"
+  },
+  "mediaBarUpcomingEpisodesDescription": "Shows when the next episode airs, from the Sonarr calendar. With New Releases, returning series join the bar too.",
+  "@mediaBarUpcomingEpisodesDescription": {
+    "description": "Description of the upcoming episodes setting"
+  },
+  "mediaBarUpcomingMovies": "Upcoming Movies",
+  "@mediaBarUpcomingMovies": {
+    "description": "Setting that shows movies Radarr expects soon in the media bar"
+  },
+  "mediaBarUpcomingMoviesDescription": "With New Releases, up to two movies Radarr expects soon join the bar. They open in Seerr.",
+  "@mediaBarUpcomingMoviesDescription": {
+    "description": "Description of the upcoming movies setting"
+  },
+  "mediaBarUpcomingDays": "Upcoming Horizon",
+  "@mediaBarUpcomingDays": {
+    "description": "Setting for how many days ahead the media bar looks for upcoming episodes and movies"
+  },
+  "mediaBarUpcomingDaysDescription": "How many days ahead to look for what's coming.",
+  "@mediaBarUpcomingDaysDescription": {
+    "description": "Description of the upcoming horizon setting"
+  },
+  "mediaBarFollowedFirst": "Followed Series First",
+  "@mediaBarFollowedFirst": {
+    "description": "Setting that puts series the user has started at the front of the media bar"
+  },
+  "mediaBarFollowedFirstDescription": "Series you've started come first.",
+  "@mediaBarFollowedFirstDescription": {
+    "description": "Description of the followed series first setting"
   },
   "moviesAndTvShows": "Movies & TV Shows",
   "@moviesAndTvShows": {

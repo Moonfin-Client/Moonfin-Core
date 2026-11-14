@@ -227,6 +227,8 @@ class _RightCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final d = detail;
+    // Nothing known about who made it, so no empty box.
+    if (d != null && d.isEmpty) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.all(18),

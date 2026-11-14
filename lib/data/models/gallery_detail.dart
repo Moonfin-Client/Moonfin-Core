@@ -1,3 +1,4 @@
+import '../services/seerr/seerr_api_models.dart';
 import 'aggregated_item.dart';
 
 class GalleryDetail {
@@ -34,4 +35,21 @@ class GalleryDetail {
       cast: cast,
     );
   }
+
+  /// From Seerr's credits, for a title that isn't in the library.
+  factory GalleryDetail.fromSeerr(String itemId, SeerrCredits? credits) {
+    return GalleryDetail(
+      itemId: itemId,
+      director: credits?.crew
+          .where((person) => person.job == 'Director')
+          .firstOrNull
+          ?.name,
+      cast: {
+        for (final person in credits?.cast ?? const <SeerrCastMember>[])
+          if (person.name.trim().isNotEmpty) person.name.trim(),
+      }.take(5).toList(),
+    );
+  }
+
+  bool get isEmpty => director == null && cast.isEmpty;
 }

@@ -10,6 +10,8 @@ import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/media_bar_repository.dart';
+import '../repositories/seerr_repository.dart';
+import '../services/seerr/seerr_api_models.dart';
 import '../services/plugin_sync_service.dart';
 
 class MediaBarViewModel extends ChangeNotifier {
@@ -97,8 +99,11 @@ class MediaBarViewModel extends ChangeNotifier {
   Future<void> ensureGalleryDetail(String itemId) async {
     if (itemId.isEmpty) return;
     if (_galleryDetails.containsKey(itemId)) return;
-    if (_isExternal(itemId)) return;
     if (!_galleryDetailInFlight.add(itemId)) return;
+    if (_isExternal(itemId)) {
+      await _externalGalleryDetail(itemId);
+      return;
+    }
 
     try {
       final raw = await _client.itemsApi.getItem(itemId);
@@ -114,6 +119,28 @@ class MediaBarViewModel extends ChangeNotifier {
     } finally {
       _galleryDetailInFlight.remove(itemId);
     }
+  }
+
+  /// A title outside the library has no people on the server, so they come
+  /// from Seerr. Without Seerr, an empty detail stops the placeholder.
+  Future<void> _externalGalleryDetail(String itemId) async {
+    final slide = items.where((item) => item.itemId == itemId).firstOrNull;
+    final tmdbId = int.tryParse(slide?.tmdbId ?? '');
+    SeerrCredits? credits;
+    try {
+      final seerr = await GetIt.instance.getAsync<SeerrRepository>();
+      if (tmdbId != null && seerr.isAvailable) {
+        credits = slide!.itemType == 'Series'
+            ? (await seerr.getTvDetails(tmdbId)).credits
+            : (await seerr.getMovieDetails(tmdbId)).credits;
+      }
+    } catch (_) {
+      // Shown without people.
+    } finally {
+      _galleryDetailInFlight.remove(itemId);
+    }
+    _galleryDetails[itemId] = GalleryDetail.fromSeerr(itemId, credits);
+    notifyListeners();
   }
 
   MediaBarViewModel(
@@ -160,6 +187,19 @@ class MediaBarViewModel extends ChangeNotifier {
     ].map(_prefs.get),
     _prefs.get(UserPreferences.mediaBarNewReleaseBanner),
     _prefs.get(UserPreferences.mediaBarNewReleaseDays),
+    _prefs.get(UserPreferences.mediaBarNewReleaseKinds),
+    _prefs.get(UserPreferences.mediaBarNewMovieBasis),
+    _prefs.get(UserPreferences.mediaBarNewMovieDays),
+    _prefs.get(UserPreferences.mediaBarNewMovieMaxAgeMonths),
+    _prefs.get(UserPreferences.mediaBarNewMovieMinRating),
+    _prefs.get(UserPreferences.mediaBarNewMovieDetail),
+    _prefs.get(UserPreferences.mediaBarNewMovieTaglineOnly),
+    _prefs.get(UserPreferences.mediaBarFollowedFirst),
+    _prefs.get(UserPreferences.mediaBarMixTypes),
+    _prefs.get(UserPreferences.mediaBarUpcomingEpisodes),
+    _prefs.get(UserPreferences.mediaBarUpcomingMovies),
+    _prefs.get(UserPreferences.mediaBarUpcomingDays),
+    _prefs.get(UserPreferences.recentlyReleasedSeriesType),
     _prefs.get(UserPreferences.hideWatchedInRecentRows),
   ].join('|');
 

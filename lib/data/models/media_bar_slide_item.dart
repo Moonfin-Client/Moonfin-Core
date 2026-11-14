@@ -1,20 +1,42 @@
-/// Why a series slide gets a banner: what aired lately.
-enum MediaBarNewRelease { newSeries, newSeason, newEpisodes }
+/// Why a slide gets a banner: what aired lately, a movie that's new, or what
+/// the Sonarr and Radarr calendars expect soon.
+enum MediaBarNewRelease {
+  newSeries,
+  newSeason,
+  newEpisodes,
+  newMovie,
+  upcomingEpisode,
+  upcomingSeason,
+  upcomingSeries,
+  upcomingMovie;
 
-/// What a series slide's banner says, and the detail line under it.
+  /// Not out yet, so the detail line is the day it comes.
+  bool get isUpcoming => index >= upcomingEpisode.index;
+}
+
+/// What a slide's banner says, and the detail line under it.
 class MediaBarNewReleaseInfo {
   final MediaBarNewRelease kind;
 
-  /// The season the new episodes belong to.
+  /// The season the new episodes belong to. 0 for a movie.
   final int season;
 
   /// The latest new episode, when the season comes out episode by episode.
   final int? episode;
 
+  /// For what's upcoming, the day it comes. For a new movie, when it came
+  /// out or reached the server, which decides it's new but isn't shown.
+  final DateTime? date;
+
+  /// A new movie's tagline, in the server's metadata language only.
+  final String? tagline;
+
   const MediaBarNewReleaseInfo({
     required this.kind,
-    required this.season,
+    this.season = 0,
     this.episode,
+    this.date,
+    this.tagline,
   });
 }
 
@@ -43,6 +65,10 @@ class MediaBarSlideItem {
   /// Set on a series whose episodes aired within the chosen window.
   final MediaBarNewReleaseInfo? newRelease;
 
+  /// A series with every episode watched, so there's nothing to play until
+  /// the next one comes.
+  final bool fullyWatched;
+
   /// The id outside titles carry in place of a server, as on Home.
   static const externalServerId = 'seerr';
 
@@ -66,6 +92,7 @@ class MediaBarSlideItem {
     this.itemType = 'Movie',
     this.remoteTrailers = const [],
     this.newRelease,
+    this.fullyWatched = false,
   });
 
   /// Whether this title came from an outside list rather than the server, so it
@@ -94,6 +121,7 @@ class MediaBarSlideItem {
         remoteTrailers: remoteTrailers,
         overview: overview,
         newRelease: release,
+        fullyWatched: fullyWatched,
       );
 
   /// The same title with its description dropped, for previews of the
@@ -117,5 +145,6 @@ class MediaBarSlideItem {
     itemType: itemType,
     remoteTrailers: remoteTrailers,
     newRelease: newRelease,
+    fullyWatched: fullyWatched,
   );
 }
