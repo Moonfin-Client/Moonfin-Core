@@ -110,6 +110,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> _bgMerge = Future<void>.value();
   bool _bgMergeInFlight = false;
   bool _bgResumeRefreshInFlight = false;
+  bool _onNowRefreshInFlight = false;
   bool _reloadRequestedWhileLoading = false;
   bool _pendingReloadPreserveExisting = true;
   bool _pendingReloadForceRefresh = false;
@@ -1060,6 +1061,18 @@ class HomeViewModel extends ChangeNotifier {
   /// Refetches the programs airing now for the On Now rows: the standalone
   /// section and the row inside the Live TV section, which share one fetch.
   Future<void> _refreshOnNowRows() async {
+    // A quick second return would otherwise race the first request, and an
+    // older answer landing last would bring back programs that have ended.
+    if (_onNowRefreshInFlight) return;
+    _onNowRefreshInFlight = true;
+    try {
+      await _refreshOnNowRowsNow();
+    } finally {
+      _onNowRefreshInFlight = false;
+    }
+  }
+
+  Future<void> _refreshOnNowRowsNow() async {
     final ids = [
       for (final row in _rows)
         if ((row.id == 'onNow' || row.id == 'liveTvOnNow') && !row.isLoading)
@@ -1082,14 +1095,12 @@ class HomeViewModel extends ChangeNotifier {
   /// Brings On Now back when its section is on but the row was left out for
   /// having nothing airing, e.g. the guide was filled in while the user was
   /// away. Checks for programs first, so a section that stays empty costs one
-  /// small request per return; once there are some, Home refreshes as the
-  /// Home button does, which lays every section out in the user's order.
+  /// small request per return. Once there are some, the row is loaded back
+  /// in the user's section order.
   Future<void> _restoreMissingOnNow() async {
     final configs = _prefs.activeHomeSectionConfigs;
-    if (!configs.any(
-      (c) =>
-          c.type == HomeSectionType.onNow || c.type == HomeSectionType.liveTv,
-    )) {
+    final standalone = configs.any((c) => c.type == HomeSectionType.onNow);
+    if (!standalone && !configs.any((c) => c.type == HomeSectionType.liveTv)) {
       return;
     }
     final HomeRow fresh;
@@ -1099,7 +1110,11 @@ class HomeViewModel extends ChangeNotifier {
       return;
     }
     if (filterEmptyElements(fresh.items).isEmpty) return;
-    await load(preserveExisting: true);
+    // The standalone section has no row left, so loading only the sections
+    // missing from Home puts it back in place and leaves the other rows and
+    // their loaded pages alone. The Live TV section keeps its own row, so it
+    // takes the same full refresh as the Home button.
+    await load(preserveExisting: true, newSectionsOnly: standalone);
   }
 
   Future<void> _refreshResumeRows() async {
