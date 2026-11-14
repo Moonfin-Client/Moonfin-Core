@@ -281,7 +281,8 @@ class UnifiedCatalogQuery {
     genre ?? '',
     officialRatings.join('|'),
     years.join(','),
-    ids?.join(',') ?? '',
+    // No id list asks for everything and an empty one for nothing.
+    ids?.join(',') ?? '*',
   ].join(';');
 }
 

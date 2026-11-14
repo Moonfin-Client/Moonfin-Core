@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/server.dart';
@@ -102,6 +103,7 @@ Future<void> seedCatalog(
         userId: 'user',
         kind: kind.itemType,
         lastSyncedAt: unifiedTestNow,
+        lastFullSyncAt: Value(unifiedTestNow),
       ),
   ]);
 });

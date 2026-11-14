@@ -713,10 +713,12 @@ class MultiServerRepository {
       );
       _rowTotals['${cacheKeyPrefix}_${session.server.id}'] =
           response['TotalRecordCount'] as int? ?? items.length;
+      // Only [limit] genres were looked at when the server had more to offer,
+      // however many of those turned out to be empty.
       readCountByServer['${cacheKeyPrefix}_${session.server.id}'] =
-          items.length < limit
-          ? (response['Items'] as List? ?? const []).length
-          : items.length;
+          _browsableGenresIn(response, browseItemTypes).length > limit
+          ? limit
+          : (response['Items'] as List? ?? const []).length;
       return items;
     }, label: cacheKeyPrefix);
 
@@ -877,6 +879,9 @@ class MultiServerRepository {
     }
 
     final nextOffsets = <String, int>{};
+    // A server that can't be asked is left where it was, to be asked again by
+    // the next page, rather than failing the page the others answered.
+    final failedServerIds = <String>{};
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
@@ -1171,15 +1176,30 @@ class MultiServerRepository {
             default:
               return const <AggregatedItem>[];
           }
-        }, label: 'loadMore ${row.rowType} from ${session.server.name}'),
+        }, label: 'loadMore ${row.rowType} from ${session.server.name}')
+            .catchError((Object _) {
+          failedServerIds.add(session.server.id);
+          return const <AggregatedItem>[];
+        }),
       ),
     );
-    // Every server answered, so this page counts. Moving the offsets on and
-    // dropping the held-back playlists only now means a failed load tries the
-    // same pages again.
+    if (sessions.isNotEmpty && failedServerIds.length == sessions.length) {
+      throw StateError('MultiServer: all servers failed to load more');
+    }
+    // How far each server has been read, the failed ones where they were.
+    final readCountByServer = <String, int>{...nextOffsets};
+    for (final serverId in failedServerIds) {
+      final cacheKey = '${row.id}_$serverId';
+      nextOffsets.remove(cacheKey);
+      readCountByServer[cacheKey] =
+          _rowOffsets[cacheKey] ?? itemsByServer[serverId]?.length ?? 0;
+    }
+    // Moving the offsets on and dropping the held-back tiles only now means a
+    // server that failed tries the same page again.
     if (generation == _pagingGeneration) {
       _rowOffsets.addAll(nextOffsets);
       for (final session in sessions) {
+        if (failedServerIds.contains(session.server.id)) continue;
         _rowHeldBack.remove('${row.id}_${session.server.id}');
       }
     }
@@ -1196,9 +1216,11 @@ class MultiServerRepository {
     Future<(List<AggregatedItem>, int)> foldedPage(
       List<AggregatedItem> tiles,
     ) async {
-      final unread = _unreadCountOf(sessions, row.id, nextOffsets);
+      final unread = _unreadCountOf(sessions, row.id, readCountByServer);
+      // A server that failed didn't move on, so reading on would not end.
       if (tiles.length <= row.items.length &&
           unread > 0 &&
+          failedServerIds.isEmpty &&
           generation == _pagingGeneration) {
         return loadMore(row: row);
       }
@@ -1462,6 +1484,15 @@ class MultiServerRepository {
 
     if (!mergeByType) return rows;
 
+    // Only read for a viewer who blocks ratings: it loads the whole catalog.
+    final blockedCopies =
+        foldedServerIds.isNotEmpty &&
+            activeParentalFilter.isActive &&
+            GetIt.instance.isRegistered<UnifiedCatalogService>()
+        ? GetIt.instance<UnifiedCatalogService>()
+        : null;
+    await blockedCopies?.tryEnsureLoaded();
+
     for (final entry in groupedItems.entries) {
       final collectionType = entry.key;
 
@@ -1474,7 +1505,12 @@ class MultiServerRepository {
       ];
       final allItems = foldedServerIds.isEmpty
           ? listed
-          : _foldLatestCopies(listed, sessions, foldedServerIds);
+          : _foldLatestCopies(
+              listed,
+              sessions,
+              foldedServerIds,
+              blockedCopies: blockedCopies,
+            );
       if (allItems.isEmpty) continue;
 
       allItems.sort((a, b) {
@@ -1535,8 +1571,9 @@ class MultiServerRepository {
   List<AggregatedItem> _foldLatestCopies(
     List<AggregatedItem> items,
     List<ServerUserSession> sessions,
-    Set<String> foldedServerIds,
-  ) {
+    Set<String> foldedServerIds, {
+    UnifiedCatalogService? blockedCopies,
+  }) {
     // The active server's copy is the one shown, as in search and the grid.
     final activeServerId = _sessionRepo.activeServerId;
     final servers = [
@@ -1549,8 +1586,39 @@ class MultiServerRepository {
     ];
     return [
       for (final item in foldSharedTitles(items, servers))
-        if (!isAnyCopyBlocked(item.rawData)) item,
+        if (!isAnyCopyBlocked(item.rawData) &&
+            !_hasBlockedCatalogCopy(item, blockedCopies, foldedServerIds))
+          item,
     ];
+  }
+
+  /// Whether [catalog] holds a blocked copy of [item] on one of
+  /// [foldedServerIds]. A server's latest items leave out its older copies,
+  /// which a merged library still counts.
+  bool _hasBlockedCatalogCopy(
+    AggregatedItem item,
+    UnifiedCatalogService? catalog,
+    Set<String> foldedServerIds,
+  ) {
+    final itemType = UnifiedLibraryKind.fromItemType(item.type)?.itemType;
+    if (catalog == null ||
+        itemType == null ||
+        !foldedServerIds.contains(item.serverId)) {
+      return false;
+    }
+    final copies = catalog.copiesOf(
+      UnifiedCatalogEntry(
+        serverId: item.serverId,
+        itemId: item.id,
+        itemType: itemType,
+        raw: item.rawData,
+      ),
+    );
+    return copies.any((copy) {
+      if (!foldedServerIds.contains(copy.serverId)) return false;
+      final rating = copy.raw['OfficialRating']?.toString().trim();
+      return rating != null && rating.isNotEmpty && isRatingBlocked(rating);
+    });
   }
 
   Future<List<_LatestForView>> _latestForSession(
@@ -1775,22 +1843,27 @@ class MultiServerRepository {
     );
   }
 
+  /// The genres of [response] that can still hold something to browse.
+  Iterable<Map<String, dynamic>> _browsableGenresIn(
+    Map<String, dynamic> response,
+    List<String> includeItemTypes,
+  ) => (response['Items'] as List? ?? const [])
+      .whereType<Map>()
+      .map((item) => item.cast<String, dynamic>())
+      .where(
+        (genre) => mayHaveBrowsableItems(
+          genre,
+          normalizedItemTypes: includeItemTypes,
+        ),
+      );
+
   Future<List<AggregatedItem>> _buildBrowsableGenresForSession(
     ServerUserSession session,
     Map<String, dynamic> response, {
     required List<String> includeItemTypes,
     int? maxGenres,
   }) async {
-    final rawItems = response['Items'] as List? ?? const [];
-    final browsable = rawItems
-        .whereType<Map>()
-        .map((item) => item.cast<String, dynamic>())
-        .where(
-          (genre) => mayHaveBrowsableItems(
-            genre,
-            normalizedItemTypes: includeItemTypes,
-          ),
-        );
+    final browsable = _browsableGenresIn(response, includeItemTypes);
     final genres = (maxGenres == null ? browsable : browsable.take(maxGenres))
         .toList(growable: false);
 

@@ -203,6 +203,22 @@ void main() {
       expect(userDataSync.favoriteChangePending('ch'), isFalse);
     });
 
+    test('the second is sent a change the first already holds', () async {
+      final first = repository.setFavorite('ch', isFavorite: true);
+      await settle();
+      requests.single.complete();
+      await first;
+
+      final second = other.setFavorite('ch', isFavorite: true);
+      await settle();
+      otherRequests.single.complete();
+      await second;
+
+      verify(() => otherApi.markFavorite('ch')).called(1);
+      expect(userDataSync.favoriteFor('ch'), isTrue);
+      expect(userDataSync.favoriteChangePending('ch'), isFalse);
+    });
+
     test('a failure on one leaves the other changed', () async {
       final first = repository.setFavorite('ch', isFavorite: true);
       final second = other.setFavorite('ch', isFavorite: true);

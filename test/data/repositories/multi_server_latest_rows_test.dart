@@ -6,6 +6,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
 import 'package:moonfin/data/services/unified_catalog_query.dart';
+import 'package:moonfin/data/services/unified_catalog_service.dart';
 import 'package:moonfin/data/utils/blocked_ratings.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
@@ -18,6 +19,22 @@ class _MockItemsApi extends Mock implements ItemsApi {}
 class _MockUserViewsApi extends Mock implements UserViewsApi {}
 
 class _MockUsersApi extends Mock implements UsersApi {}
+
+/// A catalog that holds [held] and nothing else.
+class _Catalog extends Fake implements UnifiedCatalogService {
+  _Catalog(this.held);
+
+  final List<UnifiedCatalogEntry> held;
+
+  @override
+  Future<bool> tryEnsureLoaded() async => true;
+
+  @override
+  List<UnifiedCatalogEntry> copiesOf(UnifiedCatalogEntry entry) => [
+    for (final copy in held)
+      if (copy.matchKeys.any(entry.matchKeys.contains)) copy,
+  ];
+}
 
 void main() {
   late UserPreferences prefs;
@@ -426,6 +443,38 @@ void main() {
 
     final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
     expect(movies.items.map((item) => item.id), ['c-movies-new']);
+  });
+
+  test('a title is left out when its blocked copy is only in the catalog', () async {
+    await mergeRows(libraries: true);
+    await prefs.set(UserPreferences.blockedParentalRatings, 'ZZ-18');
+    movieProviderIds = {
+      'a': {'Tmdb': '1003'},
+      'b': {'Tmdb': '1004'},
+    };
+    // The second server holds the first one's title too, rated as blocked,
+    // but not among its latest.
+    GetIt.instance.registerSingleton<UnifiedCatalogService>(
+      _Catalog([
+        UnifiedCatalogEntry(
+          serverId: 'b',
+          itemId: 'b-older',
+          itemType: 'Movie',
+          raw: {
+            'Id': 'b-older',
+            'Name': 'Older on b',
+            'Type': 'Movie',
+            'OfficialRating': 'ZZ-18',
+            'ProviderIds': {'Tmdb': '1003'},
+          },
+        ),
+      ]),
+    );
+
+    final rows = await repository(['a', 'b']).getAggregatedLatestMediaRows();
+
+    final movies = rows.firstWhere((row) => row.id.endsWith('movies'));
+    expect(movies.items.map((item) => item.id), ['b-movies-new']);
   });
 
   test('without the libraries merged by type, a card carries no copies and '

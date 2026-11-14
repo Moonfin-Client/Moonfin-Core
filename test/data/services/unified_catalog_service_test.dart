@@ -2372,6 +2372,40 @@ void main() {
         expect(a.fullPageRequests, greaterThan(fullPages));
       });
 
+      test('reads in full as soon as the connection is no longer metered, '
+          'without waiting for the next check', () async {
+        await build().forceFullRead();
+        final fullPages = a.fullPageRequests;
+        advanceClock(const Duration(hours: 25));
+
+        final service = build(isMetered: () => metered);
+        await service.syncOnLaunch();
+        expect(a.fullPageRequests, fullPages);
+
+        metered = false;
+        advanceClock(const Duration(seconds: 10));
+        await service.syncOnLaunch();
+        expect(a.fullPageRequests, greaterThan(fullPages));
+      });
+
+      test('a second launch check while still metered does not settle the '
+          'full read', () async {
+        await build().forceFullRead();
+        final fullPages = a.fullPageRequests;
+        advanceClock(const Duration(hours: 25));
+
+        final service = build(isMetered: () => metered);
+        await service.syncOnLaunch();
+        advanceClock(const Duration(seconds: 10));
+        await service.syncOnLaunch();
+        expect(a.fullPageRequests, fullPages);
+
+        metered = false;
+        advanceClock(const Duration(seconds: 10));
+        await service.syncOnLaunch();
+        expect(a.fullPageRequests, greaterThan(fullPages));
+      });
+
       test('forceFullRead reads in full all the same', () async {
         final service = build(isMetered: () => metered);
 
@@ -2467,6 +2501,17 @@ void main() {
       expect(service.rowsDecoded, 0);
       expect((await storedEntries()).map((row) => row.itemId), ['a2']);
       expect((await syncStateOf('a')).itemCount, 1);
+    });
+
+    test('a load running alongside does not keep the removed copy', () async {
+      await build().forceFullRead();
+
+      final service = build();
+      final removal = service.removeCopy('a', 'a1');
+      await service.ensureLoaded();
+      await removal;
+
+      expect(movieNames(service), ['Hodrimel']);
     });
 
     test('a disk that fails is not an error for the caller', () async {

@@ -23,6 +23,8 @@ void main() {
   final genrePageRequests = <String>[];
   // Whether the servers page their genres, as real ones do.
   var paged = false;
+  // Genres whose own item query comes back empty.
+  var emptyGenreIds = <String>{};
 
   /// [servers] maps each id to its type and the genres it lists.
   MultiServerRepository repository(
@@ -75,14 +77,18 @@ void main() {
           enableImageTypes: any(named: 'enableImageTypes'),
           imageTypeLimit: any(named: 'imageTypeLimit'),
         ),
-      ).thenAnswer(
-        (_) async => {
+      ).thenAnswer((invocation) async {
+        final genreIds = invocation.namedArguments[#genreIds] as List;
+        if (genreIds.any(emptyGenreIds.contains)) {
+          return {'Items': const [], 'TotalRecordCount': 0};
+        }
+        return {
           'Items': [
             {'Id': '$id-movie', 'Type': 'Movie', 'Name': 'movie'},
           ],
           'TotalRecordCount': 3,
-        },
-      );
+        };
+      });
     },
   );
 
@@ -101,6 +107,7 @@ void main() {
   setUp(() async {
     genrePageRequests.clear();
     paged = false;
+    emptyGenreIds = {};
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
@@ -193,6 +200,32 @@ void main() {
     ]);
     // No page is read twice, and none past a server's last.
     expect(genrePageRequests, ['a@0', 'b@0', 'a@15', 'b@15', 'a@30', 'b@30']);
+  });
+
+  test('a genre of the first page that turns out empty does not end the '
+      'row', () async {
+    await turnOnMergedLibraries(prefs);
+    paged = true;
+    String name(int i) => 'Genre ${'$i'.padLeft(2, '0')}';
+    emptyGenreIds = {'a-${name(3)}'};
+    final multiServer = repository({
+      'a': (ServerType.jellyfin, [for (var i = 1; i <= 45; i++) name(i)]),
+      'b': (ServerType.emby, const []),
+    });
+
+    var row = await multiServer.getAggregatedGenres();
+    expect(row.items, hasLength(14));
+    var pages = 0;
+    while (row.hasMore && pages < 10) {
+      pages++;
+      final (items, total) = await multiServer.loadMore(row: row);
+      row = row.copyWith(items: items, totalCount: total);
+    }
+
+    expect([for (final item in row.items) item.name], [
+      for (var i = 1; i <= 45; i++)
+        if (i != 3) name(i),
+    ]);
   });
 
   group('paging servers that share only part of their genres', () {

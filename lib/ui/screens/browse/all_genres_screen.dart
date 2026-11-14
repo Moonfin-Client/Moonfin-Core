@@ -84,6 +84,28 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   /// not from the active server's genre list.
   bool _fromCatalog = false;
 
+  /// How many genres the unified catalog held when the tiles were built.
+  int _catalogGenreCount = 0;
+  int _catalogTitlesRevision = 0;
+
+  UnifiedCatalogService? _watchedCatalog;
+
+  /// A first sync fills the catalog after the screen opened, and the tiles
+  /// would otherwise stay the active server's own until it is reopened.
+  void _onCatalogChanged() {
+    final catalog = _watchedCatalog;
+    if (catalog == null || !mounted || _isLoading || !_opensUnifiedGenres) {
+      return;
+    }
+    // Progress and watched-state changes notify too, and leave genres alone.
+    if (catalog.titlesRevision == _catalogTitlesRevision) return;
+    _catalogTitlesRevision = catalog.titlesRevision;
+    if (catalog.genres(UnifiedLibraryKind.values).length !=
+        _catalogGenreCount) {
+      _load();
+    }
+  }
+
   Future<bool> _activeServerMergesGenres() async {
     final getIt = GetIt.instance;
     if (!getIt.isRegistered<UnifiedCatalogService>() ||
@@ -110,6 +132,8 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     // below is read from its context.
     if (!mounted) return null;
     final genres = catalog.genres(UnifiedLibraryKind.values);
+    _catalogGenreCount = genres.length;
+    _catalogTitlesRevision = catalog.titlesRevision;
     if (genres.isEmpty) return null;
     final maxWidth = _genreCardRequestMaxWidth();
     // The catalog holds every title. As in the merged library, one blocked
@@ -188,6 +212,10 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     });
     _backdropUrl = _backgroundService.currentUrl;
     _prefs.addListener(_onChanged);
+    if (GetIt.instance.isRegistered<UnifiedCatalogService>()) {
+      _watchedCatalog = GetIt.instance<UnifiedCatalogService>()
+        ..addListener(_onCatalogChanged);
+    }
     _load();
   }
 
@@ -196,6 +224,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     _disposed = true;
     _backgroundSub?.cancel();
     _prefs.removeListener(_onChanged);
+    _watchedCatalog?.removeListener(_onCatalogChanged);
     _scrollController.dispose();
     super.dispose();
   }

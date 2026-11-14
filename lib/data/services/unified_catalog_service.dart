@@ -958,10 +958,15 @@ class UnifiedCatalogService extends ChangeNotifier {
     final forced = trigger == _SyncTrigger.userForced;
     // A full read is megabytes, too much to spend unasked while metered.
     final allowFullRead = trigger != _SyncTrigger.appLaunch || !_isMetered();
-    _fullReadsDeferred = false;
+    // Still put off for a server checked too recently to be asked again.
+    _fullReadsDeferred = !allowFullRead && sessions.any(_needsFullRead);
     final due = [
       for (final session in sessions)
-        if (forced || _isCheckDue(session)) session,
+        // A full read put off while metered doesn't wait for the next check.
+        if (forced ||
+            _isCheckDue(session) ||
+            (allowFullRead && _needsFullRead(session)))
+          session,
     ];
     _syncingServers.addAll(due.map((session) => session.server.id));
     if (sessionsChanged || loadedAny || pruned) {
@@ -2365,6 +2370,16 @@ class UnifiedCatalogService extends ChangeNotifier {
       });
       if (deleted.isEmpty) return;
       _noteDiskWrite(account);
+      // A load that read the rows before they were deleted may have finished
+      // since, and holds them still.
+      final loaded = _entries[account];
+      if (loaded != null) {
+        var removedAny = false;
+        for (final itemId in itemIds) {
+          removedAny = loaded.remove(itemId) != null || removedAny;
+        }
+        if (removedAny) _markChanged(titles: true);
+      }
       for (final itemType in deleted.keys) {
         _forgetServerTotal(account, itemType);
       }

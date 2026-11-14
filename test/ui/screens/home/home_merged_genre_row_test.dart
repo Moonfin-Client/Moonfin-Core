@@ -433,6 +433,28 @@ void main() {
       expectLiveRow(vm);
     });
 
+    test('a next page that waited on the stored catalog is dropped once the '
+        'merged setting is turned off', () async {
+      await storeRows('b', [
+        for (var i = 0; i < 20; i++)
+          _title('n$i', 'Zeq ${'$i'.padLeft(2, '0')}', tmdb: '${100 + i}'),
+      ]);
+      final vm = model();
+      await vm.load();
+      expect(rowOf(vm).items, hasLength(15));
+
+      catalog.gate = Completer<void>();
+      final paging = vm.loadMoreForRow(0);
+      await prefs.set(UserPreferences.mergeLibrariesByType, false);
+      await vm.load(preserveExisting: true);
+      expectLiveRow(vm);
+
+      catalog.gate!.complete();
+      await paging;
+
+      expectLiveRow(vm);
+    });
+
     test('with the merged setting turned off, a merged row restored from '
         'the cache gives way too', () async {
       final vm = model();

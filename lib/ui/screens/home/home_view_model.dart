@@ -1476,6 +1476,12 @@ class HomeViewModel extends ChangeNotifier {
     _inFlightPagingRowIds.add(row.id);
     try {
       if (!await catalog.tryEnsureLoaded() || _disposed) return;
+      // The row can be loaded again during the wait, with the merge turned
+      // off or as another genre, and this page is no longer its next one.
+      if (!identical(_mergedGenreRows[row.id], genre) ||
+          !_prefs.effectiveMergeLibrariesByType) {
+        return;
+      }
       final page = genre.nextPage(
         row.items,
         catalog,

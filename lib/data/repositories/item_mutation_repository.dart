@@ -14,6 +14,10 @@ class ItemMutationRepository {
   /// hand out the same item id, and each still needs its own request.
   static final _favoriteSyncs = <_FavoriteSyncKey, _FavoriteSync>{};
 
+  /// The server whose favorite change was the last one sent under an item id.
+  static final _lastFavoriteServer =
+      <String, ({int session, MediaServerClient server})>{};
+
   /// Shows [isFavorite] at once, then brings the server to the newest choice
   /// one request at a time, so a quick run of toggles ends where the user
   /// left it. Work left over from before a sign-out or user switch stops.
@@ -32,9 +36,19 @@ class ItemMutationRepository {
     );
     var sync = _favoriteSyncs[key];
     if (sync == null) {
+      // The flag [UserDataSync] remembers is the last server's to change this
+      // id. When that was another server, this one is sent the change rather
+      // than trusted to hold it already.
+      final last = _lastFavoriteServer[itemId];
+      final rememberedIsOthers =
+          last != null &&
+          last.session == key.session &&
+          !identical(last.server, key.server);
       sync = _favoriteSyncs[key] = _FavoriteSync(
         wanted: isFavorite,
-        held: userDataSync.confirmedFavorite(itemId) ?? !isFavorite,
+        held: rememberedIsOthers
+            ? !isFavorite
+            : userDataSync.confirmedFavorite(itemId) ?? !isFavorite,
       );
       sync.done = _syncFavorite(key, sync);
     } else {
@@ -77,6 +91,7 @@ class ItemMutationRepository {
         }
         if (userDataSync.session != session) return;
         sync.held = wanted;
+        _lastFavoriteServer[itemId] = (session: session, server: key.server);
         // Another server's run under the same id may have ended the change.
         if (userDataSync.favoriteChangePending(itemId)) {
           userDataSync.confirmFavorite(itemId, wanted);
