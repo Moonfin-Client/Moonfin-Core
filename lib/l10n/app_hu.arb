@@ -9190,7 +9190,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Ajánlások",
+    "recommendationSystemJellyfin": "Szerver ajánlások",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -11256,7 +11256,7 @@
         "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
     },
     "sinceYouWatchedSourceLocal": "Moonfin ajánlásai",
-    "sinceYouWatchedSourceServer": "Jellyfin Ajánlások",
+    "sinceYouWatchedSourceServer": "Szerver ajánlások",
     "sinceYouWatchedSourceOnline": "TMDb hasonlóság",
     "calendarSettingsView": "Megtekintés",
     "@calendarSettingsView": {
