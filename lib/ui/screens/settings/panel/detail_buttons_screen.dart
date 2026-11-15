@@ -69,7 +69,9 @@ class _DetailButtonsScreenState extends State<_DetailButtonsScreen> {
                     for (final button in DetailButton.values.where(
                       (button) =>
                           button.isOffered &&
-                          (button != DetailButton.keepAsComplete || _hasLiveTv),
+                          ((button != DetailButton.keepAsComplete &&
+                              button != DetailButton.addToMyRecordings) ||
+                              _hasLiveTv),
                     ))
                       ButtonLayoutEntry(
                         id: button.id,
