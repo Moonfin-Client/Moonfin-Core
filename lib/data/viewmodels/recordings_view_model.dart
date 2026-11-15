@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../services/recording_owners_service.dart';
+
 /// A server date in local time, or null when the server has none.
 DateTime? _serverDate(Object? value) => parseServerDate(value)?.toLocal();
 
@@ -183,6 +185,19 @@ class RecordingsViewModel extends ChangeNotifier {
   List<RecordingItem> _scheduledNext24h = const [];
   List<RecordingItem> get scheduledNext24h => _scheduledNext24h;
 
+  List<RecordingItem> _myRecordings = const [];
+
+  /// The current user's own finished recordings, newest first. Filled by
+  /// [load] when given the user's ids, for the My Recordings row.
+  List<RecordingItem> get myRecordings => _myRecordings;
+
+  // The timers the Scheduled in Next 24 Hours row keeps, or null for all.
+  Set<String>? _timerFilter;
+
+  // Loads can overlap when the view is switched quickly, so only the newest
+  // one fills the rows.
+  int _loads = 0;
+
   RecordingItem? _focusedItem;
   RecordingItem? get focusedItem => _focusedItem;
 
@@ -191,11 +206,18 @@ class RecordingsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> load() async {
+  /// Everyone's recordings. With [mine], the user's own recordings are read
+  /// too, for [myRecordings].
+  Future<void> load({MineIds? mine}) async {
+    final load = ++_loads;
+    _timerFilter = null;
     _state = RecordingsState.loading;
     notifyListeners();
 
     try {
+      final myFuture = mine == null
+          ? Future.value(const <RecordingItem>[])
+          : _fetchOwnItems(mine.itemIds);
       final recordingsFuture = Future.wait([
         _fetchRecordings(limit: 40),
         _fetchRecordings(isSeries: true),
@@ -207,7 +229,10 @@ class RecordingsViewModel extends ChangeNotifier {
 
       final results = await recordingsFuture;
       await timersFuture;
+      final my = await myFuture;
+      if (load != _loads) return;
 
+      if (mine != null) _myRecordings = my;
       _recentRecordings = results[0];
       _seriesRecordings = results[1];
       _movieRecordings = results[2];
@@ -215,9 +240,123 @@ class RecordingsViewModel extends ChangeNotifier {
       _kidsRecordings = results[4];
       _state = RecordingsState.ready;
     } catch (_) {
+      if (load != _loads) return;
       _state = RecordingsState.error;
     }
     notifyListeners();
+  }
+
+  /// Reads only [myRecordings], alongside a [load] already under way.
+  Future<void> loadMyRecordings(MineIds mine) async {
+    final load = _loads;
+    final my = await _fetchOwnItems(mine.itemIds);
+    if (load != _loads) return;
+    _myRecordings = my;
+    notifyListeners();
+  }
+
+  /// Only the user's own recordings and timers, every one of them rather than
+  /// a filtered page of everyone's, split into the same rows as [load].
+  Future<void> loadMine(MineIds ids) async {
+    final load = ++_loads;
+    _timerFilter = {for (final id in ids.timerIds) _normalizeId(id)};
+    _state = RecordingsState.loading;
+    notifyListeners();
+
+    try {
+      final itemsFuture = _fetchOwnItems(ids.itemIds, rethrowErrors: true);
+      final timersFuture = _loadScheduledTimers();
+      final items = await itemsFuture;
+      await timersFuture;
+      if (load != _loads) return;
+
+      bool flag(RecordingItem item, String key) => item.rawData[key] == true;
+      bool hasGenre(RecordingItem item, Set<String> genres) {
+        final value = item.rawData['Genres'];
+        return value is List && value.any((g) => genres.contains('$g'));
+      }
+
+      // The server sorts its own rows the same way: an episode is a series
+      // recording, a movie a movie, and sports and kids go by genre.
+      _myRecordings = items;
+      _recentRecordings = items;
+      _seriesRecordings = items
+          .where((i) => flag(i, 'IsSeries') || i.rawData['Type'] == 'Episode')
+          .toList();
+      _movieRecordings = items
+          .where((i) => flag(i, 'IsMovie') || i.rawData['Type'] == 'Movie')
+          .toList();
+      _sportsRecordings = items
+          .where((i) => flag(i, 'IsSports') || hasGenre(i, const {'Sports'}))
+          .toList();
+      _kidsRecordings = items
+          .where(
+            (i) =>
+                flag(i, 'IsKids') ||
+                hasGenre(i, const {'Kids', 'Children', 'Family'}),
+          )
+          .toList();
+      _state = RecordingsState.ready;
+    } catch (_) {
+      if (load != _loads) return;
+      _state = RecordingsState.error;
+    }
+    notifyListeners();
+  }
+
+  static String _normalizeId(String id) => id.replaceAll('-', '').toLowerCase();
+
+  // How many ids go in one request, so the query string stays short, and
+  // how many of those requests run at once.
+  static const _idsPerRequest = 50;
+  static const _requestsInFlight = 4;
+
+  /// Every item of [ids] the server still has, newest first.
+  Future<List<RecordingItem>> _fetchOwnItems(
+    Set<String> ids, {
+    bool rethrowErrors = false,
+  }) async {
+    if (ids.isEmpty) return const [];
+    final all = ids.toList();
+    try {
+      final chunks = [
+        for (var i = 0; i < all.length; i += _idsPerRequest)
+          all.sublist(i, (i + _idsPerRequest).clamp(0, all.length)),
+      ];
+      final items = <RecordingItem>[];
+      var next = 0;
+      Future<void> worker() async {
+        while (next < chunks.length) {
+          final chunk = chunks[next++];
+          final page = await _client.itemsApi.getItems(
+            ids: chunk,
+            fields: 'ImageTags,Overview,Genres,DateCreated',
+            sortBy: 'DateCreated',
+            sortOrder: 'Descending',
+          );
+          items.addAll(_parseRecordings(page));
+        }
+      }
+
+      await Future.wait([
+        for (var i = 0; i < _requestsInFlight && i < chunks.length; i++)
+          worker(),
+      ]);
+      DateTime? created(RecordingItem item) =>
+          parseServerDate(item.rawData['DateCreated']);
+      items.sort((a, b) {
+        final ca = created(a);
+        final cb = created(b);
+        if (ca == null || cb == null) {
+          return ca == null ? (cb == null ? 0 : 1) : -1;
+        }
+        return cb.compareTo(ca);
+      });
+      return items;
+    } catch (_) {
+      if (rethrowErrors) rethrow;
+      return const [];
+    }
   }
 
   Future<List<RecordingItem>> _fetchRecordings({
@@ -244,7 +383,11 @@ class RecordingsViewModel extends ChangeNotifier {
   }
 
   /// Re-reads only the Scheduled in Next 24 Hours row, after a timer changed.
-  Future<void> refreshScheduled() async {
+  /// In the user's own view, [mine] replaces the timers it keeps.
+  Future<void> refreshScheduled({MineIds? mine}) async {
+    if (mine != null && _timerFilter != null) {
+      _timerFilter = {for (final id in mine.timerIds) _normalizeId(id)};
+    }
     await _loadScheduledTimers();
     notifyListeners();
   }
@@ -255,6 +398,7 @@ class RecordingsViewModel extends ChangeNotifier {
       final items = (response['Items'] as List?) ?? [];
       final now = DateTime.now();
       final next24h = now.add(const Duration(days: 1));
+      final filter = _timerFilter;
 
       _scheduledNext24h = items
           .cast<Map<String, dynamic>>()
@@ -263,7 +407,8 @@ class RecordingsViewModel extends ChangeNotifier {
             (t) =>
                 t.startDate != null &&
                 t.startDate!.isBefore(next24h) &&
-                t.isUpcoming(now),
+                t.isUpcoming(now) &&
+                (filter == null || filter.contains(_normalizeId(t.id))),
           )
           .map(RecordingItem.fromTimer)
           .toList();

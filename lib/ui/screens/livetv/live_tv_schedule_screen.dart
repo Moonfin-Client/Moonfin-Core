@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/services/recording_owners_service.dart';
 import '../../../data/viewmodels/recordings_view_model.dart';
 import '../../../data/viewmodels/schedule_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -11,6 +12,7 @@ import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/focus_scroll.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
+import '../../widgets/live_tv/shared_recording_warning.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/offline_aware_image.dart';
@@ -117,7 +119,32 @@ class _LiveTvScheduleScreenState extends State<LiveTvScheduleScreen> {
 
   Future<void> _cancelTimer(RecordingItem item) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await showFocusRestoringDialog<bool>(
+    // Other owners get the shared warning in place of this question.
+    final confirmed = await confirmRecordingCancel(
+      context,
+      OwnedKind.timer,
+      item.timerId,
+      confirm: () async => await _askCancelTimer(item) == true,
+    );
+
+    if (confirmed && mounted) {
+      try {
+        await _vm.cancelTimer(
+          item.timerId ?? (throw StateError('No timer for ${item.name}')),
+        );
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.failedToCancelRecording)),
+          );
+        }
+      }
+    }
+  }
+
+  Future<bool?> _askCancelTimer(RecordingItem item) {
+    final l10n = AppLocalizations.of(context);
+    return showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
@@ -143,20 +170,6 @@ class _LiveTvScheduleScreenState extends State<LiveTvScheduleScreen> {
         ],
       ),
     );
-
-    if (confirmed == true) {
-      try {
-        await _vm.cancelTimer(
-          item.timerId ?? (throw StateError('No timer for ${item.name}')),
-        );
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.failedToCancelRecording)),
-          );
-        }
-      }
-    }
   }
 }
 

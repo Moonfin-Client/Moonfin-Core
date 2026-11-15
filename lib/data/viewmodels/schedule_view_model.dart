@@ -27,7 +27,47 @@ class ScheduleViewModel extends ChangeNotifier {
   ScheduleState get state => _state;
 
   List<ScheduleGroup> _groups = const [];
-  List<ScheduleGroup> get groups => _groups;
+
+  /// The upcoming timers by day, only the owned ones while
+  /// [applyOwnerFilter] has a set.
+  List<ScheduleGroup> get groups {
+    final filter = _timerFilter;
+    if (filter == null) return _groups;
+    return _filtered ??= [
+      for (final group in _groups)
+        if (group.items.any((i) => _keeps(filter, i)))
+          ScheduleGroup(
+            dateLabel: group.dateLabel,
+            items: group.items.where((i) => _keeps(filter, i)).toList(),
+          ),
+    ];
+  }
+
+  Set<String>? _timerFilter;
+  List<ScheduleGroup>? _filtered;
+
+  /// Every loaded timer's id, ignoring [applyOwnerFilter].
+  Iterable<String> get loadedTimerIds => [
+    for (final group in _groups)
+      for (final item in group.items) ?item.timerId,
+  ];
+
+  static String _normalizeId(String id) => id.replaceAll('-', '').toLowerCase();
+
+  static bool _keeps(Set<String> filter, RecordingItem item) {
+    final id = item.timerId;
+    return id != null && filter.contains(_normalizeId(id));
+  }
+
+  /// Keeps only the timers in [timerIds], or all of them when null. Ids the
+  /// server no longer has simply match nothing.
+  void applyOwnerFilter(Set<String>? timerIds) {
+    if (timerIds == null && _timerFilter == null) return;
+    _timerFilter =
+        timerIds == null ? null : {for (final id in timerIds) _normalizeId(id)};
+    _filtered = null;
+    notifyListeners();
+  }
 
   RecordingItem? _focusedItem;
   RecordingItem? get focusedItem => _focusedItem;
@@ -81,6 +121,7 @@ class ScheduleViewModel extends ChangeNotifier {
       }
 
       final sortedKeys = grouped.keys.toList()..sort();
+      _filtered = null;
       _groups = sortedKeys.map((key) {
         final date = dateLabelMap[key]!;
         return ScheduleGroup(
@@ -113,6 +154,7 @@ class ScheduleViewModel extends ChangeNotifier {
       }
     }
     _groups = _groups.where((g) => g.items.isNotEmpty).toList();
+    _filtered = null;
     if (_focusedItem?.timerId == timerId) _focusedItem = null;
     notifyListeners();
   }

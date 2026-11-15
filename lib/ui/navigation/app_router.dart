@@ -8,6 +8,7 @@ import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/connectivity_service.dart';
+import '../../data/services/recording_owners_service.dart' show MineIds;
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../di/injection.dart';
@@ -513,6 +514,8 @@ final appRouter = GoRouter(
         final autoPlay = state.uri.queryParameters['autoPlay'] == 'true';
         final contextSeasonId = state.uri.queryParameters['seasonContext'];
         final libraryId = state.uri.queryParameters['libraryId'];
+        // Opened from the user's own recordings, which keeps their episodes.
+        final extra = state.extra;
         return ItemDetailScreen(
           // The browsed season decides which episode list this screen loads, so
           // a change of context has to remount rather than reuse the view model.
@@ -521,6 +524,7 @@ final appRouter = GoRouter(
           serverId: serverId,
           autoPlay: autoPlay,
           contextSeasonId: contextSeasonId,
+          ownedEpisodeIds: extra is MineIds ? extra.itemIds : null,
           quickLook: quickLook,
           libraryId: libraryId,
         );
