@@ -478,7 +478,11 @@ void registerPlaybackModule() {
     if (item is! AggregatedItem) return null;
     final seriesId = item.seriesId;
     if (seriesId == null || seriesId.isEmpty) return null;
-    final raw = item.rawData['MediaStreams'] as List? ?? const [];
+    // The picker's index points into the resolved streams; a queued or Next Up
+    // item often lists none of its own.
+    final raw = manager.currentResolution?.mediaStreams ??
+        item.rawData['MediaStreams'] as List? ??
+        const [];
     return (
       seriesId: seriesId,
       streams: raw
