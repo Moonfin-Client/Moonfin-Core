@@ -167,6 +167,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('hideWatchedInRecentRows', UserPreferences.hideWatchedInRecentRows, SyncCodec.boolean),
   SyncedField('nextUpMaxDays', UserPreferences.nextUpMaxDays, SyncCodec.integer),
   SyncedField('enableMultiServerLibraries', UserPreferences.enableMultiServerLibraries, SyncCodec.boolean),
+  SyncedField('mergeLibrariesByType', UserPreferences.mergeLibrariesByType, SyncCodec.boolean),
   SyncedField('seasonalSurprise', UserPreferences.seasonalSurprise, SyncCodec.text, normalize: UserPreferences.parseSeasonalSurprise),
   SyncedField('seasonalDensity', UserPreferences.seasonalDensity, SyncCodec.text, normalize: UserPreferences.parseSeasonalDensity),
   SyncedField('seasonalFollower', UserPreferences.seasonalFollower, SyncCodec.boolean),

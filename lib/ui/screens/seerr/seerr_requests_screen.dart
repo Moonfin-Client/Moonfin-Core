@@ -9,6 +9,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../data/services/seerr/arr_queue.dart';
 import '../../../data/services/seerr/seerr_download_progress.dart';
 import '../../../data/services/seerr/seerr_models.dart';
 import '../../../data/viewmodels/seerr_issues_view_model.dart';
@@ -438,7 +439,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           request: req,
           summary: s.summaryFor(req),
           download: s.downloadFor(req),
-          notFoundYet: s.isNotFoundYet(req),
+          wait: s.waitFor(req),
           canManage: s.canManageRequests,
           isActioning: s.actioningRequestId == req.id,
           onTap: () => _onRequestTap(req),
@@ -514,7 +515,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 request: req,
                 summary: s.summaryFor(req),
                 download: s.downloadFor(req),
-                notFoundYet: s.isNotFoundYet(req),
+                wait: s.waitFor(req),
                 canManage: s.canManageRequests,
                 isActioning: s.actioningRequestId == req.id,
                 onTap: () => _onRequestTap(req),
@@ -1453,8 +1454,9 @@ class _RequestCard extends StatefulWidget {
   /// read it, or null when nothing is downloading.
   final SeerrDownloadSummary? download;
 
-  /// Approved, released and watched for, with nothing grabbed yet.
-  final bool notFoundYet;
+  /// What the arr is waiting on for an approved request with nothing
+  /// grabbed yet, or null.
+  final ArrWait? wait;
   final bool canManage;
   final bool isActioning;
   final VoidCallback? onTap;
@@ -1473,7 +1475,7 @@ class _RequestCard extends StatefulWidget {
     required this.request,
     this.summary,
     this.download,
-    this.notFoundYet = false,
+    this.wait,
     required this.canManage,
     required this.isActioning,
     this.onTap,
@@ -1658,8 +1660,12 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
                   // The caption shows the reason in the requester's place.
                   reasonMaxLines: 0,
                 )
-              : widget.notFoundYet
-              ? SeerrNotFoundYetLabel(scale: scale)
+              : widget.wait != null
+              ? SeerrArrWaitLabel(
+                  wait: widget.wait!,
+                  scale: scale,
+                  showLastSearch: false,
+                )
               : _StatusPill(label: statusLabel, color: statusColor),
         ),
       ],
@@ -1741,8 +1747,8 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
                   // chip, and the two together contradict each other.
                   if (downloadSummary != null)
                     SeerrDownloadProgressBar(summary: downloadSummary)
-                  else if (widget.notFoundYet)
-                    const SeerrNotFoundYetLabel()
+                  else if (widget.wait != null)
+                    SeerrArrWaitLabel(wait: widget.wait!)
                   else
                     _StatusChip(request: request),
                   // Pins the provenance to the foot so it lines up across the

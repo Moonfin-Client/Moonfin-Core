@@ -145,7 +145,7 @@ jobs:
               ;;
             kotlin)
               # gradlew is gitignored, and only a Flutter build writes it.
-              (flutter build apk --config-only && cd android && ./gradlew --continue :app:testAndroidTvDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
+              (flutter build apk --config-only && cd android && ./gradlew --continue :app:testMobileDebugUnitTest :moonfin_native_video:testDebugUnitTest) || status=1
               ;;
           esac
 

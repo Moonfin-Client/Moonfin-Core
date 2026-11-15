@@ -24,9 +24,10 @@ class _MoonfinHttpOverrides extends HttpOverrides {
     final client = super.createHttpClient(secContext);
     client.maxConnectionsPerHost = 12;
     // Only bypass certificate validation when the user has explicitly opted in
-    // (self-signed / private-CA servers). The flag is read on every failed
-    // handshake, so the toggle applies live without reinstalling the override.
-    client.badCertificateCallback = (_, _, _) => gAllowSelfSignedCertificates;
+    // (self-signed / private-CA servers), and only for their own servers. Both
+    // are read on every failed handshake, so changes apply live.
+    client.badCertificateCallback =
+        (_, host, _) => acceptsUntrustedCertificate(host);
     applyClientCertificates(client, fallback: secContext);
     return client;
   }

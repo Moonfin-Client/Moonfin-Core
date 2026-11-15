@@ -603,7 +603,7 @@
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"
   },
-  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
+  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
   "@recommendationSystemSubtitle": {
     "description": "Explanation under the recommendation system setting"
   },
@@ -611,9 +611,9 @@
   "@recommendationSystemMoonfin": {
     "description": "Recommendation system option: Moonfin Recommends"
   },
-  "recommendationSystemJellyfin": "Jellyfin Recommends",
+  "recommendationSystemJellyfin": "Server Recommends",
   "@recommendationSystemJellyfin": {
-    "description": "Recommendation system option: Jellyfin Recommends"
+    "description": "Recommendation system option: Server Recommends"
   },
   "recommendationSystemTmdb": "TMDb Similarity",
   "@recommendationSystemTmdb": {
@@ -6378,6 +6378,32 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "mergeLibrariesByType": "Merge Movie and TV Show Libraries",
+  "@mergeLibrariesByType": {
+    "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+  },
+  "mergeLibrariesByTypeDescription": "With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.",
+  "@mergeLibrariesByTypeDescription": {
+    "description": "Description for the setting that merges movie and series libraries across servers"
+  },
+  "mergedServerCount": "{count, plural, other{On {count} servers}}",
+  "@mergedServerCount": {
+    "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mergedCopiesNotChanged": "Not changed on {servers}",
+  "@mergedCopiesNotChanged": {
+    "description": "Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names",
+    "placeholders": {
+      "servers": {
+        "type": "String"
+      }
+    }
+  },
   "recentlyAddedAndReleased": "Recently Added and Released",
   "@recentlyAddedAndReleased": {
     "description": "Section title for Recently Added and Recently Released home row settings"
@@ -7801,7 +7827,42 @@
   },
   "seerrNotFoundYet": "Not found yet",
   "@seerrNotFoundYet": {
-    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet"
+    "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr or Sonarr has the released movie or aired episodes but has not found a release to download yet"
+  },
+  "seerrSearchingIndexers": "Searching indexers",
+  "@seerrSearchingIndexers": {
+    "description": "Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now"
+  },
+  "seerrNotFoundYetSearched": "Not found yet · searched {when}",
+  "@seerrNotFoundYetSearched": {
+    "description": "Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "seerrNotAvailableYet": "Not available yet",
+  "@seerrNotAvailableYet": {
+    "description": "Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it"
+  },
+  "seerrAvailableOn": "Available {date}",
+  "@seerrAvailableOn": {
+    "description": "Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "seerrNextEpisodeOn": "Next episode {date}",
+  "@seerrNextEpisodeOn": {
+    "description": "Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "seerrGetDifferentRelease": "Get a different release",
   "@seerrGetDifferentRelease": {
@@ -10854,6 +10915,18 @@
   "@playerTooltipExitFloatOnTop": {
     "description": "Tooltip label for disabling always-on-top in desktop player"
   },
+  "playerTooltipPictureInPicture": "Picture-in-picture",
+  "@playerTooltipPictureInPicture": {
+    "description": "Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings"
+  },
+  "playerTooltipExitPictureInPicture": "Exit picture-in-picture",
+  "@playerTooltipExitPictureInPicture": {
+    "description": "Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window"
+  },
+  "playerPlayingInPictureInPicture": "Playing in picture-in-picture",
+  "@playerPlayingInPictureInPicture": {
+    "description": "Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window"
+  },
   "playerTooltipLockLandscape": "Lock landscape",
   "@playerTooltipLockLandscape": {
     "description": "Tooltip label for locking landscape orientation in player"
@@ -11587,9 +11660,9 @@
   "displaySinceYouWatchedRows": "Display Since You Watched Rows",
   "displaySinceYouWatchedRowsSubtitle": "Show and customize Since You Watched rows in Home Sections.",
   "sinceYouWatchedSource": "Recommendation Source",
-  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
   "sinceYouWatchedSourceLocal": "Moonfin Recommends",
-  "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+  "sinceYouWatchedSourceServer": "Server Recommends",
   "sinceYouWatchedSourceOnline": "TMDb Similarity",
   "sinceYouWatchedSourceType": "Source Type",
   "sinceYouWatchedSourceTypeDescription": "Choose type of items to recommend",
@@ -17686,5 +17759,21 @@
   "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
   "@afterHoursPixelPurgeCardRemote": {
     "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+  },
+  "clickpadSeeking": "Allow Clickpad Seeking",
+  "@clickpadSeeking": {
+    "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+  },
+  "clickpadSeekingDescription": "When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.",
+  "@clickpadSeekingDescription": {
+    "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+  },
+  "clickpadSeekingControlsVisible": "When controls are showing",
+  "@clickpadSeekingControlsVisible": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+  },
+  "clickpadSeekingPausedOnly": "Only while paused",
+  "@clickpadSeekingPausedOnly": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
   }
 }

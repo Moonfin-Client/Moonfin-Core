@@ -244,8 +244,7 @@ jobs:
             }
 
             const rows = [
-              { platform: 'Android',       job: 'android',       artifact: 'android',              files: 'Moonfin_Android_v* (apk/aab)' },
-              { platform: 'Android TV',    job: 'android',       artifact: 'android-tv',           files: 'Moonfin_AndroidTV_v* (apk/aab)' },
+              { platform: 'Android + TV',  job: 'android',       artifact: 'android',              files: 'Moonfin_Android_v* (apk/aab)' },
               { platform: 'iOS',           job: 'ios',           artifact: 'ios-ipa',              files: 'Moonfin_iOS_v*_unsigned.ipa' },
               { platform: 'macOS',         job: 'macos',         artifact: 'macos-dmg',            files: 'Moonfin_macOS_v*.dmg' },
               { platform: 'tvOS',          job: 'tvos',          artifact: 'tvos-ipa',             files: 'Moonfin_tvOS_v*_unsigned.ipa' },
@@ -257,11 +256,11 @@ jobs:
               { platform: 'Web',           job: 'web',           artifact: 'web',                  files: 'build/web (static site, serve over HTTP)' },
             ];
 
-            // Android builds both flavors and Linux both architectures in one matrix
-            // job each, so a failure on either leg fails the job as a whole. An
-            // artifact only uploads when its own leg got that far, so its presence
-            // is what tells the two apart. Without outcomes.json, an artifact
-            // still proves its build passed, but a missing one proves nothing.
+            // Linux builds both architectures in one matrix job, so a failure on
+            // either leg fails the job as a whole. An artifact only uploads when
+            // its own leg got that far, so its presence is what tells the two
+            // apart. Without outcomes.json, an artifact still proves its build
+            // passed, but a missing one proves nothing.
             // The Apple tests row is a job, not a build, and uploads its results
             // file whether the tests passed or not, so there it proves nothing.
             const statusOf = (row) => {
