@@ -1026,6 +1026,34 @@ void main() {
       router.dispose();
     });
 
+    // A PlayNow from Live TV waits for Live TV to close on the page under it;
+    // a Stop in that wait must keep the PlayNow from starting afterwards.
+    testWidgets('outdates a PlayNow still leaving Live TV', (tester) async {
+      final router = await mountRouter(tester);
+      final receiver = receiverFor(router, clients: _EpisodeClientFactory())
+        ..setActiveSessionForTest('server', 'user');
+      unawaited(router.push(Destinations.liveTvPlayer));
+      await tester.pumpAndSettle();
+      final playing = receiver.handleRemoteCommandForTest(
+        PlayMessage(itemIds: const ['episode']),
+      );
+      await tester.pump();
+      expect(router.state.uri.path, Destinations.home);
+      expect(manager.calls, isNot(contains('play')));
+      await receiver.handleRemoteCommandForTest(
+        PlaystateMessage(command: 'Stop'),
+      );
+      await tester.pumpAndSettle();
+      await playing;
+      await tester.pumpAndSettle();
+      expect(manager.calls, isNot(contains('play')));
+      expect(router.state.uri.path, Destinations.home);
+      expect(router.routerDelegate.currentConfiguration.matches.length, 1);
+      await tester.pumpWidget(const SizedBox());
+      receiver.dispose();
+      router.dispose();
+    });
+
     testWidgets('leaves any other page where it is', (tester) async {
       final router = await mountRouter(tester);
       final receiver = receiverFor(router);

@@ -1334,11 +1334,13 @@ class SessionRepository {
   /// so a remote Stop doesn't strand an empty player on screen. Any other page
   /// stays where it is.
   Future<void> _stopRemotePlayback(PlaybackManager manager) async {
+    // Stop outdates any PlayNow still on its way, even one that left Live TV
+    // for the page under it and has not opened its player yet.
+    final generation = ++_remoteNavigationGeneration;
     if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) {
       await manager.stop(userInitiated: false);
       return;
     }
-    final generation = ++_remoteNavigationGeneration;
     final player = _closeDialogsAbovePage();
     final backend = manager.backend;
     if (OverlaySheetController.hasOpenSheet) {
