@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:clock/clock.dart';
 
+import 'bounded_concurrency.dart';
+
 /// Reads the studios a row sorted by [sortBy] and [sortOrder] is drawn from.
 ///
 /// A server that [serverSorts] gets the sort, and its first page is the row.
@@ -56,16 +58,17 @@ Future<Map<String, dynamic>> _readAllStudios(
       clock.now().difference(cached.$1) < const Duration(days: 1)) {
     return cached.$2;
   }
-  final items = <dynamic>[];
-  while (true) {
-    final page = await byName(items.length, pageSize);
-    final pageItems = page['Items'] as List? ?? const [];
-    items.addAll(pageItems);
-    final total = page['TotalRecordCount'] as int?;
-    if (pageItems.length < pageSize || (total != null && items.length >= total)) {
-      break;
-    }
-  }
+  // The first page gives the total, and the rest are read side by side so a
+  // long list fits a row's time limit.
+  final first = await byName(0, pageSize);
+  final total = first['TotalRecordCount'] as int? ?? 0;
+  final rest = await mapBounded([
+    for (var start = pageSize; start < total; start += pageSize) start,
+  ], 6, (start) => byName(start, pageSize));
+  final items = [
+    for (final page in [first, ...rest])
+      ...(page?['Items'] as List? ?? const []),
+  ];
   final all = {'Items': items, 'TotalRecordCount': items.length};
   _studioLists[cacheKey] = (clock.now(), all);
   return all;
