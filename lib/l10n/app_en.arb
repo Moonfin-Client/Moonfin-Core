@@ -603,7 +603,7 @@
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"
   },
-  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
+  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
   "@recommendationSystemSubtitle": {
     "description": "Explanation under the recommendation system setting"
   },
@@ -611,9 +611,9 @@
   "@recommendationSystemMoonfin": {
     "description": "Recommendation system option: Moonfin Recommends"
   },
-  "recommendationSystemJellyfin": "Jellyfin Recommends",
+  "recommendationSystemJellyfin": "Server Recommends",
   "@recommendationSystemJellyfin": {
-    "description": "Recommendation system option: Jellyfin Recommends"
+    "description": "Recommendation system option: Server Recommends"
   },
   "recommendationSystemTmdb": "TMDb Similarity",
   "@recommendationSystemTmdb": {
@@ -11587,9 +11587,9 @@
   "displaySinceYouWatchedRows": "Display Since You Watched Rows",
   "displaySinceYouWatchedRowsSubtitle": "Show and customize Since You Watched rows in Home Sections.",
   "sinceYouWatchedSource": "Recommendation Source",
-  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+  "sinceYouWatchedSourceDescription": "Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
   "sinceYouWatchedSourceLocal": "Moonfin Recommends",
-  "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+  "sinceYouWatchedSourceServer": "Server Recommends",
   "sinceYouWatchedSourceOnline": "TMDb Similarity",
   "sinceYouWatchedSourceType": "Source Type",
   "sinceYouWatchedSourceTypeDescription": "Choose type of items to recommend",
@@ -15553,10 +15553,6 @@
   "@librarySortMyRating": {
     "description": "Sort option: by the viewer's own like or dislike"
   },
-  "librarySortItemCount": "Item Count",
-  "@librarySortItemCount": {
-    "description": "Sort option for studios: by how many movies and shows each one has"
-  },
   "librarySortAlbumArtist": "Album Artist",
   "@librarySortAlbumArtist": {
     "description": "Sort option for music: by album artist"
@@ -17690,5 +17686,21 @@
   "afterHoursPixelPurgeCardRemote": "Left and Right slide the scrubber.",
   "@afterHoursPixelPurgeCardRemote": {
     "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+  },
+  "clickpadSeeking": "Allow Clickpad Seeking",
+  "@clickpadSeeking": {
+    "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+  },
+  "clickpadSeekingDescription": "When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.",
+  "@clickpadSeekingDescription": {
+    "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+  },
+  "clickpadSeekingControlsVisible": "When controls are showing",
+  "@clickpadSeekingControlsVisible": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+  },
+  "clickpadSeekingPausedOnly": "Only while paused",
+  "@clickpadSeekingPausedOnly": {
+    "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
   }
 }
