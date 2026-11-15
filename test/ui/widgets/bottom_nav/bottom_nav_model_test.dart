@@ -55,8 +55,6 @@ void main() {
       expect(active('/music/abc'), 2);
       expect(active('/books/abc'), 2);
       expect(active('/folder/xyz'), 2);
-      expect(active('/unified/movies'), 2);
-      expect(active('/unified/series'), 2);
       expect(active('/favorites'), 3);
     });
 

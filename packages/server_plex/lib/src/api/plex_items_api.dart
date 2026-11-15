@@ -119,8 +119,6 @@ class PlexItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
-    bool? enableUserData,
-    bool? enableImages,
   }) async {
     // A filter Plex can't apply answers with nothing, since ignoring it
     // would show items the filter was meant to leave out.
@@ -528,10 +526,7 @@ class PlexItemsApi implements ItemsApi {
     final container = await plexContainer(
       _dio,
       '/library/sections/$sectionKey/recentlyAdded',
-      {
-        ..._paging(0, limit ?? 20),
-        if (_wantsGuids(fields)) 'includeGuids': 1,
-      },
+      {..._paging(0, limit ?? 20), if (_wantsGuids(fields)) 'includeGuids': 1},
     );
     return {'Items': _items(container['Metadata'])};
   }

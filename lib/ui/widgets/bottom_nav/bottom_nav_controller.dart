@@ -21,7 +21,6 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/game_library.dart';
 import '../../../util/live_tv_library.dart';
 import '../../../util/signed_in_server_features.dart';
-import '../../util/nav_libraries.dart';
 import '../downloads_nav_slot.dart';
 import '../friends_nav_slot.dart';
 import 'bottom_nav_model.dart';
@@ -42,7 +41,7 @@ class BottomNavController extends ChangeNotifier {
       notifyListeners();
     });
     _signature = _prefsSignature();
-    _librariesSource = _librariesSourceSignature();
+    _librarySource = _librarySourceSignature();
     _loadUser();
     _loadLibraries();
   }
@@ -74,9 +73,8 @@ class BottomNavController extends ChangeNotifier {
   StreamSubscription? _userSub;
   Timer? _librariesReloadDebounce;
   String _signature = '';
-  late String _librariesSource;
+  late String _librarySource;
   bool _disposed = false;
-  int _librariesGeneration = 0;
 
   List<AggregatedLibrary> _libraries = const [];
   String? _userImageUrl;
@@ -199,7 +197,7 @@ class BottomNavController extends ChangeNotifier {
         _prefs.get(UserPreferences.showServerMessagesButton),
         _prefs.get(UserPreferences.showFriendsButton),
         _prefs.get(UserPreferences.showDownloadsButton),
-        _librariesSourceSignature(),
+        _librarySourceSignature(),
         _prefs.get(UserPreferences.navbarColor),
         _prefs.get(UserPreferences.navbarOpacity),
         _pluginSync?.seerrAvailable ?? false,
@@ -210,19 +208,18 @@ class BottomNavController extends ChangeNotifier {
     final next = _prefsSignature();
     if (next == _signature) return;
     _signature = next;
-    // Reload the libraries only when a preference that selects them changed.
-    final librariesSource = _librariesSourceSignature();
-    if (librariesSource != _librariesSource) {
-      _librariesSource = librariesSource;
+    final librarySource = _librarySourceSignature();
+    if (librarySource != _librarySource) {
+      _librarySource = librarySource;
       _scheduleLibrariesReload();
     }
     notifyListeners();
   }
 
-  /// Signature of the preferences that decide which libraries are listed.
-  String _librariesSourceSignature() =>
+  // Only the multi-server and merge switches change which libraries show.
+  String _librarySourceSignature() =>
       '${_prefs.get(UserPreferences.enableMultiServerLibraries)}|'
-      '${_prefs.get(UserPreferences.mergeLibrariesByType)}';
+      '${_prefs.effectiveMergeLibrariesByType}';
 
   // Collapses a burst of change notifications, like the settings sync
   // applying a whole profile, into a single library reload.
@@ -250,9 +247,6 @@ class BottomNavController extends ChangeNotifier {
   }
 
   Future<void> _loadLibraries() async {
-    // Only the latest load publishes. An older one can finish later, and
-    // would put back the libraries of the preferences it started under.
-    final generation = ++_librariesGeneration;
     try {
       final useMultiServer = _prefs.get(
         UserPreferences.enableMultiServerLibraries,
@@ -271,11 +265,21 @@ class BottomNavController extends ChangeNotifier {
               .withoutHiddenLibraries(libs)
           : libs;
 
-      if (_disposed || generation != _librariesGeneration) return;
-      if (sameNavLibraries(_libraries, filtered)) return;
+      if (_disposed || _sameLibraries(_libraries, filtered)) return;
       _libraries = filtered;
       notifyListeners();
     } catch (_) {}
+  }
+
+  static bool _sameLibraries(
+    List<AggregatedLibrary> a,
+    List<AggregatedLibrary> b,
+  ) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].id != b[i].id) return false;
+    }
+    return true;
   }
 
   @override

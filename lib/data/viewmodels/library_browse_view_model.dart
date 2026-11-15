@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -16,14 +14,14 @@ import '../../util/parental_rating_severity.dart';
 import '../models/aggregated_item.dart';
 import '../utils/blocked_ratings.dart';
 import '../repositories/mdblist_repository.dart';
+import '../repositories/multi_server_repository.dart';
 import '../services/plugin_sync_service.dart';
-import '../services/unified_catalog_query.dart';
-import '../services/unified_catalog_service.dart';
 import '../services/user_data_sync.dart';
 import '../services/user_ratings_api.dart';
 import '../utils/alphabet_bucket.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
+import '../utils/merged_copies.dart';
 import '../utils/playlist_utils.dart';
 
 enum LibraryBrowseState { loading, ready, error }
@@ -57,74 +55,16 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// to the ordinary browse of the same library.
   final bool favoritesOnly;
 
-  /// Set for the movie and series libraries merged across servers.
-  final UnifiedLibraryKind? unifiedKind;
+  /// Reads the server libraries a merged library spans. Set only for one.
+  final Future<MergedLibrary> Function()? loadMergedLibrary;
 
-  /// Set for a genre merged across servers, which can list both kinds.
-  final String? unifiedGenre;
-  final List<UnifiedLibraryKind> _unifiedKinds;
-  final UnifiedCatalogService? _unifiedCatalog;
-  final ImageApi Function(String serverId)? _imageApiForServer;
+  bool get isMergedBrowse => loadMergedLibrary != null;
 
-  bool get isUnifiedBrowse =>
-      _unifiedKinds.isNotEmpty && _unifiedCatalog != null;
+  List<MergedLibrarySource> _mergedSources = const [];
+  List<_MergedReader> _mergedReaders = const [];
 
-  /// Held for one whole load, so every page is cut from the same titles.
-  UnifiedCatalogSnapshot? _catalogSnapshot;
-  String? _catalogSnapshotSignature;
-
-  /// Picked once per load, so every page shares one random order.
-  int _catalogRandomSeed = 0;
-
-  /// An in-place rebuild is waiting for the catalog; no page may be cut yet.
-  bool _catalogRebuilding = false;
-
-  /// Generation of the server check this screen is waiting on.
-  int _catalogCheckGeneration = 0;
-
-  int _catalogPatchedRevision = -1;
-
-  /// Whether this visit has already asked for the opening server check.
-  bool _openingCheckRequested = false;
-
-  /// The catalog session this screen last loaded for. A different one means
-  /// the accounts changed.
-  int _catalogSessionSeen = 0;
-
-  /// True from the moment the opening server check is requested until it
-  /// completes.
-  bool _openingCheckRunning = false;
-
-  /// While the opening check runs, changed titles rebuild the list at once
-  /// instead of waiting to be let in; see [_onCatalogChanged].
-  bool _rebuildOnCatalogChange = false;
-  bool _pendingCatalogUpdate = false;
-  Future<void>? _catalogRefresh;
-
-  /// With no items yet, the grid counts as loading rather than empty.
-  bool get isCatalogSyncing =>
-      isUnifiedBrowse &&
-      (_unifiedCatalog!.isSyncing ||
-          _catalogRefresh != null ||
-          (_openingCheckRunning && _items.isEmpty));
-
-  int get catalogServersUpToDate =>
-      isUnifiedBrowse ? _unifiedCatalog!.serverCounts.upToDate : 0;
-
-  int get catalogServersTotal =>
-      isUnifiedBrowse ? _unifiedCatalog!.serverCounts.total : 0;
-
-  /// Servers whose last read failed; unread or in-progress ones don't count.
-  int get catalogUnreachableServerCount =>
-      isUnifiedBrowse ? _unifiedCatalog!.unreachableServerCount : 0;
-
-  /// Ignores filters and search, to tell an empty catalog from an empty result.
-  bool get catalogHasTitles =>
-      isUnifiedBrowse && _unifiedKinds.any(_unifiedCatalog!.hasTitles);
-
-  /// Titles changed since the list was built; held back so cards don't move.
-  bool get hasPendingCatalogUpdate =>
-      isUnifiedBrowse && _pendingCatalogUpdate && _catalogRefresh == null;
+  /// The card shown for each title match key, which later copies fold into.
+  final Map<String, AggregatedItem> _copyHolders = {};
 
   static const _pageSize = 48;
   static const _firstPageSize = 75;
@@ -138,6 +78,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   // its own behind a cache, so the grid doesn't carry ProviderIds.
   static const _browseFields =
       'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists,Genres,Studios';
+  // A merged browse folds copies on the provider ids and orders the servers'
+  // pages by the dates the sort reads.
+  static const _mergedBrowseFields =
+      '$_browseFields,ProviderIds,DateCreated,DateLastMediaAdded';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
@@ -161,16 +105,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   List<String> get _foldedNames {
     if (!identical(_searchNamesSource, _items)) {
       _searchNames = [
-        for (final item in _items)
-          isUnifiedBrowse
-              ? unifiedSearchText(item.rawData)
-              // The name on the card and the one it is sorted under, which
-              // can put an article last.
-              : foldForSearch(
-                  item.sortName == null
-                      ? item.name
-                      : '${item.name}\n${item.sortName}',
-                ),
+        for (final item in _items) foldForSearch(item.sortName ?? item.name),
       ];
       _searchNamesSource = _items;
     }
@@ -210,9 +145,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// and paging from the rendered count would ask for a window already read.
   int _fetchedCount = 0;
 
-  /// Ids already on screen. A random sort reshuffles server side on every
-  /// request, so consecutive pages are windows into different orderings and
-  /// the same item comes back on several of them.
+  /// Server and item ids already on screen. A random sort reshuffles server
+  /// side on every request, so consecutive pages are windows into different
+  /// orderings and the same item comes back on several of them.
   final Set<String> _renderedItemIds = <String>{};
 
   bool _totalCountKnown = true;
@@ -247,11 +182,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// Whether the My Rating sort can actually be served, which needs the
   /// Moonfin plugin on the server, or Silo, which keeps ratings itself.
   bool get supportsMyRatingSort =>
-      // The ratings belong to one server's plugin, not to the merged list.
-      !isUnifiedBrowse &&
+      !isMergedBrowse &&
       (_client is SiloMediaServerClient ||
-      GetIt.instance.isRegistered<PluginSyncService>() &&
-          GetIt.instance<PluginSyncService>().pluginAvailable);
+          GetIt.instance.isRegistered<PluginSyncService>() &&
+              GetIt.instance<PluginSyncService>().pluginAvailable);
 
   late SeriesStatusFilter _seriesFilter;
   SeriesStatusFilter get seriesFilter => _seriesFilter;
@@ -295,8 +229,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   bool _facetsRequested = false;
 
-  int _facetsTitlesRevision = -1;
-
   late String _letterFilter;
   String get letterFilter => _letterFilter;
 
@@ -327,7 +259,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> _libraries = const [];
   List<Map<String, dynamic>> get libraries => _libraries;
 
-  bool get isGenreBrowse => genreId != null || unifiedGenre != null;
+  bool get isGenreBrowse => genreId != null;
   bool get isStudioBrowse => studioName != null;
   bool get isFilterBrowse => isGenreBrowse || isStudioBrowse;
 
@@ -375,11 +307,16 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Map<String, double> _focusedRatings = const {};
   Map<String, double> get focusedRatings => _focusedRatings;
 
-  ImageApi get imageApi => _client.imageApi;
+  /// A merged browse shows each item from its own server.
+  ImageApi imageApiFor(AggregatedItem item) => _clientFor(item).imageApi;
 
-  ImageApi imageApiFor(AggregatedItem item) =>
-      (isUnifiedBrowse ? _imageApiForServer?.call(item.serverId) : null) ??
-      _client.imageApi;
+  MediaServerClient _clientFor(AggregatedItem item) =>
+      _mergedSources
+          .where((source) => source.session.server.id == item.serverId)
+          .firstOrNull
+          ?.session
+          .client ??
+      _client;
 
   late bool _groupByType;
   bool get groupByType => _groupByType;
@@ -456,12 +393,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     required int generation,
   }) async {
     items = withoutBlockedItems(items);
-    if (isUnifiedBrowse && activeParentalFilter.isActive) {
-      items = [
-        for (final item in items)
-          if (!isAnyCopyBlocked(item.rawData)) item,
-      ];
-    }
     if (!isPlaylistBrowse) return items;
 
     // A playlist the summary can't settle costs a request of its own, so keep a
@@ -517,7 +448,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   LibraryBrowseViewModel({
     required this.libraryId,
-    required this._client,
+    required MediaServerClient client,
     required UserPreferences prefs,
     required MdbListRepository mdbListRepository,
     this.genreId,
@@ -525,14 +456,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     this.overrideName,
     this.includeItemTypes,
     this.favoritesOnly = false,
-    this.unifiedKind,
-    this.unifiedGenre,
-    List<UnifiedLibraryKind>? unifiedGenreKinds,
-    this._unifiedCatalog,
-    this._imageApiForServer,
-  }) : _unifiedKinds = unifiedGenre != null
-           ? unifiedGenreKinds ?? UnifiedLibraryKind.values
-           : [?unifiedKind],
+    this.loadMergedLibrary,
+  }) : _client = client,
        _prefs = prefs,
        _mdbListRepository = mdbListRepository {
     _sortBy = _prefs.get(UserPreferences.librarySortBy(_prefKey));
@@ -590,253 +515,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         : null;
     _prefs.addListener(_onPrefsChanged);
     userDataSync.addListener(_onUserDataChanged);
-    if (isUnifiedBrowse) {
-      final catalog = _unifiedCatalog!;
-      _catalogSessionSeen = catalog.session;
-      catalog.addListener(_onCatalogChanged);
-    }
-  }
-
-  /// While the opening check runs the list is rebuilt as each server lands;
-  /// after it, cards are patched in place and changed titles wait to be let in.
-  void _onCatalogChanged() {
-    if (_disposed) return;
-    final catalog = _unifiedCatalog!;
-    if (catalog.session != _catalogSessionSeen) {
-      // Accounts changed: nothing else reloads and re-checks an open screen.
-      _catalogSessionSeen = catalog.session;
-      _openingCheckRequested = false;
-      _catalogCheckGeneration++;
-      _openingCheckRunning = false;
-      _rebuildOnCatalogChange = false;
-      // The cards on screen belong to the accounts that just left, and the
-      // new ones may not be allowed to see them: nothing of them stays while
-      // the new catalog loads.
-      _focusedItem = null;
-      _focusedRatings = const {};
-      _searchResults = null;
-      _searchResultsSource = null;
-      _searchNamesSource = null;
-      _searchNames = const [];
-      _groupedCategoriesCache = null;
-      _groupedCategoriesSource = null;
-      _facetValues = QueryFilterValues.empty;
-      _facetsTitlesRevision = -1;
-      unawaited(_load());
-      return;
-    }
-    // Without a snapshot no page has been read yet, so the first page read
-    // picks up the newest catalog state by itself.
-    final snapshot = _catalogSnapshot;
-    if (snapshot != null && catalog.titlesRevision != snapshot.titlesRevision) {
-      if (_rebuildOnCatalogChange || _items.isEmpty) {
-        unawaited(_load(keepShown: true));
-      } else {
-        _pendingCatalogUpdate = true;
-      }
-    }
-    _patchFromCatalog();
-    _refreshCatalogFacets();
-    notifyListeners();
-  }
-
-  void _onCatalogChecked(int check) {
-    if (_disposed || check != _catalogCheckGeneration) return;
-    _openingCheckRunning = false;
-    _rebuildOnCatalogChange = false;
-    notifyListeners();
-  }
-
-  /// Patches in place; an item the catalog dropped stays until the next load.
-  /// A card whose new data is blocked is taken out instead.
-  void _patchFromCatalog({int? since}) {
-    final catalog = _unifiedCatalog!;
-    final fromRevision = since ?? _catalogPatchedRevision;
-    _catalogPatchedRevision = catalog.revision;
-    if (catalog.revision == fromRevision || _items.isEmpty) return;
-
-    // Null when more than watched state changed: every card is compared.
-    final changedCopies = catalog.userDataChangedSince(fromRevision);
-    Set<String>? staleCopyKeys;
-    if (changedCopies != null) {
-      staleCopyKeys = {
-        for (final changedCopy in changedCopies)
-          for (final copy in unifiedCopiesOf(
-            _catalogItem(changedCopy.serverId, changedCopy.itemId) ??
-                const {},
-          ))
-            copy.key,
-      };
-      if (staleCopyKeys.isEmpty) return;
-      // A long grid is not walked for the one card that was watched.
-      final index = _renderedIndex;
-      if (index != null && _patchCards(staleCopyKeys, index)) return;
-    }
-
-    final renderedKeys = <String>{};
-    var changed = false;
-    var blocked = 0;
-    final patched = <AggregatedItem>[];
-    for (final item in _items) {
-      final current =
-          staleCopyKeys == null || staleCopyKeys.contains(_renderedKey(item))
-          ? _currentCard(item)
-          : item;
-      if (_blockedNow(item, current)) {
-        blocked++;
-        _unfocusCard(item);
-        continue;
-      }
-      // Two cards whose titles were since folded into one both resolve to
-      // it, and the second keeps what it showed until the list is rebuilt.
-      if (!renderedKeys.add(_renderedKey(current))) {
-        renderedKeys.add(_renderedKey(item));
-        patched.add(item);
-        continue;
-      }
-      changed = changed || !identical(current, item);
-      patched.add(current);
-    }
-    if (!changed && blocked == 0) return;
-    _items = patched;
-    _renderedItemIds
-      ..clear()
-      ..addAll(renderedKeys);
-    _countBlockedCards(blocked);
-  }
-
-  /// The page a card came from was filtered when it was read. A rating or a
-  /// copy that arrived since can block it, so changed cards are checked again.
-  bool _blockedNow(AggregatedItem item, AggregatedItem current) =>
-      !identical(current, item) && isAnyCopyBlocked(current.rawData);
-
-  /// Counted like a card filtered out of its page, so the total and the pages
-  /// still to come stay in step with the list.
-  void _countBlockedCards(int count) {
-    if (count == 0) return;
-    _filteredOutCount += count;
-    _totalCount = max(0, _totalCount - count);
-  }
-
-  /// The focused card feeds the header, which must not keep showing a title
-  /// that has just been taken out.
-  void _unfocusCard(AggregatedItem item) {
-    final focused = _focusedItem;
-    if (focused == null || _renderedKey(focused) != _renderedKey(item)) return;
-    _focusedItem = null;
-    _focusedRatings = const {};
-  }
-
-  /// [item] as the catalog holds it now, or [item] itself when nothing differs.
-  AggregatedItem _currentCard(AggregatedItem item) {
-    final raw = _catalogItem(item.serverId, item.id);
-    if (raw == null ||
-        identical(raw, item.rawData) ||
-        const DeepCollectionEquality().equals(raw, item.rawData)) {
-      return item;
-    }
-    return AggregatedItem(
-      id: raw['Id'].toString(),
-      serverId: raw[unifiedServerIdKey].toString(),
-      rawData: raw,
-    );
-  }
-
-  List<AggregatedItem>? _renderedIndexSource;
-  Map<String, int>? _renderedIndexByKey;
-
-  /// Where each rendered copy sits in the list, built once per list. Null when
-  /// two cards share a key, which only the walk over every card can settle.
-  Map<String, int>? get _renderedIndex {
-    if (!identical(_renderedIndexSource, _items)) {
-      _renderedIndexSource = _items;
-      final index = <String, int>{
-        for (var i = 0; i < _items.length; i++) _renderedKey(_items[i]): i,
-      };
-      _renderedIndexByKey =
-          index.length == _items.length &&
-              _renderedItemIds.length == _items.length
-          ? index
-          : null;
-    }
-    return _renderedIndexByKey;
-  }
-
-  /// Patches only the cards behind [staleCopyKeys], taking out the ones that
-  /// are now blocked. False, with nothing changed, when a card now resolves to
-  /// another copy: that can collide with a card already shown, so it is left
-  /// to the walk over every card.
-  bool _patchCards(Set<String> staleCopyKeys, Map<String, int> index) {
-    Map<int, AggregatedItem>? replacements;
-    Set<int>? blocked;
-    for (final key in staleCopyKeys) {
-      final position = index[key];
-      if (position == null) continue;
-      final item = _items[position];
-      final current = _currentCard(item);
-      if (identical(current, item)) continue;
-      if (_renderedKey(current) != key) return false;
-      if (isAnyCopyBlocked(current.rawData)) {
-        (blocked ??= {}).add(position);
-        continue;
-      }
-      (replacements ??= {})[position] = current;
-    }
-    if (blocked != null) {
-      // Positions move, so the index is left to be built again from the list.
-      final kept = <AggregatedItem>[];
-      for (var i = 0; i < _items.length; i++) {
-        if (blocked.contains(i)) {
-          _renderedItemIds.remove(_renderedKey(_items[i]));
-          _unfocusCard(_items[i]);
-        } else {
-          kept.add(replacements?[i] ?? _items[i]);
-        }
-      }
-      _items = kept;
-      _countBlockedCards(blocked.length);
-      return true;
-    }
-    if (replacements == null) return true;
-    final patched = List.of(_items);
-    replacements.forEach((position, card) => patched[position] = card);
-    _items = patched;
-    // No key moved, so the index holds for the new list too.
-    _renderedIndexSource = patched;
-    return true;
-  }
-
-  Map<String, dynamic>? _catalogItem(String serverId, String itemId) {
-    for (final kind in _unifiedKinds) {
-      final item = _unifiedCatalog!.currentItem(kind, serverId, itemId);
-      if (item != null) return item;
-    }
-    return null;
-  }
-
-  Future<void> applyCatalogUpdate() async {
-    if (_disposed || !hasPendingCatalogUpdate) return;
-    await _load(keepShown: true);
-  }
-
-  /// Re-reads every server regardless of age; concurrent calls join.
-  Future<void> refreshCatalog() {
-    if (_disposed || !isUnifiedBrowse) return Future.value();
-    final running = _catalogRefresh;
-    if (running != null) return running;
-    final refresh = _catalogRefresh = _refreshCatalog();
-    notifyListeners();
-    return refresh;
-  }
-
-  Future<void> _refreshCatalog() async {
-    try {
-      await _unifiedCatalog!.forceFullRead();
-    } finally {
-      _catalogRefresh = null;
-    }
-    if (_disposed) return;
-    await load();
   }
 
   /// Whether anything the grid shows has been watched, favourited or rated
@@ -845,18 +523,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// ask the server about its own rows the next time it is looked at.
   bool _userDataStale = false;
   bool _syncingUserData = false;
-  int _userDataRevisionSeen = userDataSync.revision;
 
   void _onUserDataChanged() {
     if (_disposed) return;
-    // Changes are published by item id alone, which two servers can share. The
-    // catalog resolves the server and reports through its own listener.
-    if (!isUnifiedBrowse) {
-      final patched = userDataSync.applyAll(_items);
-      if (!identical(patched, _items)) {
-        _items = patched;
-        notifyListeners();
-      }
+    final patched = userDataSync.applyAll(_items);
+    if (!identical(patched, _items)) {
+      _items = patched;
+      notifyListeners();
     }
     if (!_syncingUserData) _userDataStale = true;
   }
@@ -864,44 +537,22 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// Does nothing until a change has actually been recorded, so coming back to
   /// the grid normally costs no request.
   Future<void> syncUserDataIfStale() async {
-    // The grid was off screen, so pending titles can land without moving cards.
-    if (hasPendingCatalogUpdate) await applyCatalogUpdate();
     if (_disposed || _syncingUserData || !_userDataStale || _items.isEmpty) {
       return;
     }
     _syncingUserData = true;
-    final startRevision = userDataSync.revision;
-    // What this refresh publishes itself, which is no reason to go again.
-    var refreshedIds = const <String>{};
-    var settled = false;
     try {
-      if (isUnifiedBrowse) {
-        // The catalog already asks each server about its own changed copy;
-        // only the series of a changed episode is left to find.
-        var complete = true;
-        if (_unifiedKinds.contains(UnifiedLibraryKind.series)) {
-          complete = await _unifiedCatalog!.refreshSeriesOf(
-            userDataSync.changedSince(_userDataRevisionSeen),
-          );
-          if (_disposed) return;
-        }
-        if (complete) _userDataRevisionSeen = startRevision;
-        _patchFromCatalog();
-        notifyListeners();
-        settled = complete;
-      } else {
-        refreshedIds = {for (final item in _items) item.id};
-        settled = await userDataSync.refreshFromServer(_client, refreshedIds);
+      final idsByClient = <MediaServerClient, List<String>>{};
+      for (final item in _items) {
+        idsByClient.putIfAbsent(_clientFor(item), () => []).add(item.id);
       }
+      await Future.wait([
+        for (final MapEntry(key: client, value: ids) in idsByClient.entries)
+          userDataSync.refreshFromServer(client, ids),
+      ]);
     } finally {
       _syncingUserData = false;
-      // A failed refresh, or a change that arrived meanwhile, possibly to
-      // another series' episode, is left for the next one.
-      _userDataStale =
-          !settled ||
-          userDataSync
-              .changedSince(startRevision)
-              .any((id) => !refreshedIds.contains(id));
+      _userDataStale = false;
     }
   }
 
@@ -914,12 +565,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   String get _prefKey {
-    if (isUnifiedBrowse) {
-      final kindNames = _unifiedKinds.map((kind) => kind.name).join('_');
-      return unifiedGenre == null
-          ? 'unified_$kindNames'
-          : 'unified_genre_${genreNameKey(unifiedGenre!)}_$kindNames';
-    }
     final baseKey = genreId ?? studioName ?? libraryId;
     if (includeItemTypes != null && includeItemTypes!.isNotEmpty) {
       return '${baseKey}_${includeItemTypes!.join("_")}';
@@ -942,50 +587,24 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _posterSize = _readScopedPosterSize();
   }
 
-  Future<void> load() => _load();
-
-  /// [keepShown] rebuilds a merged library in place: the old list stays until
-  /// its replacement, holding as many titles, is ready.
-  Future<void> _load({bool keepShown = false}) async {
+  Future<void> load() async {
     // Any page walk still running belongs to the list we are about to drop.
     _pageWalkGeneration++;
     final generation = ++_listGeneration;
     // A scroll page still on its way belongs to the old list, so it shouldn't
     // hold up paging of the new one.
     _loadingMore = false;
-    _catalogSnapshot = null;
-    _pendingCatalogUpdate = false;
-    // 0x7fffffff, not 1 << 32, which is zero on the web build.
-    if (isUnifiedBrowse && !keepShown) {
-      _catalogRandomSeed = Random().nextInt(0x7fffffff);
-    }
-    final shownCount = _items.length;
-    if (keepShown) {
-      // The only wait that can outlast a frame. The rest is answered from
-      // memory, so the lists swap with nothing drawn in between.
-      _catalogRebuilding = true;
-      try {
-        await _unifiedCatalog!.ensureLoaded();
-      } catch (_) {
-        // The load below asks again and reports it.
-      }
-      if (generation != _listGeneration) return;
-      _catalogRebuilding = false;
-      // Drop whatever was cut while the catalog was loading.
-      _catalogSnapshot = null;
-    } else {
-      _catalogRebuilding = false;
-      _state = LibraryBrowseState.loading;
-    }
+    _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
     _filteredOutCount = 0;
     _fetchedCount = 0;
     _renderedItemIds.clear();
+    _copyHolders.clear();
     _playlistCategoryMap.clear();
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
-    if (!keepShown) notifyListeners();
+    notifyListeners();
 
     try {
       // Independent of the library lookup, so let it run alongside instead of
@@ -994,21 +613,15 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           ? Future<void>.value()
           : _syncImageTypeFromServer().then((_) => _imageTypeSynced = true);
 
-      if (isUnifiedBrowse) {
-        _libraryName = overrideName ?? '';
-        // The disk copy is enough to draw from; the servers are checked behind.
-        final catalog = _unifiedCatalog!;
-        await catalog.ensureLoaded();
-        // Once per visit: a sort or filter change shouldn't re-ask the servers.
-        if (!_openingCheckRequested) {
-          _openingCheckRequested = true;
-          _rebuildOnCatalogChange = true;
-          _openingCheckRunning = true;
-          final check = ++_catalogCheckGeneration;
-          unawaited(
-            catalog.syncNow().whenComplete(() => _onCatalogChecked(check)),
-          );
+      if (isMergedBrowse && !_libraryMetaResolved) {
+        final merged = await loadMergedLibrary!();
+        if (merged.sources.isEmpty) {
+          throw StateError('No server answered for $libraryId');
         }
+        _libraryName = merged.name;
+        _mergedSources = merged.sources;
+        _collectionType = mergedLibraryType(libraryId);
+        _libraryMetaResolved = true;
       }
 
       if (isFilterBrowse) {
@@ -1017,8 +630,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           _libraryFilter = libraryId.isEmpty ? null : libraryId;
           _initialLibraryFilterSet = true;
         }
-        // A merged genre has no one server's libraries to narrow to.
-        if (_libraries.isEmpty && !isUnifiedBrowse) _loadLibraries();
+        if (_libraries.isEmpty) _loadLibraries();
         if (libraryId.isNotEmpty) {
           try {
             final parentData = await _client.itemsApi
@@ -1066,13 +678,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _refreshPosterSizeFromScope();
 
       await imageTypeSync;
-      await _fetchPage(
-        0,
-        generation: generation,
-        pageSizeOverride: keepShown && shownCount > _firstPageSize
-            ? shownCount
-            : null,
-      );
+      await _fetchPage(0, generation: generation);
       if (generation != _listGeneration) return;
       _state = LibraryBrowseState.ready;
     } catch (e) {
@@ -1082,11 +688,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _state = LibraryBrowseState.error;
     }
     notifyListeners();
-    // A search only matches loaded items, and this load dropped the walk that
-    // was pulling in the rest for it.
-    if (isGrouping ||
-        _searchQuery.trim().isNotEmpty ||
-        _prefs.get(UserPreferences.showAlphabeticalFilters)) {
+    if (isGrouping || _prefs.get(UserPreferences.showAlphabeticalFilters)) {
       unawaited(ensureAllItemsLoaded());
     }
   }
@@ -1102,15 +704,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       await loadMore(pageSizeOverride: 300);
       if (!stillWanted()) return;
       if (_items.length == beforeCount) break;
-      if (isUnifiedBrowse) {
-        await _yieldToEventLoop();
-        if (!stillWanted()) return;
-      }
     }
   }
-
-  /// A merged library answers from memory and would otherwise yield no frame.
-  Future<void> _yieldToEventLoop() => Future<void>.delayed(Duration.zero);
 
   /// Pages until an item starting with [letter] is loaded, and reports whether
   /// one ever turned up.
@@ -1153,7 +748,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         final beforeCount = _items.length;
         await loadMore(pageSizeOverride: 300, notify: false);
         if (_items.length == beforeCount) break;
-        if (isUnifiedBrowse) await _yieldToEventLoop();
       }
     } finally {
       // The walk suppressed per page notifications, so send the one that
@@ -1169,7 +763,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Future<int?> _letterPosition(String letter) async {
     final api = _client.itemsApi;
     final parentId = _effectiveParentId;
-    if (api is! LetterPositionApi || parentId == null) return null;
+    if (api is! LetterPositionApi || parentId == null || isMergedBrowse) {
+      return null;
+    }
     try {
       return await (api as LetterPositionApi).letterPosition(
         letter,
@@ -1181,7 +777,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<void> loadMore({int? pageSizeOverride, bool notify = true}) async {
-    if (_loadingMore || _catalogRebuilding || !hasMore) return;
+    if (_loadingMore || !hasMore) return;
     _loadingMore = true;
     if (notify) notifyListeners();
 
@@ -1428,24 +1024,52 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       final sortOrder = _sortDirection == SortDirection.ascending
           ? 'Ascending'
           : 'Descending';
+      Future<Map<String, dynamic>> fetchItems(
+        MediaServerClient client,
+        String? parentId,
+        int start,
+        int limit,
+        String fields,
+      ) => _fetchItemsWithFallback(
+        client: client,
+        parentId: parentId,
+        genreIds: genreId != null ? [genreId!] : null,
+        studios: studioName != null ? [studioName!] : null,
+        includeItemTypes: includeTypes,
+        excludeItemTypes: excludeTypes,
+        collapseBoxSetItems: collapseBoxSets,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        startIndex: start,
+        limit: limit,
+        recursive: recursive,
+        fields: fields,
+        filters: filters.isEmpty ? null : filters,
+        seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
+        isFavorite: _favoriteFilter ? true : null,
+      );
       final results = await Future.wait([
-        _fetchItemsWithFallback(
-          parentId: _effectiveParentId,
-          genreIds: genreId != null ? [genreId!] : null,
-          studios: studioName != null ? [studioName!] : null,
-          includeItemTypes: includeTypes,
-          excludeItemTypes: excludeTypes,
-          collapseBoxSetItems: collapseBoxSets,
-          sortBy: sortBy,
-          sortOrder: sortOrder,
-          startIndex: startIndex,
-          limit: pageSize,
-          recursive: recursive,
-          fields: _browseFields,
-          filters: filters.isEmpty ? null : filters,
-          seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
-          isFavorite: _favoriteFilter ? true : null,
-        ),
+        if (isMergedBrowse)
+          _fetchMergedPage(
+            startIndex,
+            pageSize,
+            mergedSortComparator(sortBy, descending: sortOrder == 'Descending'),
+            (source, start, limit) => fetchItems(
+              source.session.client,
+              source.libraryId,
+              start,
+              limit,
+              _mergedBrowseFields,
+            ),
+          )
+        else
+          fetchItems(
+            _client,
+            _effectiveParentId,
+            startIndex,
+            pageSize,
+            _browseFields,
+          ),
         if (fetchDirectories)
           _getFilteredItems(
             parentId: _effectiveParentId,
@@ -1478,8 +1102,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           if (id == null || id.isEmpty) return null;
           return AggregatedItem(
             id: id,
-            serverId:
-                raw[unifiedServerIdKey]?.toString() ?? _client.baseUrl,
+            serverId: raw[_mergedServerIdKey] as String? ?? _client.baseUrl,
             rawData: raw,
           );
         })
@@ -1505,9 +1128,16 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     // reported and the dropped rows turn up on a later window.
     if (!isPlaylistBrowse) {
       filtered = filtered
-          .where((item) => !_renderedItemIds.contains(_renderedKey(item)))
+          .where((item) => _renderedItemIds.add('${item.serverId}|${item.id}'))
           .toList();
-      _renderedItemIds.addAll(filtered.map(_renderedKey));
+    }
+
+    // A copy joins the card already shown for its title, so the total shrinks
+    // with it like any other dropped row.
+    if (isMergedBrowse) {
+      final folded = foldCopies(filtered, _copyHolders);
+      _filteredOutCount += filtered.length - folded.length;
+      filtered = folded;
     }
 
     _fetchedCount = startIndex + rawItems.length;
@@ -1528,15 +1158,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     } else {
       _items = [..._items, ...filtered];
     }
-    if (isUnifiedBrowse) {
-      // The new page is only as current as the snapshot, so patch from there.
-      _patchFromCatalog(since: _catalogSnapshot?.revision ?? -1);
-    }
   }
-
-  /// Two servers can hand out the same id for different titles.
-  String _renderedKey(AggregatedItem item) =>
-      isUnifiedBrowse ? unifiedCopyKey(item.serverId, item.id) : item.id;
 
   /// Loads every item the user rated, ordered by their score, through the
   /// plugin's ratings endpoint plus id lookups. The id fetches keep the
@@ -1600,6 +1222,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> _fetchItemsWithFallback({
+    MediaServerClient? client,
     String? parentId,
     List<String>? genreIds,
     List<String>? studios,
@@ -1618,6 +1241,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }) async {
     try {
       return await _getFilteredItems(
+        client: client,
         parentId: parentId,
         genreIds: genreIds,
         studios: studios,
@@ -1648,6 +1272,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           : sortBy;
 
       return _getFilteredItems(
+        client: client,
         parentId: parentId,
         genreIds: genreIds,
         studios: studios,
@@ -1668,6 +1293,91 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         enableTotalRecordCount: false,
       );
     }
+  }
+
+  /// The next [limit] items of a merged browse in [compare]'s order, taking
+  /// whichever server's next item comes first. Every server reads ahead at
+  /// least a page, so an item only goes out once each server's next one is
+  /// known. A random order has nothing to compare and takes turns instead.
+  Future<Map<String, dynamic>> _fetchMergedPage(
+    int startIndex,
+    int limit,
+    int Function(AggregatedItem, AggregatedItem)? compare,
+    Future<Map<String, dynamic>> Function(
+      MergedLibrarySource source,
+      int start,
+      int limit,
+    )
+    fetch,
+  ) async {
+    if (startIndex == 0) {
+      _mergedReaders = [
+        for (final source in _mergedSources) _MergedReader(source),
+      ];
+    }
+    // Held here, since a reload swaps in new readers while this one waits.
+    final readers = _mergedReaders;
+    Object? failure;
+    await Future.wait([
+      for (final reader in readers)
+        if (!reader.done && reader.buffer.length < limit)
+          reader.read(fetch, limit - reader.buffer.length).catchError((
+            Object error,
+          ) {
+            failure = error;
+          }),
+    ]);
+    if (failure != null && readers.every((reader) => reader.failed)) {
+      throw failure!;
+    }
+
+    final page = <AggregatedItem>[];
+    var turn = 0;
+    while (page.length < limit) {
+      if (readers.any((reader) => reader.buffer.isEmpty && !reader.done)) {
+        break;
+      }
+      final ready = [
+        for (final reader in readers)
+          if (reader.buffer.isNotEmpty) reader,
+      ];
+      if (ready.isEmpty) break;
+      final next = compare == null
+          ? ready[turn++ % ready.length]
+          : ready.reduce(
+              (a, b) => compare(a.buffer.first, b.buffer.first) <= 0 ? a : b,
+            );
+      page.add(next.buffer.removeAt(0));
+    }
+
+    final totals = [for (final reader in readers) reader.total];
+    return {
+      'Items': [for (final item in page) item.rawData],
+      if (!totals.contains(null))
+        'TotalRecordCount': totals.fold<int>(0, (sum, total) => sum + total!),
+    };
+  }
+
+  static QueryFilterValues _mergeFacetValues(List<QueryFilterValues> values) {
+    List<T> union<T extends Comparable<Object>>(
+      Iterable<T> Function(QueryFilterValues value) pick,
+    ) => ({for (final value in values) ...pick(value)}.toList()..sort());
+    List<NamedFilterValue> unionNamed(
+      List<NamedFilterValue> Function(QueryFilterValues value) pick,
+    ) => [
+      ...{
+        for (final value in values)
+          for (final named in pick(value)) named.value: named,
+      }.values,
+    ]..sort((a, b) => a.name.compareTo(b.name));
+    return QueryFilterValues(
+      genres: union((value) => value.genres),
+      officialRatings: union((value) => value.officialRatings),
+      tags: union((value) => value.tags),
+      years: union((value) => value.years),
+      audioLanguages: unionNamed((value) => value.audioLanguages),
+      subtitleLanguages: unionNamed((value) => value.subtitleLanguages),
+    );
   }
 
   String? get _effectiveParentId {
@@ -1942,18 +1652,25 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// Reads the values the library holds once per browse, so opening the filter
   /// picker does not wait on the network every time.
   Future<void> ensureFacetValuesLoaded() async {
-    if (isUnifiedBrowse) {
-      _facetsRequested = true;
-      if (_refreshCatalogFacets()) notifyListeners();
-      return;
-    }
     if (_facetsRequested) return;
     _facetsRequested = true;
     try {
-      final values = await _client.itemsApi.getQueryFilters(
-        parentId: _effectiveParentId,
-        includeItemTypes: includeItemTypes,
-      );
+      final values = isMergedBrowse
+          ? _mergeFacetValues(
+              await Future.wait([
+                for (final source in _mergedSources)
+                  source.session.client.itemsApi
+                      .getQueryFilters(
+                        parentId: source.libraryId,
+                        includeItemTypes: includeItemTypes,
+                      )
+                      .catchError((_) => QueryFilterValues.empty),
+              ]),
+            )
+          : await _client.itemsApi.getQueryFilters(
+              parentId: _effectiveParentId,
+              includeItemTypes: includeItemTypes,
+            );
       if (_disposed) return;
       _facetValues = values;
       notifyListeners();
@@ -1962,38 +1679,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     }
   }
 
-  bool _refreshCatalogFacets() {
-    final catalog = _unifiedCatalog!;
-    if (!_facetsRequested || catalog.titlesRevision == _facetsTitlesRevision) {
-      return false;
-    }
-    _facetsTitlesRevision = catalog.titlesRevision;
-    final genre = unifiedGenre;
-    if (genre == null) {
-      _facetValues = catalog.facetsOf(
-        _unifiedKinds,
-        where: (item) => !isAnyCopyBlocked(item),
-      );
-      return true;
-    }
-    final key = genreNameKey(genre);
-    final facets = catalog.facetsOf(
-      _unifiedKinds,
-      where: (item) =>
-          !isAnyCopyBlocked(item) &&
-          unifiedGenresOf(item).any((g) => genreNameKey(g) == key),
-    );
-    // The genre is the page's subject, so it isn't offered as a filter.
-    _facetValues = QueryFilterValues(
-      officialRatings: facets.officialRatings,
-      years: facets.years,
-    );
-    return true;
-  }
-
   /// Every items query this browse makes goes through here, so the filter
   /// arguments are stated once instead of at each call.
   Future<Map<String, dynamic>> _getFilteredItems({
+    MediaServerClient? client,
     List<String>? ids,
     String? parentId,
     List<String>? genreIds,
@@ -2013,96 +1702,42 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     List<String>? seriesStatus,
     bool? isFavorite,
     bool? enableTotalRecordCount,
-  }) {
-    if (isUnifiedBrowse) {
-      return Future.value(
-        _catalogPage(
-          ids: ids,
-          sortBy: sortBy,
-          sortOrder: sortOrder,
-          startIndex: startIndex,
-          limit: limit,
-          filters: filters,
-          seriesStatus: seriesStatus,
-          isFavorite: isFavorite,
-        ),
-      );
-    }
-    return _client.itemsApi.getItems(
-      ids: ids,
-      parentId: parentId,
-      genreIds: genreIds,
-      studios: studios,
-      includeItemTypes: includeItemTypes,
-      excludeItemTypes: excludeItemTypes,
-      collapseBoxSetItems: collapseBoxSetItems,
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-      startIndex: startIndex,
-      limit: limit,
-      recursive: recursive,
-      fields: fields,
-      enableImageTypes: enableImageTypes,
-      imageTypeLimit: imageTypeLimit,
-      filters: filters,
-      seriesStatus: seriesStatus,
-      isFavorite: isFavorite,
-      enableTotalRecordCount: enableTotalRecordCount,
-      genres: _genreNamesFilter,
-      officialRatings: _officialRatingsFilter,
-      tags: _tagsFilter,
-      years: _yearsFilter,
-      videoTypes: _videoTypesFilter,
-      audioLanguages: _audioLanguagesFilter,
-      subtitleLanguages: _subtitleLanguagesFilter,
-      hasSubtitles: _hasSubtitlesFilter,
-      hasTrailer: _hasTrailerFilter,
-      hasSpecialFeature: _hasSpecialFeatureFilter,
-      hasThemeSong: _hasThemeSongFilter,
-      hasThemeVideo: _hasThemeVideoFilter,
-      isHd: _isHdFilter,
-      is4K: _is4KFilter,
-      is3D: _is3DFilter,
-    );
-  }
-
-  /// A page of the merged library. The catalog honours only the sort, the
-  /// favourites, genre, rating, year and status filters, and [ids].
-  Map<String, dynamic> _catalogPage({
-    List<String>? ids,
-    String? sortBy,
-    String? sortOrder,
-    int? startIndex,
-    int? limit,
-    List<String>? filters,
-    List<String>? seriesStatus,
-    bool? isFavorite,
-  }) {
-    final query = UnifiedCatalogQuery(
-      itemTypes: _unifiedKinds.map((kind) => kind.itemType).join(','),
-      sortBy: sortBy ?? 'SortName',
-      descending: sortOrder == 'Descending',
-      filters: filters ?? const [],
-      seriesStatus: seriesStatus ?? const [],
-      favoritesOnly: isFavorite == true,
-      genres: _genreNamesFilter ?? const [],
-      genre: unifiedGenre,
-      officialRatings: _officialRatingsFilter ?? const [],
-      years: _yearsFilter ?? const [],
-      ids: ids,
-    );
-    var snapshot = _catalogSnapshot;
-    if (snapshot == null || query.signature != _catalogSnapshotSignature) {
-      snapshot = _unifiedCatalog!.snapshotOf(
-        _unifiedKinds,
-        query,
-        random: Random(_catalogRandomSeed),
-      );
-      _catalogSnapshot = snapshot;
-      _catalogSnapshotSignature = query.signature;
-    }
-    return snapshot.page(startIndex: startIndex ?? 0, limit: limit);
-  }
+  }) => (client ?? _client).itemsApi.getItems(
+    ids: ids,
+    parentId: parentId,
+    genreIds: genreIds,
+    studios: studios,
+    includeItemTypes: includeItemTypes,
+    excludeItemTypes: excludeItemTypes,
+    collapseBoxSetItems: collapseBoxSetItems,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
+    startIndex: startIndex,
+    limit: limit,
+    recursive: recursive,
+    fields: fields,
+    enableImageTypes: enableImageTypes,
+    imageTypeLimit: imageTypeLimit,
+    filters: filters,
+    seriesStatus: seriesStatus,
+    isFavorite: isFavorite,
+    enableTotalRecordCount: enableTotalRecordCount,
+    genres: _genreNamesFilter,
+    officialRatings: _officialRatingsFilter,
+    tags: _tagsFilter,
+    years: _yearsFilter,
+    videoTypes: _videoTypesFilter,
+    audioLanguages: _audioLanguagesFilter,
+    subtitleLanguages: _subtitleLanguagesFilter,
+    hasSubtitles: _hasSubtitlesFilter,
+    hasTrailer: _hasTrailerFilter,
+    hasSpecialFeature: _hasSpecialFeatureFilter,
+    hasThemeSong: _hasThemeSongFilter,
+    hasThemeVideo: _hasThemeVideoFilter,
+    isHd: _isHdFilter,
+    is4K: _is4KFilter,
+    is3D: _is3DFilter,
+  );
 
   bool? _feature(LibraryFeatureFilter value) =>
       _featureFilters.contains(value) ? true : null;
@@ -2165,8 +1800,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<void> _syncImageTypeFromServer() async {
-    // A merged library belongs to no one server to keep the choice on.
-    if (_imagePrefKey.isEmpty || isUnifiedBrowse) return;
+    if (_imagePrefKey.isEmpty) return;
     try {
       final dp = await _client.displayPreferencesApi.getDisplayPreferences(
         _imagePrefKey,
@@ -2189,7 +1823,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<void> _syncImageTypeToServer(ImageType value) async {
-    if (_imagePrefKey.isEmpty || isUnifiedBrowse) return;
+    if (_imagePrefKey.isEmpty) return;
     try {
       final dp = await _client.displayPreferencesApi.getDisplayPreferences(
         _imagePrefKey,
@@ -2252,7 +1886,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get isMovieOrSeriesLibrary =>
       _collectionType == 'movies' ||
       _collectionType == 'tvshows' ||
-      isUnifiedBrowse ||
       (includeItemTypes != null &&
           includeItemTypes!.any((t) => t == 'Movie' || t == 'Series'));
 
@@ -2265,7 +1898,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get isSongsBrowse =>
       includeItemTypes != null && includeItemTypes!.contains('Audio');
 
-  bool get canFolderView => !isFilterBrowse && includeItemTypes == null;
+  bool get canFolderView =>
+      !isFilterBrowse && !isMergedBrowse && includeItemTypes == null;
 
   bool? _folderViewChoice;
 
@@ -2285,37 +1919,37 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   /// Only video holds a picture quality or a disc source worth filtering on.
   bool get supportsVideoFilters =>
-      // The catalog keeps what the grid shows, not each file's streams.
-      !isUnifiedBrowse && !isMusicBrowse && !isBookLibrary && !isPlaylistBrowse;
+      !isMusicBrowse && !isBookLibrary && !isPlaylistBrowse;
 
   /// Options the server can't filter on stay out of the picker rather than
   /// sitting there doing nothing.
   bool get supportsUhdFilter =>
-      !isUnifiedBrowse && _client.features.supportsUhdFilter;
+      _everyClient((features) => features.supportsUhdFilter);
 
   bool get supportsExtraFilters =>
-      !isUnifiedBrowse && _client.features.supportsExtraLibraryFilters;
+      _everyClient((features) => features.supportsExtraLibraryFilters);
 
   bool get supportsUnreleasedSeriesFilter =>
-      !isUnifiedBrowse && _client.features.supportsUnreleasedSeriesFilter;
+      _everyClient((features) => features.supportsUnreleasedSeriesFilter);
 
-  List<LibrarySortBy> get sortOptions {
-    final options = LibrarySortBy.optionsFor(
-      isSongsBrowse: isSongsBrowse,
-      isMusicBrowse: isMusicBrowse,
-      isSeriesLibrary: isSeriesLibrary,
-      isBookLibrary: isBookLibrary,
-      isFolderyLibrary: folderView,
-      isMovieOrSeriesLibrary: isMovieOrSeriesLibrary,
-      supportsMyRating: supportsMyRatingSort,
-    );
-    if (!isUnifiedBrowse) return options;
-    // The catalog doesn't keep when a series last gained an episode.
-    return [
-      for (final option in options)
-        if (option != LibrarySortBy.dateEpisodeAdded) option,
-    ];
-  }
+  // A merged browse only offers a filter every server can apply, since one
+  // that ignored it would fill the list with what it was meant to leave out.
+  bool _everyClient(bool Function(FeatureDetector features) supports) =>
+      isMergedBrowse
+      ? _mergedSources.every(
+          (source) => supports(source.session.client.features),
+        )
+      : supports(_client.features);
+
+  List<LibrarySortBy> get sortOptions => LibrarySortBy.optionsFor(
+    isSongsBrowse: isSongsBrowse,
+    isMusicBrowse: isMusicBrowse,
+    isSeriesLibrary: isSeriesLibrary,
+    isBookLibrary: isBookLibrary,
+    isFolderyLibrary: folderView,
+    isMovieOrSeriesLibrary: isMovieOrSeriesLibrary,
+    supportsMyRating: supportsMyRatingSort,
+  );
 
   Map<String, List<AggregatedItem>> get groupedCategories {
     if (!isGrouping) return const {};
@@ -2530,7 +2164,57 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _pageWalkGeneration++;
     _prefs.removeListener(_onPrefsChanged);
     userDataSync.removeListener(_onUserDataChanged);
-    if (isUnifiedBrowse) _unifiedCatalog!.removeListener(_onCatalogChanged);
     super.dispose();
+  }
+}
+
+/// Where a merged browse notes which server an item came from, since one
+/// list holds several servers' items.
+const _mergedServerIdKey = 'MergedServerId';
+
+/// Reads one server library of a merged browse, holding what it has read
+/// until the merge takes it.
+class _MergedReader {
+  _MergedReader(this.source);
+
+  final MergedLibrarySource source;
+  final buffer = <AggregatedItem>[];
+  int _offset = 0;
+  int? total;
+  bool done = false;
+  bool failed = false;
+
+  Future<void> read(
+    Future<Map<String, dynamic>> Function(
+      MergedLibrarySource source,
+      int start,
+      int limit,
+    )
+    fetch,
+    int limit,
+  ) async {
+    try {
+      final response = await fetch(source, _offset, limit);
+      final serverId = source.session.server.id;
+      final raws = [
+        for (final raw in response['Items'] as List? ?? const [])
+          if (raw is Map) raw.cast<String, dynamic>(),
+      ];
+      for (final raw in raws) {
+        final id = raw['Id']?.toString();
+        if (id == null || id.isEmpty) continue;
+        raw[_mergedServerIdKey] = serverId;
+        buffer.add(AggregatedItem(id: id, serverId: serverId, rawData: raw));
+      }
+      _offset += raws.length;
+      total = response['TotalRecordCount'] as int?;
+      done = raws.length < limit || (total != null && _offset >= total!);
+    } catch (_) {
+      // The other servers carry on, and this one counts only what it gave.
+      done = true;
+      failed = true;
+      total = _offset;
+      rethrow;
+    }
   }
 }

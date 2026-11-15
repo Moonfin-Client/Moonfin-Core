@@ -34,7 +34,6 @@ import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/row_data_source.dart';
-import '../../../data/services/unified_catalog_query.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
 import '../../../data/services/connectivity_service.dart';
@@ -79,7 +78,7 @@ import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/media_card.dart';
-import '../../widgets/unified_server_picker.dart';
+import '../../widgets/merged_copy_picker.dart';
 import '../../widgets/carousel_panel.dart';
 import '../detail/item_detail_screen.dart' show technicalDetailsFor;
 import '../../widgets/selector_builder.dart';
@@ -163,49 +162,6 @@ class HomeScreen extends StatelessWidget {
   @visibleForTesting
   static Future<String?> seeAllRoute(HomeRow row) =>
       _ContentRowsState._seeAllRoute(row);
-
-  /// [onFocusLost] runs when the server picker is dismissed and the card
-  /// that opened it no longer exists.
-  @visibleForTesting
-  static void openItem(
-    BuildContext context,
-    AggregatedItem item, {
-    bool autoPlay = false,
-    VoidCallback? onFocusLost,
-  }) {
-    final opener = FocusManager.instance.primaryFocus;
-    unawaited(
-      openOnPickedServer(
-        context,
-        item,
-        open: (itemId, serverId) => context.push(
-          autoPlay
-              ? Destinations.item(itemId, serverId: serverId, autoPlay: true)
-              : Destinations.itemOrPhoto(
-                  itemId,
-                  serverId: serverId,
-                  type: item.type,
-                  channelId: item.channelId,
-                ),
-        ),
-        onDismissed: () {
-          // Opened by touch with no card focused: there is no focus to restore.
-          if (opener == null || opener is FocusScopeNode) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final focus = FocusManager.instance.primaryFocus;
-            if (focus != null && focus is! FocusScopeNode) return;
-            // A node keeps its context after its card is removed, so only
-            // a mounted one says the card is still there.
-            if (opener.context?.mounted == true) {
-              opener.requestFocus();
-            } else {
-              onFocusLost?.call();
-            }
-          });
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -5943,13 +5899,11 @@ class _ContentRowsState extends State<_ContentRows>
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(
-              item.rawData[unifiedGenreTileKey] == true
-                  ? Destinations.unifiedGenre(item.name)
-                  : Destinations.genre(
-                      item.name,
-                      genreId: item.id,
-                      serverId: item.serverId,
-                    ),
+              Destinations.genre(
+                item.name,
+                genreId: item.id,
+                serverId: item.serverId,
+              ),
             );
           } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
             context.push(Destinations.studio(item.name, serverId: item.serverId));
@@ -6070,13 +6024,11 @@ class _ContentRowsState extends State<_ContentRows>
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
                       context.push(
-                        item.rawData[unifiedGenreTileKey] == true
-                            ? Destinations.unifiedGenre(item.name)
-                            : Destinations.genre(
-                                item.name,
-                                genreId: item.id,
-                                serverId: item.serverId,
-                              ),
+                        Destinations.genre(
+                          item.name,
+                          genreId: item.id,
+                          serverId: item.serverId,
+                        ),
                       );
                     } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
                       context.push(Destinations.studio(item.name, serverId: item.serverId));
@@ -6199,7 +6151,7 @@ class _ContentRowsState extends State<_ContentRows>
                         ? _buildWatchingNowOverlays(item, l10n)
                         : (isSeerrGenreCard
                             ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
-                            : const <Widget>[]),
+                            : mergedServerCountOverlays(context, item)),
                     imageUnderlays: [
                       if (glide != null &&
                           canUseExpandedV2Card &&
@@ -6227,7 +6179,6 @@ class _ContentRowsState extends State<_ContentRows>
                     imageSourceAspectRatio: glide != null && canUseExpandedV2Card
                         ? v2FocusedAspect
                         : null,
-                    bottomLeftBadge: unifiedServerCountBadgeFor(item),
                     subtitle: cardSubtitle,
                     subtitleWidget: cardSubtitleWidget,
                     imageUrl: imageUrl,
@@ -6903,19 +6854,25 @@ class _ContentRowsState extends State<_ContentRows>
             ContinueWatchingDefaultAction.play) {
       return false;
     }
-    _openItem(item, autoPlay: true);
+    context.push(
+      Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
+    );
     return true;
   }
 
-  void _openItem(AggregatedItem item, {bool autoPlay = false}) =>
-      HomeScreen.openItem(
-        context,
-        item,
-        autoPlay: autoPlay,
-        onFocusLost: () {
-          if (mounted) _focusFirstAvailableHomeTarget();
-        },
-      );
+  /// Opens [item]'s details, first asking which server when several hold it.
+  void _openItem(AggregatedItem item) => openPickedCopy(
+    context,
+    item,
+    (copy) => context.push(
+      Destinations.itemOrPhoto(
+        copy.id,
+        serverId: copy.serverId,
+        type: copy.type,
+        channelId: copy.channelId,
+      ),
+    ),
+  );
 
   static void _navigateToLibrary(BuildContext context, AggregatedItem item) {
     // Game libraries route to the EmulatorJS browser, everything else by its
@@ -6925,7 +6882,6 @@ class _ContentRowsState extends State<_ContentRows>
       item.rawData['CollectionType'] as String?,
       item.name,
       serverId: item.serverId,
-      unifiedKindName: item.rawData[unifiedKindKey] as String?,
     ));
   }
 

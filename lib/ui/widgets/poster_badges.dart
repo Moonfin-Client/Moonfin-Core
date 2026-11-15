@@ -164,17 +164,12 @@ class PosterBadgeCorners extends StatelessWidget {
   /// Where the bottom labels start, above the card's progress bar when it has one.
   final double bottom;
 
-  /// The card's own bottom-left badge; that corner's poster badges stack
-  /// above it.
-  final Widget? bottomLeftBadge;
-
   const PosterBadgeCorners({
     super.key,
     required this.itemId,
     this.scale = 1.0,
     this.top = 6,
     this.bottom = 6,
-    this.bottomLeftBadge,
   });
 
   @override
@@ -200,23 +195,7 @@ class PosterBadgeCorners extends StatelessWidget {
               bottom: bottom,
               left: 6,
               right: 6,
-              child: corner == PosterBadgeCorner.bottomLeft &&
-                      bottomLeftBadge != null
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      verticalDirection: VerticalDirection.up,
-                      children: [
-                        bottomLeftBadge!,
-                        PosterBadges(
-                          itemId: itemId,
-                          scale: scale,
-                          corner: corner,
-                          padding: EdgeInsets.only(bottom: 4 * scale),
-                        ),
-                      ],
-                    )
-                  : PosterBadges(itemId: itemId, scale: scale, corner: corner),
+              child: PosterBadges(itemId: itemId, scale: scale, corner: corner),
             ),
         ],
       ),

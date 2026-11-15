@@ -72,7 +72,6 @@ bool bottomNavTabMatchesRoute(BottomNavTab tab, String route) {
     BottomNavTab.search => route == Destinations.search,
     BottomNavTab.libraries => under('/library') ||
         under('/library-view') ||
-        under('/unified') ||
         under('/folder') ||
         under('/music') ||
         under('/books') ||

@@ -83,8 +83,6 @@ class EmbyItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
-    bool? enableUserData,
-    bool? enableImages,
   }) async {
     final queryParams = {
       'ParentId': ?parentId,
@@ -130,8 +128,6 @@ class EmbyItemsApi implements ItemsApi {
       'IsFavorite': ?isFavorite,
       'GroupItemsIntoCollections': ?collapseBoxSetItems,
       'EnableTotalRecordCount': ?enableTotalRecordCount,
-      'EnableUserData': ?enableUserData,
-      'EnableImages': ?enableImages,
       'EnableImageTypes': ?enableImageTypes,
       'ImageTypeLimit': ?imageTypeLimit,
       if (tags != null && tags.isNotEmpty) 'Tags': tags.join('|'),

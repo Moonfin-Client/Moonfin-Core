@@ -91,34 +91,13 @@ void main() {
     expect(requests.single.queryParameters.containsKey('sort'), isFalse);
   });
 
-  test(
-    'the user data and image switches change nothing Plex is asked',
-    () async {
-      final (dio, requests) = _recordingDio(const {'Metadata': []});
-      final api = PlexItemsApi(dio);
-
-      await api.getItems(parentId: 'section-1', includeItemTypes: ['Movie']);
-      await api.getItems(
-        parentId: 'section-1',
-        includeItemTypes: ['Movie'],
-        enableUserData: false,
-        enableImages: false,
-      );
-
-      expect(requests, hasLength(2));
-      expect(requests.last.path, requests.first.path);
-      expect(requests.last.queryParameters, requests.first.queryParameters);
-    },
-  );
-
-  test('a list asked for provider ids gets them, and its original title', () async {
+  test('a list asked for provider ids gets them', () async {
     final (dio, requests) = _recordingDio({
       'Metadata': [
         {
           'ratingKey': '7',
           'type': 'movie',
-          'title': 'Le Sablier des marées',
-          'originalTitle': 'The Ledger of the Tides',
+          'title': 'The Ledger of the Tides',
           'Guid': [
             {'id': 'tmdb://1005'},
             {'id': 'imdb://tt9000002'},
@@ -144,7 +123,6 @@ void main() {
     expect(requests[3].queryParameters.containsKey('includeGuids'), isFalse);
     final item = (listed['Items'] as List).single as Map;
     expect(item['ProviderIds'], {'Tmdb': '1005', 'Imdb': 'tt9000002'});
-    expect(item['OriginalTitle'], 'The Ledger of the Tides');
   });
 
   test("a library's latest items get provider ids only when asked", () async {
@@ -172,7 +150,6 @@ void main() {
 
     expect(requests[0].path, '/library/sections/1/recentlyAdded');
     expect(requests[0].queryParameters['includeGuids'], 1);
-    // The paging is still sent alongside.
     expect(requests[0].queryParameters['X-Plex-Container-Size'], 5);
     expect(requests[1].queryParameters.containsKey('includeGuids'), isFalse);
     expect(requests[2].queryParameters.containsKey('includeGuids'), isFalse);

@@ -2038,7 +2038,7 @@ class UserPreferences extends ChangeNotifier {
   bool get effectiveMergeContinueWatchingNextUp =>
       get(kidsModeEnabled) || get(mergeContinueWatchingNextUp);
 
-  /// Merging by type only exists with multi-server libraries on.
+  /// Merging needs every server's libraries listed in the first place.
   bool get effectiveMergeLibrariesByType =>
       get(enableMultiServerLibraries) && get(mergeLibrariesByType);
 
@@ -2232,10 +2232,9 @@ class UserPreferences extends ChangeNotifier {
     key: 'enable_multi_server_libraries',
     defaultValue: false,
   );
-  /// With multi-server libraries on, shows every server's movies as one
-  /// library and every server's series as another. Stored per server and
-  /// user on this device, and not synced through the plugin: it is not a
-  /// synced field, unlike [enableMultiServerLibraries].
+  /// Shows every server's movie libraries as one Movies library and their
+  /// show libraries as one TV Shows library, with a title several servers
+  /// hold listed once.
   static final mergeLibrariesByType = Preference(
     key: 'merge_libraries_by_type',
     defaultValue: false,

@@ -2,7 +2,6 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
-import '../offline/connectivity_aware_media_server_client.dart';
 import '../services/user_data_sync.dart';
 
 class ItemMutationRepository {
@@ -10,13 +9,7 @@ class ItemMutationRepository {
 
   ItemMutationRepository(this._client);
 
-  /// The favorite changes in progress, one per server and item. Servers can
-  /// hand out the same item id, and each still needs its own request.
-  static final _favoriteSyncs = <_FavoriteSyncKey, _FavoriteSync>{};
-
-  /// The server whose favorite change was the last one sent under an item id.
-  static final _lastFavoriteServer =
-      <String, ({int session, MediaServerClient server})>{};
+  static final _favoriteSyncs = <String, Future<void>>{};
 
   /// Shows [isFavorite] at once, then brings the server to the newest choice
   /// one request at a time, so a quick run of toggles ends where the user
@@ -26,62 +19,26 @@ class ItemMutationRepository {
   /// what the server holds throw, so a caller undoing its own toggle on error
   /// lands on the server's value whichever order the callers run in.
   Future<void> setFavorite(String itemId, {required bool isFavorite}) async {
-    // Read before the request below fills in a guess for an unknown flag.
-    final flagIsKnown = userDataSync.favoriteFor(itemId) != null;
     userDataSync.requestFavorite(itemId, isFavorite);
-    final key = (
-      session: userDataSync.session,
-      // The active client and the factory's can be two wrappers around one
-      // server's client.
-      server: onlineClientOf(_client),
-      itemId: itemId,
-    );
-    var sync = _favoriteSyncs[key];
-    if (sync == null) {
-      // The flag [UserDataSync] remembers is the last server's to change this
-      // id. When that was another server, this one is sent the change rather
-      // than trusted to hold it already.
-      final last = _lastFavoriteServer[itemId];
-      final rememberedIsOthers =
-          last != null &&
-          last.session == key.session &&
-          !identical(last.server, key.server);
-      sync = _favoriteSyncs[key] = _FavoriteSync(
-        wanted: isFavorite,
-        held: rememberedIsOthers
-            ? !isFavorite
-            : userDataSync.confirmedFavorite(itemId) ?? !isFavorite,
-        heldIsKnown: !rememberedIsOthers && flagIsKnown,
-        // Unknown, it is what the caller showed before its toggle, so a
-        // failure still lands the caller there.
-        heldIsShown: !rememberedIsOthers,
-      );
-      sync.done = _syncFavorite(key, sync);
-    } else {
-      sync.wanted = isFavorite;
-    }
+    final session = userDataSync.session;
+    final key = '$session:$itemId';
     try {
-      await sync.done;
+      await (_favoriteSyncs[key] ??= _syncFavorite(itemId, session, key));
     } on _FavoriteSyncFailure catch (failure) {
       if (failure.confirmed == isFavorite) return;
       Error.throwWithStackTrace(failure.error, failure.stackTrace);
     }
   }
 
-  /// [UserDataSync] tracks a change by item id alone, so what this server is
-  /// wanted to hold and what it does hold are kept in [sync]. Another
-  /// server's change under the same id would otherwise end this one early.
-  Future<void> _syncFavorite(_FavoriteSyncKey key, _FavoriteSync sync) async {
-    final (:session, server: _, :itemId) = key;
+  Future<void> _syncFavorite(String itemId, int session, String key) async {
     try {
       // Lets setFavorite store this run before it can finish and remove it.
       await Future<void>.value();
       while (userDataSync.session == session) {
-        final wanted = sync.wanted;
-        if (sync.heldIsKnown && wanted == sync.held) {
-          if (userDataSync.pendingFavorite(itemId) == wanted) {
-            userDataSync.confirmFavorite(itemId, wanted);
-          }
+        final wanted = userDataSync.pendingFavorite(itemId);
+        if (wanted == null) return;
+        if (wanted == userDataSync.confirmedFavorite(itemId)) {
+          userDataSync.confirmFavorite(itemId, wanted);
           return;
         }
         try {
@@ -92,21 +49,12 @@ class ItemMutationRepository {
           }
         } catch (error, stackTrace) {
           if (userDataSync.session != session) return;
+          final confirmed = userDataSync.confirmedFavorite(itemId) ?? !wanted;
           userDataSync.failFavoriteChange(itemId);
-          throw _FavoriteSyncFailure(
-            error,
-            stackTrace,
-            confirmed: sync.heldIsKnown || sync.heldIsShown ? sync.held : null,
-          );
+          throw _FavoriteSyncFailure(error, stackTrace, confirmed: confirmed);
         }
         if (userDataSync.session != session) return;
-        sync.held = wanted;
-        sync.heldIsKnown = true;
-        _lastFavoriteServer[itemId] = (session: session, server: key.server);
-        // Another server's run under the same id may have ended the change.
-        if (userDataSync.favoriteChangePending(itemId)) {
-          userDataSync.confirmFavorite(itemId, wanted);
-        }
+        userDataSync.confirmFavorite(itemId, wanted);
       }
     } finally {
       _favoriteSyncs.remove(key);
@@ -190,43 +138,11 @@ class ItemMutationRepository {
   }
 }
 
-typedef _FavoriteSyncKey = ({
-  int session,
-  MediaServerClient server,
-  String itemId,
-});
-
-/// One server's favorite change in progress.
-class _FavoriteSync {
-  _FavoriteSync({
-    required this.wanted,
-    required this.held,
-    required this.heldIsKnown,
-    required this.heldIsShown,
-  });
-
-  /// The newest choice.
-  bool wanted;
-
-  /// What the server holds, as far as this client knows.
-  bool held;
-
-  /// False while [held] is only assumed, so that the first change is sent.
-  bool heldIsKnown;
-
-  /// Whether [held] is what the caller showed, known or not. A failure then
-  /// reports it as the value to go back to.
-  final bool heldIsShown;
-
-  late final Future<void> done;
-}
-
-/// A failed favorite request and the value the server still holds, null when
-/// that isn't known.
+/// A failed favorite request and the value the server still holds.
 class _FavoriteSyncFailure {
   _FavoriteSyncFailure(this.error, this.stackTrace, {required this.confirmed});
 
   final Object error;
   final StackTrace stackTrace;
-  final bool? confirmed;
+  final bool confirmed;
 }

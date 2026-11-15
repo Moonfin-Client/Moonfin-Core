@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_plex/server_plex.dart'
     show plexItemToJellyfin, plexPersonToJellyfin;
 
 import '../../l10n/current_app_localizations.dart';
+import '../../preference/user_preferences.dart';
 import '../../util/accent_folding.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/multi_server_repository.dart';
@@ -14,10 +16,8 @@ import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/plugin_sync_service.dart';
 import '../services/seerr/seerr_api_models.dart';
-import '../services/unified_catalog_query.dart';
-import '../services/unified_catalog_service.dart';
-import '../services/unified_search_fold.dart';
 import '../utils/blocked_ratings.dart';
+import '../utils/merged_copies.dart';
 
 class SearchResultGroup {
   final String title;
@@ -104,9 +104,6 @@ class SearchViewModel extends ChangeNotifier {
   // Only set when search should cover every signed-in server.
   final MultiServerRepository? _multiServerRepository;
   final PluginSyncService? _pluginSync;
-  final bool _mergeSharedTitles;
-  final UnifiedCatalogService? _unifiedCatalog;
-  final String? Function()? _activeServerId;
   SeerrRepository? _seerrRepository;
 
   SearchViewModel(
@@ -116,9 +113,6 @@ class SearchViewModel extends ChangeNotifier {
     String? scopedParentId,
     MultiServerRepository? multiServerRepository,
     PluginSyncService? pluginSync,
-    this._mergeSharedTitles = false,
-    this._unifiedCatalog,
-    this._activeServerId,
   }) : _seerrRepository = seerrRepository,
        _multiServerRepository = multiServerRepository,
        _pluginSync = pluginSync,
@@ -183,8 +177,6 @@ class SearchViewModel extends ChangeNotifier {
   // Counts searches, so people that answer late only fill in their own search.
   int _searchRun = 0;
 
-  bool _disposed = false;
-
   static List<SearchResultGroup> _bookSearchGroups() {
     final l10n = currentAppLocalizations();
     return [
@@ -234,7 +226,6 @@ class SearchViewModel extends ChangeNotifier {
     _query = trimmed;
 
     _debounceTimer?.cancel();
-    unawaited(_warmCatalog());
 
     if (trimmed.isEmpty) {
       _results = const [];
@@ -261,7 +252,6 @@ class SearchViewModel extends ChangeNotifier {
     if (trimmed.isEmpty) return;
     _query = trimmed;
     _debounceTimer?.cancel();
-    unawaited(_warmCatalog());
     _state = SearchState.loading;
     notifyListeners();
     _executeSearch(trimmed);
@@ -281,13 +271,9 @@ class SearchViewModel extends ChangeNotifier {
           ? Future.value(const <GameSearchResult>[])
           : _fetchGameResults(query);
 
-      var (
-        groups: groups,
-        people: peopleFuture,
-        regrouped: regroupedFuture,
-      ) = _scopedParentId != null
+      final (groups, peopleFuture) = _scopedParentId != null
           ? (
-              groups: await Future.wait(
+              await Future.wait(
                 activeGroups.map((group) async {
                   final items = await _searchRepository.search(
                     query,
@@ -298,8 +284,7 @@ class SearchViewModel extends ChangeNotifier {
                   return group.copyWith(items: items);
                 }),
               ),
-              people: Future.value(const <AggregatedItem>[]),
-              regrouped: Future<List<SearchResultGroup>?>.value(),
+              Future.value(const <AggregatedItem>[]),
             )
           : await _buildGroupedGlobalResults(query, activeGroups);
       final seerr = await seerrFuture;
@@ -319,10 +304,9 @@ class SearchViewModel extends ChangeNotifier {
                 .timeout(_peopleGrace, onTimeout: () => null)
           : await peopleFuture;
 
-      if (_disposed || query != _query) return;
+      if (query != _query) return;
 
-      var shownPeople = people ?? const <AggregatedItem>[];
-      _results = _withPeople(groups, shownPeople);
+      _results = _withPeople(groups, people ?? const []);
       _seerrResults = seerr;
       _gameResults = games;
       if (smart != null || _smartQuery != query) {
@@ -343,59 +327,22 @@ class SearchViewModel extends ChangeNotifier {
         unawaited(
           peopleFuture.then((found) {
             if (found.isEmpty || run != _searchRun || query != _query) return;
-            shownPeople = found;
-            _results = _withPeople(groups, shownPeople);
+            _results = _withPeople(groups, found);
             notifyListeners();
           }),
         );
       }
-      unawaited(
-        regroupedFuture.then((regrouped) {
-          if (regrouped == null || run != _searchRun || query != _query) return;
-          groups = regrouped;
-          _results = _withPeople(groups, shownPeople);
-          notifyListeners();
-        }),
-      );
     } catch (e) {
-      if (_disposed || query != _query) return;
+      if (query != _query) return;
       _error = e;
       _state = SearchState.error;
     }
     notifyListeners();
   }
 
-  // Only where a search would fold shared titles: the load decodes the whole
-  // merged catalog.
-  Future<void> _warmCatalog() async {
-    final multiServer = _multiServerRepository;
-    if (!_mergeSharedTitles || multiServer == null) return;
-    try {
-      final sessions = await multiServer.getLoggedInServers();
-      if (_disposed || _mergeableServersOrNull(sessions) == null) return;
-      await _tryLoadCatalog();
-    } catch (_) {}
-  }
-
-  /// Starts loading the merged catalog and reports whether it loaded. False
-  /// without a catalog or in a scoped search, which never folds.
-  Future<bool> _tryLoadCatalog() async {
-    final catalog = _unifiedCatalog;
-    if (catalog == null || _scopedParentId != null) return false;
-    return catalog.tryEnsureLoaded();
-  }
-
-  /// `groups` is every group in order with the People group left empty, and
-  /// `people` the people search that fills it. `regrouped` completes with the
-  /// groups again once a catalog that loaded too late has more copies to add,
-  /// else with null.
-  Future<
-    ({
-      List<SearchResultGroup> groups,
-      Future<List<AggregatedItem>> people,
-      Future<List<SearchResultGroup>?> regrouped,
-    })
-  >
+  /// Every group in order with the People group left empty, and the people
+  /// search that fills it.
+  Future<(List<SearchResultGroup>, Future<List<AggregatedItem>>)>
   _buildGroupedGlobalResults(
     String query,
     List<SearchResultGroup> activeGroups,
@@ -406,16 +353,6 @@ class SearchViewModel extends ChangeNotifier {
     _serverNames = sessions != null && sessions.length > 1
         ? {for (final session in sessions) session.server.id: session.server.name}
         : const {};
-    final mergeableServers = _mergeableServersOrNull(sessions);
-    final catalogLoad = mergeableServers == null
-        ? Future.value(false)
-        : _tryLoadCatalog();
-    // The grace runs from the start of the search. A catalog slower than that
-    // completes the cards once it is loaded.
-    final loadedInTimeFuture = catalogLoad.timeout(
-      UnifiedCatalogService.loadGrace,
-      onTimeout: () => false,
-    );
     final peopleFuture = _searchEachServer(
       (repository) => repository
           .searchPeople(query, limit: _resultLimit)
@@ -434,60 +371,15 @@ class SearchViewModel extends ChangeNotifier {
         ],
         perGroup: _resultLimit,
         limit: _globalFetchLimit,
-        withProviderIds: mergeableServers != null,
       ),
       label: 'search',
     );
     final channels = await channelsFuture;
+    final foldsCopies =
+        _serverNames.isNotEmpty &&
+        GetIt.instance.isRegistered<UserPreferences>() &&
+        GetIt.instance<UserPreferences>().effectiveMergeLibrariesByType;
 
-    List<SearchResultGroup> groupResults({required bool withCatalog}) =>
-        _groupResults(
-          activeGroups,
-          perServerItems: perServerItems,
-          channels: channels,
-          mergeableServers: mergeableServers,
-          withCatalog: withCatalog,
-        );
-
-    final loadedInTime = await loadedInTimeFuture;
-    final grouped = groupResults(withCatalog: loadedInTime);
-    final regroupedFuture = loadedInTime
-        ? Future<List<SearchResultGroup>?>.value()
-        : catalogLoad.then((loaded) {
-            if (!loaded) return null;
-            final regrouped = groupResults(withCatalog: true);
-            return _sameCards(grouped, regrouped) ? null : regrouped;
-          });
-    return (groups: grouped, people: peopleFuture, regrouped: regroupedFuture);
-  }
-
-  /// Sorts the servers' answers into [activeGroups], folding the titles that
-  /// several of [mergeableServers] hold. [withCatalog] also adds the copies
-  /// the merged catalog knows of.
-  List<SearchResultGroup> _groupResults(
-    List<SearchResultGroup> activeGroups, {
-    required List<List<AggregatedItem>> perServerItems,
-    required List<AggregatedItem> channels,
-    required List<UnifiedServerInfo>? mergeableServers,
-    required bool withCatalog,
-  }) {
-    final catalog = withCatalog ? _unifiedCatalog : null;
-    var servers = mergeableServers;
-    if (servers != null && catalog != null) {
-      final answered = {
-        for (final items in perServerItems)
-          for (final item in items) item.serverId,
-      };
-      servers = [
-        for (final server in servers)
-          UnifiedServerInfo(
-            id: server.id,
-            name: server.name,
-            reachable:
-                answered.contains(server.id) || catalog.isReachable(server.id),
-          ),
-      ];
-    }
     final grouped = <SearchResultGroup>[];
     for (final group in activeGroups) {
       if (group.itemTypes.contains('Person')) {
@@ -498,51 +390,16 @@ class SearchViewModel extends ChangeNotifier {
         grouped.add(group.copyWith(items: channels));
         continue;
       }
-      final found = _interleave([
+      final matched = _interleave([
         for (final items in perServerItems)
           items.where((item) => group.itemTypes.contains(item.type)).toList(),
       ]);
-      // Folded before the cut to size, so a shared title takes one place.
-      final matched = servers == null
-          ? found
-          : foldSharedTitles(found, servers, knownCopies: catalog?.copiesOf);
-      // Each server's search left out its own blocked copies, but the catalog
-      // adds copies unchecked. As in the merged library, one blocked copy
-      // hides the whole title.
-      final allowed = matched.where((item) => !isAnyCopyBlocked(item.rawData));
-      grouped.add(group.copyWith(items: allowed.take(_resultLimit).toList()));
+      // With merged libraries a title several servers hold is one result.
+      final shown = foldsCopies ? foldCopies(matched) : matched;
+      grouped.add(group.copyWith(items: shown.take(_resultLimit).toList()));
     }
-    return grouped;
-  }
 
-  static bool _sameCards(List<SearchResultGroup> a, List<SearchResultGroup> b) =>
-      listEquals(
-        [for (final group in a) ...group.items.map(unifiedCardKey)],
-        [for (final group in b) ...group.items.map(unifiedCardKey)],
-      );
-
-  /// The servers whose movies and series fold into one result, preferred first
-  /// (the one being browsed, then the rest as added).
-  ///
-  /// Null, never an empty list, when nothing folds: the setting is off, there
-  /// are no sessions, or too few servers to merge.
-  List<UnifiedServerInfo>? _mergeableServersOrNull(
-    List<ServerUserSession>? sessions,
-  ) {
-    if (!_mergeSharedTitles || sessions == null) return null;
-    final active = _activeServerId?.call();
-    final mergeableServers = [
-      for (final session in MultiServerRepository.sessionsIfMergeable(sessions))
-        session.server,
-    ];
-    if (mergeableServers.isEmpty) return null;
-    return [
-      for (final server in [
-        ...mergeableServers.where((server) => server.id == active),
-        ...mergeableServers.where((server) => server.id != active),
-      ])
-        UnifiedServerInfo(id: server.id, name: server.name),
-    ];
+    return (grouped, peopleFuture);
   }
 
   /// The groups that have something to show, with [people] in the People
@@ -688,7 +545,6 @@ class SearchViewModel extends ChangeNotifier {
     _debounceTimer?.cancel();
     // Keeps people that answer after the screen closed from landing on it.
     _searchRun++;
-    _disposed = true;
     super.dispose();
   }
 }
