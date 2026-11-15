@@ -10519,7 +10519,7 @@
             }
         }
     },
-    "recommendationSystemJellyfin": "Suggerimenti Jellyfin",
+    "recommendationSystemJellyfin": "Suggerimenti del server",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -13522,7 +13522,7 @@
     "sinceYouWatchedSource": "Origine Raccomandazioni",
     "sinceYouWatchedSourceDescription": "Scegli l'origine delle raccomandazioni (Suggerimenti Moonfin, algoritmo locale personalizzato; Suggerimenti Jellyfin, motore del server; oppure le metriche di similarità di TMDb. Nota: le raccomandazioni online richiedono l'integrazione con Seerr).",
     "sinceYouWatchedSourceLocal": "Suggerimenti Moonfin",
-    "sinceYouWatchedSourceServer": "Suggerimenti Jellyfin",
+    "sinceYouWatchedSourceServer": "Suggerimenti del server",
     "sinceYouWatchedSourceOnline": "Similarità TMDb",
     "sinceYouWatchedSourceType": "Tipo di Origine",
     "sinceYouWatchedSourceTypeDescription": "Scegli il tipo di elementi da raccomandare",
