@@ -854,8 +854,10 @@ enum LibrarySortBy {
   /// or play data.
   static const studioValues = [name, dateAdded, itemCount, random];
 
-  /// What a genre row can sort by, for the same reason.
-  static const genreValues = [name, dateAdded, itemCount, random];
+  /// What the Genres setting offers. It also orders the titles in picked genre
+  /// rows, so it keeps every Items API sort and adds item count for the list of
+  /// genres.
+  static List<LibrarySortBy> get genreValues => [...itemsApiValues, itemCount];
 
   /// The options a row can offer when it only ever sorts through the Items API.
   static List<LibrarySortBy> get itemsApiValues =>
