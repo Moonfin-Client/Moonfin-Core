@@ -2924,6 +2924,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// then reports its end, so the server counts it played.
   Future<void> _exitPlayback({bool finished = false}) async {
     if (_isStopping) return;
+    // A group or remote can move the queue during the awaits below, and only
+    // the item exiting now counts as finished.
+    final exitingItem = _queue.currentItem;
     setState(() {
       _isStopping = true;
     });
@@ -2951,7 +2954,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
     }
     unawaited(
-      finished
+      finished && identical(_queue.currentItem, exitingItem)
           ? _manager.stopAsFinished()
           : _manager.stop(userInitiated: false),
     );

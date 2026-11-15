@@ -69,7 +69,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<bool>? _reconnectingSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
   bool _exiting = false;
-  bool _exitFinished = false;
+  // The item an exit marked finished. A remote can move the queue before
+  // dispose stops it, and only this item should count as watched.
+  Object? _finishedExitItem;
   final Map<String, List<Map<String, dynamic>>> _castCache = {};
   String? _castResolving;
   AppleTvPlaybackPromptController? _prompts;
@@ -1982,7 +1984,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _handleExit({bool finished = false}) {
     if (_exiting || !mounted) return;
     _exiting = true;
-    _exitFinished = finished;
+    _finishedExitItem = finished ? _manager?.queueService.currentItem : null;
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     if (context.canPop()) {
       context.pop();
@@ -2021,7 +2023,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     try {
       final manager = GetIt.instance<PlaybackManager>();
       if (!manager.playbackDeferredToExternalPlayer) {
-        if (_exitFinished) {
+        if (_finishedExitItem != null &&
+            identical(manager.queueService.currentItem, _finishedExitItem)) {
           manager.stopAsFinished();
         } else {
           manager.stop(userInitiated: true);
