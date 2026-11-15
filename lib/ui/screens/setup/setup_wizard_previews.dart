@@ -2435,8 +2435,8 @@ Widget _leftNavbarPreview(
   final iconSize = _tv ? 24.0 : 28.0;
   final itemHeight = _tv ? 40.0 : 44.0;
   final buttons = _navButtons(context, items);
-  // Home starts its rows 56 in beside the rail where a TV's top bar takes 48,
-  // and the rows' own inset is the top bar one.
+  // Home starts its rows 56 in beside the rail where a TV's top bar takes
+  // tvTopNavbarRowInset, and the rows' own inset is the top bar one.
   final railInset = _phone ? 0.0 : 56.0 - (_tv ? tvTopNavbarRowInset : 0.0);
   // The real rail only widens while it has focus, whatever Always Expand
   // Navbar Labels says, and scrolls once its buttons outgrow the screen. It

@@ -16,8 +16,6 @@ library;
 
 import 'package:flutter/material.dart';
 
-import 'platform_detection.dart';
-
 /// The canvas width every TV normalizes to. A 1080p panel lands on 1150x647
 /// at an effective density of about 1.67, which is what the ten foot layouts
 /// are sized against.
@@ -60,18 +58,13 @@ class TvUiScale extends StatelessWidget {
     if (tvUiScaleIsNegligible(realSize.width)) return child;
     final scale = tvUiScaleFor(realSize.width);
     final logicalSize = tvUiLogicalSize(realSize);
-    // tvOS reports a safe area for TVs that overscan, but the ten foot
-    // layouts keep their own overscan margins, so on Apple TV the two would
-    // stack. A scaled TV never gets the top inset.
-    EdgeInsets scaleInsets(EdgeInsets insets, {bool safeArea = false}) =>
-        safeArea && PlatformDetection.isAppleTV
-        ? EdgeInsets.zero
-        : EdgeInsets.fromLTRB(
-            insets.left / scale,
-            safeArea ? 0 : insets.top / scale,
-            insets.right / scale,
-            insets.bottom / scale,
-          );
+    EdgeInsets scaleInsets(EdgeInsets insets, {bool zeroTop = false}) =>
+        EdgeInsets.fromLTRB(
+          insets.left / scale,
+          zeroTop ? 0 : insets.top / scale,
+          insets.right / scale,
+          insets.bottom / scale,
+        );
     return FittedBox(
       fit: BoxFit.fill,
       child: SizedBox(
@@ -81,8 +74,8 @@ class TvUiScale extends StatelessWidget {
           data: mq.copyWith(
             size: logicalSize,
             devicePixelRatio: mq.devicePixelRatio * scale,
-            padding: scaleInsets(mq.padding, safeArea: true),
-            viewPadding: scaleInsets(mq.viewPadding, safeArea: true),
+            padding: scaleInsets(mq.padding, zeroTop: true),
+            viewPadding: scaleInsets(mq.viewPadding, zeroTop: true),
             viewInsets: scaleInsets(mq.viewInsets),
           ),
           child: child,
