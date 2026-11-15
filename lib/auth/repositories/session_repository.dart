@@ -1141,6 +1141,15 @@ class SessionRepository {
       return;
     }
 
+    final command = message.playCommand.toLowerCase();
+    final queuesOnly =
+        command == 'playnext' || command == 'playlast' || command == 'enqueue';
+    // A command that starts playback takes its turn on arrival, before its
+    // items load, so a Stop sent after it outdates it even while they load.
+    final generation = queuesOnly
+        ? _remoteNavigationGeneration
+        : ++_remoteNavigationGeneration;
+
     final loaded = await Future.wait(
       message.itemIds.map((itemId) async {
         try {
@@ -1163,11 +1172,10 @@ class SessionRepository {
 
     final startIndex = message.startIndex.clamp(0, items.length - 1).toInt();
     final manager = GetIt.instance<PlaybackManager>();
-    final command = message.playCommand.toLowerCase();
 
     switch (command) {
       case 'playnow':
-        await _playRemoteItems(manager, items, startIndex, message);
+        await _playRemoteItems(manager, items, startIndex, message, generation);
         break;
       case 'playnext':
         for (final item in items.reversed) {
@@ -1179,18 +1187,21 @@ class SessionRepository {
         manager.queueService.addItems(items);
         break;
       default:
-        await _playRemoteItems(manager, items, startIndex, message);
+        await _playRemoteItems(manager, items, startIndex, message, generation);
         break;
     }
   }
 
+  /// Plays [items] for a remote command that took [generation] on arrival,
+  /// unless a newer remote command took over while its items loaded.
   Future<void> _playRemoteItems(
     PlaybackManager manager,
     List<AggregatedItem> items,
     int startIndex,
     PlayMessage message,
+    int generation,
   ) async {
-    final generation = ++_remoteNavigationGeneration;
+    if (generation != _remoteNavigationGeneration) return;
     _remoteSearch?.close();
     final item = items[startIndex];
     final isLiveTv = _isLiveTvItem(item);

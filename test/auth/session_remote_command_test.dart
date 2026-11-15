@@ -58,6 +58,32 @@ class _EpisodeClient extends Fake implements MediaServerClient {
   final ItemsApi itemsApi = _EpisodeItemsApi();
 }
 
+/// Serves a remote PlayNow's items only once [release] completes.
+class _SlowEpisodeItemsApi extends _EpisodeItemsApi {
+  final release = Completer<void>();
+  @override
+  Future<Map<String, dynamic>> getItem(
+    String itemId, {
+    String? mediaSourceId,
+    String? fields,
+  }) async {
+    await release.future;
+    return super.getItem(itemId, mediaSourceId: mediaSourceId, fields: fields);
+  }
+}
+
+class _SlowEpisodeClient extends Fake implements MediaServerClient {
+  @override
+  final _SlowEpisodeItemsApi itemsApi = _SlowEpisodeItemsApi();
+}
+
+class _SlowEpisodeClientFactory extends Fake
+    implements MediaServerClientFactory {
+  final client = _SlowEpisodeClient();
+  @override
+  MediaServerClient? getClientIfExists(String serverId) => client;
+}
+
 class _EpisodeClientFactory extends Fake implements MediaServerClientFactory {
   final client = _EpisodeClient();
   @override
@@ -1044,6 +1070,36 @@ void main() {
         PlaystateMessage(command: 'Stop'),
       );
       await tester.pumpAndSettle();
+      await playing;
+      await tester.pumpAndSettle();
+      expect(manager.calls, isNot(contains('play')));
+      expect(router.state.uri.path, Destinations.home);
+      expect(router.routerDelegate.currentConfiguration.matches.length, 1);
+      await tester.pumpWidget(const SizedBox());
+      receiver.dispose();
+      router.dispose();
+    });
+
+    // Seen on a Fire TV: a Stop sent right after a PlayNow arrived while the
+    // PlayNow's items were still loading, and the item started afterwards.
+    testWidgets('outdates a PlayNow whose items are still loading', (
+      tester,
+    ) async {
+      final router = await mountRouter(tester);
+      final clients = _SlowEpisodeClientFactory();
+      final receiver = receiverFor(router, clients: clients)
+        ..setActiveSessionForTest('server', 'user');
+      unawaited(router.push(Destinations.liveTvPlayer));
+      await tester.pumpAndSettle();
+      final playing = receiver.handleRemoteCommandForTest(
+        PlayMessage(itemIds: const ['episode']),
+      );
+      await tester.pump();
+      await receiver.handleRemoteCommandForTest(
+        PlaystateMessage(command: 'Stop'),
+      );
+      await tester.pumpAndSettle();
+      clients.client.itemsApi.release.complete();
       await playing;
       await tester.pumpAndSettle();
       expect(manager.calls, isNot(contains('play')));
