@@ -4085,6 +4085,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final remoteMediaNotification = Preference(
+    key: 'remote_media_notification',
+    defaultValue: false,
+  );
+
   static final updateNotificationsEnabled = Preference(
     key: 'update_notifications_enabled',
     defaultValue: true,

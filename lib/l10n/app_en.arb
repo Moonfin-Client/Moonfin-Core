@@ -17760,6 +17760,22 @@
   "@afterHoursPixelPurgeCardRemote": {
     "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
   },
+  "remoteMediaNotificationTitle": "Remote playback notification",
+  "@remoteMediaNotificationTitle": {
+    "description": "Toggle in General settings on Android mobile to show a system media notification when another device on the same account is playing"
+  },
+  "remoteMediaNotificationSubtitle": "Show system media controls when watching on another device",
+  "@remoteMediaNotificationSubtitle": {
+    "description": "Subtitle for the remote playback notification toggle in General settings on Android mobile"
+  },
+  "remoteActivityWatching": "Watching on Moonfin",
+  "@remoteActivityWatching": {
+    "description": "Line in the Android media notification that mirrors a video another device on the same account is playing. Moonfin is the app name"
+  },
+  "remoteActivityListening": "Listening on Moonfin",
+  "@remoteActivityListening": {
+    "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+  },
   "clickpadSeeking": "Allow Clickpad Seeking",
   "@clickpadSeeking": {
     "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
