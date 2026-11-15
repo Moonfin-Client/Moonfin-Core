@@ -557,7 +557,7 @@ void main() {
             (invocation.namedArguments[#channelIds] as List?)?.cast<String>() ??
             const <String>[];
         final sports = invocation.namedArguments[#isSports] == true;
-        if (sports && sportsReload != null) await sportsReload!.future;
+        if (sports && sportsReload != null) await sportsReload.future;
         return <String, dynamic>{
           'Items': [
             for (final id in ids)
@@ -611,7 +611,7 @@ void main() {
         await _pumpFrames(tester);
         expect(_focusedLabel(), 'GuideSearch');
       }
-      sportsReload!.complete();
+      sportsReload.complete();
       await _pumpFrames(tester);
 
       if (scenario.navigateAway) {

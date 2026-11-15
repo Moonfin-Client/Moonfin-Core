@@ -504,6 +504,7 @@ class UserPreferences extends ChangeNotifier {
     'imdb_top_250_movies_enabled',
     'imdb_top_250_tv_shows_enabled',
     'imdb_top_english_movies_enabled',
+    'live_tv_category_display',
     'live_tv_channel_sort_by',
     'live_tv_last_channel_id',
     'music_playback_time_display',
