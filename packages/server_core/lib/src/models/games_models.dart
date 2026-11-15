@@ -299,6 +299,40 @@ class GameSummary {
       );
 }
 
+/// A game in a library's Recently Added or Recently Released home row.
+class RecentGame extends GameSummary {
+  final int? year;
+  final String? overview;
+  final GameArtworkDescriptor? boxart;
+
+  const RecentGame({
+    required super.id,
+    required super.title,
+    required super.system,
+    required super.core,
+    required super.fileName,
+    this.year,
+    this.overview,
+    this.boxart,
+  });
+
+  factory RecentGame.fromJson(Map<String, dynamic> json) {
+    final boxart = json['boxart'];
+    return RecentGame(
+      id: (json['id'] as String?) ?? '',
+      title: (json['title'] as String?) ?? '',
+      system: (json['system'] as String?) ?? '',
+      core: (json['core'] as String?) ?? '',
+      fileName: (json['fileName'] as String?) ?? '',
+      year: _intValue(json['year']),
+      overview: _stringValue(json['overview']),
+      boxart: boxart is Map
+          ? GameArtworkDescriptor.fromJson(boxart.cast<String, dynamic>())
+          : null,
+    );
+  }
+}
+
 class GameBios {
   final String id;
   final String fileName;

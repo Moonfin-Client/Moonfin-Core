@@ -2,7 +2,7 @@
 <component type="desktop-application">
   <id>io.moonfin.moonfin</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-3.0-only</project_license>
+  <project_license>GPL-3.0-or-later</project_license>
   <name>Moonfin</name>
   <developer id="io.moonfin">
     <name>Moonfin Team</name>
@@ -57,6 +57,219 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="3.1.0" date="2026-11-11">
+    <description>
+      <p>Features</p>
+      <p>Servers</p>
+      <ul>
+        <li>Moonfin works with Silo servers. Sign in with a password, or with a code on TV, pick a household profile, then browse, play, download and request titles through Silo's own requests.</li>
+        <li>Moonbase now runs on Plex as a companion service next to Plex Media Server. It brings settings sync, ratings and reviews, custom rows, similar items, anime markers, retro games, Seerr, Smart Search, the seasonal row and the calendar to Plex. If it isn't on port 32500, set its address under Settings &gt; Account &gt; Settings Sync &gt; Moonbase Address. <em>(Moonbase)</em></li>
+      </ul>
+      <p>Watch Parties</p>
+      <ul>
+        <li>Watch Parties come to Jellyfin, Emby and Plex, with a room list, a Home row, invite links and codes, chat, reactions, voting on what to watch and synced playback. Turn them on under Settings &gt; Playback &gt; Watch Parties. <em>(Moonbase)</em></li>
+        <li>On Silo, Watch Parties use Silo's own rooms. On Jellyfin you can still start SyncPlay groups, and the SyncPlay screen has a new look with everyone's profile picture.</li>
+      </ul>
+      <p>Home</p>
+      <ul>
+        <li>A new Watching on MDBList row shows what MDBList users are watching right now. <em>(Moonbase)</em></li>
+        <li>The media bar labels series with New Series, New Season or New Episodes, and has a new New Seasons &amp; Episodes source.</li>
+        <li>IMDb, TMDB and custom list rows show your server's own poster and progress for titles you already have.</li>
+        <li>IMDb, TMDB and seasonal rows no longer need their own switches. They show up in the Home Rows editor whenever the server can fill them.</li>
+        <li>Row Options has a Hide Watched switch for the Recently Added and Recently Released rows, and it follows your server's own setting. (#2210)</li>
+        <li>The Radarr and Sonarr upcoming rows hide titles already on your server, and dates read Today, Tomorrow or In 3 days.</li>
+        <li>Each library's Latest row and every pinned collection row ends with a See All card. (#1928)</li>
+        <li>Admins can add poster labels like 4K, HDR or Atmos in Moonbase. You can turn them off with Poster Labels under Settings &gt; Appearance. <em>(Moonbase)</em></li>
+        <li>Hide Watch Progress and Hide Unwatched Count under Settings &gt; Appearance &gt; Home Screen hide the progress bar and the unwatched badge on Home posters.</li>
+        <li>The seasonal row's Show All Year setting shows a holiday row outside the holiday dates too.</li>
+        <li>The media bar backdrop fades out at the bottom on desktop and web. (#2095)</li>
+      </ul>
+      <p>Details</p>
+      <ul>
+        <li>There are four new details styles, Stage, Premiere, Quick Look and Frost, under Settings &gt; Appearance &gt; Details Page &gt; Details Screen Style.</li>
+        <li>The long-press menu has Remove from Playlist and Remove from Collection for items that are in one.</li>
+        <li>Season and episode rows have scroll arrows on desktop.</li>
+      </ul>
+      <p>Search and Seerr</p>
+      <ul>
+        <li>Smart Search lets you search by describing what you want in a sentence, once your admin turns it on in Moonbase. <em>(Moonbase)</em></li>
+        <li>Search has an Audiobooks row, and Discover has a Search button that opens on the Requests results.</li>
+        <li>Favorites has a Watchlist tab for your Seerr watchlist.</li>
+        <li>Seerr requests show why a download is stuck, and admins can grab a different release. <em>(Moonbase)</em></li>
+        <li>Seerr's status on posters can show as a corner dot or a banner, with the new Badge Style setting.</li>
+        <li>Seerr Discover posters follow your poster size, and Sort &amp; Filter has a Movies or TV Shows switch.</li>
+        <li>When an admin renames Seerr in Moonbase, Moonfin uses that name everywhere.</li>
+      </ul>
+      <p>Calendar</p>
+      <ul>
+        <li>A new Calendar screen shows upcoming and recently aired episodes and movies from Sonarr and Radarr, in Agenda or Countdown style with a full month view. Turn on Show Calendar Button to add it to the navigation bar. On phones, Remind me sends a notification when a title reaches your library. <em>(Moonbase)</em></li>
+        <li>The upcoming rows can end with a See All card that opens the calendar. When the next episode isn't in your library yet, the end of an episode says when it airs.</li>
+        <li>Date Format under Settings &gt; General picks month and day, day and month, or your locale's default.</li>
+      </ul>
+      <p>Player</p>
+      <ul>
+        <li>Subtitle delay now opens at the top of the player with a timeline of the subtitle lines, so it no longer covers them. The native Apple player has subtitle delay too. (#2128)</li>
+        <li>Subtitles can be bold, with a stroke width, a shadow and a font from Google Fonts. (#2117)</li>
+        <li>Playback speeds go up to 5x for video and 3x for music. Video stays at 2x on Apple devices. (#1913)</li>
+        <li>Hide Controls After lets the controls hide after 1, 3 or 5 seconds. (#1901)</li>
+        <li>Dim Controls in HDR dims the controls while HDR video plays. (#2077)</li>
+        <li>The desktop player volume goes up to 150% on Windows and Linux. (#2042)</li>
+        <li>The chapter picker in the player is now a row of chapter cards.</li>
+        <li>The remote's subtitle and audio buttons open those menus in the video player. (#2111)</li>
+        <li>If the connection drops during a movie or episode, Moonfin keeps trying to reconnect for about 2 minutes.</li>
+        <li>Android TV picks the right refresh rate the first time and waits for the switch before starting audio. Playback Information shows the HDMI mode, the audio output and where the frame rate came from.</li>
+        <li>Apple TV shows a one-time tip to turn on Match Frame Rate when a video can't play smoothly. With Match Frame Rate off, Smooth 24 fps on a 60 Hz TV plays 24 fps video 0.1% slower to fit.</li>
+        <li>The 2nd and 3rd generation Apple TV 4K can turn on Direct Play 4K AV1 (Software Decode).</li>
+        <li>Dolby Vision Profile 7 FEL files on Apple devices now play through a Dolby Vision curve fold, which keeps most of the enhancement layer.</li>
+      </ul>
+      <p>Live TV</p>
+      <ul>
+        <li>Live TV responds to the remote's Guide, DVR, Channel Up/Down, CC, Audio and Record buttons.</li>
+        <li>You can favorite a channel from the player, and the guide and channel carousel update right away.</li>
+        <li>In the guide, Back goes to the channel you were watching, then to the filters. In the player's guide, selecting a program opens its options instead of tuning to it.</li>
+        <li>The new links <code>moonfin://live-tv/guide</code> and <code>moonfin://live-tv/recordings</code> let you map a remote button to the guide or recordings.</li>
+      </ul>
+      <p>Settings and Setup</p>
+      <ul>
+        <li>Settings fills the screen and shows a live preview of what each setting changes. On phones you can hide the preview.</li>
+        <li>The last setup step can add Moonbase to your server, with a one-press install for Jellyfin admins.</li>
+        <li>Let TV Sleep After closes Moonfin on Android TV after a while without a button press. On Apple TV, it hands the screen back to the Apple TV screensaver. (#1857)</li>
+        <li>Show During Music and Audiobooks lets the screensaver start while audio plays. (#2098)</li>
+        <li>Remove Watched Downloads has an Ask me choice. (#2145)</li>
+        <li>Press Settings &gt; About &gt; Version seven times to open After Hours, a hidden arcade with five mini games.</li>
+      </ul>
+      <p>Accounts</p>
+      <ul>
+        <li>Who's watching and Switch User have a new look, and picking a user shows Signing in... until Home opens.</li>
+        <li><code>moonfin://home</code> with a user id opens Home as that user. (#2231)</li>
+      </ul>
+      <p>Books</p>
+      <ul>
+        <li>Book series have their own details screen.</li>
+        <li>Treat book folders as series groups the books in a folder into one series, and book libraries have a Folders section. (#2097)</li>
+      </ul>
+      <p>Other</p>
+      <ul>
+        <li>iPhone Duo is supported closed, fully open and half open. Fully open gets wider layouts, and half open splits the calendar, Settings and player at the fold.</li>
+        <li>The web app's browser tab shows what's playing. (#2044)</li>
+        <li>Touch works on touchscreen Macs, so lists scroll and long presses work.</li>
+      </ul>
+      <p>Changed Defaults</p>
+      <ul>
+        <li>Frost is the default details style on TV and desktop.</li>
+        <li>My Media uses landscape thumbnails. Turn on Modern cards on My Media row to get posters back.</li>
+        <li>Rating badges on the details page are off. Turn Rating Badges back on in the Details Page settings.</li>
+        <li>The player controls hide after 5 seconds everywhere, so TVs no longer wait 8.</li>
+      </ul>
+      <p>Bug Fixes</p>
+      <p>Playback</p>
+      <ul>
+        <li>Direct play no longer waits on the Auto quality speed test.</li>
+        <li>Skipping the credits of a movie or the last episode no longer closes the player before a scene after them, and no longer leaves it in Continue Watching.</li>
+        <li>Skipping an outro that runs to the end moves on to the next episode on Apple devices. (#2189)</li>
+        <li>The next episode keeps the subtitle track you picked instead of switching to a forced signs track.</li>
+        <li>On mpv, an episode with a different track layout keeps your audio and subtitle picks. (#1998)</li>
+        <li>Trickplay previews no longer freeze on an old thumbnail on Android TV (#2068) or stay black after a Skip Intro prompt (#2115).</li>
+        <li>A D-pad scrub with the controls hidden now pauses playback when Pause While Scrubbing is on. (#2104)</li>
+        <li>The player redraws only the seek bar each second, not the whole screen. (#2057)</li>
+        <li>The music and video players on web set and remember their volume. (#2251)</li>
+        <li>Theme music that starts fading out and then comes back continues from its current volume.</li>
+        <li>Full-screen YouTube trailers get more time to start (#2155), and media bar trailers stay in their box on Fire TV (#2132).</li>
+      </ul>
+      <p>Android</p>
+      <ul>
+        <li>Dolby Vision Profile 5 no longer plays green and purple when the server converts it.</li>
+        <li>With Media3, E-AC-3 above 5.1 no longer restarts the audio decoder on every frame (#2020), and AVI files it can't read fall back to a server transcode (#2051).</li>
+        <li>When the video decoder fails, the server converts the video right away instead of retrying first.</li>
+        <li>A home preview or trailer closing in the background no longer stops a video you just started.</li>
+        <li>Heavily styled ASS subtitles no longer grow memory on Android TV until the app is killed. (#2089)</li>
+        <li>MOV_TEXT subtitles sit at the bottom and follow the subtitle offset. (#2103)</li>
+        <li>Android TV's Watch Next row updates once you start a Next Up episode. (#2131)</li>
+      </ul>
+      <p>Subtitles</p>
+      <ul>
+        <li>ASS subtitles follow the subtitle size setting during direct play. (#2118)</li>
+      </ul>
+      <p>Live TV</p>
+      <ul>
+        <li>Live TV channels that list a trick play stream first now play with sound, and a channel the provider refuses shows an error right away.</li>
+        <li>Stop on Live TV goes back to the guide. (#1981)</li>
+        <li>Long Live TV descriptions scroll at reading pace. (#2074)</li>
+      </ul>
+      <p>Home</p>
+      <ul>
+        <li>Continue Watching and Next Up update after you mark an episode played (#2213), and come back after being empty.</li>
+        <li>Recently Released rows keep loading past the first 15 titles.</li>
+        <li>Official MDBList lists and movies-only or shows-only rows load all their items.</li>
+        <li>Turning on a row in Row Options shows it on Home right away.</li>
+        <li>With several servers signed in, merged Home rows keep the sort you picked. Genres and studios also open on the right server (#2141), and the Genres row stays when one server times out.</li>
+        <li>The merged Continue Watching row is in the right order on Emby.</li>
+        <li>The Studios row opens the studio you pick and shows its logos again. (#2136, #2137)</li>
+        <li>Random media bar slides come from the whole library. (#2160)</li>
+        <li>The Makd, Gallery and Banner media bars start past the left sidebar. (#2094)</li>
+        <li>The screensaver waits for a card's trailer preview to finish.</li>
+        <li>On phones, Modern rows have room for a card's details (#2113), and the Next Up card sits centered on the right (#1896).</li>
+      </ul>
+      <p>Details and Libraries</p>
+      <ul>
+        <li>A series' Next Up moves on after you mark that episode played.</li>
+        <li>Episode pages show the series' regular cast along with the guest stars.</li>
+        <li>An episode's season list opens on that episode.</li>
+        <li>Details page action buttons show up all at once instead of popping in.</li>
+        <li>Play no longer looks selected while another button has focus.</li>
+        <li>File badges read DV P8, HDR10+, HDR10, HLG or SDR instead of the server's raw value.</li>
+        <li>The library grid no longer shows the previous filter's results after a quick change.</li>
+        <li>Search on Jellyfin shows movies and series again when lots of episodes or chapters match. (#2110)</li>
+        <li>The Bookstore book details page fits the screen. (#2179)</li>
+        <li>An empty Books library says No Books Found.</li>
+      </ul>
+      <p>Navigation and Settings</p>
+      <ul>
+        <li>Screens on TV and desktop open on their first item instead of their last.</li>
+        <li>Short OK presses no longer open the long-press menu on some remotes. (#2135)</li>
+        <li>Picking a media segment action in Settings keeps focus on that row, and Settings section headers are translated.</li>
+        <li>The Navigation Bar settings only show switches for buttons that can appear, and the Home Rows editor opens on your first row.</li>
+        <li>Quick Connect explains a failed sign-in instead of spinning forever.</li>
+        <li>Select works right away on the TV server list.</li>
+        <li>On a saved series in Downloads, the back arrow no longer opens highlighted on desktop, and Up and Down reach the first episode on TV. (#2030)</li>
+        <li>The Storage settings pickers show every option.</li>
+        <li>Non-admin users can open the Upcoming Calendars settings.</li>
+        <li>Voice search on Fire TV keeps focus when it can't start, and the mic no longer pushes the TV search field around.</li>
+        <li>A TV text field's placeholder hides when the keyboard opens. (#1898)</li>
+        <li>The setup wizard no longer replaces your answers with another user's synced settings.</li>
+      </ul>
+      <p>Seerr</p>
+      <ul>
+        <li>Requesting a series that Seerr can't match to Sonarr asks you to pick the match. (#2006)</li>
+        <li>The All filter in Seerr Issues includes resolved issues. (#2045)</li>
+      </ul>
+      <p>Apple</p>
+      <ul>
+        <li>24 fps movies no longer hitch on Apple devices.</li>
+        <li>The Siri Remote and iPhone Remote app Play/Pause buttons work on Apple TV.</li>
+        <li>Apple devices no longer crash with a client certificate that has no chain certificates. (#2176)</li>
+      </ul>
+      <p>Windows and Linux</p>
+      <ul>
+        <li>Windows shows video with the Glass theme and the Native window renderer. (#2082)</li>
+        <li>Windows no longer ignores input for a few seconds after launch.</li>
+        <li>Simplified Chinese no longer falls back to a Japanese font on Windows. (#2182)</li>
+        <li>Moonfin no longer crashes when you close it on Linux. (#2072)</li>
+        <li>N64 games load on Linux.</li>
+      </ul>
+      <p>Emby</p>
+      <ul>
+        <li>Group Items into Collections hides a collection's movies (#1885), and libraries no longer show up twice (#2112).</li>
+      </ul>
+      <p>Other</p>
+      <ul>
+        <li>The photo slideshow no longer cuts photos short. (#2119)</li>
+        <li>Admin Analytics no longer times out on big libraries on web.</li>
+        <li>Hiding a library shows an error if the server turns it down.</li>
+        <li>Since You Watched rows and their settings are translated.</li>
+      </ul>
+    </description>
+    </release>
     <release version="3.0.0" date="2026-10-30">
     <description>
       <p>New Features</p>

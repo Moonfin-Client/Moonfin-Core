@@ -79,6 +79,27 @@ void main() {
     });
   });
 
+  test('RecentGame.fromJson reads the year, overview and box art shape', () {
+    final game = RecentGame.fromJson({
+      'id': 'g1',
+      'title': 'Super Mario World',
+      'system': 'SNES',
+      'core': 'snes',
+      'fileName': 'Super Mario World (USA).sfc',
+      'year': 1990,
+      'overview': 'Mario and Yoshi set out to save Dinosaur Land.',
+      'boxart': {'state': 'thumbnailReady', 'url': '/a', 'width': 512, 'height': 357},
+    });
+    expect(game.year, 1990);
+    expect(game.overview, 'Mario and Yoshi set out to save Dinosaur Land.');
+    expect(game.boxart!.aspectRatio, closeTo(1.434, 0.001));
+
+    final bare = RecentGame.fromJson({'id': 'g2'});
+    expect(bare.year, isNull);
+    expect(bare.overview, isNull);
+    expect(bare.boxart, isNull);
+  });
+
   group('sanitizeDownloadFileName', () {
     test('accepts an ordinary file name', () {
       expect(

@@ -73,6 +73,13 @@ class _FakeGamesApi extends GamesApi {
     String? system,
   }) async => const [];
 
+  @override
+  Future<List<RecentGame>> getRecentGames(
+    String libraryId, {
+    bool released = false,
+    int limit = 16,
+  }) async => const [];
+
   /// What getGame answers and downloadRom writes, so a test can swap in
   /// another system's game.
   GameDetail detail = const GameDetail(

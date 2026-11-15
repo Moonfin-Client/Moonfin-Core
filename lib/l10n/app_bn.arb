@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "সার্ভার ট্রান্সকোড পছন্দ করুন",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision প্রোফাইল 7 ডাইরেক্ট প্লে",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision প্রোফাইল 7 এনহান্সমেন্ট-লেয়ার স্ট্রীম সরাসরি প্লে করা উচিত কিনা তা নিয়ন্ত্রণ করে।",
-    "settingsAutoAftkrtEnabled": "স্বয়ংক্রিয় (AFTKRT সক্ষম)",
-    "settingsEnabledOnThisDevice": "এই ডিভাইসে সক্ষম",
-    "settingsDisabledPreferTranscode": "অক্ষম (ট্রান্সকোড পছন্দ করুন)",
+    "settingsAutoAftkrtEnabled": "অটো",
+    "settingsEnabledOnThisDevice": "সক্রিয়",
+    "settingsDisabledPreferTranscode": "বন্ধ",
     "settingsResumeRewindDescription": "প্লেব্যাক পুনরায় শুরু করার সময় (দেখা চালিয়ে যাওয়া বা একটি মিডিয়া আইটেম পৃষ্ঠা থেকে), কত সেকেন্ড রিওয়াউন্ড করা উচিত?",
     "settingsUnpauseRewindDescription": "বিরতি বোতাম টিপে প্লেব্যাক পুনরায় শুরু করার সময়, কত সেকেন্ড রিওয়াউন্ড করতে হবে?",
     "settingsSkipBackLengthDescription": "রিওয়াইন্ড বোতাম টিপে কত সেকেন্ড পিছনে লাফ দিতে হবে।",
@@ -8958,5 +8958,483 @@
     "imdbMostPopularMovies": "IMDb-র সবচেয়ে জনপ্রিয় সিনেমা",
     "imdbMostPopularTvShows": "IMDb-র সবচেয়ে জনপ্রিয় টিভি শো",
     "imdbLowestRatedMovies": "IMDb-র সর্বনিম্ন রেটিং পাওয়া সিনেমা",
-    "imdbTopEnglishMovies": "IMDb-র সেরা রেটিং পাওয়া ইংরেজি সিনেমা"
+    "imdbTopEnglishMovies": "IMDb-র সেরা রেটিং পাওয়া ইংরেজি সিনেমা",
+    "detailScreenStylePremiere": "প্রিমিয়ার",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "keyNameHome": "হোম",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "loadingAnimationSizeSmall": "ছোট",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationPositionBouncing": "বাউন্সিং",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "detailSectionStudios": "স্টুডিও",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionExtras": "এক্সট্রা",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "seerrDownloading": "ডাউনলোড হচ্ছে",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "afterHoursPlay": "প্লে করুন",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "detailSectionUpNext": "পরবর্তী আপ",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "লিরিক্স",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionChapters": "অধ্যায়",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionGroupOther": "অন্যান্য",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "loadingAnimationSizeThumbnail": "থাম্বনেইল",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "detailSectionCast": "কাস্ট করুন",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "guideRepeatBadge": "পুনরাবৃত্তি করুন",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "adminEmbyConnect": "Emby সংযোগ করুন",
+    "adminTranscodingHwaAdvanced": "উন্নত",
+    "adminMetadataFieldArtists": "শিল্পী",
+    "adminMetadataFieldAlbum": "অ্যালবাম",
+    "adminLogWatch": "দেখুন",
+    "adminGroupLibrary": "লাইব্রেরি",
+    "adminGroupPlayback": "প্লেব্যাক",
+    "savedMediaRead": "পড়ুন",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "filtersHeader": "ফিল্টার",
+    "watchPartyType": "টাইপ",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "chatGroupName": "গ্রুপের নাম",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "filterExtras": "এক্সট্রা",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "autoDownloadKeepAll": "সব",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "downloadNotificationRunning": "ডাউনলোড হচ্ছে",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "animationSpeedMedium": "মাঝারি",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "বন্ধ",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailsBackdropFit": "ফিট",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "adminMetadataLockFieldRuntime": "রানটাইম",
+    "recordPromptNow": "এখন",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "calendarSettingsColorByType": "টাইপ",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursCastStatic": "স্থির",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "castMembers": "কাস্ট করুন",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "animeMarkerPending": "মুলতুবি",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "spotlightCollectionsCard": "সংগ্রহ",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "detailMetadataStatus": "সিরিজ স্ট্যাটাস",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "interfaceLayoutDesktop": "ডেস্কটপ",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "sortByName": "নাম",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "loadingAnimationSizeLarge": "বড়",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "seasonalRowCountryOther": "অন্যান্য",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "upcomingEpisodeToday": "আজ",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "detailSectionLogo": "লোগো",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionCollections": "সংগ্রহ",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionSeerrRecommendations": "সুপারিশ",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "screensaverBackdropBlack": "কালো",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "mediaBarModeBanner": "ব্যানার",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "tags": "ট্যাগ",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "adminLogLevelNone": "কোনোটিই নয়",
+    "adminMetadataLockFieldGenres": "জেনারস",
+    "adminMetadataLockFieldStudios": "স্টুডিও",
+    "chatLeave": "গ্রুপ ত্যাগ করুন",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "setupStylePremiere": "প্রিমিয়ার",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "autoDownloadDeleteNever": "কখনই না",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "settingsAdvancedSection": "উন্নত",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "audioPlaylistsSection": "অডিও প্লেলিস্ট",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "bottomNavbarTabsAvailable": "পাওয়া যায়",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "setupStyleModern": "মডার্ন",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "seerrRuntime": "রানটাইম",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "ক্লাসিক",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "musicLibraryStyleClassic": "ক্লাসিক",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "achievementsStatsWatched": "দেখা হয়েছে",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "libraryStyleClassic": "ক্লাসিক",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "মডার্ন",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataSectionRatings": "রেটিং",
+    "adminLiveTvTabRecordings": "রেকর্ডিং",
+    "adminGroupPeople": "মানুষ",
+    "librarySortAlbum": "অ্যালবাম",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "ধারা",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "screensaverBackdrop": "ব্যাকড্রপ",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "accountActive": "সক্রিয়",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "keyboardStyleClassic": "ক্লাসিক",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "rendererModeAuto": "অটো",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "performanceModeAuto": "অটো",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "keyNameDelete": "মুছুন",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "loadingAnimationSizeMedium": "মাঝারি",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "settingsAudioPassthroughMode": "পাসথ্রু",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "adminMetadataLockFieldName": "নাম",
+    "selectAllStudios": "সব নির্বাচন করুন",
+    "detailSectionPoster": "পোস্টার",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionSeerrPersonAppearances": "উপস্থিতি",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "seerrOriginalLanguage": "মূল ভাষা",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "adminMetadataLockFieldCast": "মানুষ",
+    "interfaceLayoutTv": "টিভি",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "detailMetadataGenres": "জেনারস",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailSectionMoreLikeThis": "এই মত আরো",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "adminTaskResultFailed": "ব্যর্থ",
+    "externalRowSortName": "নাম",
+    "externalRowSortReleaseDate": "মুক্তির তারিখ",
+    "externalRowSortShuffle": "শাফেল",
+    "achievementsAppearance": "চেহারা",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "playlistTypeVideo": "ভিডিও",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "playlistSortRuntime": "রানটাইম",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "শেষ খেলা",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "siloApproveSignInApprove": "অনুমোদন করুন",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "filterTrailers": "ট্রেলার",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "performanceMode": "পারফরম্যান্স",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "detailSectionBiography": "জীবনী",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "friendsDecline": "প্রত্যাখ্যান",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "emulatorCoreDownloading": "ডাউনলোড হচ্ছে",
+    "homeRowsExternalLists": "বাহ্যিক তালিকা",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "bookLibraryStyleClassic": "ক্লাসিক",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "adminMetadataLockFieldTags": "ট্যাগ",
+    "adminMetadataDisplayOrderTv": "টিভি",
+    "playlistSortReleaseDate": "মুক্তির তারিখ",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "moveUp": "উপরে সরান",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "নিচে সরান",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "অডিওবুক",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "বই",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "interfaceLayoutAutomatic": "স্বয়ংক্রিয়",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "লেখক",
+    "adminMetadataLockFieldOverview": "ওভারভিউ",
+    "screensaverGeneralSettings": "সাধারণ সেটিংস",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "নিয়ন পালস",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "দৈনিক",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "সাপ্তাহিক",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "শিরোনাম",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "ব্যবহারকারীদের",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "কার্যকলাপ",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "স্বয়ংক্রিয়",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "অ্যাডমিন",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "গ্রুপ তৈরি করুন",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "বিস্তারিত দেখুন",
+    "achievementsUnlockedMore": "+{count} আরও",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "ট্যাগলাইন",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "স্বাভাবিক",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "দেশ",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "স্বয়ংক্রিয়",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "বই",
+    "adminImageTypeMenu": "মেনু",
+    "adminGroupOverview": "ওভারভিউ",
+    "seriesRecordingAllEpisodes": "সব পর্ব",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb সাদৃশ্য",
+    "calendarSettingsView": "দেখুন",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "বিশেষ",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "কর্ম",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "শুরু",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    }
 }

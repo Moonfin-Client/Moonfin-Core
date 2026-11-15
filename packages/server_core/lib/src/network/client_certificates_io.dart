@@ -26,7 +26,7 @@ void applyClientCertificates(HttpClient client, {SecurityContext? fallback}) {
       context: certificate == null
           ? fallback
           : _contexts[certificate] ??= _contextFor(certificate),
-      onBadCertificate: (_) => gAllowSelfSignedCertificates,
+      onBadCertificate: (_) => acceptsUntrustedCertificate(uri.host),
     );
   };
 }

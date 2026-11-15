@@ -11066,7 +11066,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "recommendationSystemJellyfin": "Recomanacions Jellyfin",
+    "recommendationSystemJellyfin": "Recomanacions del servidor",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16640,7 +16640,7 @@
     },
     "sinceYouWatchedSource": "Font de les recomanacions",
     "sinceYouWatchedSourceLocal": "Recomanacions Moonfin",
-    "sinceYouWatchedSourceServer": "Recomanacions Jellyfin",
+    "sinceYouWatchedSourceServer": "Recomanacions del servidor",
     "sinceYouWatchedSourceOnline": "Similitud de TMDb",
     "sinceYouWatchedSourceType": "Tipus de font",
     "sinceYouWatchedSourceTypeDescription": "Tria el tipus d'elements que es recomanaran",
@@ -18503,5 +18503,29 @@
     "siloPinRemember": "Recorda el PIN en aquest dispositiu",
     "@siloPinRemember": {
         "description": "Checkbox in the Silo profile PIN dialog. Ticked, the PIN isn't asked for again on this device; unticked, it is asked for each time the app starts or this profile is switched to"
+    },
+    "settingsDecodingAndRenderingSection": "Descodificació i renderització",
+    "@settingsDecodingAndRenderingSection": {
+        "description": "Section header on the Quality & Decoding settings screen"
+    },
+    "settingsAudioStreamSection": "Flux d'àudio",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Sortida d'àudio",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "settingsPassthroughSettingsSection": "Configuració del passthrough",
+    "@settingsPassthroughSettingsSection": {
+        "description": "Section header on the Audio settings screen for the per-codec passthrough switches"
+    },
+    "settingsRewatchSection": "Torna a veure",
+    "@settingsRewatchSection": {
+        "description": "Section header on the Home Sections settings screen for the Rewatch row"
+    },
+    "seerrDownloadFailed": "Ha fallat la baixada",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

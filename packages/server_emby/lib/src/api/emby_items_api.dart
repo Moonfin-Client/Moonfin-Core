@@ -15,15 +15,18 @@ class EmbyItemsApi implements ItemsApi {
 
   static String? _knownFields(String? fields) {
     if (fields == null) return null;
-    if (!_unknownToEmbyFields.any(fields.contains)) return fields;
     final kept = fields
         .split(',')
         .map((field) => field.trim())
         .where(
           (field) => field.isNotEmpty && !_unknownToEmbyFields.contains(field),
         )
-        .join(',');
-    return kept.isEmpty ? null : kept;
+        .toList();
+    // Emby leaves LastPlayedDate out of UserData unless it's asked for by name.
+    if (kept.contains('UserData') && !kept.contains('UserDataLastPlayedDate')) {
+      kept.add('UserDataLastPlayedDate');
+    }
+    return kept.isEmpty ? null : kept.join(',');
   }
 
   bool _shouldRetryCollectionFallback(int statusCode) {
@@ -334,6 +337,7 @@ class EmbyItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) async {
     final userId = _getUserId();
     final response = await _dio.get(
@@ -343,6 +347,7 @@ class EmbyItemsApi implements ItemsApi {
         if (recursive) 'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
+        if (hideWatched == true) 'Filters': 'IsUnplayed',
         if (limit != null) 'Limit': limit,
         'Fields': ?_knownFields(fields),
         if (enableImageTypes != null) 'EnableImageTypes': enableImageTypes,
@@ -378,7 +383,14 @@ class EmbyItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.get(
       '/Shows/$seriesId/Episodes',
-      queryParameters: {'SeasonId': ?seasonId, 'Fields': ?_knownFields(fields)},
+      queryParameters: {
+        'SeasonId': ?seasonId,
+        'Fields': ?_knownFields(fields),
+        // Emby only folds the versions of an episode into one item when the
+        // query names a user. Without it every version comes back as its own
+        // episode, so a season held in 1080p and 4K lists each one twice.
+        'UserId': _getUserId(),
+      },
     );
     return response.data as Map<String, dynamic>;
   }

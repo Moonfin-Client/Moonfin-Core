@@ -533,9 +533,11 @@ class PlexItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   }) => getItems(
     parentId: parentId,
     includeItemTypes: includeItemTypes,
+    filters: hideWatched == true ? const ['IsUnplayed'] : null,
     sortBy: 'PremiereDate',
     sortOrder: 'Descending',
     limit: limit,

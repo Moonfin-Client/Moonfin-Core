@@ -907,7 +907,7 @@ abstract class AppLocalizations {
   /// Explanation under the recommendation system setting
   ///
   /// In en, this message translates to:
-  /// **'Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
+  /// **'Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
   String get recommendationSystemSubtitle;
 
   /// Recommendation system option: Moonfin Recommends
@@ -916,10 +916,10 @@ abstract class AppLocalizations {
   /// **'Moonfin Recommends'**
   String get recommendationSystemMoonfin;
 
-  /// Recommendation system option: Jellyfin Recommends
+  /// Recommendation system option: Server Recommends
   ///
   /// In en, this message translates to:
-  /// **'Jellyfin Recommends'**
+  /// **'Server Recommends'**
   String get recommendationSystemJellyfin;
 
   /// Recommendation system option: TMDb Similarity
@@ -8518,6 +8518,24 @@ abstract class AppLocalizations {
   /// **'Show libraries from all connected servers'**
   String get showLibrariesFromAllServers;
 
+  /// Section title for Recently Added and Recently Released home row settings
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added and Released'**
+  String get recentlyAddedAndReleased;
+
+  /// Setting to hide watched items from Recently Added and Recently Released home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Watched'**
+  String get hideWatchedInRecentRows;
+
+  /// Description for hiding watched items from Recently Added and Recently Released home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Hide watched content from Recently Added and Recently Released home rows.'**
+  String get hideWatchedInRecentRowsDescription;
+
   /// Setting for merging recently added and recently released libraries by media type
   ///
   /// In en, this message translates to:
@@ -9304,11 +9322,17 @@ abstract class AppLocalizations {
   /// **'Genres and Studios'**
   String get homeRowsGenresAndStudios;
 
-  /// Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists
+  /// Home Rows editor: heading of the group of disabled rows from custom lists a user set up, such as their own MDBList, TMDB or Letterboxd lists
   ///
   /// In en, this message translates to:
   /// **'External Lists'**
   String get homeRowsExternalLists;
+
+  /// Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services
+  ///
+  /// In en, this message translates to:
+  /// **'Streaming Services'**
+  String get homeRowsStreamingServices;
 
   /// Section title for per-row settings
   ///
@@ -21940,6 +21964,12 @@ abstract class AppLocalizations {
   /// **'Modern'**
   String get homeRowsStyleModern;
 
+  /// Name of the home row style that shows a large details panel under each row's posters
+  ///
+  /// In en, this message translates to:
+  /// **'Carousel'**
+  String get homeRowsStyleCarousel;
+
   /// No description provided for @homeRowsSection.
   ///
   /// In en, this message translates to:
@@ -21955,7 +21985,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowsTypeDescription.
   ///
   /// In en, this message translates to:
-  /// **'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.'**
+  /// **'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows. Carousel adds a details panel under each row.'**
   String get rowsTypeDescription;
 
   /// No description provided for @modernCardsOnMyMediaRow.
@@ -22159,7 +22189,7 @@ abstract class AppLocalizations {
   /// No description provided for @sinceYouWatchedSourceDescription.
   ///
   /// In en, this message translates to:
-  /// **'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).'**
+  /// **'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).'**
   String get sinceYouWatchedSourceDescription;
 
   /// No description provided for @sinceYouWatchedSourceLocal.
@@ -22171,7 +22201,7 @@ abstract class AppLocalizations {
   /// No description provided for @sinceYouWatchedSourceServer.
   ///
   /// In en, this message translates to:
-  /// **'Jellyfin Recommends'**
+  /// **'Server Recommends'**
   String get sinceYouWatchedSourceServer;
 
   /// No description provided for @sinceYouWatchedSourceOnline.
@@ -27301,6 +27331,12 @@ abstract class AppLocalizations {
   /// **'Larger cards with titles underneath.'**
   String get setupRowsModernHint;
 
+  /// What the carousel home row style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'Posters with a large details panel underneath.'**
+  String get setupRowsCarouselHint;
+
   /// What the classic detail screen style gives you
   ///
   /// In en, this message translates to:
@@ -31384,6 +31420,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Left and Right slide the scrubber.'**
   String get afterHoursPixelPurgeCardRemote;
+
+  /// Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Clickpad Seeking'**
+  String get clickpadSeeking;
+
+  /// Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls
+  ///
+  /// In en, this message translates to:
+  /// **'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.'**
+  String get clickpadSeekingDescription;
+
+  /// Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen
+  ///
+  /// In en, this message translates to:
+  /// **'When controls are showing'**
+  String get clickpadSeekingControlsVisible;
+
+  /// Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen
+  ///
+  /// In en, this message translates to:
+  /// **'Only while paused'**
+  String get clickpadSeekingPausedOnly;
 }
 
 class _AppLocalizationsDelegate

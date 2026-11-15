@@ -9,6 +9,7 @@ void main() {
         siloSettingsToUserConfiguration({
           siloLibraryOrderKey: [3, 1],
           siloDisabledLibrariesKey: [7],
+          siloHideWatchedItemsKey: true,
           siloAudioLanguageKey: 'en',
           siloSubtitleLanguageKey: 'es',
           siloSubtitleModeKey: 'always',
@@ -19,6 +20,7 @@ void main() {
 
       expect(config.orderedViews, ['3', '1']);
       expect(config.myMediaExcludes, ['7']);
+      expect(config.hidePlayedInLatest, isTrue);
       expect(config.audioLanguagePreference, 'en');
       expect(config.subtitleLanguagePreference, 'es');
       expect(config.subtitleMode, 'always');
@@ -35,6 +37,7 @@ void main() {
 
       expect(config.orderedViews, isEmpty);
       expect(config.myMediaExcludes, isEmpty);
+      expect(config.hidePlayedInLatest, isFalse);
       expect(config.audioLanguagePreference, isNull);
       expect(config.subtitleMode, 'default');
       expect(config.enableNextEpisodeAutoPlay, isTrue);
@@ -99,6 +102,7 @@ void main() {
     final values = userConfigurationToSiloSettings(
       orderedViews: ['3', '1', '3', 'not-a-library'],
       myMediaExcludes: const [],
+      hidePlayedInLatest: true,
       enableNextEpisodeAutoPlay: true,
       audioLanguagePreference: ' en ',
       subtitleLanguagePreference: '',
@@ -108,6 +112,7 @@ void main() {
     expect(values, {
       siloLibraryOrderKey: [3, 1],
       siloDisabledLibrariesKey: null,
+      siloHideWatchedItemsKey: true,
       siloAudioLanguageKey: 'en',
       siloSubtitleLanguageKey: null,
       siloSubtitleModeKey: 'off',

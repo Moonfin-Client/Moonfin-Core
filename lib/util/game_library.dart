@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../data/models/aggregated_item.dart';
 import '../data/models/aggregated_library.dart';
+import '../data/models/home_row.dart';
 import '../ui/navigation/destinations.dart';
 
 /// Shared helpers for recognizing and navigating to retro-game (ROM) libraries so every
@@ -114,6 +116,39 @@ String libraryRoute(
   }
 }
 
+/// A game as a Home row item, so a game library's recent rows can sit with
+/// the others and survive the row cache.
+AggregatedItem gameHomeItem(RecentGame game, String libraryId, String serverId) =>
+    AggregatedItem(
+      id: game.id,
+      serverId: serverId,
+      rawData: {
+        'Type': 'Game',
+        'Name': gameHeadlineTitle(game.title, game.fileName),
+        'ProductionYear': ?game.year,
+        'Overview': ?game.overview,
+        // The info line's text slot, so it reads "1985 • NES".
+        'Genres': [if (game.system.isNotEmpty) game.system],
+        'GameLibraryId': libraryId,
+        'GameFileName': game.fileName,
+        'GameBoxartAspect': ?game.boxart?.aspectRatio,
+      },
+    );
+
+bool isGameHomeItem(AggregatedItem item) => item.type == 'Game';
+
+bool isGameHomeRow(HomeRow row) =>
+    row.items.isNotEmpty && isGameHomeItem(row.items.first);
+
+String gameItemLibraryId(AggregatedItem item) =>
+    item.rawData['GameLibraryId'] as String? ?? '';
+
+String gameItemFileName(AggregatedItem item) =>
+    item.rawData['GameFileName'] as String? ?? '';
+
+double? gameItemBoxartAspect(AggregatedItem item) =>
+    (item.rawData['GameBoxartAspect'] as num?)?.toDouble();
+
 const IconData gameLibraryIcon = Icons.sports_esports;
 
 /// The icon for a library's type, shared by Library Order and the nav buttons.
@@ -150,15 +185,32 @@ String _fileStem(String fileName) {
   return dot > 0 ? fileName.substring(0, dot) : fileName;
 }
 
-/// A safe display title for a game. Some ROM folder names carry characters the app font
-/// cannot render (they arrive as the replacement char) or control bytes; strip those and,
-/// when nothing legible remains, fall back to the filename without its extension.
+/// A safe display title for a game. A name copied through a Mac or Samba share gets its
+/// characters back, and ones the app font can't draw or control bytes are dropped. When
+/// nothing legible is left, it falls back to the file name without its extension.
 String gameDisplayTitle(String title, String fileName) {
   final cleaned = title
+      .replaceAllMapped(
+        RegExp('[\uF020-\uF029]'),
+        (m) => _macSmbCharacters[m[0]!.codeUnitAt(0) - 0xF020],
+      )
       .replaceAll('�', '')
       .replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '')
       .trim();
   return cleaned.isEmpty ? _fileStem(fileName) : cleaned;
+}
+
+// A name copied through a Mac or Samba share stores the characters Windows
+// refuses as private use code points from U+F020, a trailing dot as U+F029.
+const _macSmbCharacters = ['"', '*', ':', '<', '>', '?', r'\', '|', ' ', '.'];
+
+/// The display title without trailing No-Intro tags such as "(USA)" or "(Rev 1)".
+String gameHeadlineTitle(String title, String fileName) {
+  final display = gameDisplayTitle(title, fileName);
+  final stripped = display
+      .replaceFirst(RegExp(r'(\s*[(\[][^()\[\]]*[)\]])+$'), '')
+      .trim();
+  return stripped.isEmpty ? display : stripped;
 }
 
 /// A stable, pleasant fallback color for poster/backdrop placeholders when no thumbnail

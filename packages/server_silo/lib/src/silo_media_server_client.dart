@@ -293,7 +293,10 @@ class SiloMediaServerClient extends MediaServerClient
     profilesApi,
     () => _profileId,
     images: images,
-    onConfigurationUpdated: () => userViewsApi.invalidateCache(),
+    onConfigurationUpdated: () {
+      userViewsApi.invalidateCache();
+      itemsApi.forgetHideWatched();
+    },
     downloads: downloadsApi,
   );
 

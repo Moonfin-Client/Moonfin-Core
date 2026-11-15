@@ -59,6 +59,14 @@ abstract class GamesApi {
   /// GET /Moonfin/Games/{libraryId}/Games?system=...
   Future<List<GameSummary>> getGames(String libraryId, {String? system});
 
+  /// GET /Moonfin/Games/{libraryId}/Recent, newest first by date added, or
+  /// by release year when [released]. Throws on a server without the route.
+  Future<List<RecentGame>> getRecentGames(
+    String libraryId, {
+    bool released = false,
+    int limit = 16,
+  });
+
   /// GET /Moonfin/Games/{libraryId}/Games/{gameId}
   Future<GameDetail?> getGame(String libraryId, String gameId);
 

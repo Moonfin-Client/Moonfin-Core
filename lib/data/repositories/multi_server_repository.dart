@@ -646,7 +646,7 @@ class MultiServerRepository {
 
   Future<(List<AggregatedItem>, int)> loadMore({required HomeRow row}) async {
     if (!row.hasMore || row.items.length >= _maxItems) {
-      return (row.items, row.totalCount);
+      return (row.items, row.items.length);
     }
 
     final generation = _pagingGeneration;
@@ -901,18 +901,48 @@ class MultiServerRepository {
 
                   nextOffsets[cacheKey] = startIndex + _defaultLimit;
                   final targetLimit = startIndex + _defaultLimit;
+                  final hideWatched =
+                      prefs?.get(UserPreferences.hideWatchedInRecentRows) ??
+                      false;
+                  var fetchLimit = latestMediaFetchLimitForCollection(
+                    null,
+                    defaultLimit: targetLimit,
+                    maxLimit: _maxItems,
+                    hideWatched: hideWatched,
+                  );
 
-                  final response = await session.client.itemsApi.getLatestItems(
+                  var response = await session.client.itemsApi.getLatestItems(
                     parentId: parentId,
-                    limit: targetLimit,
+                    limit: fetchLimit,
                     fields: _fields,
                     enableImageTypes: _imageTypes,
                     imageTypeLimit: _imageTypeLimit,
                   );
-                  final items = normalizeLatestMediaItems(
-                    _parseItems(response, serverId),
+                  var rawItems = _parseItems(response, serverId);
+                  var items = normalizeLatestMediaItems(
+                    rawItems,
                     limit: targetLimit,
+                    hideWatched: hideWatched,
                   );
+                  if (hideWatched &&
+                      items.length < targetLimit &&
+                      rawItems.length >= fetchLimit &&
+                      fetchLimit < _maxItems) {
+                    fetchLimit = _maxItems;
+                    response = await session.client.itemsApi.getLatestItems(
+                      parentId: parentId,
+                      limit: fetchLimit,
+                      fields: _fields,
+                      enableImageTypes: _imageTypes,
+                      imageTypeLimit: _imageTypeLimit,
+                    );
+                    rawItems = _parseItems(response, serverId);
+                    items = normalizeLatestMediaItems(
+                      rawItems,
+                      limit: targetLimit,
+                      hideWatched: true,
+                    );
+                  }
                   if (items.length <= existingCount) {
                     _rowTotals[cacheKey] = items.length;
                   } else {
@@ -1136,9 +1166,13 @@ class MultiServerRepository {
     final hasMultiple = sessions.length > 1;
     final rows = <HomeRow>[];
 
-    final mergeByType = GetIt.instance<UserPreferences>().get(
-      UserPreferences.mergeRecentRowsByType,
-    );
+    final prefs = GetIt.instance.isRegistered<UserPreferences>()
+        ? GetIt.instance<UserPreferences>()
+        : null;
+    final mergeByType =
+        prefs?.get(UserPreferences.mergeRecentRowsByType) ?? false;
+    final hideWatched =
+        prefs?.get(UserPreferences.hideWatchedInRecentRows) ?? false;
     final groupedItems = <String, List<AggregatedItem>>{};
 
     for (final session in sessions) {
@@ -1165,14 +1199,15 @@ class MultiServerRepository {
           if (latestExcludes.contains(id)) continue;
 
           final name = view.name;
-          final fetchLimit = latestMediaFetchLimitForCollection(
+          var fetchLimit = latestMediaFetchLimitForCollection(
             collectionType,
             defaultLimit: _defaultLimit,
             maxLimit: _maxItems,
+            hideWatched: hideWatched,
           );
 
           try {
-            final latestResponse = await _withTimeout(
+            var latestResponse = await _withTimeout(
               () => session.client.itemsApi.getLatestItems(
                 parentId: id,
                 limit: fetchLimit,
@@ -1183,8 +1218,34 @@ class MultiServerRepository {
               label: 'latest $name from ${session.server.name}',
             );
 
-            final parsed = _parseItems(latestResponse, session.server.id);
+            var parsed = _parseItems(latestResponse, session.server.id);
             if (parsed.isEmpty) continue;
+
+            if (hideWatched &&
+                parsed.length >= fetchLimit &&
+                fetchLimit < _maxItems) {
+              final unwatchedItems = normalizeLatestMediaItems(
+                parsed,
+                collectionType: collectionType,
+                limit: _defaultLimit,
+                hideWatched: true,
+              );
+              if (unwatchedItems.length < _defaultLimit) {
+                fetchLimit = _maxItems;
+                latestResponse = await _withTimeout(
+                  () => session.client.itemsApi.getLatestItems(
+                    parentId: id,
+                    limit: fetchLimit,
+                    fields: _fields,
+                    enableImageTypes: _imageTypes,
+                    imageTypeLimit: _imageTypeLimit,
+                  ),
+                  label: 'latest $name from ${session.server.name}',
+                );
+                parsed = _parseItems(latestResponse, session.server.id);
+                if (parsed.isEmpty) continue;
+              }
+            }
 
             // Merged rows are built once every server has answered, so the
             // items are only collected here.
@@ -1193,10 +1254,11 @@ class MultiServerRepository {
               continue;
             }
 
-            final items = normalizeLatestMediaItems(
+            var items = normalizeLatestMediaItems(
               parsed,
               collectionType: collectionType,
               limit: _defaultLimit,
+              hideWatched: hideWatched,
             );
             if (items.isEmpty) continue;
 
@@ -1255,6 +1317,7 @@ class MultiServerRepository {
         allItems,
         collectionType: collectionType,
         limit: _defaultLimit,
+        hideWatched: hideWatched,
       );
       if (items.isEmpty) continue;
 

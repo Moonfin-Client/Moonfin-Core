@@ -59,6 +59,8 @@ class _Manager extends PlaybackManager {
   @override
   Future<void> nextInQueue() async => advances++;
   @override
+  Future<void> nextInQueueAsFinished() => nextInQueue();
+  @override
   Future<void> stop({bool userInitiated = true}) async {}
 }
 

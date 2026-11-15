@@ -976,6 +976,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     home.leaf('pref_home_rows_style', l10n.rowsType, keywords: [
       'classic',
       'modern rows',
+      'carousel',
     ]),
     if (!PlatformDetection.useMobileUi) ...[
       home.leaf(
@@ -1128,6 +1129,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.nextUpMaxDays,
       subtitle: l10n.nextUpMaxDaysDescription,
       keywords: ['next up', 'days', 'cutoff'],
+    ),
+    rowToggles.leaf(
+      'pref_hide_watched_in_recent_rows',
+      l10n.hideWatchedInRecentRows,
+      subtitle: l10n.hideWatchedInRecentRowsDescription,
+      keywords: ['watched', 'played', 'recent', 'recently added', 'recently released'],
     ),
     rowToggles.leaf(
       'pref_merge_recent_rows_by_type',
@@ -1589,6 +1596,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf('skipForwardLength', l10n.skipForwardLength, keywords: [
       'seek forward',
     ]),
+    if (PlatformDetection.isAppleTV)
+      video.leaf(
+        'appleTvClickpadSeekMode',
+        l10n.clickpadSeeking,
+        subtitle: l10n.clickpadSeekingDescription,
+        keywords: ['remote', 'touchpad', 'accidental skip', 'seek lock'],
+      ),
     video.leaf(
       'controlsHideDelay',
       l10n.settingsHideControlsAfter,

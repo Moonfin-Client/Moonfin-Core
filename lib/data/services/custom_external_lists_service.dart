@@ -102,6 +102,50 @@ class ImdbExternalListItem {
       );
 }
 
+/// Reads https://mdblist.com/lists/{username}/{listname} with an optional
+/// trailing slash, query string or fragment. Anchoring on the /lists/ segment
+/// keeps extra path segments from producing the wrong pair. An official list's
+/// movies or shows page, /lists/official/{movies|shows}/{slug}, also gets a
+/// mediatype so the row keeps just that type.
+Map<String, String> parseMdblistListUrl(String url) {
+  var rawUrl = url.trim();
+  final queryStart = rawUrl.indexOf(RegExp(r'[?#]'));
+  if (queryStart >= 0) {
+    rawUrl = rawUrl.substring(0, queryStart);
+  }
+  final parts = rawUrl.split('/').where((s) => s.isNotEmpty).toList();
+  final listsIndex = parts.lastIndexOf('lists');
+  if (listsIndex >= 0 &&
+      parts.length >= listsIndex + 4 &&
+      parts[listsIndex + 1].toLowerCase() == 'official' &&
+      RegExp(r'^(movies|shows)$', caseSensitive: false).hasMatch(parts[listsIndex + 2])) {
+    return {
+      'username': 'official',
+      'listname': parts[listsIndex + 3],
+      'mediatype': parts[listsIndex + 2].toLowerCase() == 'movies' ? 'movie' : 'show',
+    };
+  }
+  if (listsIndex >= 0 && parts.length >= listsIndex + 3) {
+    return {'username': parts[listsIndex + 1], 'listname': parts[listsIndex + 2]};
+  }
+  if (parts.length >= 2) {
+    return {'username': parts[parts.length - 2], 'listname': parts.last};
+  }
+  return {'username': '', 'listname': ''};
+}
+
+/// The list's page on MDBList, which [parseMdblistListUrl] reads back.
+String mdblistListUrl(Map<String, dynamic> params) {
+  final username = params['username'] as String? ?? '';
+  final listname = params['listname'] as String? ?? '';
+  final mediaPath = switch (params['mediatype']) {
+    'movie' => 'movies/',
+    'show' => 'shows/',
+    _ => '',
+  };
+  return 'https://mdblist.com/lists/$username/$mediaPath$listname';
+}
+
 class CustomExternalListsService {
   final Dio _dio;
 
@@ -150,9 +194,7 @@ class CustomExternalListsService {
         final username = params['user'] as String? ?? '';
         return 'https://letterboxd.com/$username/';
       case 'mdblist':
-        final username = params['username'] as String? ?? '';
-        final listname = params['listname'] as String? ?? '';
-        return 'https://mdblist.com/lists/$username/$listname/';
+        return '${mdblistListUrl(params)}/';
       default:
         return 'Unknown Source';
     }

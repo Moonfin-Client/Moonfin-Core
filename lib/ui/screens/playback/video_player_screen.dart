@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:clock/clock.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -159,6 +159,18 @@ class _SubtitleLoadingSpinnerState extends State<_SubtitleLoadingSpinner>
   }
 }
 
+@visibleForTesting
+int heldSeekStepMs(int baseMs, int count) {
+  final tierMs = count <= 3
+      ? 0
+      : count <= 8
+      ? 30000
+      : count <= 16
+      ? 60000
+      : 180000;
+  return math.max(baseMs, tierMs);
+}
+
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
 
@@ -174,6 +186,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   static const _staleSuspendExit = Duration(minutes: 30);
   static const _temporarySpeed = 2.0;
   static const _tvTemporarySpeedHoldDelay = Duration(milliseconds: 420);
+  static const _heldSeekStartDelay = Duration(milliseconds: 350);
+  static const _heldSeekStepEvery = Duration(milliseconds: 110);
+  static const _heldSeekLimit = Duration(seconds: 10);
   static const _seekPromptSuppressionDuration = Duration(milliseconds: 1200);
   static const _seekDragPromptSuppressionDuration = Duration(seconds: 4);
   static const _scrubSeekConvergeTolerance = Duration(milliseconds: 800);
@@ -403,10 +418,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   CalendarEntry? _nextAirDateReminder;
   int _nextAirDateLookup = 0;
   bool _nextUpDismissed = false;
+  String? _lastOutroMarkedItemId;
   bool _isNextUpAdvancing = false;
   int _consecutiveEpisodes = 0;
   StreamSubscription? _positionSub;
   StreamSubscription? _queueSub;
+  StreamSubscription<dynamic>? _finishedItemStopSub;
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _letterboxCropAppliedSub;
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
@@ -467,6 +484,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   LogicalKeyboardKey? _seekDirection;
   int _seekRepeatCount = 0;
+
+  // A held Left or Right on a TV steps on its own timer, so a remote that
+  // repeats keys faster doesn't seek faster.
+  LogicalKeyboardKey? _heldSeekKey;
+  int _heldSeekBaseMs = 0;
+  int _heldSeekCount = 0;
+  Timer? _heldSeekTimer;
+
+  /// A Left or Right that wasn't allowed to seek stays blocked while held.
+  LogicalKeyboardKey? _clickpadBlockedKey;
 
   double _brightnessValue = 0.5;
   double _systemVolume = 1.0;
@@ -916,6 +943,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
     });
+    _finishedItemStopSub = _manager.finishedItemStopStream.listen(
+      _markCurrentItemPlayedForOutroSkip,
+    );
     _listenToLetterboxCropState(_activeBackend);
     _backendSub = _manager.backendChangedStream.listen((backend) {
       _listenToLetterboxCropState(backend);
@@ -925,8 +955,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       } else {
         _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
       }
-      // Re-apply the desktop player volume whenever the backend (re)appears.
-      if (PlatformDetection.isDesktop) {
+      // Re-apply the player volume whenever the backend (re)appears.
+      if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
         unawaited(backend.setVolume(_playerVolume));
       }
       if (!mounted) return;
@@ -984,6 +1014,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _resetSkipSegmentAutoHide();
       setState(() {
         _nextUpDismissed = false;
+        _lastOutroMarkedItemId = null;
         _showNextUp = false;
         _skipSegment = null;
         // Stream indexes belong to the file they came from, so the next item
@@ -1072,7 +1103,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     if (_useSystemVolume) {
       _initSystemVolume();
-    } else if (PlatformDetection.isDesktop) {
+    } else if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
       _initDesktopVolume();
     }
   }
@@ -1113,6 +1144,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       windowManager.removeListener(this);
     }
     _cancelTemporarySpeed();
+    _endHeldSeek();
     _hideTimer?.cancel();
     _skipSegmentAutoHideTimer?.cancel();
     _cinemaSkipDurationSub?.cancel();
@@ -1129,7 +1161,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _skipBackwardTimer?.cancel();
     _surfaceTaps.cancel();
     _persistVolumeTimer?.cancel();
-    if (PlatformDetection.isDesktop) {
+    if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
       unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
     }
     _volumeListenerSub?.cancel();
@@ -1151,6 +1183,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _positionSub?.cancel();
     _queueSub?.cancel();
+    _finishedItemStopSub?.cancel();
     _episodeBrowser?.dispose();
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
@@ -1497,6 +1530,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
     if (lifecycleState != AppLifecycleState.resumed) {
       _cancelTemporarySpeed();
+      _endHeldSeek();
     }
     switch (lifecycleState) {
       case AppLifecycleState.inactive:
@@ -2693,7 +2727,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!await _checkStillWatching()) return;
       // The next item, not the next chapter, even when the card came up
       // during one.
-      await _manager.nextInQueue();
+      await _manager.nextInQueueAsFinished();
     } finally {
       _isNextUpAdvancing = false;
     }
@@ -2710,11 +2744,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _handleNextUpCancel() {
     _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _markCurrentItemPlayedForOutroSkip();
     setState(() {
       _showNextUp = false;
       _nextUpDismissed = true;
     });
-    unawaited(_exitPlayback());
+    unawaited(_exitPlayback(finished: true));
   }
 
   void _focusNextUpPlay({int attempt = 0}) {
@@ -2738,17 +2773,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// A viewer reaching for the remote has answered the prompt's question.
   void _noteViewerActivity() => _consecutiveEpisodes = 0;
 
-  /// Returns false when the viewer chose to stop, so the caller can drop the
-  /// queue advance it was about to make.
+  /// Returns false when the caller should drop the queue advance it was about
+  /// to make, because the viewer chose to stop or the queue already moved.
   Future<bool> _checkStillWatching() async {
     final behavior = _prefs.get(UserPreferences.stillWatchingBehavior);
     if (behavior == StillWatchingBehavior.disabled) return true;
     if (_consecutiveEpisodes < behavior.episodes) return true;
 
+    final pendingItem = _queue.currentItem;
     _manager.pause();
     final shouldContinue = await StillWatchingDialog.show(context);
+    if (!mounted) return false;
+    // A group or remote can move the queue while the prompt is up. Stop still
+    // stops then, but only the episode it asked about counts as finished.
+    final sameItem = identical(_queue.currentItem, pendingItem);
     if (shouldContinue != true) {
-      unawaited(_exitPlayback());
+      if (sameItem) _markCurrentItemPlayedForOutroSkip();
+      unawaited(_exitPlayback(finished: sameItem));
       return false;
     }
 
@@ -2758,33 +2799,36 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // clears suppressAutoNext that callback ends the session and closes the
     // screen, which looks like continue exiting playback. The advance starts
     // the next episode on its own.
-    return true;
+    return sameItem;
   }
 
   // Skipping the credits counts as finishing, even when they start before the
   // server's own played threshold.
-  void _markCurrentItemPlayedForOutroSkip() {
-    final item = _queue.currentItem;
+  void _markCurrentItemPlayedForOutroSkip([dynamic targetItem]) {
+    final item = targetItem ?? _queue.currentItem;
     final itemId = _itemIdForQueueItem(item);
-    if (itemId != null && itemId.isNotEmpty) {
-      try {
-        final mutations = ItemMutationRepository(_clientForQueueItem(item));
-        unawaited(
-          mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
-        );
-        final raw = _rawDataForQueueItem(item);
-        if (raw != null) {
-          final existingUserData = raw['UserData'];
-          final userData = existingUserData is Map<String, dynamic>
-              ? existingUserData
-              : (existingUserData is Map
-                    ? existingUserData.cast<String, dynamic>()
-                    : <String, dynamic>{});
-          userData['Played'] = true;
-          raw['UserData'] = userData;
-        }
-      } catch (_) {}
-    }
+    if (itemId == null || itemId.isEmpty) return;
+    if (_lastOutroMarkedItemId == itemId) return;
+    _lastOutroMarkedItemId = itemId;
+    try {
+      final mutations = ItemMutationRepository(_clientForQueueItem(item));
+      unawaited(
+        mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
+      );
+      final raw = _rawDataForQueueItem(item);
+      if (raw != null) {
+        final existingUserData = raw['UserData'];
+        final userData = existingUserData is Map<String, dynamic>
+            ? existingUserData
+            : (existingUserData is Map
+                  ? existingUserData.cast<String, dynamic>()
+                  : <String, dynamic>{});
+        userData['Played'] = true;
+        userData['PlaybackPositionTicks'] = 0;
+        userData['PlayedPercentage'] = null;
+        raw['UserData'] = userData;
+      }
+    } catch (_) {}
   }
 
   void _skipCurrentSegment() {
@@ -2880,6 +2924,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// then reports its end, so the server counts it played.
   Future<void> _exitPlayback({bool finished = false}) async {
     if (_isStopping) return;
+    // A group or remote can move the queue during the awaits below, and only
+    // the item exiting now counts as finished.
+    final exitingItem = _queue.currentItem;
     setState(() {
       _isStopping = true;
     });
@@ -2907,7 +2954,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
     }
     unawaited(
-      finished
+      finished && identical(_queue.currentItem, exitingItem)
           ? _manager.stopAsFinished()
           : _manager.stop(userInitiated: false),
     );
@@ -3556,6 +3603,57 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _seekRepeatCount = 0;
   }
 
+  /// The first step lands now through [firstStep], and the rest scrub on a
+  /// timer until the key comes up, or after ten seconds in case the release
+  /// never arrives.
+  bool _beginHeldSeek(KeyEvent event, ValueChanged<int> firstStep) {
+    final key = event.logicalKey;
+    if (event is! KeyDownEvent || key == _heldSeekKey) return false;
+    _endHeldSeek();
+    final back = key == LogicalKeyboardKey.arrowLeft;
+    _heldSeekKey = key;
+    _heldSeekBaseMs = _prefs.get(
+      back ? UserPreferences.skipBackLength : UserPreferences.skipForwardLength,
+    );
+    _heldSeekCount = 1;
+    firstStep(back ? -_heldSeekBaseMs : _heldSeekBaseMs);
+    _heldSeekTimer = Timer(_heldSeekStartDelay, () {
+      _stepHeldSeek();
+      if (_heldSeekKey == null) return;
+      _heldSeekTimer = Timer.periodic(_heldSeekStepEvery, (timer) {
+        if (_heldSeekStartDelay + _heldSeekStepEvery * timer.tick >
+            _heldSeekLimit) {
+          _endHeldSeek();
+          return;
+        }
+        _stepHeldSeek();
+      });
+    });
+    return true;
+  }
+
+  void _stepHeldSeek() {
+    if (!_clickpadSeekAllowed) {
+      _endHeldSeek();
+      _dropScrubSession(resume: false);
+      return;
+    }
+    final ms = heldSeekStepMs(_heldSeekBaseMs, ++_heldSeekCount);
+    _seekRelativeAccumulate(
+      _heldSeekKey == LogicalKeyboardKey.arrowLeft ? -ms : ms,
+    );
+  }
+
+  void _endHeldSeek() {
+    _heldSeekTimer?.cancel();
+    _heldSeekTimer = null;
+    _heldSeekKey = null;
+  }
+
+  bool get _clickpadSeekAllowed => _prefs
+      .get(UserPreferences.appleTvClickpadSeekMode)
+      .allowsSeek(controlsVisible: _controlsVisible, playing: !_state.isPaused);
+
   SubtitleViewConfiguration _buildSubtitleConfig() =>
       buildSubtitleViewConfiguration(
         context: context,
@@ -3742,11 +3840,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
           event.logicalKey == LogicalKeyboardKey.arrowRight) {
         _resetSeekAcceleration();
+        if (event.logicalKey == _heldSeekKey) _endHeldSeek();
         // While the preview holds a paused frame the session survives
         // key-release and play is what commits. Otherwise release commits
         // directly.
         if (!_pauseDuringScrub) {
-          _commitPendingScrub();
+          if (_clickpadSeekAllowed) {
+            _commitPendingScrub();
+          } else {
+            _dropScrubSession(resume: false);
+          }
         }
       }
       return KeyEventResult.ignored;
@@ -3803,6 +3906,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     if (PlatformDetection.isTV || fromRemote) {
+      // The timer does the stepping, so repeats would only move focus around
+      // while the seek bar is still taking it.
+      if (event is KeyRepeatEvent && event.logicalKey == _heldSeekKey) {
+        return KeyEventResult.handled;
+      }
       if (_showNextUp) {
         switch (event.logicalKey) {
           case LogicalKeyboardKey.arrowLeft:
@@ -3872,30 +3980,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _exitPlayback();
           return KeyEventResult.handled;
         case LogicalKeyboardKey.arrowLeft:
-          if (_showNextUp) {
-            return KeyEventResult.ignored;
-          }
-          if (!_controlsVisible) {
-            final step = _accelerateSeekStep(
-              _prefs.get(UserPreferences.skipBackLength),
-              event,
-            );
-            _seekRelative(-step, showControls: false);
-            _showControls(focusSeekbar: true);
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
         case LogicalKeyboardKey.arrowRight:
           if (_showNextUp) {
             return KeyEventResult.ignored;
           }
           if (!_controlsVisible) {
-            final step = _accelerateSeekStep(
-              _prefs.get(UserPreferences.skipForwardLength),
+            if (!_clickpadSeekAllowed) {
+              _clickpadBlockedKey = event.logicalKey;
+              _showControls(focusSeekbar: true);
+            } else if (_beginHeldSeek(
               event,
-            );
-            _seekRelative(step, showControls: false);
-            _showControls(focusSeekbar: true);
+              (ms) => _seekRelative(ms, showControls: false),
+            )) {
+              _showControls(focusSeekbar: true);
+            }
             return KeyEventResult.handled;
           }
           return KeyEventResult.ignored;
@@ -5461,15 +5559,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               }
                               switch (event.logicalKey) {
                                 case LogicalKeyboardKey.arrowLeft:
-                                  _seekRelativeAccumulate(
-                                    -_prefs.get(UserPreferences.skipBackLength),
-                                  );
-                                  return KeyEventResult.handled;
                                 case LogicalKeyboardKey.arrowRight:
-                                  _seekRelativeAccumulate(
-                                    _prefs.get(
-                                      UserPreferences.skipForwardLength,
-                                    ),
+                                  if (event is KeyRepeatEvent &&
+                                      event.logicalKey == _clickpadBlockedKey) {
+                                    return KeyEventResult.handled;
+                                  }
+                                  if (!_clickpadSeekAllowed) {
+                                    _clickpadBlockedKey = event.logicalKey;
+                                    _showControls();
+                                    return KeyEventResult.handled;
+                                  }
+                                  _beginHeldSeek(
+                                    event,
+                                    _seekRelativeAccumulate,
                                   );
                                   return KeyEventResult.handled;
                                 case LogicalKeyboardKey.arrowUp:
@@ -6597,7 +6699,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _persistPlayerVolume() {
-    if (!PlatformDetection.isDesktop) return;
+    if (!PlatformDetection.isDesktop && !PlatformDetection.isWeb) return;
     _persistVolumeTimer?.cancel();
     _persistVolumeTimer = Timer(const Duration(milliseconds: 400), () {
       unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
@@ -8115,7 +8217,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           ),
         );
       // The local queue would start the next item on this device.
-      case TransportAction.next || TransportAction.previous:
+      case TransportAction.next ||
+          TransportAction.nextAsFinished ||
+          TransportAction.previous:
         break;
       case TransportAction.stop:
         return false;

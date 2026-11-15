@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../ui/widgets/image_source.dart';
+import '../../util/game_library.dart';
 import 'connectivity_service.dart';
 import 'media_server_client_factory.dart';
 
@@ -130,6 +131,17 @@ class BackgroundService {
           ));
         }
       }
+    }
+
+    // A game shows its in-game screenshot, the way its details screen does.
+    // The address carries the sign-in token, so it's built here, never stored.
+    if (urls.isEmpty && isGameHomeItem(item)) {
+      final snap = client.gamesApi?.thumbUrl(
+        libraryId: gameItemLibraryId(item),
+        gameId: item.id,
+        kind: 'snap',
+      );
+      if (snap != null) urls.add(snap);
     }
 
     return urls;

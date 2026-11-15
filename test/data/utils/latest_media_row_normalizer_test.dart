@@ -16,6 +16,8 @@ AggregatedItem _createItem({
   String? parentBackdropItemId,
   List<String>? parentBackdropImageTags,
   List<String>? backdropImageTags,
+  String? parentLogoImageTag,
+  String? parentLogoItemId,
 }) {
   final imageTags = <String, dynamic>{};
   if (primaryImageTag != null) {
@@ -40,6 +42,8 @@ AggregatedItem _createItem({
       'ParentBackdropItemId': ?parentBackdropItemId,
       'ParentBackdropImageTags': ?parentBackdropImageTags,
       'BackdropImageTags': ?backdropImageTags,
+      'ParentLogoImageTag': ?parentLogoImageTag,
+      'ParentLogoItemId': ?parentLogoItemId,
     },
   );
 }
@@ -72,6 +76,18 @@ void main() {
       expect(
         latestMediaFetchLimitForCollection(null, defaultLimit: 15, maxLimit: 100),
         equals(15),
+      );
+    });
+
+    test('expands limit when hideWatched is true', () {
+      expect(
+        latestMediaFetchLimitForCollection(
+          'movies',
+          defaultLimit: 15,
+          maxLimit: 100,
+          hideWatched: true,
+        ),
+        equals(60),
       );
     });
   });
@@ -282,6 +298,67 @@ void main() {
       expect(result.single.thumbImageTag, equals('darkThumb123'));
     });
 
+    test('an episode carries the show logo onto the series card', () {
+      final episode = _createItem(
+        id: 'ep-dark-3',
+        name: 'Truths',
+        type: 'Episode',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentLogoImageTag: 'darkLogo789',
+        parentLogoItemId: 'series-dark',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.id, equals('series-dark'));
+      expect(result.single.logoImageTag, equals('darkLogo789'));
+    });
+
+    test('a season carries the show logo onto the series card', () {
+      final season = _createItem(
+        id: 'season-dark-2',
+        name: 'Season 2',
+        type: 'Season',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentLogoImageTag: 'darkLogo789',
+        parentLogoItemId: 'series-dark',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [season],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.logoImageTag, equals('darkLogo789'));
+    });
+
+    test('an episode ignores a logo that is not the show\'s', () {
+      final episode = _createItem(
+        id: 'ep-dark-4',
+        name: 'Origins',
+        type: 'Episode',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentLogoImageTag: 'otherLogo',
+        parentLogoItemId: 'collection-1',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.logoImageTag, isNull);
+    });
+
     test('an episode ignores a thumb tag belonging to its season', () {
       final episode = _createItem(
         id: 'ep-dark-2',
@@ -399,6 +476,59 @@ void main() {
         isEmpty,
         reason: 'the tag names the episode, not the series',
       );
+    });
+
+    test('hideWatched filters out played movies and fully watched series', () {
+      const playedMovie = AggregatedItem(
+        id: 'm1',
+        serverId: 'server1',
+        rawData: {
+          'Id': 'm1',
+          'Name': 'Played Movie',
+          'Type': 'Movie',
+          'UserData': {'Played': true},
+        },
+      );
+      const unplayedMovie = AggregatedItem(
+        id: 'm2',
+        serverId: 'server1',
+        rawData: {
+          'Id': 'm2',
+          'Name': 'Unplayed Movie',
+          'Type': 'Movie',
+          'UserData': {'Played': false},
+        },
+      );
+      const watchedSeries = AggregatedItem(
+        id: 's1',
+        serverId: 'server1',
+        rawData: {
+          'Id': 's1',
+          'Name': 'Watched Series',
+          'Type': 'Series',
+          'UserData': {'Played': false, 'UnplayedItemCount': 0},
+          'ChildCount': 3,
+        },
+      );
+      const partialSeries = AggregatedItem(
+        id: 's2',
+        serverId: 'server1',
+        rawData: {
+          'Id': 's2',
+          'Name': 'Partial Series',
+          'Type': 'Series',
+          'UserData': {'Played': false, 'UnplayedItemCount': 2},
+          'ChildCount': 3,
+        },
+      );
+
+      final result = normalizeLatestMediaItems(
+        [playedMovie, unplayedMovie, watchedSeries, partialSeries],
+        limit: 10,
+        hideWatched: true,
+      );
+
+      expect(result.map((i) => i.id).toList(), equals(['m2', 's2']));
     });
   });
 }

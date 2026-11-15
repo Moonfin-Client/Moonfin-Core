@@ -160,6 +160,7 @@ class MediaBarViewModel extends ChangeNotifier {
     ].map(_prefs.get),
     _prefs.get(UserPreferences.mediaBarNewReleaseBanner),
     _prefs.get(UserPreferences.mediaBarNewReleaseDays),
+    _prefs.get(UserPreferences.hideWatchedInRecentRows),
   ].join('|');
 
   void _onPrefsChanged() {
@@ -219,7 +220,7 @@ class MediaBarViewModel extends ChangeNotifier {
 
     try {
       final nextState = await _repository.loadItems();
-      if (loadGeneration != _loadGeneration) return;
+      if (loadGeneration != _loadGeneration || _reloadAfterLoad) return;
 
       if (nextState is MediaBarError &&
           previousReady != null &&

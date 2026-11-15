@@ -51,6 +51,7 @@ class GamePosterCard extends StatefulWidget {
     this.cacheManager,
     this.artwork,
     this.onArtworkError,
+    this.externalIsFocused,
   });
 
   final String? imageUrl;
@@ -85,6 +86,10 @@ class GamePosterCard extends StatefulWidget {
   /// When present it replaces the legacy cache-manager URL path entirely.
   final Widget? artwork;
   final ValueChanged<Object>? onArtworkError;
+
+  /// Set by a row that owns focus itself, like Home's. The card then takes no
+  /// focus of its own.
+  final bool? externalIsFocused;
 
   @override
   State<GamePosterCard> createState() => _GamePosterCardState();
@@ -150,11 +155,20 @@ class _GamePosterCardState extends State<GamePosterCard> {
 
   @override
   Widget build(BuildContext context) {
-    final active = _activeIn(InputModeTracker.pointerIsLive(context));
+    final pointerLive = InputModeTracker.pointerIsLive(context);
+    final external = widget.externalIsFocused;
+    final active = external == null || pointerLive
+        ? _activeIn(pointerLive)
+        : external;
     final scale = widget.cardFocusExpansion && active
         ? MediaCard.focusScale
         : 1.0;
 
+    final card = GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: widget.onTap,
+      child: RepaintBoundary(child: _buildCard(context, active, scale)),
+    );
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) {
@@ -165,19 +179,15 @@ class _GamePosterCardState extends State<GamePosterCard> {
         setState(() => _hovered = false);
         if (!_focused) widget.onHoverEnd?.call();
       },
-      child: Focus(
-        focusNode: widget.focusNode,
-        autofocus: widget.autofocus,
-        onKeyEvent: _handleKeyEvent,
-        onFocusChange: _handleFocusChange,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.onTap,
-          child: RepaintBoundary(
-            child: _buildCard(context, active, scale),
-          ),
-        ),
-      ),
+      child: external != null
+          ? card
+          : Focus(
+              focusNode: widget.focusNode,
+              autofocus: widget.autofocus,
+              onKeyEvent: _handleKeyEvent,
+              onFocusChange: _handleFocusChange,
+              child: card,
+            ),
     );
   }
 

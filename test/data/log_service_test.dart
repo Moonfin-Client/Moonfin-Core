@@ -144,6 +144,42 @@ void main() {
       );
     });
 
+    test('redacts passwords, refresh tokens, secrets and signatures', () {
+      assertRedacted(
+        'POST /token refresh_token=abc123&client_secret=s3cr3t',
+        'refresh_token=[REDACTED]&client_secret=[REDACTED]',
+      );
+      assertRedacted('login password=hunter2', 'password=[REDACTED]');
+      assertRedacted(
+        'GET /Videos/1/stream?expires=99&sig=a1b2c3',
+        'expires=99&sig=[REDACTED]',
+      );
+    });
+
+    test('redacts emails and home folder names', () {
+      assertRedacted('signed in as jane.doe@example.com', 'as [REDACTED]');
+      assertRedacted(
+        'switch to 1920x1080@23.976 for 23.976fps content',
+        'switch to 1920x1080@23.976 for',
+      );
+      assertRedacted(
+        'open /home/jane/Videos/x.mkv failed',
+        '/home/[REDACTED]/Videos/x.mkv',
+      );
+      assertRedacted(
+        r'open C:\Users\jane\Videos\x.mkv failed',
+        r'\Users\[REDACTED]\Videos',
+      );
+      assertRedacted(
+        'GET /Users/0123456789abcdef0123456789abcdef/Items',
+        '/Users/0123456789abcdef0123456789abcdef/Items',
+      );
+      assertRedacted(
+        'GET /Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+        '/Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+      );
+    });
+
     test('redacts a credential sent as a header', () {
       assertRedacted('X-Emby-Token: deadbeefcafe', 'X-Emby-Token: [REDACTED]');
       assertRedacted(

@@ -121,6 +121,7 @@ abstract class ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
     bool recursive = false,
+    bool? hideWatched,
   });
 
   Future<Map<String, dynamic>> getSeasons(String seriesId, {String? fields});

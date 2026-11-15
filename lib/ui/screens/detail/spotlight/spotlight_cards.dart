@@ -672,9 +672,7 @@ class _SpotlightCardsBuilder {
     final seerrRecommendations = pieces.recommendations
         ? seerrState!.recommendations
         : const <SeerrDiscoverItem>[];
-    final seerrSimilar = pieces.similar
-        ? seerrState!.similar
-        : const <SeerrDiscoverItem>[];
+    final seerrSimilar = pieces.similarItems;
     if (similar.isEmpty &&
         seerrRecommendations.isEmpty &&
         seerrSimilar.isEmpty) {

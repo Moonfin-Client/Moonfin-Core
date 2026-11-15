@@ -270,6 +270,7 @@ class SiloUsersApi implements UsersApi {
   ) => userConfigurationToSiloSettings(
     orderedViews: c.orderedViews,
     myMediaExcludes: c.myMediaExcludes,
+    hidePlayedInLatest: c.hidePlayedInLatest,
     enableNextEpisodeAutoPlay: c.enableNextEpisodeAutoPlay,
     audioLanguagePreference: c.audioLanguagePreference,
     subtitleLanguagePreference: c.subtitleLanguagePreference,

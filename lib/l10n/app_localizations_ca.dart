@@ -4876,6 +4876,16 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra les biblioteques de tots els servidors connectats';
 
   @override
+  String get recentlyAddedAndReleased => 'Recently Added and Released';
+
+  @override
+  String get hideWatchedInRecentRows => 'Hide Watched';
+
+  @override
+  String get hideWatchedInRecentRowsDescription =>
+      'Hide watched content from Recently Added and Recently Released home rows.';
+
+  @override
   String get mergeRecentRowsByType => 'Fusiona les files recents per tipus';
 
   @override
@@ -5327,6 +5337,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get homeRowsExternalLists => 'Llistes externes';
+
+  @override
+  String get homeRowsStreamingServices => 'Streaming Services';
 
   @override
   String get perRowSettings => 'Configuració per fila';
@@ -5988,7 +6001,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get seerrDownloadStalled => 'Stalled';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Ha fallat la baixada';
 
   @override
   String get seerrImportBlocked => 'Import blocked';
@@ -12696,6 +12709,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
+  String get homeRowsStyleCarousel => 'Carousel';
+
+  @override
   String get homeRowsSection => 'Files d\'inici';
 
   @override
@@ -15891,6 +15907,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get setupRowsModernHint => 'Targetes més grans amb títols a sota.';
 
   @override
+  String get setupRowsCarouselHint =>
+      'Posters with a large details panel underneath.';
+
+  @override
   String get setupDetailClassicHint => 'Tot està centrat en una sola columna.';
 
   @override
@@ -16706,16 +16726,18 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsAdvancedSection => 'Avançat';
 
   @override
-  String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
+  String get settingsDecodingAndRenderingSection =>
+      'Descodificació i renderització';
 
   @override
-  String get settingsAudioStreamSection => 'Audio Stream';
+  String get settingsAudioStreamSection => 'Flux d\'àudio';
 
   @override
-  String get settingsAudioOutputSection => 'Audio Output';
+  String get settingsAudioOutputSection => 'Sortida d\'àudio';
 
   @override
-  String get settingsPassthroughSettingsSection => 'Passthrough Settings';
+  String get settingsPassthroughSettingsSection =>
+      'Configuració del passthrough';
 
   @override
   String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
@@ -16724,7 +16746,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
 
   @override
-  String get settingsRewatchSection => 'Rewatch';
+  String get settingsRewatchSection => 'Torna a veure';
 
   @override
   String get favoritesSwitchViewSection => 'Switch View';
@@ -18470,4 +18492,17 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Esquerra i Dreta mouen la barra.';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

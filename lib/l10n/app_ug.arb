@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "مۇلازىمېتىرنىڭ كود نومۇرىنى تاللاڭ",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision ئارخىپى 7 بىۋاسىتە ئويۇن",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision ئارخىپى 7 كۈچەيتمە قەۋەت ئېقىمىنىڭ بىۋاسىتە ئوينىشى كېرەكلىكىنى كونترول قىلىدۇ.",
-    "settingsAutoAftkrtEnabled": "ئاپتوماتىك (AFTKRT قوزغىتىلدى)",
-    "settingsEnabledOnThisDevice": "بۇ ئۈسكۈنىدە قوزغىتىلدى",
-    "settingsDisabledPreferTranscode": "چەكلەنگەن (transcode نى ياخشى كۆرۈڭ)",
+    "settingsAutoAftkrtEnabled": "ئاپتوماتىك",
+    "settingsEnabledOnThisDevice": "قوزغىتىلغان",
+    "settingsDisabledPreferTranscode": "تاقاق",
     "settingsResumeRewindDescription": "قويۇشنى ئەسلىگە كەلتۈرگەندە (داۋاملىق كۆرۈشنى ياكى مېدىيا تۈر بېتىدىن) ، قانچە سېكۇنتنى قايتۇرۇش كېرەك؟",
     "settingsUnpauseRewindDescription": "ۋاقىتلىق توختىتىش كۇنۇپكىسىنى باسقاندىن كېيىن قايتا ئويناشنى ئەسلىگە كەلتۈرگەندە ، قانچە سېكۇنت قايتىشى كېرەك؟",
     "settingsSkipBackLengthDescription": "كەينىگە قايتۇرۇش كۇنۇپكىسىنى باسقاندىن كېيىن قانچە سېكۇنت كەينىگە سەكرىگىلى بولىدۇ.",
@@ -8958,5 +8958,483 @@
     "imdbMostPopularMovies": "IMDb ئەڭ ئالقىشلانغان كىنولار",
     "imdbMostPopularTvShows": "IMDb ئەڭ ئالقىشلانغان تېلېۋىزىيە تىياتىرلىرى",
     "imdbLowestRatedMovies": "IMDb ئەڭ تۆۋەن باھالانغان كىنولار",
-    "imdbTopEnglishMovies": "IMDb ئەڭ يۇقىرى باھالانغان ئىنگلىزچە كىنولار"
+    "imdbTopEnglishMovies": "IMDb ئەڭ يۇقىرى باھالانغان ئىنگلىزچە كىنولار",
+    "emulatorCoreDownloading": "چۈشۈرۈش",
+    "castMembers": "ئېكرانغا چىقىرىش",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "playlistTypeVideo": "سىن",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "audioPlaylistsSection": "ئاۋاز قويۇش تىزىملىكلىرى",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "settingsAudioPassthroughMode": "بىۋاسىتە ئۆتكۈزۈش",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "tags": "خەتكۈچ",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "selectAllStudios": "ھەممىنى تاللاڭ",
+    "filtersHeader": "سۈزگۈچ",
+    "interfaceLayoutTv": "TV",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "ئۈستەل يۈزى",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "mediaBarModeBanner": "بايراق",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "filterTrailers": "ئالدىن كۆرۈنۈشلەر",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "filterExtras": "قوشۇمچىلار",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "ئەسلى تىل",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "seerrRuntime": "ئۇزۇنلۇقى",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "setupStyleClassic": "كلاسسىك",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "setupStyleModern": "زامانىۋى",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "adminMetadataDisplayOrderTv": "TV",
+    "adminMetadataLockFieldName": "ئىسمى",
+    "adminMetadataLockFieldGenres": "ژانىرلار",
+    "adminMetadataLockFieldCast": "كىشىلەر",
+    "adminMetadataLockFieldRuntime": "ئۇزۇنلۇقى",
+    "adminMetadataLockFieldStudios": "ئىستۇدىيەلەر",
+    "adminMetadataLockFieldTags": "خەتكۈچ",
+    "seerrDownloading": "چۈشۈرۈش",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "performanceMode": "ئۈنۈم",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeAuto": "ئاپتوماتىك",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "كىچىك كۆرۈنۈش",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "كىچىك",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "ئوتتۇراھال",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "چوڭ",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPositionBouncing": "سەكرەيدىغان",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "screensaverBackdrop": "ئارقا كۆرۈنۈش",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "قارا",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "autoDownloadKeepAll": "ھەممىسى",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDeleteNever": "ھەرگىز بولمايدۇ",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "downloadNotificationRunning": "چۈشۈرۈش",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "spotlightCollectionsCard": "توپلام",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "keyNameHome": "باش بەت",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedMedium": "ئوتتۇراھال",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedOff": "تاقاق",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "detailMetadataStatus": "يۈرۈشلۈك ھالىتى",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataGenres": "ژانىرلار",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "upcomingEpisodeToday": "بۈگۈن",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "animeMarkerPending": "ساقلىنىۋاتىدۇ",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "savedMediaRead": "ئوقۇ",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "sortByName": "ئىسمى",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "achievementsAppearance": "كۆرۈنۈش",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "كۆرۈلگەن",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "guideRepeatBadge": "تەكرارلاڭ",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "bottomNavbarTabsAvailable": "ئىشلەتكىلى بولىدۇ",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "friendsDecline": "رەت قىلىش",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "chatGroupName": "گۇرۇپپا ئىسمى",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatLeave": "گۇرۇپپىدىن ئايرىلىش",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "detailSectionGroupOther": "باشقىلىرى",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "لوگو",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionPoster": "پوستېر",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionUpNext": "كېيىنكىسى",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "ناخشا تېكىستى",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "ئېكرانغا چىقىرىش",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionStudios": "ئىستۇدىيەلەر",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "باب",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "قوشۇمچىلار",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "توپلام",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "بۇنىڭغا ئوخشاش",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionSeerrRecommendations": "تەۋسىيە",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "قاتناشقان ئەسەرلەر",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "تەرجىمىھالى",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "seasonalRowCountryOther": "باشقىلىرى",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "settingsAdvancedSection": "ئالىي",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortReleaseDate": "ئېلان قىلىنغان ۋاقىت",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortRuntime": "ئۇزۇنلۇقى",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "playlistSortLastPlayed": "ئەڭ ئاخىرقى قويۇلغان",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "rendererModeAuto": "ئاپتوماتىك",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "libraryStyleClassic": "كلاسسىك",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "libraryStyleModern": "زامانىۋى",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "سەنئەتكارلار",
+    "adminMetadataFieldAlbum": "ئالبوم",
+    "adminMetadataSectionRatings": "باھالار",
+    "adminLiveTvTabRecordings": "خاتىرىلەنگەن پروگراممىلار",
+    "adminLogLevelNone": "يوق",
+    "adminTaskResultFailed": "مەغلۇپ بولدى",
+    "adminLogWatch": "كۆرۈش",
+    "adminGroupLibrary": "مېدىيا ئامبىرى",
+    "adminGroupPlayback": "قويۇش",
+    "adminGroupPeople": "كىشىلەر",
+    "librarySortAlbum": "ئالبوم",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "librarySortGenre": "ژانىر",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "bookLibraryStyleClassic": "كلاسسىك",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "سىرتقى تىزىملىكلەر",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "adminEmbyConnect": "Emby ئۇلىنىش",
+    "adminTranscodingHwaAdvanced": "ئالىي",
+    "musicLibraryStyleClassic": "كلاسسىك",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "keyNameDelete": "ئۆچۈرۈش",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "keyboardStyleClassic": "كلاسسىك",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "recordPromptNow": "ھازىر",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "detailsBackdropFit": "Fit",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "externalRowSortName": "ئىسمى",
+    "externalRowSortReleaseDate": "ئېلان قىلىنغان ۋاقىت",
+    "externalRowSortShuffle": "تەرتىپسىز قويۇش",
+    "siloApproveSignInApprove": "تەستىق",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "accountActive": "ئاكتىپ",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailScreenStylePremiere": "تۇنجى قويۇلۇش",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "setupStylePremiere": "تۇنجى قويۇلۇش",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "calendarSettingsColorByType": "تىپ",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "afterHoursPlay": "قويۇش",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "afterHoursCastStatic": "مۇقىم",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "watchPartyType": "تىپ",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "moveUp": "يۆتكەڭ",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "تۆۋەنگە يۆتكەڭ",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "ئاۋازلىق كىتاب",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "كىتاب",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "interfaceLayoutAutomatic": "ئاپتوماتىك",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "ئاپتور",
+    "adminMetadataLockFieldOverview": "ئومۇمىي چۈشەنچە",
+    "screensaverGeneralSettings": "ئادەتتىكى تەڭشەكلەر",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "نېئون پۇلس",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "كۈندىلىك",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "ھەپتىلىك",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "ماۋزۇلار",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "ئىشلەتكۈچى",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "پائالىيەت",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "ئاپتوماتىك",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "باشقۇرغۇچى",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "گۇرۇپپا قۇرۇش",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "تەپسىلاتلارنى كۆرۈش",
+    "achievementsUnlockedMore": "يەنە +{count}",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "خەتكۈچ",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "نورمال",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "دۆلەت",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "ئاپتوماتىك",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "كىتاب",
+    "adminImageTypeMenu": "تىزىملىك",
+    "adminGroupOverview": "ئومۇمىي چۈشەنچە",
+    "seriesRecordingAllEpisodes": "بارلىق بۆلۈملەر",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "ئەينەك",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb ئوخشاشلىقى",
+    "calendarSettingsView": "كۆرۈش",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "ئالاھىدە",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "ھەرىكەتلەر",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "باشلىنىش",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    }
 }

@@ -540,8 +540,15 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
         label: l10n.setupStyleModern,
         hint: l10n.setupRowsModernHint,
         selected: selected == HomeRowsStyle.v2,
-        preview: () => homeRowsPreview(modern: true),
+        preview: () => homeRowsPreview(modern: true, carousel: false),
         onSelect: () => setState(() => _homeRows = HomeRowsStyle.v2),
+      ),
+      _SetupOption(
+        label: l10n.homeRowsStyleCarousel,
+        hint: l10n.setupRowsCarouselHint,
+        selected: selected == HomeRowsStyle.carousel,
+        preview: () => homeRowsPreview(modern: true, carousel: true),
+        onSelect: () => setState(() => _homeRows = HomeRowsStyle.carousel),
       ),
     ];
   }

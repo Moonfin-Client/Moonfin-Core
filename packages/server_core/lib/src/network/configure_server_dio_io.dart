@@ -43,7 +43,8 @@ void configureServerDio(
 
       client.userAgent = serverUserAgent;
 
-      client.badCertificateCallback = (_, _, _) => gAllowSelfSignedCertificates;
+      client.badCertificateCallback =
+          (_, host, _) => acceptsUntrustedCertificate(host);
 
       // The app's HttpOverrides already do this, and replacing their
       // connection factory would undo any other override.

@@ -4,11 +4,13 @@ import 'package:moonfin/preference/user_preferences.dart';
 
 void main() {
   group('the TMDB home sections', () {
-    // A new tmdb* section missing from the map fails here.
+    // A new tmdb* section missing from the map fails here. The outside chart
+    // rows have no switch.
+    bool hadSwitch(HomeSectionType type) =>
+        type.name.startsWith('tmdb') && !externalCharts.containsKey(type);
+
     test('every tmdb section in the enum has a preference', () {
-      final inEnum = HomeSectionType.values
-          .where((type) => type.name.startsWith('tmdb'))
-          .toSet();
+      final inEnum = HomeSectionType.values.where(hadSwitch).toSet();
       final mapped = UserPreferences.tmdbSectionEnabled.keys.toSet();
 
       expect(inEnum.difference(mapped), isEmpty,
@@ -35,7 +37,7 @@ void main() {
       for (final type in HomeSectionType.values) {
         expect(
           UserPreferences.isTmdbSectionType(type),
-          type.name.startsWith('tmdb'),
+          hadSwitch(type),
           reason: type.name,
         );
       }
