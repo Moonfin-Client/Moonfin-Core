@@ -47,6 +47,23 @@ class _MpvDetectHost extends _RecordingHost {
   }
 }
 
+/// Cropdetect whose reading flips between two results on every read.
+class _MpvAlternatingHost extends _MpvDetectHost {
+  _MpvAlternatingHost(this.readings);
+
+  final List<Map<String, String>> readings;
+  int reads = 0;
+
+  @override
+  Future<bool> command(List<String> args) async {
+    if (args.length >= 2 && args[0] == 'vf' && args[1] == 'pre') {
+      lavfi = readings[reads % readings.length];
+      reads++;
+    }
+    return super.command(args);
+  }
+}
+
 /// Software frame shots, one queued rect per sample.
 class _MpvShotHost extends _MpvDetectHost implements MpvFrameSampleHost {
   _MpvShotHost(this.shots);
@@ -780,6 +797,7 @@ void main() {
         final results = <LetterboxScanResult>[];
         cropper.scanResults.listen(results.add);
         cropper.setEnabled(true);
+        cropper.recrop();
         async.elapse(const Duration(seconds: 3));
         expect(cropper.isApplied, isFalse);
         expect(results, isEmpty);
@@ -808,6 +826,7 @@ void main() {
         final results = <LetterboxScanResult>[];
         cropper.scanResults.listen(results.add);
         cropper.setEnabled(true);
+        cropper.recrop();
         async.elapse(const Duration(seconds: 30));
         final reads = host.commands
             .where(
@@ -835,6 +854,7 @@ void main() {
         final results = <LetterboxScanResult>[];
         cropper.scanResults.listen(results.add);
         cropper.setEnabled(true);
+        cropper.recrop();
         async.elapse(const Duration(seconds: 1));
         expect(results, [LetterboxScanResult.noBars]);
         cropper.cancel();
@@ -857,6 +877,7 @@ void main() {
         final results = <LetterboxScanResult>[];
         cropper.scanResults.listen(results.add);
         cropper.setEnabled(true);
+        cropper.recrop();
         async.elapse(const Duration(seconds: 5));
         expect(host.shotCalls, 7);
         expect(
@@ -864,6 +885,81 @@ void main() {
           isTrue,
         );
         expect(results, [LetterboxScanResult.cropped]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('a scan Recrop did not start reports nothing', () {
+      fakeAsync((async) {
+        final host = _MpvDetectHost()
+          ..lavfi = {'w': '1920', 'h': '1080', 'x': '0', 'y': '0'};
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 1));
+        cropper.onSourceOpened('file://next.mkv');
+        async.elapse(const Duration(seconds: 1));
+        expect(results, isEmpty);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot confirmation reads count against the read budget', () {
+      fakeAsync((async) {
+        // Inferred bars that a dark reading never confirms.
+        final host = _MpvAlternatingHost([
+          {'w': '1706', 'h': '804', 'x': '44', 'y': '138'},
+          {'w': '600', 'h': '300', 'x': '700', 'y': '500'},
+        ]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+          windowboxGap: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        cropper.recrop();
+        async.elapse(const Duration(seconds: 60));
+        expect(host.reads, MpvLetterboxCrop.oneShotMaxReads);
+        expect(cropper.isApplied, isFalse);
+        expect(results, [LetterboxScanResult.inconclusive]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('bars after a full frame leave the scan inconclusive', () {
+      fakeAsync((async) {
+        const full = LetterboxCropRect(w: 1920, h: 1080, x: 0, y: 0);
+        const wide = LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138);
+        const flat = LetterboxCropRect(w: 1920, h: 1038, x: 0, y: 21);
+        final host = _MpvShotHost([
+          full,
+          for (var i = 0; i < 12; i++) i.isEven ? wide : flat,
+        ]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        cropper.recrop();
+        async.elapse(const Duration(seconds: 10));
+        expect(cropper.isApplied, isFalse);
+        expect(results, [LetterboxScanResult.inconclusive]);
         cropper.cancel();
         async.flushMicrotasks();
       });
@@ -1249,6 +1345,67 @@ void main() {
       );
     });
 
+    test('one-shot confirms inferred bars before cropping them', () async {
+      final host = _Media3RecordingHost()
+        ..detectResult = {
+          'w': 1706,
+          'h': 804,
+          'x': 44,
+          'y': 138,
+          'sourceWidth': 1920,
+          'sourceHeight': 1080,
+        };
+      final cropper = Media3LetterboxCropper(
+        host,
+        supported: true,
+        autoDelay: Duration.zero,
+        sampleCount: 1,
+        sampleGap: Duration.zero,
+        windowboxGap: Duration.zero,
+      );
+      await cropper.setEnabled(true);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(host.detectCalls, 1 + LetterboxCrop.windowboxConfirmations);
+      expect(
+        host.applied.last,
+        const LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138),
+      );
+    });
+
+    test('one-shot drops inferred bars a later read does not show', () async {
+      final host = _Media3RecordingHost()
+        ..detectQueue = [
+          {
+            'w': 1706,
+            'h': 804,
+            'x': 44,
+            'y': 138,
+            'sourceWidth': 1920,
+            'sourceHeight': 1080,
+          },
+        ]
+        ..detectResult = {
+          'w': 1920,
+          'h': 1080,
+          'x': 0,
+          'y': 0,
+          'sourceWidth': 1920,
+          'sourceHeight': 1080,
+        };
+      final cropper = Media3LetterboxCropper(
+        host,
+        supported: true,
+        autoDelay: Duration.zero,
+        sampleCount: 1,
+        sampleGap: Duration.zero,
+        windowboxGap: Duration.zero,
+      );
+      await cropper.setEnabled(true);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(host.detectCalls, 2);
+      expect(host.applied, everyElement(isNull));
+    });
+
     test('a dark frame does not apply a crop', () {
       fakeAsync((async) {
         final host = _Media3RecordingHost()
@@ -1309,6 +1466,9 @@ class _Media3RecordingHost implements Media3LetterboxHost {
     'sourceWidth': 1920,
     'sourceHeight': 1080,
   };
+
+  /// Served one per detect before [detectResult], when set.
+  List<Map<String, int>?> detectQueue = [];
   final applied = <LetterboxCropRect?>[];
   int detectCalls = 0;
 
@@ -1338,6 +1498,7 @@ class _Media3RecordingHost implements Media3LetterboxHost {
   @override
   Future<Map<String, int>?> detectLetterbox() async {
     detectCalls++;
+    if (detectQueue.isNotEmpty) return detectQueue.removeAt(0);
     return detectResult;
   }
 

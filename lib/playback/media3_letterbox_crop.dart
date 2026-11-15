@@ -316,10 +316,11 @@ class Media3LetterboxCropper extends LetterboxCropper {
   }
 
   /// The widest-of-three merge is not enough for bars on all four sides: a
-  /// centred title card fills every sample. Later reads must still agree.
+  /// centred title card fills every sample. Bars inferred past dark sides
+  /// are just as uncertain. Later reads must still agree.
   Future<bool> _windowboxHolds(int generation, LetterboxSample sample) async {
     final rect = sample.rect;
-    if (!sample.windowbox || rect == null) return true;
+    if (!sample.needsConfirmation || rect == null) return true;
     for (var i = 0; i < LetterboxCrop.windowboxConfirmations; i++) {
       if (!await _delay(generation, windowboxGap)) return false;
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) {

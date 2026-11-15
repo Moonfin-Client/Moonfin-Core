@@ -272,13 +272,16 @@ class MpvLetterboxCropper extends LetterboxCropper {
   bool _skipStartDelay = false;
   bool _forceRestart = false;
   bool _keepAppliedCrop = false;
+  bool _recropRequested = false;
+  int? _reportGeneration;
   bool _applied = false;
   MpvCropGeometry? _geometry;
   String? _doneUrl;
   String? _loopUrl;
   bool _inFlight = false;
 
-  /// This scan read a frame with no bars.
+  /// This scan read a frame with no bars, and no crop reading since has
+  /// disagreed with it.
   bool _sawFullFrame = false;
 
   bool get _continuous => _recropInterval > Duration.zero;
@@ -293,7 +296,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
 
   Stream<MpvCropGeometry?> get geometryStream => _geometryController.stream;
 
-  /// Emits when a one-shot scan (start of playback or [recrop]) finishes.
+  /// Emits when a one-shot scan started by [recrop] finishes. Scans started
+  /// by a new source do not report, so a result never answers a Recrop
+  /// press made on an earlier item.
   Stream<LetterboxScanResult> get scanResults => _scanResultController.stream;
 
   /// The applied crop is wider than the window, so fit would show bars
@@ -374,10 +379,13 @@ class MpvLetterboxCropper extends LetterboxCropper {
     _skipStartDelay = true;
     _forceRestart = true;
     _keepAppliedCrop = _applied;
+    _recropRequested = true;
     await _sync();
   }
 
   Future<void> _sync() async {
+    final report = _recropRequested;
+    _recropRequested = false;
     if (!_enabled) {
       _generation++;
       _doneUrl = null;
@@ -416,6 +424,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
       _stabilizer.reset();
     }
     final generation = ++_generation;
+    _reportGeneration = report ? generation : null;
     if (keepCrop) {
       await _removeDetectFilter();
     } else {
@@ -521,7 +530,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
         _inFlight = false;
         await _removeDetectFilter();
         await _restoreHwdec();
-        if (!_continuous && _isCurrent(generation)) {
+        if (!_continuous &&
+            _isCurrent(generation) &&
+            _reportGeneration == generation) {
           _scanResultController.add(
             _applied
                 ? LetterboxScanResult.cropped
@@ -542,11 +553,13 @@ class MpvLetterboxCropper extends LetterboxCropper {
       if (applied == null) _sawFullFrame = true;
       return applied == null;
     }
+    if (sample.kind != LetterboxSampleKind.crop) return false;
     final rect = sample.rect;
-    return sample.kind == LetterboxSampleKind.crop &&
-        rect != null &&
-        applied != null &&
-        LetterboxCrop.similar(rect, applied);
+    final settles =
+        rect != null && applied != null && LetterboxCrop.similar(rect, applied);
+    // Bars after a full frame leave the scan undecided, not bar-free.
+    if (!settles) _sawFullFrame = false;
+    return settles;
   }
 
   Future<bool> _runFrameSamples(int generation) async {
@@ -646,22 +659,26 @@ class MpvLetterboxCropper extends LetterboxCropper {
     required bool needsDownload,
     required String? downloadFormat,
   }) async {
-    Future<_Measurement?> read() => _readOrCopyBack(
-      generation,
-      needsDownload: needsDownload,
-      downloadFormat: downloadFormat,
-      resetEachFrame: false,
-      window: downloadFormat != null
-          ? MpvLetterboxCrop.downloadWindow
-          : detectDuration,
-    );
+    // Confirmation reads count against the same budget. A reading taken
+    // inside it may still finish confirming, so the scan stops after at most
+    // oneShotMaxReads + windowboxConfirmations readings.
+    var reads = 0;
+    Future<_Measurement?> read() {
+      reads++;
+      return _readOrCopyBack(
+        generation,
+        needsDownload: needsDownload,
+        downloadFormat: downloadFormat,
+        resetEachFrame: false,
+        window: downloadFormat != null
+            ? MpvLetterboxCrop.downloadWindow
+            : detectDuration,
+      );
+    }
+
     // One reading of a dark scene sees no edges. Keep reading until one is
     // usable instead of giving up on the first.
-    for (
-      var attempt = 0;
-      attempt < MpvLetterboxCrop.oneShotMaxReads;
-      attempt++
-    ) {
+    for (var attempt = 0; reads < MpvLetterboxCrop.oneShotMaxReads; attempt++) {
       if (attempt > 0) {
         if (!await _delay(generation, MpvLetterboxCrop.oneShotRetryGap)) {
           return;
