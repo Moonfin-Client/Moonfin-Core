@@ -365,6 +365,18 @@ void main() {
     );
     expect(find.text('Not found yet \u00b7 searched 3h ago'), findsOneWidget);
 
+    await show(ArrNotFoundYet(lastSearch: DateTime.now()));
+    expect(find.text('Not found yet'), findsOneWidget);
+
+    // An episode that aired since the queue was read.
+    await show(
+      ArrNotReleased(
+        date: DateTime.now().subtract(const Duration(hours: 1)),
+        nextEpisode: true,
+      ),
+    );
+    expect(find.text('Not found yet'), findsOneWidget);
+
     await show(const ArrNotReleased(nextEpisode: false));
     expect(find.text('Not available yet'), findsOneWidget);
 

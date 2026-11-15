@@ -344,10 +344,18 @@ class SeerrArrWaitLabel extends StatelessWidget {
       ArrSearching() => (Icons.travel_explore, l10n.seerrSearchingIndexers),
       ArrNotFoundYet(:final lastSearch) => (
         Icons.search_off,
-        lastSearch != null && showLastSearch
+        // A search that only just ended would read "searched Just now".
+        lastSearch != null &&
+                showLastSearch &&
+                clock.now().difference(lastSearch).inMinutes >= 1
             ? l10n.seerrNotFoundYetSearched(relativeTimeLabel(l10n, lastSearch))
             : l10n.seerrNotFoundYet,
       ),
+      // An episode that aired since the queue was read, with nothing grabbed,
+      // hasn't been found yet.
+      ArrNotReleased(nextEpisode: true, :final date?)
+          when !date.isAfter(clock.now()) =>
+        (Icons.search_off, l10n.seerrNotFoundYet),
       ArrNotReleased(:final date, :final nextEpisode) => (
         Icons.event,
         // A date already gone would read as wrong.
