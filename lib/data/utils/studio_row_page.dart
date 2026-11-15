@@ -20,13 +20,15 @@ import 'bounded_concurrency.dart';
 /// counts when the list is filtered by type, which would drop studios.
 Future<void> countStudios(
   ItemsApi api,
-  Iterable<Map<String, dynamic>> studios,
-) async {
+  Iterable<Map<String, dynamic>> studios, {
+  String? parentId,
+}) async {
   final uncounted = studios
       .where((s) => s['MovieCount'] == null && s['SeriesCount'] == null)
       .toList();
   await mapBounded(uncounted, 6, (studio) async {
     final result = await api.getItems(
+      parentId: parentId,
       studios: [studio['Name'] as String? ?? ''],
       includeItemTypes: const ['Movie', 'Series'],
       recursive: true,

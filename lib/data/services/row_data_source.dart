@@ -874,7 +874,9 @@ class RowDataSource {
       items = (page['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     } else {
       items = await _collectStudios(selectedSet, fetchPage);
-      if (sortBy == 'ItemCount') await countStudios(_client.itemsApi, items);
+      if (sortBy == 'ItemCount') {
+        await countStudios(_client.itemsApi, items, parentId: parentId);
+      }
     }
 
     final row = _buildRow(

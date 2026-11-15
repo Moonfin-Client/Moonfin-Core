@@ -69,6 +69,7 @@ void main() {
     final api = _ItemsApi();
     when(
       () => api.getItems(
+        parentId: any(named: 'parentId'),
         studios: any(named: 'studios'),
         includeItemTypes: any(named: 'includeItemTypes'),
         recursive: any(named: 'recursive'),
@@ -84,7 +85,19 @@ void main() {
       <String, dynamic>{'Name': 'HBO', 'MovieCount': 4, 'SeriesCount': 2},
     ];
 
-    await countStudios(api, studios);
+    await countStudios(api, studios, parentId: 'movies');
+    expect(
+      verify(
+        () => api.getItems(
+          parentId: captureAny(named: 'parentId'),
+          studios: any(named: 'studios'),
+          includeItemTypes: any(named: 'includeItemTypes'),
+          recursive: any(named: 'recursive'),
+          limit: any(named: 'limit'),
+        ),
+      ).captured,
+      ['movies', 'movies'],
+    );
 
     expect(studios[0]['ChildCount'], 56);
     expect(studios[1]['ChildCount'], 3);

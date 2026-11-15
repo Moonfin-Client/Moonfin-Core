@@ -1489,8 +1489,8 @@ class HomeViewModel extends ChangeNotifier {
       var value = sort?.$1 ?? _prefs.get<LibrarySortBy>(saved);
       // A sort the row doesn't offer reads as Name, as its setting shows.
       if (offered != null && !offered.contains(value)) value = LibrarySortBy.name;
-      // Counted in the app, since no server sorts on it.
-      return value.rowSortValue;
+      // Rows offering a list rank in the app; the rest pass it to the server.
+      return offered == null ? value.apiValue : value.rowSortValue;
     }
     String sortOrder(Preference<SortDirection> saved) =>
         (sort?.$2 ?? _prefs.get<SortDirection>(saved)).apiValue;
