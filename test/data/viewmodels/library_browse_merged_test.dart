@@ -89,6 +89,13 @@ class _SortedItemsApi implements ItemsApi {
     };
   }
 
+  /// Each server's library id stands in for the genre only it holds.
+  @override
+  Future<QueryFilterValues> getQueryFilters({
+    String? parentId,
+    List<String>? includeItemTypes,
+  }) async => QueryFilterValues(genres: [?parentId]);
+
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -131,8 +138,9 @@ MergedLibrarySource _source(String serverId, _SortedItemsApi api) => (
 );
 
 Future<LibraryBrowseViewModel> _viewModel(
-  List<MergedLibrarySource> sources,
-) async {
+  List<MergedLibrarySource> sources, {
+  Future<MergedLibrary> Function()? lookup,
+}) async {
   SharedPreferences.setMockInitialValues({});
   final store = PreferenceStore();
   await store.init();
@@ -141,8 +149,9 @@ Future<LibraryBrowseViewModel> _viewModel(
     client: _FakeClient(_SortedItemsApi(const [])),
     prefs: UserPreferences(store),
     mdbListRepository: _FakeMdbListRepository(),
-    loadMergedLibrary: () async =>
-        (name: 'Movies', sources: sources, complete: true),
+    loadMergedLibrary:
+        lookup ??
+        () async => (name: 'Movies', sources: sources, complete: true),
   );
 }
 
@@ -254,6 +263,28 @@ void main() {
     expect(vm.items.map((item) => item.name), ['one', 'two']);
     expect(vm.hasMore, isFalse);
   });
+
+  test(
+    'a server that answers a retried lookup adds its filter values',
+    () async {
+      final a = _source('a', _SortedItemsApi(const [('Alpha', '1')]));
+      final b = _source('b', _SortedItemsApi(const [('Beta', '2')]));
+      var lookups = 0;
+      final vm = await _viewModel(
+        const [],
+        lookup: () async => ++lookups == 1
+            ? (name: 'Movies', sources: [a], complete: false)
+            : (name: 'Movies', sources: [a, b], complete: true),
+      );
+      await vm.load();
+      await vm.ensureFacetValuesLoaded();
+      expect(vm.facetValues.genres, ['a']);
+
+      await vm.load();
+      await pumpEventQueue();
+      expect(vm.facetValues.genres, ['a', 'b']);
+    },
+  );
 
   test('every server failing is an error, not an empty library', () async {
     final vm = await _viewModel([

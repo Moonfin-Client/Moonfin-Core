@@ -637,6 +637,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         _libraryMetaResolved = true;
         // A server that didn't answer is asked again on the next load.
         _mergedLookupComplete = merged.complete;
+        // Facets already read came from the servers that answered last time.
+        if (_facetsRequested) {
+          _facetsRequested = false;
+          unawaited(ensureFacetValuesLoaded());
+        }
       }
 
       if (isFilterBrowse) {
