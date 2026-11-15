@@ -1066,30 +1066,26 @@ class HomeViewModel extends ChangeNotifier {
     if (_onNowRefreshInFlight) return;
     _onNowRefreshInFlight = true;
     try {
-      await _refreshOnNowRowsNow();
+      final ids = [
+        for (final row in _rows)
+          if ((row.id == 'onNow' || row.id == 'liveTvOnNow') && !row.isLoading)
+            row.id,
+      ];
+      if (ids.isEmpty) {
+        await _restoreMissingOnNow();
+        return;
+      }
+      final fresh = _dataSource.loadOnNow(_serverId);
+      // Each row handles a failure itself, and this keeps the shared request
+      // from surfacing one as uncaught.
+      fresh.ignore();
+      await Future.wait([
+        for (final id in ids)
+          _refreshRowInPlace(id, () => fresh, (items) => items),
+      ]);
     } finally {
       _onNowRefreshInFlight = false;
     }
-  }
-
-  Future<void> _refreshOnNowRowsNow() async {
-    final ids = [
-      for (final row in _rows)
-        if ((row.id == 'onNow' || row.id == 'liveTvOnNow') && !row.isLoading)
-          row.id,
-    ];
-    if (ids.isEmpty) {
-      await _restoreMissingOnNow();
-      return;
-    }
-    final fresh = _dataSource.loadOnNow(_serverId);
-    // Each row's refresh handles a failure; this keeps one that no row ends
-    // up awaiting from surfacing as uncaught.
-    fresh.ignore();
-    await Future.wait([
-      for (final id in ids)
-        _refreshRowInPlace(id, () => fresh, (items) => items),
-    ]);
   }
 
   /// Brings On Now back when its section is on but the row was left out for
@@ -1098,11 +1094,11 @@ class HomeViewModel extends ChangeNotifier {
   /// small request per return. Once there are some, the row is loaded back
   /// in the user's section order.
   Future<void> _restoreMissingOnNow() async {
-    final configs = _prefs.activeHomeSectionConfigs;
-    final standalone = configs.any((c) => c.type == HomeSectionType.onNow);
-    if (!standalone && !configs.any((c) => c.type == HomeSectionType.liveTv)) {
-      return;
-    }
+    final standalone = _prefs.activeHomeSections.contains(
+      HomeSectionType.onNow,
+    );
+    // Inside Live TV, On Now only shows once that section found channels.
+    if (!standalone && !_rows.any((row) => row.id == 'liveTv')) return;
     final HomeRow fresh;
     try {
       fresh = await _dataSource.loadOnNow(_serverId);
