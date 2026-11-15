@@ -533,7 +533,10 @@ class _EnumPreferenceTileState<T extends Enum>
         title: widget.title,
         description: widget.description,
         options: [for (final v in values) widget.labelOf(v)],
-        currentIndex: () => values.indexOf(_binding.value),
+        // A value the tile no longer offers reads as its first option.
+        currentIndex: () => values.contains(_binding.value)
+            ? values.indexOf(_binding.value)
+            : 0,
       ),
       child: _buildTile(context, values),
     );
