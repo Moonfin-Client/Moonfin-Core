@@ -6,7 +6,7 @@ import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 
 import '../../preference/home_section_config.dart';
-import '../offline/connectivity_aware_media_server_client.dart';
+import '../offline/offline_items_api.dart';
 import '../../preference/user_preferences.dart';
 import '../../preference/preference_constants.dart';
 import '../../l10n/app_localizations.dart';
@@ -803,6 +803,8 @@ class RowDataSource {
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toSet();
+    // Read once, so every page of a scan comes from the same catalog.
+    final itemsApi = _client.itemsApi;
 
     Future<Map<String, dynamic>> fetchPage(
       int startIndex,
@@ -811,7 +813,7 @@ class RowDataSource {
       String pageSortOrder = _defaultSortOrder,
     ]) async {
       try {
-        return await _client.itemsApi.getStudios(
+        return await itemsApi.getStudios(
           parentId: parentId,
           userId: _client.userId,
           sortBy: pageSortBy,
@@ -827,7 +829,7 @@ class RowDataSource {
         final statusCode = e.response?.statusCode ?? 0;
         _recordIfAccessDenied(statusCode, parentId);
         if (!_shouldRetryWithoutFields(statusCode)) rethrow;
-        return _client.itemsApi.getStudios(
+        return itemsApi.getStudios(
           parentId: parentId,
           userId: _client.userId,
           sortBy: pageSortBy,
@@ -848,9 +850,9 @@ class RowDataSource {
         sortOrder: sortOrder,
         limit: _defaultLimit,
         pageSize: _studioPageSize,
-        serverSorts: _client.itemsApi.sortsStudios,
+        serverSorts: itemsApi.sortsStudios,
         cacheKey:
-            '$serverId|${_client.userId}|$parentId|${shouldUseOfflineCatalog()}',
+            '$serverId|${_client.userId}|$parentId|${itemsApi is OfflineItemsApi}',
       );
       items = (page['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     } else {
@@ -859,7 +861,7 @@ class RowDataSource {
     if (sortBy.startsWith('DatePlayed')) {
       markStudiosLastPlayed(
         items,
-        await fetchStudioLastPlayed(_client.itemsApi, parentId: parentId),
+        await fetchStudioLastPlayed(itemsApi, parentId: parentId),
       );
     }
 

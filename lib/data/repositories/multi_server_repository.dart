@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/models/server.dart';
-import '../offline/connectivity_aware_media_server_client.dart';
+import '../offline/offline_items_api.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/models/user.dart';
 import '../../auth/services/silo_household.dart';
@@ -575,12 +575,14 @@ class MultiServerRepository {
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
+          // Read once, so every page of a scan comes from the same catalog.
+          final itemsApi = session.client.itemsApi;
           Future<Map<String, dynamic>> fetchPage(
             int startIndex,
             int limit, [
             String pageSortBy = _defaultSortBy,
             String pageSortOrder = _defaultSortOrder,
-          ]) => session.client.itemsApi.getStudios(
+          ]) => itemsApi.getStudios(
                 userId: session.client.userId,
                 sortBy: pageSortBy,
                 sortOrder: pageSortOrder,
@@ -600,9 +602,9 @@ class MultiServerRepository {
                     sortOrder: sortOrder,
                     limit: perServer,
                     pageSize: _studioPageSize,
-                    serverSorts: session.client.itemsApi.sortsStudios,
+                    serverSorts: itemsApi.sortsStudios,
                     cacheKey:
-                        '${session.server.id}|${session.client.userId}|${shouldUseOfflineCatalog()}',
+                        '${session.server.id}|${session.client.userId}|${itemsApi is OfflineItemsApi}',
                   ),
                   session.server.id,
                 )
@@ -614,7 +616,7 @@ class MultiServerRepository {
           if (sortBy.startsWith('DatePlayed')) {
             markStudiosLastPlayed(
               studios.map((s) => s.rawData),
-              await fetchStudioLastPlayed(session.client.itemsApi),
+              await fetchStudioLastPlayed(itemsApi),
             );
           }
           return studios;
