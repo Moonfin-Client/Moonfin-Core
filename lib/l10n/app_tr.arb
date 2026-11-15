@@ -10477,7 +10477,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Önerileri",
+    "recommendationSystemJellyfin": "Sunucu Önerileri",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16805,7 +16805,7 @@
     "sinceYouWatchedSource": "Öneri Kaynağı",
     "sinceYouWatchedSourceDescription": "Öneri kaynağını seçin (Moonfin Önerileri: özel yerel algoritma, Jellyfin Önerileri: sunucu motoru veya TMDb'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).",
     "sinceYouWatchedSourceLocal": "Moonfin Önerileri",
-    "sinceYouWatchedSourceServer": "Jellyfin Önerileri",
+    "sinceYouWatchedSourceServer": "Sunucu Önerileri",
     "sinceYouWatchedSourceOnline": "TMDb Benzerliği",
     "sinceYouWatchedSourceType": "Kaynak Tipi",
     "sinceYouWatchedSourceTypeDescription": "Önerilecek öğelerin tipini seçin",
