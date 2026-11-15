@@ -2,13 +2,14 @@ import 'dart:math';
 
 /// The sort a studio row with nothing picked can apply. Jellyfin's /Studios
 /// only lists by name, so name and random are the orders a page can give; any
-/// other order would need every studio, so it stays A to Z.
+/// other order would need every studio, so it reads as name, as the setting
+/// shows it.
 (String sortBy, String sortOrder) unpickedStudioSort(
   String sortBy,
   String sortOrder,
 ) => const ['SortName', 'Random'].contains(sortBy.split(',').first)
     ? (sortBy, sortOrder)
-    : ('SortName', 'Ascending');
+    : ('SortName', sortOrder);
 
 /// Reads the studios a row with nothing picked is drawn from, in name order:
 /// the first page for A to Z, the last page for Z to A, and a page at a random
