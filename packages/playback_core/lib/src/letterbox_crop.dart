@@ -175,24 +175,15 @@ abstract final class LetterboxCrop {
     final bottom = sourceHeight - height - y;
     final left = x;
     final right = sourceWidth - width - x;
-    // The darkest edge of a lit picture can read as a few columns of bar.
-    // Within the slack the picture still reaches that edge, so snap to it.
-    final slackX = math.max(margin, (sourceWidth * edgeSlack).round());
-    final slackY = math.max(margin, (sourceHeight * edgeSlack).round());
-    final fullWidth = left <= slackX && right <= slackX;
-    final fullHeight = top <= slackY && bottom <= slackY;
+    final fullWidth = left <= margin && right <= margin;
+    final fullHeight = top <= margin && bottom <= margin;
     if (fullWidth && fullHeight) {
       return const LetterboxSample(kind: LetterboxSampleKind.fullFrame);
     }
     if (fullWidth || fullHeight) {
       return LetterboxSample(
         kind: LetterboxSampleKind.crop,
-        rect: LetterboxCropRect(
-          w: fullWidth ? sourceWidth : width,
-          h: fullHeight ? sourceHeight : height,
-          x: fullWidth ? 0 : x,
-          y: fullHeight ? 0 : y,
-        ),
+        rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
       );
     }
 
@@ -220,7 +211,7 @@ abstract final class LetterboxCrop {
       bottom: bottom,
       sourceWidth: sourceWidth,
       sourceHeight: sourceHeight,
-      slack: slackY,
+      margin: margin,
     )) {
       return LetterboxSample(
         kind: LetterboxSampleKind.crop,
@@ -232,10 +223,6 @@ abstract final class LetterboxCrop {
     return const LetterboxSample(kind: LetterboxSampleKind.ignore);
   }
 
-  /// Fraction of the source a picture edge may sit inside the frame edge and
-  /// still count as reaching it.
-  static const edgeSlack = 0.01;
-
   /// Top and bottom bars that match each other and leave a known cinema
   /// ratio at full width. The sides are not checked: a dark scene leaves
   /// them unlit. Only letterbox: a lit figure in a dark frame looks like a
@@ -246,9 +233,9 @@ abstract final class LetterboxCrop {
     required int bottom,
     required int sourceWidth,
     required int sourceHeight,
-    required int slack,
+    required int margin,
   }) {
-    if (top <= slack || bottom <= slack) return false;
+    if (top <= margin || bottom <= margin) return false;
     final maxOff = math.max(4, sourceHeight * 0.005);
     if ((top - bottom).abs() > maxOff) return false;
     return isKnownRatio(

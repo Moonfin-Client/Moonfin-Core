@@ -277,7 +277,9 @@ void main() {
     });
 
     // Readings from MobLand S01E01 (3840x2160, 2.39:1 picture, 278px bars).
-    test('classify snaps a picture edge a dark column pulled in', () {
+    test('classify does not stretch a picture short of the edges', () {
+      // 32px short on the right, with bars that do not match: a dark scene,
+      // not bars to trust.
       final sample = LetterboxCrop.classify(
         width: 3808,
         height: 1572,
@@ -286,12 +288,24 @@ void main() {
         sourceWidth: 3840,
         sourceHeight: 2160,
       );
-      expect(sample.kind, LetterboxSampleKind.crop);
+      expect(sample.kind, LetterboxSampleKind.ignore);
+    });
+
+    test('classify keeps the edge margin at 4K', () {
+      // A lit picture 20px inside both sides is not full width.
+      final sample = LetterboxCrop.classify(
+        width: 3800,
+        height: 2160,
+        x: 20,
+        y: 0,
+        sourceWidth: 3840,
+        sourceHeight: 2160,
+      );
+      expect(sample.kind, isNot(LetterboxSampleKind.fullFrame));
       expect(
         sample.rect,
-        const LetterboxCropRect(w: 3840, h: 1572, x: 0, y: 312),
+        const LetterboxCropRect(w: 3800, h: 2160, x: 20, y: 0),
       );
-      expect(sample.needsConfirmation, isFalse);
     });
 
     test('classify keeps matching bars when the sides are dark', () {
