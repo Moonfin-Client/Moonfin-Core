@@ -375,7 +375,10 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                   // and mobile has no top info panel, so the rows only need
                   // to clear the requests entry.
                   if (_isModern || PlatformDetection.useMobileUi)
-                    SizedBox(height: requestsEntryTop + 44.0)
+                    SizedBox(
+                      height: requestsEntryTop +
+                          44.0 * MediaQuery.textScalerOf(context).scale(1.0),
+                    )
                   else
                     _InfoPanel(item: _selectedItem, topInset: infoTopInset, leftInset: infoPanelLeft),
                   Expanded(
@@ -391,32 +394,43 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
               ),
               Positioned(
                 top: requestsEntryTop,
+                left: PlatformDetection.useMobileUi
+                    ? (navbarPosition == NavbarPosition.top ? 24 : 68) +
+                        MediaQuery.paddingOf(context).left
+                    : null,
                 // An opened folding phone on its side keeps the clock in
                 // this corner.
                 right: 24 + MediaQuery.paddingOf(context).right,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // The app's own search, which lists library titles and
-                    // ones to request side by side.
-                    _RequestsEntryButton(
-                      focusNode: _searchEntryFocusNode,
-                      icon: Icons.search,
-                      label: AppLocalizations.of(context).search,
-                      onTap: () =>
-                          context.navigateTopLevel(Destinations.searchRequests),
-                      onDown: () => _initialFocusNode.requestFocus(),
-                      onUp: _focusNavbarFromEntry,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // The app's own search, which lists library titles and
+                        // ones to request side by side.
+                        _RequestsEntryButton(
+                          focusNode: _searchEntryFocusNode,
+                          icon: Icons.search,
+                          label: AppLocalizations.of(context).search,
+                          onTap: () =>
+                              context.navigateTopLevel(Destinations.searchRequests),
+                          onDown: () => _initialFocusNode.requestFocus(),
+                          onUp: _focusNavbarFromEntry,
+                        ),
+                        const SizedBox(width: 10),
+                        _RequestsEntryButton(
+                          focusNode: _requestsEntryFocusNode,
+                          badgeCount: _badgeCount,
+                          onTap: _openRequests,
+                          onDown: () => _initialFocusNode.requestFocus(),
+                          onUp: _focusNavbarFromEntry,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    _RequestsEntryButton(
-                      focusNode: _requestsEntryFocusNode,
-                      badgeCount: _badgeCount,
-                      onTap: _openRequests,
-                      onDown: () => _initialFocusNode.requestFocus(),
-                      onUp: _focusNavbarFromEntry,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
