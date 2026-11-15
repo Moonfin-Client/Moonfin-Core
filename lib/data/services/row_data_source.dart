@@ -818,7 +818,7 @@ class RowDataSource {
           recursive: true,
           startIndex: startIndex,
           limit: limit,
-          fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated',
+          fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
           // Before Jellyfin 12 a studio's counts only come back with a type filter.
           includeItemTypes: const ['Movie', 'Series'],
         );
@@ -848,6 +848,7 @@ class RowDataSource {
         limit: _defaultLimit,
         pageSize: _studioPageSize,
         serverSorts: _client.itemsApi.sortsStudios,
+        cacheKey: '$serverId|${_client.userId}|$parentId',
       );
       items = (page['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     } else {

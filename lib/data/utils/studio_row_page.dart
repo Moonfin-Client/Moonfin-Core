@@ -1,12 +1,15 @@
 import 'dart:math';
 
+import 'package:clock/clock.dart';
 import 'package:server_core/server_core.dart';
 
 /// Reads the studios a row sorted by [sortBy] and [sortOrder] is drawn from.
 ///
 /// A server that [serverSorts] gets the sort, and its first page is the row.
-/// Otherwise, and for item count and last played, which no server sorts
-/// studios by, the row reads a wider page by name for the caller to sort.
+/// Otherwise name and random read at most two pages by name. Item count and
+/// last played, which no server sorts studios by, and date added read every
+/// page for the caller to rank, kept for a day per [cacheKey] since Home
+/// reloads often.
 Future<Map<String, dynamic>> fetchStudioRowPage(
   Future<Map<String, dynamic>> Function(
     int startIndex,
@@ -20,6 +23,7 @@ Future<Map<String, dynamic>> fetchStudioRowPage(
   required int limit,
   required int pageSize,
   required bool serverSorts,
+  required String cacheKey,
 }) async {
   final rankedInApp =
       sortBy == 'ItemCount' || sortBy.startsWith('DatePlayed');
@@ -28,7 +32,11 @@ Future<Map<String, dynamic>> fetchStudioRowPage(
   }
   Future<Map<String, dynamic>> byName(int startIndex, int limit) =>
       fetchPage(startIndex, limit, 'SortName', 'Ascending');
-  final nameSort = sortBy.split(',').first == 'SortName';
+  final primary = sortBy.split(',').first;
+  if (const ['ItemCount', 'DateCreated', 'DatePlayed'].contains(primary)) {
+    return _readAllStudios(byName, pageSize, cacheKey);
+  }
+  final nameSort = primary == 'SortName';
   final descending = sortOrder.toLowerCase() == 'descending';
   if (nameSort && !descending) return byName(0, limit);
   final first = await byName(0, pageSize);
@@ -89,4 +97,31 @@ void markStudiosLastPlayed(
       'LastPlayedDate': date,
     };
   }
+}
+
+final _studioLists = <String, (DateTime, Map<String, dynamic>)>{};
+
+Future<Map<String, dynamic>> _readAllStudios(
+  Future<Map<String, dynamic>> Function(int startIndex, int limit) byName,
+  int pageSize,
+  String cacheKey,
+) async {
+  final cached = _studioLists[cacheKey];
+  if (cached != null &&
+      clock.now().difference(cached.$1) < const Duration(days: 1)) {
+    return cached.$2;
+  }
+  final items = <dynamic>[];
+  while (true) {
+    final page = await byName(items.length, pageSize);
+    final pageItems = page['Items'] as List? ?? const [];
+    items.addAll(pageItems);
+    final total = page['TotalRecordCount'] as int?;
+    if (pageItems.length < pageSize || (total != null && items.length >= total)) {
+      break;
+    }
+  }
+  final all = {'Items': items, 'TotalRecordCount': items.length};
+  _studioLists[cacheKey] = (clock.now(), all);
+  return all;
 }

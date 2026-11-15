@@ -22,8 +22,12 @@ List<AggregatedItem> sortAggregatedItems(
   // tie-break.
   final descending = sortOrder.toLowerCase() == 'descending';
 
+  // SortName drops leading articles, so "The Asylum" sorts under A.
+  String sortName(AggregatedItem item) =>
+      (item.rawData['SortName'] as String? ?? item.name).toLowerCase();
+
   int compareByName(AggregatedItem a, AggregatedItem b) {
-    final byName = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    final byName = sortName(a).compareTo(sortName(b));
     return descending ? -byName : byName;
   }
 
