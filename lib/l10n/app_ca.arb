@@ -16640,7 +16640,7 @@
     },
     "sinceYouWatchedSource": "Font de les recomanacions",
     "sinceYouWatchedSourceLocal": "Recomanacions Moonfin",
-    "sinceYouWatchedSourceServer": "Recomanacions Jellyfin",
+    "sinceYouWatchedSourceServer": "Recomanacions del servidor",
     "sinceYouWatchedSourceOnline": "Similitud de TMDb",
     "sinceYouWatchedSourceType": "Tipus de font",
     "sinceYouWatchedSourceTypeDescription": "Tria el tipus d'elements que es recomanaran",
