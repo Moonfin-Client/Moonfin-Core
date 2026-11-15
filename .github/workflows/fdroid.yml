@@ -1,0 +1,92 @@
+name: Publish F-Droid Repo
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-26.04
+    defaults:
+      run:
+        working-directory: fdroid
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check if update needed
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          EVENT_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          if [ "$EVENT_NAME" = "release" ]; then
+            if [ "$EVENT_PRERELEASE" = "true" ]; then
+              echo "Prerelease, skipping"
+              exit 0
+            fi
+            TAG="$EVENT_TAG"
+          else
+            # The latest release is never a prerelease or a draft.
+            TAG=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)
+          fi
+          VERSION="${TAG#v}"
+
+          REPO_URL=$(sed -n 's/^repo_url: *//p' config.yml)
+          PUBLISHED=$(curl -fsS "$REPO_URL/index-v2.json" \
+            | jq -r '.packages["org.moonfin.androidtv"].versions[].manifest.versionName' \
+            | sort -V | tail -n1)
+          NEWEST=$(printf '%s\n' "$PUBLISHED" "$VERSION" | sort -V | tail -n1)
+          if [ "$NEWEST" = "$PUBLISHED" ]; then
+            echo "No update needed (repo has ${PUBLISHED}, release is ${VERSION})"
+            exit 0
+          fi
+          echo "Update needed: repo has ${PUBLISHED:-nothing}, release is ${VERSION}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Install fdroidserver and rclone
+        if: steps.check.outputs.tag != ''
+        run: |
+          pipx install fdroidserver==2.4.5
+          sudo apt-get update -q
+          sudo apt-get install -y -q rclone
+
+      - name: Download the APK
+        if: steps.check.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.check.outputs.tag }}
+        run: |
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" \
+            --pattern 'Moonfin_Android_v*.apk' --dir repo
+
+      - name: Build the signed index
+        if: steps.check.outputs.tag != ''
+        env:
+          FDROID_KEYSTORE_BASE64: ${{ secrets.FDROID_KEYSTORE_BASE64 }}
+          FDROID_KEYSTORE_PASSWORD: ${{ secrets.FDROID_KEYSTORE_PASSWORD }}
+        run: |
+          printf '%s' "$FDROID_KEYSTORE_BASE64" | base64 --decode > keystore.p12
+          fdroid update
+
+      - name: Upload to R2
+        if: steps.check.outputs.tag != ''
+        env:
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+          RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          # The APK goes up before the index that points at it.
+          rclone copy repo r2:moonfin-fdroid/repo --exclude "/index*" --exclude "/entry*"
+          # Cloudflare could otherwise serve a cached entry.jar that no longer
+          # matches index-v2.json, which clients reject.
+          rclone sync repo r2:moonfin-fdroid/repo --header-upload "Cache-Control: no-cache"

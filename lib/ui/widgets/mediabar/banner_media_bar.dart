@@ -199,7 +199,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
           double.infinity,
         );
         return Padding(
-          padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
+          padding: EdgeInsets.fromLTRB(_sideInset, topInset, _sideInset, 8),
           child: _wrapStatusFocus(
             SizedBox(
               height: loadingHeight,
@@ -214,7 +214,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
         AppLocalizations.of(context),
       );
       return Padding(
-        padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
+        padding: EdgeInsets.fromLTRB(_sideInset, topInset, _sideInset, 8),
         child: _wrapStatusFocus(
           SizedBox(
             height: 72,
@@ -263,7 +263,12 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
     final showArrows = items.length > 1 && PlatformDetection.useDesktopUi;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16 + sidebarInset, topInset, 16, 8),
+      padding: EdgeInsets.fromLTRB(
+        _sideInset + sidebarInset,
+        topInset,
+        _sideInset,
+        8,
+      ),
       child: Focus(
         focusNode: widget.focusNode,
         autofocus: widget.focusNode == null && PlatformDetection.useLeanbackUi,
@@ -357,6 +362,8 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
       ),
     );
   }
+
+  double get _sideInset => PlatformDetection.useMobileUi ? 16 : 24;
 
   Widget _backdrop(MediaBarSlideItem item) {
     final url = item.backdropUrl;
