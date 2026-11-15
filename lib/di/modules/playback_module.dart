@@ -361,48 +361,6 @@ void _rememberSeriesTrackOnServer(
   write.catchError((Object _) {});
 }
 
-/// Saves the track the viewer picked in [item] as its series' choice, so the
-/// next episode starts with it. Returns the series it was saved for, or null
-/// when there is nothing to save: not an episode, or a track that leaves
-/// nothing to recognise it by later, an external one added mid playback say,
-/// in which case the last choice stays.
-///
-/// [playingStreams] are the streams the player resolved for [item], which the
-/// picker's [index] points into. They come first because the queued item often
-/// lists none: a Next Up card or the episode played after another asks the
-/// server for a few fields only.
-@visibleForTesting
-String? rememberSeriesTrackChoice(
-  UserPreferences prefs,
-  dynamic item,
-  int index, {
-  required bool subtitle,
-  List<Map<String, dynamic>>? playingStreams,
-}) {
-  if (item is! AggregatedItem) return null;
-  final seriesId = item.seriesId;
-  if (seriesId == null || seriesId.isEmpty) return null;
-  final kind = subtitle ? 'subtitle' : 'audio';
-  final source = playingStreams != null && playingStreams.isNotEmpty
-      ? playingStreams
-      : (item.rawData['MediaStreams'] as List? ?? const [])
-            .whereType<Map>()
-            .map((e) => e.cast<String, dynamic>());
-  final pref = createSeriesTrackPreferenceFromStream(
-    streams: source
-        .where((s) => (s['Type'] as String?)?.toLowerCase() == kind)
-        .toList(),
-    selectedIndex: index,
-  );
-  if (pref.isEmpty) return null;
-  if (subtitle) {
-    prefs.setSeriesSubtitlePreference(seriesId, pref);
-  } else {
-    prefs.setSeriesAudioPreference(seriesId, pref);
-  }
-  return seriesId;
-}
-
 void registerPlaybackModule() {
   final pipService = PipService();
   _getIt.registerSingleton<PipService>(pipService);
@@ -491,31 +449,28 @@ void registerPlaybackModule() {
     ..autoBitrateProvider = autoBitrate.measuredBpsForActiveServer
     ..savedAutoBitrateProvider = autoBitrate.savedBpsForActiveServer;
 
-  // The streams the player resolved for [item], or null when what it has
-  // resolved belongs to something else.
-  List<Map<String, dynamic>>? playingStreamsOf(dynamic item) {
-    final resolved = manager.currentResolutionItem;
-    final sameItem =
-        identical(resolved, item) ||
-        (resolved is AggregatedItem &&
-            item is AggregatedItem &&
-            resolved.id == item.id);
-    return sameItem ? manager.currentResolution?.mediaStreams : null;
-  }
-
-  // This choice carries to the next episode, so it takes the selected signal
-  // rather than the changed ones below, which also fire without the viewer.
-  void rememberSelectedTrack(int index, {required bool subtitle}) {
+  // The streams of one kind belonging to whatever is playing, or null when
+  // that isn't an episode and so has no series to remember a choice for.
+  ({String seriesId, List<Map<String, dynamic>> streams})? seriesStreams(
+    String kind,
+  ) {
     final item = manager.queueService.currentItem;
-    final seriesId = rememberSeriesTrackChoice(
-      _getIt<UserPreferences>(),
-      item,
-      index,
-      subtitle: subtitle,
-      playingStreams: playingStreamsOf(item),
+    if (item is! AggregatedItem) return null;
+    final seriesId = item.seriesId;
+    if (seriesId == null || seriesId.isEmpty) return null;
+    // The picker's index points into the resolved streams; a queued or Next Up
+    // item often lists none of its own.
+    final raw = manager.currentResolution?.mediaStreams ??
+        item.rawData['MediaStreams'] as List? ??
+        const [];
+    return (
+      seriesId: seriesId,
+      streams: raw
+          .whereType<Map>()
+          .map((e) => e.cast<String, dynamic>())
+          .where((s) => (s['Type'] as String?)?.toLowerCase() == kind)
+          .toList(),
     );
-    if (seriesId == null) return;
-    _rememberSeriesTrackOnServer(item, seriesId, index, subtitle: subtitle);
   }
 
   manager.onSubtitleTrackChanged = (itemId, index) {
@@ -554,10 +509,42 @@ void registerPlaybackModule() {
     );
   };
 
-  manager.onSubtitleTrackSelected = (itemId, index) =>
-      rememberSelectedTrack(index, subtitle: true);
-  manager.onAudioTrackSelected = (itemId, index) =>
-      rememberSelectedTrack(index, subtitle: false);
+  // This choice carries to the next episode, so it takes the selected signal
+  // rather than the changed ones above, which also fire without the viewer.
+  manager.onSubtitleTrackSelected = (itemId, index) {
+    final series = seriesStreams('subtitle');
+    if (series == null) return;
+    final pref = createSeriesTrackPreferenceFromStream(
+      streams: series.streams,
+      selectedIndex: index,
+    );
+    // A track the item doesn't list, an external one added mid playback say,
+    // leaves nothing to recognise it by later, so the last choice stays.
+    if (pref.isEmpty) return;
+    _getIt<UserPreferences>().setSeriesSubtitlePreference(series.seriesId, pref);
+    _rememberSeriesTrackOnServer(
+      manager.queueService.currentItem,
+      series.seriesId,
+      index,
+      subtitle: true,
+    );
+  };
+  manager.onAudioTrackSelected = (itemId, index) {
+    final series = seriesStreams('audio');
+    if (series == null) return;
+    final pref = createSeriesTrackPreferenceFromStream(
+      streams: series.streams,
+      selectedIndex: index,
+    );
+    if (pref.isEmpty) return;
+    _getIt<UserPreferences>().setSeriesAudioPreference(series.seriesId, pref);
+    _rememberSeriesTrackOnServer(
+      manager.queueService.currentItem,
+      series.seriesId,
+      index,
+      subtitle: false,
+    );
+  };
 
   manager.setBackend(initialBackend);
   manager.setBackendSelector((resolution, currentBackend) {
