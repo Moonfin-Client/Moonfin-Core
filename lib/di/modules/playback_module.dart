@@ -9,7 +9,6 @@ import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
-import '../../data/models/series_track_preference.dart';
 import '../../data/repositories/offline_repository.dart';
 import '../../data/services/audiobook_bookmarks_service.dart';
 import '../../data/services/audiobook_notes_service.dart';
@@ -55,8 +54,8 @@ import '../../watch_party/watch_party_rooms_service.dart';
 import '../../util/platform_detection.dart';
 import '../../util/episode_playability.dart';
 import '../../util/season_queue_context.dart';
-import '../../util/audio_track_logic.dart';
 import '../../util/subtitle_track_logic.dart';
+import '../../util/playback_track_selection.dart';
 import '../../util/secondary_subtitle_track_selection.dart';
 
 final _getIt = GetIt.instance;
@@ -82,6 +81,27 @@ bool _shouldUseHtmlVideoBackend(StreamResolutionResult resolution) {
 
   return true;
 }
+
+String? _currentSeriesId(PlaybackManager manager) {
+  final currentItem = manager.queueService.currentItem;
+  return currentItem is AggregatedItem ? currentItem.seriesId : null;
+}
+
+/// The audio picked for the item about to play only counts for its subtitles.
+/// The audio selector is handed that pick directly.
+SessionTrackChoices _sessionTrackChoices(
+  PlaybackManager manager, {
+  required bool includeExplicitAudio,
+}) => SessionTrackChoices(
+  explicitAudioIndex: includeExplicitAudio && manager.audioSelectionExplicit
+      ? manager.audioStreamIndex
+      : null,
+  audioLanguage: manager.lastExplicitAudioLanguage,
+  audioIndex: manager.lastExplicitAudioIndex,
+  audioTitle: manager.lastExplicitAudioTitle,
+  subtitleLanguage: manager.lastExplicitSubtitleLanguage,
+  subtitleEnabled: manager.lastExplicitSubtitleEnabled,
+);
 
 /// Why this client refuses to direct play [resolution], or null when it does
 /// not. Named rather than boolean because a client-side refusal leaves the
@@ -665,38 +685,11 @@ void registerPlaybackModule() {
   manager.audioTrackSelector = (audioStreams, explicitIndex) {
     if (explicitIndex != null) return explicitIndex;
 
-    final currentItem = manager.queueService.currentItem;
-    if (currentItem is AggregatedItem &&
-        currentItem.seriesId != null &&
-        currentItem.seriesId!.isNotEmpty) {
-      final seriesAudioPref = prefs.getSeriesAudioPreference(
-        currentItem.seriesId!,
-      );
-      if (seriesAudioPref.isNotEmpty) {
-        final matchedIndex = matchSeriesTrackIndex(
-          streams: audioStreams,
-          pref: seriesAudioPref,
-        );
-        if (matchedIndex != null) return matchedIndex;
-      }
-    }
-
-    final preferredAudioLanguage =
-        manager.lastExplicitAudioLanguage ??
-        (prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? 'auto');
-
-    return computeEffectiveAudioIndex(
+    return selectPlaybackAudioIndex(
       audioStreams: audioStreams,
-      preferredAudioLanguage: preferredAudioLanguage,
-      fallbackAudioLanguage:
-          prefs.get(UserPreferences.fallbackAudioLanguage) as String? ?? '',
-      preferDefaultAudioTrack:
-          prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
-      preferAudioDescription:
-          prefs.get(UserPreferences.preferAudioDescription) as bool? ?? false,
-      explicitAudioIndex: explicitIndex,
-      lastExplicitAudioIndex: manager.lastExplicitAudioIndex,
-      lastExplicitAudioTitle: manager.lastExplicitAudioTitle,
+      prefs: prefs,
+      seriesId: _currentSeriesId(manager),
+      session: _sessionTrackChoices(manager, includeExplicitAudio: false),
     );
   };
 
@@ -704,88 +697,12 @@ void registerPlaybackModule() {
       .subtitleTrackSelector = (subtitleStreams, audioStreams, explicitIndex) {
     if (explicitIndex != null) return explicitIndex;
 
-    final currentItem = manager.queueService.currentItem;
-    String? seriesId;
-    if (currentItem is AggregatedItem) {
-      seriesId = currentItem.seriesId;
-    }
-
-    final seriesSubPref = seriesId != null && seriesId.isNotEmpty
-        ? prefs.getSeriesSubtitlePreference(seriesId)
-        : SeriesTrackPreference.empty;
-    if (seriesSubPref.isNone) return -1;
-    if (seriesSubPref.isNotEmpty) {
-      final matchedIndex = matchSeriesTrackIndex(
-        streams: subtitleStreams,
-        pref: seriesSubPref,
-      );
-      if (matchedIndex != null) return matchedIndex;
-    }
-
-    final effectiveAudioIndex = computeEffectiveAudioIndex(
-      audioStreams: audioStreams,
-      preferredAudioLanguage:
-          manager.lastExplicitAudioLanguage ??
-          (prefs.get(UserPreferences.defaultAudioLanguage) as String? ??
-              'auto'),
-      fallbackAudioLanguage:
-          prefs.get(UserPreferences.fallbackAudioLanguage) as String? ?? '',
-      preferDefaultAudioTrack:
-          prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
-      preferAudioDescription:
-          prefs.get(UserPreferences.preferAudioDescription) as bool? ?? false,
-      explicitAudioIndex: manager.audioSelectionExplicit
-          ? manager.audioStreamIndex
-          : null,
-      lastExplicitAudioIndex: manager.lastExplicitAudioIndex,
-      lastExplicitAudioTitle: manager.lastExplicitAudioTitle,
-    );
-
-    final activeAudioStream = audioStreams.firstWhere(
-      (s) => s['Index'] == effectiveAudioIndex,
-      orElse: () => const <String, dynamic>{},
-    );
-    final activeAudioLanguage = activeAudioStream.isNotEmpty
-        ? activeAudioStream['Language'] as String?
-        : null;
-
-    var subtitleMode = manager.lastExplicitSubtitleEnabled == false
-        ? SubtitleMode.none
-        : prefs.get(UserPreferences.subtitleMode);
-
-    var preferredLanguage = manager.lastExplicitSubtitleLanguage;
-    // No track in this episode carries the remembered one, so fall back to its
-    // language and make sure subtitles are on to show it. A remembered track
-    // with no language tag has nothing to fall back to.
-    if (preferredLanguage == null && seriesSubPref.language.isNotEmpty) {
-      preferredLanguage = seriesSubPref.language;
-      if (subtitleMode == SubtitleMode.none) {
-        subtitleMode = SubtitleMode.always;
-      }
-    }
-
-    preferredLanguage ??=
-        (prefs.get(UserPreferences.defaultSubtitleLanguage) as String? ?? '');
-
-    return computeEffectiveSubtitleIndex(
+    return selectPlaybackSubtitleIndex(
       subtitleStreams: subtitleStreams,
-      selectedSubtitleIndex: null,
-      activePlaybackSubtitleIndex: null,
-      subtitleMode: subtitleMode,
-      preferredLanguage: preferredLanguage,
-      fallbackLanguage:
-          prefs.get(UserPreferences.fallbackSubtitleLanguage) as String? ?? '',
-      preferSdh:
-          prefs.get(UserPreferences.preferSdhSubtitles) as bool? ?? false,
-      preferTextSubtitles:
-          prefs.get(UserPreferences.preferTextSubtitles) as bool? ?? false,
-      preferExternalSubtitles:
-          prefs.get(UserPreferences.preferExternalSubtitles) as bool? ?? false,
-      pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay) as bool? ?? false,
-      assDirectPlay: prefs.get(UserPreferences.assDirectPlay) as bool? ?? false,
-      preferredAudioLanguage:
-          prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? 'auto',
-      activeAudioLanguage: activeAudioLanguage,
+      audioStreams: audioStreams,
+      prefs: prefs,
+      seriesId: _currentSeriesId(manager),
+      session: _sessionTrackChoices(manager, includeExplicitAudio: true),
     );
   };
 
