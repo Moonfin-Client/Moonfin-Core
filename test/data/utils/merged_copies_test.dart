@@ -142,6 +142,23 @@ void main() {
       expect([...items]..sort(descending), [items[0], items[2], items[1]]);
     });
 
+    test('an accented title sorts with its plain letter', () {
+      final items = [
+        _movie('1', 'a', sortName: 'zorro'),
+        _movie('2', 'b', sortName: 'été'),
+        _movie('3', 'a', sortName: 'dune'),
+        _movie('4', 'b', sortName: 'fargo'),
+      ];
+      final byName = mergedSortComparator('SortName', descending: false)!;
+
+      expect(([...items]..sort(byName)).map((item) => item.id), [
+        '3',
+        '2',
+        '4',
+        '1',
+      ]);
+    });
+
     test('a random order has nothing to merge on', () {
       expect(mergedSortComparator('Random', descending: false), isNull);
     });

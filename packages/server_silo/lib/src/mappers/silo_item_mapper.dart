@@ -105,7 +105,7 @@ Map<String, dynamic>? siloItemToBaseItemDto(
     if (_criticRating(item['ratings']) case final critic?)
       'CriticRating': critic,
     if (_runTimeTicks(item) case final ticks?) 'RunTimeTicks': ticks,
-    'ProviderIds': _providerIds(item),
+    'ProviderIds': _providerIds(item, id),
     if (_dateAdded(item['versions']) case final added?) 'DateCreated': added,
     ..._imageFields(id, itemType.siloType, item, images),
     ..._seriesFields(id, itemType.siloType, item, images, series),
@@ -263,7 +263,8 @@ int? _runTimeTicks(Map<String, dynamic> item) {
   return minutesToTicksOrNull(item['runtime']);
 }
 
-Map<String, String> _providerIds(Map<String, dynamic> item) => {
+Map<String, String> _providerIds(Map<String, dynamic> item, String id) => {
+  if (siloKeyedProviderId(id) case (:final name, :final value)) name: value,
   if (jsonText(item['imdb_id']) case final imdb?) 'Imdb': imdb,
   if (siloIdOf(item['tmdb_id']) case final tmdb?) 'Tmdb': tmdb,
   if (siloIdOf(item['tvdb_id']) case final tvdb?) 'Tvdb': tvdb,

@@ -1,5 +1,6 @@
 import 'package:server_core/server_core.dart';
 
+import '../../util/accent_folding.dart';
 import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 
@@ -145,8 +146,9 @@ int Function(AggregatedItem, AggregatedItem)? mergedSortComparator(
 
 Comparable<Object>? _sortValue(AggregatedItem item, String field) =>
     switch (field) {
-      'SortName' => (item.sortName ?? item.name).toLowerCase(),
-      'Name' => item.name.toLowerCase(),
+      // Folded so "Été" sorts with the E's, as each server lists it.
+      'SortName' => foldForSearch(item.sortName ?? item.name),
+      'Name' => foldForSearch(item.name),
       'DateCreated' => item.dateCreated,
       // Servers sort on this name but send the date as DateLastMediaAdded.
       'DateLastContentAdded' => parseServerDate(
