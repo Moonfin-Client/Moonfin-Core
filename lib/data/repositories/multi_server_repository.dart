@@ -586,7 +586,7 @@ class MultiServerRepository {
                 recursive: true,
                 startIndex: startIndex,
                 limit: limit,
-                fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated',
+                fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
                 // Before Jellyfin 12 a studio's counts only come back with a type filter.
                 includeItemTypes: const ['Movie', 'Series'],
               );
@@ -599,6 +599,7 @@ class MultiServerRepository {
               limit: perServer,
               pageSize: _studioPageSize,
               serverSorts: session.client.itemsApi.sortsStudios,
+              cacheKey: '${session.server.id}|${session.client.userId}',
             );
             return _parseItems(response, session.server.id);
           }

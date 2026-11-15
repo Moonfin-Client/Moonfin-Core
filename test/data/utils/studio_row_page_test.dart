@@ -1,5 +1,8 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/utils/studio_row_page.dart';
+
+var _nextKey = 0;
 
 void main() {
   // A server holding [total] studios that, like Jellyfin, lists them by name
@@ -47,6 +50,7 @@ void main() {
       limit: 15,
       pageSize: 200,
       serverSorts: serverSorts,
+      cacheKey: '${_nextKey++}',
     );
     sorts?.addAll(s.sorts);
     return s.calls;
@@ -70,8 +74,41 @@ void main() {
     expect(calls.last.$2, 200);
   });
 
-  test('date added sorts the first page', () async {
-    expect(await pagesRead(1000, sortBy: 'DateCreated,SortName'), [(0, 200)]);
+  const everyPage = [(0, 200), (200, 200), (400, 200), (600, 200), (800, 200)];
+
+  test('date added reads every page', () async {
+    expect(await pagesRead(1000, sortBy: 'DateCreated,SortName'), everyPage);
+  });
+
+  test('item count keeps the whole list for a day per server and user', () async {
+    final s = server(1000);
+    Future<Map<String, dynamic>> read(String key) => fetchStudioRowPage(
+      s.fetch,
+      sortBy: 'ItemCount',
+      sortOrder: 'Descending',
+      limit: 15,
+      pageSize: 200,
+      serverSorts: false,
+      cacheKey: key,
+    );
+    final start = DateTime(2026, 11, 15);
+
+    final all = await withClock(Clock.fixed(start), () => read('a|me'));
+    expect((all['Items'] as List).last, {'Id': '999'});
+    await withClock(
+      Clock.fixed(start.add(const Duration(hours: 23))),
+      () => read('a|me'),
+    );
+    expect(s.calls, hasLength(5));
+
+    await withClock(Clock.fixed(start), () => read('b|me'));
+    expect(s.calls, hasLength(10));
+
+    await withClock(
+      Clock.fixed(start.add(const Duration(days: 1))),
+      () => read('a|me'),
+    );
+    expect(s.calls, hasLength(15));
   });
 
   test('a list that fits in one page is read once', () async {
@@ -106,8 +143,8 @@ void main() {
         serverSorts: true,
         sorts: sorts,
       ),
-      [(0, 200)],
+      everyPage,
     );
-    expect(sorts, ['SortName Ascending']);
+    expect(sorts.toSet(), {'SortName Ascending'});
   });
 }
