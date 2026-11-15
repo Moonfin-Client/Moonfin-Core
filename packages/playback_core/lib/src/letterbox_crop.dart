@@ -57,6 +57,7 @@ class LetterboxSample {
     required this.kind,
     this.rect,
     this.windowbox = false,
+    this.inferred = false,
   });
 
   final LetterboxSampleKind kind;
@@ -65,6 +66,15 @@ class LetterboxSample {
   /// Bars on all four sides. Easier to mistake for a lit shape in a dark
   /// scene than a crop that spans an edge, so it needs more agreement.
   final bool windowbox;
+
+  /// Matching top and bottom bars at a known ratio, while the sides did not
+  /// reach the frame edge. A dark scene hides the picture's sides, so the
+  /// sides are dropped and only the bars are kept. Not seen directly, so a
+  /// one-shot scan confirms it the way it confirms a [windowbox].
+  final bool inferred;
+
+  /// One reading is not enough to apply this sample.
+  bool get needsConfirmation => windowbox || inferred;
 }
 
 /// Apply a new crop (or `null` to uncrop). [hold] means keep the last apply.
@@ -165,35 +175,87 @@ abstract final class LetterboxCrop {
     final bottom = sourceHeight - height - y;
     final left = x;
     final right = sourceWidth - width - x;
-    final linkedToSource =
-        (top <= margin && bottom <= margin) ||
-        (left <= margin && right <= margin);
-    final windowbox =
-        !linkedToSource &&
-        isWindowbox(
-          width: width,
-          height: height,
-          top: top,
-          bottom: bottom,
-          left: left,
-          right: right,
-          sourceWidth: sourceWidth,
-          sourceHeight: sourceHeight,
-        );
-    if (!linkedToSource && !windowbox) {
-      return const LetterboxSample(kind: LetterboxSampleKind.ignore);
-    }
-
-    final fullFrame =
-        top <= margin && bottom <= margin && left <= margin && right <= margin;
-    if (fullFrame) {
+    // The darkest edge of a lit picture can read as a few columns of bar.
+    // Within the slack the picture still reaches that edge, so snap to it.
+    final slackX = math.max(margin, (sourceWidth * edgeSlack).round());
+    final slackY = math.max(margin, (sourceHeight * edgeSlack).round());
+    final fullWidth = left <= slackX && right <= slackX;
+    final fullHeight = top <= slackY && bottom <= slackY;
+    if (fullWidth && fullHeight) {
       return const LetterboxSample(kind: LetterboxSampleKind.fullFrame);
     }
+    if (fullWidth || fullHeight) {
+      return LetterboxSample(
+        kind: LetterboxSampleKind.crop,
+        rect: LetterboxCropRect(
+          w: fullWidth ? sourceWidth : width,
+          h: fullHeight ? sourceHeight : height,
+          x: fullWidth ? 0 : x,
+          y: fullHeight ? 0 : y,
+        ),
+      );
+    }
 
-    return LetterboxSample(
-      kind: LetterboxSampleKind.crop,
-      rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
-      windowbox: windowbox,
+    final windowbox = isWindowbox(
+      width: width,
+      height: height,
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right,
+      sourceWidth: sourceWidth,
+      sourceHeight: sourceHeight,
+    );
+    if (windowbox) {
+      return LetterboxSample(
+        kind: LetterboxSampleKind.crop,
+        rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
+        windowbox: true,
+      );
+    }
+
+    if (isInferredLetterbox(
+      height: height,
+      top: top,
+      bottom: bottom,
+      sourceWidth: sourceWidth,
+      sourceHeight: sourceHeight,
+      slack: slackY,
+    )) {
+      return LetterboxSample(
+        kind: LetterboxSampleKind.crop,
+        rect: LetterboxCropRect(w: sourceWidth, h: height, x: 0, y: top),
+        inferred: true,
+      );
+    }
+
+    return const LetterboxSample(kind: LetterboxSampleKind.ignore);
+  }
+
+  /// Fraction of the source a picture edge may sit inside the frame edge and
+  /// still count as reaching it.
+  static const edgeSlack = 0.01;
+
+  /// Top and bottom bars that match each other and leave a known cinema
+  /// ratio at full width. The sides are not checked: a dark scene leaves
+  /// them unlit. Only letterbox: a lit figure in a dark frame looks like a
+  /// 4:3 pillarbox far too often.
+  static bool isInferredLetterbox({
+    required int height,
+    required int top,
+    required int bottom,
+    required int sourceWidth,
+    required int sourceHeight,
+    required int slack,
+  }) {
+    if (top <= slack || bottom <= slack) return false;
+    final maxOff = math.max(4, sourceHeight * 0.005);
+    if ((top - bottom).abs() > maxOff) return false;
+    return isKnownRatio(
+      width: sourceWidth,
+      height: height,
+      sourceWidth: sourceWidth,
+      sourceHeight: sourceHeight,
     );
   }
 
@@ -279,7 +341,8 @@ abstract final class LetterboxCrop {
 
 /// Consecutive-sample hysteresis from mpv `dynamic-crop.lua`.
 ///
-/// One dark frame cannot retarget the crop. A known cinema ratio needs
+/// One dark frame cannot retarget the crop, and unusable readings between
+/// matching ones do not break the streak. A known cinema ratio needs
 /// [newCropHits] matching samples; a previously trusted crop needs
 /// [trustedHits]; an unknown ratio needs [unknownHits].
 class LetterboxCropStabilizer {
@@ -351,8 +414,9 @@ class LetterboxCropStabilizer {
       linkedTolerance: linkedTolerance,
     );
 
+    // An unusable reading says nothing about the bars, so it neither counts
+    // nor breaks a streak. Dark scenes would otherwise never confirm a crop.
     if (sample.kind == LetterboxSampleKind.ignore) {
-      resetCandidate();
       return const LetterboxCropDecision.hold();
     }
 

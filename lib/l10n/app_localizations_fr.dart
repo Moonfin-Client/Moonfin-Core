@@ -3587,6 +3587,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Nouveau rognage des bandes noires';
 
   @override
+  String get playerBlackBarsCropped => 'Black bars cropped';
+
+  @override
+  String get playerNoBlackBarsFound => 'No black bars found';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Couldn\'t detect black bars. Try again in a brighter scene';
+
+  @override
   String get stretch => 'Étirer';
 
   @override

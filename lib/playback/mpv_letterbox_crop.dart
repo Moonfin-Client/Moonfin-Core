@@ -18,6 +18,11 @@ class MpvLetterboxCrop {
   static const autoDelay = Duration(seconds: 4);
   static const detectDuration = Duration(seconds: 1);
 
+  /// A one-shot scan keeps reading through dark scenes for about this many
+  /// tries, a second or more apart, before it gives up.
+  static const oneShotMaxReads = 12;
+  static const oneShotRetryGap = Duration(seconds: 1);
+
   /// Long enough for cropdetect to see a few frames, short enough that a 4K
   /// download does not stay on the playback path.
   static const downloadWindow = Duration(milliseconds: 250);
@@ -213,6 +218,18 @@ abstract class MpvFrameSampleHost {
   Future<MpvFrameSample?> sampleFrame(int width, int height);
 }
 
+/// How a one-shot scan ended.
+enum LetterboxScanResult {
+  /// A crop is on screen.
+  cropped,
+
+  /// The picture fills the frame; there are no bars to crop.
+  noBars,
+
+  /// Every reading was too dark or too busy to tell.
+  inconclusive,
+}
+
 class MpvCropGeometry {
   const MpvCropGeometry(this.rect);
 
@@ -236,6 +253,8 @@ class MpvLetterboxCropper extends LetterboxCropper {
   final LetterboxCropStabilizer _stabilizer;
   final _appliedController = StreamController<bool>.broadcast();
   final _geometryController = StreamController<MpvCropGeometry?>.broadcast();
+  final _scanResultController =
+      StreamController<LetterboxScanResult>.broadcast();
 
   /// Apply and clear each take several mpv calls. Running them one at a time
   /// keeps a disable from landing halfway through an apply.
@@ -259,6 +278,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
   String? _loopUrl;
   bool _inFlight = false;
 
+  /// This scan read a frame with no bars.
+  bool _sawFullFrame = false;
+
   bool get _continuous => _recropInterval > Duration.zero;
 
   @override
@@ -270,6 +292,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
   MpvCropGeometry? get geometry => _geometry;
 
   Stream<MpvCropGeometry?> get geometryStream => _geometryController.stream;
+
+  /// Emits when a one-shot scan (start of playback or [recrop]) finishes.
+  Stream<LetterboxScanResult> get scanResults => _scanResultController.stream;
 
   /// The applied crop is wider than the window, so fit would show bars
   /// again and the picture has to be zoomed to fill it. An ultrawide window
@@ -429,6 +454,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
       return;
     }
 
+    _sawFullFrame = false;
     try {
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
       if (!_skipStartDelay && _host.position < autoDelay) {
@@ -495,14 +521,39 @@ class MpvLetterboxCropper extends LetterboxCropper {
         _inFlight = false;
         await _removeDetectFilter();
         await _restoreHwdec();
+        if (!_continuous && _isCurrent(generation)) {
+          _scanResultController.add(
+            _applied
+                ? LetterboxScanResult.cropped
+                : _sawFullFrame
+                ? LetterboxScanResult.noBars
+                : LetterboxScanResult.inconclusive,
+          );
+        }
       }
     }
+  }
+
+  /// A one-shot sample that agrees with what is on screen: no bars while
+  /// uncropped, or the applied crop again.
+  bool _settles(LetterboxSample sample) {
+    final applied = _stabilizer.applied;
+    if (sample.kind == LetterboxSampleKind.fullFrame) {
+      if (applied == null) _sawFullFrame = true;
+      return applied == null;
+    }
+    final rect = sample.rect;
+    return sample.kind == LetterboxSampleKind.crop &&
+        rect != null &&
+        applied != null &&
+        LetterboxCrop.similar(rect, applied);
   }
 
   Future<bool> _runFrameSamples(int generation) async {
     final sampler = _host as MpvFrameSampleHost;
     var failures = 0;
     var samples = 0;
+    var settled = 0;
     var adaptiveInterval = Duration.zero;
     while (_isCurrent(generation) && _enabled) {
       if (_geometry != null) {
@@ -561,12 +612,22 @@ class MpvLetterboxCropper extends LetterboxCropper {
         if (nextMillis > adaptiveInterval.inMilliseconds) {
           adaptiveInterval = Duration(milliseconds: nextMillis);
         }
-        // Three quiet samples with nothing pending means no bars. A pending
-        // candidate still needs its hits, which can take more than three.
+        final sample = LetterboxCrop.classify(
+          width: rect?.w,
+          height: rect?.h,
+          x: rect?.x,
+          y: rect?.y,
+          sourceWidth: size.$1,
+          sourceHeight: size.$2,
+        );
+        if (_settles(sample)) settled++;
+        // Three samples that agree with the screen and nothing pending means
+        // done. Dark samples count for neither, so a dark opening keeps the
+        // scan going until the budget runs out.
         if (!_continuous &&
             (decision.changed ||
-                samples >= 6 ||
-                (samples >= 3 && !_applied && !_stabilizer.hasCandidate))) {
+                samples >= MpvLetterboxCrop.oneShotMaxReads ||
+                (settled >= 3 && !_stabilizer.hasCandidate))) {
           _doneUrl = _host.currentUrl;
           return true;
         }
@@ -594,10 +655,31 @@ class MpvLetterboxCropper extends LetterboxCropper {
           ? MpvLetterboxCrop.downloadWindow
           : detectDuration,
     );
-    final measured = await read();
-    if (measured == null || !_isCurrent(generation)) return;
-    if (await _windowboxHolds(generation, measured, read)) {
-      await _commitSample(generation, measured);
+    // One reading of a dark scene sees no edges. Keep reading until one is
+    // usable instead of giving up on the first.
+    for (
+      var attempt = 0;
+      attempt < MpvLetterboxCrop.oneShotMaxReads;
+      attempt++
+    ) {
+      if (attempt > 0) {
+        if (!await _delay(generation, MpvLetterboxCrop.oneShotRetryGap)) {
+          return;
+        }
+        if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
+      }
+      final measured = await read();
+      if (measured == null || !_isCurrent(generation)) return;
+      final kind = measured.sample?.kind;
+      if (kind != null &&
+          kind != LetterboxSampleKind.ignore &&
+          await _windowboxHolds(generation, measured, read)) {
+        await _commitSample(generation, measured);
+        break;
+      }
+      if (!_isCurrent(generation)) return;
+      // Copy-back restarts the decoder on every read; do not loop on it.
+      if (measured.copyBack) break;
     }
     if (_isCurrent(generation)) _doneUrl = _host.currentUrl;
   }
@@ -612,7 +694,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
   ) async {
     final sample = measured.sample;
     final rect = sample?.rect;
-    if (sample == null || !sample.windowbox || rect == null) return true;
+    if (sample == null || !sample.needsConfirmation || rect == null) {
+      return true;
+    }
     for (var i = 0; i < LetterboxCrop.windowboxConfirmations; i++) {
       if (!await _delay(generation, windowboxGap)) return false;
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) {
@@ -732,6 +816,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     final sample = measured.sample;
     if (sample == null || !_isCurrent(generation)) return;
     if (sample.kind == LetterboxSampleKind.fullFrame) {
+      _sawFullFrame = true;
       await _clearCrop(generation);
       return;
     }

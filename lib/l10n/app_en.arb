@@ -4808,6 +4808,18 @@
   "@playerRecroppingBlackBars": {
     "description": "Toast when the player re-runs letterbox crop detection"
   },
+  "playerBlackBarsCropped": "Black bars cropped",
+  "@playerBlackBarsCropped": {
+    "description": "Toast after a manual recrop found letterbox bars and cropped them"
+  },
+  "playerNoBlackBarsFound": "No black bars found",
+  "@playerNoBlackBarsFound": {
+    "description": "Toast after a manual recrop found that the picture fills the frame"
+  },
+  "playerBlackBarsNotDetected": "Couldn't detect black bars. Try again in a brighter scene",
+  "@playerBlackBarsNotDetected": {
+    "description": "Toast after a manual recrop saw only dark or unclear frames"
+  },
   "stretch": "Stretch",
   "@stretch": {
     "description": "Zoom mode: stretch"

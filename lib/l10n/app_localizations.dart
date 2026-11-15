@@ -6208,6 +6208,24 @@ abstract class AppLocalizations {
   /// **'Recropping black bars'**
   String get playerRecroppingBlackBars;
 
+  /// Toast after a manual recrop found letterbox bars and cropped them
+  ///
+  /// In en, this message translates to:
+  /// **'Black bars cropped'**
+  String get playerBlackBarsCropped;
+
+  /// Toast after a manual recrop found that the picture fills the frame
+  ///
+  /// In en, this message translates to:
+  /// **'No black bars found'**
+  String get playerNoBlackBarsFound;
+
+  /// Toast after a manual recrop saw only dark or unclear frames
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t detect black bars. Try again in a brighter scene'**
+  String get playerBlackBarsNotDetected;
+
   /// Zoom mode: stretch
   ///
   /// In en, this message translates to:

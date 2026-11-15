@@ -259,6 +259,87 @@ void main() {
       expect(observe().changed, isTrue);
     });
 
+    // Readings from MobLand S01E01 (3840x2160, 2.39:1 picture, 278px bars).
+    test('classify snaps a picture edge a dark column pulled in', () {
+      final sample = LetterboxCrop.classify(
+        width: 3808,
+        height: 1572,
+        x: 0,
+        y: 312,
+        sourceWidth: 3840,
+        sourceHeight: 2160,
+      );
+      expect(sample.kind, LetterboxSampleKind.crop);
+      expect(
+        sample.rect,
+        const LetterboxCropRect(w: 3840, h: 1572, x: 0, y: 312),
+      );
+      expect(sample.needsConfirmation, isFalse);
+    });
+
+    test('classify keeps matching bars when the sides are dark', () {
+      final sample = LetterboxCrop.classify(
+        width: 3414,
+        height: 1608,
+        x: 88,
+        y: 276,
+        sourceWidth: 3840,
+        sourceHeight: 2160,
+      );
+      expect(sample.kind, LetterboxSampleKind.crop);
+      expect(
+        sample.rect,
+        const LetterboxCropRect(w: 3840, h: 1608, x: 0, y: 276),
+      );
+      expect(sample.inferred, isTrue);
+      expect(sample.needsConfirmation, isTrue);
+    });
+
+    test('classify ignores bars that do not match', () {
+      expect(
+        LetterboxCrop.classify(
+          width: 2388,
+          height: 1452,
+          x: 1452,
+          y: 276,
+          sourceWidth: 3840,
+          sourceHeight: 2160,
+        ).kind,
+        LetterboxSampleKind.ignore,
+      );
+    });
+
+    test('classify ignores matching bars at an unlisted ratio', () {
+      // A lit band across a dark frame: equal margins, but 1920/600 is no
+      // cinema ratio.
+      expect(
+        LetterboxCrop.classify(
+          width: 1200,
+          height: 600,
+          x: 300,
+          y: 240,
+          sourceWidth: 1920,
+          sourceHeight: 1080,
+        ).kind,
+        LetterboxSampleKind.ignore,
+      );
+    });
+
+    test('classify does not infer a pillarbox from a lit figure', () {
+      // Centred, full of height but not width: a 4:3 shape in a dark scene.
+      expect(
+        LetterboxCrop.classify(
+          width: 1440,
+          height: 1000,
+          x: 240,
+          y: 30,
+          sourceWidth: 1920,
+          sourceHeight: 1080,
+        ).kind,
+        LetterboxSampleKind.ignore,
+      );
+    });
+
     test('classify treats a full-frame as uncrop', () {
       expect(
         LetterboxCrop.classify(
@@ -360,7 +441,7 @@ void main() {
       expect(decision.rect, letterbox);
     });
 
-    test('a dark frame after one sample resets the streak', () {
+    test('a dark frame between matching samples keeps the streak', () {
       final stabilizer = LetterboxCropStabilizer();
       observe(stabilizer, letterbox);
       expect(
@@ -375,6 +456,18 @@ void main() {
             )
             .changed,
         isFalse,
+      );
+      final decision = observe(stabilizer, letterbox);
+      expect(decision.changed, isTrue);
+      expect(decision.rect, letterbox);
+    });
+
+    test('a different crop still restarts the streak', () {
+      final stabilizer = LetterboxCropStabilizer();
+      observe(stabilizer, letterbox);
+      observe(
+        stabilizer,
+        const LetterboxCropRect(w: 1920, h: 960, x: 0, y: 60),
       );
       expect(observe(stabilizer, letterbox).changed, isFalse);
     });
@@ -669,6 +762,108 @@ void main() {
           host.commands.any((args) => _isVideoCrop(args, '1920x950+0+64')),
           isTrue,
         );
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot cropdetect keeps reading through a dark opening', () {
+      fakeAsync((async) {
+        final host = _MpvDetectHost()
+          ..lavfi = {'w': '600', 'h': '300', 'x': '700', 'y': '500'};
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 3));
+        expect(cropper.isApplied, isFalse);
+        expect(results, isEmpty);
+        host.lavfi = {'w': '1920', 'h': '804', 'x': '0', 'y': '138'};
+        async.elapse(const Duration(seconds: 2));
+        expect(
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
+          isTrue,
+        );
+        expect(results, [LetterboxScanResult.cropped]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot cropdetect gives up on a scene that stays dark', () {
+      fakeAsync((async) {
+        final host = _MpvDetectHost()
+          ..lavfi = {'w': '600', 'h': '300', 'x': '700', 'y': '500'};
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 30));
+        final reads = host.commands
+            .where(
+              (args) => args.length >= 2 && args[0] == 'vf' && args[1] == 'pre',
+            )
+            .length;
+        expect(reads, MpvLetterboxCrop.oneShotMaxReads);
+        expect(cropper.isApplied, isFalse);
+        expect(results, [LetterboxScanResult.inconclusive]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot reports no bars for a full-frame picture', () {
+      fakeAsync((async) {
+        final host = _MpvDetectHost()
+          ..lavfi = {'w': '1920', 'h': '1080', 'x': '0', 'y': '0'};
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 1));
+        expect(results, [LetterboxScanResult.noBars]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot shots get past a dark opening to inferred bars', () {
+      fakeAsync((async) {
+        // MobLand S01E01 software shots at half scale: lit blobs, then bars
+        // whose sides a dark scene hides.
+        const dark = LetterboxCropRect(w: 640, h: 656, x: 648, y: 338);
+        const bars = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
+        final host = _MpvShotHost([dark, null, dark, dark, bars, dark, bars]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 5));
+        expect(host.shotCalls, 7);
+        expect(
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
+          isTrue,
+        );
+        expect(results, [LetterboxScanResult.cropped]);
         cropper.cancel();
         async.flushMicrotasks();
       });
