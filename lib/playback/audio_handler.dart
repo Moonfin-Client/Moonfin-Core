@@ -509,6 +509,9 @@ class MoonfinAudioHandler extends BaseAudioHandler
         mediaItem.value?.title != session.title ||
         mediaItem.value?.artist != session.subtitle;
     _remoteMode = true;
+    // A local stop drops the player listeners, which local playback needs to
+    // take the notification back.
+    _ensureBound();
     if (mediaChanged) {
       unawaited(_pushRemoteMediaItemAndState(session));
     } else {

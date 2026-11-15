@@ -15,20 +15,25 @@ import 'overlay_sheet.dart';
 import 'remote_search_sheet.dart';
 import 'remote_navigation_pad.dart';
 
-// The media notification can ask for the sheet while it is already open.
+// The media notification can ask for the sheet while it is already open, or
+// before the route has built it.
+bool _remoteControlOpening = false;
 State? _openRemoteControlSheet;
 
 void showRemoteControlDialog(
   BuildContext context, {
   String? initialSessionId,
 }) {
-  if (_openRemoteControlSheet?.mounted ?? false) return;
+  if (_remoteControlOpening || (_openRemoteControlSheet?.mounted ?? false)) {
+    return;
+  }
+  _remoteControlOpening = true;
   showFocusRestoringModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (_) => _RemoteControlSheet(initialSessionId: initialSessionId),
-  );
+  ).whenComplete(() => _remoteControlOpening = false);
 }
 
 class _RemoteControlSheet extends StatefulWidget {
@@ -71,6 +76,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   @override
   void initState() {
     super.initState();
+    _remoteControlOpening = false;
     _openRemoteControlSheet = this;
     _sessionApi = GetIt.instance<MediaServerClient>().sessionApi;
     _userId = GetIt.instance<MediaServerClient>().userId;

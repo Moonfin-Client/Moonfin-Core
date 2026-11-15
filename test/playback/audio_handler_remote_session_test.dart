@@ -363,6 +363,19 @@ void main() {
     expect(handler.mediaItem.value?.id, 'remote:sess-tv:ep-3');
   });
 
+  test('local playback still takes the notification after a local stop', () async {
+    await handler.stop();
+    remoteService.activeSessionNotifier.value = _remoteSession();
+    await Future<void>.delayed(Duration.zero);
+    expect(handler.isRemoteMode, isTrue);
+
+    manager.queueService.setQueue([_localSong]);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(handler.isRemoteMode, isFalse);
+    expect(handler.mediaItem.value?.id, 'song-1');
+  });
+
   test('omits seek controls and exposes active cast kind when non-seekable Cast session is active', () async {
     remoteService.activeSessionNotifier.value = _remoteSession(
       sessionId: 'cast:googleCast:living-room',
@@ -379,10 +392,16 @@ void main() {
       MediaControl.stop,
     ]);
     expect(handler.playbackState.value.androidCompactActionIndices, [0, 1]);
-    expect(
-      handler.playbackState.value.systemActions,
-      isNot(containsAll([MediaAction.seek, MediaAction.fastForward, MediaAction.rewind])),
-    );
+    for (final action in [
+      MediaAction.seek,
+      MediaAction.fastForward,
+      MediaAction.rewind,
+    ]) {
+      expect(
+        handler.playbackState.value.systemActions,
+        isNot(contains(action)),
+      );
+    }
 
     // Turning canSeek on without changing position/playing still republishes controls.
     remoteService.activeSessionNotifier.value = _remoteSession(

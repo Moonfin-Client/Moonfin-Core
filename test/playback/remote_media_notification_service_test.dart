@@ -429,6 +429,44 @@ void main() {
     ]);
   });
 
+  test(
+    "a server session cast follows the item the server says it's on",
+    () async {
+      await prefs.set(UserPreferences.remoteMediaNotification, true);
+      service.start();
+      castService.activeKindNotifier.value = CastTargetKind.jellyfinSession;
+      castService.activeTargetNotifier.value = const CastTarget(
+        id: 'sess-tv',
+        title: 'SHIELD',
+        kind: CastTargetKind.jellyfinSession,
+      );
+      castService.castItemNotifier.value = const AggregatedItem(
+        id: 'ep-1',
+        serverId: 'server-1',
+        rawData: {
+          'Id': 'ep-1',
+          'Name': 'The Beast in the Jungle',
+          'Type': 'Episode',
+        },
+      );
+      castService.remoteStateNotifier.value = 'playing';
+      socket.eventsController.add(
+        SessionsMessage([
+          _tvSession(
+            itemId: 'ep-2',
+            itemName: 'The Romance of Certain Old Clothes',
+          ),
+        ]),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final active = service.activeSession!;
+      expect(active.itemId, 'ep-2');
+      expect(active.title, 'The Romance of Certain Old Clothes');
+      expect(active.jellyfinSessionId, 'sess-tv');
+    },
+  );
+
   test('audio remote sessions use Listening on Moonfin without device name', () async {
     await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();

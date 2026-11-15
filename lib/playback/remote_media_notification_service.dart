@@ -435,6 +435,15 @@ class RemoteMediaNotificationService {
     if (state == 'idle') return null;
 
     final target = _castService.activeTargetNotifier.value;
+    // A server session moves on to its next item by itself, and only the
+    // server's own record of it says which item that is.
+    if (kind == CastTargetKind.jellyfinSession && target != null) {
+      final session = _sessionsById[target.id];
+      final activeClient = _activeClient();
+      if (session?['NowPlayingItem'] is Map && activeClient != null) {
+        return _sessionCandidate(activeClient, session!);
+      }
+    }
     final duration = item.runtime;
     final positionTicks = _castService.remotePositionNotifier.value;
     final position = positionTicks > 0
@@ -506,7 +515,13 @@ class RemoteMediaNotificationService {
     if (candidates.isEmpty) return null;
 
     candidates.sort((a, b) => _compareSessions(a, b));
-    final chosen = candidates.first;
+    return _sessionCandidate(client, candidates.first);
+  }
+
+  RemoteMediaSession? _sessionCandidate(
+    MediaServerClient client,
+    Map<String, dynamic> chosen,
+  ) {
     final sessionId = chosen['Id']?.toString();
     if (sessionId == null || sessionId.isEmpty) return null;
 
@@ -854,13 +869,14 @@ class RemoteMediaNotificationService {
   }
 
   void dispose() {
-    if (!_started) return;
-    _started = false;
+    // A refresh made before start can still have armed these.
     _refreshDebounce?.cancel();
     _refreshDebounce = null;
     _fallbackPollTimer?.cancel();
     _fallbackPollTimer = null;
     _clearPausedGrace();
+    if (!_started) return;
+    _started = false;
     _socketEventSub?.cancel();
     _socketEventSub = null;
     _socketConnSub?.cancel();
