@@ -159,12 +159,24 @@ void main() {
     test('redacts emails and home folder names', () {
       assertRedacted('signed in as jane.doe@example.com', 'as [REDACTED]');
       assertRedacted(
+        'switch to 1920x1080@23.976 for 23.976fps content',
+        'switch to 1920x1080@23.976 for',
+      );
+      assertRedacted(
         'open /home/jane/Videos/x.mkv failed',
         '/home/[REDACTED]/Videos/x.mkv',
       );
       assertRedacted(
         r'open C:\Users\jane\Videos\x.mkv failed',
         r'\Users\[REDACTED]\Videos',
+      );
+      assertRedacted(
+        'GET /Users/0123456789abcdef0123456789abcdef/Items',
+        '/Users/0123456789abcdef0123456789abcdef/Items',
+      );
+      assertRedacted(
+        'GET /Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+        '/Users/01234567-89ab-cdef-0123-456789abcdef/Views',
       );
     });
 

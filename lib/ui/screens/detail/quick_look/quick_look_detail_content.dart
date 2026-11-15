@@ -201,11 +201,30 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
     final pad = landscape ? 26.0 : 20.0;
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.82);
 
+    // The parts under the buttons sit below the fold, so they come into view
+    // with focus.
+    Widget revealed(Widget child) => Builder(
+      builder: (context) => Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onFocusChange: (focused) {
+          if (focused) reveal(context);
+        },
+        child: child,
+      ),
+    );
+
     // Built before the buttons, so Down from them knows where to land.
     final tracks = tracksSection(l10n, onLeftEdge: () {}, shareRow: landscape);
     final seasons = item.type == 'Series' ? _seasons(l10n) : null;
+    final collection = collectionRows(l10n);
     final openNode = pageNode('open');
-    _stops = [?tracks?.node, ?seasons?.node, openNode];
+    _stops = [
+      ?tracks?.node,
+      ?seasons?.node,
+      for (final row in collection) row.node!,
+      openNode,
+    ];
 
     final ratings = RatingsRow.forDetailScreen(
       item: item,
@@ -268,19 +287,13 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
           ],
           if (tracks != null) ...[
             const SizedBox(height: 14),
-            // The chips sit below the fold, so they come into view with focus.
-            Builder(
-              builder: (context) => Focus(
-                canRequestFocus: false,
-                skipTraversal: true,
-                onFocusChange: (focused) {
-                  if (focused) reveal(context);
-                },
-                child: tracks.child,
-              ),
-            ),
+            revealed(tracks.child),
           ],
           if (seasons != null) ...[const SizedBox(height: 14), seasons.child],
+          for (final row in collection) ...[
+            const SizedBox(height: 14),
+            revealed(row.child),
+          ],
           if (facts != null) ...[const SizedBox(height: 14), facts],
           if (providers != null) ...[
             const SizedBox(height: 14),

@@ -7625,7 +7625,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
+    "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -10460,9 +10460,9 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Recommends",
+    "recommendationSystemJellyfin": "Server Recommends",
     "@recommendationSystemJellyfin": {
-        "description": "Recommendation system option: Jellyfin Recommends"
+        "description": "Recommendation system option: Server Recommends"
     },
     "uiScaleGrandparents": "Grandparents",
     "@uiScaleGrandparents": {
@@ -12765,7 +12765,7 @@
         "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
     },
     "sinceYouWatchedSourceLocal": "Moonfin Recommends",
-    "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+    "sinceYouWatchedSourceServer": "Server Recommends",
     "sinceYouWatchedSourceOnline": "TMDb Similarity",
     "calendarSettingsSpecials": "Specials",
     "@calendarSettingsSpecials": {
