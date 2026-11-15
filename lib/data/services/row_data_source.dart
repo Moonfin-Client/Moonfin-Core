@@ -819,6 +819,8 @@ class RowDataSource {
           startIndex: startIndex,
           limit: limit,
           fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated',
+          // Before Jellyfin 12 a studio's counts only come back with a type filter.
+          includeItemTypes: const ['Movie', 'Series'],
         );
       } on DioException catch (e) {
         final statusCode = e.response?.statusCode ?? 0;
@@ -832,6 +834,7 @@ class RowDataSource {
           recursive: true,
           startIndex: startIndex,
           limit: limit,
+          includeItemTypes: const ['Movie', 'Series'],
         );
       }
     }

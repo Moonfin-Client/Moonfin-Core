@@ -587,6 +587,8 @@ class MultiServerRepository {
                 startIndex: startIndex,
                 limit: limit,
                 fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated',
+                // Before Jellyfin 12 a studio's counts only come back with a type filter.
+                includeItemTypes: const ['Movie', 'Series'],
               );
 
           final studios = selectedSet.isEmpty
