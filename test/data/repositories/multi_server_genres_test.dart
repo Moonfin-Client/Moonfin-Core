@@ -194,6 +194,30 @@ void main() {
     expect(row.totalCount, 36);
   });
 
+  test('a server whose genres all fail to count fails, not an empty row', () async {
+    when(
+      () => genresCall(itemsApis['b']!),
+    ).thenAnswer((_) async => throw Exception('down'));
+    final emby = itemsApis['a']!;
+    when(() => genresCall(emby)).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'a-genre-0', 'Name': 'a genre 0', 'Type': 'Genre'},
+        ],
+        'TotalRecordCount': 1,
+      },
+    );
+    when(() => artworkCall(emby)).thenThrow(Exception('down'));
+
+    await expectLater(
+      multiServer.getAggregatedGenres(
+        sortBy: 'ItemCount',
+        sortOrder: 'Descending',
+      ),
+      throwsStateError,
+    );
+  });
+
   // Emby lists genres without counts, so ranking by count needs each counted.
   test("ranks a server's uncounted genres by item count within its time", () {
     fakeAsync((async) {

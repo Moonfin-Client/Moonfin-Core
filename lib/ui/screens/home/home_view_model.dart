@@ -1501,7 +1501,10 @@ class HomeViewModel extends ChangeNotifier {
     final collectionsSortOrder = sortOrder(
       UserPreferences.collectionsRowSortOrder,
     );
-    final genresSortBy = sortBy(UserPreferences.genresRowSortBy);
+    final genresSortBy = sortBy(
+      UserPreferences.genresRowSortBy,
+      LibrarySortBy.genreValues,
+    );
     final genresSortOrder = sortOrder(UserPreferences.genresRowSortOrder);
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)

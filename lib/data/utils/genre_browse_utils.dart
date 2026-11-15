@@ -87,6 +87,7 @@ Future<Map<String, dynamic>> countGenres(
   final genres = (response['Items'] as List? ?? const [])
       .whereType<Map<String, dynamic>>()
       .toList();
+  var answered = 0;
   final counted = await mapBounded(genres, concurrency, (genre) async {
     try {
       final result = await api.getItems(
@@ -96,11 +97,16 @@ Future<Map<String, dynamic>> countGenres(
         recursive: true,
         limit: 1,
       );
+      answered++;
       return {...genre, 'ChildCount': _asInt(result['TotalRecordCount'])};
     } catch (_) {
       return {...genre, 'ChildCount': 0};
     }
   });
+  // Every query failing is an outage, not a server of empty genres.
+  if (genres.isNotEmpty && answered == 0) {
+    throw StateError('No genre could be counted');
+  }
   return {...response, 'Items': counted};
 }
 
