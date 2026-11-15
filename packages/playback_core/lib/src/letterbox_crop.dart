@@ -434,7 +434,8 @@ class LetterboxCropStabilizer {
       _candidateRect = sample.rect;
       _hits = 1;
     }
-    if (!sample.inferred) _edgeHit = true;
+    // A windowbox spans neither axis either, so it is no edge evidence.
+    if (!sample.needsConfirmation) _edgeHit = true;
 
     if (_hits < _hitsNeeded(sample)) {
       return const LetterboxCropDecision.hold();

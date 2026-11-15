@@ -594,6 +594,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
       }
       if (!_isCurrent(generation)) return true;
       if (frame == null) {
+        // A failed capture is an unusable reading too, so a guessed streak
+        // cannot step over it.
+        _stabilizer.observe(sourceWidth: size.$1, sourceHeight: size.$2);
         if (++failures >= 3) {
           return false;
         }

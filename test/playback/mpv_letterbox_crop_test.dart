@@ -64,6 +64,21 @@ class _MpvAlternatingHost extends _MpvDetectHost {
   }
 }
 
+/// Every other software capture fails outright.
+class _MpvFailingShotHost extends _MpvDetectHost implements MpvFrameSampleHost {
+  _MpvFailingShotHost(this.rect);
+
+  final LetterboxCropRect rect;
+  int shotCalls = 0;
+
+  @override
+  Future<MpvFrameSample?> sampleFrame(int width, int height) async {
+    final fail = shotCalls.isOdd;
+    shotCalls++;
+    return fail ? null : MpvFrameSample(rect: rect, elapsed: Duration.zero);
+  }
+}
+
 /// Software frame shots, one queued rect per sample.
 class _MpvShotHost extends _MpvDetectHost implements MpvFrameSampleHost {
   _MpvShotHost(this.shots);
@@ -532,6 +547,18 @@ void main() {
       expect(decision.rect, letterbox);
     });
 
+    test('windowboxes split by dark frames do not add up', () {
+      const box = LetterboxCropRect(w: 1600, h: 900, x: 160, y: 90);
+      final stabilizer = LetterboxCropStabilizer()..holdThroughIgnored = true;
+      observe(stabilizer, box);
+      for (var i = 0; i < 8; i++) {
+        dark(stabilizer);
+      }
+      observe(stabilizer, box);
+      expect(observe(stabilizer, box).changed, isFalse);
+      expect(stabilizer.applied, isNull);
+    });
+
     test('an edge reading lets inferred bars confirm it', () {
       const inferred = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
       final stabilizer = LetterboxCropStabilizer();
@@ -919,6 +946,25 @@ void main() {
         cropper.recrop();
         async.elapse(const Duration(seconds: 1));
         expect(results, [LetterboxScanResult.noBars]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot shots skip inferred bars split by failed captures', () {
+      fakeAsync((async) {
+        final host = _MpvFailingShotHost(
+          const LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138),
+        );
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+        );
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 10));
+        expect(host.shotCalls, greaterThan(4));
+        expect(cropper.isApplied, isFalse);
         cropper.cancel();
         async.flushMicrotasks();
       });
