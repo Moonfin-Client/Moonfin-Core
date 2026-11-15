@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/models/server.dart';
-import '../offline/offline_items_api.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/models/user.dart';
 import '../../auth/services/silo_household.dart';
@@ -571,52 +570,44 @@ class MultiServerRepository {
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toSet();
+    if (selectedSet.isEmpty) {
+      (sortBy, sortOrder) = unpickedStudioSort(sortBy, sortOrder);
+    }
 
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
-          // Read once, so every page of a scan comes from the same catalog.
-          final itemsApi = session.client.itemsApi;
-          Future<Map<String, dynamic>> fetchPage(
-            int startIndex,
-            int limit, [
-            String pageSortBy = _defaultSortBy,
-            String pageSortOrder = _defaultSortOrder,
-          ]) => itemsApi.getStudios(
+          // Pages are read by name and the row is sorted below.
+          Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) =>
+              session.client.itemsApi.getStudios(
                 userId: session.client.userId,
-                sortBy: pageSortBy,
-                sortOrder: pageSortOrder,
+                sortBy: _defaultSortBy,
+                sortOrder: _defaultSortOrder,
                 recursive: true,
                 startIndex: startIndex,
                 limit: limit,
                 fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
-                // Before Jellyfin 12 a studio's counts only come back with a type filter.
-                includeItemTypes: const ['Movie', 'Series'],
               );
 
-          final studios = selectedSet.isEmpty
-              ? _parseItems(
-                  await fetchStudioRowPage(
-                    fetchPage,
-                    sortBy: sortBy,
-                    sortOrder: sortOrder,
-                    limit: perServer,
-                    pageSize: _studioPageSize,
-                    serverSorts: itemsApi.sortsStudios,
-                    cacheKey:
-                        '${session.server.id}|${session.client.userId}|${itemsApi is OfflineItemsApi}',
-                  ),
-                  session.server.id,
-                )
-              : await _collectStudios(
-                  selectedSet,
-                  session.server.id,
-                  fetchPage,
-                );
+          if (selectedSet.isEmpty) {
+            final response = await fetchStudioRowPage(
+              fetchPage,
+              sortBy: sortBy,
+              sortOrder: sortOrder,
+              limit: perServer,
+              pageSize: _studioPageSize,
+            );
+            return _parseItems(response, session.server.id);
+          }
+          final studios = await _collectStudios(
+            selectedSet,
+            session.server.id,
+            fetchPage,
+          );
           if (sortBy.startsWith('DatePlayed')) {
             markStudiosLastPlayed(
               studios.map((s) => s.rawData),
-              await fetchStudioLastPlayed(itemsApi),
+              await fetchStudioLastPlayed(session.client.itemsApi),
             );
           }
           return studios;

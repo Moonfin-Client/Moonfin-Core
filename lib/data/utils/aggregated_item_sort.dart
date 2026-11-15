@@ -57,23 +57,17 @@ List<AggregatedItem> sortAggregatedItems(
           b.criticRating?.toDouble(),
           descending: descending,
         );
-      case 'Runtime':
-      case 'RunTimeTicks':
-        return _compareNullableNum(
-          a.runTimeTicks?.toDouble(),
-          b.runTimeTicks?.toDouble(),
-          descending: descending,
-        );
       case 'DatePlayed':
         return _compareNullableDate(
           a.lastPlayedDate,
           b.lastPlayedDate,
           descending: descending,
         );
-      case 'ItemCount':
+      case 'Runtime':
+      case 'RunTimeTicks':
         return _compareNullableNum(
-          _titleCount(a),
-          _titleCount(b),
+          a.runTimeTicks?.toDouble(),
+          b.runTimeTicks?.toDouble(),
           descending: descending,
         );
       case 'ProductionYear':
@@ -105,8 +99,3 @@ int _compareNullableNum(double? a, double? b, {bool descending = false}) {
   final ascending = a == null ? -1 : (b == null ? 1 : a.compareTo(b));
   return descending ? -ascending : ascending;
 }
-
-double _titleCount(AggregatedItem item) =>
-    ((item.rawData['MovieCount'] as num? ?? 0) +
-            (item.rawData['SeriesCount'] as num? ?? 0))
-        .toDouble();

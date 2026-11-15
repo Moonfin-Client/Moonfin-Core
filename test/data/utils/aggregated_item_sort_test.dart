@@ -2,43 +2,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/aggregated_item_sort.dart';
 
-AggregatedItem _studio(
-  String name, {
-  int? movies,
-  int? series,
-  String? sortName,
-}) => AggregatedItem(
-  id: name,
-  serverId: 'server',
-  rawData: {
-    'Name': name,
-    'SortName': ?sortName,
-    'MovieCount': ?movies,
-    'SeriesCount': ?series,
-  },
-);
+AggregatedItem _studio(String name, {String? sortName, String? added}) =>
+    AggregatedItem(
+      id: name,
+      serverId: 'server',
+      rawData: {'Name': name, 'SortName': ?sortName, 'DateCreated': ?added},
+    );
 
 void main() {
-  test('item count ranks studios by their movies and shows together', () {
+  test('date added puts the newest picked studio first', () {
     final sorted = sortAggregatedItems(
       [
-        _studio('A24', movies: 3),
-        _studio('HBO', series: 2, movies: 4),
-        _studio('Pixar', movies: 5),
-        _studio('Unknown'),
+        _studio('A24', added: '2024-01-01T00:00:00Z'),
+        _studio('Pixar', added: '2026-01-01T00:00:00Z'),
+        _studio('HBO', added: '2025-01-01T00:00:00Z'),
       ],
-      sortBy: 'ItemCount',
+      sortBy: 'DateCreated,SortName',
       sortOrder: 'Descending',
     );
-    expect(sorted.map((s) => s.name), ['HBO', 'Pixar', 'A24', 'Unknown']);
+    expect(sorted.map((s) => s.name), ['Pixar', 'HBO', 'A24']);
   });
 
   test('name order follows the sort name, so a leading article is skipped', () {
     final sorted = sortAggregatedItems(
-      [
-        _studio('Pixar'),
-        _studio('The Asylum', sortName: 'Asylum'),
-      ],
+      [_studio('Pixar'), _studio('The Asylum', sortName: 'Asylum')],
       sortBy: 'SortName',
       sortOrder: 'Ascending',
     );

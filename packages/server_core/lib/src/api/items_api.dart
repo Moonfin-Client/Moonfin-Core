@@ -218,10 +218,6 @@ abstract class ItemsApi {
     List<String>? includeItemTypes,
   });
 
-  /// Whether [getStudios] applies sortBy and sortOrder itself. Jellyfin's
-  /// /Studios takes neither and always lists by name.
-  bool get sortsStudios;
-
   Future<Map<String, dynamic>> getStudios({
     String? parentId,
     String? userId,

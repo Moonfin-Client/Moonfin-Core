@@ -1674,9 +1674,7 @@ class HomeViewModel extends ChangeNotifier {
         final studiosSort = LibrarySortBy.studioValues.contains(savedStudiosSort)
             ? savedStudiosSort
             : LibrarySortBy.name;
-        final studiosSortBy = studiosSort == LibrarySortBy.itemCount
-            ? 'ItemCount'
-            : studiosSort.apiValue;
+        final studiosSortBy = studiosSort.apiValue;
         final studiosSortOrder = sortOrder(UserPreferences.studiosRowSortOrder);
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
         final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();

@@ -1044,9 +1044,6 @@ class OfflineItemsApi implements ItemsApi {
   }
 
   @override
-  bool get sortsStudios => false;
-
-  @override
   Future<Map<String, dynamic>> getStudios({
     String? parentId,
     String? userId,
@@ -1065,39 +1062,29 @@ class OfflineItemsApi implements ItemsApi {
 
     final studiosByName = <String, Map<String, dynamic>>{};
     for (final e in scope) {
-      final countKey = switch (e.type) {
-        'Movie' => 'MovieCount',
-        'Series' => 'SeriesCount',
-        _ => null,
-      };
-      final counted = <String>{};
       final studioItems = ((e.metadata['Studios'] as List?) ?? const [])
           .whereType<Map>()
           .toList();
-      for (final s in studioItems) {
-        final name = s['Name'] as String?;
-        if (name == null || name.isEmpty) continue;
-        final key = name.toLowerCase();
-        final studio = studiosByName.putIfAbsent(
-          key,
-          () => {
-            'Id': s['Id']?.toString() ?? 'offline-studio:$name',
-            'Name': name,
-            'Type': 'Studio',
-            'ServerId': e.row.serverId,
-            'MovieCount': 0,
-            'SeriesCount': 0,
-          },
-        );
-        if (countKey != null && counted.add(key)) {
-          studio[countKey] = (studio[countKey] as int) + 1;
+      if (studioItems.isNotEmpty) {
+        for (final s in studioItems) {
+          final name = s['Name'] as String?;
+          if (name == null || name.isEmpty) continue;
+          studiosByName.putIfAbsent(
+            name.toLowerCase(),
+            () => {
+              'Id': s['Id']?.toString() ?? 'offline-studio:$name',
+              'Name': name,
+              'Type': 'Studio',
+              'ServerId': e.row.serverId,
+            },
+          );
         }
       }
     }
 
-    // A downloaded item records only its studio's name, so the list is sorted
-    // by name here, and the movies and series downloaded from each studio are
-    // its counts.
+    // A downloaded item records nothing about its studio beyond the name, so
+    // name is the only thing there is to sort on and sortBy has nothing to act
+    // on offline.
     final result = studiosByName.values.toList()
       ..sort(
         (a, b) => (a['Name'] as String).toLowerCase().compareTo(
