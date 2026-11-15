@@ -15,29 +15,20 @@ import 'overlay_sheet.dart';
 import 'remote_search_sheet.dart';
 import 'remote_navigation_pad.dart';
 
-BuildContext? _activeRemoteControlContext;
-State? _activeRemoteControlSheet;
-Object? _activeRemoteControlToken;
+// The media notification can ask for the sheet while it is already open.
+State? _openRemoteControlSheet;
 
 void showRemoteControlDialog(
   BuildContext context, {
   String? initialSessionId,
 }) {
-  if (_activeRemoteControlContext?.mounted ?? false) return;
-  final token = Object();
-  _activeRemoteControlToken = token;
-  _activeRemoteControlContext = context;
+  if (_openRemoteControlSheet?.mounted ?? false) return;
   showFocusRestoringModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (_) => _RemoteControlSheet(initialSessionId: initialSessionId),
-  ).whenComplete(() {
-    if (identical(_activeRemoteControlToken, token)) {
-      _activeRemoteControlToken = null;
-      _activeRemoteControlContext = null;
-    }
-  });
+  );
 }
 
 class _RemoteControlSheet extends StatefulWidget {
@@ -80,7 +71,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   @override
   void initState() {
     super.initState();
-    _activeRemoteControlSheet = this;
+    _openRemoteControlSheet = this;
     _sessionApi = GetIt.instance<MediaServerClient>().sessionApi;
     _userId = GetIt.instance<MediaServerClient>().userId;
     WidgetsBinding.instance.addObserver(this);
@@ -111,11 +102,6 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
 
   @override
   void dispose() {
-    if (identical(_activeRemoteControlSheet, this)) {
-      _activeRemoteControlSheet = null;
-      _activeRemoteControlToken = null;
-      _activeRemoteControlContext = null;
-    }
     WidgetsBinding.instance.removeObserver(this);
     _cancelNavigation();
     _cancelVolume();
@@ -380,11 +366,8 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
         }
         if (!_appliedInitialSelection && widget.initialSessionId != null) {
           final initialSession = controllable
-              .cast<Map<String, dynamic>?>()
-              .firstWhere(
-                (s) => s?['Id']?.toString() == widget.initialSessionId,
-                orElse: () => null,
-              );
+              .where((s) => s['Id']?.toString() == widget.initialSessionId)
+              .firstOrNull;
           if (initialSession != null) {
             _appliedInitialSelection = true;
             _selectedSession ??= initialSession;

@@ -17695,6 +17695,14 @@
   "@remoteMediaNotificationSubtitle": {
     "description": "Subtitle for the remote playback notification toggle in General settings on Android mobile"
   },
+  "remoteActivityWatching": "Watching on Moonfin",
+  "@remoteActivityWatching": {
+    "description": "Line in the Android media notification that mirrors a video another device on the same account is playing. Moonfin is the app name"
+  },
+  "remoteActivityListening": "Listening on Moonfin",
+  "@remoteActivityListening": {
+    "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+  },
   "clickpadSeeking": "Allow Clickpad Seeking",
   "@clickpadSeeking": {
     "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"

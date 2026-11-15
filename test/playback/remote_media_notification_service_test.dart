@@ -274,7 +274,6 @@ void main() {
     expect(active, isNotNull);
     expect(active!.sessionId, 'sess-tv');
     expect(active.jellyfinSessionId, 'sess-tv');
-    expect(active.deviceName, 'SHIELD');
     expect(active.title, 'The Beast in the Jungle');
     expect(active.subtitle, 'The Haunting of Bly Manor • S1E9');
     expect(active.activityLabel, 'Watching on Moonfin');
@@ -410,7 +409,6 @@ void main() {
     final active = service.activeSession;
     expect(active, isNotNull);
     expect(active!.isCastBacked, isTrue);
-    expect(active.deviceName, 'Living Room TV');
     expect(active.title, 'Inception');
     expect(active.subtitle, '2010');
     expect(active.activityLabel, 'Watching on Moonfin');

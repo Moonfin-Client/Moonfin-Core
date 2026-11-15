@@ -54,6 +54,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
   static const Duration defaultPausedForegroundGrace = Duration(minutes: 30);
 
   final Duration pausedForegroundGrace;
+  final bool holdsForegroundWhilePaused;
   bool _remoteMode = false;
   bool _remotePlaybackInfoActive = false;
   String? _lastRemoteMediaKey;
@@ -78,6 +79,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     this._lastSessionStore, {
     this._remoteService,
     this.pausedForegroundGrace = defaultPausedForegroundGrace,
+    this.holdsForegroundWhilePaused = false,
   }) {
     _bindStreams();
     unawaited(_attachAndroidInterruptions());
@@ -133,14 +135,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
       q.queueChangedStream.listen((_) {
         if (_hasLocalItem) {
           if (_remoteMode) _exitRemoteMode(emitIdle: false);
-          _pushQueue();
-          _pushMediaItemForCurrentTrack();
-          _pushPlaybackState();
-          _updateAudioSession();
-          _persistSession();
-          return;
-        }
-        if (_shouldMirrorRemote) {
+        } else if (_shouldMirrorRemote) {
           unawaited(_deactivateSession());
           _onRemoteSessionChanged();
           return;
@@ -570,6 +565,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
   }
 
   void _scheduleLocalPausedIdleTimer(dynamic currentItem, int queueIndex) {
+    if (!holdsForegroundWhilePaused) return;
     final key = 'local:${identityHashCode(currentItem)}:$queueIndex';
     if (_pausedIdleTimer != null && _pausedIdleKey == key) {
       return;
@@ -1183,12 +1179,10 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> fastForward() async {
-    final ms = GetIt.instance.isRegistered<UserPreferences>()
-        ? GetIt.instance<UserPreferences>().get(
-            UserPreferences.skipForwardLength,
-          )
-        : 30000;
-    final offset = Duration(milliseconds: ms);
+    final prefs = GetIt.instance<UserPreferences>();
+    final offset = Duration(
+      milliseconds: prefs.get(UserPreferences.skipForwardLength),
+    );
     if (isRemoteMode) {
       return _remoteService!.fastForward(offset);
     }
@@ -1197,10 +1191,10 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> rewind() async {
-    final ms = GetIt.instance.isRegistered<UserPreferences>()
-        ? GetIt.instance<UserPreferences>().get(UserPreferences.skipBackLength)
-        : 10000;
-    final offset = Duration(milliseconds: ms);
+    final prefs = GetIt.instance<UserPreferences>();
+    final offset = Duration(
+      milliseconds: prefs.get(UserPreferences.skipBackLength),
+    );
     if (isRemoteMode) {
       return _remoteService!.rewind(offset);
     }
@@ -1225,6 +1219,12 @@ Future<void> initAudioService({
       GetIt.instance.isRegistered<RemoteMediaNotificationService>()
       ? GetIt.instance<RemoteMediaNotificationService>()
       : null;
+  // A paused remote session needs the foreground service to keep its socket
+  // alive, so it's only held for people who turned the remote notification
+  // on, and only for pausedForegroundGrace. Holding it also keeps
+  // audio_service's wake lock, which makes Android warn that the app drains
+  // the battery.
+  final holdForeground = remoteService?.isEnabled ?? false;
 
   final handler = await AudioService.init<MoonfinAudioHandler>(
     builder: () => MoonfinAudioHandler(
@@ -1233,18 +1233,13 @@ Future<void> initAudioService({
       browse,
       lastSessionStore,
       remoteService: remoteService,
+      holdsForegroundWhilePaused: holdForeground,
     ),
     config: AudioServiceConfig(
       androidNotificationChannelId: 'com.moonfin.app.audio',
       androidNotificationChannelName: 'Music Playback',
       androidNotificationOngoing: false,
-      // Keep the foreground notification alive across temporary pauses so
-      // lock-screen / shade controls and the remote session socket remain
-      // responsive for resuming. Unbounded battery drain is prevented by
-      // MoonfinAudioHandler.defaultPausedForegroundGrace, which emits idle
-      // after 30 minutes of continuous pause to release the wake lock and
-      // foreground service.
-      androidStopForegroundOnPause: false,
+      androidStopForegroundOnPause: !holdForeground,
       notificationColor: const Color(0xFF1A1A2E),
       androidNotificationIcon: 'drawable/ic_notification',
       androidBrowsableRootExtras: {

@@ -7,6 +7,7 @@ import '../data/services/cast/cast_service.dart';
 import '../data/services/cast/cast_target.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../data/services/socket_handler.dart';
+import '../l10n/current_app_localizations.dart';
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
 
@@ -16,15 +17,14 @@ import '../util/platform_detection.dart';
 class RemoteMediaSession {
   const RemoteMediaSession({
     required this.sessionId,
-    required this.deviceName,
     required this.itemId,
     required this.title,
+    required this.activityLabel,
     required this.position,
     required this.isPlaying,
     this.jellyfinSessionId,
     this.castKind,
     this.subtitle,
-    this.activityLabel = 'Watching on Moonfin',
     this.serverId,
     this.artUrl,
     this.duration,
@@ -38,7 +38,6 @@ class RemoteMediaSession {
   final String sessionId;
   final String? jellyfinSessionId;
   final CastTargetKind? castKind;
-  final String deviceName;
   final String itemId;
   final String title;
   final String? subtitle;
@@ -67,7 +66,6 @@ class RemoteMediaSession {
       sessionId: sessionId,
       jellyfinSessionId: jellyfinSessionId,
       castKind: castKind,
-      deviceName: deviceName,
       itemId: itemId,
       title: title,
       subtitle: subtitle,
@@ -154,7 +152,7 @@ class RemoteMediaNotificationService {
   /// remote session (or when one was locally dismissed while still playing) so
   /// the WebSocket stays connected across screen-off / background periods.
   bool get keepsSocketAlive {
-    if (!_isFeatureEnabled) return false;
+    if (!isEnabled) return false;
     final session = activeSessionNotifier.value;
     if (session != null) {
       if (session.isCastBacked) return false;
@@ -271,11 +269,11 @@ class RemoteMediaNotificationService {
     _recompute();
   }
 
-  bool get _isFeatureEnabled =>
+  bool get isEnabled =>
       _enabledOnPlatform && _prefs.get(UserPreferences.remoteMediaNotification);
 
   void _syncSubscription() {
-    final wantSubscribed = _started && _isFeatureEnabled && _activeClient() != null;
+    final wantSubscribed = _started && isEnabled && _activeClient() != null;
     if (wantSubscribed == _subscribedToSessions) return;
     _subscribedToSessions = wantSubscribed;
     if (wantSubscribed) {
@@ -286,11 +284,11 @@ class RemoteMediaNotificationService {
   }
 
   void _handleSocketEvent(ServerWebSocketMessage event) {
-    if (!_isFeatureEnabled) return;
+    if (!isEnabled) return;
     switch (event) {
       case SessionsMessage(:final sessions):
         _lastSessionsPushAt = DateTime.now();
-        _applySessionsSnapshot(sessions, replaceAll: true);
+        _applySessionsSnapshot(sessions);
       case SessionEndedMessage(:final sessionId):
         if (_sessionsById.remove(sessionId) != null) {
           if (_preferredSessionId == sessionId) {
@@ -308,7 +306,7 @@ class RemoteMediaNotificationService {
   }
 
   void _scheduleRefresh() {
-    if (!_isFeatureEnabled || _refreshDebounce != null) return;
+    if (!isEnabled || _refreshDebounce != null) return;
     _refreshDebounce = Timer(const Duration(milliseconds: 250), () {
       _refreshDebounce = null;
       unawaited(refreshSessions());
@@ -316,7 +314,7 @@ class RemoteMediaNotificationService {
   }
 
   Future<void> refreshSessions() async {
-    if (!_isFeatureEnabled) return;
+    if (!isEnabled) return;
     final client = _activeClient();
     if (client == null ||
         client.accessToken == null ||
@@ -334,7 +332,7 @@ class RemoteMediaNotificationService {
           !identical(client, _activeClient())) {
         return;
       }
-      _applySessionsSnapshot(sessions, replaceAll: true);
+      _applySessionsSnapshot(sessions);
     } catch (_) {
       // Non-Jellyfin/Emby servers or transient network errors are ignored.
     } finally {
@@ -342,13 +340,8 @@ class RemoteMediaNotificationService {
     }
   }
 
-  void _applySessionsSnapshot(
-    List<Map<String, dynamic>> sessions, {
-    bool replaceAll = false,
-  }) {
-    if (replaceAll) {
-      _sessionsById.clear();
-    }
+  void _applySessionsSnapshot(List<Map<String, dynamic>> sessions) {
+    _sessionsById.clear();
     for (final session in sessions) {
       final id = session['Id']?.toString();
       if (id == null || id.isEmpty) continue;
@@ -358,7 +351,7 @@ class RemoteMediaNotificationService {
   }
 
   void _recompute() {
-    if (!_isFeatureEnabled) {
+    if (!isEnabled) {
       _preferredSessionId = null;
       _clearPausedGrace();
       _clearDismissedState();
@@ -393,7 +386,6 @@ class RemoteMediaNotificationService {
       _clearDismissedState();
     }
 
-    _updatePausedGraceFor(candidate);
     _setSession(candidate);
     _syncFallbackPoll();
   }
@@ -419,7 +411,7 @@ class RemoteMediaNotificationService {
     final hasDismissedJellyfin =
         _dismissedIdentityKey != null && !_dismissedIsCastBacked;
     final needPoll =
-        _isFeatureEnabled && (hasActiveJellyfin || hasDismissedJellyfin);
+        isEnabled && (hasActiveJellyfin || hasDismissedJellyfin);
     if (!needPoll) {
       _fallbackPollTimer?.cancel();
       _fallbackPollTimer = null;
@@ -443,9 +435,6 @@ class RemoteMediaNotificationService {
     if (state == 'idle') return null;
 
     final target = _castService.activeTargetNotifier.value;
-    final deviceName = (target?.title.trim().isNotEmpty ?? false)
-        ? target!.title.trim()
-        : kind.name;
     final duration = item.runtime;
     final positionTicks = _castService.remotePositionNotifier.value;
     final position = positionTicks > 0
@@ -463,7 +452,6 @@ class RemoteMediaNotificationService {
       jellyfinSessionId:
           kind == CastTargetKind.jellyfinSession ? target?.id : null,
       castKind: kind,
-      deviceName: deviceName,
       itemId: item.id,
       title: item.name,
       subtitle: _formatSubtitle(
@@ -478,9 +466,7 @@ class RemoteMediaNotificationService {
         albumArtist: item.albumArtist,
         album: item.album,
       ),
-      activityLabel: item.isAudioLike
-          ? 'Listening on Moonfin'
-          : 'Watching on Moonfin',
+      activityLabel: _activityLabel(listening: item.isAudioLike),
       serverId: item.serverId,
       artUrl: client?.imageApi.getPrimaryImageUrl(item.id, maxHeight: 300),
       duration: duration,
@@ -529,7 +515,6 @@ class RemoteMediaNotificationService {
     if (itemId == null || itemId.isEmpty) return null;
 
     final playState = chosen['PlayState'] as Map<String, dynamic>?;
-    final deviceName = _deviceNameFor(chosen);
     final runtimeTicks = (nowPlaying['RunTimeTicks'] as num?)?.toInt();
     final positionTicks = (playState?['PositionTicks'] as num?)?.toInt() ?? 0;
     final duration = runtimeTicks != null && runtimeTicks > 0
@@ -553,7 +538,6 @@ class RemoteMediaNotificationService {
     return RemoteMediaSession(
       sessionId: sessionId,
       jellyfinSessionId: sessionId,
-      deviceName: deviceName,
       itemId: itemId,
       title: nowPlaying['Name'] as String? ?? 'Moonfin',
       subtitle: _formatSubtitle(
@@ -572,9 +556,7 @@ class RemoteMediaNotificationService {
         albumArtist: nowPlaying['AlbumArtist'] as String?,
         album: nowPlaying['Album'] as String?,
       ),
-      activityLabel: isAudioLike
-          ? 'Listening on Moonfin'
-          : 'Watching on Moonfin',
+      activityLabel: _activityLabel(listening: isAudioLike),
       artUrl: client.imageApi.getPrimaryImageUrl(itemId, maxHeight: 300),
       duration: duration,
       position: position,
@@ -622,11 +604,11 @@ class RemoteMediaNotificationService {
     return raw.whereType<String>().toSet();
   }
 
-  static String _deviceNameFor(Map<String, dynamic> session) {
-    final device = session['DeviceName']?.toString().trim() ?? '';
-    if (device.isNotEmpty) return device;
-    final client = session['Client']?.toString().trim() ?? '';
-    return client.isNotEmpty ? client : 'Remote device';
+  static String _activityLabel({required bool listening}) {
+    final l10n = currentAppLocalizations();
+    return listening
+        ? l10n.remoteActivityListening
+        : l10n.remoteActivityWatching;
   }
 
   static String? _formatSubtitle({
@@ -677,7 +659,6 @@ class RemoteMediaNotificationService {
     return a.sessionId == b.sessionId &&
         a.jellyfinSessionId == b.jellyfinSessionId &&
         a.castKind == b.castKind &&
-        a.deviceName == b.deviceName &&
         a.itemId == b.itemId &&
         a.title == b.title &&
         a.subtitle == b.subtitle &&

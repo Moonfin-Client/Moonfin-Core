@@ -282,21 +282,11 @@ class _CastMiniPlayerContentState extends State<_CastMiniPlayerContent> {
 
   String _kindLabel(AppLocalizations l10n) => _castKindLabel(l10n, _kind);
 
-  Future<void> _doAction(Future<void> Function() action) async {
-    try {
-      await action();
-    } catch (e) {
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.castControlFailed(describeError(e, l10n)),
-          ),
-        ),
-      );
-    }
-  }
+  Future<void> _doAction(Future<void> Function() action) => _runCastAction(
+    ScaffoldMessenger.maybeOf(context),
+    AppLocalizations.of(context),
+    action,
+  );
 
   void _onSeekEnd(double value, double maxValue) {
     setState(() => _isSeeking = false);

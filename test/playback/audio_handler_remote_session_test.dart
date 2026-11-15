@@ -177,7 +177,6 @@ RemoteMediaSession _remoteSession({
     sessionId: sessionId,
     jellyfinSessionId: jellyfinSessionId,
     castKind: castKind,
-    deviceName: 'SHIELD',
     itemId: itemId,
     title: 'The Beast in the Jungle',
     subtitle: 'The Haunting of Bly Manor • S1E9',
@@ -459,8 +458,8 @@ void main() {
   test('republishes media item when duration or metadata resolves on same item', () async {
     remoteService.activeSessionNotifier.value = RemoteMediaSession(
       sessionId: 'sess-tv',
-      deviceName: 'SHIELD',
       itemId: 'ep-1',
+      activityLabel: 'Watching on Moonfin',
       title: 'The Beast in the Jungle',
       subtitle: 'The Haunting of Bly Manor • S1E9',
       position: Duration.zero,
@@ -474,8 +473,8 @@ void main() {
     // Duration resolves on same identityKey
     remoteService.activeSessionNotifier.value = RemoteMediaSession(
       sessionId: 'sess-tv',
-      deviceName: 'SHIELD',
       itemId: 'ep-1',
+      activityLabel: 'Watching on Moonfin',
       title: 'The Beast in the Jungle',
       subtitle: 'The Haunting of Bly Manor • S1E9',
       position: const Duration(seconds: 5),
@@ -700,6 +699,7 @@ void main() {
       _FakeSessionStore(),
       remoteService: remoteService,
       pausedForegroundGrace: const Duration(milliseconds: 25),
+      holdsForegroundWhilePaused: true,
     );
     addTearDown(shortGraceHandler.disposeForTest);
 
@@ -716,6 +716,26 @@ void main() {
     expect(
       shortGraceHandler.playbackState.value.processingState,
       AudioProcessingState.idle,
+    );
+  });
+
+  test('a local pause keeps its notification when the foreground is not held', () async {
+    final shortGraceHandler = MoonfinAudioHandler(
+      manager,
+      _FakeClientFactory(),
+      _FakeBrowse(),
+      _FakeSessionStore(),
+      remoteService: remoteService,
+      pausedForegroundGrace: const Duration(milliseconds: 25),
+    );
+    addTearDown(shortGraceHandler.disposeForTest);
+
+    manager.queueService.setQueue([_localSong]);
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    expect(shortGraceHandler.playbackState.value.playing, isFalse);
+    expect(
+      shortGraceHandler.playbackState.value.processingState,
+      AudioProcessingState.ready,
     );
   });
 }
