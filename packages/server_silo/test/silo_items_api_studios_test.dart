@@ -54,17 +54,6 @@ void main() {
     }
   });
 
-  test('studios come by name whatever the sort, as sortsStudios says', () async {
-    final api = siloTestClient(server()).itemsApi;
-    expect(api.sortsStudios, isFalse);
-    final page = await api.getStudios(sortBy: 'DateCreated,SortName');
-    expect((page['Items'] as List).map((i) => (i as Map)['Name']), [
-      'A24',
-      'HBO',
-      'Warner Bros.',
-    ]);
-  });
-
   test('getItem on a studio id names it', () async {
     final studio = await siloTestClient(
       server(),

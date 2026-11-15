@@ -830,10 +830,7 @@ enum LibrarySortBy {
   artist('Artist,Album,SortName', 'Artist'),
   trackNumber('IndexNumber,SortName', 'Number'),
   genre('Genre,SortName', 'Genre'),
-  foldersFirst('IsFolder,SortName', 'Folders First'),
-
-  /// Sorted in the app, since neither server sorts studios by their counts.
-  itemCount('SortName', 'Item Count', usesDedicatedEndpoint: true);
+  foldersFirst('IsFolder,SortName', 'Folders First');
 
   const LibrarySortBy(
     this.apiValue,
@@ -852,7 +849,7 @@ enum LibrarySortBy {
 
   /// What a studio row can sort by, since a studio carries no runtime, ratings
   /// or play data.
-  static const studioValues = [name, dateAdded, itemCount, random];
+  static const studioValues = [name, dateAdded, random];
 
   /// The options a row can offer when it only ever sorts through the Items API.
   static List<LibrarySortBy> get itemsApiValues =>

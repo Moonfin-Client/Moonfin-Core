@@ -6,7 +6,6 @@ import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 
 import '../../preference/home_section_config.dart';
-import '../offline/offline_items_api.dart';
 import '../../preference/user_preferences.dart';
 import '../../preference/preference_constants.dart';
 import '../../l10n/app_localizations.dart';
@@ -803,41 +802,36 @@ class RowDataSource {
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toSet();
-    // Read once, so every page of a scan comes from the same catalog.
-    final itemsApi = _client.itemsApi;
+    if (selectedSet.isEmpty) {
+      (sortBy, sortOrder) = unpickedStudioSort(sortBy, sortOrder);
+    }
 
-    Future<Map<String, dynamic>> fetchPage(
-      int startIndex,
-      int limit, [
-      String pageSortBy = _defaultSortBy,
-      String pageSortOrder = _defaultSortOrder,
-    ]) async {
+    // Pages are read by name, since Jellyfin's /Studios ignores any sort and
+    // the row is sorted here.
+    Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) async {
       try {
-        return await itemsApi.getStudios(
+        return await _client.itemsApi.getStudios(
           parentId: parentId,
           userId: _client.userId,
-          sortBy: pageSortBy,
-          sortOrder: pageSortOrder,
+          sortBy: _defaultSortBy,
+          sortOrder: _defaultSortOrder,
           recursive: true,
           startIndex: startIndex,
           limit: limit,
           fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
-          // Before Jellyfin 12 a studio's counts only come back with a type filter.
-          includeItemTypes: const ['Movie', 'Series'],
         );
       } on DioException catch (e) {
         final statusCode = e.response?.statusCode ?? 0;
         _recordIfAccessDenied(statusCode, parentId);
         if (!_shouldRetryWithoutFields(statusCode)) rethrow;
-        return itemsApi.getStudios(
+        return _client.itemsApi.getStudios(
           parentId: parentId,
           userId: _client.userId,
-          sortBy: pageSortBy,
-          sortOrder: pageSortOrder,
+          sortBy: _defaultSortBy,
+          sortOrder: _defaultSortOrder,
           recursive: true,
           startIndex: startIndex,
           limit: limit,
-          includeItemTypes: const ['Movie', 'Series'],
         );
       }
     }
@@ -850,9 +844,6 @@ class RowDataSource {
         sortOrder: sortOrder,
         limit: _defaultLimit,
         pageSize: _studioPageSize,
-        serverSorts: itemsApi.sortsStudios,
-        cacheKey:
-            '$serverId|${_client.userId}|$parentId|${itemsApi is OfflineItemsApi}',
       );
       items = (page['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     } else {

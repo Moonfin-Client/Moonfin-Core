@@ -1478,9 +1478,6 @@ class SiloItemsApi
   /// together, as Moonfin shows a series' network as its studio. Same shape
   /// and rules as [getGenres].
   @override
-  bool get sortsStudios => false;
-
-  @override
   Future<Map<String, dynamic>> getStudios({
     String? parentId,
     String? userId,

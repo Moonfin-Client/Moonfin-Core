@@ -1,75 +1,33 @@
 import 'dart:math';
 
-import 'package:clock/clock.dart';
+/// The sort a studio row with nothing picked can apply. Jellyfin's /Studios
+/// only lists by name, so name and random are the orders a page can give; any
+/// other order would need every studio, so it stays A to Z.
+(String sortBy, String sortOrder) unpickedStudioSort(
+  String sortBy,
+  String sortOrder,
+) => const ['SortName', 'Random'].contains(sortBy.split(',').first)
+    ? (sortBy, sortOrder)
+    : ('SortName', 'Ascending');
 
-import 'bounded_concurrency.dart';
-
-/// Reads the studios a row sorted by [sortBy] and [sortOrder] is drawn from.
-///
-/// A server that [serverSorts] gets the sort, and its first page is the row.
-/// Otherwise name and random read at most two pages by name. Item count,
-/// which no server sorts studios by, and date added read every page for the
-/// caller to rank, kept for a day per [cacheKey] since Home reloads often.
+/// Reads the studios a row with nothing picked is drawn from, in name order:
+/// the first page for A to Z, the last page for Z to A, and a page at a random
+/// offset for Random. The caller sorts the result.
 Future<Map<String, dynamic>> fetchStudioRowPage(
-  Future<Map<String, dynamic>> Function(
-    int startIndex,
-    int limit,
-    String sortBy,
-    String sortOrder,
-  )
-  fetchPage, {
+  Future<Map<String, dynamic>> Function(int startIndex, int limit) fetchPage, {
   required String sortBy,
   required String sortOrder,
   required int limit,
   required int pageSize,
-  required bool serverSorts,
-  required String cacheKey,
 }) async {
-  if (serverSorts && sortBy != 'ItemCount') {
-    return fetchPage(0, limit, sortBy, sortOrder);
-  }
-  Future<Map<String, dynamic>> byName(int startIndex, int limit) =>
-      fetchPage(startIndex, limit, 'SortName', 'Ascending');
-  final primary = sortBy.split(',').first;
-  if (primary == 'ItemCount' || primary == 'DateCreated') {
-    return _readAllStudios(byName, pageSize, cacheKey);
-  }
-  final nameSort = primary == 'SortName';
+  final random = sortBy == 'Random';
   final descending = sortOrder.toLowerCase() == 'descending';
-  if (nameSort && !descending) return byName(0, limit);
-  final first = await byName(0, pageSize);
-  final lastStart = (first['TotalRecordCount'] as int? ?? 0) - pageSize;
-  if (lastStart <= 0) return first;
-  if (sortBy == 'Random') {
-    return byName(Random().nextInt(lastStart + 1), pageSize);
-  }
-  return nameSort ? byName(lastStart, pageSize) : first;
-}
-
-final _studioLists = <String, (DateTime, Map<String, dynamic>)>{};
-
-Future<Map<String, dynamic>> _readAllStudios(
-  Future<Map<String, dynamic>> Function(int startIndex, int limit) byName,
-  int pageSize,
-  String cacheKey,
-) async {
-  final cached = _studioLists[cacheKey];
-  if (cached != null &&
-      clock.now().difference(cached.$1) < const Duration(days: 1)) {
-    return cached.$2;
-  }
-  // The first page gives the total, and the rest are read side by side so a
-  // long list fits a row's time limit.
-  final first = await byName(0, pageSize);
+  final first = await fetchPage(0, random ? pageSize : limit);
+  if (!random && !descending) return first;
   final total = first['TotalRecordCount'] as int? ?? 0;
-  final rest = await mapBounded([
-    for (var start = pageSize; start < total; start += pageSize) start,
-  ], 6, (start) => byName(start, pageSize));
-  final items = [
-    for (final page in [first, ...rest])
-      ...(page?['Items'] as List? ?? const []),
-  ];
-  final all = {'Items': items, 'TotalRecordCount': items.length};
-  _studioLists[cacheKey] = (clock.now(), all);
-  return all;
+  if (!random) return total > limit ? fetchPage(total - limit, limit) : first;
+  final lastStart = total - pageSize;
+  return lastStart > 0
+      ? fetchPage(Random().nextInt(lastStart + 1), pageSize)
+      : first;
 }

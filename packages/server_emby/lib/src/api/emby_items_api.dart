@@ -701,9 +701,6 @@ class EmbyItemsApi implements ItemsApi {
   }
 
   @override
-  bool get sortsStudios => true;
-
-  @override
   Future<Map<String, dynamic>> getStudios({
     String? parentId,
     String? userId,
