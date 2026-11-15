@@ -424,21 +424,18 @@ void main() {
     expect(small.height, closeTo(800, 0.01));
   });
 
-  testWidgets('text gives back the part of the UI scale the stage carries', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1.0;
-    tester.view.physicalSize = const Size(3840, 2160);
-    addTearDown(tester.view.reset);
-    addTearDown(() => PlatformDetection.setTvMode(false));
-    await prefs.set(
-      UserPreferences.desktopUiScale,
-      DesktopUiScale.greatGrandparents,
-    );
+  group('text gives back the part of the UI scale the stage carries', () {
     const box = Key('box');
     late double textScale;
 
-    Future<void> pumpStage() async {
+    Future<void> pumpStage(WidgetTester tester) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(3840, 2160);
+      addTearDown(tester.view.reset);
+      await prefs.set(
+        UserPreferences.desktopUiScale,
+        DesktopUiScale.greatGrandparents,
+      );
       await tester.pumpWidget(
         MaterialApp(
           home: MediaQuery(
@@ -460,17 +457,40 @@ void main() {
       );
     }
 
-    await pumpStage();
-    expect(textScale, closeTo(1, 0.001));
-    expect(tester.getRect(find.byKey(box)).width, closeTo(160, 0.01));
+    group('on a desktop', () {
+      setUp(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop),
+      );
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
 
-    PlatformDetection.setTvMode(true);
-    await pumpStage();
-    expect(textScale, closeTo(1.6, 0.001));
-    expect(
-      tester.getRect(find.byKey(box)).width,
-      closeTo(100 * (3840 - 72) / 1280, 0.01),
-    );
+      testWidgets('the stage carries all of it', (tester) async {
+        await pumpStage(tester);
+
+        expect(textScale, closeTo(1, 0.001));
+        expect(tester.getRect(find.byKey(box)).width, closeTo(160, 0.01));
+      });
+    });
+
+    group('on a TV', () {
+      setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+
+      testWidgets('the stage fills the room and the text keeps it', (
+        tester,
+      ) async {
+        await pumpStage(tester);
+
+        expect(textScale, closeTo(1.6, 0.001));
+        expect(
+          tester.getRect(find.byKey(box)).width,
+          closeTo(100 * (3840 - 72) / 1280, 0.01),
+        );
+      });
+    });
   });
 
   testWidgets('the ratings strip shares a width or keeps each column to its '
