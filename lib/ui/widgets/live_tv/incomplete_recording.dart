@@ -16,6 +16,7 @@ import '../marquee_text.dart';
 import '../media_badge.dart';
 import '../overlay_sheet.dart';
 import 'live_tv_recording_icon.dart';
+import 'recording_owner_line.dart';
 
 /// Amber, so it reads as a warning next to the watched and favorite badges
 /// without looking like the red recording mark.
@@ -840,8 +841,26 @@ Future<RecordAiringOutcome> recordAiring({
       : RecordAiringOutcome.recordedLaterShowingFailed;
 }
 
-/// The snackbar for a finished [recordAiring], or null after a cancel.
+/// The snackbar for a finished [recordAiring], or null after a cancel. With
+/// [programId], a requested later showing also names the other users already
+/// waiting for it.
 String? recordAiringMessage(
+  AppLocalizations l10n,
+  RecordAiringOutcome outcome, {
+  String? programId,
+}) {
+  final message = _recordAiringMessage(l10n, outcome);
+  if (message == null || programId == null) return message;
+  if (outcome != RecordAiringOutcome.recordedWithLaterShowing &&
+      outcome != RecordAiringOutcome.laterShowingOnly) {
+    return message;
+  }
+  final others = _service?.waitingOthersFor(programId) ?? const [];
+  final waiting = ownerLineText(l10n, others, waiting: true);
+  return waiting == null ? message : '$message\n$waiting';
+}
+
+String? _recordAiringMessage(
   AppLocalizations l10n,
   RecordAiringOutcome outcome,
 ) => switch (outcome) {
