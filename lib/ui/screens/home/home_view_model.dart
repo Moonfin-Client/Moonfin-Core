@@ -110,7 +110,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> _bgMerge = Future<void>.value();
   bool _bgMergeInFlight = false;
   bool _bgResumeRefreshInFlight = false;
-  bool _onNowRefreshInFlight = false;
+  Future<void>? _onNowRefresh;
   bool _reloadRequestedWhileLoading = false;
   bool _pendingReloadPreserveExisting = true;
   bool _pendingReloadForceRefresh = false;
@@ -1061,10 +1061,12 @@ class HomeViewModel extends ChangeNotifier {
   /// Refetches the programs airing now for the On Now rows: the standalone
   /// section and the row inside the Live TV section, which share one fetch.
   Future<void> _refreshOnNowRows() async {
-    // A quick second return would otherwise race the first request, and an
-    // older answer landing last would bring back programs that have ended.
-    if (_onNowRefreshInFlight) return;
-    _onNowRefreshInFlight = true;
+    // A quick second return waits on the request already out rather than
+    // sending its own, since an older answer landing last would bring back
+    // programs that have ended.
+    if (_onNowRefresh case final running?) return running;
+    final done = Completer<void>();
+    _onNowRefresh = done.future;
     try {
       final ids = [
         for (final row in _rows)
@@ -1084,7 +1086,8 @@ class HomeViewModel extends ChangeNotifier {
           _refreshRowInPlace(id, () => fresh, (items) => items),
       ]);
     } finally {
-      _onNowRefreshInFlight = false;
+      _onNowRefresh = null;
+      done.complete();
     }
   }
 

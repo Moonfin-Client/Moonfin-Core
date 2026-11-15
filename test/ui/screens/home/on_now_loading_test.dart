@@ -277,7 +277,7 @@ void main() {
       expect(model.rows.single.items.map((item) => item.id), ['next']);
     });
 
-    test('a second return while the first is out asks once', () async {
+    test('a second return while the first is out waits on it', () async {
       await loadPopulatedRow();
       final answer = Completer<HomeRow>();
       when(() => source.loadOnNow('http://server.test'))
@@ -285,11 +285,18 @@ void main() {
       clearInteractions(source);
 
       final first = model.refreshResumeAndNextUp();
-      final second = model.refreshResumeAndNextUp();
+      var secondDone = false;
+      final second = model.refreshResumeAndNextUp().then(
+        (_) => secondDone = true,
+      );
+      await pumpEventQueue();
+      expect(secondDone, isFalse);
+
       answer.complete(airing(['next']));
       await Future.wait([first, second]);
 
       verify(() => source.loadOnNow('http://server.test')).called(1);
+      expect(model.rows.single.items.map((item) => item.id), ['next']);
     });
 
     test('brings On Now back once programs are airing', () async {
