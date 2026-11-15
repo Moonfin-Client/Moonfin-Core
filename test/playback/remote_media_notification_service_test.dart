@@ -464,8 +464,50 @@ void main() {
       expect(active.itemId, 'ep-2');
       expect(active.title, 'The Romance of Certain Old Clothes');
       expect(active.jellyfinSessionId, 'sess-tv');
+
+      await service.stop();
+      expect(castService.calls, ['stop:jellyfinSession']);
+      expect(sessionApi.commands, isEmpty);
+      expect(service.activeSession, isNull);
+
+      // The cast service lets go of the cast once it's stopped.
+      castService.activeKindNotifier.value = null;
+      castService.activeTargetNotifier.value = null;
+      castService.castItemNotifier.value = null;
+      await Future<void>.delayed(Duration.zero);
+      expect(service.activeSession, isNull);
     },
   );
+
+  test('a server session cast dismissed before the server reports it stays '
+      'dismissed', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    service.start();
+    castService.activeKindNotifier.value = CastTargetKind.jellyfinSession;
+    castService.activeTargetNotifier.value = const CastTarget(
+      id: 'sess-tv',
+      title: 'SHIELD',
+      kind: CastTargetKind.jellyfinSession,
+    );
+    castService.castItemNotifier.value = const AggregatedItem(
+      id: 'ep-1',
+      serverId: 'server-1',
+      rawData: {
+        'Id': 'ep-1',
+        'Name': 'The Beast in the Jungle',
+        'Type': 'Episode',
+      },
+    );
+    castService.remoteStateNotifier.value = 'playing';
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.itemId, 'ep-1');
+
+    service.dismissCurrent();
+    socket.eventsController.add(SessionsMessage([_tvSession()]));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.activeSession, isNull);
+  });
 
   test('audio remote sessions use Listening on Moonfin without device name', () async {
     await prefs.set(UserPreferences.remoteMediaNotification, true);

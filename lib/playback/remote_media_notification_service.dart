@@ -457,7 +457,13 @@ class RemoteMediaNotificationService {
         _activeClient();
 
     return RemoteMediaSession(
-      sessionId: target != null ? 'cast:${kind.name}:${target.id}' : 'cast:${kind.name}',
+      // A server session keeps its own id, so it's the same item whether it
+      // comes from here or from the server's record.
+      sessionId: kind == CastTargetKind.jellyfinSession && target != null
+          ? target.id
+          : target != null
+          ? 'cast:${kind.name}:${target.id}'
+          : 'cast:${kind.name}',
       jellyfinSessionId:
           kind == CastTargetKind.jellyfinSession ? target?.id : null,
       castKind: kind,
@@ -722,8 +728,19 @@ class RemoteMediaNotificationService {
   Future<void> stop() async {
     final session = activeSessionNotifier.value;
     if (session == null) return;
-    if (session.isCastBacked) {
-      await _castService.stop(session.castKind!);
+    // A server session this device cast to ends through the cast service,
+    // which sends the session its Stop and lets go of the cast.
+    final castKind =
+        session.castKind ??
+        (_castService.activeKindNotifier.value ==
+                    CastTargetKind.jellyfinSession &&
+                _castService.activeTargetNotifier.value?.id == session.sessionId
+            ? CastTargetKind.jellyfinSession
+            : null);
+    if (castKind != null) {
+      // The server's record shows the item until it hears of the stop.
+      _sessionsById.remove(session.sessionId);
+      await _castService.stop(castKind);
       if (_isSameSession(session)) {
         _setSession(null);
       }
