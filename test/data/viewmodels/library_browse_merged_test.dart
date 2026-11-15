@@ -12,11 +12,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// A server library sorted by name, answering each page from where it's
 /// asked to start.
 class _SortedItemsApi implements ItemsApi {
-  _SortedItemsApi(this.titles, {this.fails = false});
+  _SortedItemsApi(this.titles, {this.fails = false, this.originals = const {}});
 
   /// Each title, with the TMDB id it carries when it has one.
   final List<(String, String?)> titles;
   final bool fails;
+
+  /// The original title of each title that has one.
+  final Map<String, String> originals;
   final requests = <(int, int)>[];
 
   @override
@@ -80,6 +83,7 @@ class _SortedItemsApi implements ItemsApi {
             'SortName': title,
             'Type': 'Movie',
             'ProviderIds': {'Tmdb': ?tmdb},
+            'OriginalTitle': ?originals[title],
           },
       ],
     };
@@ -137,42 +141,105 @@ Future<LibraryBrowseViewModel> _viewModel(
     client: _FakeClient(_SortedItemsApi(const [])),
     prefs: UserPreferences(store),
     mdbListRepository: _FakeMdbListRepository(),
-    loadMergedLibrary: () async => (name: 'Movies', sources: sources),
+    loadMergedLibrary: () async =>
+        (name: 'Movies', sources: sources, complete: true),
   );
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('every server pages in by name, with shared titles shown once', () async {
-    final a = _SortedItemsApi([
-      for (var i = 0; i < 60; i += 2) ('a${i.toString().padLeft(3, '0')}', null),
-      ('shared', '603'),
+  test(
+    'every server pages in by name, with shared titles shown once',
+    () async {
+      final a = _SortedItemsApi([
+        for (var i = 0; i < 60; i += 2)
+          ('a${i.toString().padLeft(3, '0')}', null),
+        ('shared', '603'),
+      ]);
+      final b = _SortedItemsApi([
+        for (var i = 1; i < 60; i += 2)
+          ('a${i.toString().padLeft(3, '0')}', null),
+        ('shared', '603'),
+      ]);
+      final vm = await _viewModel([_source('a', a), _source('b', b)]);
+      addTearDown(vm.dispose);
+
+      await vm.load();
+      while (vm.hasMore) {
+        await vm.loadMore();
+      }
+
+      final names = vm.items.map((item) => item.name).toList();
+      expect(names, [...names]..sort());
+      expect(names.where((name) => name == 'shared'), hasLength(1));
+      expect(names, hasLength(61));
+      expect(vm.totalCount, 61);
+      final shared = vm.items.singleWhere((item) => item.name == 'shared');
+      expect(copiesOf(shared).map((copy) => copy.serverId), ['a', 'b']);
+      expect(vm.items.firstWhere((item) => item.name == 'a001').serverId, 'b');
+      // Each server is asked from where it left off, not from the list's count.
+      expect(a.requests.first.$1, 0);
+      expect(a.requests.skip(1).every((request) => request.$1 > 0), isTrue);
+    },
+  );
+
+  test('the search box finds a card by any copy\'s title or the original '
+      'title', () async {
+    final vm = await _viewModel([
+      _source(
+        'a',
+        _SortedItemsApi(
+          [('The Lord of the Rings', '120'), ('Amélie', '194')],
+          originals: {'Amélie': "Le Fabuleux Destin d'Amélie Poulain"},
+        ),
+      ),
+      _source(
+        'b',
+        _SortedItemsApi([
+          ('Le Seigneur des Anneaux', '120'),
+          ('Die fabelhafte Welt der Amélie', '194'),
+        ]),
+      ),
     ]);
-    final b = _SortedItemsApi([
-      for (var i = 1; i < 60; i += 2) ('a${i.toString().padLeft(3, '0')}', null),
-      ('shared', '603'),
-    ]);
-    final vm = await _viewModel([_source('a', a), _source('b', b)]);
     addTearDown(vm.dispose);
-
     await vm.load();
-    while (vm.hasMore) {
-      await vm.loadMore();
-    }
 
-    final names = vm.items.map((item) => item.name).toList();
-    expect(names, [...names]..sort());
-    expect(names.where((name) => name == 'shared'), hasLength(1));
-    expect(names, hasLength(61));
-    expect(vm.totalCount, 61);
-    final shared = vm.items.singleWhere((item) => item.name == 'shared');
-    expect(copiesOf(shared).map((copy) => copy.serverId), ['a', 'b']);
-    expect(vm.items.firstWhere((item) => item.name == 'a001').serverId, 'b');
-    // Each server is asked from where it left off, not from the list's count.
-    expect(a.requests.first.$1, 0);
-    expect(a.requests.skip(1).every((request) => request.$1 > 0), isTrue);
+    vm.setSearchQuery('lord');
+    expect(vm.items.map((item) => item.name), ['Le Seigneur des Anneaux']);
+    vm.setSearchQuery('fabuleux');
+    expect(vm.items.map((item) => item.name), ['Amélie']);
   });
+
+  test(
+    'loading everything carries on past a page that only held copies',
+    () async {
+      String name(String prefix, int i) =>
+          '$prefix${i.toString().padLeft(3, '0')}';
+      final vm = await _viewModel([
+        _source(
+          'a',
+          _SortedItemsApi([
+            for (var i = 0; i < 600; i++) (name('a', i), '${i + 1}'),
+          ]),
+        ),
+        _source(
+          'b',
+          _SortedItemsApi([
+            for (var i = 0; i < 600; i++) (name('z', i), '${i + 1}'),
+            ('zzzz', null),
+          ]),
+        ),
+      ]);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      await vm.ensureAllItemsLoaded();
+
+      expect(vm.items, hasLength(601));
+      expect(vm.items.last.name, 'zzzz');
+    },
+  );
 
   test('a server that fails leaves the others browsing', () async {
     final vm = await _viewModel([

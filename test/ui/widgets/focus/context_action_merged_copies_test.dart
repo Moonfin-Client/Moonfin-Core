@@ -88,20 +88,21 @@ void main() {
 
   tearDown(() => GetIt.instance.reset());
 
-  /// One title both servers hold under the same numeric id, as Emby does.
-  AggregatedItem sharedTitle(String id) {
-    AggregatedItem copy(String serverId) => AggregatedItem(
-      id: id,
+  /// One title both servers hold, under the same numeric id unless [idOnB]
+  /// says otherwise, as Emby's ids often are.
+  AggregatedItem sharedTitle(String id, {String? idOnB}) {
+    AggregatedItem copy(String serverId, String copyId) => AggregatedItem(
+      id: copyId,
       serverId: serverId,
       rawData: {
-        'Id': id,
+        'Id': copyId,
         'Type': 'Movie',
         'Name': 'Movie',
         'ProviderIds': {'Tmdb': '603'},
         'UserData': {'IsFavorite': false},
       },
     );
-    return foldCopies([copy('a'), copy('b')]).single;
+    return foldCopies([copy('a', id), copy('b', idOnB ?? id)]).single;
   }
 
   Future<void> select(WidgetTester tester, AggregatedItem item) async {
@@ -134,11 +135,21 @@ void main() {
     expect(userDataSync.favoriteFor('7'), isTrue);
   });
 
+  testWidgets('a copy whose id another server already marked a favorite is '
+      'still sent', (tester) async {
+    // Another title on server a already uses the id of b's copy.
+    userDataSync.publish('10', {'IsFavorite': true});
+
+    await select(tester, sharedTitle('9', idOnB: '10'));
+
+    verify(() => libraries['a']!.markFavorite('9')).called(1);
+    verify(() => libraries['b']!.markFavorite('10')).called(1);
+  });
+
   testWidgets('one server refusing keeps the other server\'s favorite and '
       'names the one that refused', (tester) async {
-    when(
-      () => libraries['a']!.markFavorite('8'),
-    ).thenThrow(StateError('refused'));
+    when(() => libraries['a']!.markFavorite('8'))
+        .thenThrow(StateError('refused'));
 
     await select(tester, sharedTitle('8'));
 

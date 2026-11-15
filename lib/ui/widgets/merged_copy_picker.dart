@@ -14,6 +14,9 @@ import 'track_selector_dialog.dart';
 
 const _detailsTimeout = Duration(seconds: 4);
 
+// Set while a picker loads its details, so a second press can't stack another.
+var _picking = false;
+
 /// The name [serverId] was signed in under, or the id when it's unknown.
 String mergedServerName(String serverId) =>
     GetIt.instance<AuthenticationStore>()
@@ -35,19 +38,25 @@ Future<void> openPickedCopy(
     open(item);
     return;
   }
-  final details = await Future.wait(copies.map(_detailsOf));
-  if (!context.mounted) return;
-  final l10n = AppLocalizations.of(context);
-  final picked = await TrackSelectorDialog.show(
-    context,
-    title: l10n.selectServer,
-    options: [
-      for (final (index, copy) in copies.indexed)
-        _optionFor(copy, details[index], l10n),
-    ],
-  );
-  if (picked == null || !context.mounted) return;
-  open(copies[picked]);
+  if (_picking) return;
+  _picking = true;
+  try {
+    final details = await Future.wait(copies.map(_detailsOf));
+    if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
+    final picked = await TrackSelectorDialog.show(
+      context,
+      title: l10n.selectServer,
+      options: [
+        for (final (index, copy) in copies.indexed)
+          _optionFor(copy, details[index], l10n),
+      ],
+    );
+    if (picked == null || !context.mounted) return;
+    open(copies[picked]);
+  } finally {
+    _picking = false;
+  }
 }
 
 Future<Map<String, dynamic>?> _detailsOf(AggregatedItem copy) async {

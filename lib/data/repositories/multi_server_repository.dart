@@ -33,8 +33,13 @@ import '../../l10n/current_app_localizations.dart';
 /// One server's library inside a merged library.
 typedef MergedLibrarySource = ({ServerUserSession session, String libraryId});
 
-/// A merged library's name and the server libraries it reads.
-typedef MergedLibrary = ({String name, List<MergedLibrarySource> sources});
+/// A merged library's name, the server libraries it reads, and whether every
+/// server answered.
+typedef MergedLibrary = ({
+  String name,
+  List<MergedLibrarySource> sources,
+  bool complete,
+});
 
 class ServerUserSession {
   final Server server;
@@ -256,24 +261,31 @@ class MultiServerRepository {
       ...sessions.where((session) => session.server.id == activeServerId),
       ...sessions.where((session) => session.server.id != activeServerId),
     ];
-    final perServer = await Future.wait(
-      ordered.map(
-        (session) => _withTimeout(
-          () async {
-            final response = await loadVisibleUserViews(session.client);
-            return <MergedLibrarySource>[
-              for (final view in response['Items'] as List? ?? const [])
-                if (view is Map && view['CollectionType'] == collectionType)
-                  (session: session, libraryId: view['Id'].toString()),
-            ];
-          },
+    var complete = true;
+    Future<List<MergedLibrarySource>> sourcesOf(
+      ServerUserSession session,
+    ) async {
+      try {
+        final response = await _withTimeout(
+          () => loadVisibleUserViews(session.client),
           label: 'merged libraries from ${session.server.name}',
-        ).catchError((_) => <MergedLibrarySource>[]),
-      ),
-    );
+        );
+        return [
+          for (final view in response['Items'] as List? ?? const [])
+            if (view is Map && view['CollectionType'] == collectionType)
+              (session: session, libraryId: view['Id'].toString()),
+        ];
+      } catch (_) {
+        complete = false;
+        return const [];
+      }
+    }
+
+    final perServer = await Future.wait(ordered.map(sourcesOf));
     return (
       name: _mergedLibraryName(collectionType),
       sources: perServer.expand((sources) => sources).toList(),
+      complete: complete,
     );
   }
 

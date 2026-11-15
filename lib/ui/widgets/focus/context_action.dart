@@ -12,6 +12,7 @@ import '../../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../../data/offline/offline_catalog.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/user_data_sync.dart';
 import '../../../data/utils/merged_copies.dart';
 import '../../../util/signed_in_server_features.dart';
 import '../../../util/server_url.dart';
@@ -113,10 +114,9 @@ bool isContextMediaType(String? type) =>
     type == 'MusicAlbum' ||
     type == 'BoxSet';
 
-/// Marks every copy of [item] watched or a favorite on its own server and
-/// names the servers that refused. The copies go one at a time, since two
-/// servers can share an id and the favorite sync runs once per id. A title
-/// only one server holds fails the way it always has.
+/// Marks [item] watched or a favorite on every server that holds it and names
+/// the servers that refused. A title only one server holds takes the usual
+/// path and fails the way it always has.
 Future<void> _changeEveryCopy(
   BuildContext context,
   AggregatedItem item, {
@@ -125,29 +125,42 @@ Future<void> _changeEveryCopy(
 }) async {
   final copies = copiesOf(item);
   final factory = GetIt.instance<MediaServerClientFactory>();
-  final changedIds = <String>{};
+  if (copies.length == 1) {
+    final mutations = ItemMutationRepository(
+      factory.clientForServerOrActive(item.serverId),
+    );
+    return played != null
+        ? mutations.setPlayed(item.id, isPlayed: played)
+        : mutations.setFavorite(item.id, isFavorite: favorite!);
+  }
+  // The shared user data is keyed by item id alone, and another server can
+  // use a copy's id for a different title. So every server is asked directly
+  // and only the card's own entry changes.
   final refused = <String>[];
   for (final copy in copies) {
-    final client = factory.clientForServerOrActive(copy.serverId);
+    final api = factory.clientForServerOrActive(copy.serverId).userLibraryApi;
     try {
-      if (played != null) {
-        await ItemMutationRepository(client)
-            .setPlayed(copy.id, isPlayed: played);
-      } else if (changedIds.contains(copy.id)) {
-        // Another server's copy already set the shared favorite flag for this
-        // id, which would make the change look done and skip this server.
-        await (favorite!
-            ? client.userLibraryApi.markFavorite(copy.id)
-            : client.userLibraryApi.unmarkFavorite(copy.id));
-      } else {
-        await ItemMutationRepository(client)
-            .setFavorite(copy.id, isFavorite: favorite!);
-      }
-      changedIds.add(copy.id);
+      await switch ((played, favorite)) {
+        (true, _) => api.markPlayed(copy.id),
+        (false, _) => api.unmarkPlayed(copy.id),
+        (_, true) => api.markFavorite(copy.id),
+        _ => api.unmarkFavorite(copy.id),
+      };
     } catch (_) {
-      if (copies.length == 1) rethrow;
       refused.add(mergedServerName(copy.serverId));
     }
+  }
+  if (refused.length < copies.length) {
+    userDataSync.publish(
+      item.id,
+      played != null
+          ? {
+              'Played': played,
+              'PlayedPercentage': null,
+              'PlaybackPositionTicks': 0,
+            }
+          : {'IsFavorite': favorite},
+    );
   }
   if (refused.isEmpty || !context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(

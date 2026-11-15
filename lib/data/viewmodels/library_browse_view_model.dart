@@ -61,6 +61,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get isMergedBrowse => loadMergedLibrary != null;
 
   List<MergedLibrarySource> _mergedSources = const [];
+  bool _mergedLookupComplete = false;
   List<_MergedReader> _mergedReaders = const [];
 
   /// The card shown for each title match key, which later copies fold into.
@@ -78,10 +79,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   // its own behind a cache, so the grid doesn't carry ProviderIds.
   static const _browseFields =
       'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists,Genres,Studios';
-  // A merged browse folds copies on the provider ids and orders the servers'
-  // pages by the dates the sort reads.
+  // A merged browse folds copies on the provider ids, orders the servers' pages
+  // by the dates the sort reads and searches the original titles.
   static const _mergedBrowseFields =
-      '$_browseFields,ProviderIds,DateCreated,DateLastMediaAdded';
+      '$_browseFields,ProviderIds,DateCreated,DateLastMediaAdded,OriginalTitle';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
@@ -105,12 +106,24 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   List<String> get _foldedNames {
     if (!identical(_searchNamesSource, _items)) {
       _searchNames = [
-        for (final item in _items) foldForSearch(item.sortName ?? item.name),
+        for (final item in _items) foldForSearch(_searchTextOf(item)),
       ];
       _searchNamesSource = _items;
     }
     return _searchNames;
   }
+
+  // A merged card also answers to each copy's title, which another server can
+  // hold in another language, and to the original title they share.
+  String _searchTextOf(AggregatedItem item) => isMergedBrowse
+      ? [
+          item.sortName ?? item.name,
+          for (final copy in copiesOf(item)) ...[
+            copy.name,
+            ?copy.rawData['OriginalTitle'] as String?,
+          ],
+        ].join('\n')
+      : item.sortName ?? item.name;
 
   List<AggregatedItem> get items {
     // The server folds accents for the searches it answers, so matching here
@@ -613,7 +626,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           ? Future<void>.value()
           : _syncImageTypeFromServer().then((_) => _imageTypeSynced = true);
 
-      if (isMergedBrowse && !_libraryMetaResolved) {
+      if (isMergedBrowse && !_mergedLookupComplete) {
         final merged = await loadMergedLibrary!();
         if (merged.sources.isEmpty) {
           throw StateError('No server answered for $libraryId');
@@ -622,6 +635,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         _mergedSources = merged.sources;
         _collectionType = mergedLibraryType(libraryId);
         _libraryMetaResolved = true;
+        // A server that didn't answer is asked again on the next load.
+        _mergedLookupComplete = merged.complete;
       }
 
       if (isFilterBrowse) {
@@ -700,10 +715,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
     if (!stillWanted()) return;
     while (hasMore) {
-      final beforeCount = _items.length;
+      final fetchedBefore = _fetchedCount;
       await loadMore(pageSizeOverride: 300);
       if (!stillWanted()) return;
-      if (_items.length == beforeCount) break;
+      if (_fetchedCount == fetchedBefore) break;
     }
   }
 
@@ -745,9 +760,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           await Future.delayed(const Duration(milliseconds: 30));
           if (!stillWanted()) return false;
         }
-        final beforeCount = _items.length;
+        final fetchedBefore = _fetchedCount;
         await loadMore(pageSizeOverride: 300, notify: false);
-        if (_items.length == beforeCount) break;
+        if (_fetchedCount == fetchedBefore) break;
       }
     } finally {
       // The walk suppressed per page notifications, so send the one that
@@ -1652,7 +1667,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// Reads the values the library holds once per browse, so opening the filter
   /// picker does not wait on the network every time.
   Future<void> ensureFacetValuesLoaded() async {
-    if (_facetsRequested) return;
+    // A merged browse only knows its servers once the first load finishes.
+    if (_facetsRequested || (isMergedBrowse && _mergedSources.isEmpty)) return;
     _facetsRequested = true;
     try {
       final values = isMergedBrowse

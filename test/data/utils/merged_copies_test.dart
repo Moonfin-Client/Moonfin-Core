@@ -69,17 +69,12 @@ void main() {
 
   test('placeholder provider ids never match', () {
     final keys = titleMatchKeys(
-      _movie(
-        '1',
-        'a',
-        ids: {'Tmdb': '0', 'Imdb': 'tt0000000', 'Tvdb': 'none'},
-      ),
+      _movie('1', 'a', ids: {'Tmdb': '0', 'Imdb': 'tt0000000', 'Tvdb': 'none'}),
     );
     expect(keys, isEmpty);
-    expect(
-      titleMatchKeys(_movie('1', 'a', ids: {'Imdb': 'TT0111161'})),
-      {'Movie:imdb:tt0111161'},
-    );
+    expect(titleMatchKeys(_movie('1', 'a', ids: {'Imdb': 'TT0111161'})), {
+      'Movie:imdb:tt0111161',
+    });
   });
 
   test('copies fold into the first card, across calls', () {
@@ -104,6 +99,27 @@ void main() {
     ]);
     expect(serverCountOf(card), 3);
     expect(serverCountOf(first.last), 1);
+  });
+
+  test('a card refreshed after it was shown still gets later copies', () {
+    final holders = <String, AggregatedItem>{};
+    final shown = foldCopies([
+      _movie('a1', 'a', ids: {'Tmdb': '603'}),
+    ], holders).single;
+    // A user data refresh swaps the card for one with a copied map.
+    final refreshed = AggregatedItem(
+      id: shown.id,
+      serverId: shown.serverId,
+      rawData: {
+        ...shown.rawData,
+        'UserData': {'Played': true},
+      },
+    );
+    foldCopies([
+      _movie('b1', 'b', ids: {'Tmdb': '603'}),
+    ], holders);
+
+    expect(copiesOf(refreshed).map((copy) => copy.id), ['a1', 'b1']);
   });
 
   group('mergedSortComparator', () {

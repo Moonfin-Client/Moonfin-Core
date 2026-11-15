@@ -99,12 +99,16 @@ List<AggregatedItem> foldCopies(
     final holder = keys.map((key) => holders![key]).nonNulls.firstOrNull;
     if (holder == null) {
       kept.add(item);
+      if (keys.isEmpty) continue;
+      // Made up front so a refreshed card, which copies the map, still shares
+      // the list later copies are added to.
+      item.rawData.putIfAbsent(_copiesKey, () => []);
       for (final key in keys) {
         holders[key] = item;
       }
       continue;
     }
-    final copies = holder.rawData.putIfAbsent(_copiesKey, () => []) as List;
+    final copies = holder.rawData[_copiesKey] as List;
     for (final copy in copiesOf(item)) {
       copies.add({
         'serverId': copy.serverId,
