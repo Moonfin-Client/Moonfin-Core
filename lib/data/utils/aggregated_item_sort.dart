@@ -100,7 +100,12 @@ int _compareNullableNum(double? a, double? b, {bool descending = false}) {
   return descending ? -ascending : ascending;
 }
 
-double _titleCount(AggregatedItem item) =>
-    ((item.rawData['MovieCount'] as num? ?? 0) +
-            (item.rawData['SeriesCount'] as num? ?? 0))
-        .toDouble();
+// Movies and series, or the total a studio was counted with on its own.
+double _titleCount(AggregatedItem item) {
+  final data = item.rawData;
+  if (data['MovieCount'] == null && data['SeriesCount'] == null) {
+    return (data['ChildCount'] as num? ?? 0).toDouble();
+  }
+  return ((data['MovieCount'] as num? ?? 0) + (data['SeriesCount'] as num? ?? 0))
+      .toDouble();
+}

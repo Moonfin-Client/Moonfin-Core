@@ -44,4 +44,20 @@ void main() {
     );
     expect(sorted.map((s) => s.name), ['The Asylum', 'Pixar']);
   });
+
+  test('a studio counted on its own ranks by that total', () {
+    final sorted = sortAggregatedItems(
+      [
+        _studio('A24', movies: 3),
+        AggregatedItem(
+          id: 'Toho',
+          serverId: 'server',
+          rawData: {'Name': 'Toho', 'ChildCount': 56},
+        ),
+      ],
+      sortBy: 'ItemCount',
+      sortOrder: 'Descending',
+    );
+    expect(sorted.map((s) => s.name), ['Toho', 'A24']);
+  });
 }

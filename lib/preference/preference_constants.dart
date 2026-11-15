@@ -832,13 +832,20 @@ enum LibrarySortBy {
   genre('Genre,SortName', 'Genre'),
   foldersFirst('IsFolder,SortName', 'Folders First'),
 
-  /// Sorted in the app, since neither server sorts studios by their counts.
-  itemCount('SortName', 'Item Count', usesDedicatedEndpoint: true);
+  /// Ranked in the app, since no server sorts studios or genres by count. Only
+  /// the Studios and Genres rows offer it.
+  itemCount(
+    'SortName',
+    'Item Count',
+    usesDedicatedEndpoint: true,
+    appSortValue: 'ItemCount',
+  );
 
   const LibrarySortBy(
     this.apiValue,
     this.displayName, {
     this.usesDedicatedEndpoint = false,
+    this.appSortValue,
   });
 
   /// Always a value the Items API accepts, so any caller can pass it through.
@@ -849,6 +856,13 @@ enum LibrarySortBy {
   /// than sorting through the Items API. Rows that know about the endpoint act
   /// on this, and everything else falls back to [apiValue].
   final bool usesDedicatedEndpoint;
+
+  /// What a Home row ranking its own items sorts on, when that isn't
+  /// [apiValue]. Item count's [apiValue] stays a real field, so a picked genre
+  /// row's titles, which have no count, come back by name.
+  final String? appSortValue;
+
+  String get rowSortValue => appSortValue ?? apiValue;
 
   /// What a studio row can sort by, since a studio carries no runtime, ratings
   /// or play data.

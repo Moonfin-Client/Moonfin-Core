@@ -698,12 +698,6 @@ class PlexItemsApi implements ItemsApi {
   /// Studio pages filter by name, so the id just has to be unique and free of
   /// commas, since the home row saves its picked studios as a comma list.
   /// Plex's encoded key is both.
-  ///
-  /// Plex studio tags carry only a name, so name and random are the orders
-  /// there are; any other sort comes back by name.
-  @override
-  bool get sortsStudios => true;
-
   @override
   Future<Map<String, dynamic>> getStudios({
     String? parentId,

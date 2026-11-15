@@ -516,7 +516,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       title: l10n.collectionsRowSorting,
                       description: l10n.collectionsRowSortingDescription,
                       icon: Icons.sort,
-                      // Item count is for studios only.
+                      // Item count is for studios and genres only.
                       values: [
                         for (final v in LibrarySortBy.values)
                           if (v != LibrarySortBy.itemCount) v,
@@ -638,7 +638,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                         title: l10n.playlistsRowSorting,
                         description: l10n.playlistsRowSortingDescription,
                         icon: Icons.sort,
-                        // Item count is for studios only.
+                        // Item count is for studios and genres only.
                         values: [
                           for (final v in LibrarySortBy.values)
                             if (v != LibrarySortBy.itemCount) v,
