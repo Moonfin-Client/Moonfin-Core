@@ -63,7 +63,7 @@ void main() {
     expect(unpickedStudioSort('Random', 'Ascending'), ('Random', 'Ascending'));
     expect(unpickedStudioSort('DateCreated,SortName', 'Descending'), (
       'SortName',
-      'Ascending',
+      'Descending',
     ));
   });
 
