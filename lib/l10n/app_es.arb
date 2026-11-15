@@ -11876,7 +11876,7 @@
         "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
     },
     "sinceYouWatchedSourceLocal": "Moonfin Recommends",
-    "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+    "sinceYouWatchedSourceServer": "Server Recommends",
     "sinceYouWatchedSourceOnline": "Similitud de TMDb",
     "calendarFullCalendar": "Calendario completo",
     "@calendarFullCalendar": {
