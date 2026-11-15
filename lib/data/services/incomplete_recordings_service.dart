@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import 'plugin_sync_service.dart';
+import 'recording_owners_service.dart';
 
 /// What happened to the complete showing of an incomplete recording's episode.
 enum CompleteShowingStatus { scheduled, recorded, notFound, none }
@@ -137,6 +138,7 @@ class IncompleteRecordingsService extends ChangeNotifier {
   // before either can't fill the set once it lands.
   int _generation = 0;
   int _sessionGeneration = 0;
+  final Map<String, List<RecordingOwner>> _waitingOthers = {};
 
   IncompleteRecordingsService({
     required MediaServerClient? Function() client,
@@ -167,6 +169,7 @@ class IncompleteRecordingsService extends ChangeNotifier {
     _inFlight = null;
     _byItem = const {};
     _loadedAt = null;
+    _waitingOthers.clear();
     notifyListeners();
     if (value) unawaited(refresh());
   }
@@ -252,12 +255,31 @@ class IncompleteRecordingsService extends ChangeNotifier {
   }
 
   /// Asks the plugin to record a complete showing of the program's episode
-  /// later. Returns false when it couldn't.
-  Future<bool> requestCompleteShowing(String programId) => _send(
-    'POST',
-    '/Moonfin/LiveTv/CompleteShowing',
-    {'programId': programId},
-  );
+  /// later. Returns false when it couldn't. The other users already waiting
+  /// for it are kept for [waitingOthersFor].
+  Future<bool> requestCompleteShowing(String programId) async {
+    _waitingOthers.remove(programId);
+    final response = await _raw('POST', '/Moonfin/LiveTv/CompleteShowing', {
+      'programId': programId,
+    });
+    final status = response?.statusCode ?? 0;
+    if (status < 200 || status >= 300) return false;
+    final data = response?.data;
+    final others = data is Map ? data['otherOwners'] : null;
+    if (others is List) {
+      final parsed = others.map(RecordingOwner.fromJson).nonNulls.toList();
+      if (parsed.isNotEmpty) {
+        _waitingOthers[programId] = List.unmodifiable(parsed);
+      }
+    }
+    return true;
+  }
+
+  /// The other users the plugin said were also waiting for the complete
+  /// showing last requested for [programId]. Empty when there are none or
+  /// the recording owners feature is off.
+  List<RecordingOwner> waitingOthersFor(String programId) =>
+      _waitingOthers[programId] ?? const [];
 
   Future<CompleteShowingOptions> completeShowingOptions(
     String programId,
@@ -307,6 +329,7 @@ class IncompleteRecordingsService extends ChangeNotifier {
     String programId,
     SuggestedShowing showing,
   ) {
+    _waitingOthers.remove(programId);
     if (!extendedSupported || showing.generation != _sessionGeneration) {
       return Future.value(false);
     }

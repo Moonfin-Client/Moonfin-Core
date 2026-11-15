@@ -16,6 +16,7 @@ import '../../auth/services/silo_token_storage.dart';
 import '../../data/repositories/seerr_repository.dart';
 import 'seerr/seerr_discover_sliders.dart';
 import 'incomplete_recordings_service.dart';
+import 'recording_owners_service.dart';
 import 'moonbase_endpoint.dart';
 import 'server_messages_service.dart';
 import 'settings_stream_transport.dart';
@@ -69,6 +70,11 @@ class PluginSyncService extends ChangeNotifier {
   IncompleteRecordingsService? get _incompleteRecordings =>
       GetIt.instance.isRegistered<IncompleteRecordingsService>()
       ? GetIt.instance<IncompleteRecordingsService>()
+      : null;
+
+  RecordingOwnersService? get _recordingOwners =>
+      GetIt.instance.isRegistered<RecordingOwnersService>()
+      ? GetIt.instance<RecordingOwnersService>()
       : null;
 
   bool _pluginAvailable = false;
@@ -333,6 +339,7 @@ class PluginSyncService extends ChangeNotifier {
     _clientLogSupported = false;
     _pushSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
+    if (!keepIncompleteRecordings) _recordingOwners?.setSupported(false);
     _activeThemeCacheServerId = null;
     if (notify) {
       _siloRequestsAvailable = false;
@@ -381,6 +388,7 @@ class PluginSyncService extends ChangeNotifier {
     if (!client.features.supportsMoonfinPlugin) {
       _stopSettingsStream();
       _messages?.setSupported(false);
+      _recordingOwners?.setSupported(false);
       _setPluginSeerrEnabled(client, false);
       notifyListeners();
       return _PluginAvailabilityStatus.unavailable;
@@ -390,6 +398,7 @@ class PluginSyncService extends ChangeNotifier {
       final pingResult = await _ping(client);
       if (pingResult == null && moonbaseKnownMissing(client)) {
         _incompleteRecordings?.setSupported(false);
+        _recordingOwners?.setSupported(false);
         _stopSettingsStream();
         _messages?.setSupported(false);
         _setPluginSeerrEnabled(client, false);
@@ -398,6 +407,7 @@ class PluginSyncService extends ChangeNotifier {
       }
       if (pingResult == null) {
         _incompleteRecordings?.setSupported(false);
+        _recordingOwners?.setSupported(false);
         _stopSettingsStream();
         notifyListeners();
         return _PluginAvailabilityStatus.unknown;
@@ -406,6 +416,7 @@ class PluginSyncService extends ChangeNotifier {
       final installed = _readBool(pingResult, 'installed');
       if (installed != null && !installed) {
         _incompleteRecordings?.setSupported(false);
+        _recordingOwners?.setSupported(false);
         _stopSettingsStream();
         _setPluginSeerrEnabled(client, false);
         notifyListeners();
@@ -415,6 +426,7 @@ class PluginSyncService extends ChangeNotifier {
       final syncEnabled = _readBool(pingResult, 'settingsSyncEnabled');
       if (syncEnabled != null && !syncEnabled) {
         _incompleteRecordings?.setSupported(false);
+        _recordingOwners?.setSupported(false);
         _stopSettingsStream();
         _setPluginSeerrEnabled(client, false);
         notifyListeners();
@@ -456,6 +468,9 @@ class PluginSyncService extends ChangeNotifier {
       _incompleteRecordings?.setSupported(
         _readBool(pingResult, 'incompleteRecordingsSupported') ?? false,
         extended: _readBool(pingResult, 'extendedCompleteShowingsSupported') ?? false,
+      );
+      _recordingOwners?.setSupported(
+        _readBool(pingResult, 'recordingOwnersSupported') ?? false,
       );
 
       // On Silo, requests are Silo's own (see configureSeerr), and Moonbase
