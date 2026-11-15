@@ -2,12 +2,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/aggregated_item_sort.dart';
 
-AggregatedItem _studio(String name, {int? movies, int? series}) =>
-    AggregatedItem(
-      id: name,
-      serverId: 'server',
-      rawData: {'Name': name, 'MovieCount': ?movies, 'SeriesCount': ?series},
-    );
+AggregatedItem _studio(
+  String name, {
+  int? movies,
+  int? series,
+  String? sortName,
+}) => AggregatedItem(
+  id: name,
+  serverId: 'server',
+  rawData: {
+    'Name': name,
+    'SortName': ?sortName,
+    'MovieCount': ?movies,
+    'SeriesCount': ?series,
+  },
+);
 
 void main() {
   test('item count ranks studios by their movies and shows together', () {
@@ -22,5 +31,17 @@ void main() {
       sortOrder: 'Descending',
     );
     expect(sorted.map((s) => s.name), ['HBO', 'Pixar', 'A24', 'Unknown']);
+  });
+
+  test('name order follows the sort name, so a leading article is skipped', () {
+    final sorted = sortAggregatedItems(
+      [
+        _studio('Pixar'),
+        _studio('The Asylum', sortName: 'Asylum'),
+      ],
+      sortBy: 'SortName',
+      sortOrder: 'Ascending',
+    );
+    expect(sorted.map((s) => s.name), ['The Asylum', 'Pixar']);
   });
 }
