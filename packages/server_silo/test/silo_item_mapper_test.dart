@@ -200,6 +200,21 @@ void main() {
       expect(siloItemToBaseItemDto({'type': 'movie'}), isNull);
     });
 
+    test("a list entry's provider id comes from its id", () {
+      Map<String, dynamic>? ids(String type, String id) =>
+          siloItemToBaseItemDto({
+                'type': type,
+                'content_id': id,
+                'title': 'Listed',
+              })?['ProviderIds']
+              as Map<String, dynamic>?;
+
+      expect(ids('movie', 'movie-imdb-tt0295701'), {'Imdb': 'tt0295701'});
+      expect(ids('series', 'series-tmdb-1399'), {'Tmdb': '1399'});
+      // A season is keyed on its series, so the id isn't its own.
+      expect(ids('season', 'season-imdb-tt1641384-1'), isEmpty);
+    });
+
     test('a bare list entry maps with what it has', () {
       final dto = siloItemToBaseItemDto({
         'type': 'movie',

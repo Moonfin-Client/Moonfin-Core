@@ -78,6 +78,7 @@ import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/merged_copy_picker.dart';
 import '../../widgets/carousel_panel.dart';
 import '../detail/item_detail_screen.dart' show technicalDetailsFor;
 import '../../widgets/selector_builder.dart';
@@ -202,6 +203,7 @@ class _HomeShellState extends State<_HomeShell>
   final ValueNotifier<bool> _isScrolledToTopNotifier = ValueNotifier(true);
   String _lastSectionsJson = '';
   bool _lastMultiServer = false;
+  bool _lastMergeLibraries = false;
   bool _lastMergeContinueWatchingNextUp = false;
   String _lastHiddenCW = '{}';
   String _lastHiddenNU = '{}';
@@ -246,6 +248,7 @@ class _HomeShellState extends State<_HomeShell>
     _lastMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
     );
+    _lastMergeLibraries = _userPrefs.effectiveMergeLibrariesByType;
     _lastMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
@@ -414,6 +417,7 @@ class _HomeShellState extends State<_HomeShell>
     final currentMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
     );
+    final currentMergeLibraries = _userPrefs.effectiveMergeLibrariesByType;
     final currentMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
@@ -435,6 +439,7 @@ class _HomeShellState extends State<_HomeShell>
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
+        currentMergeLibraries != _lastMergeLibraries ||
         currentMergeContinueWatchingNextUp != _lastMergeContinueWatchingNextUp ||
         currentBlocked != _lastBlockedParentalRatings ||
         currentHiddenCW != _lastHiddenCW ||
@@ -451,6 +456,7 @@ class _HomeShellState extends State<_HomeShell>
         currentDateFormat != _lastDateFormat) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
+      _lastMergeLibraries = currentMergeLibraries;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
       _lastBlockedParentalRatings = currentBlocked;
       _lastHiddenCW = currentHiddenCW;
@@ -5913,14 +5919,7 @@ class _ContentRowsState extends State<_ContentRows>
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
-            context.push(
-              Destinations.itemOrPhoto(
-                item.id,
-                serverId: item.serverId,
-                type: item.type,
-                channelId: item.channelId,
-              ),
-            );
+            _openItem(item);
           }
         },
         itemBuilder: (ctx, item, idx, isFocused) {
@@ -6045,14 +6044,7 @@ class _ContentRowsState extends State<_ContentRows>
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {
-                      context.push(
-                        Destinations.itemOrPhoto(
-                          item.id,
-                          serverId: item.serverId,
-                          type: item.type,
-                          channelId: item.channelId,
-                        ),
-                      );
+                      _openItem(item);
                     }
                   }
 
@@ -6168,7 +6160,7 @@ class _ContentRowsState extends State<_ContentRows>
                         ? _buildWatchingNowOverlays(item, l10n)
                         : (isSeerrGenreCard
                             ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
-                            : const <Widget>[]),
+                            : mergedServerCountOverlays(context, item)),
                     imageUnderlays: [
                       if (glide != null &&
                           canUseExpandedV2Card &&
@@ -6876,6 +6868,20 @@ class _ContentRowsState extends State<_ContentRows>
     );
     return true;
   }
+
+  /// Opens [item]'s details, first asking which server when several hold it.
+  void _openItem(AggregatedItem item) => openPickedCopy(
+    context,
+    item,
+    (copy) => context.push(
+      Destinations.itemOrPhoto(
+        copy.id,
+        serverId: copy.serverId,
+        type: copy.type,
+        channelId: copy.channelId,
+      ),
+    ),
+  );
 
   static void _navigateToLibrary(BuildContext context, AggregatedItem item) {
     // Game libraries route to the EmulatorJS browser, everything else by its

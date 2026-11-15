@@ -6378,6 +6378,32 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "mergeLibrariesByType": "Merge Movie and TV Show Libraries",
+  "@mergeLibrariesByType": {
+    "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+  },
+  "mergeLibrariesByTypeDescription": "With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.",
+  "@mergeLibrariesByTypeDescription": {
+    "description": "Description for the setting that merges movie and series libraries across servers"
+  },
+  "mergedServerCount": "{count, plural, other{On {count} servers}}",
+  "@mergedServerCount": {
+    "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mergedCopiesNotChanged": "Not changed on {servers}",
+  "@mergedCopiesNotChanged": {
+    "description": "Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names",
+    "placeholders": {
+      "servers": {
+        "type": "String"
+      }
+    }
+  },
   "recentlyAddedAndReleased": "Recently Added and Released",
   "@recentlyAddedAndReleased": {
     "description": "Section title for Recently Added and Recently Released home row settings"

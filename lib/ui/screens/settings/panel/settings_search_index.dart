@@ -1276,6 +1276,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.showLibrariesFromAllServers,
     ),
     libraries.leaf(
+      'merge_libraries_by_type',
+      l10n.mergeLibrariesByType,
+      subtitle: l10n.mergeLibrariesByTypeDescription,
+      keywords: [
+        'multi server',
+        'all movies',
+        'all series',
+        'tv shows',
+        'unified',
+        'duplicates',
+      ],
+    ),
+    libraries.leaf(
       'pref_show_book_discover_tab',
       l10n.showBookDiscoverTab,
       subtitle: l10n.showBookDiscoverTabDescription,
