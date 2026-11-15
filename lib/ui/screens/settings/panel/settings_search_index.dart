@@ -1596,6 +1596,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf('skipForwardLength', l10n.skipForwardLength, keywords: [
       'seek forward',
     ]),
+    if (PlatformDetection.isAppleTV)
+      video.leaf(
+        'appleTvClickpadSeekMode',
+        l10n.clickpadSeeking,
+        subtitle: l10n.clickpadSeekingDescription,
+        keywords: ['remote', 'touchpad', 'accidental skip', 'seek lock'],
+      ),
     video.leaf(
       'controlsHideDelay',
       l10n.settingsHideControlsAfter,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
@@ -113,6 +114,10 @@ class PushMessagingService {
     }
     try {
       await _start();
+      // Someone who turned notifications down never gets a token from Google.
+      final settings =
+          await FirebaseMessaging.instance.getNotificationSettings();
+      if (settings.authorizationStatus == AuthorizationStatus.denied) return;
       // A server switch reuses the same FCM token, so drop the dedupe and let
       // the new server get its own registration.
       _lastRegisteredToken = null;
@@ -183,22 +188,34 @@ class PushMessagingService {
     _lastRegisteredToken = token;
   }
 
-  /// Unregister this device with the plugin, e.g. on logout. No-op off mobile
-  /// or when there is no active client.
-  Future<void> unregister() async {
+  /// Unregister this device with the plugin, e.g. on logout. With
+  /// [deleteToken] the FCM token and the Firebase installation ID go too, so
+  /// it's only passed when no other signed-in server still sends to it.
+  Future<void> unregister({bool deleteToken = false}) async {
     if (!PlatformDetection.isMobile) return;
 
     final client = GetIt.instance.isRegistered<MediaServerClient>()
         ? GetIt.instance<MediaServerClient>()
         : null;
-    if (client == null) return;
-    if (!GetIt.instance.isRegistered<PluginSyncService>()) return;
-
-    await GetIt.instance<PluginSyncService>().unregisterPushDevice(
-      client,
-      deviceId: _deviceId(_lastRegisteredToken),
-    );
+    if (client != null && GetIt.instance.isRegistered<PluginSyncService>()) {
+      await GetIt.instance<PluginSyncService>().unregisterPushDevice(
+        client,
+        deviceId: _deviceId(_lastRegisteredToken),
+      );
+    }
     _lastRegisteredToken = null;
+
+    final started = _startFuture;
+    if (deleteToken && started != null) {
+      try {
+        await started;
+        await FirebaseMessaging.instance.deleteToken();
+        // Firebase keeps the installation ID until the app deletes it.
+        await FirebaseInstallations.instance.delete();
+      } catch (e) {
+        debugPrint('PushMessagingService: Firebase cleanup failed: $e');
+      }
+    }
   }
 
   /// Reuses the app's Jellyfin device id so the plugin can tie the push
