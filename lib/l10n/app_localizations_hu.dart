@@ -18310,4 +18310,123 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get clickpadSeekingPausedOnly => 'Only while paused';
+
+  @override
+  String get recordingsScopeMine => 'Mine';
+
+  @override
+  String get recordingsScopeEveryone => 'Everyone';
+
+  @override
+  String get myRecordings => 'My Recordings';
+
+  @override
+  String get myRecordingsEmpty => 'Recordings you schedule will show up here.';
+
+  @override
+  String get addToMyRecordings => 'Add to My Recordings';
+
+  @override
+  String get addSeriesToMyRecordings => 'Add Series to My Recordings';
+
+  @override
+  String ownerRecordingOne(String name) {
+    return '$name is recording this';
+  }
+
+  @override
+  String ownerRecordingTwo(String first, String second) {
+    return '$first and $second are recording this';
+  }
+
+  @override
+  String ownerRecordingMany(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count other users are recording this',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ownerWaitingOne(String name) {
+    return '$name is also waiting for this';
+  }
+
+  @override
+  String ownerWaitingTwo(String first, String second) {
+    return '$first and $second are also waiting for this';
+  }
+
+  @override
+  String ownerWaitingMany(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count other users are also waiting for this',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedCancelOne(String name) {
+    return '$name also has this in My Recordings. Cancelling stops it for everyone.';
+  }
+
+  @override
+  String sharedCancelTwo(String first, String second) {
+    return '$first and $second also have this in My Recordings. Cancelling stops it for everyone.';
+  }
+
+  @override
+  String sharedCancelMany(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count other users also have this in My Recordings. Cancelling stops it for everyone.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedDeleteOne(String name) {
+    return '$name also has this in My Recordings. Deleting removes it for everyone.';
+  }
+
+  @override
+  String sharedDeleteTwo(String first, String second) {
+    return '$first and $second also have this in My Recordings. Deleting removes it for everyone.';
+  }
+
+  @override
+  String sharedDeleteMany(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count other users also have this in My Recordings. Deleting removes it for everyone.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedKeep => 'Keep';
+
+  @override
+  String get sharedCancelForEveryone => 'Cancel for Everyone';
+
+  @override
+  String get sharedDeleteForEveryone => 'Delete for Everyone';
+
+  @override
+  String get sharedSeriesChange =>
+      'Other users also record this series. Changes apply to everyone.';
+
+  @override
+  String get sharedKeepAsIs => 'Keep As Is';
+
+  @override
+  String get sharedChangeForEveryone => 'Change for Everyone';
 }
