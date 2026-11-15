@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
@@ -86,36 +87,64 @@ void main() {
     expect(await pagesRead(1000, sortBy: 'DateCreated,SortName'), everyPage);
   });
 
-  test('item count keeps the whole list for a day per server and user', () async {
-    final s = server(1000);
-    Future<Map<String, dynamic>> read(String key) => fetchStudioRowPage(
-      s.fetch,
-      sortBy: 'ItemCount',
-      sortOrder: 'Descending',
-      limit: 15,
-      pageSize: 200,
-      serverSorts: false,
-      cacheKey: key,
-    );
-    final start = DateTime(2026, 11, 15);
+  test("a long list is read side by side, inside a row's time limit", () {
+    fakeAsync((async) {
+      final s = server(2200);
+      Future<Map<String, dynamic>> slow(int a, int b, String c, String d) =>
+          Future.delayed(
+            const Duration(milliseconds: 800),
+            () => s.fetch(a, b, c, d),
+          );
+      Map<String, dynamic>? all;
+      fetchStudioRowPage(
+        slow,
+        sortBy: 'ItemCount',
+        sortOrder: 'Descending',
+        limit: 15,
+        pageSize: 200,
+        serverSorts: false,
+        cacheKey: 'slow',
+      ).then((value) => all = value);
 
-    final all = await withClock(Clock.fixed(start), () => read('a|me'));
-    expect((all['Items'] as List).last, {'Id': '999'});
-    await withClock(
-      Clock.fixed(start.add(const Duration(hours: 23))),
-      () => read('a|me'),
-    );
-    expect(s.calls, hasLength(5));
-
-    await withClock(Clock.fixed(start), () => read('b|me'));
-    expect(s.calls, hasLength(10));
-
-    await withClock(
-      Clock.fixed(start.add(const Duration(days: 1))),
-      () => read('a|me'),
-    );
-    expect(s.calls, hasLength(15));
+      async.elapse(const Duration(seconds: 3));
+      expect(all, isNotNull);
+      expect(all!['Items'], hasLength(2200));
+    });
   });
+
+  test(
+    'item count keeps the whole list for a day per server and user',
+    () async {
+      final s = server(1000);
+      Future<Map<String, dynamic>> read(String key) => fetchStudioRowPage(
+        s.fetch,
+        sortBy: 'ItemCount',
+        sortOrder: 'Descending',
+        limit: 15,
+        pageSize: 200,
+        serverSorts: false,
+        cacheKey: key,
+      );
+      final start = DateTime(2026, 11, 15);
+
+      final all = await withClock(Clock.fixed(start), () => read('a|me'));
+      expect((all['Items'] as List).last, {'Id': '999'});
+      await withClock(
+        Clock.fixed(start.add(const Duration(hours: 23))),
+        () => read('a|me'),
+      );
+      expect(s.calls, hasLength(5));
+
+      await withClock(Clock.fixed(start), () => read('b|me'));
+      expect(s.calls, hasLength(10));
+
+      await withClock(
+        Clock.fixed(start.add(const Duration(days: 1))),
+        () => read('a|me'),
+      );
+      expect(s.calls, hasLength(15));
+    },
+  );
 
   test('a list that fits in one page is read once', () async {
     expect(await pagesRead(120, sortBy: 'Random'), [(0, 200)]);

@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/models/server.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/models/user.dart';
 import '../../auth/services/silo_household.dart';
@@ -600,7 +601,8 @@ class MultiServerRepository {
                     limit: perServer,
                     pageSize: _studioPageSize,
                     serverSorts: session.client.itemsApi.sortsStudios,
-                    cacheKey: '${session.server.id}|${session.client.userId}',
+                    cacheKey:
+                        '${session.server.id}|${session.client.userId}|${shouldUseOfflineCatalog()}',
                   ),
                   session.server.id,
                 )
