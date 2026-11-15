@@ -1467,14 +1467,20 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  /// A search still reading the rest of the library may find something yet,
+  /// so it shows a spinner until it has looked everywhere.
+  Widget _buildNothingFound() => Center(
+    child: _vm.searchFilling
+        ? CircularProgressIndicator(color: _jellyfinBlue)
+        : Text(
+            AppLocalizations.of(context).noItemsFound,
+            style: const TextStyle(color: Colors.white70),
+          ),
+  );
+
   Widget _buildSongsList() {
     if (_vm.items.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context).noItemsFound,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      );
+      return _buildNothingFound();
     }
     final isMobile = _isCompact(context);
     final hPad = isMobile ? 16.0 : _horizontalPadding;
@@ -1513,12 +1519,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Widget _buildGrid() {
     if (_vm.items.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context).noItemsFound,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      );
+      return _buildNothingFound();
     }
 
     if (_vm.scrollDirection == LibraryScrollDirection.horizontal) {
@@ -1947,12 +1948,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     Map<String, List<AggregatedItem>> categories,
   ) {
     if (categories.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context).noItemsFound,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      );
+      return _buildNothingFound();
     }
 
     final cardWidth = _cardWidth() * _kGroupedRowCardScale;

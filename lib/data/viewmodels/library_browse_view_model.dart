@@ -257,6 +257,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   String get searchQuery => _searchQuery;
 
   Timer? _searchDebounceTimer;
+
+  /// Whether a search is still reading the rest of the library, so finding
+  /// nothing yet isn't the answer.
+  bool get searchFilling => _searchFilling;
+  bool _searchFilling = false;
+  int _searchRun = 0;
   static const _searchLoadDelay = Duration(milliseconds: 300);
 
   /// Matching happens against the items already loaded, so a query that reaches
@@ -265,12 +271,21 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   void setSearchQuery(String query) {
     if (_searchQuery == query) return;
     _searchQuery = query;
-    notifyListeners();
     _searchDebounceTimer?.cancel();
-    if (_searchQuery.trim().isEmpty || !hasMore) return;
-    _searchDebounceTimer = Timer(_searchLoadDelay, () {
+    final run = ++_searchRun;
+    _searchFilling = _searchQuery.trim().isNotEmpty && hasMore;
+    notifyListeners();
+    if (!_searchFilling) return;
+    _searchDebounceTimer = Timer(_searchLoadDelay, () async {
       if (_disposed) return;
-      unawaited(ensureAllItemsLoaded());
+      try {
+        await ensureAllItemsLoaded();
+      } finally {
+        if (!_disposed && run == _searchRun) {
+          _searchFilling = false;
+          notifyListeners();
+        }
+      }
     });
   }
 

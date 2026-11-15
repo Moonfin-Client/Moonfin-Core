@@ -326,6 +326,47 @@ void main() {
     );
   });
 
+  test(
+    'a search is still filling until it has read the whole library',
+    () async {
+      final vm = await _viewModel([
+        _source(
+          'a',
+          _SortedItemsApi([
+            for (var i = 0; i < 200; i++)
+              ('a${i.toString().padLeft(3, '0')}', null),
+          ]),
+        ),
+        _source('b', _SortedItemsApi(const [('zebra', null)])),
+      ]);
+      addTearDown(vm.dispose);
+      await vm.load();
+      expect(vm.hasMore, isTrue);
+
+      vm.setSearchQuery('zebra');
+      expect(vm.items, isEmpty);
+      expect(vm.searchFilling, isTrue);
+
+      while (vm.searchFilling) {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      expect(vm.items.map((item) => item.name), ['zebra']);
+    },
+  );
+
+  test('a search with nothing left to read is done at once', () async {
+    final vm = await _viewModel([
+      _source('a', _SortedItemsApi(const [('alpha', null)])),
+      _source('b', _SortedItemsApi(const [('beta', null)])),
+    ]);
+    addTearDown(vm.dispose);
+    await vm.load();
+
+    vm.setSearchQuery('zebra');
+    expect(vm.items, isEmpty);
+    expect(vm.searchFilling, isFalse);
+  });
+
   test('a server that fails leaves the others browsing', () async {
     final vm = await _viewModel([
       _source('a', _SortedItemsApi([('one', null), ('two', null)])),
