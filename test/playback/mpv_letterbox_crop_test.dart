@@ -458,23 +458,71 @@ void main() {
       expect(decision.rect, letterbox);
     });
 
-    test('a dark frame between matching samples keeps the streak', () {
+    LetterboxCropDecision dark(LetterboxCropStabilizer stabilizer) =>
+        stabilizer.observe(
+          width: 400,
+          height: 200,
+          x: 760,
+          y: 440,
+          sourceWidth: 1920,
+          sourceHeight: 1080,
+        );
+
+    test('a dark frame after one sample resets the streak', () {
       final stabilizer = LetterboxCropStabilizer();
       observe(stabilizer, letterbox);
-      expect(
-        stabilizer
-            .observe(
-              width: 400,
-              height: 200,
-              x: 760,
-              y: 440,
-              sourceWidth: 1920,
-              sourceHeight: 1080,
-            )
-            .changed,
-        isFalse,
-      );
+      expect(dark(stabilizer).changed, isFalse);
+      expect(observe(stabilizer, letterbox).changed, isFalse);
+    });
+
+    test('a one-shot scan holds edge bars through a dark frame', () {
+      final stabilizer = LetterboxCropStabilizer()..holdThroughIgnored = true;
+      observe(stabilizer, letterbox);
+      expect(dark(stabilizer).changed, isFalse);
       final decision = observe(stabilizer, letterbox);
+      expect(decision.changed, isTrue);
+      expect(decision.rect, letterbox);
+    });
+
+    test('two unrelated lit shapes do not add up to a crop', () {
+      // A 16:9 title without bars in a dark scene: off-centre lit shapes
+      // that happen to leave matching top and bottom margins.
+      for (final hold in [false, true]) {
+        final stabilizer = LetterboxCropStabilizer()..holdThroughIgnored = hold;
+        observe(
+          stabilizer,
+          const LetterboxCropRect(w: 1100, h: 804, x: 200, y: 138),
+        );
+        for (var i = 0; i < 50; i++) {
+          dark(stabilizer);
+        }
+        final decision = observe(
+          stabilizer,
+          const LetterboxCropRect(w: 1000, h: 806, x: 700, y: 137),
+        );
+        expect(decision.changed, isFalse, reason: 'hold=$hold');
+        expect(stabilizer.applied, isNull, reason: 'hold=$hold');
+      }
+    });
+
+    test('inferred bars need three readings in a row', () {
+      const inferred = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
+      final stabilizer = LetterboxCropStabilizer()..holdThroughIgnored = true;
+      observe(stabilizer, inferred);
+      expect(observe(stabilizer, inferred).changed, isFalse);
+      dark(stabilizer);
+      observe(stabilizer, inferred);
+      expect(observe(stabilizer, inferred).changed, isFalse);
+      final decision = observe(stabilizer, inferred);
+      expect(decision.changed, isTrue);
+      expect(decision.rect, letterbox);
+    });
+
+    test('an edge reading lets inferred bars confirm it', () {
+      const inferred = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
+      final stabilizer = LetterboxCropStabilizer();
+      observe(stabilizer, letterbox);
+      final decision = observe(stabilizer, inferred);
       expect(decision.changed, isTrue);
       expect(decision.rect, letterbox);
     });
@@ -862,13 +910,33 @@ void main() {
       });
     });
 
+    test('one-shot shots skip inferred bars split by dark frames', () {
+      fakeAsync((async) {
+        const dark = LetterboxCropRect(w: 640, h: 656, x: 648, y: 338);
+        const bars = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
+        final host = _MpvShotHost([
+          for (var i = 0; i < 12; i++) i.isEven ? bars : dark,
+        ]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+        );
+        cropper.setEnabled(true);
+        async.elapse(const Duration(seconds: 10));
+        expect(cropper.isApplied, isFalse);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
     test('one-shot shots get past a dark opening to inferred bars', () {
       fakeAsync((async) {
         // MobLand S01E01 software shots at half scale: lit blobs, then bars
         // whose sides a dark scene hides.
         const dark = LetterboxCropRect(w: 640, h: 656, x: 648, y: 338);
         const bars = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
-        final host = _MpvShotHost([dark, null, dark, dark, bars, dark, bars]);
+        final host = _MpvShotHost([dark, null, dark, dark, bars, bars, bars]);
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,

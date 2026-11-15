@@ -464,6 +464,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
     }
 
     _sawFullFrame = false;
+    // A one-shot scan has a fixed read budget, so a dark frame between two
+    // matching edge readings should not cost it the streak.
+    _stabilizer.holdThroughIgnored = !_continuous;
     try {
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
       if (!_skipStartDelay && _host.position < autoDelay) {

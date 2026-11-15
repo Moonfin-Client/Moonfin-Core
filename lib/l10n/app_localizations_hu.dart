@@ -3571,16 +3571,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Fekete sávok újravágása';
 
   @override
-  String get playerBlackBarsCropped => 'Black bars cropped';
-
-  @override
-  String get playerNoBlackBarsFound => 'No black bars found';
-
-  @override
-  String get playerBlackBarsNotDetected =>
-      'Couldn\'t detect black bars. Try again in a brighter scene';
-
-  @override
   String get stretch => 'Nyújtás';
 
   @override

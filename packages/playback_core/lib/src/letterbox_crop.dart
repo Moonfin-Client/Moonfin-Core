@@ -341,10 +341,13 @@ abstract final class LetterboxCrop {
 
 /// Consecutive-sample hysteresis from mpv `dynamic-crop.lua`.
 ///
-/// One dark frame cannot retarget the crop, and unusable readings between
-/// matching ones do not break the streak. A known cinema ratio needs
+/// One dark frame cannot retarget the crop. A known cinema ratio needs
 /// [newCropHits] matching samples; a previously trusted crop needs
 /// [trustedHits]; an unknown ratio needs [unknownHits].
+///
+/// Bars inferred past dark sides are only a guess. A streak made only of
+/// them needs [unknownHits] samples in a row, and an unusable reading always
+/// ends it, so two unrelated lit shapes cannot add up to a crop.
 class LetterboxCropStabilizer {
   LetterboxCropStabilizer({
     this.round = 2,
@@ -362,9 +365,18 @@ class LetterboxCropStabilizer {
   final int trustedHits;
   final int unknownHits;
 
+  /// Unusable readings leave a streak with edge-reaching bars in place
+  /// instead of ending it. For a bounded one-shot scan, where a dark scene
+  /// would otherwise never give two matching readings back to back.
+  /// Continuous scans keep the strict reset.
+  bool holdThroughIgnored = false;
+
   LetterboxSampleKind? _candidateKind;
   LetterboxCropRect? _candidateRect;
   int _hits = 0;
+
+  /// The streak has a sample whose bars reached the frame edges.
+  bool _edgeHit = false;
   LetterboxCropRect? _applied;
   final _trusted = <LetterboxCropRect>[];
   bool _trustedFullFrame = false;
@@ -390,6 +402,7 @@ class LetterboxCropStabilizer {
     _hits = 0;
     _candidateKind = null;
     _candidateRect = null;
+    _edgeHit = false;
   }
 
   LetterboxCropDecision observe({
@@ -414,9 +427,10 @@ class LetterboxCropStabilizer {
       linkedTolerance: linkedTolerance,
     );
 
-    // An unusable reading says nothing about the bars, so it neither counts
-    // nor breaks a streak. Dark scenes would otherwise never confirm a crop.
+    // An unusable reading never counts. It ends the streak unless a bounded
+    // scan holds one that edge-reaching bars started.
     if (sample.kind == LetterboxSampleKind.ignore) {
+      if (!holdThroughIgnored || !_edgeHit) resetCandidate();
       return const LetterboxCropDecision.hold();
     }
 
@@ -428,10 +442,12 @@ class LetterboxCropStabilizer {
     if (_sameCandidate(sample)) {
       _hits++;
     } else {
+      resetCandidate();
       _candidateKind = sample.kind;
       _candidateRect = sample.rect;
       _hits = 1;
     }
+    if (!sample.inferred) _edgeHit = true;
 
     if (_hits < _hitsNeeded(sample)) {
       return const LetterboxCropDecision.hold();
@@ -469,7 +485,7 @@ class LetterboxCropStabilizer {
   int _hitsNeeded(LetterboxSample sample) {
     if (_isTrusted(sample)) return trustedHits;
     if (sample.kind == LetterboxSampleKind.fullFrame) return newCropHits;
-    if (sample.windowbox) return unknownHits;
+    if (sample.windowbox || !_edgeHit) return unknownHits;
     final rect = sample.rect;
     if (rect != null &&
         LetterboxCrop.isKnownRatio(

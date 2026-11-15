@@ -3560,16 +3560,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
-  String get playerBlackBarsCropped => 'Black bars cropped';
-
-  @override
-  String get playerNoBlackBarsFound => 'No black bars found';
-
-  @override
-  String get playerBlackBarsNotDetected =>
-      'Couldn\'t detect black bars. Try again in a brighter scene';
-
-  @override
   String get stretch => 'Созылу';
 
   @override
