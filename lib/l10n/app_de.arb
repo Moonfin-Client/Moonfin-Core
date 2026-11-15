@@ -10209,7 +10209,7 @@
     "@spotlightRecommendationsSeerr": {
         "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
     },
-    "recommendationSystemJellyfin": "Jellyfin Empfehlungen",
+    "recommendationSystemJellyfin": "Server-Empfehlungen",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
