@@ -622,7 +622,11 @@ class SpotlightStudiosGridSection extends StatelessWidget {
                         imageUrl: entries[i].logoUrl!,
                         fit: BoxFit.contain,
                         imageBuilder: (context, imageProvider) => Container(
-                          color: Colors.white,
+                          color: entries[i].logoUrl!.contains('duotone,ffffff')
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest
+                              : Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
