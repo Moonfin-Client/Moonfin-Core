@@ -5,6 +5,7 @@ import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
 import 'package:moonfin/data/utils/merged_copies.dart';
 import 'package:moonfin/data/viewmodels/library_browse_view_model.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +13,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// A server library sorted by name, answering each page from where it's
 /// asked to start.
 class _SortedItemsApi implements ItemsApi {
-  _SortedItemsApi(this.titles, {this.fails = false, this.originals = const {}});
+  _SortedItemsApi(
+    this.titles, {
+    this.fails = false,
+    this.originals = const {},
+    this.listedOnly = const [],
+  });
 
   /// Each title, with the TMDB id it carries when it has one.
   final List<(String, String?)> titles;
@@ -20,6 +26,10 @@ class _SortedItemsApi implements ItemsApi {
 
   /// The original title of each title that has one.
   final Map<String, String> originals;
+
+  /// Titles the server lists among its provider ids but never pages in, like
+  /// one hidden from this user after the list was read.
+  final List<(String, String?)> listedOnly;
   final requests = <(int, int)>[];
 
   @override
@@ -72,7 +82,8 @@ class _SortedItemsApi implements ItemsApi {
     if (fails) throw StateError('offline');
     final start = startIndex ?? 0;
     requests.add((start, limit ?? 0));
-    final sorted = [...titles]..sort((a, b) => a.$1.compareTo(b.$1));
+    final sorted = [...titles, if (fields == 'ProviderIds') ...listedOnly]
+      ..sort((a, b) => a.$1.compareTo(b.$1));
     return {
       'TotalRecordCount': sorted.length,
       'Items': [
@@ -188,8 +199,9 @@ void main() {
       expect(copiesOf(shared).map((copy) => copy.serverId), ['a', 'b']);
       expect(vm.items.firstWhere((item) => item.name == 'a001').serverId, 'b');
       // Each server is asked from where it left off, not from the list's count.
-      expect(a.requests.first.$1, 0);
-      expect(a.requests.skip(1).every((request) => request.$1 > 0), isTrue);
+      final pages = a.requests.where((request) => request.$2 > 0);
+      expect(pages.first.$1, 0);
+      expect(pages.skip(1).every((request) => request.$1 > 0), isTrue);
     },
   );
 
@@ -214,8 +226,8 @@ void main() {
     addTearDown(vm.dispose);
     await vm.load();
 
-    vm.setSearchQuery('lord');
-    expect(vm.items.map((item) => item.name), ['Le Seigneur des Anneaux']);
+    vm.setSearchQuery('seigneur');
+    expect(vm.items.map((item) => item.name), ['The Lord of the Rings']);
     vm.setSearchQuery('fabuleux');
     expect(vm.items.map((item) => item.name), ['Amélie']);
   });
@@ -249,6 +261,70 @@ void main() {
       expect(vm.items.last.name, 'zzzz');
     },
   );
+
+  group("the first server's copy is the card", () {
+    List<MergedLibrarySource> sources({
+      List<(String, String?)> listedOnly = const [],
+    }) => [
+      _source(
+        'a',
+        _SortedItemsApi([
+          ('Alpha', '1'),
+          ('The Lord of the Rings', '120'),
+        ], listedOnly: listedOnly),
+      ),
+      _source(
+        'b',
+        _SortedItemsApi([
+          ('Beta', '2'),
+          ('Le Seigneur des Anneaux', '120'),
+          ('Spectre', '9'),
+        ]),
+      ),
+    ];
+
+    test('at its own place, even when the other copy sorts first', () async {
+      final vm = await _viewModel(sources());
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      expect(vm.items.map((item) => item.name), [
+        'Alpha',
+        'Beta',
+        'Spectre',
+        'The Lord of the Rings',
+      ]);
+      expect(copiesOf(vm.items.last).map((copy) => copy.serverId), ['a', 'b']);
+    });
+
+    test('but the first copy keeps the card while a filter is on', () async {
+      final vm = await _viewModel(sources());
+      addTearDown(vm.dispose);
+      await vm.setPlayedFilter(PlayedStatusFilter.unwatched);
+
+      expect(
+        vm.items.map((item) => item.name),
+        contains('Le Seigneur des Anneaux'),
+      );
+    });
+
+    test(
+      'a copy that waited for a card that never came shows at the end',
+      () async {
+        final vm = await _viewModel(sources(listedOnly: [('Spectre', '9')]));
+        addTearDown(vm.dispose);
+        await vm.load();
+
+        expect(vm.items.map((item) => item.name), [
+          'Alpha',
+          'Beta',
+          'The Lord of the Rings',
+          'Spectre',
+        ]);
+        expect(vm.totalCount, 4);
+      },
+    );
+  });
 
   test('a server that fails leaves the others browsing', () async {
     final vm = await _viewModel([

@@ -67,6 +67,14 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// The card shown for each title match key, which later copies fold into.
   final Map<String, AggregatedItem> _copyHolders = {};
 
+  /// Holds other servers' copies back for the first server's own card. Null
+  /// while a filter is on, since that server's copy could be filtered out.
+  PreferredCopies? _preferredCopies;
+
+  /// The first server's titles, kept while the query they were read with
+  /// stays the same.
+  ({String query, Set<String> titles})? _preferredTitles;
+
   static const _pageSize = 48;
   static const _firstPageSize = 75;
   // Name and CollectionType come back as default fields, so the library lookup
@@ -614,6 +622,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _fetchedCount = 0;
     _renderedItemIds.clear();
     _copyHolders.clear();
+    _preferredCopies = null;
     _playlistCategoryMap.clear();
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
@@ -1068,6 +1077,14 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
         isFavorite: _favoriteFilter ? true : null,
       );
+      final preferred = isMergedBrowse && startIndex == 0 && !hasActiveFilters
+          ? _readPreferredCopies(
+              includeTypes: includeTypes,
+              excludeTypes: excludeTypes,
+              collapseBoxSets: collapseBoxSets,
+              recursive: recursive,
+            )
+          : null;
       final results = await Future.wait([
         if (isMergedBrowse)
           _fetchMergedPage(
@@ -1107,6 +1124,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
             enableTotalRecordCount: false,
           ),
       ]);
+      if (preferred != null) {
+        final copies = await preferred;
+        if (generation == _listGeneration) _preferredCopies = copies;
+      }
       response = results.first;
       if (fetchDirectories) {
         directories = (results.last['Items'] as List?) ?? const [];
@@ -1155,8 +1176,16 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     // A copy joins the card already shown for its title, so the total shrinks
     // with it like any other dropped row.
     if (isMergedBrowse) {
-      final folded = foldCopies(filtered, _copyHolders);
+      final folded = foldCopies(filtered, _copyHolders, _preferredCopies);
       _filteredOutCount += filtered.length - folded.length;
+      // A copy waiting for a card that never came, such as one hidden from
+      // this user, gets its own card once the list runs out.
+      if (_preferredCopies case final preferred?
+          when _mergedReaders.every((r) => r.done && r.buffer.isEmpty)) {
+        final unclaimed = foldCopies(preferred.takeAllWaiting(), _copyHolders);
+        _filteredOutCount -= unclaimed.length;
+        folded.addAll(unclaimed);
+      }
       filtered = folded;
     }
 
@@ -1312,6 +1341,68 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         isFavorite: isFavorite,
         enableTotalRecordCount: false,
       );
+    }
+  }
+
+  /// Every title the first server of a merged browse holds, which is the
+  /// signed-in one whenever it has this library. Read with the pages' own
+  /// query, so a movie folded into a collection there isn't waited on.
+  Future<PreferredCopies?> _readPreferredCopies({
+    required List<String>? includeTypes,
+    required List<String>? excludeTypes,
+    required bool? collapseBoxSets,
+    required bool recursive,
+  }) async {
+    final serverId = _mergedSources.first.session.server.id;
+    final own = [
+      for (final source in _mergedSources)
+        if (source.session.server.id == serverId) source,
+    ];
+    if (own.length == _mergedSources.length) return null;
+    final query = [
+      serverId,
+      for (final source in own) source.libraryId,
+      includeTypes,
+      excludeTypes,
+      collapseBoxSets,
+      recursive,
+    ].join('|');
+    if (_preferredTitles case (query: final read, :final titles)
+        when read == query) {
+      return PreferredCopies(serverId, titles);
+    }
+    try {
+      final responses = await Future.wait([
+        for (final source in own)
+          _getFilteredItems(
+            client: source.session.client,
+            parentId: source.libraryId,
+            includeItemTypes: includeTypes,
+            excludeItemTypes: excludeTypes,
+            collapseBoxSetItems: collapseBoxSets,
+            recursive: recursive,
+            fields: 'ProviderIds',
+            imageTypeLimit: 0,
+            enableTotalRecordCount: false,
+          ),
+      ]);
+      final titles = {
+        for (final response in responses)
+          for (final raw in response['Items'] as List? ?? const [])
+            if (raw is Map)
+              ...titleMatchKeys(
+                AggregatedItem(
+                  id: raw['Id']?.toString() ?? '',
+                  serverId: serverId,
+                  rawData: raw.cast<String, dynamic>(),
+                ),
+              ),
+      };
+      _preferredTitles = (query: query, titles: titles);
+      return PreferredCopies(serverId, titles);
+    } catch (_) {
+      // Without the list, the first copy shown keeps the card.
+      return null;
     }
   }
 

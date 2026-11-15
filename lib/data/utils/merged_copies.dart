@@ -86,41 +86,98 @@ List<AggregatedItem> copiesOf(AggregatedItem item) => [
 int serverCountOf(AggregatedItem item) =>
     copiesOf(item).map((copy) => copy.serverId).toSet().length;
 
+/// The server whose copy a merged card should be, and the other servers'
+/// copies of its titles waiting for that card to come up.
+class PreferredCopies {
+  PreferredCopies(this.serverId, this.titles);
+
+  final String serverId;
+
+  /// The match keys of every title [serverId] holds.
+  final Set<String> titles;
+
+  final _waiting = <String, List<AggregatedItem>>{};
+
+  /// Holds [item] back when the preferred server has its title, so the card
+  /// shows that server's name and sits where that server sorts it.
+  bool _wait(AggregatedItem item, Set<String> keys) {
+    if (item.serverId == serverId || !keys.any(titles.contains)) return false;
+    for (final key in keys) {
+      (_waiting[key] ??= []).add(item);
+    }
+    return true;
+  }
+
+  Set<AggregatedItem> _take(Set<String> keys) {
+    final taken = {for (final key in keys) ...?_waiting.remove(key)};
+    for (final item in taken) {
+      for (final key in titleMatchKeys(item)) {
+        _waiting[key]?.remove(item);
+      }
+    }
+    return taken;
+  }
+
+  /// Every copy still waiting, once the list has run out without the
+  /// preferred server's copy turning up.
+  List<AggregatedItem> takeAllWaiting() {
+    final all = {for (final items in _waiting.values) ...items};
+    _waiting.clear();
+    return all.toList();
+  }
+}
+
 /// Folds each item that shares a match key with an earlier one into it, as
 /// one of its copies. [holders] carries the titles already shown from one
-/// call to the next, so a later page folds into an earlier page's card.
+/// call to the next, so a later page folds into an earlier page's card. With
+/// [preferred], another server's copy of a title the preferred server holds
+/// waits to join that server's card instead of becoming the card.
 List<AggregatedItem> foldCopies(
   Iterable<AggregatedItem> items, [
   Map<String, AggregatedItem>? holders,
+  PreferredCopies? preferred,
 ]) {
   holders ??= {};
   final kept = <AggregatedItem>[];
   for (final item in items) {
     final keys = titleMatchKeys(item);
     final holder = keys.map((key) => holders![key]).nonNulls.firstOrNull;
-    if (holder == null) {
-      kept.add(item);
-      if (keys.isEmpty) continue;
-      // Made up front so a refreshed card, which copies the map, still shares
-      // the list later copies are added to.
-      item.rawData.putIfAbsent(_copiesKey, () => []);
-      for (final key in keys) {
-        holders[key] = item;
-      }
+    if (holder != null) {
+      _join(holder, item, keys, holders);
       continue;
     }
-    final copies = holder.rawData[_copiesKey] as List;
-    for (final copy in copiesOf(item)) {
-      copies.add({
-        'serverId': copy.serverId,
-        'item': {...copy.rawData}..remove(_copiesKey),
-      });
-    }
+    if (preferred != null && preferred._wait(item, keys)) continue;
+    kept.add(item);
+    if (keys.isEmpty) continue;
+    // Made up front so a refreshed card, which copies the map, still shares
+    // the list later copies are added to.
+    item.rawData.putIfAbsent(_copiesKey, () => []);
     for (final key in keys) {
-      holders.putIfAbsent(key, () => holder);
+      holders[key] = item;
+    }
+    for (final copy in preferred?._take(keys) ?? const <AggregatedItem>{}) {
+      _join(item, copy, titleMatchKeys(copy), holders);
     }
   }
   return kept;
+}
+
+void _join(
+  AggregatedItem holder,
+  AggregatedItem item,
+  Set<String> keys,
+  Map<String, AggregatedItem> holders,
+) {
+  final copies = holder.rawData[_copiesKey] as List;
+  for (final copy in copiesOf(item)) {
+    copies.add({
+      'serverId': copy.serverId,
+      'item': {...copy.rawData}..remove(_copiesKey),
+    });
+  }
+  for (final key in keys) {
+    holders.putIfAbsent(key, () => holder);
+  }
 }
 
 /// Orders items the way a server does for [sortBy], its comma separated sort

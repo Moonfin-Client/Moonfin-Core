@@ -122,6 +122,37 @@ void main() {
     expect(copiesOf(refreshed).map((copy) => copy.id), ['a1', 'b1']);
   });
 
+  group('with a preferred server', () {
+    test("another server's copy waits to join that server's card", () {
+      final preferred = PreferredCopies('a', {'Movie:tmdb:120'});
+      final holders = <String, AggregatedItem>{};
+      final french = _movie('b1', 'b', ids: {'Tmdb': '120'});
+      final other = _movie('b2', 'b', ids: {'Tmdb': '7'});
+      final english = _movie('a1', 'a', ids: {'Tmdb': '120'});
+
+      expect(foldCopies([french, other], holders, preferred), [other]);
+      expect(foldCopies([english], holders, preferred), [english]);
+      expect(copiesOf(english).map((copy) => copy.id), ['a1', 'b1']);
+      expect(preferred.takeAllWaiting(), isEmpty);
+    });
+
+    test('a copy still waiting is handed back once', () {
+      final preferred = PreferredCopies('a', {
+        'Movie:tmdb:120',
+        'Movie:imdb:tt0120737',
+      });
+      final french = _movie(
+        'b1',
+        'b',
+        ids: {'Tmdb': '120', 'Imdb': 'tt0120737'},
+      );
+
+      expect(foldCopies([french], {}, preferred), isEmpty);
+      expect(preferred.takeAllWaiting(), [french]);
+      expect(preferred.takeAllWaiting(), isEmpty);
+    });
+  });
+
   group('mergedSortComparator', () {
     test('orders by the sort fields, a missing value first', () {
       final items = [
