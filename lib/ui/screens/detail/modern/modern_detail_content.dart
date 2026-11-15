@@ -2418,9 +2418,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               imageBuilder: (context, imageProvider) {
                                 return Container(
                                   color: imageUrl.contains('duotone,ffffff')
-                                      ? Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest
+                                      ? const Color(0xFF1A1A1A)
                                       : Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
