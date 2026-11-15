@@ -3493,6 +3493,8 @@ void main() {
         UserPreferences.libraryCardTitles.key,
         UserPreferences.useDetailedSubHeadings.key,
         UserPreferences.hideBackdropsInLibraries.key,
+        UserPreferences.hideLibraryWatchProgress.key,
+        UserPreferences.hideLibraryUnwatchedCount.key,
         UserPreferences.musicLibraryStyle.key,
         UserPreferences.bookLibraryStyle.key,
       ]) {

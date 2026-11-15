@@ -1335,6 +1335,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.useDetailedSubHeadings,
       subtitle: l10n.useDetailedSubHeadingsDescription,
     ),
+    libraries.leaf(
+      'pref_hide_library_watch_progress',
+      l10n.hideLibraryWatchProgress,
+      subtitle: l10n.hideLibraryWatchProgressSubtitle,
+      keywords: ['resume', 'played'],
+    ),
+    libraries.leaf(
+      'pref_hide_library_unwatched_count',
+      l10n.hideLibraryUnwatchedCount,
+      subtitle: l10n.hideLibraryUnwatchedCountSubtitle,
+      keywords: ['unplayed'],
+    ),
 
     mediaBar.screen(keywords: ['featured', 'carousel', 'banner', 'hero']),
     mediaBar.leaf('mediaBarMode', l10n.mediaBarMode),
