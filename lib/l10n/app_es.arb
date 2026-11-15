@@ -6597,7 +6597,7 @@
     "settingsDoNothing": "no hacer nada",
     "settingsMaxBitrateDescription": "Limite la tasa de bits de transmisión. El contenido que supere este umbral se transcodificará para ajustarse.",
     "settingsMaxResolutionDescription": "Limita la resolución máxima que solicitará el jugador. El contenido de mayor resolución se transcodificará hacia abajo.",
-    "settingsPlayerZoomDescription": "Cómo se debe escalar el video para que se ajuste a la pantalla.",
+    "settingsPlayerZoomDescription": "Cómo se ajusta el vídeo a la pantalla. La función Zoom para llenar amplía la imagen hasta que llena la pantalla y recorta los bordes. No detecta las barras negras.",
     "settingsPlaybackEngineAndroidTv": "Motor de reproducción (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Elija el motor de reproducción predeterminado en dispositivos Android TV. Los cambios se aplican a la siguiente sesión de reproducción.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (recomendado)",
@@ -6648,7 +6648,7 @@
     "settingsSyncplayAdvancedCorrection": "Corrección avanzada",
     "settingsSyncplayAdvancedCorrectionSubtitle": "Habilite la lógica de sincronización detallada",
     "settingsSyncplaySyncCorrection": "Corrección de sincronización",
-    "settingsSyncplaySyncCorrectionSubtitle": "Ajusta automáticamente la reproducción para mantener la sincronización",
+    "settingsSyncplaySyncCorrectionSubtitle": "Mantén este dispositivo en sintonía con la habitación",
     "settingsSyncplaySpeedToSync": "Velocidad de sincronización",
     "settingsSyncplaySpeedToSyncSubtitle": "Utilice el ajuste de velocidad de reproducción para sincronizar",
     "settingsSyncplaySkipToSync": "Saltar a sincronización",
@@ -9153,7 +9153,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Recommends",
+    "recommendationSystemJellyfin": "Server Recommends",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -11889,5 +11889,174 @@
     "afterHoursStart": "Inicio",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "playlistTypeMixed": "Mezclado",
+    "@playlistTypeMixed": {
+        "description": "Filter checkbox label for mixed media playlists"
+    },
+    "settingsAudioPassthroughModeDescription": "Cómo llega el sonido envolvente comprimido a su televisor o receptor.",
+    "settingsDownmixToStereoDescription": "Mezclar todo el audio decodificado en dos canales.",
+    "hideDetailsMediaDescription": "Ocultar descripción multimedia",
+    "@hideDetailsMediaDescription": {
+        "description": "Setting title to hide media description on details screen"
+    },
+    "hideHomeMediaDescription": "Ocultar descripción multimedia",
+    "@hideHomeMediaDescription": {
+        "description": "Setting title to hide media description on home screen"
+    },
+    "manual": "Manual",
+    "@manual": {
+        "description": "Option: manual"
+    },
+    "loadingAnimationConfiguration": "Cargando la configuración de la animación",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "setupDetailSpotlightHint": "El héroe principal, con tarjetas desplegables para el reparto y los extras.",
+    "@setupDetailSpotlightHint": {
+        "description": "What the spotlight detail screen style gives you"
+    },
+    "friendsLastWatched": "Visto por última vez {title}",
+    "@friendsLastWatched": {
+        "description": "Status line of an offline friend with the last thing they played",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastSeen": "Visto por última vez {time}",
+    "@friendsLastSeen": {
+        "description": "Status line of an offline friend, with a relative time such as 5m ago",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "chatMakeAdmin": "Crear administrador",
+    "@chatMakeAdmin": {
+        "description": "Action that makes a group member an admin"
+    },
+    "chatLeaveBody": "¿Abandonas este grupo? Alguien tendrá que añadirte de nuevo para que puedas reincorporarte.",
+    "@chatLeaveBody": {
+        "description": "Body of the dialog leaving a group chat"
+    },
+    "detailSectionMediaInfo": "Información Multimedia",
+    "@detailSectionMediaInfo": {
+        "description": "Details screen section: file, stream and Direct Play details"
+    },
+    "libraryOrder": "Orden de la biblioteca",
+    "@libraryOrder": {
+        "description": "Title of the settings screen that reorders the user's libraries"
+    },
+    "holidayLunarNewYear": "Año Nuevo Lunar",
+    "@holidayLunarNewYear": {
+        "description": "Seasonal row title for Lunar New Year"
+    },
+    "profileLoad": "Cargar",
+    "@profileLoad": {
+        "description": "Button that replaces this device's settings with the chosen profile from the server"
+    },
+    "settingsGeneralSubtitle": "Idioma, reloj, entrada y rendimiento",
+    "@settingsGeneralSubtitle": {
+        "description": "Subtitle for the General settings root entry"
+    },
+    "settingsLibrariesEntrySubtitle": "Visibilidad, orden y páginas de la biblioteca",
+    "@settingsLibrariesEntrySubtitle": {
+        "description": "Subtitle for the Libraries entry on the Appearance settings screen"
+    },
+    "settingsDetailsPageSubtitle": "Diseño, botones, secciones, valoraciones y música de fondo",
+    "@settingsDetailsPageSubtitle": {
+        "description": "Subtitle for the Details Page entry on the Appearance settings screen"
+    },
+    "settingsLanguageSection": "Idioma",
+    "@settingsLanguageSection": {
+        "description": "Section header on the General settings screen"
+    },
+    "settingsLooksSection": "Aspecto",
+    "@settingsLooksSection": {
+        "description": "Section header on the Home Screen settings screen for how rows and cards look"
+    },
+    "jumpBackIn": "Volver a Entrar",
+    "@jumpBackIn": {
+        "description": "Heading over the albums and playlists the user played recently in a music library"
+    },
+    "keptAsComplete": "Marcado como completo",
+    "@keptAsComplete": {
+        "description": "Snackbar confirmation after Keep as Complete"
+    },
+    "rommLinkedAs": "Vinculado como {username}",
+    "@rommLinkedAs": {
+        "description": "Shown when the user's RomM account is linked",
+        "placeholders": {
+            "username": {
+                "type": "String"
+            }
+        }
+    },
+    "recordPromptUncertainMatch": "Coinciden únicamente por título y descripción. Comprueba que se trata del mismo programa.",
+    "@recordPromptUncertainMatch": {
+        "description": "Caution under the future showing when it has no season and episode numbers to confirm it is the same program"
+    },
+    "musicMix": "Mezcla",
+    "@musicMix": {
+        "description": "Small label over a music mix card, as in a playlist the app put together"
+    },
+    "setupMediaBarMoonfinHint": "Obra de arte grande con el título, los detalles y la descripción general sobre ella.",
+    "@setupMediaBarMoonfinHint": {
+        "description": "What the Moonfin media bar style looks like"
+    },
+    "setupMediaBarMakdHint": "Gran obra de arte encabezada por un gran logotipo de título.",
+    "@setupMediaBarMakdHint": {
+        "description": "What the MakD media bar style looks like"
+    },
+    "radarrCalendarHideDownloaded": "Ocultar las películas que ya están en el servidor",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Ocultar episodios que ya están en el servidor",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "calendarBadgeMidseasonFinale": "Final de mitad de temporada",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Oculta los títulos de los episodios y las imágenes fijas de las series que te has quedado atrás",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "setupMoonbaseManualSteps": "La instalación requiere algunos pasos en tu servidor. Los encontrarás todos en este enlace.",
+    "@setupMoonbaseManualSteps": {
+        "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+    },
+    "moonbaseFeatureMessages": "Mensajes del administrador de su servidor",
+    "@moonbaseFeatureMessages": {
+        "description": "Moonbase dialog feature"
+    },
+    "watchPartyJoinWithCode": "Únete con un código",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyStatusJoining": "Unirse",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyMakeHost": "Hacer anfitrión",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyLeave": "Abandonar",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "settingsPreviewRowsOffInKidsMode": "El modo infantil mantiene estas filas fuera de la pantalla de inicio, por lo que esta configuración no lo modifica.",
+    "@settingsPreviewRowsOffInKidsMode": {
+        "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
+    },
+    "settingsPreviewKeptOffByKidsMode": "El modo Niños mantiene esto desactivado de Inicio",
+    "@settingsPreviewKeptOffByKidsMode": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
     }
 }
