@@ -101,6 +101,7 @@ class _FakePlaybackManager extends Fake implements PlaybackManager {
     bool enableTranscoding = true,
     bool autoPlay = true,
     bool carryTrackSelections = false,
+    bool stopCurrentAsFinished = false,
   }) async {
     played.add([for (final item in items) (item as AggregatedItem).id]);
     starts.add(startIndex);

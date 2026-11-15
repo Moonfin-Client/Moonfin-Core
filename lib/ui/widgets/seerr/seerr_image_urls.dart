@@ -17,3 +17,8 @@ const seerrBackdropSmallBase = 'https://image.tmdb.org/t/p/w780';
 
 /// Streaming service logos, which never show bigger than a small tile.
 const seerrLogoBase = 'https://image.tmdb.org/t/p/w92';
+
+/// A Seerr image path as a URL on [base]. A path that is already a URL is
+/// kept: on Silo a person's credits are library titles with their own poster.
+String seerrImageUrl(String base, String path) =>
+    path.startsWith('http') ? path : '$base$path';
