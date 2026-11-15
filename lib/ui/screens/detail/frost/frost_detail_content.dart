@@ -92,17 +92,24 @@ Color get _platter => _lit(0.14);
 const _duration = Duration(milliseconds: 200);
 
 /// The stage Frost's TV view is laid out on: 1280 by 720 at the least, in
-/// the room's own shape so it fills the room rather than leaving bars.
-Size frostStageSize(BoxConstraints room) {
+/// the room's own shape. With [fill], as on a TV, it fills the room, and
+/// otherwise it's drawn one to one, so a big window gets more room rather
+/// than a bigger picture. [uiScale] then magnifies it from there for as long
+/// as the least stage still fits.
+Size frostStageSize(
+  BoxConstraints room, {
+  double uiScale = 1,
+  bool fill = true,
+}) {
   if (!room.hasBoundedWidth || !room.hasBoundedHeight) {
     return const Size(1280, 720);
   }
   final aspect = room.maxWidth / room.maxHeight;
-  final width = math.max(1280.0, 720 * aspect);
-  return Size(width, width / aspect);
+  final fit = room.maxWidth / math.max(1280.0, 720 * aspect);
+  return room.biggest / math.min(fit, (fill ? fit : 1) * uiScale);
 }
 
-/// Scales [child], laid out on the stage, to fill the room the app's own
+/// Scales [child], laid out on the stage, into the room the app's own
 /// navigation leaves, under a top navbar, past the collapsed left sidebar or
 /// the back button a bottom navbar brings, and above that bar.
 class FrostStage extends StatelessWidget {
@@ -112,21 +119,39 @@ class FrostStage extends StatelessWidget {
   const FrostStage({super.key, required this.navbarTop, required this.child});
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.only(
-      top: navbarTop ? TopToolbar.heightFor(context) : 0,
-      left: navbarTop ? 0 : 72,
-      bottom: BottomNavInsetScope.maybeOf(context) ?? 0,
-    ),
-    child: LayoutBuilder(
-      builder: (context, constraints) => FittedBox(
-        child: SizedBox.fromSize(
-          size: frostStageSize(constraints),
-          child: child,
-        ),
+  Widget build(BuildContext context) {
+    final uiScale = detailDesktopScale();
+    final fill = PlatformDetection.isTV;
+    final media = MediaQuery.of(context);
+    return Padding(
+      padding: EdgeInsets.only(
+        top: navbarTop ? TopToolbar.heightFor(context) : 0,
+        left: navbarTop ? 0 : 72,
+        bottom: BottomNavInsetScope.maybeOf(context) ?? 0,
       ),
-    ),
-  );
+      child: LayoutBuilder(
+        builder: (context, room) {
+          final stage = frostStageSize(room, uiScale: uiScale, fill: fill);
+          // The app already scales text by the UI scale, so the text gives
+          // back whatever part of it the stage's magnification carries.
+          final carried = frostStageSize(room, fill: fill).width / stage.width;
+          return FittedBox(
+            child: SizedBox.fromSize(
+              size: stage,
+              child: MediaQuery(
+                data: media.copyWith(
+                  textScaler: TextScaler.linear(
+                    media.textScaler.scale(1) / carried,
+                  ),
+                ),
+                child: child,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 /// The title floats in a glass window over a blurred, dimmed copy of its own
