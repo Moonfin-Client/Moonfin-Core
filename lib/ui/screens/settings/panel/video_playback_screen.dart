@@ -174,6 +174,20 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   60000: l10n.settingsSixtySeconds,
                 },
               ),
+              if (PlatformDetection.isAppleTV)
+                EnumPreferenceTile<AppleTvClickpadSeekMode>(
+                  preference: UserPreferences.appleTvClickpadSeekMode,
+                  title: l10n.clickpadSeeking,
+                  description: l10n.clickpadSeekingDescription,
+                  icon: Icons.touch_app_outlined,
+                  labelOf: (v) => switch (v) {
+                    AppleTvClickpadSeekMode.always => l10n.always,
+                    AppleTvClickpadSeekMode.controlsVisible =>
+                      l10n.clickpadSeekingControlsVisible,
+                    AppleTvClickpadSeekMode.pausedOnly =>
+                      l10n.clickpadSeekingPausedOnly,
+                  },
+                ),
               IntPickerPreferenceTile(
                 preference: UserPreferences.controlsHideDelay,
                 title: l10n.settingsHideControlsAfter,

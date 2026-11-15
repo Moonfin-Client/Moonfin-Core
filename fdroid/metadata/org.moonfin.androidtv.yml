@@ -1,0 +1,32 @@
+Categories:
+  - Multimedia
+License: GPL-3.0-or-later
+AuthorName: Moonfin
+WebSite: https://moonfin.io/
+SourceCode: https://github.com/Moonfin-Client/Moonfin-Core
+IssueTracker: https://github.com/Moonfin-Client/Moonfin-Core/issues
+Changelog: https://github.com/Moonfin-Client/Moonfin-Core/releases
+Donate: https://www.buymeacoffee.com/moonfin
+
+Summary: Jellyfin, Emby, Plex and Silo client for phones, tablets and TVs
+Description: |-
+  Moonfin brings your Jellyfin, Emby, and Plex experience to both Android TV and Android phones/tablets in one polished app.
+
+  Whether you’re on the couch or on the go, Moonfin makes it easy to browse, stream, and manage your personal media library with a fast, modern interface built for every screen size.
+
+  To use Moonfin, you’ll need your own Jellyfin, Emby, or Plex server.
+
+  With Moonfin, you can:
+
+  • Watch movies, shows, and music from your personal library
+  • Use one app across Android TV and mobile
+  • Download media for offline playback
+  • Browse and play Live TV and DVR content (server setup required)
+  • Watch trailers directly in the app
+  • Request new content with Seerr integration
+  • Connect multiple servers and browse them in one place
+  • Customize your home screen, navigation, and playback behavior
+  • Sync compatible settings across devices with the Moonfin plugin
+  • Use advanced playback controls for subtitles, audio tracks, and more
+
+  Moonfin is a third-party client built with love for the Jellyfin, Emby, and Plex communities.

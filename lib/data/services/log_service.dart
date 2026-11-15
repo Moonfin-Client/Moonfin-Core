@@ -112,10 +112,17 @@ class LogService extends ChangeNotifier {
     caseSensitive: false,
   );
 
-  static final _emailRegex = RegExp(r'[\w.+-]+@[\w-]+(?:\.[\w-]+)+');
+  // A real address ends in a letters-only domain, so a display mode like
+  // 1920x1080@23.976 stays.
+  static final _emailRegex = RegExp(
+    r'[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[A-Za-z]{2,}\b',
+  );
 
-  // The folder after home is the account name, often the person's own.
-  static final _homeDirRegex = RegExp(r'(/home/|/Users/|\\Users\\)[^/\\\s]+');
+  // The folder after home is the account name, often the person's own. Server
+  // user IDs in paths like /Users/<id>/Items aren't names, so they stay.
+  static final _homeDirRegex = RegExp(
+    r'(/home/|/Users/|\\Users\\)(?![0-9a-fA-F]{32}\b|[0-9a-fA-F-]{36}\b)[^/\\\s]+',
+  );
 
   static final _ipv4Regex = RegExp(
     r'\b(?:\d{1,3}\.){3}\d{1,3}\b',
