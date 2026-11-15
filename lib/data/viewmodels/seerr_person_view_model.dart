@@ -43,12 +43,12 @@ class SeerrPersonViewModel extends ChangeNotifier {
       final credits = results[1] as SeerrPersonCombinedCredits;
 
       final castWithPosters = credits.cast
-          .where((i) => i.posterPath != null && !i.isBlacklisted)
+          .where((i) => _shows(i) && !i.isBlacklisted)
           .toList()
         ..sort((a, b) => a.displayTitle.compareTo(b.displayTitle));
 
       final crewWithPosters = credits.crew
-          .where((i) => i.posterPath != null && !i.isBlacklisted)
+          .where((i) => _shows(i) && !i.isBlacklisted)
           .toList()
         ..sort((a, b) => a.displayTitle.compareTo(b.displayTitle));
 
@@ -62,4 +62,10 @@ class SeerrPersonViewModel extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  /// Credits without a poster are left out, unless the title is in the
+  /// library: Silo's credits are library titles, and one without a poster
+  /// shows as a card without an image.
+  static bool _shows(SeerrDiscoverItem item) =>
+      item.posterPath != null || item.mediaInfo?.jellyfinMediaId != null;
 }

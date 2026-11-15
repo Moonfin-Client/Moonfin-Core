@@ -27,6 +27,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 import 'package:moonfin/ui/widgets/marquee_text.dart';
+import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
@@ -149,6 +150,8 @@ class _Manager extends PlaybackManager {
   int stopCalls = 0;
   int finishedStopCalls = 0;
   int nextInQueueCalls = 0;
+  int finishedNextInQueueCalls = 0;
+  bool blockNextAdvance = false;
   PlaybackBringupState bringup = const PlaybackBringupState.idle();
   StreamResolutionResult? resolution;
 
@@ -190,6 +193,14 @@ class _Manager extends PlaybackManager {
   @override
   Future<void> nextInQueue() async {
     nextInQueueCalls++;
+    queueService.next();
+  }
+
+  @override
+  Future<void> nextInQueueAsFinished() async {
+    finishedNextInQueueCalls++;
+    if (blockNextAdvance) return;
+    notifyFinishedItemStop(queueService.currentItem);
     queueService.next();
   }
 }
@@ -489,6 +500,204 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  group('holding Left or Right on TV', () {
+    Future<void> playOnTv(WidgetTester tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.skipForwardLength,
+        10000,
+      );
+      await mountPlayer(tester);
+      manager.state.setDuration(const Duration(hours: 10));
+      manager.state.setPlaying(true);
+      await tester.pump();
+      // Lets the controls hide.
+      await tester.pump(const Duration(seconds: 10));
+    }
+
+    // Focus moves wait for a frame and retry, so frames keep coming the way
+    // playing video does.
+    Future<void> advance(WidgetTester tester, int milliseconds) async {
+      for (var t = 0; t < milliseconds; t += 10) {
+        tester.binding.scheduleFrame();
+        await tester.pump(const Duration(milliseconds: 10));
+      }
+    }
+
+    Future<void> pausedWithControlsUp(WidgetTester tester) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+      manager.state.setPlaying(false);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await advance(tester, 300);
+    }
+
+    test('grows from the set step to 30, 60 and 180 seconds', () {
+      expect(
+        [
+          for (var count = 1; count <= 18; count++)
+            heldSeekStepMs(10000, count) ~/ 1000,
+        ],
+        [10, 10, 10, 30, 30, 30, 30, 30, 60, 60, 60, 60, 60, 60, 60, 60, 180, 180],
+      );
+      expect(heldSeekStepMs(60000, 5), 60000, reason: 'never below the set step');
+    });
+
+    testWidgets('steps on a timer, not on key repeats', (tester) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+      manager.state.setPosition(const Duration(seconds: 10));
+      await advance(tester, 200);
+      for (var i = 0; i < 5; i++) {
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      }
+      // Steps land at 350 ms, then every 110 ms, through the eighth.
+      await advance(tester, 850);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [
+        const Duration(seconds: 10),
+        const Duration(seconds: 10 + 10 + 10 + 5 * 30),
+      ]);
+
+      await advance(tester, 1000);
+      expect(manager.seeks, hasLength(2), reason: 'release stops the hold');
+
+      // A tap on the seek bar moves one set step.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks.last, const Duration(seconds: 190));
+      await advance(tester, 1000);
+      expect(manager.seeks, hasLength(3));
+
+      // Lets the last commit stop waiting for the player to land.
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek with the controls up, a press first shows them', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.controlsVisible,
+      );
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty, reason: 'held, it stays blocked');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, playback never seeks', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+
+      for (var i = 0; i < 2; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 300);
+      }
+      expect(manager.seeks, isEmpty);
+
+      // A stalled stream isn't a pause.
+      manager.state
+        ..setPlayWhenReady(true)
+        ..setPlaying(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      manager.state.setPlayWhenReady(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, resuming drops a hold', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 200);
+      manager.state.setPlaying(true);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a hold ended before its first step stays ended', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPlaying(true);
+      await advance(tester, 400);
+      manager.state.setPlaying(false);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 600);
+      expect(manager.seeks, isEmpty);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('stops by itself when the release never comes', (
+      tester,
+    ) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPosition(const Duration(seconds: 10));
+      await advance(tester, 1000);
+      await tester.pump(const Duration(seconds: 11));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      // From 10 s, ten seconds of steps: 10, 10, five of 30, eight of 60 and
+      // 73 of 180.
+      expect(
+        manager.seeks.last,
+        const Duration(seconds: 10 + 10 + 10 + 5 * 30 + 8 * 60 + 73 * 180),
+      );
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   testWidgets('short Cinema pre-roll blocks ordinary intro/outro actions', (
     tester,
   ) async {
@@ -598,6 +807,165 @@ void main() {
     expect(find.byType(VideoPlayerScreen), findsNothing);
     await tester.pumpWidget(const SizedBox());
   }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
+
+  group('TV Next Up during outro', () {
+    setUp(() {
+      PlatformDetection.setTvMode(true);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    });
+
+    tearDown(() {
+      PlatformDetection.setTvMode(false);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    });
+
+    testWidgets(
+      'closing Next Up during outro on TV marks the episode watched and exits finished',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.tap(
+          find.descendant(
+            of: find.byType(NextUpOverlay),
+            matching: find.byIcon(Icons.close_rounded),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedStopCalls, 1);
+        expect(manager.stopCalls, 0);
+        expect(client.userLibrary.markedPlayed, ['ep1']);
+        expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        expect((ep1Raw['UserData'] as Map)['PlaybackPositionTicks'], 0);
+        expect(find.byType(VideoPlayerScreen), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'playing next from Next Up during outro marks the episode watched and advances finished',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, ['ep1']);
+        expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'intercepted Next Up play during outro does not mark the episode watched until committed',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.blockNextAdvance = true;
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, isEmpty);
+        expect(ep1Raw['UserData'], isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+  });
 
   // Issue #1688: a resume that takes longer than the hide delay to start
   // playing left the controls up until a key was pressed.

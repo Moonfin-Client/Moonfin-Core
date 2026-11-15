@@ -22,7 +22,6 @@ import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 import '../../../util/focus/gamepad/android_gamepad_channel.dart';
 import '../../../util/desktop_emulator_gamepad.dart';
 import '../../../util/emulator_host_messages.dart';
-import '../../../util/insecure_certificates.dart';
 import '../../../util/webview_client_cert.dart';
 import '../../../util/webview_environment.dart';
 import '../../../util/system_ui.dart';
@@ -1479,7 +1478,12 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
                         gAllowSelfSignedCertificates
                         ? (controller, challenge) async =>
                               ServerTrustAuthResponse(
-                                action: ServerTrustAuthResponseAction.PROCEED,
+                                action:
+                                    acceptsUntrustedCertificate(
+                                      challenge.protectionSpace.host,
+                                    )
+                                    ? ServerTrustAuthResponseAction.PROCEED
+                                    : ServerTrustAuthResponseAction.CANCEL,
                               )
                         : null,
                     onReceivedClientCertRequest: clientCertificateResponse,

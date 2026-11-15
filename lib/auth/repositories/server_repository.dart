@@ -22,7 +22,25 @@ class ServerRepository {
   final List<Server> _servers = [];
   final _stateController = StreamController<ServerAdditionState>.broadcast();
 
-  ServerRepository(this._authStore, this._clientFactory, [this._certStore]);
+  ServerRepository(this._authStore, this._clientFactory, [this._certStore]) {
+    gIsOwnServerHost = _isOwnServerHost;
+  }
+
+  /// Hosts the user typed this session, which have no saved server yet while
+  /// they're being added.
+  final Set<String> _typedHosts = {};
+
+  /// Whether [host] belongs to a saved server at any address it's reached on,
+  /// or to one the user typed. Self-signed certificates are only accepted for
+  /// these.
+  bool _isOwnServerHost(String host) =>
+      _typedHosts.contains(host) ||
+      _servers.any(
+        (s) => [
+          s.address,
+          ...s.candidateAddresses,
+        ].any((a) => Uri.tryParse(a)?.host == host),
+      );
 
   List<Server> get servers => List.unmodifiable(_servers);
   Stream<ServerAdditionState> get additionState => _stateController.stream;
@@ -89,6 +107,8 @@ class ServerRepository {
     if (address.isEmpty) {
       return null;
     }
+    final typedHost = Uri.tryParse(address)?.host;
+    if (typedHost != null && typedHost.isNotEmpty) _typedHosts.add(typedHost);
 
     final candidates = _buildCandidates(address);
     _stateController.add(ServerConnecting(address: address));

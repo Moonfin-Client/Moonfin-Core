@@ -420,6 +420,7 @@ void main() {
 
     tearDown(() async {
       gAllowSelfSignedCertificates = false;
+      gIsOwnServerHost = (_) => false;
       await server.close(force: true);
     });
 
@@ -455,10 +456,30 @@ void main() {
 
     test('is accepted once the user allows self-signed ones', () async {
       gAllowSelfSignedCertificates = true;
+      gIsOwnServerHost = (host) => host == '127.0.0.1';
       final dio = Dio();
       configureServerDio(dio);
 
       expect(await statusOf(dio), HttpStatus.noContent);
+    });
+
+    test('is still refused from a host that is not the user\'s server',
+        () async {
+      gAllowSelfSignedCertificates = true;
+      gIsOwnServerHost = (host) => host == 'my-server.lan';
+      final dio = Dio();
+      configureServerDio(dio);
+
+      await expectLater(
+        statusOf(dio),
+        throwsA(
+          isA<DioException>().having(
+            isUntrustedCertificate,
+            'an untrusted certificate',
+            isTrue,
+          ),
+        ),
+      );
     });
 
     test('is the only failure read as one', () {

@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/playback/native_apple_player_backend.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,6 +61,40 @@ void main() {
 
     expect(await sent(canBrowse: true), isTrue);
     expect(await sent(canBrowse: false), isFalse);
+  });
+
+  test('passes seek modes to the native player', () async {
+    for (final mode in AppleTvClickpadSeekMode.values) {
+      await backend.setUiMetadata(
+        topTitle: '',
+        topSubtitle: '',
+        chapters: const [],
+        hasPrevious: false,
+        hasNext: false,
+        skipForwardMs: 30000,
+        skipBackMs: 10000,
+        clickpadSeekMode: mode,
+        audioTracks: const [],
+        subtitleTracks: const [],
+      );
+      final args = calls.last.arguments as Map;
+      expect(args['clickpadSeekMode'], mode.name);
+    }
+  });
+
+  test('leaves seeking unrestricted by default', () async {
+    await backend.setUiMetadata(
+      topTitle: '',
+      topSubtitle: '',
+      chapters: const [],
+      hasPrevious: false,
+      hasNext: false,
+      skipForwardMs: 30000,
+      skipBackMs: 10000,
+      audioTracks: const [],
+      subtitleTracks: const [],
+    );
+    expect((calls.last.arguments as Map)['clickpadSeekMode'], 'always');
   });
 
   test('opens, refreshes and closes the panel by name', () async {

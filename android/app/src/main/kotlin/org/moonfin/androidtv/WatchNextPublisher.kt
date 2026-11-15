@@ -55,7 +55,10 @@ class WatchNextPublisher(private val context: Context) {
                 // A Next Up entry that has since been started must be rewritten
                 // as Continue, otherwise it keeps WATCH_NEXT_TYPE_NEXT, no
                 // progress and its old engagement time.
-                ((incoming["resumePositionMs"] as? Number)?.toLong() ?: 0L) > 0L
+                ((incoming["resumePositionMs"] as? Number)?.toLong() ?: 0L) > 0L ||
+                // Also rewrites entries whose poster changed, such as ones saved
+                // by older builds with the server token in the URI.
+                program.posterArtUri?.toString() != incoming["posterUri"]
         }
         for (program in stale) {
             context.contentResolver.delete(

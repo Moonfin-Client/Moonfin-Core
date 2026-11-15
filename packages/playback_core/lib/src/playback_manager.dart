@@ -643,6 +643,9 @@ class PlaybackManager implements AudioOwnable {
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
+  final _finishedItemStopController = StreamController<dynamic>.broadcast(
+    sync: true,
+  );
   final _liveRecoveryStatusController =
       StreamController<LiveRecoveryStatus?>.broadcast();
   final _volumeController = StreamController<double>.broadcast();
@@ -666,6 +669,18 @@ class PlaybackManager implements AudioOwnable {
   /// Each new level, so a screen showing its own volume can follow a change
   /// made from somewhere else, such as a session remote.
   Stream<double> get volumeStream => _volumeController.stream;
+
+  /// Emits the outgoing queue item when a finished stop or finished queue
+  /// advance commits (after any transport interceptor has allowed it).
+  Stream<dynamic> get finishedItemStopStream =>
+      _finishedItemStopController.stream;
+
+  /// Allows test subclasses overriding `stopAsFinished` or
+  /// `nextInQueueAsFinished` to emit committed finished-stop events.
+  void notifyFinishedItemStop(dynamic item) {
+    if (item == null || _finishedItemStopController.isClosed) return;
+    _finishedItemStopController.add(item);
+  }
 
   void reportVolumeState({
     required double volume,
@@ -2947,6 +2962,10 @@ class PlaybackManager implements AudioOwnable {
     // episode, so the audio and subtitle picks carry over the way they do onto
     // the next episode. The track arguments are ignored then.
     bool carryTrackSelections = false,
+    // True when a coordinator (SyncPlay) replaces the queue on behalf of
+    // [TransportAction.nextAsFinished], so the outgoing item closes as watched
+    // without keeping a resume point.
+    bool stopCurrentAsFinished = false,
   }) async {
     _beginNewPlaybackSource('the viewer tuned somewhere else');
     _viewerPaused = !autoPlay;
@@ -2992,7 +3011,7 @@ class PlaybackManager implements AudioOwnable {
         backend: _traceBackendName(_backend),
       ),
     );
-    await _stopAndReportCurrent();
+    await _stopAndReportCurrent(finished: stopCurrentAsFinished);
     _secondarySubtitleStreamIndex = null;
     _secondarySubtitleDelaySeconds = 0;
     _resetBackendSelectionLock();
@@ -4423,7 +4442,16 @@ class PlaybackManager implements AudioOwnable {
     await _advanceQueue();
   }
 
-  Future<void> _advanceQueue() async {
+  /// Advances like [nextInQueue], reporting the current item stopped at its
+  /// end so leaving its credits marks it watched instead of keeping a resume
+  /// point. Dispatches [TransportAction.nextAsFinished] so coordinators that
+  /// replace the queue via [playItems] know to pass `stopCurrentAsFinished`.
+  Future<void> nextInQueueAsFinished() async {
+    if (await _maybeIntercept(TransportAction.nextAsFinished)) return;
+    await _advanceQueue(finished: true);
+  }
+
+  Future<void> _advanceQueue({bool finished = false}) async {
     // Nothing queued after this, so run it to the end and let the ordinary
     // finish handle watched state and whatever follows, rather than stopping
     // on a dead player.
@@ -4436,7 +4464,7 @@ class PlaybackManager implements AudioOwnable {
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
-      await _stopAndReportCurrent(skipQueueChange: true);
+      await _stopAndReportCurrent(skipQueueChange: true, finished: finished);
       _resetBackendSelectionLock();
       final hadNext = queueService.next();
       if (hadNext) {
@@ -5580,6 +5608,9 @@ class PlaybackManager implements AudioOwnable {
           !identical(queueService.currentItem, expectedItem)) {
         return false;
       }
+      final finishedItem = finished
+          ? (queueService.currentItem ?? _lastPlaybackItem)
+          : null;
       // The other half of the re-resolve note: between them every app
       // initiated teardown of the player's playlist is now on the record.
       _diagnosticLogger?.call(
@@ -5596,6 +5627,7 @@ class PlaybackManager implements AudioOwnable {
       _stopProgressTimer();
       final backend = _backend;
       if (_hasNoActivePlayback(backend)) {
+        if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
           _forceTranscodeForQueue = false;
           _directPlayAllowedForQueue = true;
@@ -5608,6 +5640,7 @@ class PlaybackManager implements AudioOwnable {
         return true;
       }
       if (_isOfflinePlayback) {
+        if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
           await _onOfflineStop?.call();
           _onOfflineStop = null;
@@ -5683,6 +5716,7 @@ class PlaybackManager implements AudioOwnable {
       _currentResolution = null;
       _lastPlaybackItem = null;
       _lastPlaybackResolution = null;
+      if (finishedItem != null) notifyFinishedItemStop(finishedItem);
       await _backend?.stop();
       _playbackStartTime = null;
       _waitingForMedia = false;
@@ -5732,6 +5766,7 @@ class PlaybackManager implements AudioOwnable {
     _backendChangedController.close();
     _bringupStateController.close();
     _sessionEndedController.close();
+    _finishedItemStopController.close();
     _liveRecoveryStatusController.close();
     _reconnectRetry?.cancel();
     _reconnectProvenTimer?.cancel();
@@ -5818,7 +5853,7 @@ class PlaybackManager implements AudioOwnable {
   }
 }
 
-enum TransportAction { resume, pause, seek, stop, next, previous }
+enum TransportAction { resume, pause, seek, stop, next, nextAsFinished, previous }
 
 enum PlaybackStartupRecoveryDecision { retryWithTranscode, abortPlayback }
 
