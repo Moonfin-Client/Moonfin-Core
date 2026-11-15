@@ -6,13 +6,14 @@ import 'bounded_concurrency.dart';
 
 /// The sort a studio row with nothing picked can apply. Jellyfin's /Studios
 /// only lists by name, so name and random are the orders a page can give; any
-/// other order would need every studio, so it stays A to Z.
+/// other order would need every studio, so it reads as name, as the setting
+/// shows it.
 (String sortBy, String sortOrder) unpickedStudioSort(
   String sortBy,
   String sortOrder,
 ) => const ['SortName', 'Random'].contains(sortBy.split(',').first)
     ? (sortBy, sortOrder)
-    : ('SortName', 'Ascending');
+    : ('SortName', sortOrder);
 
 /// Gives each studio without counts the number of movies and series it holds,
 /// from a one-item query of its own. Jellyfin before 12 only sends a studio's
