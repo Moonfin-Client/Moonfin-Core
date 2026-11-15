@@ -1,5 +1,7 @@
 import 'package:server_core/server_core.dart';
 
+import 'bounded_concurrency.dart';
+
 /// Every item type a genre row can be built from, across all the libraries
 /// that have one. Callers that only want part of this pass their own list,
 /// which [normalizeBrowsableGenreItemTypes] narrows against this.
@@ -73,6 +75,34 @@ bool genresLackCounts(Map<String, dynamic> response) =>
     (response['Items'] as List? ?? const [])
         .whereType<Map<String, dynamic>>()
         .any((genre) => !genreReportsCounts(genre));
+
+/// [response] with each genre's `ChildCount` read from a one-item query of its
+/// own, for a server that lists genres without counts.
+Future<Map<String, dynamic>> countGenres(
+  ItemsApi api,
+  Map<String, dynamic> response, {
+  required List<String> includeItemTypes,
+  int concurrency = 6,
+}) async {
+  final genres = (response['Items'] as List? ?? const [])
+      .whereType<Map<String, dynamic>>()
+      .toList();
+  final counted = await mapBounded(genres, concurrency, (genre) async {
+    try {
+      final result = await api.getItems(
+        genreIds: [genre['Id'].toString()],
+        includeItemTypes: includeItemTypes,
+        excludeItemTypes: const ['Episode'],
+        recursive: true,
+        limit: 1,
+      );
+      return {...genre, 'ChildCount': _asInt(result['TotalRecordCount'])};
+    } catch (_) {
+      return {...genre, 'ChildCount': 0};
+    }
+  });
+  return {...response, 'Items': counted};
+}
 
 /// Whether a genre can still be listed. A count of zero rules it out, and a
 /// genre with no counts at all stays until its own item query answers.

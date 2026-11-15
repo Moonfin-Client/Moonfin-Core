@@ -767,11 +767,12 @@ class RowDataSource {
     }
 
     // Emby sends genres without counts, so each one is counted before ranking.
-    final countFirst = byCount && genresLackCounts(response);
-    if (countFirst) {
-      response = await _enrichGenreResponseForBrowse(
+    if (byCount && genresLackCounts(response)) {
+      response = await countGenres(
+        _client.itemsApi,
         response,
         includeItemTypes: browseItemTypes,
+        concurrency: _genreArtworkConcurrency,
       );
     }
     if (byCount) {
@@ -786,12 +787,10 @@ class RowDataSource {
       };
     }
 
-    final enrichedResponse = countFirst
-        ? response
-        : await _enrichGenreResponseForBrowse(
-            response,
-            includeItemTypes: browseItemTypes,
-          );
+    final enrichedResponse = await _enrichGenreResponseForBrowse(
+      response,
+      includeItemTypes: browseItemTypes,
+    );
 
     final row = _buildRow(
       id: 'genres',
