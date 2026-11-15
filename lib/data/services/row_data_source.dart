@@ -6,6 +6,7 @@ import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 
 import '../../preference/home_section_config.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import '../../preference/user_preferences.dart';
 import '../../preference/preference_constants.dart';
 import '../../l10n/app_localizations.dart';
@@ -874,7 +875,8 @@ class RowDataSource {
         limit: _defaultLimit,
         pageSize: _studioPageSize,
         serverSorts: _client.itemsApi.sortsStudios,
-        cacheKey: '$serverId|${_client.userId}|$parentId',
+        cacheKey:
+            '$serverId|${_client.userId}|$parentId|${shouldUseOfflineCatalog()}',
       );
       items = (page['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     } else {
