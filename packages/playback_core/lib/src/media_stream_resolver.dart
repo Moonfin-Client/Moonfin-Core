@@ -347,6 +347,8 @@ abstract class MediaStreamResolver {
 
   static const _pgsCodecs = {'pgs', 'pgssub', 'hdmv_pgs_subtitle'};
 
+  static const _subtitleFileExtensions = {'srt', 'vtt'};
+
   static bool isPgsCodec(String? codec) =>
       _pgsCodecs.contains(codec?.toLowerCase());
 
@@ -370,12 +372,18 @@ abstract class MediaStreamResolver {
       final isExternal = stream['IsExternal'] == true;
       final supportsExternal = stream['SupportsExternalStream'] == true;
       if (!isExternal && !supportsExternal) continue;
+      // The server converts a track it can't send as is, such as MP4 timed
+      // text, so the file's extension names the format the player gets.
+      final extension =
+          Uri.tryParse(deliveryUrl)?.path.split('.').last.toLowerCase();
       subs.add(ExternalSubtitle(
         deliveryUrl: '$baseUrl$deliveryUrl',
         title: stream['DisplayTitle'] as String? ??
             stream['Title'] as String?,
         language: stream['Language'] as String?,
-        codec: (stream['Codec'] as String?) ?? 'srt',
+        codec: _subtitleFileExtensions.contains(extension)
+            ? extension!
+            : (stream['Codec'] as String?) ?? 'srt',
         isDefault: stream['IsDefault'] as bool? ?? false,
         isForced: stream['IsForced'] as bool? ?? false,
         streamIndex: stream['Index'] as int?,
