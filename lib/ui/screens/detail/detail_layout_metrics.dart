@@ -295,9 +295,9 @@ double minimalistEpisodeCardWidth(
 /// nothing on it but buttons.
 bool detailFallsBackToModern(String? type) => type == 'Playlist';
 
-/// Whether Stage or Premiere draws this item type. Everything else, a person,
-/// an album or a playlist, goes to Modern, which already knows how to lay
-/// those out.
+/// Whether Stage, Premiere, Quick Look and Frost draw this item type.
+/// Everything else, a person, an album or a playlist, goes to Modern, which
+/// already knows how to lay those out.
 bool detailPageDraws(String? type) => const {
   'Movie',
   'Series',
@@ -305,4 +305,5 @@ bool detailPageDraws(String? type) => const {
   'Episode',
   'Video',
   'MusicVideo',
+  'BoxSet',
 }.contains(type);

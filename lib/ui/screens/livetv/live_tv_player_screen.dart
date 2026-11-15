@@ -1309,14 +1309,16 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _suppressBackUntil = DateTime.now().add(duration);
   }
 
-  void _showInfo() {
+  /// [focusButtons] false keeps focus off the buttons, so Left and Right go on
+  /// scrubbing.
+  void _showInfo({bool focusButtons = true}) {
     if (_isCarouselOpen) return;
     final wasHidden = !_infoVisible;
     setState(() => _infoVisible = true);
     if (wasHidden && !_recordingActionInProgress) {
       unawaited(_refreshRecordingStatus());
     }
-    if (PlatformDetection.isTV) {
+    if (PlatformDetection.isTV && focusButtons) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_infoVisible || _isOverlayInteractionActive) return;
         _tvPlayPauseFocus.requestFocus();
@@ -1465,6 +1467,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   bool get _osdControlHasFocus => _osdFocusOrder.any((node) => node.hasFocus);
+
+  /// A Left or Right that wasn't allowed to seek stays blocked while held.
+  LogicalKeyboardKey? _clickpadBlockedKey;
 
   bool get _arrowsScrub =>
       _rewindWindow != null && (!_infoVisible || !_osdControlHasFocus);
@@ -2050,6 +2055,23 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       // Until the viewer moves down into the buttons, left and right scrub.
       case LogicalKeyboardKey.arrowLeft when _arrowsScrub:
       case LogicalKeyboardKey.arrowRight when _arrowsScrub:
+        if (event is KeyRepeatEvent &&
+            event.logicalKey == _clickpadBlockedKey) {
+          return KeyEventResult.handled;
+        }
+        final allowed = _prefs
+            .get(UserPreferences.appleTvClickpadSeekMode)
+            .allowsSeek(
+              controlsVisible: _infoVisible,
+              playing: !_state.isPaused,
+            );
+        _clickpadBlockedKey = allowed ? null : event.logicalKey;
+        if (!allowed) {
+          _seekCommitTimer?.cancel();
+          if (_seekTarget != null) setState(() => _seekTarget = null);
+          _showInfo(focusButtons: false);
+          return KeyEventResult.handled;
+        }
         _scrubWithKey(
           event,
           forward: event.logicalKey == LogicalKeyboardKey.arrowRight,

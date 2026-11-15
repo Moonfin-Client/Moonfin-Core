@@ -624,6 +624,10 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
       );
     }
 
+    for (final row in collectionRows(l10n)) {
+      out.add(framed(row.node!, row.child));
+    }
+
     final tracks = tracksSection(l10n);
     if (tracks != null) {
       out.add(

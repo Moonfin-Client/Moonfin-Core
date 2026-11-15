@@ -22,7 +22,7 @@ Moonfin is a media client for Jellyfin, Emby, Plex and Silo servers, built with 
 
 | Platform            | Download                                                                                                                                                                                                                                                                                       |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Android Mobile / TV | [![Google Play](https://img.shields.io/badge/Google%20Play-grey?logo=Google+Play\&label=)](https://play.google.com/store/apps/details?id=org.moonfin.androidtv)                                                                                                                                |
+| Android Mobile / TV | [![Google Play](https://img.shields.io/badge/Google%20Play-grey?logo=Google+Play\&label=)](https://play.google.com/store/apps/details?id=org.moonfin.androidtv)<br>[![F-Droid](https://img.shields.io/badge/F--Droid-1976D2?logo=fdroid\&logoColor=white)](https://fdroid.link/#https://fdroid.moonfin.io/repo?fingerprint=E92F0E888A61F60272533D023BE022A570CFA4933D57235EE48732D3742EBE96) |
 | Fire TV             | [![Amazon Appstore](https://img.shields.io/badge/Amazon%20Appstore-FF9900?logo=amazon\&logoColor=white)](https://www.amazon.com/Moonfin/dp/B0H76BG3DW)                                                                                                                                         |
 | iOS                 | [![App Store](https://img.shields.io/badge/App_Store-0D96F6?logo=app-store\&logoColor=white)](https://apps.apple.com/app/moonfin/id6761283970)                                                                                                                                                 |
 | Linux               | [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux\&logoColor=fff)](https://aur.archlinux.org/packages/moonfin-bin)<br>[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux\&logoColor=black)](https://github.com/Moonfin-Client/Moonfin-Core/releases) |
@@ -223,8 +223,8 @@ Moonfin is built on the work of:
 
 Moonfin is free software. You can redistribute it and modify it under the terms
 of the GNU General Public License as published by the Free Software Foundation,
-either version 2 of the License or, at your option, any later version. See
-[LICENSE](LICENSE) for the version 2 text.
+either version 3 of the License or, at your option, any later version. See
+[LICENSE](LICENSE) for the version 3 text.
 
 ---
 

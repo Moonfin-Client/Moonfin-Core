@@ -281,4 +281,99 @@ void main() {
     // again, and it too says the item was played to the end.
     expect(service.stops, [end, end]);
   });
+
+  test('nextInQueueAsFinished reports the end of the current item', () async {
+    manager = managerWith();
+    await manager.playItems(<dynamic>[
+      <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+      <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+    ]);
+    backend.currentDuration = end;
+    backend.emitPosition(credits);
+
+    await manager.nextInQueueAsFinished();
+
+    expect(service.stops, [end]);
+    expect(manager.queueService.currentIndex, 1);
+  });
+
+  test(
+    'nextInQueueAsFinished dispatches TransportAction.nextAsFinished and leaves unrelated playItems unfinished',
+    () async {
+      manager = managerWith();
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ]);
+      backend.currentDuration = end;
+      backend.emitPosition(credits);
+
+      final seenActions = <TransportAction>[];
+      manager.setTransportInterceptor((action, {position}) async {
+        seenActions.add(action);
+        // Simulate a coordinator (Watch Party / Cast) that swallows next.
+        return action == TransportAction.nextAsFinished;
+      });
+
+      await manager.nextInQueueAsFinished();
+      expect(seenActions, [TransportAction.nextAsFinished]);
+      expect(service.stops, isEmpty);
+
+      // An unrelated item switch afterwards must still report the outgoing
+      // position rather than consuming a stale finished flag.
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode3', 'Type': 'Episode'},
+      ]);
+      expect(service.stops, [credits]);
+    },
+  );
+
+  test(
+    'playItems with stopCurrentAsFinished reports the end of the outgoing item',
+    () async {
+      manager = managerWith();
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+      ]);
+      backend.currentDuration = end;
+      backend.emitPosition(credits);
+
+      final finishedItems = <dynamic>[];
+      final sub = manager.finishedItemStopStream.listen(finishedItems.add);
+      addTearDown(sub.cancel);
+
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ], stopCurrentAsFinished: true);
+      expect(service.stops, [end]);
+      expect(finishedItems.map((e) => e['Id']), ['episode1']);
+    },
+  );
+
+  test(
+    'finishedItemStopStream emits on committed finish and stays silent when intercepted',
+    () async {
+      manager = managerWith();
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'episode1', 'Type': 'Episode'},
+        <String, dynamic>{'Id': 'episode2', 'Type': 'Episode'},
+      ]);
+      backend.currentDuration = end;
+      backend.emitPosition(credits);
+
+      final finishedItems = <dynamic>[];
+      final sub = manager.finishedItemStopStream.listen(finishedItems.add);
+      addTearDown(sub.cancel);
+
+      manager.setTransportInterceptor((action, {position}) async {
+        return action == TransportAction.nextAsFinished;
+      });
+      await manager.nextInQueueAsFinished();
+      expect(finishedItems, isEmpty);
+
+      manager.setTransportInterceptor(null);
+      await manager.nextInQueueAsFinished();
+      expect(finishedItems.map((e) => e['Id']), ['episode1']);
+    },
+  );
 }
