@@ -6565,8 +6565,8 @@
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision الملف الشخصي 7 اللعب المباشر",
     "settingsDolbyVisionProfile7DirectPlayDescription": "يتحكم في ما إذا كان Dolby Vision يجب أن يقوم تدفقات طبقة التحسين الخاصة بالملف الشخصي 7 بالتشغيل المباشر.",
     "settingsAutoAftkrtEnabled": "تلقائي",
-    "settingsEnabledOnThisDevice": "تم التفعيل على هذا الجهاز",
-    "settingsDisabledPreferTranscode": "معطل (يفضل التحويل)",
+    "settingsEnabledOnThisDevice": "مفعّل",
+    "settingsDisabledPreferTranscode": "إيقاف",
     "settingsResumeRewindDescription": "عند استئناف التشغيل (من \"متابعة المشاهدة\" أو من صفحة عنصر الوسائط)، ما هو عدد الثواني التي يجب إرجاعها؟",
     "settingsUnpauseRewindDescription": "عند استئناف التشغيل بعد الضغط على زر الإيقاف المؤقت، كم ثانية يجب إرجاعها؟",
     "settingsSkipBackLengthDescription": "كم ثانية يجب الرجوع إليها بعد الضغط على زر الترجيع.",
@@ -9217,5 +9217,511 @@
     "hdrOutputFailed": "غير نشط — لم يتمكن من البدء، جاري استخدام المسار الافتراضي",
     "@hdrOutputFailed": {
         "description": "Stream info value when the native HDR window could not be created"
+    },
+    "detailScreenStylePremiere": "العرض الأول",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "loadingAnimationSizeSmall": "صغير",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "seerrDownloading": "جارٍ التنزيل",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "playlistTypeVideo": "فيديو",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "keyNameDelete": "حذف",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "musicLibraryStyleClassic": "كلاسيكي",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "adminMetadataSectionRatings": "التقييمات",
+    "adminMetadataPersonKindDirector": "مُخرج",
+    "adminMetadataLockFieldName": "اسم",
+    "adminMetadataLockFieldRuntime": "مدة التشغيل",
+    "detailMetadataGenres": "أنواع",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "adminMetadataFieldAlbum": "الألبوم",
+    "selectAllStudios": "حدد الكل",
+    "adminMetadataLockFieldGenres": "أنواع",
+    "watchPartyType": "يكتب",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "achievementsStatsWatched": "تمت مشاهدته",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "chatGroupName": "اسم المجموعة",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "playbackTimeEndsAt": "ينتهي عند",
+    "@playbackTimeEndsAt": {
+        "description": "Progress bar time option showing the clock time playback finishes"
+    },
+    "autoDownloadKeepAll": "الجميع",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "downloadNotificationRunning": "جارٍ التنزيل",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "librarySortDateAdded": "اضيف تاريخ",
+    "@librarySortDateAdded": {
+        "description": "Sort option: when an item was added to the server library"
+    },
+    "detailsBackdropFit": "ملائم",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "musicFilter": "تصفية",
+    "@musicFilter": {
+        "description": "Albums screen button that opens the genre filter"
+    },
+    "calendarSettingsView": "عرض",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "afterHoursPlay": "تشغيل",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "adminTranscodingHwaAdvanced": "متقدم",
+    "adminMetadataLockFieldTags": "العلامات",
+    "adminGroupPeople": "الناس",
+    "chatLeave": "مغادرة المجموعة",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "additionalParts": "قطع اضافية",
+    "@additionalParts": {
+        "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
+    },
+    "rendererModeAuto": "تلقائي",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "keyboardStyleClassic": "كلاسيكي",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "guideRepeatBadge": "إعادة",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "sortByName": "اسم",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "detailMetadataStatus": "حالة السلسلة",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "seasonalRowCountryOther": "آخر",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "loadingAnimationSizeLarge": "كبير",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationSizeThumbnail": "صورة مصغرة",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "detailSectionSeerrPersonAppearances": "الظهور",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionCast": "إرسال",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "tags": "العلامات",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "settingsAudioPassthroughMode": "العبور",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "homeRowsExternalLists": "القوائم الخارجية",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "libraryStyleClassic": "كلاسيكي",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "adminEmbyConnect": "Emby تواصل",
+    "adminMetadataLockFieldCast": "الناس",
+    "adminMetadataLockFieldStudios": "استوديوهات",
+    "emulatorCoreDownloading": "جارٍ التنزيل",
+    "filtersHeader": "المرشحات",
+    "setupStylePremiere": "العرض الأول",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "seerrRuntime": "مدة التشغيل",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "animeMarkerPending": "قيد الانتظار",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "keyNameHome": "البداية",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "animationSpeedOff": "إيقاف",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "autoDownloadDeleteNever": "أبداً",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "libraryStyleModern": "حديث",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "adminMetadataFieldArtists": "الفنانون",
+    "adminLiveTvTabRecordings": "التسجيلات",
+    "librarySortDateEpisodeAdded": "اضيف تاريخ الحلقة",
+    "@librarySortDateEpisodeAdded": {
+        "description": "Sort option for series: when the newest episode was added"
+    },
+    "librarySortParentalRating": "تقييم ابوي",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "librarySortAlbum": "الألبوم",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "savedMediaRead": "يقرأ",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "groupByParentalRating": "تقييم ابوي",
+    "@groupByParentalRating": {
+        "description": "Option to group library items by parental rating"
+    },
+    "loadingAnimationSizeMedium": "واسطة",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "screensaverBackdropBlack": "أسود",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "loadingAnimationPositionBouncing": "مرتد",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "accountActive": "نشيط",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "detailSectionChapters": "فصول",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "spotlightCollectionsCard": "المجموعات",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "siloApproveSignInApprove": "يعتمد",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "detailSectionPoster": "ملصق",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionSeerrRecommendations": "التوصيات",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "sortOrder": "ترتيب التصنيف",
+    "ascending": "تصاعدي",
+    "descending": "تنازلي",
+    "detailSectionLyrics": "الكلمات",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "afterHoursCastStatic": "ثابت",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "actionButtonsOnScreenPlayOnly": "تشغيل",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "detailSectionExtras": "زيادات",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "المجموعات",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionBiography": "سيرة",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "bookLibraryStyleClassic": "كلاسيكي",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "adminLogLevelNone": "بدون",
+    "adminTaskResultFailed": "فشل",
+    "adminLogWatch": "مشاهدة",
+    "adminGroupLibrary": "المكتبة",
+    "adminGroupPlayback": "التشغيل",
+    "externalRowSortName": "اسم",
+    "externalRowSortReleaseDate": "تاريخ الاطلاق",
+    "externalRowSortShuffle": "خلط",
+    "achievementsAppearance": "المظهر",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "bottomNavbarTabsAvailable": "متاح",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "playlistSortReleaseDate": "تاريخ الاطلاق",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "playlistSortPlayCount": "عدّاد التشغيل",
+    "@playlistSortPlayCount": {
+        "description": "Label for sorting playlist items by play count"
+    },
+    "filterExtras": "زيادات",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "seerrOriginalLanguage": "اللغة الأصلية",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "animationSpeedMedium": "واسطة",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "playlistSortLastPlayed": "آخر لعب",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "librarySortGenre": "النوع",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "recordPromptNow": "الآن",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "calendarSettingsColorByType": "يكتب",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "detailMetadataParentalRating": "تقييم ابوي",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "upcomingEpisodeToday": "اليوم",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "detailSectionGroupOther": "آخر",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "الشعار",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionUpNext": "القادم",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionStudios": "استوديوهات",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionMoreLikeThis": "المزيد مثل هذا",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "adminMetadataDisplayOrderTv": "تلفزيون",
+    "friendsDecline": "انخفاض",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "filterTrailers": "الإعلانات التشويقية",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "setupStyleModern": "حديث",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "mediaBarModeBanner": "راية",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "screensaverBackdrop": "الخلفية",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "audioPlaylistsSection": "قوائم تشغيل الصوت",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "setupStyleClassic": "كلاسيكي",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "settingsAdvancedSection": "متقدم",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playlistSortRuntime": "مدة التشغيل",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "moveUp": "تحرك لأعلى",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "تحرك للأسفل",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "كتاب صوتي",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "كتاب",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "adminMetadataPersonKindAuthor": "مؤلف",
+    "adminMetadataLockFieldOverview": "ملخص",
+    "screensaverGeneralSettings": "الإعدادات العامة",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "نبض النيون",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "يوميًا",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "أسبوعي",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "العناوين",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "المستخدمين",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "نشاط",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "تلقائي",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "مسؤل",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "إنشاء مجموعة",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "عرض التفاصيل",
+    "achievementsUnlockedMore": "+{count} المزيد",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "سطر الوصف",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "طبيعي",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "الدولة",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "تلقائي",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "كتاب",
+    "adminImageTypeMenu": "القائمة",
+    "adminGroupOverview": "ملخص",
+    "seriesRecordingAllEpisodes": "كل الحلقات",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "زجاجي",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "settingsPreviewSaved": "تم الحفظ",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "تشابه TMDb",
+    "calendarSettingsSpecials": "العروض الخاصة",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "الإجراءات",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "البداية",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "seerrDownloadFailed": "فشل التنزيل",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
     }
 }

@@ -54,7 +54,7 @@ bool _isWideArtworkRow(HomeRow row) =>
 /// Classic whichever style is picked, and so do game rows, which draw the
 /// game screens' cards.
 bool isHomeRowModern(HomeRow row, UserPreferences prefs) {
-  if (prefs.get(UserPreferences.homeRowsStyle) != HomeRowsStyle.v2) {
+  if (!prefs.get(UserPreferences.homeRowsStyle).usesModernCards) {
     return false;
   }
   if (_isWideArtworkRow(row)) {
@@ -63,6 +63,15 @@ bool isHomeRowModern(HomeRow row, UserPreferences prefs) {
   return !isGameHomeRow(row);
 }
 
+/// A Modern row that draws the Carousel panel under its cards. Audio and My
+/// Media rows keep plain Modern cards.
+bool isHomeRowCarousel(HomeRow row, UserPreferences prefs) =>
+    prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.carousel &&
+    isHomeRowModern(row, prefs) &&
+    !row.isAudio &&
+    row.rowType != HomeRowType.libraryTiles &&
+    row.rowType != HomeRowType.libraryTilesSmall;
+
 /// A My Media row in the Modern style whose cards stay static because Modern
 /// cards are turned off for it.
 bool isHomeRowModernMyMediaStatic(HomeRow row, UserPreferences prefs) {
@@ -70,6 +79,26 @@ bool isHomeRowModernMyMediaStatic(HomeRow row, UserPreferences prefs) {
       (row.rowType == HomeRowType.libraryTiles ||
           row.rowType == HomeRowType.libraryTilesSmall) &&
       !prefs.get(UserPreferences.modernCardsOnMyMediaRow);
+}
+
+String? carouselBackdropUrl(AggregatedItem item, ImageApi imageApi) {
+  if (item.backdropImageTags.isNotEmpty) {
+    return imageApi.getBackdropImageUrl(
+      item.id,
+      maxWidth: 1280,
+      tag: item.backdropImageTags.first,
+    );
+  }
+  final parentId = item.parentBackdropItemId;
+  final parentTags = item.parentBackdropImageTags;
+  if (parentId != null && parentTags.isNotEmpty) {
+    return imageApi.getBackdropImageUrl(
+      parentId,
+      maxWidth: 1280,
+      tag: parentTags.first,
+    );
+  }
+  return null;
 }
 
 /// A TMDB image at [width] for a stored Seerr path, which may already be a

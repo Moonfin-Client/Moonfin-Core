@@ -814,7 +814,7 @@ class SiloItemsApi
       try {
         return await _library(library);
       } on StateError {
-        return _person(library);
+        return getPerson(library);
       }
     }
     if (siloTypeOfId(itemId) == 'season') return _season(itemId);
@@ -1519,7 +1519,10 @@ class SiloItemsApi
   /// A person's page: `GET /catalog/people/{id}` as a Jellyfin
   /// `Person` item, its photo registered. Their titles are
   /// `getItems(personIds: [id])`, which pages Silo's `source=person`.
-  Future<Map<String, dynamic>> _person(String personId) async {
+  ///
+  /// Unlike [getItem], a person whose id is also a library's still answers
+  /// the person.
+  Future<Map<String, dynamic>> getPerson(String personId) async {
     final response = await _dio.get<dynamic>(
       '/api/v2/catalog/people/${Uri.encodeComponent(personId)}',
     );

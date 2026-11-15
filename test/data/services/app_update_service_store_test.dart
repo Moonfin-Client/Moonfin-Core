@@ -11,6 +11,12 @@ void main() {
         isTrue,
       );
       expect(AppUpdateService.isStoreInstaller('org.fdroid.fdroid'), isTrue);
+      expect(AppUpdateService.isStoreInstaller('org.fdroid.basic'), isTrue);
+      expect(AppUpdateService.isStoreInstaller('com.looker.droidify'), isTrue);
+      expect(
+        AppUpdateService.isStoreInstaller('com.machiav3lli.fdroid'),
+        isTrue,
+      );
     });
 
     test('matches case-insensitively and ignores surrounding whitespace', () {

@@ -6564,9 +6564,9 @@
     "settingsPreferServerTranscode": "Preferuji překódování serveru",
     "settingsDolbyVisionProfile7DirectPlay": "Přímé přehrávání Dolby Vision Profile 7",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Určuje, zda by streamy vrstvy vylepšení Dolby Vision profilu 7 měly řídit přehrávání.",
-    "settingsAutoAftkrtEnabled": "Auto (AFTKRT povoleno)",
-    "settingsEnabledOnThisDevice": "Na tomto zařízení povoleno",
-    "settingsDisabledPreferTranscode": "Zakázáno (preferovat překódování)",
+    "settingsAutoAftkrtEnabled": "Automaticky",
+    "settingsEnabledOnThisDevice": "Zapnuto",
+    "settingsDisabledPreferTranscode": "Vypnuto",
     "settingsResumeRewindDescription": "O kolik sekund by se mělo při obnovení přehrávání (ze stránky Pokračovat ve sledování nebo ze stránky mediální položky) vrátit zpět?",
     "settingsUnpauseRewindDescription": "Při obnovení přehrávání po stisknutí tlačítka pauzy, o kolik sekund by se mělo převinout zpět?",
     "settingsSkipBackLengthDescription": "O kolik sekund skočit zpět po stisknutí tlačítka převíjení zpět.",
@@ -9135,5 +9135,463 @@
     "keyboardShortcutsTitle": "Klávesové zkratky",
     "@keyboardShortcutsTitle": {
         "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "detailScreenStylePremiere": "Premiéra",
+    "@detailScreenStylePremiere": {
+        "description": "Detail screen style option: the title centered over a full screen backdrop, with every section down the page under it"
+    },
+    "externalRowSortName": "Jméno",
+    "filterExtras": "Bonusy",
+    "@filterExtras": {
+        "description": "Library filter for items that have bonus features."
+    },
+    "savedMediaRead": "Číst",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "loadingAnimationSizeSmall": "Malý",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "seasonalRowCountryOther": "Ostatní",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "detailSectionGroupOther": "Ostatní",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "loadingAnimationSizeLarge": "Velký",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "animeMarkerPending": "Čeká na vyřízení",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "settingsAudioPassthroughMode": "Průchod",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "adminTranscodingHwaAdvanced": "Moderní",
+    "adminMetadataDisplayOrderTv": "televize",
+    "adminMetadataLockFieldName": "Jméno",
+    "adminMetadataLockFieldGenres": "Žánry",
+    "adminMetadataLockFieldStudios": "Studia",
+    "filtersHeader": "Filtry",
+    "watchPartyType": "Typ",
+    "@watchPartyType": {
+        "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "playlistSortReleaseDate": "Datum vydání",
+    "@playlistSortReleaseDate": {
+        "description": "Label for sorting playlist items by release date"
+    },
+    "librarySortAlbum": "Album",
+    "@librarySortAlbum": {
+        "description": "Sort option for music: by album name"
+    },
+    "detailsBackdropFit": "Fit",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "recordPromptNow": "Teď",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "calendarSettingsColorByType": "Typ",
+    "@calendarSettingsColorByType": {
+        "description": "Color by choice that colors episodes and movies differently"
+    },
+    "detailSectionChapters": "Kapitoly",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Bonusy",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "adminMetadataLockFieldRuntime": "Doba běhu",
+    "keyboardStyleClassic": "Klasický",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "rendererModeAuto": "Automaticky",
+    "@rendererModeAuto": {
+        "description": "Renderer option: let the app choose per device"
+    },
+    "performanceModeAuto": "Automaticky",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "loadingAnimationSizeThumbnail": "Náhled",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "guideRepeatBadge": "Opakovat",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "detailSectionMoreLikeThis": "Více podobných",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionStudios": "Studia",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "libraryStyleModern": "Moderní",
+    "@libraryStyleModern": {
+        "description": "Library style option: one bar with labeled buttons"
+    },
+    "musicLibraryStyleClassic": "Klasický",
+    "@musicLibraryStyleClassic": {
+        "description": "Music library style option: the original rows"
+    },
+    "libraryStyleClassic": "Klasický",
+    "@libraryStyleClassic": {
+        "description": "Library style option: the original header"
+    },
+    "screensaverBackdropBlack": "Černý",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "adminMetadataFieldArtists": "Interpreti",
+    "adminEmbyConnect": "Emby Připojit",
+    "adminLogLevelNone": "Žádné",
+    "adminGroupPlayback": "Přehrávání",
+    "adminGroupPeople": "Lidé",
+    "adminMetadataLockFieldCast": "Lidé",
+    "externalRowSortReleaseDate": "Datum vydání",
+    "chatGroupName": "Název skupiny",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "friendsDecline": "Pokles",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "setupStylePremiere": "Premiéra",
+    "@setupStylePremiere": {
+        "description": "Name of the detail layout that centers the title over a full screen backdrop, offered in the setup wizard"
+    },
+    "autoDownloadDeleteNever": "Nikdy",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "seerrOriginalLanguage": "Původní jazyk",
+    "@seerrOriginalLanguage": {
+        "description": "Heading for the original language filter in the Seerr browse dialog."
+    },
+    "playlistTypeVideo": "Video",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "seerrRuntime": "Doba běhu",
+    "@seerrRuntime": {
+        "description": "Heading for the runtime window filter in the Seerr browse dialog."
+    },
+    "tags": "Tagy",
+    "@tags": {
+        "description": "Heading for the keyword tags a title is filed under"
+    },
+    "accountActive": "Aktivní",
+    "@accountActive": {
+        "description": "Marks the account that is signed in now in the Switch User screen"
+    },
+    "keyNameDelete": "Smazat",
+    "@keyNameDelete": {
+        "description": "Key cap label for the Delete key"
+    },
+    "adminMetadataLockFieldTags": "Tagy",
+    "keyNameHome": "Domů",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "setupStyleClassic": "Klasický",
+    "@setupStyleClassic": {
+        "description": "Name of the original layout, offered in the setup wizard"
+    },
+    "loadingAnimationPositionBouncing": "Poskakující",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "seerrDownloading": "Stahování",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "loadingAnimationSizeMedium": "Střední",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "playlistSortRuntime": "Doba běhu",
+    "@playlistSortRuntime": {
+        "description": "Label for sorting playlist items by runtime"
+    },
+    "animationSpeedMedium": "Střední",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "afterHoursPlay": "Přehrát",
+    "@afterHoursPlay": {
+        "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
+    },
+    "detailMetadataGenres": "Žánry",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "afterHoursCastStatic": "Statické",
+    "@afterHoursCastStatic": {
+        "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
+    },
+    "detailMetadataStatus": "Stav série",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailSectionLyrics": "Text",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Odeslat",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionCollections": "Sbírky",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionSeerrRecommendations": "Doporučení",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrPersonAppearances": "Účinkování",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionBiography": "Životopis",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "upcomingEpisodeToday": "Dnes",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "bookLibraryStyleClassic": "Klasický",
+    "@bookLibraryStyleClassic": {
+        "description": "Book library style option: the original shelves"
+    },
+    "homeRowsExternalLists": "Externí seznamy",
+    "@homeRowsExternalLists": {
+        "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
+    },
+    "screensaverBackdrop": "Pozadí",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "adminMetadataFieldAlbum": "Album",
+    "adminMetadataSectionRatings": "Hodnocení",
+    "adminLiveTvTabRecordings": "Nahrávky",
+    "adminTaskResultFailed": "Selhalo",
+    "adminLogWatch": "Sledovat",
+    "emulatorCoreDownloading": "Stahování",
+    "selectAllStudios": "Vyberte Vše",
+    "externalRowSortShuffle": "Náhodně",
+    "achievementsAppearance": "Vzhled",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsStatsWatched": "Zhlédnuto",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "chatLeave": "Opustit skupinu",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "audioPlaylistsSection": "Zvukové playlisty",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "filterTrailers": "Upoutávky",
+    "@filterTrailers": {
+        "description": "Library filter for items that have a trailer."
+    },
+    "setupStyleModern": "Moderní",
+    "@setupStyleModern": {
+        "description": "Name of the newer layout, offered in the setup wizard"
+    },
+    "autoDownloadKeepAll": "Vše",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "downloadNotificationRunning": "Stahování",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "animationSpeedOff": "Vypnuto",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "bottomNavbarTabsAvailable": "K dispozici",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "playlistSortLastPlayed": "Naposledy hráno",
+    "@playlistSortLastPlayed": {
+        "description": "Label for sorting playlist items by last played date"
+    },
+    "siloApproveSignInApprove": "Schvalovat",
+    "@siloApproveSignInApprove": {
+        "description": "Button in the Silo approve-a-sign-in dialog that approves the typed code"
+    },
+    "performanceMode": "Výkon",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "sortByName": "Jméno",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "detailSectionUpNext": "Další Nahoru",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "adminGroupLibrary": "Knihovna",
+    "librarySortGenre": "Žánr",
+    "@librarySortGenre": {
+        "description": "Sort option: by genre"
+    },
+    "detailSectionPoster": "Plakát",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "mediaBarModeBanner": "Prapor",
+    "@mediaBarModeBanner": {
+        "description": "Media bar style option: Banner"
+    },
+    "settingsAdvancedSection": "Moderní",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "moveUp": "Posunout nahoru",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Přesunout dolů",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "playlistTypeAudiobook": "Audiokniha",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Kniha",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "adminMetadataPersonKindAuthor": "Autor",
+    "adminMetadataLockFieldOverview": "Přehled",
+    "screensaverGeneralSettings": "Obecná nastavení",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neonový puls",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "achievementsDailyQuests": "Denní",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Týdně",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Tituly",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Uživatelé",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Aktivita",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "Automatický",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatAdmin": "Správce",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Vytvořit skupinu",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Zobrazit podrobnosti",
+    "achievementsUnlockedMore": "+{count} další",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Slogan",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normální",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Země",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatický",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Kniha",
+    "adminImageTypeMenu": "Nabídka",
+    "adminGroupOverview": "Přehled",
+    "seriesRecordingAllEpisodes": "Všechny epizody",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin doporučuje",
+    "sinceYouWatchedSourceOnline": "Podobnost podle TMDb",
+    "calendarSettingsView": "Pohled",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Speciality",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Akce",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Začátek",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
     }
 }

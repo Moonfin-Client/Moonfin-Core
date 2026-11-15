@@ -2,8 +2,10 @@ package org.moonfin.androidtv
 
 import android.app.UiModeManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import java.io.File
 
 /**
  * Whether this device is a TV, or null when the platform could not answer.
@@ -14,13 +16,21 @@ import android.content.res.Configuration
  */
 fun isTelevisionOrNull(context: Context): Boolean? {
     // The leanback feature is a static property of the device, so it is the
-    // signal to trust when both answer.
+    // signal to trust when both answer. Some uncertified boxes only report the
+    // older television feature.
     val hasLeanback = runCatching {
         val pm = context.packageManager
         pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK) ||
+            pm.hasSystemFeature("android.hardware.type.television") ||
             pm.hasSystemFeature("amazon.hardware.fire_tv")
     }.getOrNull()
-    if (hasLeanback == true) return true
+    if (hasLeanback == true) {
+        rememberTv(context)
+        return true
+    }
+    // A box seen as a TV before stays one when the checks above can't answer,
+    // or the phone UI lands on it for the session.
+    if (isKnownTv(context)) return true
 
     val uiModeType = runCatching {
         (context.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager)?.currentModeType
@@ -43,3 +53,29 @@ private fun hasTouchscreenOrNull(context: Context): Boolean? = runCatching {
 }.getOrNull()
 
 fun isTelevision(context: Context): Boolean = isTelevisionOrNull(context) == true
+
+/** Whether the phone layout is usable, which takes a touchscreen on a device that isn't TV-only. */
+fun supportsTouchLayoutOrNull(context: Context): Boolean? = runCatching {
+    val pm = context.packageManager
+    pm.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN) &&
+        !pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK_ONLY)
+}.getOrNull()
+
+/**
+ * Only a TV launcher starts the app through LEANBACK_LAUNCHER, which also
+ * catches boxes that report no TV feature at all.
+ */
+fun rememberLeanbackLaunch(context: Context, intent: Intent?) {
+    if (intent?.hasCategory(Intent.CATEGORY_LEANBACK_LAUNCHER) == true) rememberTv(context)
+}
+
+// Only the static signals are remembered, never the ui mode guess. The file
+// sits outside backups so a TV's answer can't be restored onto a phone.
+private fun knownTvMarker(context: Context) = File(context.noBackupFilesDir, "known_tv")
+
+private fun rememberTv(context: Context) {
+    runCatching { knownTvMarker(context).createNewFile() }
+}
+
+private fun isKnownTv(context: Context): Boolean =
+    runCatching { knownTvMarker(context).exists() }.getOrDefault(false)

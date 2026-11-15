@@ -188,7 +188,8 @@ class _AppearanceScreenState extends State<_AppearanceScreen> {
                         InterfaceLayout.tv,
                         if (PlatformDetection.isDesktop)
                           InterfaceLayout.desktop,
-                        if (PlatformDetection.isAndroid) InterfaceLayout.phone,
+                        if (PlatformDetection.canUsePhoneLayout)
+                          InterfaceLayout.phone,
                       ],
                       labelOf: (v) => switch (v) {
                         InterfaceLayout.automatic =>

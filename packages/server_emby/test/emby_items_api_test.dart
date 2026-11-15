@@ -206,6 +206,21 @@ void main() {
     expect(request()?.queryParameters['UserId'], 'user-1');
   });
 
+  // Verified against Emby 4.10.2.0: a season of 6 episodes held in two
+  // versions answers 12 items without UserId and 6 with it.
+  test('episodes name the user so Emby folds versions together', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(
+      dio,
+      () => 'user-1',
+    ).getEpisodes('series-1', seasonId: 'season-1');
+
+    expect(request()?.path, '/Shows/series-1/Episodes');
+    expect(request()?.queryParameters['SeasonId'], 'season-1');
+    expect(request()?.queryParameters['UserId'], 'user-1');
+  });
+
   test('collection removal deletes with the joined Ids param', () async {
     final (dio, request) = _recordingDio();
 
