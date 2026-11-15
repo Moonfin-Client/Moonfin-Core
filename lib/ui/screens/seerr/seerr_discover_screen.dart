@@ -350,10 +350,10 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         ((navbarIsLeft && !PlatformDetection.useMobileUi) ? 80.0 : 48.0) +
         (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
     final infoTopInset = topPad + (navbarHeight > 0 ? navbarHeight - 12.0 : 28.0);
-    // On phones the navbar pill and row titles crowd the top edge, so the
-    // requests entry drops below them.
+    // On phones, align the entry buttons with the floating back button (or
+    // just below the top navbar when pinned at the top).
     final requestsEntryTop = PlatformDetection.useMobileUi
-        ? infoTopInset + 40.0
+        ? topPad + (navbarHeight > 0 ? navbarHeight + 8.0 : 16.0)
         : infoTopInset;
     return Scaffold(
       backgroundColor: AppColorScheme.background,
@@ -372,8 +372,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Modern cards show their details under the focused card,
-                  // so the rows only need to clear the requests entry.
-                  if (_isModern)
+                  // and mobile has no top info panel, so the rows only need
+                  // to clear the requests entry.
+                  if (_isModern || PlatformDetection.useMobileUi)
                     SizedBox(height: requestsEntryTop + 44.0)
                   else
                     _InfoPanel(item: _selectedItem, topInset: infoTopInset, leftInset: infoPanelLeft),
