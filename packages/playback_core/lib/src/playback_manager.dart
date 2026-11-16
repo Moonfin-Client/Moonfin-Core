@@ -645,7 +645,8 @@ class PlaybackManager implements AudioOwnable {
   final _sessionEndedController = StreamController<void>.broadcast();
   final _endedByServerController = StreamController<String>.broadcast();
   /// The queue item whose session the server ended on purpose, so nothing
-  /// reopens it; a new start of any item clears it.
+  /// reopens it; a new start of any item clears it, except one made while
+  /// that item's stop still runs.
   dynamic _endedByServerItem;
   /// True while the stop of an ended session runs. A start of the ended item
   /// meanwhile (a Next or a queue pick that repeats it) is turned away.
@@ -4306,22 +4307,14 @@ class PlaybackManager implements AudioOwnable {
     }
     if (replacements != _replacementRequests) return;
     // Nothing else is coming, whether the viewer did nothing, pressed Stop
-    // or pressed Next at the end of the queue or onto the same item. A start
-    // that doesn't join the stop may still be resolving: the new token turns
-    // it away, and a second backend stop ends one that reached the player
-    // (or what a failed first stop left playing).
+    // or pressed Next at the end of the queue or onto the same item. No
+    // await from here on, so a Next can't slip in between the check and
+    // letting go of the queue, and the new token turns away a start that
+    // doesn't join the stop and is still resolving.
     _playbackSessionToken++;
     try {
-      await _backend?.stop();
-    } catch (e) {
-      _diagnosticLogger?.call('Stopping a session the server ended: $e');
-    }
-    if (replacements != _replacementRequests) return;
-    // No await from here on, so a Next can't slip in between the check and
-    // letting go of the queue.
-    try {
       _releaseQueue();
-    } catch (e) {
+    } on StateError catch (e) {
       // Disposed while the stop ran.
       _diagnosticLogger?.call('Clearing the queue of an ended session: $e');
       return;

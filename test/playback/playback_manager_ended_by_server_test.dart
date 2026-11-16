@@ -364,6 +364,25 @@ void main() {
       expect(backend.playing, isFalse);
     });
 
+    testWidgets('Next with repeat one closes instead', (tester) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[
+        episodeA,
+        episodeB,
+      ]);
+      manager.queueService
+        ..toggleRepeat()
+        ..toggleRepeat();
+      expect(manager.queueService.repeatMode, RepeatMode.repeatOne);
+      final next = manager.nextInQueue();
+      await release(tester, gate);
+      await next;
+      await tester.pump();
+
+      expect(events, ['ended: Ended on the server.', 'closed']);
+      expect(manager.queueService.currentItem, isNull);
+      expect(backend.playing, isFalse);
+    });
+
     testWidgets('picking the ended item in the queue closes instead', (
       tester,
     ) async {
