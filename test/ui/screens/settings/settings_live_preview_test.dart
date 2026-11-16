@@ -50,6 +50,7 @@ import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_month_screen.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/home/home_backdrop.dart';
+import 'package:moonfin/ui/screens/home/home_row_card_image.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/preview_row_samples.dart';
@@ -61,6 +62,7 @@ import 'package:moonfin/ui/widgets/bounded_network_image.dart';
 import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
+import 'package:moonfin/ui/widgets/modern_row.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
@@ -2118,6 +2120,39 @@ void main() {
     await pump();
     expect(sizedTo(InfoArea.fixedHeight(isMobile: false)), findsOneWidget);
     expect(textScale(), 1);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('Modern posters match the real Home at a tried card size', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
+      ..tryValue('pref_desktop_ui_scale', DesktopUiScale.large)
+      ..focus(
+        const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
+      )
+      ..tryValue('poster_size', PosterSize.extraLarge);
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+
+    final height = modernImageHeight(
+      PosterSize.extraLarge,
+      homeRowPlatformScale(DesktopUiScale.large.scaleFactor),
+    );
+    expect(
+      find.byWidgetPredicate((w) => w is SizedBox && w.height == height),
+      findsWidgets,
+    );
     debugDefaultTargetPlatformOverride = null;
   });
 
