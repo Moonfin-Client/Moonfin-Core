@@ -36,6 +36,7 @@ import '../../widgets/playback/lyrics_view.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import 'audiobook_player_view.dart';
+import 'playback_ended_by_server.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({super.key});
@@ -130,6 +131,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         _rebuild();
         _loadLyricsIfNeeded();
         unawaited(_maybeExtendWithRadio());
+      }),
+      _manager.endedByServerStream.listen((message) {
+        if (mounted) showPlaybackEndedByServer(context, message);
       }),
       _manager.sessionEndedStream.listen((_) {
         if (!mounted || _isExitingPlayback) return;

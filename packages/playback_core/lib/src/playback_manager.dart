@@ -643,6 +643,7 @@ class PlaybackManager implements AudioOwnable {
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
+  final _endedByServerController = StreamController<String>.broadcast();
   final _finishedItemStopController = StreamController<dynamic>.broadcast(
     sync: true,
   );
@@ -761,6 +762,11 @@ class PlaybackManager implements AudioOwnable {
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
+
+  /// The server's message when it ended the session itself (Silo: an
+  /// administrator terminated it). Comes just before [sessionEndedStream],
+  /// so the player can say why it closed.
+  Stream<String> get endedByServerStream => _endedByServerController.stream;
   LiveRecoveryStatus? get liveRecoveryStatus => _liveRecoveryStatus;
   Stream<LiveRecoveryStatus?> get liveRecoveryStatusStream =>
       _liveRecoveryStatusController.stream;
@@ -4148,12 +4154,39 @@ class PlaybackManager implements AudioOwnable {
             )
             .then<void>(
               (_) => _progressSettled(generation),
-              onError: (Object _, StackTrace _) => _progressSettled(generation),
+              onError: (Object error, StackTrace _) {
+                _progressSettled(generation);
+                if (error is PlaybackRefusedException) {
+                  unawaited(_stopEndedByServer(generation, error.message));
+                }
+              },
             ),
       );
     } catch (_) {
       _progressSettled(generation);
     }
+  }
+
+  /// A progress report answered that the server ended the session on
+  /// purpose, so what is buffered must not play on: stop, say why, and close
+  /// the player. A generation the viewer has already moved past is left be.
+  Future<void> _stopEndedByServer(
+    _ProgressGeneration generation,
+    String message,
+  ) async {
+    if (generation.ended || !identical(_progressGeneration, generation)) {
+      return;
+    }
+    _diagnosticLogger?.call('The server ended the session: $message');
+    try {
+      await stop(userInitiated: false);
+    } catch (e) {
+      _diagnosticLogger?.call('Stopping a session the server ended: $e');
+    }
+    if (!_endedByServerController.isClosed) {
+      _endedByServerController.add(message);
+    }
+    _notifySessionEnded();
   }
 
   void _progressSettled(_ProgressGeneration generation) {
@@ -5766,6 +5799,7 @@ class PlaybackManager implements AudioOwnable {
     _backendChangedController.close();
     _bringupStateController.close();
     _sessionEndedController.close();
+    _endedByServerController.close();
     _finishedItemStopController.close();
     _liveRecoveryStatusController.close();
     _reconnectRetry?.cancel();

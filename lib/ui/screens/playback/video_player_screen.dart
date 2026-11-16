@@ -115,6 +115,7 @@ import 'playback_takeover.dart';
 import 'episode_browser.dart';
 import 'episode_browser_panel.dart';
 import 'osd_buttons.dart';
+import 'playback_ended_by_server.dart';
 import 'trickplay_housing_inset.dart';
 
 class _SubtitleLoadingSpinner extends StatefulWidget {
@@ -415,6 +416,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<bool>? _screenLockSub;
   StreamSubscription<bool>? _screensaverPlayingSub;
   StreamSubscription<void>? _completedSub;
+  StreamSubscription<String>? _endedByServerSub;
   bool _isRestoringPosition = false;
   DateTime? _suppressSeekPromptsUntil;
   bool _wasPlayingBeforeScreenLock = false;
@@ -966,6 +968,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     unawaited(_loadNextAirDate());
     unawaited(_syncAutoHdrSwitching());
     _positionSub = _state.positionStream.listen(_onPositionUpdate);
+    _endedByServerSub = _manager.endedByServerStream.listen((message) {
+      if (mounted) showPlaybackEndedByServer(context, message);
+    });
     _completedSub = _manager.sessionEndedStream.listen((_) {
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
@@ -1232,6 +1237,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _aetherRemoteCommandSub?.cancel();
     _screenLockSub?.cancel();
     _completedSub?.cancel();
+    _endedByServerSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
     FocusManager.instance.removeListener(_restoreOverlayFocus);
     _overlayFocus.dispose();

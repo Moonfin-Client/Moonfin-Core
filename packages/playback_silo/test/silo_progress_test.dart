@@ -129,7 +129,6 @@ void main() {
 
   for (final (status, code) in [
     (404, 'playback_session_not_found'),
-    (410, 'playback_session_ended'),
     (409, 'installation_changed'),
   ]) {
     test('a session that is over ($status $code): no more samples', () async {
@@ -140,6 +139,28 @@ void main() {
       expect(SiloPlaybackSessions.of(s.client)[_session]!.ended, isTrue);
     });
   }
+
+  test('an administrator ended it (410): the sample says so, no more '
+      'samples', () async {
+    final s = await _started(
+      SiloTestServer.problemRoute(
+        410,
+        'playback_session_ended',
+        'An administrator ended this playback session',
+      ),
+    );
+    await expectLater(
+      s.service.onPlaybackProgress(_item, s.stream, Duration.zero),
+      throwsA(
+        isA<PlaybackRefusedException>()
+            .having((e) => e.message, 'message', siloEndedOnServerMessage)
+            .having((e) => e.reason, 'reason', 'playback_session_ended'),
+      ),
+    );
+    await s.service.onPlaybackProgress(_item, s.stream, Duration.zero);
+    expect(s.server.to(_progressPath), hasLength(1));
+    expect(SiloPlaybackSessions.of(s.client)[_session]!.ended, isTrue);
+  });
 
   test('another failure reaches the caller and the session goes on', () async {
     final s = await _started([
