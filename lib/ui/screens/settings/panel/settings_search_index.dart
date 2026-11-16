@@ -1357,14 +1357,14 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     libraries.leaf(
       'pref_hide_library_watch_progress',
-      l10n.hideLibraryWatchProgress,
-      subtitle: l10n.hideLibraryWatchProgressSubtitle,
+      l10n.hideHomeWatchProgress,
+      subtitle: l10n.hideHomeWatchProgressSubtitle,
       keywords: ['resume', 'played'],
     ),
     libraries.leaf(
       'pref_hide_library_unwatched_count',
-      l10n.hideLibraryUnwatchedCount,
-      subtitle: l10n.hideLibraryUnwatchedCountSubtitle,
+      l10n.hideHomeUnwatchedCount,
+      subtitle: l10n.hideHomeUnwatchedCountSubtitle,
       keywords: ['unplayed'],
     ),
 

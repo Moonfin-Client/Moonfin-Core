@@ -2323,6 +2323,7 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_hide_library_unwatched_count',
     defaultValue: false,
   );
+
   static final maxBitrate = Preference(
     key: 'pref_max_bitrate',
     defaultValue: '120',

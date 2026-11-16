@@ -14419,35 +14419,19 @@
   },
   "hideHomeWatchProgress": "Hide Watch Progress",
   "@hideHomeWatchProgress": {
-    "description": "Setting title to hide the playback progress bar on home screen posters"
+    "description": "Setting title to hide the playback progress bar on home screen and library posters"
   },
   "hideHomeWatchProgressSubtitle": "Hide the progress bar on posters you've started watching.",
   "@hideHomeWatchProgressSubtitle": {
-    "description": "Description for setting to hide the playback progress bar on home screen posters"
+    "description": "Description for setting to hide the playback progress bar on home screen and library posters"
   },
   "hideHomeUnwatchedCount": "Hide Unwatched Count",
   "@hideHomeUnwatchedCount": {
-    "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    "description": "Setting title to hide the unwatched episode count badge on home screen and library posters"
   },
   "hideHomeUnwatchedCountSubtitle": "Hide the badge showing how many episodes are left to watch.",
   "@hideHomeUnwatchedCountSubtitle": {
-    "description": "Description for setting to hide the unwatched episode count badge on home screen posters"
-  },
-  "hideLibraryWatchProgress": "Hide Watch Progress",
-  "@hideLibraryWatchProgress": {
-    "description": "Setting title to hide the playback progress bar on library page posters"
-  },
-  "hideLibraryWatchProgressSubtitle": "Hide the progress bar on posters you've started watching.",
-  "@hideLibraryWatchProgressSubtitle": {
-    "description": "Description for setting to hide the playback progress bar on library page posters"
-  },
-  "hideLibraryUnwatchedCount": "Hide Unwatched Count",
-  "@hideLibraryUnwatchedCount": {
-    "description": "Setting title to hide the unwatched episode count badge on library page posters"
-  },
-  "hideLibraryUnwatchedCountSubtitle": "Hide the badge showing how many episodes are left to watch.",
-  "@hideLibraryUnwatchedCountSubtitle": {
-    "description": "Description for setting to hide the unwatched episode count badge on library page posters"
+    "description": "Description for setting to hide the unwatched episode count badge on home screen and library posters"
   },
   "continueWatchingAndNextUpHeader": "Continue Watching and Next Up",
   "@continueWatchingAndNextUpHeader": {
