@@ -2,7 +2,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
 
-import 'silo_media_stream_resolver.dart' show siloEndedOnServerMessage;
+import 'silo_media_stream_resolver.dart' show siloEndedOnServerRefusal;
 import 'silo_playback_sessions.dart';
 
 /// Reports playback to Silo.
@@ -110,14 +110,9 @@ class SiloPlaySessionService implements PlayerService {
   /// so the item's user data changed too.
   bool _ends(Object error, SiloPlaybackSession session) {
     if (SiloPlaybackApi.isEndedByServer(error)) {
-      session
-        ..ended = true
-        ..endedByServer = true;
+      session.ended = true;
       _noteEnded(session);
-      throw const PlaybackRefusedException(
-        siloEndedOnServerMessage,
-        reason: 'playback_session_ended',
-      );
+      throw siloEndedOnServerRefusal;
     }
     if (SiloPlaybackApi.isSessionGone(error) ||
         SiloPlaybackApi.isInstallationChanged(error)) {

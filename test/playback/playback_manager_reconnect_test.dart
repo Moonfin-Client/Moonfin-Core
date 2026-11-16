@@ -547,6 +547,34 @@ void main() {
       });
     });
 
+    test('a track change on a session the server ended closes the player '
+        'without failing the change', () {
+      final resolver = _Resolver()
+        ..replanError = const PlaybackRefusedException(
+          'Ended on the server.',
+          reason: PlaybackRefusedException.sessionEndedReason,
+        );
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        Object? failure;
+        manager.changeAudioTrack(2).catchError((Object e) => failure = e);
+        async.elapse(const Duration(seconds: 1));
+
+        expect(failure, isNull, reason: 'a refusal here is not a crash');
+        expect(resolver.requests, hasLength(1));
+        expect(events, ['ended: Ended on the server.', 'closed']);
+        expect(
+          manager.bringupState.phase,
+          isNot(PlaybackBringupPhase.failed),
+          reason: 'one message, from the close',
+        );
+        async.elapse(const Duration(minutes: 1));
+        expect(resolver.resolves, 1, reason: 'no new session');
+      });
+    });
+
     test('stops reconnecting when the viewer stops', () {
       final resolver = _Resolver();
       _withPlayback(resolver, (async, manager, backend, service) {

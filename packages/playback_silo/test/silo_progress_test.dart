@@ -149,6 +149,8 @@ void main() {
         'An administrator ended this playback session',
       ),
     );
+    final heard = <String>[];
+    s.client.ownUserDataChanges.listen(heard.add);
     await expectLater(
       s.service.onPlaybackProgress(_item, s.stream, Duration.zero),
       throwsA(
@@ -159,9 +161,10 @@ void main() {
     );
     await s.service.onPlaybackProgress(_item, s.stream, Duration.zero);
     expect(s.server.to(_progressPath), hasLength(1));
-    final session = SiloPlaybackSessions.of(s.client)[_session]!;
-    expect(session.ended, isTrue);
-    expect(session.endedByServer, isTrue);
+    expect(SiloPlaybackSessions.of(s.client)[_session]!.ended, isTrue);
+    // Silo recorded the play when it ended the session.
+    await Future<void>.delayed(Duration.zero);
+    expect(heard, ['movie-imdb-tt0295701']);
   });
 
   test('another failure reaches the caller and the session goes on', () async {

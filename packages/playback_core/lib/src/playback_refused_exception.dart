@@ -6,16 +6,20 @@
 /// a failed bringup with [message] as the error, which the player shows,
 /// and the launcher closes the player without treating it as a crash.
 ///
-/// With [reason] `playback_session_ended` (Silo: an administrator ended the
+/// With [reason] [sessionEndedReason] (Silo: an administrator ended the
 /// session), from a progress report or a replan of a playing stream, the
 /// manager stops playback and closes the player with [message] on
-/// `PlaybackManager.endedByServerStream`.
+/// `PlaybackManager.endedByServerStream` instead.
 class PlaybackRefusedException implements Exception {
   const PlaybackRefusedException(
     this.message, {
     this.reason,
     this.retryable = false,
   });
+
+  /// The [reason] of a session the server ended on purpose: nothing may
+  /// start it again.
+  static const sessionEndedReason = 'playback_session_ended';
 
   /// The server's words, for the viewer.
   final String message;

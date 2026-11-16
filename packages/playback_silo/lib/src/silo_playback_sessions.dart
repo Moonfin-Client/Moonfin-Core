@@ -53,11 +53,6 @@ class SiloPlaybackSession {
   /// under another installation): nothing more is reported on it.
   bool ended = false;
 
-  /// Ended by an administrator (`410 playback_session_ended`). Such a
-  /// session must not be started again, so a replan of it is refused rather
-  /// than replaced by a new session.
-  bool endedByServer = false;
-
   /// The `stop_id` of this session's stop, minted once and sent on every
   /// retry.
   late final String stopId = siloNewUuid();

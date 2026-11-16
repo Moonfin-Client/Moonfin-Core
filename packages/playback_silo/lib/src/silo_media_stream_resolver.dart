@@ -188,13 +188,12 @@ class SiloMediaStreamResolver
   static const replanRetryBudget = Duration(seconds: 30);
 
   /// A stream Moonfin got from Silo whose session is live and still plays
-  /// it, or one an administrator ended: its replan is refused, so the player
-  /// stops instead of starting the title again in a new session.
+  /// it.
   @override
   bool canReplan(StreamResolutionResult current) {
     final session = _sessions.sessionOf(current);
     return session != null &&
-        (!session.ended || session.endedByServer) &&
+        !session.ended &&
         identical(session.resolution, current);
   }
 
@@ -226,12 +225,6 @@ class SiloMediaStreamResolver
     ReplanRequest request,
   ) async {
     final session = _sessions.sessionOf(current);
-    if (session != null && session.endedByServer) {
-      throw const PlaybackRefusedException(
-        siloEndedOnServerMessage,
-        reason: 'playback_session_ended',
-      );
-    }
     if (session == null || session.ended) {
       throw StateError('No live Silo session for ${current.playSessionId}');
     }
@@ -279,13 +272,10 @@ class SiloMediaStreamResolver
       decision = await _replan(client.playbackApi, session.sessionId, body);
     } catch (error) {
       if (SiloPlaybackApi.isEndedByServer(error)) {
-        session
-          ..ended = true
-          ..endedByServer = true;
-        throw const PlaybackRefusedException(
-          siloEndedOnServerMessage,
-          reason: 'playback_session_ended',
-        );
+        // Silo recorded the play when it ended the session.
+        session.ended = true;
+        client.notePlaybackEnded(session.itemId);
+        throw siloEndedOnServerRefusal;
       }
       if (SiloPlaybackApi.isSessionGone(error) ||
           SiloPlaybackApi.isInstallationChanged(error)) {
@@ -694,6 +684,13 @@ PlaybackRefusedException siloRefusal(Map<String, dynamic> decision) {
 /// Shown when an administrator ended the session (`410`): the player
 /// leaves playback and doesn't start it again by itself.
 const siloEndedOnServerMessage = 'Playback was ended on the Silo server.';
+
+/// An administrator ended the session (`410 playback_session_ended`): the
+/// player stops and must not start it again.
+const siloEndedOnServerRefusal = PlaybackRefusedException(
+  siloEndedOnServerMessage,
+  reason: PlaybackRefusedException.sessionEndedReason,
+);
 
 /// Shown when the server has playback switched off for this account.
 const siloPlaybackUnavailableMessage =

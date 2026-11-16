@@ -644,7 +644,9 @@ class PlaybackManager implements AudioOwnable {
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
   final _endedByServerController = StreamController<String>.broadcast();
-  bool _endingForServer = false;
+  /// The queue item whose session the server ended on purpose, so nothing
+  /// reopens it; a new start of any item clears it.
+  dynamic _endedByServerItem;
   final _finishedItemStopController = StreamController<dynamic>.broadcast(
     sync: true,
   );
@@ -3150,6 +3152,7 @@ class PlaybackManager implements AudioOwnable {
       _itemEpoch++;
       _resetLiveRecoveryBudget();
       _endReconnect();
+      _endedByServerItem = null;
     }
 
     if (_forceTranscodeForQueue) {
@@ -3164,6 +3167,8 @@ class PlaybackManager implements AudioOwnable {
       _setBringupState(const PlaybackBringupState.idle());
       return;
     }
+    // Its session was ended on purpose; the stop under way closes it.
+    if (reopening && identical(item, _endedByServerItem)) return;
 
     // The backstop for everything the queue filter couldn't answer without a
     // lookup. Prerolls carry no rating of their own and are skipped.
@@ -3309,9 +3314,14 @@ class PlaybackManager implements AudioOwnable {
           );
           replanBase = replanned;
           return replanned;
-        } on PlaybackRefusedException {
+        } on PlaybackRefusedException catch (refusal) {
           // The server answered, and its answer is no: starting again
-          // wouldn't change it (or it ended the session on purpose).
+          // wouldn't change it. A session it ended on purpose stops here and
+          // now, before the caller can retry or start a new one.
+          final ended = _endedByServer(refusal);
+          if (ended != null && sessionToken == _playbackSessionToken) {
+            unawaited(_stopEndedByServer(ended.message));
+          }
           rethrow;
         } catch (error) {
           // A retired replan must not open its old source again after a tune.
@@ -3365,14 +3375,10 @@ class PlaybackManager implements AudioOwnable {
     try {
       resolution = await resolve(maxBitrate);
     } on PlaybackRefusedException catch (refusal) {
-      // A replan of a session the server ended on purpose: the player
-      // closes, after this attempt has unwound (a reconnect's retry included).
-      final ended = _endedByServer(refusal);
-      if (ended != null &&
-          replanFrom != null &&
-          sessionToken == _playbackSessionToken) {
-        Timer.run(() => unawaited(_stopEndedByServer(ended.message)));
-      }
+      // A session the server ended on purpose is being stopped (see
+      // resolve), and the player closes with its own message. Not a failure
+      // for the caller (a seek, a track change, a reconnect) to report.
+      if (_endedByServer(refusal) != null) return;
       // The server's own words, which the player shows.
       if (sessionToken == _playbackSessionToken) {
         _setBringupState(
@@ -4169,9 +4175,15 @@ class PlaybackManager implements AudioOwnable {
                 // report on.
                 if (ended != null) generation.reportPending = false;
                 _progressSettled(generation);
-                if (ended != null &&
-                    !generation.ended &&
-                    identical(_progressGeneration, generation)) {
+                if (ended == null) {
+                  if (error is PlaybackRefusedException) {
+                    _diagnosticLogger?.call('Progress refused: $error');
+                  }
+                  return;
+                }
+                // Even from a generation a re-resolve just retired: the item
+                // still playing is the one whose session ended.
+                if (identical(generation.item, queueService.currentItem)) {
                   unawaited(_stopEndedByServer(ended.message));
                 }
               },
@@ -4186,27 +4198,28 @@ class PlaybackManager implements AudioOwnable {
   /// (Silo: an administrator did), else null.
   static PlaybackRefusedException? _endedByServer(Object error) =>
       error is PlaybackRefusedException &&
-          error.reason == 'playback_session_ended'
+          error.reason == PlaybackRefusedException.sessionEndedReason
       ? error
       : null;
 
-  /// The server ended the session on purpose, so what is buffered must not
-  /// play on and nothing may start it again: stop, say why, and close the
-  /// player. If the viewer starts something else while the stop runs, that
-  /// is left alone.
+  /// The server ended the current item's session on purpose, so what is
+  /// buffered must not play on and nothing may reopen it: stop, say why, and
+  /// close the player. The stop takes the next session token and viewer
+  /// intent before its first await, so a re-resolve or reconnect under way
+  /// gives up instead of starting a new session. If the viewer starts
+  /// something else while the stop runs, that is left alone.
   Future<void> _stopEndedByServer(String message) async {
-    if (_endingForServer) return;
-    _endingForServer = true;
+    final item = queueService.currentItem;
+    if (item == null || identical(item, _endedByServerItem)) return;
+    _endedByServerItem = item;
     _diagnosticLogger?.call('The server ended the session: $message');
-    // The stop moves the viewer's intent on by one; anything more is a new
-    // playback started meanwhile.
-    final intent = _viewerIntentGeneration + 1;
+    _abandonLiveRecovery('the server ended the session');
+    _viewerPaused = false;
+    final intent = _viewerIntentGeneration;
     try {
-      await stop(userInitiated: false);
+      await _stopAndReportCurrent();
     } catch (e) {
       _diagnosticLogger?.call('Stopping a session the server ended: $e');
-    } finally {
-      _endingForServer = false;
     }
     if (intent != _viewerIntentGeneration) return;
     if (!_endedByServerController.isClosed) {
