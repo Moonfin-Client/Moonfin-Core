@@ -191,6 +191,10 @@ class _HomeShellState extends State<_HomeShell>
   bool _lastCanReachServer = true;
   late final HomeViewModel _viewModel;
 
+  /// Counts returns to Home, so a quick second return can tell an earlier
+  /// one's refresh from its own.
+  int _returnRefreshes = 0;
+
   final ValueNotifier<AggregatedItem?> _selectedItemNotifier = ValueNotifier(null);
   final GlobalKey<_ContentRowsState> _contentRowsKey =
       GlobalKey<_ContentRowsState>();
@@ -587,11 +591,13 @@ class _HomeShellState extends State<_HomeShell>
       _themeMusicService.fadeOutAndStop();
       return;
     }
-    // Only the resume / next-up rows can change from viewing an item, so a
-    // lightweight in-place refresh keeps every other row (its paginated items,
-    // scroll offset, and focus) intact. A full refresh still runs on the Home
-    // button and pull-to-refresh. The refresh can remove a row that refetched
-    // empty, so once it lands, re-assert focus in case it held the focused row.
+    // Only the resume / next-up rows can change from viewing an item, and On
+    // Now from the time spent away, so a lightweight in-place refresh keeps
+    // every other row (its paginated items, scroll offset, and focus) intact.
+    // A full refresh still runs on the Home button and pull-to-refresh. The
+    // refresh can remove a row that refetched empty, so once it lands,
+    // re-assert focus in case it held the focused row.
+    final returnRefresh = ++_returnRefreshes;
     Future.delayed(const Duration(milliseconds: 300), () async {
       if (!mounted) return;
       if (GetIt.instance.isRegistered<PlaybackManager>()) {
@@ -605,7 +611,9 @@ class _HomeShellState extends State<_HomeShell>
       if (!mounted) return;
       await _viewModel.refreshResumeAndNextUp();
       if (!mounted) return;
-      _contentRowsKey.currentState?.ensureFocusAfterReturnRefresh();
+      _contentRowsKey.currentState?.ensureFocusAfterReturnRefresh(
+        retireAnchor: returnRefresh == _returnRefreshes,
+      );
     });
     _contentRowsKey.currentState?.reassertNavigationCallbacks();
     _contentRowsKey.currentState?.restoreReturnFocus();
@@ -3487,7 +3495,7 @@ class _ContentRowsState extends State<_ContentRows>
   /// refresh removed the row that held focus, focus is now dead and no key
   /// handler will ever run, so re-assert it on TV. Bails whenever anything
   /// real still has focus so it never steals.
-  void ensureFocusAfterReturnRefresh() {
+  void ensureFocusAfterReturnRefresh({bool retireAnchor = true}) {
     if (!mounted || PlatformDetection.useMobileUi) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_mayRestoreHomeFocus()) return;
@@ -3496,8 +3504,8 @@ class _ContentRowsState extends State<_ContentRows>
         return;
       }
       _realignScrollAfterReturn();
-      // Last chance to use the anchor, so retire it either way.
-      _returnScrollRowId = null;
+      // A later return still needs the anchor, so only the latest retires it.
+      if (retireAnchor) _returnScrollRowId = null;
       if (!PlatformDetection.isTV) return;
       if (_homeContentHasRealFocus()) return;
       if (!_focusIsGenuinelyLost()) return;
