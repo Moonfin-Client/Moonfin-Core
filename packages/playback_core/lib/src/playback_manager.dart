@@ -644,6 +644,7 @@ class PlaybackManager implements AudioOwnable {
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
   final _endedByServerController = StreamController<String>.broadcast();
+  bool _endingForServer = false;
   final _finishedItemStopController = StreamController<dynamic>.broadcast(
     sync: true,
   );
@@ -3364,6 +3365,14 @@ class PlaybackManager implements AudioOwnable {
     try {
       resolution = await resolve(maxBitrate);
     } on PlaybackRefusedException catch (refusal) {
+      // A replan of a session the server ended on purpose: the player
+      // closes, after this attempt has unwound (a reconnect's retry included).
+      final ended = _endedByServer(refusal);
+      if (ended != null &&
+          replanFrom != null &&
+          sessionToken == _playbackSessionToken) {
+        Timer.run(() => unawaited(_stopEndedByServer(ended.message)));
+      }
       // The server's own words, which the player shows.
       if (sessionToken == _playbackSessionToken) {
         _setBringupState(
@@ -4155,9 +4164,15 @@ class PlaybackManager implements AudioOwnable {
             .then<void>(
               (_) => _progressSettled(generation),
               onError: (Object error, StackTrace _) {
+                final ended = _endedByServer(error);
+                // The session is over, so a coalesced report has nothing to
+                // report on.
+                if (ended != null) generation.reportPending = false;
                 _progressSettled(generation);
-                if (error is PlaybackRefusedException) {
-                  unawaited(_stopEndedByServer(generation, error.message));
+                if (ended != null &&
+                    !generation.ended &&
+                    identical(_progressGeneration, generation)) {
+                  unawaited(_stopEndedByServer(ended.message));
                 }
               },
             ),
@@ -4167,22 +4182,33 @@ class PlaybackManager implements AudioOwnable {
     }
   }
 
-  /// A progress report answered that the server ended the session on
-  /// purpose, so what is buffered must not play on: stop, say why, and close
-  /// the player. A generation the viewer has already moved past is left be.
-  Future<void> _stopEndedByServer(
-    _ProgressGeneration generation,
-    String message,
-  ) async {
-    if (generation.ended || !identical(_progressGeneration, generation)) {
-      return;
-    }
+  /// [error] as a refusal saying the server ended the session on purpose
+  /// (Silo: an administrator did), else null.
+  static PlaybackRefusedException? _endedByServer(Object error) =>
+      error is PlaybackRefusedException &&
+          error.reason == 'playback_session_ended'
+      ? error
+      : null;
+
+  /// The server ended the session on purpose, so what is buffered must not
+  /// play on and nothing may start it again: stop, say why, and close the
+  /// player. If the viewer starts something else while the stop runs, that
+  /// is left alone.
+  Future<void> _stopEndedByServer(String message) async {
+    if (_endingForServer) return;
+    _endingForServer = true;
     _diagnosticLogger?.call('The server ended the session: $message');
+    // The stop moves the viewer's intent on by one; anything more is a new
+    // playback started meanwhile.
+    final intent = _viewerIntentGeneration + 1;
     try {
       await stop(userInitiated: false);
     } catch (e) {
       _diagnosticLogger?.call('Stopping a session the server ended: $e');
+    } finally {
+      _endingForServer = false;
     }
+    if (intent != _viewerIntentGeneration) return;
     if (!_endedByServerController.isClosed) {
       _endedByServerController.add(message);
     }

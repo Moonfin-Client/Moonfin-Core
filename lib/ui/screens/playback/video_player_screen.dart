@@ -969,7 +969,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     unawaited(_syncAutoHdrSwitching());
     _positionSub = _state.positionStream.listen(_onPositionUpdate);
     _endedByServerSub = _manager.endedByServerStream.listen((message) {
-      if (mounted) showPlaybackEndedByServer(context, message);
+      // Throttled like the failed bringup a refused replan also shows, so
+      // the two don't stack.
+      if (mounted) {
+        _showThrottledPlaybackError(
+          playbackEndedByServerText(context, message),
+        );
+      }
     });
     _completedSub = _manager.sessionEndedStream.listen((_) {
       if (!mounted || _isStopping) return;

@@ -150,6 +150,9 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
   /// Whether the server is unreachable: every replan and resolve throws.
   bool unreachable = false;
 
+  /// Thrown by every replan when set (the server refused it).
+  Object? replanError;
+
   /// Holds the next replan until completed, to keep an attempt in flight.
   Completer<void>? replanGate;
   int resolves = 0;
@@ -197,6 +200,8 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
     replanGate = null;
     if (gate != null) await gate.future;
     if (unreachable) throw StateError('server unreachable');
+    final error = replanError;
+    if (error != null) throw error;
     return _stream(current.playSessionId!, requests.length + 1);
   }
 }
@@ -510,6 +515,35 @@ void main() {
         final attempts = resolver.requests.length;
         async.elapse(const Duration(minutes: 1));
         expect(resolver.requests, hasLength(attempts));
+      });
+    });
+
+    test('a session the server ended closes the player instead of starting '
+        'a new one', () {
+      final resolver = _Resolver()
+        ..replanError = const PlaybackRefusedException(
+          'Ended on the server.',
+          reason: 'playback_session_ended',
+        );
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'source_refused',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+        expect(events, ['ended: Ended on the server.', 'closed']);
+        expect(manager.isReconnecting, isFalse);
+
+        async.elapse(const Duration(minutes: 1));
+        expect(resolver.requests, hasLength(1));
+        expect(resolver.resolves, 1, reason: 'no new session');
       });
     });
 

@@ -5,6 +5,11 @@
 /// (Silo's terminal reasons). The playback manager reports it as
 /// a failed bringup with [message] as the error, which the player shows,
 /// and the launcher closes the player without treating it as a crash.
+///
+/// With [reason] `playback_session_ended` (Silo: an administrator ended the
+/// session), from a progress report or a replan of a playing stream, the
+/// manager stops playback and closes the player with [message] on
+/// `PlaybackManager.endedByServerStream`.
 class PlaybackRefusedException implements Exception {
   const PlaybackRefusedException(
     this.message, {

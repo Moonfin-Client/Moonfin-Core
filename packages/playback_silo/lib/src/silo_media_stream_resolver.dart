@@ -188,12 +188,13 @@ class SiloMediaStreamResolver
   static const replanRetryBudget = Duration(seconds: 30);
 
   /// A stream Moonfin got from Silo whose session is live and still plays
-  /// it.
+  /// it, or one an administrator ended: its replan is refused, so the player
+  /// stops instead of starting the title again in a new session.
   @override
   bool canReplan(StreamResolutionResult current) {
     final session = _sessions.sessionOf(current);
     return session != null &&
-        !session.ended &&
+        (!session.ended || session.endedByServer) &&
         identical(session.resolution, current);
   }
 
@@ -225,6 +226,12 @@ class SiloMediaStreamResolver
     ReplanRequest request,
   ) async {
     final session = _sessions.sessionOf(current);
+    if (session != null && session.endedByServer) {
+      throw const PlaybackRefusedException(
+        siloEndedOnServerMessage,
+        reason: 'playback_session_ended',
+      );
+    }
     if (session == null || session.ended) {
       throw StateError('No live Silo session for ${current.playSessionId}');
     }
@@ -272,7 +279,9 @@ class SiloMediaStreamResolver
       decision = await _replan(client.playbackApi, session.sessionId, body);
     } catch (error) {
       if (SiloPlaybackApi.isEndedByServer(error)) {
-        session.ended = true;
+        session
+          ..ended = true
+          ..endedByServer = true;
         throw const PlaybackRefusedException(
           siloEndedOnServerMessage,
           reason: 'playback_session_ended',

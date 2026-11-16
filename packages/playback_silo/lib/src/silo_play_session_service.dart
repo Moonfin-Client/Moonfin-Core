@@ -106,10 +106,14 @@ class SiloPlaySessionService implements PlayerService {
   }
 
   /// Marks [session] over when [error] says so, and answers whether it did.
-  /// Throws when an administrator ended it.
+  /// Throws when an administrator ended it; Silo has then recorded the play,
+  /// so the item's user data changed too.
   bool _ends(Object error, SiloPlaybackSession session) {
     if (SiloPlaybackApi.isEndedByServer(error)) {
-      session.ended = true;
+      session
+        ..ended = true
+        ..endedByServer = true;
+      _noteEnded(session);
       throw const PlaybackRefusedException(
         siloEndedOnServerMessage,
         reason: 'playback_session_ended',

@@ -159,7 +159,9 @@ void main() {
     );
     await s.service.onPlaybackProgress(_item, s.stream, Duration.zero);
     expect(s.server.to(_progressPath), hasLength(1));
-    expect(SiloPlaybackSessions.of(s.client)[_session]!.ended, isTrue);
+    final session = SiloPlaybackSessions.of(s.client)[_session]!;
+    expect(session.ended, isTrue);
+    expect(session.endedByServer, isTrue);
   });
 
   test('another failure reaches the caller and the session goes on', () async {

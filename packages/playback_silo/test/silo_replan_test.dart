@@ -211,6 +211,33 @@ void main() {
     expect(SiloPlaybackSessions.of(s.client)[_session]!.ended, isTrue);
   });
 
+  test('once an administrator ended it, a replan is refused without asking '
+      'Silo, never turned into a new start', () async {
+    final s = await _started(
+      SiloTestServer.problemRoute(410, 'playback_session_ended', 'Ended'),
+    );
+    // The progress report heard it first.
+    SiloPlaybackSessions.of(s.client)[_session]!
+      ..ended = true
+      ..endedByServer = true;
+    expect(s.resolver.canReplan(s.stream), isTrue);
+    await expectLater(
+      s.resolver.replan(
+        _item,
+        s.stream,
+        _at(const Duration(minutes: 30), ReplanReason.trackChange),
+      ),
+      throwsA(
+        isA<PlaybackRefusedException>().having(
+          (e) => e.reason,
+          'reason',
+          'playback_session_ended',
+        ),
+      ),
+    );
+    expect(s.server.to(_replanPath), isEmpty);
+  });
+
   test('a session that expired throws, for a new start', () async {
     final s = await _started(
       SiloTestServer.problemRoute(404, 'playback_session_not_found', 'Gone'),
