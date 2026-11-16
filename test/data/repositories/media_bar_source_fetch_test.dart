@@ -217,6 +217,32 @@ void main() {
     expect(shown, ['unseen']);
   });
 
+  // The fake ignores the date floor the way Silo does.
+  test('old movies a server sends anyway leave every source asked', () async {
+    final old = DateTime.now().subtract(const Duration(days: 400));
+    final server = _Server(
+      {
+        for (var c = 0; c < 8; c++)
+          'old$c': [for (var i = 0; i < 12; i++) 'old${c}_$i'],
+        'fresh': const ['new'],
+      },
+      released: {
+        for (var c = 0; c < 8; c++)
+          for (var i = 0; i < 12; i++) 'old${c}_$i': old,
+        'new': DateTime.now().subtract(const Duration(days: 10)),
+      },
+    );
+
+    final shown = await load(
+      server,
+      itemCount: 5,
+      source: UserPreferences.mediaBarSourceNewReleases,
+    );
+
+    expect(server.asked, hasLength(9));
+    expect(shown, ['new']);
+  });
+
   test('a movie out within the window gets the new movie label', () async {
     final now = DateTime.now();
     final server = _Server(

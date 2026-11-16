@@ -148,6 +148,10 @@ class MediaBarRepository {
       final allItems = <Map<String, dynamic>>[];
       final seenIds = <String>{};
       final usable = _usableFor(excludedGenres);
+      final newMovieDays = _isNewReleaseSource
+          ? _prefs.get(UserPreferences.mediaBarNewMovieDays)
+          : null;
+      final now = DateTime.now();
       var usableCount = 0;
       // A source still waiting for a slot is skipped once the pool holds twice
       // the item count to choose from. The order is shuffled so the skipped
@@ -167,6 +171,15 @@ class MediaBarRepository {
             for (final item in batch) {
               final id = item['Id']?.toString();
               if (id != null && !seenIds.add(id)) continue;
+              // A server can send movies outside the window (Silo ignores the
+              // date floor), so they're dropped before they count, or they'd
+              // stop the search before a later source's new ones come in.
+              if (newMovieDays != null &&
+                  item['Type'] == 'Movie' &&
+                  mediaBarNewMovieOf(item, days: newMovieDays, now: now) ==
+                      null) {
+                continue;
+              }
               allItems.add(item);
               if (usable(item)) usableCount++;
             }
@@ -179,15 +192,6 @@ class MediaBarRepository {
       if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
           GetIt.instance<MediaBarRepository>() != this) {
         return const MediaBarDisabled();
-      }
-
-      if (_isNewReleaseSource) {
-        final newMovies = _newMovies(allItems);
-        allItems.removeWhere(
-          (item) =>
-              item['Type'] == 'Movie' &&
-              !newMovies.containsKey(item['Id']?.toString()),
-        );
       }
 
       var selected = _selectItemsWithBackdrops(
@@ -582,7 +586,7 @@ class MediaBarRepository {
     final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
     try {
       // shortcut: getItems has no upper date bound, so a movie dated in the
-      // future can take a pool slot before _newMovies drops it. The recently
+      // future can take a pool slot before it's dropped. The recently
       // released call caps at today but skips collections on Silo. Add a max
       // date to getItems on every backend if this ever matters.
       final response = await _client.itemsApi
