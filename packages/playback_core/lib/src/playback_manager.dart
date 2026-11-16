@@ -647,13 +647,30 @@ class PlaybackManager implements AudioOwnable {
   /// The queue item whose session the server ended on purpose, so nothing
   /// reopens it; a new start of any item clears it.
   dynamic _endedByServerItem;
+  /// True while the stop of an ended session runs. A start of the ended item
+  /// meanwhile (a Next or a queue pick that repeats it) is turned away.
+  bool _endingByServer = false;
   /// The server session the player streams from. A replan keeps it; a fresh
   /// start replaces it, so a late refusal from the old one stops nothing.
   String? _ownedPlaySessionId;
   /// Bumped when the viewer asks for something else to play (another item,
-  /// queue or source) and there is one, unlike a Stop or a Next at the end
-  /// of the queue. A server-ended stop reads it to tell whether to close.
+  /// queue or source) and there is one, unlike a Stop, a Next at the end of
+  /// the queue or one that repeats the current item. A server-ended stop
+  /// reads it to tell whether to close. Bumped through
+  /// [_requestReplacement].
   int _replacementRequests = 0;
+
+  /// Counts a request to play [target] instead of the current item. The
+  /// current item again (repeat one, repeat all on a one-item queue, a tap
+  /// on the playing entry) is not something else.
+  void _requestReplacement(dynamic target) {
+    if (target == null || identical(target, queueService.currentItem)) return;
+    _replacementRequests++;
+  }
+
+  dynamic get _queuedNextItem => queueService.repeatMode == RepeatMode.repeatOne
+      ? queueService.currentItem
+      : queueService.peekNext;
   final _finishedItemStopController = StreamController<dynamic>.broadcast(
     sync: true,
   );
@@ -2866,7 +2883,7 @@ class PlaybackManager implements AudioOwnable {
   Future<void> _autoNext() async {
     if (await _maybeIntercept(TransportAction.next)) return;
     _beginNewPlaybackSource('the queue advanced to another item');
-    if (queueService.hasNext) _replacementRequests++;
+    _requestReplacement(_queuedNextItem);
     _mediaSourceId = null;
     if (_isOfflinePlayback) {
       await _stopAndReportCurrent(skipQueueChange: true);
@@ -3161,7 +3178,7 @@ class PlaybackManager implements AudioOwnable {
       _itemEpoch++;
       _resetLiveRecoveryBudget();
       _endReconnect();
-      _endedByServerItem = null;
+      if (!_endingByServer) _endedByServerItem = null;
     }
 
     if (_forceTranscodeForQueue) {
@@ -3177,7 +3194,9 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     // Its session was ended on purpose; the stop under way closes it.
-    if (reopening && identical(item, _endedByServerItem)) return;
+    if ((reopening || _endingByServer) && identical(item, _endedByServerItem)) {
+      return;
+    }
 
     // The backstop for everything the queue filter couldn't answer without a
     // lookup. Prerolls carry no rating of their own and are skipped.
@@ -4265,6 +4284,15 @@ class PlaybackManager implements AudioOwnable {
     final item = queueService.currentItem;
     if (item == null || identical(item, _endedByServerItem)) return;
     _endedByServerItem = item;
+    _endingByServer = true;
+    try {
+      await _finishEndedByServer(message);
+    } finally {
+      _endingByServer = false;
+    }
+  }
+
+  Future<void> _finishEndedByServer(String message) async {
     _diagnosticLogger?.call('The server ended the session: $message');
     _abandonLiveRecovery('the server ended the session');
     _viewerPaused = false;
@@ -4278,10 +4306,26 @@ class PlaybackManager implements AudioOwnable {
     }
     if (replacements != _replacementRequests) return;
     // Nothing else is coming, whether the viewer did nothing, pressed Stop
-    // or pressed Next at the end of the queue. The backend is already
-    // stopped, so let go of the queue here, with no await a Next could slip
-    // into, and close.
-    _releaseQueue();
+    // or pressed Next at the end of the queue or onto the same item. A start
+    // that doesn't join the stop may still be resolving: the new token turns
+    // it away, and a second backend stop ends one that reached the player
+    // (or what a failed first stop left playing).
+    _playbackSessionToken++;
+    try {
+      await _backend?.stop();
+    } catch (e) {
+      _diagnosticLogger?.call('Stopping a session the server ended: $e');
+    }
+    if (replacements != _replacementRequests) return;
+    // No await from here on, so a Next can't slip in between the check and
+    // letting go of the queue.
+    try {
+      _releaseQueue();
+    } catch (e) {
+      // Disposed while the stop ran.
+      _diagnosticLogger?.call('Clearing the queue of an ended session: $e');
+      return;
+    }
     _endedByServerItem = null;
     if (!_endedByServerController.isClosed) {
       _endedByServerController.add(message);
@@ -4599,7 +4643,7 @@ class PlaybackManager implements AudioOwnable {
     }
     if (_isManualNexting || _isAutoNexting) return;
     _beginNewPlaybackSource('the viewer advanced the queue');
-    if (queueService.hasNext) _replacementRequests++;
+    _requestReplacement(_queuedNextItem);
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
@@ -4629,7 +4673,11 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     _beginNewPlaybackSource('the viewer moved to the previous item');
-    _replacementRequests++;
+    final queued = queueService.items;
+    final index = queueService.currentIndex;
+    _requestReplacement(
+      index > 0 ? queued[index - 1] : (queued.isEmpty ? null : queued.last),
+    );
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -4639,7 +4687,10 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> playFromQueue(int index) async {
     _beginNewPlaybackSource('the viewer selected another queued item');
-    _replacementRequests++;
+    final queued = queueService.items;
+    _requestReplacement(
+      index >= 0 && index < queued.length ? queued[index] : null,
+    );
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();

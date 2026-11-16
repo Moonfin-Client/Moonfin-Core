@@ -347,6 +347,39 @@ void main() {
       expect(manager.queueService.currentItem, isNull);
       expect(events, ['ended: Ended on the server.', 'closed']);
     });
+
+    testWidgets('Next that repeats the ended item closes instead', (
+      tester,
+    ) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[episodeA]);
+      manager.queueService.toggleRepeat();
+      expect(manager.queueService.repeatMode, RepeatMode.repeatAll);
+      final next = manager.nextInQueue();
+      await release(tester, gate);
+      await next;
+      await tester.pump();
+
+      expect(events, ['ended: Ended on the server.', 'closed']);
+      expect(manager.queueService.currentItem, isNull);
+      expect(backend.playing, isFalse);
+    });
+
+    testWidgets('picking the ended item in the queue closes instead', (
+      tester,
+    ) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[
+        episodeA,
+        episodeB,
+      ]);
+      final pick = manager.playFromQueue(0);
+      await release(tester, gate);
+      await pick;
+      await tester.pump();
+
+      expect(events, ['ended: Ended on the server.', 'closed']);
+      expect(manager.queueService.currentItem, isNull);
+      expect(backend.playing, isFalse);
+    });
   });
 
   testWidgets('another progress failure leaves playback alone', (
