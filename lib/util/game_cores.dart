@@ -433,10 +433,11 @@ const Map<String, Map<String, String>> coreOptionDefaults = {
   'melonds': {'melonds_touch_mode': 'Touch'},
 };
 
-/// Additions to [coreOptionDefaults] for the Windows and Linux hosts.
-const Map<String, Map<String, String>> softwareOnlyCoreOptionDefaults = {
+/// Options a core has to run with when the host can't give it a GPU context.
+const Map<String, Map<String, String>> softwareRenderingCoreOptions = {
   'mupen64plus_next': {
-    // Neither host has an OpenGL backend, so the GLideN64 default can't render.
+    // The GLideN64 default fails to load without a GPU context, and angrylion
+    // needs a low-level RSP to draw.
     'mupen64plus-rdp-plugin': 'angrylion',
     'mupen64plus-rsp-plugin': 'parallel',
   },
@@ -447,13 +448,39 @@ Map<String, String>? withCoreOptionDefaults(
   String coreId,
   Map<String, String>? settings,
 ) {
-  final defaults = {
-    ...?coreOptionDefaults[coreId],
-    if (PlatformDetection.isWindows || PlatformDetection.isLinux)
-      ...?softwareOnlyCoreOptionDefaults[coreId],
-  };
-  if (defaults.isEmpty) return settings;
+  final defaults = coreOptionDefaults[coreId];
+  if (defaults == null) return settings;
   return {...defaults, ...?settings};
+}
+
+/// The options [coreId] has to run with on this device. They win over saved
+/// settings, because a saved GPU renderer fails to load here. Empty when the
+/// host renders on the GPU, which only Android's does, and only with hardware
+/// rendering on.
+Map<String, String> softwareRenderingOverrides(
+  String coreId, {
+  required bool hardwareRenderingEnabled,
+}) => PlatformDetection.isAndroid && hardwareRenderingEnabled
+    ? const {}
+    : softwareRenderingCoreOptions[coreId] ?? const {};
+
+/// [options] as they should be saved after a session that ran with
+/// [softwareRenderingOverrides]. Each overridden option goes back to the value
+/// saved before the session, or is left out if there was none, so the game
+/// returns to its own renderer once the device can render on the GPU.
+Map<String, String> optionsToSave(
+  Iterable<MapEntry<String, String>> options,
+  Map<String, String?> savedBeforeOverrides,
+) {
+  final values = Map.fromEntries(options);
+  savedBeforeOverrides.forEach((key, saved) {
+    if (saved == null) {
+      values.remove(key);
+    } else {
+      values[key] = saved;
+    }
+  });
+  return values;
 }
 
 /// The saved-settings key for [coreId], shared by every place that reads or

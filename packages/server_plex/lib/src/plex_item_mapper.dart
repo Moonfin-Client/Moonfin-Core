@@ -168,6 +168,8 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
     'Id': id,
     'Name': m['title'],
     if (m['titleSort'] != null) 'SortName': m['titleSort'],
+    // A track's originalTitle is its artist, read below.
+    if (!isTrack) 'OriginalTitle': ?m['originalTitle'],
     'Type': _itemTypes[type] ?? 'Video',
     'IsFolder': _folderTypes.contains(type),
     if (type == 'movie' || type == 'episode' || type == 'clip')

@@ -9220,7 +9220,7 @@
             }
         }
     },
-    "recommendationSystemJellyfin": "Jellyfin Recomenda",
+    "recommendationSystemJellyfin": "Recomendações do servidor",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -14813,7 +14813,7 @@
     },
     "sinceYouWatchedSource": "Fonte de recomendações",
     "sinceYouWatchedSourceLocal": "Recomendações do Moonfin",
-    "sinceYouWatchedSourceServer": "Recomendações do Jellyfin",
+    "sinceYouWatchedSourceServer": "Recomendações do servidor",
     "sinceYouWatchedSourceOnline": "Similaridade TMDb",
     "sinceYouWatchedSourceType": "Tipo de fonte",
     "sinceYouWatchedSourceTypeDescription": "Escolha o tipo de conteúdo para recomendar",

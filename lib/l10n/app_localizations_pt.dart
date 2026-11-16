@@ -18716,7 +18716,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get recommendationSystemMoonfin => 'Moonfin Recomenda';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recomenda';
+  String get recommendationSystemJellyfin => 'Recomendações do servidor';
 
   @override
   String get recommendationSystemTmdb => 'Similaridade do TMDb';
@@ -30347,7 +30347,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get sinceYouWatchedSourceLocal => 'Recomendações do Moonfin';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Recomendações do Jellyfin';
+  String get sinceYouWatchedSourceServer => 'Recomendações do servidor';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Similaridade TMDb';
@@ -33934,7 +33934,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String get recommendationSystemMoonfin => 'Moonfin Recomenda';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recomenda';
+  String get recommendationSystemJellyfin => 'Servidor Recomenda';
 
   @override
   String get recommendationSystemTmdb => 'Semelhança TMDb';
@@ -43970,7 +43970,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String get sinceYouWatchedSourceLocal => 'Moonfin Recomenda';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recomenda';
+  String get sinceYouWatchedSourceServer => 'Servidor Recomenda';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Semelhança TMDb';

@@ -28,6 +28,18 @@ class LetterboxCropRect {
 
   String get videoCrop => '${w}x$h+$x+$y';
 
+  /// The smallest rectangle holding this one and [other].
+  LetterboxCropRect widen(LetterboxCropRect other) {
+    final left = math.min(x, other.x);
+    final top = math.min(y, other.y);
+    return LetterboxCropRect(
+      w: math.max(x + w, other.x + other.w) - left,
+      h: math.max(y + h, other.y + other.h) - top,
+      x: left,
+      y: top,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       other is LetterboxCropRect &&
@@ -299,9 +311,19 @@ class LetterboxCropStabilizer {
   final int trustedHits;
   final int unknownHits;
 
+  /// An unusable reading leaves a streak of edge-reaching bars in place
+  /// instead of ending it, for a one-shot scan with a fixed read budget,
+  /// where a dark scene would otherwise never give two matching readings
+  /// back to back.
+  bool holdThroughIgnored = false;
+
   LetterboxSampleKind? _candidateKind;
   LetterboxCropRect? _candidateRect;
   int _hits = 0;
+
+  /// The streak's bars reach the frame edges. A windowbox doesn't.
+  bool _edgeStreak = false;
+
   LetterboxCropRect? _applied;
   final _trusted = <LetterboxCropRect>[];
   bool _trustedFullFrame = false;
@@ -352,7 +374,7 @@ class LetterboxCropStabilizer {
     );
 
     if (sample.kind == LetterboxSampleKind.ignore) {
-      resetCandidate();
+      if (!holdThroughIgnored || !_edgeStreak) resetCandidate();
       return const LetterboxCropDecision.hold();
     }
 
@@ -368,6 +390,7 @@ class LetterboxCropStabilizer {
       _candidateRect = sample.rect;
       _hits = 1;
     }
+    _edgeStreak = !sample.windowbox;
 
     if (_hits < _hitsNeeded(sample)) {
       return const LetterboxCropDecision.hold();

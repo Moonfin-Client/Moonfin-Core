@@ -309,6 +309,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return backend is HtmlVideoBackend ? backend : null;
   }
 
+  /// The web backend lasts as long as the app, so this is only null off web.
+  HtmlVideoBackend? get _webVideoBackend =>
+      PlatformDetection.isWeb && GetIt.instance.isRegistered<HtmlVideoBackend>()
+      ? GetIt.instance<HtmlVideoBackend>()
+      : null;
+
+  /// The video is in the browser's floating window, apart from [_isInPiP],
+  /// which is the system PiP on phones.
+  bool _isInBrowserPiP = false;
+
+  void _onBrowserPiPChanged() {
+    final inPiP = _webVideoBackend?.inPictureInPicture.value ?? false;
+    if (!mounted || inPiP == _isInBrowserPiP) return;
+    setState(() => _isInBrowserPiP = inPiP);
+  }
+
+  void _toggleBrowserPiP() {
+    final backend = _activeHtmlVideoBackend;
+    if (backend == null) return;
+    if (_isInBrowserPiP) {
+      unawaited(backend.exitPictureInPicture());
+    } else {
+      unawaited(backend.enterPictureInPicture());
+    }
+  }
+
   bool _controlsVisible = true;
   bool _subtitleDelayOpen = false;
   Timer? _hideTimer;
@@ -427,6 +453,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _letterboxCropAppliedSub;
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
+  StreamSubscription<LetterboxScanResult>? _letterboxScanResultSub;
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
@@ -1057,15 +1084,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _updateDisplayPlaying(playing);
       _syncCinemaSkip();
       // The hide timer passes over a player that hasn't started yet, so a
-      // start or resume slower than its delay needs it armed again here. A
-      // pause with a description card clears the controls sooner so the card
-      // shows quickly.
-      if (_controlsVisible && !_isSeeking) {
-        if (playing) {
-          _scheduleHide();
-        } else if (_hasPausedDescriptionCard) {
-          _scheduleHide(delay: const Duration(seconds: 2));
-        }
+      // start or resume slower than its delay needs it armed again here.
+      if (playing && _controlsVisible && !_isSeeking) {
+        _scheduleHide();
       }
       if (isMobilePlayback) {
         _pipService.updatePiPActions(isPlaying: playing);
@@ -1096,6 +1117,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (PlatformDetection.useDesktopUi) {
       unawaited(_syncDesktopFullscreenState());
       unawaited(_syncAlwaysOnTopState());
+    }
+
+    final webVideoBackend = _webVideoBackend;
+    if (webVideoBackend != null) {
+      _isInBrowserPiP = webVideoBackend.inPictureInPicture.value;
+      webVideoBackend.inPictureInPicture.addListener(_onBrowserPiPChanged);
     }
 
     if (PlatformDetection.isMobile) {
@@ -1188,6 +1215,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
     _letterboxCropGeometrySub?.cancel();
+    _letterboxScanResultSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
     _pipChangedSub?.cancel();
@@ -1222,6 +1250,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!PlatformDetection.isTV) _pipService.enableAutoPiP(false);
     if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
       unawaited(_setAlwaysOnTop(false));
+    }
+    // Leaving the player stops the video, so its floating window goes too.
+    final webVideoBackend = _webVideoBackend;
+    if (webVideoBackend != null) {
+      webVideoBackend.inPictureInPicture.removeListener(_onBrowserPiPChanged);
+      unawaited(webVideoBackend.exitPictureInPicture());
     }
     // The launch coordinator briefly owns this route while Android decides
     // whether to hand the queue to an external player. Keep that prepared
@@ -3038,6 +3072,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (pauseAsked) {
       if (_displayPlaying && mounted) {
         setState(() => _displayPlaying = false);
+        _clearControlsForPausedDescription();
       }
       return;
     }
@@ -3047,8 +3082,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _displayPlayingDebounce = Timer(delay, () {
       if (mounted && !_state.isPlaying) {
         setState(() => _displayPlaying = false);
+        _clearControlsForPausedDescription();
       }
     });
+  }
+
+  /// A pause with a description card clears the controls at once, so the card
+  /// shows as soon as the player reads as paused.
+  void _clearControlsForPausedDescription() {
+    if (_controlsVisible && !_isSeeking && _hasPausedDescriptionCard) {
+      _scheduleHide(delay: Duration.zero);
+    }
   }
 
   void _startEndsAtTicker() {
@@ -3089,11 +3133,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  // Off TV the transport sits in the middle of the picture, right where the
-  // paused description card goes, so with a card to show the controls still
-  // hide while paused and the card shows once they do.
+  // The paused description covers the picture where the controls sit, so
+  // with one to show the controls still hide while paused and it shows once
+  // they do.
   bool get _hasPausedDescriptionCard =>
-      !PlatformDetection.useLeanbackUi &&
       _bringupState.phase == PlaybackBringupPhase.ready &&
       _prefs.get(UserPreferences.showDescriptionOnPause) &&
       _currentItemDescription() != null;
@@ -4612,8 +4655,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
+      // The element has to stay mounted under the label: taking it out of
+      // the page closes the browser's floating window.
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
+            if (_isInBrowserPiP)
+              ColoredBox(
+                color: Colors.black,
+                // Above the transport in the middle, so the two don't overlap.
+                child: Align(
+                  alignment: const Alignment(0, -0.4),
+                  child: Text(
+                    AppLocalizations.of(
+                      context,
+                    ).playerPlayingInPictureInPicture,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white70, fontSize: 28),
+                  ),
+                ),
+              ),
+          ],
+        ),
       );
     }
 
@@ -4905,67 +4970,74 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       initialData: _state.isPlaying,
       builder: (context, snap) {
         final isPlaying = _isPlayingShown;
-        final centerControlsShowing =
-            !PlatformDetection.useLeanbackUi &&
-            _controlsVisible &&
-            !_isOsdLocked;
+        final controlsShowing = _controlsVisible && !_isOsdLocked;
+        // Laid out on the settings preview's 960 by 540 screen and scaled to
+        // this one by height, so a wide phone keeps the whole block on screen.
+        // It's sized by the screen alone, so UI Scaling and the system font
+        // size stay out of it.
+        final u = MediaQuery.sizeOf(context).shortestSide / 540;
+        TextStyle text(double size, FontWeight weight) => TextStyle(
+          color: Colors.white,
+          fontSize: size * u,
+          fontWeight: weight,
+          shadows: const [Shadow(blurRadius: 6, color: Colors.black)],
+        );
         return Positioned.fill(
           child: IgnorePointer(
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 220),
-              opacity: isPlaying || centerControlsShowing ? 0.0 : 1.0,
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.58),
+              opacity: isPlaying || controlsShowing ? 0.0 : 1.0,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withValues(alpha: 0.85),
+                      Colors.black.withValues(alpha: 0.3),
+                    ],
+                  ),
+                ),
                 child: SafeArea(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 960),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.spaceXl,
-                          vertical: AppSpacing.spaceLg,
-                        ),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: const Color(0xCC111111),
-                            borderRadius: AppRadius.circular(18),
-                            border: Border.fromBorderSide(
-                              ThemeRegistry.active.borders.cardBorder.copyWith(
-                                color: Colors.white.withValues(alpha: 0.18),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      48 * u,
+                      110 * u,
+                      48 * u,
+                      0,
+                    ),
+                    child: Align(
+                      alignment: AlignmentDirectional.topStart,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 460 * u),
+                        child: MediaQuery.withNoTextScaling(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context).paused
+                                    .toUpperCase(),
+                                style: text(13, FontWeight.w700),
                               ),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.spaceXl),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (title.isNotEmpty)
-                                    Text(
-                                      title,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTypography.fontSizeXl,
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.2,
-                                      ),
-                                    ),
-                                  if (title.isNotEmpty)
-                                    const SizedBox(height: AppSpacing.spaceMd),
-                                  Text(
-                                    description,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: AppTypography.fontSizeLg,
-                                      height: 1.45,
-                                    ),
-                                  ),
-                                ],
+                              if (title.isNotEmpty) ...[
+                                SizedBox(height: 8 * u),
+                                Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: text(32, FontWeight.w700),
+                                ),
+                              ],
+                              SizedBox(height: 8 * u),
+                              Text(
+                                description,
+                                maxLines: 8,
+                                overflow: TextOverflow.ellipsis,
+                                style: text(
+                                  15,
+                                  FontWeight.w500,
+                                ).copyWith(height: 1.4),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
@@ -6321,6 +6393,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               size: secondaryIconSize,
               extent: secondaryExtent,
               tooltip: _tooltipMessage(l10n.playbackInformation, shortcut: 'I'),
+            ),
+          if (shows(OsdButton.pictureInPicture) &&
+              !_castOwnsTransport &&
+              (_activeHtmlVideoBackend?.supportsPictureInPicture ?? false))
+            OsdButton.pictureInPicture: _controlButton(
+              _isInBrowserPiP
+                  ? Icons.picture_in_picture_rounded
+                  : Icons.picture_in_picture_alt_rounded,
+              onPressed: _toggleBrowserPiP,
+              size: secondaryIconSize,
+              extent: secondaryExtent,
+              tooltip: _isInBrowserPiP
+                  ? _tooltipMessage(l10n.playerTooltipExitPictureInPicture)
+                  : _tooltipMessage(l10n.playerTooltipPictureInPicture),
             ),
           if (PlatformDetection.useDesktopUi && shows(OsdButton.fullscreen))
             OsdButton.fullscreen: _controlButton(
@@ -7740,6 +7826,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _recropBlackBarsFromUi() {
     final cropper = _activeBackend?.letterboxCropper;
     if (cropper == null || !cropper.isSupported) return;
+    // Toasts the result of this press's scan. A later press replaces it.
+    _letterboxScanResultSub?.cancel();
+    _letterboxScanResultSub = null;
+    if (cropper is MpvLetterboxCropper &&
+        _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds) == 0) {
+      _letterboxScanResultSub = cropper.scanResults.listen((result) {
+        _letterboxScanResultSub?.cancel();
+        _letterboxScanResultSub = null;
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context);
+        _showPlayerToast(switch (result) {
+          LetterboxScanResult.cropped => l10n.playerBlackBarsCropped,
+          LetterboxScanResult.noBars => l10n.playerNoBlackBarsFound,
+          LetterboxScanResult.inconclusive =>
+            l10n.playerBlackBarsNotDetected,
+        });
+      });
+    }
     unawaited(cropper.recrop());
     if (!mounted) return;
     _showPlayerToast(AppLocalizations.of(context).playerRecroppingBlackBars);
@@ -8189,6 +8293,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_castService.castItemNotifier.value?.id != item.id) return;
     _manager.setTransportInterceptor(_castTransport);
     setState(() => _castOwnsTransport = true);
+    // The copy here is paused under the casting cover, so it can't float.
+    unawaited(_activeHtmlVideoBackend?.exitPictureInPicture());
   }
 
   void _onCastChanged() {

@@ -10183,7 +10183,7 @@
     "@noBooksFoundDescription": {
         "description": "Description shown when a books library has no items"
     },
-    "recommendationSystemJellyfin": "Recommandé par Jellyfin",
+    "recommendationSystemJellyfin": "Recommandé par le serveur",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -15338,7 +15338,7 @@
     "sinceYouWatchedSource": "Source des recommandations",
     "sinceYouWatchedSourceDescription": "Choisissez la source des recommandations (l'algorithme local « Moonfin recommande », le serveur « Jellyfin recommande » ou les mesures de similarité TMDb. Remarque : les recommandations en ligne nécessitent l'intégration Seerr).",
     "sinceYouWatchedSourceLocal": "Moonfin recommande",
-    "sinceYouWatchedSourceServer": "Jellyfin recommande",
+    "sinceYouWatchedSourceServer": "Recommandé par le serveur",
     "sinceYouWatchedSourceOnline": "Similarité TMDb",
     "sinceYouWatchedSourceType": "Type de source",
     "sinceYouWatchedSourceTypeDescription": "Choisissez le type d'éléments à recommander",
