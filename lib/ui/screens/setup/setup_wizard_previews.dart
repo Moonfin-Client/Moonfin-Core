@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:server_core/server_core.dart';
+import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
@@ -2812,10 +2812,21 @@ double _rowPeekCover(BuildContext context, String mode) {
     UserPreferences.homeRowsStyle,
   ).usesModernCards;
   final (poster, thumb) = _sampleCardHeights(context);
+  final firstRowPosters =
+      modern ||
+      _classicRowImageType(context, HomeSectionType.resume) ==
+          ImageType.poster;
   // The title band's padding and line of text, then the cards' top padding.
   final header = (modern ? 7.0 : 24.0) + 19.0 + 5.0;
-  return header + (modern ? poster : thumb) / 2;
+  return header + (firstRowPosters ? poster : thumb) / 2;
 }
+
+/// The image type a Classic sample row draws, the one picked for that row or
+/// the one every row is set to, as on Home.
+ImageType _classicRowImageType(BuildContext context, HomeSectionType section) =>
+    previewValue(context, UserPreferences.homeRowsUniversalOverride)
+    ? previewValue(context, UserPreferences.homeRowsUniversalImageType)
+    : previewValue(context, UserPreferences.homeRowImageType(section));
 
 Widget _homeRowsColumn(
   BuildContext context,
@@ -3005,6 +3016,10 @@ Widget _homeRowsColumn(
     // A phone caps a grown card at the row's width, the way Home does.
     final rowWidth = _designSize().width - 32;
     final width = _phone && grown > rowWidth ? rowWidth : grown;
+    // The ratings and overview run to the end of the row as on Home, and off
+    // TV they stop at twice the card's width.
+    final room = _designSize().width - _rowLeftInset - 20;
+    final detailsWidth = _tv ? room : (width * 2).clamp(0.0, room);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -3055,7 +3070,7 @@ Widget _homeRowsColumn(
               Positioned(
                 left: 0,
                 top: 0,
-                width: width * 2.4,
+                width: detailsWidth,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -3096,11 +3111,15 @@ Widget _homeRowsColumn(
 
   Widget row(
     String title, {
-    bool thumbs = false,
+    required HomeSectionType section,
     int offset = 0,
     bool withFocus = false,
   }) {
     final showLabels = _showSampleLabels(context);
+    final imageType = modern
+        ? ImageType.poster
+        : _classicRowImageType(context, section);
+    final wide = imageType != ImageType.poster;
     final cards = <Widget>[
       for (var i = 0; i < 8; i++)
         if (withFocus && i == 0 && modern)
@@ -3108,10 +3127,14 @@ Widget _homeRowsColumn(
         else
           card(
             _itemAt(items, i + offset),
-            height: thumbs ? thumbHeight : posterHeight,
-            aspect: thumbs ? 16 / 9 : 2 / 3,
-            imageUrl: thumbs ? _itemAt(items, i + offset).backdropUrl : null,
-            progress: thumbs && i == 0 ? 0.35 : (thumbs && i == 1 ? 0.7 : null),
+            height: wide ? thumbHeight : posterHeight,
+            aspect: switch (imageType) {
+              ImageType.poster => 2 / 3,
+              ImageType.thumb => 16 / 9,
+              ImageType.banner => kBannerAspectRatio,
+            },
+            imageUrl: wide ? _itemAt(items, i + offset).backdropUrl : null,
+            progress: wide && i == 0 ? 0.35 : (wide && i == 1 ? 0.7 : null),
             // Not every file has both, as in a real library.
             labels: !showLabels || i % 3 == 2
                 ? const []
@@ -3230,12 +3253,20 @@ Widget _homeRowsColumn(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ?infoOverlay,
-        row(l10n.continueWatching, thumbs: !modern, withFocus: focusFirst),
+        row(
+          l10n.continueWatching,
+          section: HomeSectionType.resume,
+          withFocus: focusFirst,
+        ),
         if (!oneRowPerScreen) ...[
           SizedBox(height: rowGap),
-          row(l10n.recentlyAdded, offset: 3),
+          row(
+            l10n.recentlyAdded,
+            section: HomeSectionType.latestMedia,
+            offset: 3,
+          ),
           SizedBox(height: rowGap),
-          row(l10n.nextUp, thumbs: !modern, offset: 6),
+          row(l10n.nextUp, section: HomeSectionType.nextUp, offset: 6),
         ],
       ],
     ),
