@@ -96,6 +96,8 @@ class AggregatedItem {
   String? get seriesLogoImageTag =>
       rawData['ParentLogoImageTag'] as String?;
 
+  String? get parentLogoItemId => rawData['ParentLogoItemId']?.toString();
+
   Map? get _userData => rawData['UserData'] as Map?;
 
   double? get playedPercentage =>

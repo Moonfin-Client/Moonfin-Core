@@ -115,6 +115,7 @@ class _Manager extends PlaybackManager {
     bool enableTranscoding = true,
     bool autoPlay = true,
     bool carryTrackSelections = false,
+    bool stopCurrentAsFinished = false,
   }) async {
     final id = (items.first as AggregatedItem).id;
     playedChannelIds.add(id);

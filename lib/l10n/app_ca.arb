@@ -11066,7 +11066,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "recommendationSystemJellyfin": "Recomanacions Jellyfin",
+    "recommendationSystemJellyfin": "Recomanacions del servidor",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16640,7 +16640,7 @@
     },
     "sinceYouWatchedSource": "Font de les recomanacions",
     "sinceYouWatchedSourceLocal": "Recomanacions Moonfin",
-    "sinceYouWatchedSourceServer": "Recomanacions Jellyfin",
+    "sinceYouWatchedSourceServer": "Recomanacions del servidor",
     "sinceYouWatchedSourceOnline": "Similitud de TMDb",
     "sinceYouWatchedSourceType": "Tipus de font",
     "sinceYouWatchedSourceTypeDescription": "Tria el tipus d'elements que es recomanaran",

@@ -907,7 +907,7 @@ abstract class AppLocalizations {
   /// Explanation under the recommendation system setting
   ///
   /// In en, this message translates to:
-  /// **'Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
+  /// **'Use the Moonfin Recommends local-library algorithm, Server Recommends from your media server, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
   String get recommendationSystemSubtitle;
 
   /// Recommendation system option: Moonfin Recommends
@@ -916,10 +916,10 @@ abstract class AppLocalizations {
   /// **'Moonfin Recommends'**
   String get recommendationSystemMoonfin;
 
-  /// Recommendation system option: Jellyfin Recommends
+  /// Recommendation system option: Server Recommends
   ///
   /// In en, this message translates to:
-  /// **'Jellyfin Recommends'**
+  /// **'Server Recommends'**
   String get recommendationSystemJellyfin;
 
   /// Recommendation system option: TMDb Similarity
@@ -22189,7 +22189,7 @@ abstract class AppLocalizations {
   /// No description provided for @sinceYouWatchedSourceDescription.
   ///
   /// In en, this message translates to:
-  /// **'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).'**
+  /// **'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).'**
   String get sinceYouWatchedSourceDescription;
 
   /// No description provided for @sinceYouWatchedSourceLocal.
@@ -22201,7 +22201,7 @@ abstract class AppLocalizations {
   /// No description provided for @sinceYouWatchedSourceServer.
   ///
   /// In en, this message translates to:
-  /// **'Jellyfin Recommends'**
+  /// **'Server Recommends'**
   String get sinceYouWatchedSourceServer;
 
   /// No description provided for @sinceYouWatchedSourceOnline.

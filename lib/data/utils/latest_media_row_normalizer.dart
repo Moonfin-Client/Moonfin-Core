@@ -164,6 +164,9 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
   rawData['Name'] = seriesName;
   rawData.remove('IndexNumber');
   rawData.remove('ParentIndexNumber');
+  // The episode's or season's own ids would match a different title than the
+  // series when copies are folded across servers.
+  rawData.remove('ProviderIds');
 
   // A season's parent is the series so its tag fits the id set below, but an
   // episode's parent is the season and that tag would not match the series.
@@ -205,6 +208,17 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
     imageTags['Thumb'] = seriesThumbImageTag;
   } else {
     imageTags.remove('Thumb');
+  }
+
+  // The show's logo comes as the parent logo, so it only fits when the
+  // parent is the series.
+  final seriesLogoImageTag = item.parentLogoItemId == seriesId
+      ? item.seriesLogoImageTag
+      : null;
+  if (seriesLogoImageTag != null && seriesLogoImageTag.isNotEmpty) {
+    imageTags['Logo'] = seriesLogoImageTag;
+  } else {
+    imageTags.remove('Logo');
   }
 
   rawData['ImageTags'] = imageTags;

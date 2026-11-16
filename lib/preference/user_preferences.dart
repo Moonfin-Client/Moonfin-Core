@@ -741,6 +741,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_merge_continue_watching_next_up',
     'pref_next_up_max_days',
     'enable_multi_server_libraries',
+    'merge_libraries_by_type',
     'pref_merge_recent_rows_by_type',
     'pref_hide_watched_in_recent_rows',
     'seasonal_surprise',
@@ -2037,6 +2038,10 @@ class UserPreferences extends ChangeNotifier {
   bool get effectiveMergeContinueWatchingNextUp =>
       get(kidsModeEnabled) || get(mergeContinueWatchingNextUp);
 
+  /// Merging needs every server's libraries listed in the first place.
+  bool get effectiveMergeLibrariesByType =>
+      get(enableMultiServerLibraries) && get(mergeLibrariesByType);
+
   /// The online source is an outside catalog no parental rating reaches, so
   /// Kids Mode keeps recommendations inside the server's own library.
   RecommendationSystemSource get effectiveRecommendationSystemSource =>
@@ -2225,6 +2230,13 @@ class UserPreferences extends ChangeNotifier {
   );
   static final enableMultiServerLibraries = Preference(
     key: 'enable_multi_server_libraries',
+    defaultValue: false,
+  );
+  /// Shows every server's movie libraries as one Movies library and their
+  /// show libraries as one TV Shows library, with a title several servers
+  /// hold listed once.
+  static final mergeLibrariesByType = Preference(
+    key: 'merge_libraries_by_type',
     defaultValue: false,
   );
   static final mergeRecentRowsByType = Preference(
@@ -4071,6 +4083,11 @@ class UserPreferences extends ChangeNotifier {
   static final confirmExit = Preference(
     key: 'confirm_exit',
     defaultValue: true,
+  );
+
+  static final remoteMediaNotification = Preference(
+    key: 'remote_media_notification',
+    defaultValue: false,
   );
 
   static final updateNotificationsEnabled = Preference(

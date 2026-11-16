@@ -11,6 +11,9 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../../data/offline/offline_catalog.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
+import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/user_data_sync.dart';
+import '../../../data/utils/merged_copies.dart';
 import '../../../util/signed_in_server_features.dart';
 import '../../../util/server_url.dart';
 import '../../../l10n/app_localizations.dart';
@@ -28,6 +31,7 @@ import '../remove_from_playlist_dialog.dart';
 import '../adaptive/adaptive_dialog.dart';
 import '../change_artwork_dialog.dart';
 import '../identify_dialog.dart';
+import '../merged_copy_picker.dart';
 import '../overlay_sheet.dart';
 
 class ItemContextAction {
@@ -110,6 +114,64 @@ bool isContextMediaType(String? type) =>
     type == 'MusicAlbum' ||
     type == 'BoxSet';
 
+/// Marks [item] watched or a favorite on every server that holds it and names
+/// the servers that refused. A title only one server holds takes the usual
+/// path and fails the way it always has.
+Future<void> _changeEveryCopy(
+  BuildContext context,
+  AggregatedItem item, {
+  bool? played,
+  bool? favorite,
+}) async {
+  final copies = copiesOf(item);
+  final factory = GetIt.instance<MediaServerClientFactory>();
+  if (copies.length == 1) {
+    final mutations = ItemMutationRepository(
+      factory.clientForServerOrActive(item.serverId),
+    );
+    return played != null
+        ? mutations.setPlayed(item.id, isPlayed: played)
+        : mutations.setFavorite(item.id, isFavorite: favorite!);
+  }
+  // The shared user data is keyed by item id alone, and another server can
+  // use a copy's id for a different title. So every server is asked directly
+  // and only the card's own entry changes.
+  final refused = <String>[];
+  for (final copy in copies) {
+    final api = factory.clientForServerOrActive(copy.serverId).userLibraryApi;
+    try {
+      await switch ((played, favorite)) {
+        (true, _) => api.markPlayed(copy.id),
+        (false, _) => api.unmarkPlayed(copy.id),
+        (_, true) => api.markFavorite(copy.id),
+        _ => api.unmarkFavorite(copy.id),
+      };
+    } catch (_) {
+      refused.add(mergedServerName(copy.serverId));
+    }
+  }
+  if (refused.length < copies.length) {
+    userDataSync.publish(
+      item.id,
+      played != null
+          ? {
+              'Played': played,
+              'PlayedPercentage': null,
+              'PlaybackPositionTicks': 0,
+            }
+          : {'IsFavorite': favorite},
+    );
+  }
+  if (refused.isEmpty || !context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        AppLocalizations.of(context).mergedCopiesNotChanged(refused.join(', ')),
+      ),
+    ),
+  );
+}
+
 List<ItemContextAction> contextActionsFor(
   BuildContext context,
   AggregatedItem item, {
@@ -165,12 +227,16 @@ List<ItemContextAction> contextActionsFor(
         label: l10n.goToDetailsScreen,
         onSelect: () async {
           if (!context.mounted) return;
-          context.push(
-            Destinations.itemOrPhoto(
-              item.id,
-              serverId: item.serverId,
-              type: item.type,
-              channelId: item.channelId,
+          await openPickedCopy(
+            context,
+            item,
+            (copy) => context.push(
+              Destinations.itemOrPhoto(
+                copy.id,
+                serverId: copy.serverId,
+                type: copy.type,
+                channelId: copy.channelId,
+              ),
             ),
           );
         },
@@ -184,8 +250,12 @@ List<ItemContextAction> contextActionsFor(
         label: watchStateOf(item).hasProgress ? l10n.resume : l10n.play,
         onSelect: () async {
           if (!context.mounted) return;
-          context.push(
-            Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
+          await openPickedCopy(
+            context,
+            item,
+            (copy) => context.push(
+              Destinations.item(copy.id, serverId: copy.serverId, autoPlay: true),
+            ),
           );
         },
       ));
@@ -213,7 +283,7 @@ List<ItemContextAction> contextActionsFor(
           ? l10n.contextMenuMarkUnwatched
           : l10n.contextMenuMarkWatched,
       onSelect: () async {
-        await mutations.setPlayed(item.id, isPlayed: !item.isPlayed);
+        await _changeEveryCopy(context, item, played: !item.isPlayed);
         onChanged?.call();
       },
     ));
@@ -276,7 +346,7 @@ List<ItemContextAction> contextActionsFor(
           ? l10n.contextMenuRemoveFromFavorites
           : l10n.contextMenuAddToFavorites,
       onSelect: () async {
-        await mutations.setFavorite(item.id, isFavorite: !item.isFavorite);
+        await _changeEveryCopy(context, item, favorite: !item.isFavorite);
         onChanged?.call();
       },
     ));

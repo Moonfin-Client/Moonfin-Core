@@ -596,6 +596,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.showConfirmationBeforeExiting,
         keywords: ['quit', 'close'],
       ),
+    if (PlatformDetection.isAndroid && !PlatformDetection.isTV)
+      general.leaf(
+        'remote_media_notification',
+        l10n.remoteMediaNotificationTitle,
+        subtitle: l10n.remoteMediaNotificationSubtitle,
+        keywords: ['remote', 'notification', 'cast', 'media', 'controls'],
+      ),
     if (PlatformDetection.isAndroid)
       general.leaf('pref_performance_mode', l10n.performanceMode, keywords: [
         'memory',
@@ -1274,6 +1281,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'enable_multi_server_libraries',
       l10n.multiServerLibraries,
       subtitle: l10n.showLibrariesFromAllServers,
+    ),
+    libraries.leaf(
+      'merge_libraries_by_type',
+      l10n.mergeLibrariesByType,
+      subtitle: l10n.mergeLibrariesByTypeDescription,
+      keywords: [
+        'multi server',
+        'all movies',
+        'all series',
+        'tv shows',
+        'unified',
+        'duplicates',
+      ],
     ),
     libraries.leaf(
       'pref_show_book_discover_tab',

@@ -1719,6 +1719,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
         _requestTransport('seek', target.inMilliseconds / 1000);
         return true;
       case TransportAction.next:
+      case TransportAction.nextAsFinished:
       case TransportAction.previous:
         // The room plays one item, and the host picks the next.
         return true;
