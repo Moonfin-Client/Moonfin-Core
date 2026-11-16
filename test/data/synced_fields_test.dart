@@ -98,6 +98,7 @@ void main() {
     'downloadStorageLimitMb',
     'downloadWifiOnly',
     'enableMultiServerLibraries',
+    'mergeLibrariesByType',
     'enableRadarrCalendar',
     'enableSonarrCalendar',
     'epgMobileView',

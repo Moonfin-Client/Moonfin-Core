@@ -596,6 +596,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.showConfirmationBeforeExiting,
         keywords: ['quit', 'close'],
       ),
+    if (PlatformDetection.isAndroid && !PlatformDetection.isTV)
+      general.leaf(
+        'remote_media_notification',
+        l10n.remoteMediaNotificationTitle,
+        subtitle: l10n.remoteMediaNotificationSubtitle,
+        keywords: ['remote', 'notification', 'cast', 'media', 'controls'],
+      ),
     if (PlatformDetection.isAndroid)
       general.leaf('pref_performance_mode', l10n.performanceMode, keywords: [
         'memory',
@@ -1276,6 +1283,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.showLibrariesFromAllServers,
     ),
     libraries.leaf(
+      'merge_libraries_by_type',
+      l10n.mergeLibrariesByType,
+      subtitle: l10n.mergeLibrariesByTypeDescription,
+      keywords: [
+        'multi server',
+        'all movies',
+        'all series',
+        'tv shows',
+        'unified',
+        'duplicates',
+      ],
+    ),
+    libraries.leaf(
       'pref_show_book_discover_tab',
       l10n.showBookDiscoverTab,
       subtitle: l10n.showBookDiscoverTabDescription,
@@ -1809,7 +1829,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         audio.leaf(
           'pref_audio_passthrough_output',
           l10n.settingsAudioPassthroughOutput,
-          keywords: ['iec', 'audiotrack', 'bitstream', 'packer', 'kodi', 'raw'],
+          subtitle: l10n.settingsAudioPassthroughOutputDescription,
+          keywords: [
+            'iec',
+            'audiotrack',
+            'bitstream',
+            'packer',
+            'kodi',
+            'raw',
+            'no sound',
+            'silent',
+            'silence',
+          ],
         ),
       audio.leaf(
         'pref_downmix_to_stereo',

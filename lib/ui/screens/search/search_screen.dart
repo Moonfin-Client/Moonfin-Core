@@ -20,6 +20,7 @@ import '../../../data/services/recent_searches_store.dart';
 import '../../../data/services/remote_search_session.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/voice_search_controller.dart';
+import '../../../data/utils/merged_copies.dart';
 import '../../../data/viewmodels/search_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -40,6 +41,7 @@ import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_badge.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/merged_copy_picker.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -1585,7 +1587,8 @@ class _SearchScreenState extends State<SearchScreen>
       MediaQuery.devicePixelRatioOf(context),
       ArtworkShape.forAspectRatio(ar),
     );
-    final serverName = _vm.serverNameFor(item);
+    // A result several servers hold shows how many instead of one's name.
+    final serverName = serverCountOf(item) > 1 ? null : _vm.serverNameFor(item);
     // A person's round portrait would clip the badge, so their server goes on
     // the line under the name instead.
     final serverOnSubtitle = serverName != null && item.type == 'Person';
@@ -1596,6 +1599,7 @@ class _SearchScreenState extends State<SearchScreen>
       subtitle: serverOnSubtitle ? serverName : _subtitle(item),
       imageUrl: _imageUrl(item, maxWidth: requestWidth),
       imageOverlays: [
+        ...mergedServerCountOverlays(context, item),
         if (serverName != null && !serverOnSubtitle)
           Positioned(
             left: 6,
@@ -1622,11 +1626,15 @@ class _SearchScreenState extends State<SearchScreen>
           : (node, event) {
               if (event.isActionable && _isPlayKey(event.logicalKey)) {
                 if (event is KeyDownEvent) {
-                  context.push(
-                    Destinations.item(
-                      item.id,
-                      serverId: item.serverId,
-                      autoPlay: true,
+                  openPickedCopy(
+                    context,
+                    item,
+                    (copy) => context.push(
+                      Destinations.item(
+                        copy.id,
+                        serverId: copy.serverId,
+                        autoPlay: true,
+                      ),
                     ),
                   );
                 }
@@ -1634,12 +1642,16 @@ class _SearchScreenState extends State<SearchScreen>
               }
               return onNavKey(node, event);
             },
-      onTap: () => context.push(
-        Destinations.itemOrPhoto(
-          item.id,
-          serverId: item.serverId,
-          type: item.type,
-          channelId: item.channelId,
+      onTap: () => openPickedCopy(
+        context,
+        item,
+        (copy) => context.push(
+          Destinations.itemOrPhoto(
+            copy.id,
+            serverId: copy.serverId,
+            type: copy.type,
+            channelId: copy.channelId,
+          ),
         ),
       ),
       onLongPress: () => showContextMenu(

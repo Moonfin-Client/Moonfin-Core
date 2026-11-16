@@ -451,8 +451,9 @@ Set<String> _defaultFetchCores(String relativePath) {
 }
 
 void _coreOptionDefaultsTests() {
+  const n64 = 'mupen64plus_next';
+
   group('withCoreOptionDefaults', () {
-    const n64 = 'mupen64plus_next';
     const cacheKey = 'mupen64plus-MaxTxCacheSize';
 
     test('applies the app default when the user has no settings', () {
@@ -493,36 +494,79 @@ void _coreOptionDefaultsTests() {
       );
     });
 
-    for (final platform in [TargetPlatform.windows, TargetPlatform.linux]) {
-      test('${platform.name} defaults N64 to the software renderer', () {
-        debugDefaultTargetPlatformOverride = platform;
-        addTearDown(() => debugDefaultTargetPlatformOverride = null);
-        final merged = withCoreOptionDefaults(n64, {
-          'mupen64plus-rsp-plugin': 'hle',
-        })!;
-        expect(merged['mupen64plus-rdp-plugin'], 'angrylion');
-        expect(merged['mupen64plus-rsp-plugin'], 'hle');
-        expect(merged[cacheKey], '1500');
-      });
-    }
-
-    test('other platforms keep the core renderer defaults', () {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      addTearDown(() => debugDefaultTargetPlatformOverride = null);
-      final merged = withCoreOptionDefaults(n64, null)!;
-      expect(merged.containsKey('mupen64plus-rdp-plugin'), isFalse);
-      expect(merged.containsKey('mupen64plus-rsp-plugin'), isFalse);
-    });
-
     test('every defaulted core is actually in the catalog', () {
       // A typo in a core id would silently never apply.
       final ids = gameCoreCatalog.map((c) => c.coreId).toSet();
       for (final coreId in [
         ...coreOptionDefaults.keys,
-        ...softwareOnlyCoreOptionDefaults.keys,
+        ...softwareRenderingCoreOptions.keys,
       ]) {
         expect(ids, contains(coreId), reason: '$coreId is not a known core');
       }
+    });
+  });
+
+  group('softwareRenderingOverrides', () {
+    const software = {
+      'mupen64plus-rdp-plugin': 'angrylion',
+      'mupen64plus-rsp-plugin': 'parallel',
+    };
+
+    for (final platform in [
+      TargetPlatform.windows,
+      TargetPlatform.linux,
+      TargetPlatform.macOS,
+    ]) {
+      test('${platform.name} always runs N64 on the software renderer', () {
+        debugDefaultTargetPlatformOverride = platform;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        expect(
+          softwareRenderingOverrides(n64, hardwareRenderingEnabled: true),
+          software,
+        );
+      });
+    }
+
+    test('Android overrides only with hardware rendering off', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      expect(
+        softwareRenderingOverrides(n64, hardwareRenderingEnabled: true),
+        isEmpty,
+      );
+      expect(
+        softwareRenderingOverrides(n64, hardwareRenderingEnabled: false),
+        software,
+      );
+    });
+
+    test('a core with no GPU renderer is never overridden', () {
+      expect(
+        softwareRenderingOverrides('snes9x', hardwareRenderingEnabled: false),
+        isEmpty,
+      );
+    });
+  });
+
+  group('optionsToSave', () {
+    test('saves what was saved before the override, or nothing', () {
+      final saved = optionsToSave(
+        {
+          'mupen64plus-rdp-plugin': 'angrylion',
+          'mupen64plus-rsp-plugin': 'parallel',
+          'mupen64plus-MaxTxCacheSize': '1500',
+        }.entries,
+        {'mupen64plus-rdp-plugin': 'gliden64', 'mupen64plus-rsp-plugin': null},
+      );
+      expect(saved, {
+        'mupen64plus-rdp-plugin': 'gliden64',
+        'mupen64plus-MaxTxCacheSize': '1500',
+      });
+    });
+
+    test('saves every option as is when nothing was overridden', () {
+      final options = {'a': 'b', 'c': 'd'};
+      expect(optionsToSave(options.entries, const {}), options);
     });
   });
 }

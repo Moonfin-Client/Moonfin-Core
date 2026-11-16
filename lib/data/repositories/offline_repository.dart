@@ -470,6 +470,11 @@ class OfflineRepository {
     return counts;
   }
 
+  /// Fires after every write to the downloads table, without reading it.
+  Stream<void> watchItemChanges() => _db
+      .tableUpdates(TableUpdateQuery.onTable(_db.downloadedItems))
+      .map((_) {});
+
   Stream<List<DownloadedItem>> watchItems({
     String? type,
     bool onlyCompleted = false,

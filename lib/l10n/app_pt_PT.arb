@@ -9197,7 +9197,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Recomenda",
+    "recommendationSystemJellyfin": "Servidor Recomenda",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -13827,7 +13827,7 @@
     },
     "sinceYouWatchedSource": "Fonte de recomendações",
     "sinceYouWatchedSourceLocal": "Moonfin Recomenda",
-    "sinceYouWatchedSourceServer": "Jellyfin Recomenda",
+    "sinceYouWatchedSourceServer": "Servidor Recomenda",
     "sinceYouWatchedSourceOnline": "Semelhança TMDb",
     "sinceYouWatchedSourceType": "Tipo de origem",
     "sinceYouWatchedSourceTypeDescription": "Escolher o tipo de itens a recomendar",

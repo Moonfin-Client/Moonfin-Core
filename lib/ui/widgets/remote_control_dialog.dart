@@ -15,17 +15,31 @@ import 'overlay_sheet.dart';
 import 'remote_search_sheet.dart';
 import 'remote_navigation_pad.dart';
 
-void showRemoteControlDialog(BuildContext context) {
+// The media notification can ask for the sheet while it is already open, or
+// before the route has built it.
+bool _remoteControlOpening = false;
+State? _openRemoteControlSheet;
+
+void showRemoteControlDialog(
+  BuildContext context, {
+  String? initialSessionId,
+}) {
+  if (_remoteControlOpening || (_openRemoteControlSheet?.mounted ?? false)) {
+    return;
+  }
+  _remoteControlOpening = true;
   showFocusRestoringModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => const _RemoteControlSheet(),
-  );
+    builder: (_) => _RemoteControlSheet(initialSessionId: initialSessionId),
+  ).whenComplete(() => _remoteControlOpening = false);
 }
 
 class _RemoteControlSheet extends StatefulWidget {
-  const _RemoteControlSheet();
+  const _RemoteControlSheet({this.initialSessionId});
+
+  final String? initialSessionId;
 
   @override
   State<_RemoteControlSheet> createState() => _RemoteControlSheetState();
@@ -57,10 +71,13 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   String? _searchSessionId;
   String? _searchDeviceId;
   bool _openingSearch = false;
+  bool _appliedInitialSelection = false;
 
   @override
   void initState() {
     super.initState();
+    _remoteControlOpening = false;
+    _openRemoteControlSheet = this;
     _sessionApi = GetIt.instance<MediaServerClient>().sessionApi;
     _userId = GetIt.instance<MediaServerClient>().userId;
     WidgetsBinding.instance.addObserver(this);
@@ -351,6 +368,15 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
           if (_selectedSession == null) {
             _cancelNavigation();
             _cancelVolume();
+          }
+        }
+        if (!_appliedInitialSelection && widget.initialSessionId != null) {
+          final initialSession = controllable
+              .where((s) => s['Id']?.toString() == widget.initialSessionId)
+              .firstOrNull;
+          if (initialSession != null) {
+            _appliedInitialSelection = true;
+            _selectedSession ??= initialSession;
           }
         }
         _reconcileVolume(volumeRequest);
@@ -651,6 +677,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
           onTap: () => setState(() {
             _cancelNavigation();
             _cancelVolume();
+            _appliedInitialSelection = true;
             _selectedSession = isSelected ? null : session;
             // Another device has its own volume and position, so what was held
             // for the last one doesn't carry over.

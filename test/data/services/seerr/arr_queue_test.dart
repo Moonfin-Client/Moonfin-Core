@@ -101,46 +101,141 @@ void main() {
     });
   });
 
-  group('not found yet', () {
-    test('a released, monitored movie with no file and an empty queue', () {
-      expect(ArrQueue.fromJson(radarrAnswer()).isNotFoundYet, isTrue);
-    });
+  group('what the arr waits on', () {
+    ArrWait? wait(Map<String, dynamic> json) => ArrQueue.fromJson(json).wait;
+    // Dates relative to now, so the tests don't age.
+    final soon = DateTime.now().toUtc().add(const Duration(days: 7));
+    final gone = DateTime.now().toUtc().subtract(const Duration(days: 7));
 
-    test('not while something is in the queue', () {
+    test('a released, monitored movie with no file and an empty queue is not '
+        'found yet, with when Radarr last searched', () {
+      expect(wait(radarrAnswer()), isA<ArrNotFoundYet>());
+      final found = wait({
+        ...radarrAnswer(),
+        'lastSearchTime': '2026-11-12T08:00:00Z',
+      });
       expect(
-        ArrQueue.fromJson(radarrAnswer(items: [stalledItem])).isNotFoundYet,
-        isFalse,
-      );
-    });
-
-    test('not for an unreleased, unmonitored or downloaded movie', () {
-      expect(
-        ArrQueue.fromJson(radarrAnswer(isAvailable: false)).isNotFoundYet,
-        isFalse,
-      );
-      expect(
-        ArrQueue.fromJson(radarrAnswer(monitored: false)).isNotFoundYet,
-        isFalse,
-      );
-      expect(
-        ArrQueue.fromJson(radarrAnswer(hasFile: true)).isNotFoundYet,
-        isFalse,
-      );
-      // Radarr couldn't say, so it isn't claimed.
-      expect(
-        ArrQueue.fromJson(radarrAnswer(isAvailable: null)).isNotFoundYet,
-        isFalse,
+        (found as ArrNotFoundYet).lastSearch?.toUtc(),
+        DateTime.utc(2026, 11, 12, 8),
       );
     });
 
-    test('never for Sonarr, which cannot tell an unaired season', () {
+    test('nothing while something is in the queue, even mid-search', () {
+      expect(wait(radarrAnswer(items: [stalledItem])), isNull);
       expect(
-        const ArrQueue(
-          service: 'sonarr',
-          inArr: true,
-          monitored: true,
-        ).isNotFoundYet,
-        isFalse,
+        wait({
+          ...radarrAnswer(items: [stalledItem]),
+          'searching': true,
+        }),
+        isNull,
+      );
+    });
+
+    test('a search running now comes before the rest', () {
+      expect(
+        wait({...radarrAnswer(isAvailable: false), 'searching': true}),
+        isA<ArrSearching>(),
+      );
+      expect(
+        wait({...radarrAnswer(), 'searching': false}),
+        isA<ArrNotFoundYet>(),
+      );
+    });
+
+    test('an unreleased movie is not out yet, with its release date when '
+        'Moonbase sends one', () {
+      final bare = wait(radarrAnswer(isAvailable: false));
+      expect(bare, isA<ArrNotReleased>());
+      expect((bare as ArrNotReleased).date, isNull);
+      expect(bare.nextEpisode, isFalse);
+      final dated = wait({
+        ...radarrAnswer(isAvailable: false),
+        'releaseDate': soon.toIso8601String(),
+      });
+      expect((dated as ArrNotReleased).date?.toUtc(), soon);
+    });
+
+    test('a release date already gone is kept, for the label to leave out', () {
+      final held = wait({
+        ...radarrAnswer(isAvailable: false),
+        'releaseDate': gone.toIso8601String(),
+      });
+      expect((held as ArrNotReleased).date?.toUtc(), gone);
+    });
+
+    test('nothing for an unmonitored or downloaded movie, or when Radarr '
+        "couldn't say", () {
+      expect(wait(radarrAnswer(monitored: false)), isNull);
+      expect(wait(radarrAnswer(hasFile: true)), isNull);
+      expect(wait(radarrAnswer(isAvailable: null)), isNull);
+    });
+
+    Map<String, dynamic> sonarrAnswer(List<Map<String, dynamic>> seasons) => {
+      'service': 'sonarr',
+      'inArr': true,
+      'monitored': true,
+      'items': const <Object>[],
+      'seasons': seasons,
+    };
+
+    const done = {
+      'seasonNumber': 1,
+      'monitored': true,
+      'episodeCount': 10,
+      'episodeFileCount': 10,
+    };
+    final airing = {
+      'seasonNumber': 2,
+      'monitored': true,
+      'episodeCount': 3,
+      'episodeFileCount': 3,
+      'nextAiring': soon.toIso8601String(),
+    };
+    const missing = {
+      'seasonNumber': 3,
+      'monitored': true,
+      'episodeCount': 4,
+      'episodeFileCount': 1,
+    };
+
+    test('a season with aired episodes missing is not found yet', () {
+      expect(
+        wait(sonarrAnswer([done, airing, missing])),
+        isA<ArrNotFoundYet>(),
+      );
+    });
+
+    test('a season with every aired episode waits on its next airing', () {
+      final next = wait(sonarrAnswer([done, airing]));
+      expect((next as ArrNotReleased).date?.toUtc(), soon);
+      expect(next.nextEpisode, isTrue);
+    });
+
+    test('a request only waits on the seasons it asked for', () {
+      final queue = ArrQueue.fromJson(sonarrAnswer([done, airing, missing]));
+      expect(queue.forSeasons([2]).wait, isA<ArrNotReleased>());
+      expect(queue.forSeasons([1]).wait, isNull);
+    });
+
+    test('specials and unmonitored seasons are left out unless asked for', () {
+      const specials = {
+        'seasonNumber': 0,
+        'monitored': true,
+        'episodeCount': 5,
+        'episodeFileCount': 0,
+      };
+      final unwatched = {...missing, 'monitored': false};
+      final queue = ArrQueue.fromJson(
+        sonarrAnswer([done, specials, unwatched]),
+      );
+      expect(queue.wait, isNull);
+      expect(queue.forSeasons([0]).wait, isA<ArrNotFoundYet>());
+    });
+
+    test('nothing for Sonarr from a Moonbase that sends no seasons', () {
+      expect(
+        const ArrQueue(service: 'sonarr', inArr: true, monitored: true).wait,
+        isNull,
       );
     });
   });
