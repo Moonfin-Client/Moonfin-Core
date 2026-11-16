@@ -855,6 +855,64 @@ void main() {
       });
     });
 
+    test('one-shot cropdetect keeps a full frame a confirmation read saw', () {
+      fakeAsync((async) {
+        const card = {'w': '1780', 'h': '712', 'x': '70', 'y': '184'};
+        final host = _MpvAlternatingHost([
+          card,
+          {'w': '1920', 'h': '1080', 'x': '0', 'y': '0'},
+          card,
+          card,
+          card,
+        ]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+          windowboxGap: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        cropper.recrop();
+        async.elapse(const Duration(seconds: 10));
+        expect(host.reads, 3);
+        expect(cropper.isApplied, isFalse);
+        expect(results, [LetterboxScanResult.noBars]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('one-shot cropdetect drops readings from before a seek', () {
+      fakeAsync((async) {
+        // An intro lit near the top, then the letterboxed film after a skip.
+        final host = _MpvAlternatingHost([
+          {'w': '800', 'h': '200', 'x': '560', 'y': '20'},
+          {'w': '1000', 'h': '804', 'x': '920', 'y': '138'},
+          {'w': '1200', 'h': '804', 'x': '0', 'y': '138'},
+        ]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        cropper.setEnabled(true);
+        cropper.recrop();
+        async.elapse(const Duration(milliseconds: 500));
+        host.position = const Duration(minutes: 2);
+        async.elapse(const Duration(seconds: 5));
+        expect(
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
+          isTrue,
+        );
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
     test('one-shot cropdetect gives up on a scene that stays dark', () {
       fakeAsync((async) {
         // A lit shape that never reaches the edges, even though its top and
@@ -925,32 +983,21 @@ void main() {
       });
     });
 
-    test('one-shot shots add up frames that light opposite sides', () {
+    test("one-shot shots don't crop from one edge reading and dark frames", () {
       fakeAsync((async) {
+        // A brief widescreen card, then a dark scene in a 16:9 title.
         final host = _MpvShotHost([
-          const LetterboxCropRect(w: 640, h: 400, x: 648, y: 338),
-          null,
-          const LetterboxCropRect(w: 1200, h: 804, x: 0, y: 138),
-          null,
-          const LetterboxCropRect(w: 1100, h: 804, x: 820, y: 138),
-          const LetterboxCropRect(w: 1000, h: 804, x: 400, y: 138),
+          const LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138),
+          const LetterboxCropRect(w: 400, h: 200, x: 760, y: 440),
         ]);
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,
           autoDelay: Duration.zero,
         );
-        final results = <LetterboxScanResult>[];
-        cropper.scanResults.listen(results.add);
         cropper.setEnabled(true);
-        cropper.recrop();
-        async.elapse(const Duration(seconds: 5));
-        expect(host.shotCalls, 6);
-        expect(
-          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
-          isTrue,
-        );
-        expect(results, [LetterboxScanResult.cropped]);
+        async.elapse(const Duration(seconds: 10));
+        expect(cropper.isApplied, isFalse);
         cropper.cancel();
         async.flushMicrotasks();
       });
@@ -1005,11 +1052,15 @@ void main() {
       });
     });
 
-    test('a full frame anywhere in a one-shot scan means no bars', () {
+    test('bars after a full frame leave the scan inconclusive', () {
       fakeAsync((async) {
         const full = LetterboxCropRect(w: 1920, h: 1080, x: 0, y: 0);
         const wide = LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138);
-        final host = _MpvShotHost([full, wide, wide, wide]);
+        const flat = LetterboxCropRect(w: 1920, h: 1038, x: 0, y: 21);
+        final host = _MpvShotHost([
+          full,
+          for (var i = 0; i < 12; i++) i.isEven ? wide : flat,
+        ]);
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,
@@ -1021,7 +1072,7 @@ void main() {
         cropper.recrop();
         async.elapse(const Duration(seconds: 10));
         expect(cropper.isApplied, isFalse);
-        expect(results, [LetterboxScanResult.noBars]);
+        expect(results, [LetterboxScanResult.inconclusive]);
         cropper.cancel();
         async.flushMicrotasks();
       });
