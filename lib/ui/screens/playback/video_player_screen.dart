@@ -309,6 +309,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return backend is HtmlVideoBackend ? backend : null;
   }
 
+  /// The web backend lasts as long as the app, so this is only null off web.
+  HtmlVideoBackend? get _webVideoBackend =>
+      PlatformDetection.isWeb && GetIt.instance.isRegistered<HtmlVideoBackend>()
+      ? GetIt.instance<HtmlVideoBackend>()
+      : null;
+
+  /// The video is in the browser's floating window, apart from [_isInPiP],
+  /// which is the system PiP on phones.
+  bool _isInBrowserPiP = false;
+
+  void _onBrowserPiPChanged() {
+    final inPiP = _webVideoBackend?.inPictureInPicture.value ?? false;
+    if (!mounted || inPiP == _isInBrowserPiP) return;
+    setState(() => _isInBrowserPiP = inPiP);
+  }
+
+  void _toggleBrowserPiP() {
+    final backend = _activeHtmlVideoBackend;
+    if (backend == null) return;
+    if (_isInBrowserPiP) {
+      unawaited(backend.exitPictureInPicture());
+    } else {
+      unawaited(backend.enterPictureInPicture());
+    }
+  }
+
   bool _controlsVisible = true;
   bool _subtitleDelayOpen = false;
   Timer? _hideTimer;
@@ -418,13 +444,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   CalendarEntry? _nextAirDateReminder;
   int _nextAirDateLookup = 0;
   bool _nextUpDismissed = false;
+  String? _lastOutroMarkedItemId;
   bool _isNextUpAdvancing = false;
   int _consecutiveEpisodes = 0;
   StreamSubscription? _positionSub;
   StreamSubscription? _queueSub;
+  StreamSubscription<dynamic>? _finishedItemStopSub;
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _letterboxCropAppliedSub;
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
+  StreamSubscription<LetterboxScanResult>? _letterboxScanResultSub;
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
@@ -941,6 +970,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
     });
+    _finishedItemStopSub = _manager.finishedItemStopStream.listen(
+      _markCurrentItemPlayedForOutroSkip,
+    );
     _listenToLetterboxCropState(_activeBackend);
     _backendSub = _manager.backendChangedStream.listen((backend) {
       _listenToLetterboxCropState(backend);
@@ -1009,6 +1041,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _resetSkipSegmentAutoHide();
       setState(() {
         _nextUpDismissed = false;
+        _lastOutroMarkedItemId = null;
         _showNextUp = false;
         _skipSegment = null;
         // Stream indexes belong to the file they came from, so the next item
@@ -1051,15 +1084,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _updateDisplayPlaying(playing);
       _syncCinemaSkip();
       // The hide timer passes over a player that hasn't started yet, so a
-      // start or resume slower than its delay needs it armed again here. A
-      // pause with a description card clears the controls sooner so the card
-      // shows quickly.
-      if (_controlsVisible && !_isSeeking) {
-        if (playing) {
-          _scheduleHide();
-        } else if (_hasPausedDescriptionCard) {
-          _scheduleHide(delay: const Duration(seconds: 2));
-        }
+      // start or resume slower than its delay needs it armed again here.
+      if (playing && _controlsVisible && !_isSeeking) {
+        _scheduleHide();
       }
       if (isMobilePlayback) {
         _pipService.updatePiPActions(isPlaying: playing);
@@ -1090,6 +1117,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (PlatformDetection.useDesktopUi) {
       unawaited(_syncDesktopFullscreenState());
       unawaited(_syncAlwaysOnTopState());
+    }
+
+    final webVideoBackend = _webVideoBackend;
+    if (webVideoBackend != null) {
+      _isInBrowserPiP = webVideoBackend.inPictureInPicture.value;
+      webVideoBackend.inPictureInPicture.addListener(_onBrowserPiPChanged);
     }
 
     if (PlatformDetection.isMobile) {
@@ -1177,10 +1210,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _positionSub?.cancel();
     _queueSub?.cancel();
+    _finishedItemStopSub?.cancel();
     _episodeBrowser?.dispose();
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
     _letterboxCropGeometrySub?.cancel();
+    _letterboxScanResultSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
     _pipChangedSub?.cancel();
@@ -1215,6 +1250,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!PlatformDetection.isTV) _pipService.enableAutoPiP(false);
     if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
       unawaited(_setAlwaysOnTop(false));
+    }
+    // Leaving the player stops the video, so its floating window goes too.
+    final webVideoBackend = _webVideoBackend;
+    if (webVideoBackend != null) {
+      webVideoBackend.inPictureInPicture.removeListener(_onBrowserPiPChanged);
+      unawaited(webVideoBackend.exitPictureInPicture());
     }
     // The launch coordinator briefly owns this route while Android decides
     // whether to hand the queue to an external player. Keep that prepared
@@ -2720,7 +2761,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!await _checkStillWatching()) return;
       // The next item, not the next chapter, even when the card came up
       // during one.
-      await _manager.nextInQueue();
+      await _manager.nextInQueueAsFinished();
     } finally {
       _isNextUpAdvancing = false;
     }
@@ -2737,11 +2778,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _handleNextUpCancel() {
     _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _markCurrentItemPlayedForOutroSkip();
     setState(() {
       _showNextUp = false;
       _nextUpDismissed = true;
     });
-    unawaited(_exitPlayback());
+    unawaited(_exitPlayback(finished: true));
   }
 
   void _focusNextUpPlay({int attempt = 0}) {
@@ -2765,17 +2807,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// A viewer reaching for the remote has answered the prompt's question.
   void _noteViewerActivity() => _consecutiveEpisodes = 0;
 
-  /// Returns false when the viewer chose to stop, so the caller can drop the
-  /// queue advance it was about to make.
+  /// Returns false when the caller should drop the queue advance it was about
+  /// to make, because the viewer chose to stop or the queue already moved.
   Future<bool> _checkStillWatching() async {
     final behavior = _prefs.get(UserPreferences.stillWatchingBehavior);
     if (behavior == StillWatchingBehavior.disabled) return true;
     if (_consecutiveEpisodes < behavior.episodes) return true;
 
+    final pendingItem = _queue.currentItem;
     _manager.pause();
     final shouldContinue = await StillWatchingDialog.show(context);
+    if (!mounted) return false;
+    // A group or remote can move the queue while the prompt is up. Stop still
+    // stops then, but only the episode it asked about counts as finished.
+    final sameItem = identical(_queue.currentItem, pendingItem);
     if (shouldContinue != true) {
-      unawaited(_exitPlayback());
+      if (sameItem) _markCurrentItemPlayedForOutroSkip();
+      unawaited(_exitPlayback(finished: sameItem));
       return false;
     }
 
@@ -2785,33 +2833,36 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // clears suppressAutoNext that callback ends the session and closes the
     // screen, which looks like continue exiting playback. The advance starts
     // the next episode on its own.
-    return true;
+    return sameItem;
   }
 
   // Skipping the credits counts as finishing, even when they start before the
   // server's own played threshold.
-  void _markCurrentItemPlayedForOutroSkip() {
-    final item = _queue.currentItem;
+  void _markCurrentItemPlayedForOutroSkip([dynamic targetItem]) {
+    final item = targetItem ?? _queue.currentItem;
     final itemId = _itemIdForQueueItem(item);
-    if (itemId != null && itemId.isNotEmpty) {
-      try {
-        final mutations = ItemMutationRepository(_clientForQueueItem(item));
-        unawaited(
-          mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
-        );
-        final raw = _rawDataForQueueItem(item);
-        if (raw != null) {
-          final existingUserData = raw['UserData'];
-          final userData = existingUserData is Map<String, dynamic>
-              ? existingUserData
-              : (existingUserData is Map
-                    ? existingUserData.cast<String, dynamic>()
-                    : <String, dynamic>{});
-          userData['Played'] = true;
-          raw['UserData'] = userData;
-        }
-      } catch (_) {}
-    }
+    if (itemId == null || itemId.isEmpty) return;
+    if (_lastOutroMarkedItemId == itemId) return;
+    _lastOutroMarkedItemId = itemId;
+    try {
+      final mutations = ItemMutationRepository(_clientForQueueItem(item));
+      unawaited(
+        mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
+      );
+      final raw = _rawDataForQueueItem(item);
+      if (raw != null) {
+        final existingUserData = raw['UserData'];
+        final userData = existingUserData is Map<String, dynamic>
+            ? existingUserData
+            : (existingUserData is Map
+                  ? existingUserData.cast<String, dynamic>()
+                  : <String, dynamic>{});
+        userData['Played'] = true;
+        userData['PlaybackPositionTicks'] = 0;
+        userData['PlayedPercentage'] = null;
+        raw['UserData'] = userData;
+      }
+    } catch (_) {}
   }
 
   void _skipCurrentSegment() {
@@ -2907,6 +2958,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// then reports its end, so the server counts it played.
   Future<void> _exitPlayback({bool finished = false}) async {
     if (_isStopping) return;
+    // A group or remote can move the queue during the awaits below, and only
+    // the item exiting now counts as finished.
+    final exitingItem = _queue.currentItem;
     setState(() {
       _isStopping = true;
     });
@@ -2934,7 +2988,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
     }
     unawaited(
-      finished
+      finished && identical(_queue.currentItem, exitingItem)
           ? _manager.stopAsFinished()
           : _manager.stop(userInitiated: false),
     );
@@ -3018,6 +3072,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (pauseAsked) {
       if (_displayPlaying && mounted) {
         setState(() => _displayPlaying = false);
+        _clearControlsForPausedDescription();
       }
       return;
     }
@@ -3027,8 +3082,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _displayPlayingDebounce = Timer(delay, () {
       if (mounted && !_state.isPlaying) {
         setState(() => _displayPlaying = false);
+        _clearControlsForPausedDescription();
       }
     });
+  }
+
+  /// A pause with a description card clears the controls at once, so the card
+  /// shows as soon as the player reads as paused.
+  void _clearControlsForPausedDescription() {
+    if (_controlsVisible && !_isSeeking && _hasPausedDescriptionCard) {
+      _scheduleHide(delay: Duration.zero);
+    }
   }
 
   void _startEndsAtTicker() {
@@ -3069,11 +3133,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  // Off TV the transport sits in the middle of the picture, right where the
-  // paused description card goes, so with a card to show the controls still
-  // hide while paused and the card shows once they do.
+  // The paused description covers the picture where the controls sit, so
+  // with one to show the controls still hide while paused and it shows once
+  // they do.
   bool get _hasPausedDescriptionCard =>
-      !PlatformDetection.useLeanbackUi &&
       _bringupState.phase == PlaybackBringupPhase.ready &&
       _prefs.get(UserPreferences.showDescriptionOnPause) &&
       _currentItemDescription() != null;
@@ -4592,8 +4655,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
+      // The element has to stay mounted under the label: taking it out of
+      // the page closes the browser's floating window.
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
+            if (_isInBrowserPiP)
+              ColoredBox(
+                color: Colors.black,
+                // Above the transport in the middle, so the two don't overlap.
+                child: Align(
+                  alignment: const Alignment(0, -0.4),
+                  child: Text(
+                    AppLocalizations.of(
+                      context,
+                    ).playerPlayingInPictureInPicture,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white70, fontSize: 28),
+                  ),
+                ),
+              ),
+          ],
+        ),
       );
     }
 
@@ -4885,67 +4970,74 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       initialData: _state.isPlaying,
       builder: (context, snap) {
         final isPlaying = _isPlayingShown;
-        final centerControlsShowing =
-            !PlatformDetection.useLeanbackUi &&
-            _controlsVisible &&
-            !_isOsdLocked;
+        final controlsShowing = _controlsVisible && !_isOsdLocked;
+        // Laid out on the settings preview's 960 by 540 screen and scaled to
+        // this one by height, so a wide phone keeps the whole block on screen.
+        // It's sized by the screen alone, so UI Scaling and the system font
+        // size stay out of it.
+        final u = MediaQuery.sizeOf(context).shortestSide / 540;
+        TextStyle text(double size, FontWeight weight) => TextStyle(
+          color: Colors.white,
+          fontSize: size * u,
+          fontWeight: weight,
+          shadows: const [Shadow(blurRadius: 6, color: Colors.black)],
+        );
         return Positioned.fill(
           child: IgnorePointer(
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 220),
-              opacity: isPlaying || centerControlsShowing ? 0.0 : 1.0,
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.58),
+              opacity: isPlaying || controlsShowing ? 0.0 : 1.0,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withValues(alpha: 0.85),
+                      Colors.black.withValues(alpha: 0.3),
+                    ],
+                  ),
+                ),
                 child: SafeArea(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 960),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.spaceXl,
-                          vertical: AppSpacing.spaceLg,
-                        ),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: const Color(0xCC111111),
-                            borderRadius: AppRadius.circular(18),
-                            border: Border.fromBorderSide(
-                              ThemeRegistry.active.borders.cardBorder.copyWith(
-                                color: Colors.white.withValues(alpha: 0.18),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      48 * u,
+                      110 * u,
+                      48 * u,
+                      0,
+                    ),
+                    child: Align(
+                      alignment: AlignmentDirectional.topStart,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 460 * u),
+                        child: MediaQuery.withNoTextScaling(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context).paused
+                                    .toUpperCase(),
+                                style: text(13, FontWeight.w700),
                               ),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.spaceXl),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (title.isNotEmpty)
-                                    Text(
-                                      title,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTypography.fontSizeXl,
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.2,
-                                      ),
-                                    ),
-                                  if (title.isNotEmpty)
-                                    const SizedBox(height: AppSpacing.spaceMd),
-                                  Text(
-                                    description,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: AppTypography.fontSizeLg,
-                                      height: 1.45,
-                                    ),
-                                  ),
-                                ],
+                              if (title.isNotEmpty) ...[
+                                SizedBox(height: 8 * u),
+                                Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: text(32, FontWeight.w700),
+                                ),
+                              ],
+                              SizedBox(height: 8 * u),
+                              Text(
+                                description,
+                                maxLines: 8,
+                                overflow: TextOverflow.ellipsis,
+                                style: text(
+                                  15,
+                                  FontWeight.w500,
+                                ).copyWith(height: 1.4),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
@@ -6301,6 +6393,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               size: secondaryIconSize,
               extent: secondaryExtent,
               tooltip: _tooltipMessage(l10n.playbackInformation, shortcut: 'I'),
+            ),
+          if (shows(OsdButton.pictureInPicture) &&
+              !_castOwnsTransport &&
+              (_activeHtmlVideoBackend?.supportsPictureInPicture ?? false))
+            OsdButton.pictureInPicture: _controlButton(
+              _isInBrowserPiP
+                  ? Icons.picture_in_picture_rounded
+                  : Icons.picture_in_picture_alt_rounded,
+              onPressed: _toggleBrowserPiP,
+              size: secondaryIconSize,
+              extent: secondaryExtent,
+              tooltip: _isInBrowserPiP
+                  ? _tooltipMessage(l10n.playerTooltipExitPictureInPicture)
+                  : _tooltipMessage(l10n.playerTooltipPictureInPicture),
             ),
           if (PlatformDetection.useDesktopUi && shows(OsdButton.fullscreen))
             OsdButton.fullscreen: _controlButton(
@@ -7720,6 +7826,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _recropBlackBarsFromUi() {
     final cropper = _activeBackend?.letterboxCropper;
     if (cropper == null || !cropper.isSupported) return;
+    // Toasts the result of this press's scan. A later press replaces it.
+    _letterboxScanResultSub?.cancel();
+    _letterboxScanResultSub = null;
+    if (cropper is MpvLetterboxCropper &&
+        _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds) == 0) {
+      _letterboxScanResultSub = cropper.scanResults.listen((result) {
+        _letterboxScanResultSub?.cancel();
+        _letterboxScanResultSub = null;
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context);
+        _showPlayerToast(switch (result) {
+          LetterboxScanResult.cropped => l10n.playerBlackBarsCropped,
+          LetterboxScanResult.noBars => l10n.playerNoBlackBarsFound,
+          LetterboxScanResult.inconclusive =>
+            l10n.playerBlackBarsNotDetected,
+        });
+      });
+    }
     unawaited(cropper.recrop());
     if (!mounted) return;
     _showPlayerToast(AppLocalizations.of(context).playerRecroppingBlackBars);
@@ -8169,6 +8293,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_castService.castItemNotifier.value?.id != item.id) return;
     _manager.setTransportInterceptor(_castTransport);
     setState(() => _castOwnsTransport = true);
+    // The copy here is paused under the casting cover, so it can't float.
+    unawaited(_activeHtmlVideoBackend?.exitPictureInPicture());
   }
 
   void _onCastChanged() {
@@ -8197,7 +8323,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           ),
         );
       // The local queue would start the next item on this device.
-      case TransportAction.next || TransportAction.previous:
+      case TransportAction.next ||
+          TransportAction.nextAsFinished ||
+          TransportAction.previous:
         break;
       case TransportAction.stop:
         return false;

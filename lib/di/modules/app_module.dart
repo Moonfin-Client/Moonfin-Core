@@ -63,6 +63,7 @@ import '../../data/viewmodels/media_bar_view_model.dart';
 import '../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../playback/current_playing_item.dart';
 import '../../playback/external_player_service.dart';
+import '../../playback/remote_media_notification_service.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
 import '../../ui/navigation/app_router.dart';
@@ -292,6 +293,18 @@ void registerAppModule() {
     dispose: (service) => service.dispose(),
   );
   _getIt.registerLazySingleton(() => const ExternalPlayerService());
+  _getIt.registerLazySingleton(
+    () => RemoteMediaNotificationService(
+      socketHandler: _getIt<SocketHandler>(),
+      castService: _getIt<CastService>(),
+      prefs: _getIt<UserPreferences>(),
+      activeClient: () => _getIt.isRegistered<MediaServerClient>()
+          ? _getIt<MediaServerClient>()
+          : null,
+      clientFactory: _getIt<MediaServerClientFactory>(),
+    ),
+    dispose: (service) => service.dispose(),
+  );
 
   _registerUserScopedSingletons();
 }

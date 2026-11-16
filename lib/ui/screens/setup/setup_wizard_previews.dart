@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:server_core/server_core.dart';
+import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
@@ -44,10 +44,12 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/carousel_panel.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/friends_nav_slot.dart';
+import '../../widgets/home_row_spacing.dart';
 import '../../widgets/info_area.dart';
 import '../../widgets/poster_badges.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
 import '../../widgets/mediabar/media_bar_new_release_label.dart';
+import '../../widgets/modern_row.dart';
 import '../../widgets/rating_display.dart';
 import '../../widgets/seerr_icons.dart';
 import '../../widgets/settings/settings_preview_scope.dart';
@@ -247,7 +249,7 @@ double _desktopScale(BuildContext context) =>
 double _rowScale(BuildContext context) =>
     (_tv ? 0.8 : 1.0) * _desktopScale(context);
 
-double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
+double get _rowLeftInset => _phone ? 16 : (_tv ? tvTopNavbarRowInset + 32 : 32);
 
 /// Lays [child] out at the platform design size, then scales it into the card.
 Widget _screen(Widget child) {
@@ -1748,7 +1750,9 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
   ];
 
   final banner = Padding(
-    padding: EdgeInsets.fromLTRB(16, _phone ? 24 : 0, 16, 8),
+    padding: _phone
+        ? const EdgeInsets.fromLTRB(16, 24, 16, 8)
+        : const EdgeInsets.fromLTRB(24, 0, 24, 8),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(14),
       child: SizedBox(
@@ -2432,9 +2436,9 @@ Widget _leftNavbarPreview(
   final iconSize = _tv ? 24.0 : 28.0;
   final itemHeight = _tv ? 40.0 : 44.0;
   final buttons = _navButtons(context, items);
-  // Home starts its rows 56 in beside the rail where a TV's top bar takes 48,
-  // and the rows' own inset is the top bar one.
-  final railInset = _phone ? 0.0 : 56.0 - (_tv ? 48.0 : 0.0);
+  // Home starts its rows 56 in beside the rail where a TV's top bar takes
+  // tvTopNavbarRowInset, and the rows' own inset is the top bar one.
+  final railInset = _phone ? 0.0 : 56.0 - (_tv ? tvTopNavbarRowInset : 0.0);
   // The real rail only widens while it has focus, whatever Always Expand
   // Navbar Labels says, and scrolls once its buttons outgrow the screen. It
   // floats over the screen rather than pushing it aside.
@@ -2782,24 +2786,14 @@ bool _showSampleLabels(BuildContext context) {
   return previewValue(context, UserPreferences.showPosterLabels);
 }
 
-/// The sample rows' poster and thumb heights at the card size being looked at.
-/// Modern's sample posters are drawn larger than Home's. Carousel's keep
-/// Home's size, so its panel fits under them as it does on Home.
-(double, double) _sampleCardHeights(
-  BuildContext context, {
-  required bool modern,
-  bool carousel = false,
-}) {
+/// The sample rows' poster and thumb heights at the card size and UI scale
+/// being looked at, the sizes Home draws them at in every row style.
+(double, double) _sampleCardHeights(BuildContext context) {
   final posterSize = previewValue(context, UserPreferences.posterSize);
+  final scale = _rowScale(context);
   return (
-    (modern && !carousel ? 240.0 : 150.0) *
-        _rowScale(context) *
-        posterSize.portraitHeight /
-        PosterSize.medium.portraitHeight,
-    110.0 *
-        _rowScale(context) *
-        posterSize.landscapeHeight /
-        PosterSize.medium.landscapeHeight,
+    modernImageHeight(posterSize, scale),
+    posterSize.landscapeHeight * scale,
   );
 }
 
@@ -2813,17 +2807,26 @@ double _rowPeekCover(BuildContext context, String mode) {
       previewValue(context, UserPreferences.fullScreenRows)) {
     return 0;
   }
-  final style = previewValue(context, UserPreferences.homeRowsStyle);
-  final modern = style.usesModernCards;
-  final (poster, thumb) = _sampleCardHeights(
+  final modern = previewValue(
     context,
-    modern: modern,
-    carousel: style == HomeRowsStyle.carousel,
-  );
+    UserPreferences.homeRowsStyle,
+  ).usesModernCards;
+  final (poster, thumb) = _sampleCardHeights(context);
+  final firstRowPosters =
+      modern ||
+      _classicRowImageType(context, HomeSectionType.resume) ==
+          ImageType.poster;
   // The title band's padding and line of text, then the cards' top padding.
   final header = (modern ? 7.0 : 24.0) + 19.0 + 5.0;
-  return header + (modern ? poster : thumb) / 2;
+  return header + (firstRowPosters ? poster : thumb) / 2;
 }
+
+/// The image type a Classic sample row draws, the one picked for that row or
+/// the one every row is set to, as on Home.
+ImageType _classicRowImageType(BuildContext context, HomeSectionType section) =>
+    previewValue(context, UserPreferences.homeRowsUniversalOverride)
+    ? previewValue(context, UserPreferences.homeRowsUniversalImageType)
+    : previewValue(context, UserPreferences.homeRowImageType(section));
 
 Widget _homeRowsColumn(
   BuildContext context,
@@ -2998,11 +3001,7 @@ Widget _homeRowsColumn(
     ),
   );
 
-  final (posterHeight, thumbHeight) = _sampleCardHeights(
-    context,
-    modern: modern,
-    carousel: isCarousel,
-  );
+  final (posterHeight, thumbHeight) = _sampleCardHeights(context);
   final rowGap = rowGapOverride ?? (modern ? (_phone ? 40.0 : 60.0) : 18.0);
   final showOverview = !previewValue(
     context,
@@ -3017,6 +3016,10 @@ Widget _homeRowsColumn(
     // A phone caps a grown card at the row's width, the way Home does.
     final rowWidth = _designSize().width - 32;
     final width = _phone && grown > rowWidth ? rowWidth : grown;
+    // The ratings and overview run to the end of the row as on Home, and off
+    // TV they stop at twice the card's width.
+    final room = _designSize().width - _rowLeftInset - 20;
+    final detailsWidth = _tv ? room : (width * 2).clamp(0.0, room);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -3067,7 +3070,7 @@ Widget _homeRowsColumn(
               Positioned(
                 left: 0,
                 top: 0,
-                width: width * 2.4,
+                width: detailsWidth,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -3108,11 +3111,15 @@ Widget _homeRowsColumn(
 
   Widget row(
     String title, {
-    bool thumbs = false,
+    required HomeSectionType section,
     int offset = 0,
     bool withFocus = false,
   }) {
     final showLabels = _showSampleLabels(context);
+    final imageType = modern
+        ? ImageType.poster
+        : _classicRowImageType(context, section);
+    final wide = imageType != ImageType.poster;
     final cards = <Widget>[
       for (var i = 0; i < 8; i++)
         if (withFocus && i == 0 && modern)
@@ -3120,10 +3127,14 @@ Widget _homeRowsColumn(
         else
           card(
             _itemAt(items, i + offset),
-            height: thumbs ? thumbHeight : posterHeight,
-            aspect: thumbs ? 16 / 9 : 2 / 3,
-            imageUrl: thumbs ? _itemAt(items, i + offset).backdropUrl : null,
-            progress: thumbs && i == 0 ? 0.35 : (thumbs && i == 1 ? 0.7 : null),
+            height: wide ? thumbHeight : posterHeight,
+            aspect: switch (imageType) {
+              ImageType.poster => 2 / 3,
+              ImageType.thumb => 16 / 9,
+              ImageType.banner => kBannerAspectRatio,
+            },
+            imageUrl: wide ? _itemAt(items, i + offset).backdropUrl : null,
+            progress: wide && i == 0 ? 0.35 : (wide && i == 1 ? 0.7 : null),
             // Not every file has both, as in a real library.
             labels: !showLabels || i % 3 == 2
                 ? const []
@@ -3242,12 +3253,20 @@ Widget _homeRowsColumn(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ?infoOverlay,
-        row(l10n.continueWatching, thumbs: !modern, withFocus: focusFirst),
+        row(
+          l10n.continueWatching,
+          section: HomeSectionType.resume,
+          withFocus: focusFirst,
+        ),
         if (!oneRowPerScreen) ...[
           SizedBox(height: rowGap),
-          row(l10n.recentlyAdded, offset: 3),
+          row(
+            l10n.recentlyAdded,
+            section: HomeSectionType.latestMedia,
+            offset: 3,
+          ),
           SizedBox(height: rowGap),
-          row(l10n.nextUp, thumbs: !modern, offset: 6),
+          row(l10n.nextUp, section: HomeSectionType.nextUp, offset: 6),
         ],
       ],
     ),

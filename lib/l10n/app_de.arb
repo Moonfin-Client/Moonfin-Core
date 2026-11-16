@@ -10209,7 +10209,7 @@
     "@spotlightRecommendationsSeerr": {
         "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
     },
-    "recommendationSystemJellyfin": "Jellyfin Empfehlungen",
+    "recommendationSystemJellyfin": "Server-Empfehlungen",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -11037,7 +11037,7 @@
     "sinceYouWatchedSource": "Empfehlungsquelle",
     "sinceYouWatchedSourceDescription": "Wähle zwischen dem lokalen Empfehlungsalgorithmus von Moonfin, dem serverseitigen Empfehlungssystem von Jellyfin und den Ähnlichkeitsbewertungen von TMDb. Hinweis: Online-Empfehlungen erfordern eine Seerr-Integration.",
     "sinceYouWatchedSourceLocal": "Moonfin-Empfehlungen",
-    "sinceYouWatchedSourceServer": "Jellyfin-Empfehlungen",
+    "sinceYouWatchedSourceServer": "Server-Empfehlungen",
     "sinceYouWatchedSourceOnline": "TMDb-Ähnlichkeit",
     "sinceYouWatchedSourceType": "Inhaltstyp",
     "sinceYouWatchedSourceTypeDescription": "Wähle aus, welche Arten von Inhalten empfohlen werden sollen",

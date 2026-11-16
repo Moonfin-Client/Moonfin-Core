@@ -27,6 +27,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 import 'package:moonfin/ui/widgets/marquee_text.dart';
+import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
@@ -149,6 +150,8 @@ class _Manager extends PlaybackManager {
   int stopCalls = 0;
   int finishedStopCalls = 0;
   int nextInQueueCalls = 0;
+  int finishedNextInQueueCalls = 0;
+  bool blockNextAdvance = false;
   PlaybackBringupState bringup = const PlaybackBringupState.idle();
   StreamResolutionResult? resolution;
 
@@ -190,6 +193,14 @@ class _Manager extends PlaybackManager {
   @override
   Future<void> nextInQueue() async {
     nextInQueueCalls++;
+    queueService.next();
+  }
+
+  @override
+  Future<void> nextInQueueAsFinished() async {
+    finishedNextInQueueCalls++;
+    if (blockNextAdvance) return;
+    notifyFinishedItemStop(queueService.currentItem);
     queueService.next();
   }
 }
@@ -797,6 +808,165 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
 
+  group('TV Next Up during outro', () {
+    setUp(() {
+      PlatformDetection.setTvMode(true);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    });
+
+    tearDown(() {
+      PlatformDetection.setTvMode(false);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    });
+
+    testWidgets(
+      'closing Next Up during outro on TV marks the episode watched and exits finished',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.tap(
+          find.descendant(
+            of: find.byType(NextUpOverlay),
+            matching: find.byIcon(Icons.close_rounded),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedStopCalls, 1);
+        expect(manager.stopCalls, 0);
+        expect(client.userLibrary.markedPlayed, ['ep1']);
+        expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        expect((ep1Raw['UserData'] as Map)['PlaybackPositionTicks'], 0);
+        expect(find.byType(VideoPlayerScreen), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'playing next from Next Up during outro marks the episode watched and advances finished',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, ['ep1']);
+        expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'intercepted Next Up play during outro does not mark the episode watched until committed',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.blockNextAdvance = true;
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, isEmpty);
+        expect(ep1Raw['UserData'], isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+  });
+
   // Issue #1688: a resume that takes longer than the hide delay to start
   // playing left the controls up until a key was pressed.
   testWidgets('controls hide after a start slower than the hide delay', (
@@ -1360,17 +1530,47 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
-    testWidgets('shows a couple of seconds after a pause', (tester) async {
+    testWidgets('waits for the controls to hide on a TV too', (tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await pumpPlayer(tester);
+      expect(cardOpacity(tester), 0);
+
+      await tester.pump(const Duration(seconds: 10));
+      expect(cardOpacity(tester), 1);
+      expect(find.text('PAUSED'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('keeps its size whatever the text scale', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpPlayer(tester);
+      await tester.pump(const Duration(seconds: 10));
+
+      final paused = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('PAUSED'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(paused.textScaler, TextScaler.noScaling);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('shows as soon as playback pauses', (tester) async {
       await pumpPlayer(tester);
       manager.state.setPlaying(true);
       await tester.pump();
       await tester.pump();
-      manager.state.setPlaying(false);
-      await tester.pump();
-      await tester.pump();
       expect(find.byType(Slider), findsOneWidget);
 
-      await tester.pump(const Duration(milliseconds: 2100));
+      // A drop the viewer didn't ask for reads as a pause after 200 ms.
+      manager.state.setPlaying(false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.byType(Slider), findsNothing);
       expect(cardOpacity(tester), 1);
 

@@ -78,6 +78,7 @@ import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/merged_copy_picker.dart';
 import '../../widgets/carousel_panel.dart';
 import '../detail/item_detail_screen.dart' show technicalDetailsFor;
 import '../../widgets/selector_builder.dart';
@@ -190,6 +191,10 @@ class _HomeShellState extends State<_HomeShell>
   bool _lastCanReachServer = true;
   late final HomeViewModel _viewModel;
 
+  /// Counts returns to Home, so a quick second return can tell an earlier
+  /// one's refresh from its own.
+  int _returnRefreshes = 0;
+
   final ValueNotifier<AggregatedItem?> _selectedItemNotifier = ValueNotifier(null);
   final GlobalKey<_ContentRowsState> _contentRowsKey =
       GlobalKey<_ContentRowsState>();
@@ -202,6 +207,7 @@ class _HomeShellState extends State<_HomeShell>
   final ValueNotifier<bool> _isScrolledToTopNotifier = ValueNotifier(true);
   String _lastSectionsJson = '';
   bool _lastMultiServer = false;
+  bool _lastMergeLibraries = false;
   bool _lastMergeContinueWatchingNextUp = false;
   String _lastHiddenCW = '{}';
   String _lastHiddenNU = '{}';
@@ -246,6 +252,7 @@ class _HomeShellState extends State<_HomeShell>
     _lastMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
     );
+    _lastMergeLibraries = _userPrefs.effectiveMergeLibrariesByType;
     _lastMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
@@ -414,6 +421,7 @@ class _HomeShellState extends State<_HomeShell>
     final currentMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
     );
+    final currentMergeLibraries = _userPrefs.effectiveMergeLibrariesByType;
     final currentMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
@@ -435,6 +443,7 @@ class _HomeShellState extends State<_HomeShell>
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
+        currentMergeLibraries != _lastMergeLibraries ||
         currentMergeContinueWatchingNextUp != _lastMergeContinueWatchingNextUp ||
         currentBlocked != _lastBlockedParentalRatings ||
         currentHiddenCW != _lastHiddenCW ||
@@ -451,6 +460,7 @@ class _HomeShellState extends State<_HomeShell>
         currentDateFormat != _lastDateFormat) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
+      _lastMergeLibraries = currentMergeLibraries;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
       _lastBlockedParentalRatings = currentBlocked;
       _lastHiddenCW = currentHiddenCW;
@@ -581,16 +591,29 @@ class _HomeShellState extends State<_HomeShell>
       _themeMusicService.fadeOutAndStop();
       return;
     }
-    // Only the resume / next-up rows can change from viewing an item, so a
-    // lightweight in-place refresh keeps every other row (its paginated items,
-    // scroll offset, and focus) intact. A full refresh still runs on the Home
-    // button and pull-to-refresh. The refresh can remove a row that refetched
-    // empty, so once it lands, re-assert focus in case it held the focused row.
+    // Only the resume / next-up rows can change from viewing an item, and On
+    // Now from the time spent away, so a lightweight in-place refresh keeps
+    // every other row (its paginated items, scroll offset, and focus) intact.
+    // A full refresh still runs on the Home button and pull-to-refresh. The
+    // refresh can remove a row that refetched empty, so once it lands,
+    // re-assert focus in case it held the focused row.
+    final returnRefresh = ++_returnRefreshes;
     Future.delayed(const Duration(milliseconds: 300), () async {
+      if (!mounted) return;
+      if (GetIt.instance.isRegistered<PlaybackManager>()) {
+        try {
+          await GetIt.instance<PlaybackManager>().lastStopReport.timeout(
+            const Duration(seconds: 2),
+            onTimeout: () {},
+          );
+        } catch (_) {}
+      }
       if (!mounted) return;
       await _viewModel.refreshResumeAndNextUp();
       if (!mounted) return;
-      _contentRowsKey.currentState?.ensureFocusAfterReturnRefresh();
+      _contentRowsKey.currentState?.ensureFocusAfterReturnRefresh(
+        retireAnchor: returnRefresh == _returnRefreshes,
+      );
     });
     _contentRowsKey.currentState?.reassertNavigationCallbacks();
     _contentRowsKey.currentState?.restoreReturnFocus();
@@ -3472,7 +3495,7 @@ class _ContentRowsState extends State<_ContentRows>
   /// refresh removed the row that held focus, focus is now dead and no key
   /// handler will ever run, so re-assert it on TV. Bails whenever anything
   /// real still has focus so it never steals.
-  void ensureFocusAfterReturnRefresh() {
+  void ensureFocusAfterReturnRefresh({bool retireAnchor = true}) {
     if (!mounted || PlatformDetection.useMobileUi) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_mayRestoreHomeFocus()) return;
@@ -3481,8 +3504,8 @@ class _ContentRowsState extends State<_ContentRows>
         return;
       }
       _realignScrollAfterReturn();
-      // Last chance to use the anchor, so retire it either way.
-      _returnScrollRowId = null;
+      // A later return still needs the anchor, so only the latest retires it.
+      if (retireAnchor) _returnScrollRowId = null;
       if (!PlatformDetection.isTV) return;
       if (_homeContentHasRealFocus()) return;
       if (!_focusIsGenuinelyLost()) return;
@@ -4625,18 +4648,15 @@ class _ContentRowsState extends State<_ContentRows>
     required PosterSize posterSize,
   }) {
     final safeTop = MediaQuery.of(context).padding.top;
-    final desktopScale = _desktopUiScaleFactor();
     final isRowsV2 = _isHomeRowsStyleV2();
     final navbarIsTop =
         prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final tvTopNavbarInset =
         navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
-            ? 48.0
+            ? tvTopNavbarRowInset
             : 0.0;
     final navbarLeftInset = navbarIsTop ? 16.0 + tvTopNavbarInset : 56.0;
-    final platformScale = PlatformDetection.isTV
-        ? 1.0
-        : (PlatformDetection.useMobileUi ? 1.0 : desktopScale);
+    final platformScale = homeRowPlatformScale(_desktopUiScaleFactor());
     final v2ImageHeight =
         modernImageHeight(posterSize, platformScale);
     final v2PortraitWidth = v2ImageHeight * (2 / 3);
@@ -4760,7 +4780,7 @@ class _ContentRowsState extends State<_ContentRows>
         : safeTop + 56;
     final tvTopNavbarInset =
         navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
-        ? 48.0
+        ? tvTopNavbarRowInset
         : 0.0;
     final rowLeftInset =
         (navbarIsLeft && !PlatformDetection.useMobileUi
@@ -5678,7 +5698,7 @@ class _ContentRowsState extends State<_ContentRows>
     final rowLeftInsetV2 =
         (navbarIsTopV2
             ? (PlatformDetection.isTV && !PlatformDetection.useMobileUi
-                  ? 48.0
+                  ? tvTopNavbarRowInset
                   : 0.0)
             : (!PlatformDetection.useMobileUi ? 56.0 : 0.0)) +
         (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
@@ -5904,14 +5924,7 @@ class _ContentRowsState extends State<_ContentRows>
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
-            context.push(
-              Destinations.itemOrPhoto(
-                item.id,
-                serverId: item.serverId,
-                type: item.type,
-                channelId: item.channelId,
-              ),
-            );
+            _openItem(item);
           }
         },
         itemBuilder: (ctx, item, idx, isFocused) {
@@ -6036,14 +6049,7 @@ class _ContentRowsState extends State<_ContentRows>
                     } else if (item.serverId == 'seerr') {
                       _navigateToSeerrItem(context, item);
                     } else {
-                      context.push(
-                        Destinations.itemOrPhoto(
-                          item.id,
-                          serverId: item.serverId,
-                          type: item.type,
-                          channelId: item.channelId,
-                        ),
-                      );
+                      _openItem(item);
                     }
                   }
 
@@ -6159,7 +6165,7 @@ class _ContentRowsState extends State<_ContentRows>
                         ? _buildWatchingNowOverlays(item, l10n)
                         : (isSeerrGenreCard
                             ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
-                            : const <Widget>[]),
+                            : mergedServerCountOverlays(context, item)),
                     imageUnderlays: [
                       if (glide != null &&
                           canUseExpandedV2Card &&
@@ -6867,6 +6873,20 @@ class _ContentRowsState extends State<_ContentRows>
     );
     return true;
   }
+
+  /// Opens [item]'s details, first asking which server when several hold it.
+  void _openItem(AggregatedItem item) => openPickedCopy(
+    context,
+    item,
+    (copy) => context.push(
+      Destinations.itemOrPhoto(
+        copy.id,
+        serverId: copy.serverId,
+        type: copy.type,
+        channelId: copy.channelId,
+      ),
+    ),
+  );
 
   static void _navigateToLibrary(BuildContext context, AggregatedItem item) {
     // Game libraries route to the EmulatorJS browser, everything else by its
