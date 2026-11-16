@@ -536,6 +536,22 @@ void main() {
       await advance(tester, 300);
     }
 
+    // The seek bar retries its focus for a few frames after the controls come
+    // up. A quick second Down used to be pulled back to it, and Right seeked.
+    testWidgets('a quick Down to the buttons stays there', (tester) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await advance(tester, 30);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await advance(tester, 600);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 100);
+      expect(manager.seeks, isEmpty, reason: 'Right moved along the buttons');
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
     test('grows from the set step to 30, 60 and 180 seconds', () {
       expect(
         [
