@@ -13369,7 +13369,14 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final labelUnder = host?.labelsUnderCircles ?? false;
     // With the circles' labels under them, Play keeps its own in the pill.
     final labeledPlay = widget.isPrimary && labelUnder;
-    final isExpanded = labeledPlay || (showHighlight && !labelUnder);
+    // Only focus grows a circle. A hovered one that no longer fits its line
+    // wraps to the next, out from under the pointer, then shrinks and wraps
+    // back; hover shows the label in a tooltip instead.
+    final focusGrows = InputModeTracker.showFocusVisuals(
+      context,
+      focused || (widget.focusNode?.hasFocus ?? false),
+    );
+    final isExpanded = labeledPlay || (focusGrows && !labelUnder);
     final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
         ? (isMobile ? 50.0 : 54.0 * scale)
@@ -13590,7 +13597,15 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         ),
       ),
     );
-    if (!labelUnder) return circle;
+    if (!labelUnder) {
+      return isExpanded || widget.label.isEmpty
+          ? circle
+          : Tooltip(
+              message: widget.label,
+              triggerMode: TooltipTriggerMode.manual,
+              child: circle,
+            );
+    }
 
     // The label's space is kept even with nothing in it, so the row doesn't
     // shift as focus moves along it. A long label stays centered under its
