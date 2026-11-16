@@ -181,15 +181,8 @@ class MediaBarRepository {
         return const MediaBarDisabled();
       }
 
-      // Worked out once on the whole pool: the new releases source keeps only
-      // the movies that pass, and the chosen slides take their labels from it.
-      final movieLabels =
-          _prefs.get(UserPreferences.mediaBarNewReleaseBanner) &&
-          _newReleaseKinds.contains(UserPreferences.mediaBarNewMovie);
-      final newMovies = movieLabels || _isNewReleaseSource
-          ? _newMovies(allItems.where(usable))
-          : const <String, MediaBarNewReleaseInfo>{};
       if (_isNewReleaseSource) {
+        final newMovies = _newMovies(allItems);
         allItems.removeWhere(
           (item) =>
               item['Type'] == 'Movie' &&
@@ -237,14 +230,12 @@ class MediaBarRepository {
         );
       }
 
-      // A fallback can pick titles the pool never held, so those are checked
-      // on their own.
-      final pooled = {for (final item in allItems) item['Id']?.toString()};
-      final labels = !movieLabels
-          ? const <String, MediaBarNewReleaseInfo>{}
-          : selected.every((item) => pooled.contains(item['Id']?.toString()))
-          ? newMovies
-          : _newMovies(selected);
+      final movieLabels =
+          _prefs.get(UserPreferences.mediaBarNewReleaseBanner) &&
+          _newReleaseKinds.contains(UserPreferences.mediaBarNewMovie);
+      final labels = movieLabels
+          ? _newMovies(selected)
+          : const <String, MediaBarNewReleaseInfo>{};
 
       final items = await _mixInExternal(
         [
@@ -582,10 +573,6 @@ class MediaBarRepository {
   }
 
   /// The newest movies released within the window, newest first.
-  /// ponytail: getItems has no upper date bound, so a movie dated in the
-  /// future can take a pool slot before [_newMovies] drops it. The recently
-  /// released call caps at today but skips collections on Silo. Add a max
-  /// date to getItems on every backend if this ever matters.
   Future<List<Map<String, dynamic>>> _fetchNewReleaseMovies({
     String? parentId,
   }) async {
@@ -594,6 +581,10 @@ class MediaBarRepository {
     // included) when the user configuration loads.
     final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
     try {
+      // shortcut: getItems has no upper date bound, so a movie dated in the
+      // future can take a pool slot before _newMovies drops it. The recently
+      // released call caps at today but skips collections on Silo. Add a max
+      // date to getItems on every backend if this ever matters.
       final response = await _client.itemsApi
           .getItems(
             parentId: parentId,

@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/models/media_bar_state.dart';
 import 'package:moonfin/data/repositories/media_bar_repository.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -68,11 +69,14 @@ class _Server {
 void main() {
   tearDown(() => GetIt.instance.reset());
 
+  late List<MediaBarSlideItem> slides;
+
   Future<List<String>> load(
     _Server server, {
     required int itemCount,
     String source = UserPreferences.mediaBarSourceRandom,
     bool hideWatched = false,
+    String? newReleaseKinds,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
@@ -82,6 +86,9 @@ void main() {
     await prefs.set(UserPreferences.mediaBarItemCount, '$itemCount');
     await prefs.set(UserPreferences.mediaBarSourceType, source);
     await prefs.set(UserPreferences.hideWatchedInRecentRows, hideWatched);
+    if (newReleaseKinds != null) {
+      await prefs.set(UserPreferences.mediaBarNewReleaseKinds, newReleaseKinds);
+    }
     await prefs.set(
       UserPreferences.mediaBarCollectionIds,
       server.collections.keys.join(','),
@@ -129,7 +136,8 @@ void main() {
     final repo = MediaBarRepository(client, prefs);
     GetIt.instance.registerSingleton<MediaBarRepository>(repo);
     final state = await repo.loadItems();
-    return (state as MediaBarReady).items.map((item) => item.itemId).toList();
+    slides = (state as MediaBarReady).items;
+    return slides.map((item) => item.itemId).toList();
   }
 
   Map<String, List<String>> collections(int count, int size) => {
@@ -207,6 +215,43 @@ void main() {
     );
 
     expect(shown, ['unseen']);
+  });
+
+  test('a movie out within the window gets the new movie label', () async {
+    final now = DateTime.now();
+    final server = _Server(
+      {
+        'movies': const ['new', 'old'],
+      },
+      released: {
+        'new': now.subtract(const Duration(days: 10)),
+        'old': now.subtract(const Duration(days: 400)),
+      },
+    );
+
+    await load(server, itemCount: 10);
+
+    expect(
+      {for (final slide in slides) slide.itemId: slide.newRelease?.kind},
+      {'new': MediaBarNewRelease.newMovie, 'old': null},
+    );
+  });
+
+  test('no movie is labeled when the movie label is left out', () async {
+    final server = _Server(
+      {
+        'movies': const ['new'],
+      },
+      released: {'new': DateTime.now().subtract(const Duration(days: 10))},
+    );
+
+    await load(
+      server,
+      itemCount: 10,
+      newReleaseKinds: UserPreferences.mediaBarNewSeason,
+    );
+
+    expect(slides.single.newRelease, isNull);
   });
 
   // The server's titles have no air date, so nothing counts as aired lately.
