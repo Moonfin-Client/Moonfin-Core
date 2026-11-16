@@ -55,7 +55,6 @@ import 'mediabar/gallery_coverflow.dart';
 import 'mediabar/gallery_layout.dart';
 import 'mediabar/media_bar_nav_arrow.dart';
 import 'mediabar/media_bar_status_focus.dart';
-import 'mediabar/media_bar_corner_light.dart';
 import 'mediabar/media_bar_new_release_label.dart';
 import 'mediabar/media_bar_title.dart';
 import 'rating_display.dart';
@@ -2088,10 +2087,6 @@ class _MediaBarState extends State<MediaBar>
                     ),
                   ),
                   ..._buildVideoOverlays(allowPersistentMedia3: true),
-                  // This layout has no overlay, so the logo corner gets its
-                  // own shade.
-                  if (currentItem != null && (!isMobile || isTablet))
-                    const Positioned.fill(child: MediaBarCornerLight()),
                   if (items.length > 1 && !_isTrailerPlaying)
                     Positioned(
                       bottom: 8 + widget.rowPeek,
@@ -2381,12 +2376,13 @@ class _MediaBarState extends State<MediaBar>
                               ),
                       ),
                     ),
-                  if (currentItem != null && !isMobile)
+                  if (currentItem != null)
                     Builder(
                       builder: (context) {
                         final contentHeight =
                             widget.height - effectiveTopInset - widget.rowPeek;
                         final screenWidth = MediaQuery.of(context).size.width;
+                        final logoTop = contentHeight * 0.22;
                         final logoWidth = (screenWidth * 0.45).clamp(
                           220.0,
                           640.0,
@@ -2395,46 +2391,99 @@ class _MediaBarState extends State<MediaBar>
                           90.0,
                           300.0,
                         );
+                        final mobileLogoHeight = (contentHeight * 0.18).clamp(
+                          58.0,
+                          112.0,
+                        );
+                        final mobileLogoWidth = (screenWidth * 0.7).clamp(
+                          190.0,
+                          380.0,
+                        );
+                        final mobileLogoTop =
+                            (contentHeight * 0.5 - mobileLogoHeight / 2).clamp(
+                              8.0,
+                              contentHeight * 0.56,
+                            );
                         return Positioned(
-                          left: 50 + _sidebarInset,
-                          top: contentHeight * 0.22,
+                          left: isMobile ? null : 50 + _sidebarInset,
+                          top: isMobile ? mobileLogoTop : logoTop,
                           child: AnimatedOpacity(
                             opacity: _isTrailerPlaying ? 0 : 1,
                             duration: const Duration(milliseconds: 250),
                             child: IgnorePointer(
                               ignoring: _isTrailerPlaying,
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                child: Column(
-                                  key: ValueKey(
-                                    'makd_logo_${currentItem.itemId}',
-                                  ),
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: logoWidth,
-                                      height: logoHeight,
-                                      child: _buildLogoWithShadow(
-                                        currentItem.logoUrl,
-                                        currentItem.title,
+                              child: isMobile
+                                  ? SizedBox(
+                                      width: screenWidth,
+                                      child: Center(
+                                        child: AnimatedSwitcher(
+                                          duration: const Duration(
+                                            milliseconds: 300,
+                                          ),
+                                          child: Column(
+                                            key: ValueKey(
+                                              'makd_logo_${currentItem.itemId}',
+                                            ),
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                width: mobileLogoWidth,
+                                                height: mobileLogoHeight,
+                                                child: _buildLogoWithShadow(
+                                                  currentItem.logoUrl,
+                                                  currentItem.title,
+                                                ),
+                                              ),
+                                              if (currentItem.newRelease
+                                                  case final release?) ...[
+                                                const SizedBox(height: 8),
+                                                MediaBarNewReleaseLine(
+                                                  release: release,
+                                                  showMessage: false,
+                                                  alignment:
+                                                      CrossAxisAlignment.center,
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : AnimatedSwitcher(
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      child: Column(
+                                        key: ValueKey(
+                                          'makd_logo_${currentItem.itemId}',
+                                        ),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(
+                                            width: logoWidth,
+                                            height: logoHeight,
+                                            child: _buildLogoWithShadow(
+                                              currentItem.logoUrl,
+                                              currentItem.title,
+                                            ),
+                                          ),
+                                          if (currentItem.newRelease
+                                              case final release?) ...[
+                                            const SizedBox(height: 8),
+                                            ConstrainedBox(
+                                              constraints: BoxConstraints(
+                                                maxWidth: logoWidth,
+                                              ),
+                                              child: MediaBarNewReleaseLine(
+                                                release: release,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                     ),
-                                    if (currentItem.newRelease
-                                        case final release?) ...[
-                                      const SizedBox(height: 8),
-                                      ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxWidth: logoWidth,
-                                        ),
-                                        child: MediaBarNewReleaseLine(
-                                          release: release,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
                             ),
                           ),
                         );
@@ -2444,11 +2493,7 @@ class _MediaBarState extends State<MediaBar>
                     Positioned(
                       left: isMobile ? 0 : 50 + _sidebarInset,
                       right: isMobile ? 0 : null,
-                      // Phones stack the logo and label over the info, so a
-                      // taller info block pushes them up instead of covering
-                      // them. The gap at the bottom keeps the dots clear.
-                      top: isMobile ? 8 : null,
-                      bottom: isMobile ? 40 : 20 + widget.rowPeek,
+                      bottom: isMobile ? 24 : 20 + widget.rowPeek,
                       child: AnimatedOpacity(
                         opacity: _isTrailerPlaying ? 0 : 1,
                         duration: const Duration(milliseconds: 250),
@@ -2462,40 +2507,28 @@ class _MediaBarState extends State<MediaBar>
                               width: isMobile ? null : contentWidth,
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 320),
-                                child: KeyedSubtree(
+                                child: _MakdContent(
                                   key: ValueKey(
                                     'makd_content_${currentItem.itemId}',
                                   ),
-                                  child: _makdInfo(
-                                    context,
-                                    currentItem,
-                                    content: _MakdContent(
-                                      item: currentItem,
-                                      ratings: currentRatings,
-                                      enableAdditionalRatings: widget.prefs.get(
-                                        UserPreferences
-                                            .mediaBarEnableAdditionalRatings,
-                                      ),
-                                      enabledRatings: widget.prefs.get(
-                                        UserPreferences.mediaBarEnabledRatings,
-                                      ),
-                                      showLabels: widget.prefs.get(
-                                        UserPreferences.mediaBarShowRatingLabels,
-                                      ),
-                                      showBadges: widget.prefs.get(
-                                        UserPreferences.mediaBarShowRatingBadges,
-                                      ),
-                                      isMobile: isMobile,
-                                      onPlay: () =>
-                                          _navigateToItemAndPlay(context, items),
-                                      onInfo: () =>
-                                          _navigateToItem(context, items),
-                                    ),
-                                    contentHeight:
-                                        widget.height -
-                                        effectiveTopInset -
-                                        widget.rowPeek,
+                                  item: currentItem,
+                                  ratings: currentRatings,
+                                  enableAdditionalRatings: widget.prefs.get(
+                                    UserPreferences.mediaBarEnableAdditionalRatings,
                                   ),
+                                  enabledRatings: widget.prefs.get(
+                                    UserPreferences.mediaBarEnabledRatings,
+                                  ),
+                                  showLabels: widget.prefs.get(
+                                    UserPreferences.mediaBarShowRatingLabels,
+                                  ),
+                                  showBadges: widget.prefs.get(
+                                    UserPreferences.mediaBarShowRatingBadges,
+                                  ),
+                                  isMobile: isMobile,
+                                  onPlay: () =>
+                                      _navigateToItemAndPlay(context, items),
+                                  onInfo: () => _navigateToItem(context, items),
                                 ),
                               ),
                             ),
@@ -2539,45 +2572,6 @@ class _MediaBarState extends State<MediaBar>
           ),
         ),
       ),
-    );
-  }
-
-  /// MakD's info block. On a phone, the centered logo and the new release
-  /// label sit on top of it in the same column, so they can't overlap.
-  Widget _makdInfo(
-    BuildContext context,
-    MediaBarSlideItem item, {
-    required Widget content,
-    required double contentHeight,
-  }) {
-    if (!PlatformDetection.useMobileUi) return content;
-    final screenWidth = MediaQuery.of(context).size.width;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // Gives way first when the info is tall.
-        Flexible(
-          child: SizedBox(
-            width: (screenWidth * 0.7).clamp(190.0, 380.0),
-            height: (contentHeight * 0.18).clamp(58.0, 112.0),
-            child: _buildLogoWithShadow(
-              item.logoUrl,
-              item.title,
-              alignment: Alignment.center,
-            ),
-          ),
-        ),
-        if (item.newRelease case final release?) ...[
-          const SizedBox(height: 8),
-          MediaBarNewReleaseLine(
-            release: release,
-            showMessage: false,
-            alignment: CrossAxisAlignment.center,
-          ),
-        ],
-        const SizedBox(height: 12),
-        content,
-      ],
     );
   }
 
@@ -3181,28 +3175,20 @@ class _MediaBarState extends State<MediaBar>
     }
   }
 
-  Widget _buildLogoFallback(
-    String title, {
-    Alignment alignment = Alignment.centerLeft,
-  }) => Align(
-    alignment: alignment,
+  Widget _buildLogoFallback(String title) => Align(
+    alignment: Alignment.centerLeft,
     child: MediaBarTitle(title: title, shadows: _textShadows),
   );
 
-  Widget _buildLogoWithShadow(
-    String? url,
-    String title, {
-    Alignment alignment = Alignment.centerLeft,
-  }) {
-    if (url == null) return _buildLogoFallback(title, alignment: alignment);
+  Widget _buildLogoWithShadow(String? url, String title) {
+    if (url == null) return _buildLogoFallback(title);
     Widget image() => OfflineAwareImage(
       imageUrl: url,
       fit: BoxFit.contain,
-      alignment: alignment,
+      alignment: Alignment.centerLeft,
       fadeInDuration: Duration.zero,
       priority: ImageFetchPriority.high,
-      errorWidget: (_, _, _) =>
-          _buildLogoFallback(title, alignment: alignment),
+      errorWidget: (_, _, _) => _buildLogoFallback(title),
     );
     return Stack(
       fit: StackFit.expand,
@@ -3364,11 +3350,7 @@ class _SlideInfo extends StatelessWidget {
         children: [
           if (showRelease && !compact)
             if (item.newRelease case final release?) ...[
-              MediaBarNewReleaseLine(
-                release: release,
-                showMessage: false,
-                showBar: false,
-              ),
+              MediaBarNewReleaseLine(release: release, showMessage: false),
               const SizedBox(height: 6),
             ],
           _MetadataRow(item: item),
@@ -3622,6 +3604,7 @@ class _MakdContent extends StatelessWidget {
   final VoidCallback onInfo;
 
   const _MakdContent({
+    super.key,
     required this.item,
     required this.ratings,
     required this.enableAdditionalRatings,
@@ -3674,14 +3657,7 @@ class _MakdContent extends StatelessWidget {
         const SizedBox(height: 14),
         if (!PlatformDetection.isTV)
           _MakdActionButtons(
-            // Nothing to play off the server, nor on a series watched to the
-            // end that's only announced.
-            onPlay:
-                item.isExternal ||
-                    (item.fullyWatched &&
-                        (item.newRelease?.kind.isUpcoming ?? false))
-                ? null
-                : onPlay,
+            onPlay: item.isExternal ? null : onPlay,
             onInfo: onInfo,
             isMobile: isMobile,
           ),

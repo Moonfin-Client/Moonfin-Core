@@ -41,7 +41,6 @@ class CalendarEntry {
     this.episodeId,
     this.libraryIds = const [],
     this.badge,
-    this.hasDigitalDate = false,
   });
 
   final String key;
@@ -78,10 +77,6 @@ class CalendarEntry {
   final String? episodeId;
   final List<String> libraryIds;
   final CalendarBadge? badge;
-
-  /// For a movie, whether Radarr knows a digital release date at all, even
-  /// one outside the range asked for.
-  final bool hasDigitalDate;
 
   bool get isEpisode => kind == CalendarEntryKind.episode;
   bool get isMovie => kind == CalendarEntryKind.movie;
@@ -227,8 +222,6 @@ List<CalendarEntry> parseRadarrEntries(
         monitored: json['monitored'] != false,
         itemId: _text(json['moonfinItemId']),
         libraryIds: _ids(json['moonfinLibraryIds']),
-        hasDigitalDate:
-            DateTime.tryParse('${json['digitalRelease'] ?? ''}') != null,
       ),
     );
   }

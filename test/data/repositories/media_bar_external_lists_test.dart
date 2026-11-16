@@ -32,7 +32,6 @@ ImdbExternalListItem _title(
   String type = 'Movie',
   String? rating = 'PG-13',
   String? backdrop = '/list.jpg',
-  List<String> genres = const [],
 }) => ImdbExternalListItem(
   imdbId: 'tt$tmdbId',
   tmdbId: tmdbId,
@@ -42,7 +41,6 @@ ImdbExternalListItem _title(
   posterUrl: '/poster.jpg',
   rating: 7.0,
   officialRating: rating,
-  genres: genres,
 );
 
 void main() {
@@ -64,8 +62,6 @@ void main() {
     String contentType = 'both',
     String libraryIds = '',
     String blocked = '',
-    String excludedGenres = '',
-    String itemCount = '10',
     Map<String, Map<String, dynamic>> details = const {},
   }) async {
     SharedPreferences.setMockInitialValues({});
@@ -73,12 +69,11 @@ void main() {
     await store.init();
     final prefs = UserPreferences(store);
     await prefs.set(UserPreferences.pluginSyncEnabled, false);
-    await prefs.set(UserPreferences.mediaBarItemCount, itemCount);
+    await prefs.set(UserPreferences.mediaBarItemCount, '10');
     await prefs.set(UserPreferences.mediaBarContentType, contentType);
     await prefs.set(UserPreferences.mediaBarExternalLists, lists.keys.join(','));
     await prefs.set(UserPreferences.mediaBarLibraryIds, libraryIds);
     await prefs.set(UserPreferences.blockedParentalRatings, blocked);
-    await prefs.set(UserPreferences.mediaBarExcludedGenres, excludedGenres);
     GetIt.instance.registerSingleton<UserPreferences>(prefs);
 
     final sync = _Sync();
@@ -216,39 +211,6 @@ void main() {
 
     expect(slides.map((s) => s.itemId), ['1']);
     expect(slides.single.backdropUrl, 'https://image.tmdb.org/t/p/w1280/list.jpg');
-  });
-
-  test("uses the list's genres to exclude when TMDB has none", () async {
-    final slides = await load(
-      excludedGenres: 'Horror',
-      lists: {
-        'imdb_top_250_movies': [
-          _title('1', genres: ['Horror']),
-          _title('2', genres: ['Comedy']),
-        ],
-      },
-    );
-
-    expect(slides.map((s) => s.itemId), ['2']);
-    expect(slides.single.genres, ['Comedy']);
-  });
-
-  test('library slides take the place of left out outside titles', () async {
-    final slides = await load(
-      itemCount: '3',
-      libraryIds: 'lib',
-      excludedGenres: 'Horror',
-      lists: {
-        'imdb_top_250_movies': [
-          for (final id in ['1', '2', '3']) _title(id, genres: ['Horror']),
-        ],
-      },
-    );
-
-    expect(
-      slides.map((s) => s.itemId),
-      unorderedEquals(['own0', 'own1', 'own2']),
-    );
   });
 
   test('mixes picked lists in with a picked library', () async {

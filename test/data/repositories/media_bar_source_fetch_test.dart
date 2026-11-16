@@ -19,9 +19,12 @@ class _UserViewsApi extends Mock implements UserViewsApi {}
 /// Collections served by a fake server that answers after a short delay and
 /// remembers which collections it was asked about and how many at once.
 class _Server {
-  _Server(this.collections);
+  _Server(this.collections, {this.released = const {}});
 
   final Map<String, List<String>> collections;
+
+  /// Release dates by id. The other titles have none.
+  final Map<String, DateTime> released;
   final asked = <String>{};
   var inFlight = 0;
   var mostInFlight = 0;
@@ -47,6 +50,8 @@ class _Server {
             'Id': id,
             'Type': 'Movie',
             'BackdropImageTags': ['b'],
+            if (released[id] case final date?)
+              'PremiereDate': date.toUtc().toIso8601String(),
           },
       ],
     };
@@ -149,6 +154,26 @@ void main() {
 
     expect(shown.toSet(), shared.toSet());
     expect(shown, hasLength(5));
+  });
+
+  test('new releases keep only the movies out within the window', () async {
+    final server = _Server(
+      {
+        'movies': const ['new', 'old', 'undated'],
+      },
+      released: {
+        'new': DateTime.now().subtract(const Duration(days: 10)),
+        'old': DateTime.now().subtract(const Duration(days: 400)),
+      },
+    );
+
+    final shown = await load(
+      server,
+      itemCount: 10,
+      source: UserPreferences.mediaBarSourceNewReleases,
+    );
+
+    expect(shown, ['new']);
   });
 
   // The server's titles have no air date, so nothing counts as aired lately.

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
@@ -270,163 +269,17 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
     }
   }
 
+  String _newReleaseKindsSubtitle(AppLocalizations l10n) {
+    final names = _newReleaseKindNames(l10n);
+    final kinds = _splitCsv(UserPreferences.mediaBarNewReleaseKinds);
+    return kinds.isEmpty
+        ? l10n.noneSelected
+        : [for (final kind in kinds) ?names[kind]].join(', ');
+  }
+
   void _pushSyncAndRebuild() {
     _pushSync();
     if (mounted) setState(() {});
-  }
-
-  List<Widget> _newReleaseTiles(AppLocalizations l10n) {
-    final labelsOn = _prefs.get(UserPreferences.mediaBarNewReleaseBanner);
-    final names = _newReleaseKindNames(l10n);
-    final kinds = _splitCsv(UserPreferences.mediaBarNewReleaseKinds);
-    final byDateAdded =
-        _prefs.get(UserPreferences.mediaBarNewMovieBasis) ==
-        UserPreferences.mediaBarNewMovieByAdded;
-    return [
-      SwitchPreferenceTile(
-        preference: UserPreferences.mediaBarNewReleaseBanner,
-        title: l10n.mediaBarNewReleaseBanner,
-        subtitle: l10n.mediaBarNewReleaseBannerDescription,
-        icon: Icons.new_releases_outlined,
-        onChanged: _pushSyncAndRebuild,
-      ),
-      if (labelsOn)
-        _MediaBarActionTile(
-          icon: const Icon(Icons.label_outline),
-          title: Text(l10n.mediaBarNewReleaseKinds),
-          subtitle: Text(
-            kinds.isEmpty
-                ? l10n.noneSelected
-                : [for (final kind in kinds) ?names[kind]].join(', '),
-          ),
-          onTap: _showNewReleaseKindSelector,
-        ),
-      IntPickerPreferenceTile(
-        preference: UserPreferences.mediaBarNewReleaseDays,
-        title: l10n.mediaBarNewReleaseDays,
-        description: l10n.mediaBarNewReleaseDaysDescription,
-        icon: Icons.date_range,
-        options: {
-          for (final days in const [7, 14, 30, 60, 90])
-            days: l10n.daysValue(days),
-        },
-        onChanged: _pushSync,
-      ),
-      StringPickerPreferenceTile(
-        preference: UserPreferences.mediaBarNewMovieBasis,
-        title: l10n.mediaBarNewMovieBasis,
-        // One explanation at a time: the one for the date picked.
-        description: byDateAdded
-            ? l10n.mediaBarNewMovieByAddedDescription
-            : l10n.mediaBarNewMovieByReleaseDescription,
-        icon: Icons.movie_filter_outlined,
-        options: {
-          UserPreferences.mediaBarNewMovieByRelease:
-              l10n.mediaBarNewMovieByRelease,
-          UserPreferences.mediaBarNewMovieByAdded: l10n.mediaBarNewMovieByAdded,
-        },
-        onChanged: _pushSyncAndRebuild,
-      ),
-      IntPickerPreferenceTile(
-        preference: UserPreferences.mediaBarNewMovieDays,
-        title: l10n.mediaBarNewMovieDays,
-        description: l10n.mediaBarNewMovieDaysDescription,
-        icon: Icons.event_outlined,
-        options: {
-          for (final days in const [30, 60, 90, 120, 180, 365])
-            days: l10n.daysValue(days),
-        },
-        onChanged: _pushSync,
-      ),
-      if (byDateAdded)
-        IntPickerPreferenceTile(
-          preference: UserPreferences.mediaBarNewMovieMaxAgeMonths,
-          title: l10n.mediaBarNewMovieMaxAge,
-          description: l10n.mediaBarNewMovieMaxAgeDescription,
-          icon: Icons.history,
-          options: {
-            for (final months in const [3, 6, 12, 24])
-              months: l10n.mediaBarLastMonths(months),
-          },
-          onChanged: _pushSync,
-        ),
-      SwitchPreferenceTile(
-        preference: UserPreferences.mediaBarNewMovieDetail,
-        title: l10n.mediaBarNewMovieDetail,
-        subtitle: l10n.mediaBarNewMovieDetailDescription,
-        icon: Icons.format_quote_outlined,
-        onChanged: _pushSyncAndRebuild,
-      ),
-      if (_prefs.get(UserPreferences.mediaBarNewMovieDetail))
-        SwitchPreferenceTile(
-          preference: UserPreferences.mediaBarNewMovieTaglineOnly,
-          title: l10n.mediaBarNewMovieTaglineOnly,
-          subtitle: l10n.mediaBarNewMovieTaglineOnlyDescription,
-          icon: Icons.filter_alt_outlined,
-          onChanged: _pushSync,
-        ),
-      // Stored in tenths, so the slider steps by halves of a point.
-      SliderPreferenceTile(
-        preference: UserPreferences.mediaBarNewMovieMinRating,
-        title: l10n.mediaBarNewMovieMinRating,
-        description: l10n.mediaBarNewMovieMinRatingDescription,
-        icon: Icons.star_outline,
-        min: 0,
-        max: 100,
-        divisions: 20,
-        labelOf: (tenths) => tenths == 0
-            ? l10n.off
-            : l10n.mediaBarRatingAtLeast(
-                NumberFormat(
-                  '0.#',
-                  Localizations.localeOf(context).toString(),
-                ).format(tenths / 10),
-              ),
-        onChangeEnd: _pushSync,
-      ),
-      if (_prefs.get(UserPreferences.mediaBarContentType) ==
-          UserPreferences.mediaBarContentTypeBoth)
-        SwitchPreferenceTile(
-          preference: UserPreferences.mediaBarMixTypes,
-          title: l10n.mediaBarMixTypes,
-          subtitle: l10n.mediaBarMixTypesDescription,
-          icon: Icons.shuffle,
-          onChanged: _pushSync,
-        ),
-      SwitchPreferenceTile(
-        preference: UserPreferences.mediaBarUpcomingEpisodes,
-        title: l10n.mediaBarUpcomingEpisodes,
-        subtitle: l10n.mediaBarUpcomingEpisodesDescription,
-        icon: Icons.calendar_month_outlined,
-        onChanged: _pushSyncAndRebuild,
-      ),
-      SwitchPreferenceTile(
-        preference: UserPreferences.mediaBarUpcomingMovies,
-        title: l10n.mediaBarUpcomingMovies,
-        subtitle: l10n.mediaBarUpcomingMoviesDescription,
-        icon: Icons.local_movies_outlined,
-        onChanged: _pushSyncAndRebuild,
-      ),
-      if (_prefs.get(UserPreferences.mediaBarUpcomingEpisodes) ||
-          _prefs.get(UserPreferences.mediaBarUpcomingMovies))
-        IntPickerPreferenceTile(
-          preference: UserPreferences.mediaBarUpcomingDays,
-          title: l10n.mediaBarUpcomingDays,
-          description: l10n.mediaBarUpcomingDaysDescription,
-          icon: Icons.date_range_outlined,
-          options: {
-            for (final days in const [3, 7, 14]) days: l10n.daysValue(days),
-          },
-          onChanged: _pushSync,
-        ),
-      SwitchPreferenceTile(
-        preference: UserPreferences.mediaBarFollowedFirst,
-        title: l10n.mediaBarFollowedFirst,
-        subtitle: l10n.mediaBarFollowedFirstDescription,
-        icon: Icons.playlist_play,
-        onChanged: _pushSync,
-      ),
-    ];
   }
 
   String _sourceSubtitle(
@@ -501,24 +354,11 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     'movies': l10n.moviesOnly,
                     'tvshows': l10n.tvShowsOnly,
                   },
-                  onChanged: _pushSyncAndRebuild,
+                  onChanged: _pushSync,
                 ),
                 StringPickerPreferenceTile(
                   preference: UserPreferences.mediaBarSourceType,
                   title: l10n.mediaBarSourceType,
-                  // The picker can't describe each choice, so the tile says
-                  // what the chosen one does.
-                  description: switch (_prefs.get(
-                    UserPreferences.mediaBarSourceType,
-                  )) {
-                    UserPreferences.mediaBarSourceRecentlyAdded =>
-                      l10n.mediaBarSourceRecentlyAddedDescription,
-                    UserPreferences.mediaBarSourceRecentlyReleased =>
-                      l10n.mediaBarSourceRecentlyReleasedDescription,
-                    UserPreferences.mediaBarSourceNewReleases =>
-                      l10n.mediaBarSourceNewReleasesDescription,
-                    _ => l10n.mediaBarSourceRandomDescription,
-                  },
                   icon: Icons.auto_awesome_motion,
                   options: {
                     UserPreferences.mediaBarSourceRandom:
@@ -528,9 +368,9 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     UserPreferences.mediaBarSourceRecentlyReleased:
                         l10n.recentlyReleased,
                     UserPreferences.mediaBarSourceNewReleases:
-                        l10n.mediaBarSourceNewReleases,
+                        l10n.mediaBarSourceNewReleasesAll,
                   },
-                  onChanged: _pushSyncAndRebuild,
+                  onChanged: _pushSync,
                 ),
                 StringPickerPreferenceTile(
                   preference: UserPreferences.mediaBarItemCount,
@@ -550,7 +390,53 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
             ),
 
             SettingsSectionHeader(l10n.mediaBarNewReleasesSection),
-            adaptiveListSection(children: _newReleaseTiles(l10n)),
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseBanner,
+                  title: l10n.mediaBarNewReleaseBanner,
+                  subtitle: l10n.mediaBarNewReleaseBannerAllDescription,
+                  icon: Icons.new_releases_outlined,
+                  onChanged: _pushSyncAndRebuild,
+                ),
+                if (_prefs.get(UserPreferences.mediaBarNewReleaseBanner))
+                  _MediaBarActionTile(
+                    icon: const Icon(Icons.label_outline),
+                    title: Text(l10n.mediaBarNewReleaseKinds),
+                    subtitle: Text(_newReleaseKindsSubtitle(l10n)),
+                    onTap: _showNewReleaseKindSelector,
+                  ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseDays,
+                  title: l10n.mediaBarNewEpisodeDays,
+                  description: l10n.mediaBarNewReleaseDaysDescription,
+                  icon: Icons.date_range,
+                  options: {
+                    for (final days in const [7, 14, 30, 60, 90])
+                      days: l10n.daysValue(days),
+                  },
+                  onChanged: _pushSync,
+                ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarNewMovieDays,
+                  title: l10n.mediaBarNewMovieDays,
+                  description: l10n.mediaBarNewMovieDaysDescription,
+                  icon: Icons.event_outlined,
+                  options: {
+                    for (final days in const [30, 60, 90, 120, 180, 365])
+                      days: l10n.daysValue(days),
+                  },
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarNewMovieDetail,
+                  title: l10n.mediaBarNewMovieDetail,
+                  subtitle: l10n.mediaBarNewMovieDetailDescription,
+                  icon: Icons.format_quote_outlined,
+                  onChanged: _pushSync,
+                ),
+              ],
+            ),
 
             if (UserPreferences.mediaBarModeDrawsRatings(mode)) ...[
               SettingsSectionHeader(l10n.ratings),
