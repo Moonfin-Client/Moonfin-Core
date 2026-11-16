@@ -304,7 +304,7 @@ class SearchViewModel extends ChangeNotifier {
                 .timeout(_peopleGrace, onTimeout: () => null)
           : await peopleFuture;
 
-      if (query != _query) return;
+      if (run != _searchRun || query != _query) return;
 
       _results = _withPeople(groups, people ?? const []);
       _seerrResults = seerr;
@@ -333,7 +333,7 @@ class SearchViewModel extends ChangeNotifier {
         );
       }
     } catch (e) {
-      if (query != _query) return;
+      if (run != _searchRun || query != _query) return;
       _error = e;
       _state = SearchState.error;
     }
@@ -543,7 +543,7 @@ class SearchViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _debounceTimer?.cancel();
-    // Keeps people that answer after the screen closed from landing on it.
+    // Keeps searches that answer after the screen closed from landing on it.
     _searchRun++;
     super.dispose();
   }

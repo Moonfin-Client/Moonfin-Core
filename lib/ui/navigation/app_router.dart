@@ -342,9 +342,8 @@ final appRouter = GoRouter(
     GoRoute(
       path: Destinations.search,
       builder: (context, state) => SearchScreen(
-        // Key on the session or the full URI so a new deep link (query,
-        // library or tab) rebuilds the screen. initialQuery is read only in
-        // initState, so a reused State would keep the previous query.
+        // A link to search while it's open reuses this page, so the URI key
+        // gives the screen a fresh state that reads the new query.
         key: state.extra is RemoteSearchSession
             ? ObjectKey(state.extra)
             : ValueKey(state.uri.toString()),
