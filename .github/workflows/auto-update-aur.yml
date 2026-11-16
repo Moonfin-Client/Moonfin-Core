@@ -137,6 +137,8 @@ jobs:
           url='https://github.com/Moonfin-Client/Moonfin-Core'
           license=('GPL-3.0-or-later')
           depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu' 'sqlite' 'xdg-user-dirs')
+          # pactree, to work out which libraries depends guarantees.
+          makedepends=('pacman-contrib')
           provides=('moonfin')
           conflicts=('moonfin')
           # The binary and the bundled libraries ship stripped already, and
@@ -173,14 +175,25 @@ jobs:
             # The tarball also carries every library its own libmpv needed,
             # built on Ubuntu. Arch's libmpv was built against Arch's copies,
             # and a bundled one with the same soname but an older ABI fails
-            # at the first call into it. Any bundled library the system also
-            # provides goes, so each soname resolves to the system alone.
-            local lib_dir="\${pkgdir}/usr/lib/moonfin/lib" f soname
+            # at the first call into it. A bundled library goes when a package
+            # that depends pulls in provides the same soname, so each soname
+            # resolves to the system alone. Packages that are only on the
+            # build machine don't count, since users aren't guaranteed them.
+            local lib_dir="\${pkgdir}/usr/lib/moonfin/lib" f soname owner
+            local -A runtime_pkgs=()
+            # pactree prints dependency strings such as libfoo.so=1-64;
+            # pacman -Qq resolves them to the installed package names.
+            while read -r owner; do
+              runtime_pkgs[\${owner}]=1
+            done < <(for f in "\${depends[@]}"; do pactree -lu "\${f}"; done \\
+              | sort -u | xargs pacman -Qq)
             for f in "\${lib_dir}"/*.so*; do
               [ -f "\${f}" ] && [ ! -L "\${f}" ] || continue
               soname=\$(readelf -d "\${f}" 2>/dev/null \\
                 | sed -n 's/.*(SONAME).*\\[\\(.*\\)\\].*/\\1/p')
-              if [ -n "\${soname}" ] && [ -e "/usr/lib/\${soname}" ]; then
+              [ -n "\${soname}" ] || continue
+              owner=\$(pacman -Qqo "/usr/lib/\${soname}" 2>/dev/null) || continue
+              if [ -n "\${runtime_pkgs[\${owner}]:-}" ]; then
                 rm -f "\${f}"
               fi
             done
@@ -226,6 +239,7 @@ jobs:
             "    depends = harfbuzz-icu" \
             "    depends = sqlite" \
             "    depends = xdg-user-dirs" \
+            "    makedepends = pacman-contrib" \
             "    provides = moonfin" \
             "    conflicts = moonfin" \
             "    source = moonfin-bin-${VERSION}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}.tar.gz" \
