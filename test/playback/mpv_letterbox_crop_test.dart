@@ -23,8 +23,19 @@ class _MpvDetectHost extends _RecordingHost {
   };
   String? hwdecCurrent;
 
-  /// Holds the first step of an apply open, so a test can land between steps.
-  Completer<void>? subPositionGate;
+  /// Holds an apply open on its crop command, so a test can land mid-apply.
+  Completer<void>? cropGate;
+
+  @override
+  Future<bool> command(List<String> args) async {
+    final ok = await super.command(args);
+    if (args.length >= 3 &&
+        args[1] == 'file-local-options/video-crop' &&
+        args[2].isNotEmpty) {
+      await cropGate?.future;
+    }
+    return ok;
+  }
 
   @override
   Future<String?> getProperty(String key) async {
@@ -34,10 +45,7 @@ class _MpvDetectHost extends _RecordingHost {
     if (key == 'video-params/hw-pixelformat') {
       return hwdecCurrent == null ? null : 'nv12';
     }
-    if (key == 'sub-pos') {
-      await subPositionGate?.future;
-      return subtitlePosition;
-    }
+    if (key == 'sub-pos') return subtitlePosition;
     for (final entry in lavfi.entries) {
       if (key == MpvLetterboxCrop.metadataProperty(entry.key)) {
         return entry.value;
@@ -750,7 +758,7 @@ void main() {
       });
     });
 
-    test('moves native subtitles inside the crop and restores them', () {
+    test('a crop leaves the subtitle position alone', () {
       fakeAsync((async) {
         final host = _MpvDetectHost();
         final cropper = MpvLetterboxCropper(
@@ -761,11 +769,13 @@ void main() {
         );
         cropper.setEnabled(true);
         async.flushMicrotasks();
-        expect(host.subtitlePosition, '87.222');
+        expect(cropper.isApplied, isTrue);
+        expect(host.setProperties.containsKey('sub-pos'), isFalse);
+        expect(host.subtitlePosition, '100');
 
         cropper.setEnabled(false);
         async.flushMicrotasks();
-        expect(host.subtitlePosition, '100');
+        expect(host.setProperties.containsKey('sub-pos'), isFalse);
         cropper.cancel();
       });
     });
@@ -1131,7 +1141,7 @@ void main() {
 
     test('a disable during an apply still ends uncropped', () {
       fakeAsync((async) {
-        final host = _MpvDetectHost()..subPositionGate = Completer<void>();
+        final host = _MpvDetectHost()..cropGate = Completer<void>();
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,
@@ -1140,10 +1150,10 @@ void main() {
         );
         cropper.setEnabled(true);
         async.flushMicrotasks();
-        // The apply is parked on its sub-pos read.
+        // The apply is parked on its crop command.
         cropper.setEnabled(false);
         async.flushMicrotasks();
-        host.subPositionGate!.complete();
+        host.cropGate!.complete();
         async.flushMicrotasks();
         final crops = host.commands
             .where(
@@ -1155,7 +1165,7 @@ void main() {
             .toList();
         expect(crops.last[2], '');
         expect(cropper.isApplied, isFalse);
-        expect(host.subtitlePosition, '100');
+        expect(host.setProperties.containsKey('sub-pos'), isFalse);
         cropper.cancel();
       });
     });
