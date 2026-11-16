@@ -237,6 +237,11 @@ class _ExpiringResolver extends _Resolver implements StreamCredentialRefresher {
 class _TestService extends Fake implements PlayerService {
   final List<String?> stops = <String?>[];
 
+  /// Holds the next progress report until completed, then fails it with
+  /// [progressError].
+  Completer<void>? progressGate;
+  Object? progressError;
+
   @override
   Future<void> onPlaybackStart(
     dynamic mediaItem,
@@ -256,7 +261,13 @@ class _TestService extends Fake implements PlayerService {
     int? subtitleStreamIndex,
     int? volumeLevel,
     bool? isMuted,
-  }) async {}
+  }) async {
+    final gate = progressGate;
+    if (gate == null) return;
+    progressGate = null;
+    await gate.future;
+    throw progressError!;
+  }
 
   @override
   Future<void> onPlaybackStop(
@@ -572,6 +583,34 @@ void main() {
         );
         async.elapse(const Duration(minutes: 1));
         expect(resolver.resolves, 1, reason: 'no new session');
+      });
+    });
+
+    test('a refusal from a session a fresh start replaced closes nothing', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        final held = Completer<void>();
+        service
+          ..progressGate = held
+          ..progressError = const PlaybackRefusedException(
+            'Ended on the server.',
+            reason: PlaybackRefusedException.sessionEndedReason,
+          );
+        async.elapse(const Duration(seconds: 15));
+        expect(service.progressGate, isNull, reason: 'a report is held');
+
+        // The session can't move to the new track, so a new one starts.
+        resolver.replanError = StateError('session expired');
+        manager.changeAudioTrack(2).catchError((Object _) {});
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.resolves, 2, reason: 'a fresh session');
+
+        held.complete();
+        async.elapse(const Duration(seconds: 1));
+        expect(events, isEmpty);
       });
     });
 

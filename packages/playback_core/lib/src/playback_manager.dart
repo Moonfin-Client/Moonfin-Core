@@ -647,6 +647,9 @@ class PlaybackManager implements AudioOwnable {
   /// The queue item whose session the server ended on purpose, so nothing
   /// reopens it; a new start of any item clears it.
   dynamic _endedByServerItem;
+  /// The server session the player streams from. A replan keeps it; a fresh
+  /// start replaces it, so a late refusal from the old one stops nothing.
+  String? _ownedPlaySessionId;
   final _finishedItemStopController = StreamController<dynamic>.broadcast(
     sync: true,
   );
@@ -3319,7 +3322,12 @@ class PlaybackManager implements AudioOwnable {
           // wouldn't change it. A session it ended on purpose stops here and
           // now, before the caller can retry or start a new one.
           final ended = _endedByServer(refusal);
-          if (ended != null && sessionToken == _playbackSessionToken) {
+          // A recovery that started meanwhile replans this same session, so
+          // it stops too, unless the viewer has moved to another item.
+          if (ended != null &&
+              (sessionToken == _playbackSessionToken ||
+                  (_ownsPlaySession(base) &&
+                      identical(item, queueService.currentItem)))) {
             unawaited(_stopEndedByServer(ended.message));
           }
           rethrow;
@@ -3332,6 +3340,7 @@ class PlaybackManager implements AudioOwnable {
             'Replan refused ($replanReason): $error; resolving afresh',
           );
           replanBase = null;
+          if (_ownsPlaySession(base)) _ownedPlaySessionId = null;
           unawaited(
             _service
                 ?.onPlaybackStop(item, base, startPosition)
@@ -3637,6 +3646,7 @@ class PlaybackManager implements AudioOwnable {
     }
 
     _currentResolution = resolution;
+    _ownedPlaySessionId = resolution.playSessionId;
     _streamsOutdatedItemId = null;
     _lastPlaybackItem = item;
     _lastPlaybackResolution = resolution;
@@ -4187,8 +4197,10 @@ class PlaybackManager implements AudioOwnable {
                 // Even from a generation a replan just retired: the item still
                 // playing is the one whose session ended. One the viewer
                 // retired (next, stop) is theirs to end.
+                // A fresh session that replaced it is left alone.
                 if ((!generation.ended || generation.replanned) &&
-                    identical(generation.item, queueService.currentItem)) {
+                    identical(generation.item, queueService.currentItem) &&
+                    _ownsPlaySession(generation.resolution)) {
                   unawaited(_stopEndedByServer(ended.message));
                 }
               },
@@ -4197,6 +4209,13 @@ class PlaybackManager implements AudioOwnable {
     } catch (_) {
       _progressSettled(generation);
     }
+  }
+
+  /// Whether [resolution]'s server session is the one the player streams
+  /// from. Sessions without an id (not Silo) always count.
+  bool _ownsPlaySession(StreamResolutionResult resolution) {
+    final id = resolution.playSessionId;
+    return id == null || id == _ownedPlaySessionId;
   }
 
   /// [error] as a refusal saying the server ended the session on purpose
