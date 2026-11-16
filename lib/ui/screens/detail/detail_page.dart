@@ -113,10 +113,9 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
   FocusNode pageNode(String id) =>
       _nodes.putIfAbsent(id, () => FocusNode(debugLabel: 'detail-$id'));
 
-  // The card in each row a key was last pressed on, by the row's entry node,
-  // which is the card the row was left from. Coming back lands on it, where
-  // the row is still scrolled to. The first card may not be built by then, so
-  // it can't take focus.
+  // The card each row was last left from, by the row's entry node, so coming
+  // back lands where the row is still scrolled to. A row scrolled far enough
+  // no longer builds its first card.
   final _rowLeftFrom = <FocusNode, FocusNode>{};
 
   /// Where focus goes on entering the section that [node] stands for: the
@@ -127,6 +126,12 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
     if (card.context?.mounted == true) return card;
     _rowLeftFrom.remove(node);
     return node;
+  }
+
+  /// Remembers the focused card, so coming back into [node]'s row lands on it.
+  void rememberRowCard(FocusNode node) {
+    final card = FocusManager.instance.primaryFocus;
+    if (card != null) _rowLeftFrom[node] = card;
   }
 
   @override
@@ -287,8 +292,7 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
-    final card = FocusManager.instance.primaryFocus;
-    if (card != null) _rowLeftFrom[node] = card;
+    rememberRowCard(node);
     final key = event.logicalKey;
     if (key == LogicalKeyboardKey.arrowUp) {
       moveUp(node);

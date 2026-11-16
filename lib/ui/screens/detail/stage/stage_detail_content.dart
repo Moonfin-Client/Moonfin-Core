@@ -219,22 +219,10 @@ class _StageDetailContentState extends State<StageDetailContent>
       if (!mounted || ctx == null || !ctx.mounted || offScreen(ctx) == 0) {
         return;
       }
-      if (node == section) {
-        Scrollable.ensureVisible(
-          ctx,
-          alignment: 0.3,
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-          alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-        );
-        return;
-      }
-      // Only the page scrolls, so a card back in the middle of its row
-      // doesn't pull the row sideways.
-      final box = ctx.findRenderObject();
-      if (box == null || !pageScroll.hasClients) return;
-      pageScroll.position.ensureVisible(
-        box,
+      // A card back in the middle of its row brings the row into view, so
+      // the row isn't pulled sideways.
+      Scrollable.ensureVisible(
+        node == section ? ctx : Scrollable.of(ctx).context,
         alignment: 0.3,
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,

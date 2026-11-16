@@ -610,8 +610,14 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
             );
           }
         },
-        onNavigateUp: () => moveUp(node),
-        onNavigateDown: () => moveDown(node),
+        onNavigateUp: () {
+          rememberRowCard(node);
+          moveUp(node);
+        },
+        onNavigateDown: () {
+          rememberRowCard(node);
+          moveDown(node);
+        },
         onNavigateLeft: index == 0 ? () {} : null,
         onNavigateRight: index == seasons.length - 1 ? () {} : null,
         autoScroll: true,
