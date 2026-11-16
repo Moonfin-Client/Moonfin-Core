@@ -590,6 +590,9 @@ class MediaBarRepository {
     String? parentId,
   }) async {
     final days = _prefs.get(UserPreferences.mediaBarNewMovieDays);
+    // Seeded from the server's own choice (Silo's home.hide_watched_items
+    // included) when the user configuration loads.
+    final hideWatched = _prefs.get(UserPreferences.hideWatchedInRecentRows);
     try {
       final response = await _client.itemsApi
           .getItems(
@@ -599,6 +602,7 @@ class MediaBarRepository {
             sortBy: 'PremiereDate',
             sortOrder: 'Descending',
             minPremiereDate: DateTime.now().subtract(Duration(days: days)),
+            filters: hideWatched ? const ['IsUnplayed'] : null,
             limit: _poolSize,
             fields: _fields,
             enableTotalRecordCount: false,

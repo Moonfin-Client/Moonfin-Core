@@ -19,12 +19,15 @@ class _UserViewsApi extends Mock implements UserViewsApi {}
 /// Collections served by a fake server that answers after a short delay and
 /// remembers which collections it was asked about and how many at once.
 class _Server {
-  _Server(this.collections, {this.released = const {}});
+  _Server(this.collections, {this.released = const {}, this.watched = const {}});
 
   final Map<String, List<String>> collections;
 
   /// Release dates by id. The other titles have none.
   final Map<String, DateTime> released;
+
+  /// Ids left out when the call asks for unplayed titles only.
+  final Set<String> watched;
   final asked = <String>{};
   var inFlight = 0;
   var mostInFlight = 0;
@@ -43,9 +46,13 @@ class _Server {
     }
     final start = args[#startIndex] as int? ?? 0;
     final limit = args[#limit] as int;
+    final unplayed = (args[#filters] as List?)?.contains('IsUnplayed') ?? false;
     return {
       'Items': [
-        for (final id in ids.skip(start).take(limit))
+        for (final id in ids
+            .where((id) => !unplayed || !watched.contains(id))
+            .skip(start)
+            .take(limit))
           {
             'Id': id,
             'Type': 'Movie',
@@ -65,6 +72,7 @@ void main() {
     _Server server, {
     required int itemCount,
     String source = UserPreferences.mediaBarSourceRandom,
+    bool hideWatched = false,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
@@ -73,6 +81,7 @@ void main() {
     await prefs.set(UserPreferences.pluginSyncEnabled, false);
     await prefs.set(UserPreferences.mediaBarItemCount, '$itemCount');
     await prefs.set(UserPreferences.mediaBarSourceType, source);
+    await prefs.set(UserPreferences.hideWatchedInRecentRows, hideWatched);
     await prefs.set(
       UserPreferences.mediaBarCollectionIds,
       server.collections.keys.join(','),
@@ -94,6 +103,7 @@ void main() {
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
         enableImageTypes: any(named: 'enableImageTypes'),
         minPremiereDate: any(named: 'minPremiereDate'),
+        filters: any(named: 'filters'),
       ),
     ).thenAnswer(server.answer);
     final images = _ImageApi();
@@ -174,6 +184,29 @@ void main() {
     );
 
     expect(shown, ['new']);
+  });
+
+  test('new releases leave watched movies out when hide watched is on', () async {
+    final now = DateTime.now();
+    final server = _Server(
+      {
+        'movies': const ['seen', 'unseen'],
+      },
+      released: {
+        'seen': now.subtract(const Duration(days: 5)),
+        'unseen': now.subtract(const Duration(days: 10)),
+      },
+      watched: {'seen'},
+    );
+
+    final shown = await load(
+      server,
+      itemCount: 10,
+      source: UserPreferences.mediaBarSourceNewReleases,
+      hideWatched: true,
+    );
+
+    expect(shown, ['unseen']);
   });
 
   // The server's titles have no air date, so nothing counts as aired lately.
