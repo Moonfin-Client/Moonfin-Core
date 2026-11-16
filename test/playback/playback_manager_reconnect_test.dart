@@ -614,6 +614,33 @@ void main() {
       });
     });
 
+    test('a refusal heard after a background stop keeps the queue', () {
+      final resolver = _Resolver()
+        ..replanError = const PlaybackRefusedException(
+          'Ended on the server.',
+          reason: PlaybackRefusedException.sessionEndedReason,
+        );
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        final gate = Completer<void>();
+        resolver.replanGate = gate;
+        manager.changeAudioTrack(2).catchError((Object _) {});
+        async.flushMicrotasks();
+        expect(resolver.requests, hasLength(1), reason: 'a replan is out');
+
+        final item = manager.queueService.currentItem;
+        unawaited(manager.stopForBackground(item));
+        async.flushMicrotasks();
+        gate.complete();
+        async.elapse(const Duration(seconds: 1));
+
+        expect(events, isEmpty);
+        expect(manager.queueService.currentItem, same(item));
+      });
+    });
+
     test('stops reconnecting when the viewer stops', () {
       final resolver = _Resolver();
       _withPlayback(resolver, (async, manager, backend, service) {
