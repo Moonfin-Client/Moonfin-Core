@@ -12209,5 +12209,304 @@
     "adminCinemaIntrosParentalHelp": "Solo seleccionar trailers con una calificación igual o inferior a la del vídeo que se está viendo.",
     "adminCinemaIntrosSimilarOnly": "Reproducir solo trailers similares a lo que se está viendo",
     "adminCinemaIntrosCustomPathHelp": "Una carpeta con vídeos. Se elige uno al azar y se reproduce después de los tráileres.",
-    "adminPageDescAnalytics": "Tamaños, códecs y formatos de las Bibliotecas"
+    "adminPageDescAnalytics": "Tamaños, códecs y formatos de las Bibliotecas",
+    "showAlphabeticalFilters": "Mostrar Alfabéticamente",
+    "@showAlphabeticalFilters": {
+        "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
+    },
+    "personalRatingThumbs": "Me gusta / No me gusta",
+    "@personalRatingThumbs": {
+        "description": "Personal rating style using like and dislike actions."
+    },
+    "like": "Me gusta",
+    "@like": {
+        "description": "Personal rating action for a positive rating."
+    },
+    "dislike": "No me gusta",
+    "@dislike": {
+        "description": "Personal rating action for a negative rating."
+    },
+    "personalRatingMine": "Mi calificación",
+    "@personalRatingMine": {
+        "description": "Label under the viewer's own rating in the ratings row."
+    },
+    "setupSkip": "Omitir la configuración",
+    "@setupSkip": {
+        "description": "Leaves the first-run setup wizard without answering anything"
+    },
+    "setupNavbarQuestion": "¿Adónde debería ir la navegación?",
+    "@setupNavbarQuestion": {
+        "description": "Setup question asking where the navigation bar should sit"
+    },
+    "setupMediaBarQuestion": "¿Cómo debería verse la parte superior de tu Pantalla de inicio?",
+    "@setupMediaBarQuestion": {
+        "description": "Setup wizard question for the media bar style"
+    },
+    "setupHomeRowsQuestion": "¿Cómo deberían verse tus filas?",
+    "@setupHomeRowsQuestion": {
+        "description": "Setup wizard question for the home row style"
+    },
+    "setupDetailQuestion": "¿Cómo debería verse una película o serie al abrirla?",
+    "@setupDetailQuestion": {
+        "description": "Setup wizard question for the detail screen style"
+    },
+    "setupTourQuestion": "Ya está todo listo. Esto es lo que hay dentro.",
+    "@setupTourQuestion": {
+        "description": "Heading of the final setup wizard screen"
+    },
+    "setupTourBulletRequests": "Solicitar a Seerr",
+    "@setupTourBulletRequests": {
+        "description": "Bullet on the closing setup screen for the Seerr request feature"
+    },
+    "settingsShowLiveTvButtonInNavigation": "Muestra el botón de TV en Directo en la barra de navegación cuando el servidor tiene una biblioteca de TV en directo",
+    "modernCardsTransitionSpeed": "Velocidad de transición de las tarjetas modernas",
+    "@modernCardsTransitionSpeed": {
+        "description": "Setting title for adjusting animation speed of modern card expansions"
+    },
+    "kidsMode": "Modo Niños",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "kidsModeSubtitle": "Simplifica la aplicación y bloquea el acceso con un PIN",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "blockedRatingsUnrankedSection": "Solo se bloquea a sí mismo",
+    "@blockedRatingsUnrankedSection": {
+        "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+    },
+    "setupPlaybackLanguages": "Idiomas de reproducción",
+    "@setupPlaybackLanguages": {
+        "description": "Heading of the optional audio and subtitle language section on the last setup wizard screen"
+    },
+    "setupOptional": "Opcional",
+    "@setupOptional": {
+        "description": "Tag beside an optional section in the setup wizard"
+    },
+    "friendsOffline": "Desconectado",
+    "@friendsOffline": {
+        "description": "Section header and status for friends who are offline"
+    },
+    "friendsNone": "Aún no tienes amigos. Añade a personas de este servidor para verlas aquí.",
+    "@friendsNone": {
+        "description": "Shown when the friends list is empty"
+    },
+    "friendsNoRequests": "No se aceptan solicitudes de amistad.",
+    "@friendsNoRequests": {
+        "description": "Shown when there are no pending friend requests"
+    },
+    "friendsNoMatches": "Nadie coincide con ese nombre.",
+    "@friendsNoMatches": {
+        "description": "Shown when the people search finds nobody"
+    },
+    "friendsMuteDuringPlaybackSubtitle": "No se mostrarán banners de mensajes mientras se reproduce un video o un juego",
+    "@friendsMuteDuringPlaybackSubtitle": {
+        "description": "Subtitle of the Mute during playback setting"
+    },
+    "chatNew": "Nuevo mensaje",
+    "@chatNew": {
+        "description": "Entry that starts a chat with one friend"
+    },
+    "chatNewGroup": "Nuevo grupo",
+    "@chatNewGroup": {
+        "description": "Entry that creates a group chat"
+    },
+    "chatNone": "Aún no hay mensajes.",
+    "@chatNone": {
+        "description": "Shown when there are no chats or no messages in a chat"
+    },
+    "chatNobodyToAdd": "Ya no queda nadie que añadir.",
+    "@chatNobodyToAdd": {
+        "description": "Shown when every friend is already in the group"
+    },
+    "chatNewMessageFrom": "Nuevo mensaje de {name}",
+    "@chatNewMessageFrom": {
+        "description": "Title of the banner for a new chat message",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "detailSectionMoreEpisodes": "Mas episodios",
+    "@detailSectionMoreEpisodes": {
+        "description": "Details screen section: the other episodes of a show on an episode's page"
+    },
+    "detailSectionMoreEpisodesSubtitle": "En las páginas de los episodios",
+    "@detailSectionMoreEpisodesSubtitle": {
+        "description": "Subtitle for the More episodes section switch"
+    },
+    "detailSectionPersonPagesSubtitle": "En las páginas de personas",
+    "@detailSectionPersonPagesSubtitle": {
+        "description": "Subtitle for Seerr sections only shown on a person's Details screen"
+    },
+    "holidayNewYear": "Año Nuevo",
+    "@holidayNewYear": {
+        "description": "Seasonal row title for New Year's"
+    },
+    "settingsSyncSubtitle": "Perfiles de sincronización y personalización del plugin Moonbase",
+    "@settingsSyncSubtitle": {
+        "description": "Subtitle for the Settings Sync entry"
+    },
+    "navigationBar": "Barra de Navegacion",
+    "@navigationBar": {
+        "description": "Settings screen for the navigation bar style and buttons"
+    },
+    "qualityAndDecoding": "Calidad y Decodificación",
+    "@qualityAndDecoding": {
+        "description": "Settings screen for streaming limits, decoding, HDR and Dolby Vision"
+    },
+    "librarySortMyRating": "Mi calificación",
+    "@librarySortMyRating": {
+        "description": "Sort option: by the viewer's own like or dislike"
+    },
+    "musicLibraryStyle": "Estilo de Biblioteca Musical",
+    "@musicLibraryStyle": {
+        "description": "Label for the setting that picks the music library layout"
+    },
+    "addServerPlexChoice": "Usa tu cuenta de Plex para encontrar tus servidores",
+    "@addServerPlexChoice": {
+        "description": "Add Server dialog: what the Sign in with Plex option does"
+    },
+    "addServerAddressHelp": "La misma dirección que abrirías en un navegador, incluyendo el puerto.",
+    "@addServerAddressHelp": {
+        "description": "Add Server dialog: help under the Connect to Server title"
+    },
+    "addServerDetectNote": "Funciona con Jellyfin, Emby y Silo. Al introducir una dirección de Plex, se abre la página de inicio de sesión de Plex.",
+    "@addServerDetectNote": {
+        "description": "Add Server dialog: note under the address field"
+    },
+    "addServerFound": "Servidor encontrado",
+    "@addServerFound": {
+        "description": "Add Server dialog: title once the address answered"
+    },
+    "addServerUseDifferentAddress": "Usar una dirección diferente",
+    "@addServerUseDifferentAddress": {
+        "description": "Add Server dialog: goes back to the address field instead of keeping the server that was found"
+    },
+    "mostPlayed": "Más reproducido",
+    "@mostPlayed": {
+        "description": "Songs screen mix card and list of the songs played most"
+    },
+    "musicSortMostAlbums": "La mayoría de los álbumes",
+    "@musicSortMostAlbums": {
+        "description": "Genres screen order: the genres with the most albums first"
+    },
+    "showLibrariesIndividuallySubtitle": "Mostrar cada biblioteca como un botón independiente en la barra de navegación en lugar de en el menú Bibliotecas",
+    "@showLibrariesIndividuallySubtitle": {
+        "description": "Subtitle for the Show Libraries Individually setting"
+    },
+    "bookSortMostTitles": "La mayoría de los títulos",
+    "@bookSortMostTitles": {
+        "description": "Book genres screen order: the genres with the most titles first"
+    },
+    "setupNavbarTopHint": "Pestañas en la parte superior de la pantalla.",
+    "@setupNavbarTopHint": {
+        "description": "What the Top Bar navigation position gives you"
+    },
+    "setupMediaBarOffHint": "No hay área destacada. El Inicio se abre directamente a sus filas.",
+    "@setupMediaBarOffHint": {
+        "description": "What turning the media bar off does to the Home screen"
+    },
+    "moonbaseAddress": "Dirección de Moonbase",
+    "@moonbaseAddress": {
+        "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
+    },
+    "setupDetailFrostHint": "El título en una ventana de cristal sobre su ilustración borrosa, con pestañas debajo de los botones.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "calendarNothingUpcoming": "No aparece nada",
+    "@calendarNothingUpcoming": {
+        "description": "Calendar message when no episodes or movies are scheduled"
+    },
+    "calendarNothingRecent": "No se ha emitido nada recientemente",
+    "@calendarNothingRecent": {
+        "description": "Calendar message when nothing aired in the last few days"
+    },
+    "calendarEmptyDay": "Nada en este día",
+    "@calendarEmptyDay": {
+        "description": "Calendar message under a day with no episodes or movies"
+    },
+    "calendarBadgeSeasonPremiere": "Nueva temporada",
+    "@calendarBadgeSeasonPremiere": {
+        "description": "Tag on the first episode of a new season"
+    },
+    "calendarNotMonitored": "No monitoreado",
+    "@calendarNotMonitored": {
+        "description": "Tag on a calendar entry that Sonarr or Radarr won't download"
+    },
+    "calendarMovieDetails": "Detalles de la película",
+    "@calendarMovieDetails": {
+        "description": "Button that opens a movie's details page from the calendar"
+    },
+    "calendarProblemNotConfigured": "Todavía no hay ningún servidor Sonarr o Radarr conectado.",
+    "@calendarProblemNotConfigured": {
+        "description": "Calendar message when the server has no Sonarr or Radarr"
+    },
+    "calendarSettingsRequestButtonSubtitle": "Mostrar el botón de solicitud de Seerr en las películas y temporadas faltantes",
+    "@calendarSettingsRequestButtonSubtitle": {
+        "description": "Subtitle of the Request button calendar setting. Seerr is a product name"
+    },
+    "showNextAirDate": "Próxima fecha de emisión al final",
+    "@showNextAirDate": {
+        "description": "Playback setting that says when the next episode airs at the end of an episode"
+    },
+    "setupMoonbaseIntro": "Moonbase es gratuito y se ejecuta en tu servidor. Con él, Moonfin obtiene:",
+    "@setupMoonbaseIntro": {
+        "description": "First line of the Moonbase dialog, followed by a list of features"
+    },
+    "setupMoonbaseAskAdmin": "Solo un administrador del servidor puede instalarlo. Envíale este enlace.",
+    "@setupMoonbaseAskAdmin": {
+        "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseInstalled": "Moonbase está instalado. Se activa cuando se reinicia el servidor, lo que detiene cualquier reproducción en este momento.",
+    "@setupMoonbaseInstalled": {
+        "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+    },
+    "setupMoonbaseInstallFailed": "No se pudo instalar Moonbase. {error}",
+    "@setupMoonbaseInstallFailed": {
+        "description": "Shown in the Moonbase dialog when installing or restarting failed",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsHdrControlsDimming": "Controles de atenuación en HDR",
+    "@settingsHdrControlsDimming": {
+        "description": "Playback setting for how much the player controls dim while HDR video plays"
+    },
+    "settingsHdrControlsDimmingDescription": "El blanco se ve mucho más brillante junto a un vídeo HDR, por lo que los controles del reproductor se atenúan en esta medida mientras se reproduce.",
+    "@settingsHdrControlsDimmingDescription": {
+        "description": "Description under the Dim Controls in HDR playback setting"
+    },
+    "watchPartyChatOverlay": "Mostrar el chat sobre el vídeo",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Los nuevos mensajes se muestran durante unos segundos",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Alertas de Party",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyNoSuchCode": "Ningún alojamiento tiene ese código.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyStatusNotWatching": "No estoy mirando",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyOnlyHostControls": "Solo el anfitrión puede controlar la reproducción.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyReplyNoWay": "De ninguna manera",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
+    }
 }
