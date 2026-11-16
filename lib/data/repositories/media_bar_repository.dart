@@ -581,20 +581,27 @@ class MediaBarRepository {
     }
   }
 
-  /// The newest movies already out, newest first. Movies dated in the future
-  /// are left out by the server, so they can't fill the pool. [_newMovies]
-  /// applies the window.
+  /// The newest movies released within the window, newest first.
+  /// ponytail: getItems has no upper date bound, so a movie dated in the
+  /// future can take a pool slot before [_newMovies] drops it. The recently
+  /// released call caps at today but skips collections on Silo. Add a max
+  /// date to getItems on every backend if this ever matters.
   Future<List<Map<String, dynamic>>> _fetchNewReleaseMovies({
     String? parentId,
   }) async {
+    final days = _prefs.get(UserPreferences.mediaBarNewMovieDays);
     try {
       final response = await _client.itemsApi
-          .getRecentlyReleasedItems(
+          .getItems(
             parentId: parentId,
             includeItemTypes: const ['Movie'],
             recursive: true,
+            sortBy: 'PremiereDate',
+            sortOrder: 'Descending',
+            minPremiereDate: DateTime.now().subtract(Duration(days: days)),
             limit: _poolSize,
             fields: _fields,
+            enableTotalRecordCount: false,
             enableImageTypes: 'Backdrop,Logo,Banner',
           )
           .timeout(const Duration(seconds: 15));

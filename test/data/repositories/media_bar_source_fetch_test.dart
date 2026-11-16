@@ -96,16 +96,6 @@ void main() {
         minPremiereDate: any(named: 'minPremiereDate'),
       ),
     ).thenAnswer(server.answer);
-    when(
-      () => items.getRecentlyReleasedItems(
-        parentId: any(named: 'parentId'),
-        includeItemTypes: any(named: 'includeItemTypes'),
-        recursive: any(named: 'recursive'),
-        limit: any(named: 'limit'),
-        fields: any(named: 'fields'),
-        enableImageTypes: any(named: 'enableImageTypes'),
-      ),
-    ).thenAnswer(server.answer);
     final images = _ImageApi();
     when(
       () => images.getBackdropImageUrl(
