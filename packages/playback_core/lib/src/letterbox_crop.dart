@@ -28,6 +28,18 @@ class LetterboxCropRect {
 
   String get videoCrop => '${w}x$h+$x+$y';
 
+  /// The smallest rectangle holding this one and [other].
+  LetterboxCropRect widen(LetterboxCropRect other) {
+    final left = math.min(x, other.x);
+    final top = math.min(y, other.y);
+    return LetterboxCropRect(
+      w: math.max(x + w, other.x + other.w) - left,
+      h: math.max(y + h, other.y + other.h) - top,
+      x: left,
+      y: top,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       other is LetterboxCropRect &&
@@ -57,7 +69,6 @@ class LetterboxSample {
     required this.kind,
     this.rect,
     this.windowbox = false,
-    this.inferred = false,
   });
 
   final LetterboxSampleKind kind;
@@ -66,15 +77,6 @@ class LetterboxSample {
   /// Bars on all four sides. Easier to mistake for a lit shape in a dark
   /// scene than a crop that spans an edge, so it needs more agreement.
   final bool windowbox;
-
-  /// Matching top and bottom bars at a known ratio, while the sides did not
-  /// reach the frame edge. A dark scene hides the picture's sides, so the
-  /// sides are dropped and only the bars are kept. Not seen directly, so a
-  /// one-shot scan confirms it the way it confirms a [windowbox].
-  final bool inferred;
-
-  /// One reading is not enough to apply this sample.
-  bool get needsConfirmation => windowbox || inferred;
 }
 
 /// Apply a new crop (or `null` to uncrop). [hold] means keep the last apply.
@@ -175,74 +177,35 @@ abstract final class LetterboxCrop {
     final bottom = sourceHeight - height - y;
     final left = x;
     final right = sourceWidth - width - x;
-    final fullWidth = left <= margin && right <= margin;
-    final fullHeight = top <= margin && bottom <= margin;
-    if (fullWidth && fullHeight) {
+    final linkedToSource =
+        (top <= margin && bottom <= margin) ||
+        (left <= margin && right <= margin);
+    final windowbox =
+        !linkedToSource &&
+        isWindowbox(
+          width: width,
+          height: height,
+          top: top,
+          bottom: bottom,
+          left: left,
+          right: right,
+          sourceWidth: sourceWidth,
+          sourceHeight: sourceHeight,
+        );
+    if (!linkedToSource && !windowbox) {
+      return const LetterboxSample(kind: LetterboxSampleKind.ignore);
+    }
+
+    final fullFrame =
+        top <= margin && bottom <= margin && left <= margin && right <= margin;
+    if (fullFrame) {
       return const LetterboxSample(kind: LetterboxSampleKind.fullFrame);
     }
-    if (fullWidth || fullHeight) {
-      return LetterboxSample(
-        kind: LetterboxSampleKind.crop,
-        rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
-      );
-    }
 
-    final windowbox = isWindowbox(
-      width: width,
-      height: height,
-      top: top,
-      bottom: bottom,
-      left: left,
-      right: right,
-      sourceWidth: sourceWidth,
-      sourceHeight: sourceHeight,
-    );
-    if (windowbox) {
-      return LetterboxSample(
-        kind: LetterboxSampleKind.crop,
-        rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
-        windowbox: true,
-      );
-    }
-
-    if (isInferredLetterbox(
-      height: height,
-      top: top,
-      bottom: bottom,
-      sourceWidth: sourceWidth,
-      sourceHeight: sourceHeight,
-      margin: margin,
-    )) {
-      return LetterboxSample(
-        kind: LetterboxSampleKind.crop,
-        rect: LetterboxCropRect(w: sourceWidth, h: height, x: 0, y: top),
-        inferred: true,
-      );
-    }
-
-    return const LetterboxSample(kind: LetterboxSampleKind.ignore);
-  }
-
-  /// Top and bottom bars that match each other and leave a known cinema
-  /// ratio at full width. The sides are not checked: a dark scene leaves
-  /// them unlit. Only letterbox: a lit figure in a dark frame looks like a
-  /// 4:3 pillarbox far too often.
-  static bool isInferredLetterbox({
-    required int height,
-    required int top,
-    required int bottom,
-    required int sourceWidth,
-    required int sourceHeight,
-    required int margin,
-  }) {
-    if (top <= margin || bottom <= margin) return false;
-    final maxOff = math.max(4, sourceHeight * 0.005);
-    if ((top - bottom).abs() > maxOff) return false;
-    return isKnownRatio(
-      width: sourceWidth,
-      height: height,
-      sourceWidth: sourceWidth,
-      sourceHeight: sourceHeight,
+    return LetterboxSample(
+      kind: LetterboxSampleKind.crop,
+      rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
+      windowbox: windowbox,
     );
   }
 
@@ -331,10 +294,6 @@ abstract final class LetterboxCrop {
 /// One dark frame cannot retarget the crop. A known cinema ratio needs
 /// [newCropHits] matching samples; a previously trusted crop needs
 /// [trustedHits]; an unknown ratio needs [unknownHits].
-///
-/// Bars inferred past dark sides are only a guess. A streak made only of
-/// them needs [unknownHits] samples in a row, and an unusable reading always
-/// ends it, so two unrelated lit shapes cannot add up to a crop.
 class LetterboxCropStabilizer {
   LetterboxCropStabilizer({
     this.round = 2,
@@ -352,18 +311,19 @@ class LetterboxCropStabilizer {
   final int trustedHits;
   final int unknownHits;
 
-  /// Unusable readings leave a streak with edge-reaching bars in place
-  /// instead of ending it. For a bounded one-shot scan, where a dark scene
-  /// would otherwise never give two matching readings back to back.
-  /// Continuous scans keep the strict reset.
+  /// An unusable reading leaves a streak of edge-reaching bars in place
+  /// instead of ending it, for a one-shot scan with a fixed read budget,
+  /// where a dark scene would otherwise never give two matching readings
+  /// back to back.
   bool holdThroughIgnored = false;
 
   LetterboxSampleKind? _candidateKind;
   LetterboxCropRect? _candidateRect;
   int _hits = 0;
 
-  /// The streak has a sample whose bars reached the frame edges.
-  bool _edgeHit = false;
+  /// The streak's bars reach the frame edges. A windowbox doesn't.
+  bool _edgeStreak = false;
+
   LetterboxCropRect? _applied;
   final _trusted = <LetterboxCropRect>[];
   bool _trustedFullFrame = false;
@@ -389,7 +349,6 @@ class LetterboxCropStabilizer {
     _hits = 0;
     _candidateKind = null;
     _candidateRect = null;
-    _edgeHit = false;
   }
 
   LetterboxCropDecision observe({
@@ -414,10 +373,8 @@ class LetterboxCropStabilizer {
       linkedTolerance: linkedTolerance,
     );
 
-    // An unusable reading never counts. It ends the streak unless a bounded
-    // scan holds one that edge-reaching bars started.
     if (sample.kind == LetterboxSampleKind.ignore) {
-      if (!holdThroughIgnored || !_edgeHit) resetCandidate();
+      if (!holdThroughIgnored || !_edgeStreak) resetCandidate();
       return const LetterboxCropDecision.hold();
     }
 
@@ -429,13 +386,11 @@ class LetterboxCropStabilizer {
     if (_sameCandidate(sample)) {
       _hits++;
     } else {
-      resetCandidate();
       _candidateKind = sample.kind;
       _candidateRect = sample.rect;
       _hits = 1;
     }
-    // A windowbox spans neither axis either, so it is no edge evidence.
-    if (!sample.needsConfirmation) _edgeHit = true;
+    _edgeStreak = !sample.windowbox;
 
     if (_hits < _hitsNeeded(sample)) {
       return const LetterboxCropDecision.hold();
@@ -473,7 +428,7 @@ class LetterboxCropStabilizer {
   int _hitsNeeded(LetterboxSample sample) {
     if (_isTrusted(sample)) return trustedHits;
     if (sample.kind == LetterboxSampleKind.fullFrame) return newCropHits;
-    if (sample.windowbox || !_edgeHit) return unknownHits;
+    if (sample.windowbox) return unknownHits;
     final rect = sample.rect;
     if (rect != null &&
         LetterboxCrop.isKnownRatio(

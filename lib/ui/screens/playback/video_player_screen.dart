@@ -7816,7 +7816,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _recropBlackBarsFromUi() {
     final cropper = _activeBackend?.letterboxCropper;
     if (cropper == null || !cropper.isSupported) return;
-    // Report how the scan this press starts ends. A later press replaces it.
+    // Toasts the result of this press's scan. A later press replaces it.
     _letterboxScanResultSub?.cancel();
     _letterboxScanResultSub = null;
     if (cropper is MpvLetterboxCropper &&

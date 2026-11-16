@@ -47,7 +47,7 @@ class _MpvDetectHost extends _RecordingHost {
   }
 }
 
-/// Cropdetect whose reading flips between two results on every read.
+/// Cropdetect that moves through [readings], one per read, then starts over.
 class _MpvAlternatingHost extends _MpvDetectHost {
   _MpvAlternatingHost(this.readings);
 
@@ -61,21 +61,6 @@ class _MpvAlternatingHost extends _MpvDetectHost {
       reads++;
     }
     return super.command(args);
-  }
-}
-
-/// Every other software capture fails outright.
-class _MpvFailingShotHost extends _MpvDetectHost implements MpvFrameSampleHost {
-  _MpvFailingShotHost(this.rect);
-
-  final LetterboxCropRect rect;
-  int shotCalls = 0;
-
-  @override
-  Future<MpvFrameSample?> sampleFrame(int width, int height) async {
-    final fail = shotCalls.isOdd;
-    shotCalls++;
-    return fail ? null : MpvFrameSample(rect: rect, elapsed: Duration.zero);
   }
 }
 
@@ -293,7 +278,7 @@ void main() {
 
     // Readings from MobLand S01E01 (3840x2160, 2.39:1 picture, 278px bars).
     test('classify does not stretch a picture short of the edges', () {
-      // 32px short on the right, with bars that do not match: a dark scene,
+      // 32px short on the right, with bars that don't match: a dark scene,
       // not bars to trust.
       final sample = LetterboxCrop.classify(
         width: 3808,
@@ -307,7 +292,7 @@ void main() {
     });
 
     test('classify keeps the edge margin at 4K', () {
-      // A lit picture 20px inside both sides is not full width.
+      // A lit picture 20px inside both sides isn't full width.
       final sample = LetterboxCrop.classify(
         width: 3800,
         height: 2160,
@@ -323,66 +308,27 @@ void main() {
       );
     });
 
-    test('classify keeps matching bars when the sides are dark', () {
+    test('readings that light opposite sides widen into the bars', () {
+      // A dark scene lit the right side in one reading and the left in the
+      // next.
+      final widened = const LetterboxCropRect(
+        w: 2098,
+        h: 1604,
+        x: 1742,
+        y: 278,
+      ).widen(const LetterboxCropRect(w: 3456, h: 1604, x: 0, y: 278));
       final sample = LetterboxCrop.classify(
-        width: 3414,
-        height: 1608,
-        x: 88,
-        y: 276,
+        width: widened.w,
+        height: widened.h,
+        x: widened.x,
+        y: widened.y,
         sourceWidth: 3840,
         sourceHeight: 2160,
       );
       expect(sample.kind, LetterboxSampleKind.crop);
       expect(
         sample.rect,
-        const LetterboxCropRect(w: 3840, h: 1608, x: 0, y: 276),
-      );
-      expect(sample.inferred, isTrue);
-      expect(sample.needsConfirmation, isTrue);
-    });
-
-    test('classify ignores bars that do not match', () {
-      expect(
-        LetterboxCrop.classify(
-          width: 2388,
-          height: 1452,
-          x: 1452,
-          y: 276,
-          sourceWidth: 3840,
-          sourceHeight: 2160,
-        ).kind,
-        LetterboxSampleKind.ignore,
-      );
-    });
-
-    test('classify ignores matching bars at an unlisted ratio', () {
-      // A lit band across a dark frame: equal margins, but 1920/600 is no
-      // cinema ratio.
-      expect(
-        LetterboxCrop.classify(
-          width: 1200,
-          height: 600,
-          x: 300,
-          y: 240,
-          sourceWidth: 1920,
-          sourceHeight: 1080,
-        ).kind,
-        LetterboxSampleKind.ignore,
-      );
-    });
-
-    test('classify does not infer a pillarbox from a lit figure', () {
-      // Centred, full of height but not width: a 4:3 shape in a dark scene.
-      expect(
-        LetterboxCrop.classify(
-          width: 1440,
-          height: 1000,
-          x: 240,
-          y: 30,
-          sourceWidth: 1920,
-          sourceHeight: 1080,
-        ).kind,
-        LetterboxSampleKind.ignore,
+        const LetterboxCropRect(w: 3840, h: 1604, x: 0, y: 278),
       );
     });
 
@@ -534,19 +480,6 @@ void main() {
       }
     });
 
-    test('inferred bars need three readings in a row', () {
-      const inferred = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
-      final stabilizer = LetterboxCropStabilizer()..holdThroughIgnored = true;
-      observe(stabilizer, inferred);
-      expect(observe(stabilizer, inferred).changed, isFalse);
-      dark(stabilizer);
-      observe(stabilizer, inferred);
-      expect(observe(stabilizer, inferred).changed, isFalse);
-      final decision = observe(stabilizer, inferred);
-      expect(decision.changed, isTrue);
-      expect(decision.rect, letterbox);
-    });
-
     test('windowboxes split by dark frames do not add up', () {
       const box = LetterboxCropRect(w: 1600, h: 900, x: 160, y: 90);
       final stabilizer = LetterboxCropStabilizer()..holdThroughIgnored = true;
@@ -557,15 +490,6 @@ void main() {
       observe(stabilizer, box);
       expect(observe(stabilizer, box).changed, isFalse);
       expect(stabilizer.applied, isNull);
-    });
-
-    test('an edge reading lets inferred bars confirm it', () {
-      const inferred = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
-      final stabilizer = LetterboxCropStabilizer();
-      observe(stabilizer, letterbox);
-      final decision = observe(stabilizer, inferred);
-      expect(decision.changed, isTrue);
-      expect(decision.rect, letterbox);
     });
 
     test('a different crop still restarts the streak', () {
@@ -902,10 +826,41 @@ void main() {
       });
     });
 
+    test('one-shot cropdetect adds up readings that light opposite sides', () {
+      fakeAsync((async) {
+        final host = _MpvAlternatingHost([
+          {'w': '600', 'h': '300', 'x': '700', 'y': '500'},
+          {'w': '1000', 'h': '804', 'x': '920', 'y': '138'},
+          {'w': '1200', 'h': '804', 'x': '0', 'y': '138'},
+        ]);
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        final results = <LetterboxScanResult>[];
+        cropper.scanResults.listen(results.add);
+        cropper.setEnabled(true);
+        cropper.recrop();
+        async.elapse(const Duration(seconds: 5));
+        expect(host.reads, 3);
+        expect(
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
+          isTrue,
+        );
+        expect(results, [LetterboxScanResult.cropped]);
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
     test('one-shot cropdetect gives up on a scene that stays dark', () {
       fakeAsync((async) {
+        // A lit shape that never reaches the edges, even though its top and
+        // bottom margins match a 2.39:1 picture.
         final host = _MpvDetectHost()
-          ..lavfi = {'w': '600', 'h': '300', 'x': '700', 'y': '500'};
+          ..lavfi = {'w': '1200', 'h': '800', 'x': '300', 'y': '140'};
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,
@@ -951,31 +906,11 @@ void main() {
       });
     });
 
-    test('one-shot shots skip inferred bars split by failed captures', () {
+    test('one-shot shots never crop a lit shape short of the edges', () {
       fakeAsync((async) {
-        final host = _MpvFailingShotHost(
-          const LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138),
-        );
-        final cropper = MpvLetterboxCropper(
-          host,
-          supported: true,
-          autoDelay: Duration.zero,
-        );
-        cropper.setEnabled(true);
-        async.elapse(const Duration(seconds: 10));
-        expect(host.shotCalls, greaterThan(4));
-        expect(cropper.isApplied, isFalse);
-        cropper.cancel();
-        async.flushMicrotasks();
-      });
-    });
-
-    test('one-shot shots skip inferred bars split by dark frames', () {
-      fakeAsync((async) {
-        const dark = LetterboxCropRect(w: 640, h: 656, x: 648, y: 338);
-        const bars = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
+        const shape = LetterboxCropRect(w: 1200, h: 800, x: 300, y: 140);
         final host = _MpvShotHost([
-          for (var i = 0; i < 12; i++) i.isEven ? bars : dark,
+          for (var i = 0; i < 12; i++) i.isEven ? shape : null,
         ]);
         final cropper = MpvLetterboxCropper(
           host,
@@ -990,13 +925,16 @@ void main() {
       });
     });
 
-    test('one-shot shots get past a dark opening to inferred bars', () {
+    test('one-shot shots add up frames that light opposite sides', () {
       fakeAsync((async) {
-        // MobLand S01E01 software shots at half scale: lit blobs, then bars
-        // whose sides a dark scene hides.
-        const dark = LetterboxCropRect(w: 640, h: 656, x: 648, y: 338);
-        const bars = LetterboxCropRect(w: 1706, h: 804, x: 44, y: 138);
-        final host = _MpvShotHost([dark, null, dark, dark, bars, bars, bars]);
+        final host = _MpvShotHost([
+          const LetterboxCropRect(w: 640, h: 400, x: 648, y: 338),
+          null,
+          const LetterboxCropRect(w: 1200, h: 804, x: 0, y: 138),
+          null,
+          const LetterboxCropRect(w: 1100, h: 804, x: 820, y: 138),
+          const LetterboxCropRect(w: 1000, h: 804, x: 400, y: 138),
+        ]);
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,
@@ -1007,7 +945,7 @@ void main() {
         cropper.setEnabled(true);
         cropper.recrop();
         async.elapse(const Duration(seconds: 5));
-        expect(host.shotCalls, 7);
+        expect(host.shotCalls, 6);
         expect(
           host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
           isTrue,
@@ -1042,9 +980,9 @@ void main() {
 
     test('one-shot confirmation reads count against the read budget', () {
       fakeAsync((async) {
-        // Inferred bars that a dark reading never confirms.
+        // A windowbox that a dark reading never confirms.
         final host = _MpvAlternatingHost([
-          {'w': '1706', 'h': '804', 'x': '44', 'y': '138'},
+          {'w': '1780', 'h': '712', 'x': '70', 'y': '184'},
           {'w': '600', 'h': '300', 'x': '700', 'y': '500'},
         ]);
         final cropper = MpvLetterboxCropper(
@@ -1067,15 +1005,11 @@ void main() {
       });
     });
 
-    test('bars after a full frame leave the scan inconclusive', () {
+    test('a full frame anywhere in a one-shot scan means no bars', () {
       fakeAsync((async) {
         const full = LetterboxCropRect(w: 1920, h: 1080, x: 0, y: 0);
         const wide = LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138);
-        const flat = LetterboxCropRect(w: 1920, h: 1038, x: 0, y: 21);
-        final host = _MpvShotHost([
-          full,
-          for (var i = 0; i < 12; i++) i.isEven ? wide : flat,
-        ]);
+        final host = _MpvShotHost([full, wide, wide, wide]);
         final cropper = MpvLetterboxCropper(
           host,
           supported: true,
@@ -1087,7 +1021,7 @@ void main() {
         cropper.recrop();
         async.elapse(const Duration(seconds: 10));
         expect(cropper.isApplied, isFalse);
-        expect(results, [LetterboxScanResult.inconclusive]);
+        expect(results, [LetterboxScanResult.noBars]);
         cropper.cancel();
         async.flushMicrotasks();
       });
@@ -1473,67 +1407,6 @@ void main() {
       );
     });
 
-    test('one-shot confirms inferred bars before cropping them', () async {
-      final host = _Media3RecordingHost()
-        ..detectResult = {
-          'w': 1706,
-          'h': 804,
-          'x': 44,
-          'y': 138,
-          'sourceWidth': 1920,
-          'sourceHeight': 1080,
-        };
-      final cropper = Media3LetterboxCropper(
-        host,
-        supported: true,
-        autoDelay: Duration.zero,
-        sampleCount: 1,
-        sampleGap: Duration.zero,
-        windowboxGap: Duration.zero,
-      );
-      await cropper.setEnabled(true);
-      await Future<void>.delayed(const Duration(milliseconds: 20));
-      expect(host.detectCalls, 1 + LetterboxCrop.windowboxConfirmations);
-      expect(
-        host.applied.last,
-        const LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138),
-      );
-    });
-
-    test('one-shot drops inferred bars a later read does not show', () async {
-      final host = _Media3RecordingHost()
-        ..detectQueue = [
-          {
-            'w': 1706,
-            'h': 804,
-            'x': 44,
-            'y': 138,
-            'sourceWidth': 1920,
-            'sourceHeight': 1080,
-          },
-        ]
-        ..detectResult = {
-          'w': 1920,
-          'h': 1080,
-          'x': 0,
-          'y': 0,
-          'sourceWidth': 1920,
-          'sourceHeight': 1080,
-        };
-      final cropper = Media3LetterboxCropper(
-        host,
-        supported: true,
-        autoDelay: Duration.zero,
-        sampleCount: 1,
-        sampleGap: Duration.zero,
-        windowboxGap: Duration.zero,
-      );
-      await cropper.setEnabled(true);
-      await Future<void>.delayed(const Duration(milliseconds: 20));
-      expect(host.detectCalls, 2);
-      expect(host.applied, everyElement(isNull));
-    });
-
     test('a dark frame does not apply a crop', () {
       fakeAsync((async) {
         final host = _Media3RecordingHost()
@@ -1594,9 +1467,6 @@ class _Media3RecordingHost implements Media3LetterboxHost {
     'sourceWidth': 1920,
     'sourceHeight': 1080,
   };
-
-  /// Served one per detect before [detectResult], when set.
-  List<Map<String, int>?> detectQueue = [];
   final applied = <LetterboxCropRect?>[];
   int detectCalls = 0;
 
@@ -1626,7 +1496,6 @@ class _Media3RecordingHost implements Media3LetterboxHost {
   @override
   Future<Map<String, int>?> detectLetterbox() async {
     detectCalls++;
-    if (detectQueue.isNotEmpty) return detectQueue.removeAt(0);
     return detectResult;
   }
 
