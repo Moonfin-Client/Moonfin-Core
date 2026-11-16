@@ -152,6 +152,12 @@ void main() {
       expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
     });
 
+    test('is null for a plugin that can\'t read the schedule', () async {
+      final server = _FakeServer(501, 'Not Implemented');
+
+      expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
+    });
+
     test('is null for an answer without allowed', () async {
       final server = _FakeServer(200, {'secondsUntilClose': 60});
 

@@ -27,8 +27,10 @@ class JellyfinUsersApi implements UsersApi {
       final response = await _dio.get('/Moonfin/AccessWindow');
       return AccessWindow.tryParse(response.data);
     } on DioException catch (e) {
-      // A server without the plugin, or with one from before it answered this.
-      if (e.response?.statusCode == 404) return null;
+      // A server without the plugin or with one from before it answered this
+      // (404), or a plugin that can't read the schedule there (501).
+      final status = e.response?.statusCode;
+      if (status == 404 || status == 501) return null;
       rethrow;
     }
   }
