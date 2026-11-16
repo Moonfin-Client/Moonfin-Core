@@ -28,10 +28,12 @@ void main() {
   tearDown(() => GetIt.instance.reset());
 
   /// Loads the bar from one TV library with the home row in [mode], and
-  /// returns the slides and the item types asked of the server.
+  /// returns the slides and the item types asked of the server. [children]
+  /// answers an episode or season request by its limit.
   Future<(List<String>, List<List<String>?>)> load(
-    RecentlyReleasedSeriesType mode,
-  ) async {
+    RecentlyReleasedSeriesType mode, {
+    List<Map<String, dynamic>> Function(int limit)? children,
+  }) async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
@@ -66,15 +68,17 @@ void main() {
     ).thenAnswer((invocation) async {
       final types =
           invocation.namedArguments[#includeItemTypes] as List<String>?;
+      final limit = invocation.namedArguments[#limit] as int;
       asked.add(types);
       return {
         'Items': switch (types?.single) {
-          'Episode' => [
+          'Series' => [_item('first', 'Series')],
+          _ when children != null => children(limit),
+          _ => [
             _item('e1', 'Episode', seriesId: 'late'),
             _item('e2', 'Episode', seriesId: 'early'),
             _item('e3', 'Episode', seriesId: 'late'),
           ],
-          _ => [_item('first', 'Series')],
         },
       };
     });
@@ -128,6 +132,32 @@ void main() {
       ['Episode'],
     ]);
     expect(shown, unorderedEquals(['late', 'early']));
+  });
+
+  test('season mode keeps the series Silo answers with', () async {
+    final (shown, asked) = await load(
+      RecentlyReleasedSeriesType.season,
+      children: (_) => [_item('a', 'Series'), _item('b', 'Series')],
+    );
+
+    expect(asked, [
+      ['Season'],
+    ]);
+    expect(shown, unorderedEquals(['a', 'b']));
+  });
+
+  test('one show filling the first read is read again at the ceiling',
+      () async {
+    final (shown, asked) = await load(
+      RecentlyReleasedSeriesType.episode,
+      children: (limit) => [
+        for (var i = 0; i < limit; i++)
+          _item('e$i', 'Episode', seriesId: limit > 160 ? 's${i % 5}' : 'daily'),
+      ],
+    );
+
+    expect(asked, hasLength(2));
+    expect(shown, hasLength(5));
   });
 
   test('series mode still asks for series', () async {

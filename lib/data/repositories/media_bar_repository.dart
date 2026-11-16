@@ -428,7 +428,8 @@ class MediaBarRepository {
   /// air date. Movies, when the type allows them, come as before.
   Future<List<Map<String, dynamic>>> _fetchRecentlyReleasedByChild(
     String childType,
-    List<String>? itemTypes, {
+    List<String>? itemTypes,
+    int limit, {
     String? parentId,
     bool? hideWatched,
   }) async {
@@ -450,15 +451,32 @@ class MediaBarRepository {
       return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     }
 
-    Future<List<Map<String, dynamic>>> seriesOf(
-      List<Map<String, dynamic>> children,
-    ) async {
-      final seriesIds = <String>[];
+    List<String> seriesIdsOf(List<Map<String, dynamic>> children) {
+      final ids = <String>[];
       for (final child in children) {
-        final id = child['SeriesId']?.toString();
-        if (id == null || seriesIds.contains(id)) continue;
-        seriesIds.add(id);
-        if (seriesIds.length >= _poolSize) break;
+        // Silo lists no seasons and answers with the series themselves.
+        final id =
+            (child['Type'] == 'Series' ? child['Id'] : child['SeriesId'])
+                ?.toString();
+        if (id == null || ids.contains(id)) continue;
+        ids.add(id);
+        if (ids.length >= _poolSize) break;
+      }
+      return ids;
+    }
+
+    Future<List<Map<String, dynamic>>> latestSeries() async {
+      // Several episodes or seasons share a series, so more are read to end up
+      // with as many series as the other sources give.
+      const firstLimit = _poolSize * 4;
+      final children = await released([childType], firstLimit);
+      var seriesIds = seriesIdsOf(children);
+      // One show can fill the whole first read, so a short answer is read
+      // again at the home row's ceiling. A failed retry keeps the first one.
+      if (seriesIds.length < limit && children.length >= firstLimit) {
+        try {
+          seriesIds = seriesIdsOf(await released([childType], 500));
+        } catch (_) {}
       }
       if (seriesIds.isEmpty) return const [];
       final response = await _client.itemsApi
@@ -479,9 +497,7 @@ class MediaBarRepository {
     }
 
     final batches = await Future.wait([
-      // Several episodes or seasons share a series, so more are read to end up
-      // with as many series as the other sources give.
-      released([childType], _poolSize * 4).then(seriesOf),
+      latestSeries(),
       if (itemTypes == null || itemTypes.contains('Movie'))
         released(const ['Movie'], _poolSize),
     ]);
@@ -517,6 +533,7 @@ class MediaBarRepository {
           return await _fetchRecentlyReleasedByChild(
             childType,
             itemTypes,
+            limit,
             parentId: parentId,
             hideWatched: hideWatched,
           );
