@@ -645,7 +645,8 @@ class MultiServerRepository {
                 recursive: true,
                 startIndex: startIndex,
                 limit: limit,
-                fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
+                fields:
+                    'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
               );
 
           if (selectedSet.isEmpty) {

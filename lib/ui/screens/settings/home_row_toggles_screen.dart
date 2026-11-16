@@ -811,10 +811,13 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       title: l10n.studiosRowSorting,
                       description: l10n.studiosRowSortingDescription,
                       icon: Icons.sort_by_alpha,
-                      // With none picked, only name and random order apply.
-                      values: studiosPicked
-                          ? LibrarySortBy.studioValues
-                          : const [LibrarySortBy.name, LibrarySortBy.random],
+                      // A studio carries no runtime, ratings or play data, and
+                      // with none picked only name and random order apply.
+                      values: [
+                        LibrarySortBy.name,
+                        if (studiosPicked) LibrarySortBy.dateAdded,
+                        LibrarySortBy.random,
+                      ],
                       labelOf: (v) => librarySortLabel(v, l10n),
                       onChanged: _onStudiosSortChanged,
                     ),
