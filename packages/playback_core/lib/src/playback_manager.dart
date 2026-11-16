@@ -4263,19 +4263,22 @@ class PlaybackManager implements AudioOwnable {
     _abandonLiveRecovery('the server ended the session');
     _viewerPaused = false;
     final intent = _viewerIntentGeneration;
+    // The queue stays until the stop is over: a Next, a Previous or another
+    // episode picked meanwhile joins this stop and goes on from it.
     try {
-      await _stopAndReportCurrent();
+      await _stopAndReportCurrent(skipQueueChange: true);
     } catch (e) {
       _diagnosticLogger?.call('Stopping a session the server ended: $e');
     }
+    if (intent != _viewerIntentGeneration) return;
+    // Nothing plays any more, so this only lets go of the queue.
+    try {
+      await _stopAndReportCurrent();
+    } catch (e) {
+      _diagnosticLogger?.call('Clearing the queue of an ended session: $e');
+    }
     // Nothing is left to reopen once the queue is gone.
     if (queueService.currentItem == null) _endedByServerItem = null;
-    // A Next pressed meanwhile joined this stop, which cleared the queue, so
-    // nothing opens after it and the player still closes.
-    if (intent != _viewerIntentGeneration &&
-        queueService.currentItem != null) {
-      return;
-    }
     if (!_endedByServerController.isClosed) {
       _endedByServerController.add(message);
     }
