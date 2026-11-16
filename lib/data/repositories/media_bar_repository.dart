@@ -581,23 +581,20 @@ class MediaBarRepository {
     }
   }
 
-  /// The newest movies released within the window, newest first.
+  /// The newest movies already out, newest first. Movies dated in the future
+  /// are left out by the server, so they can't fill the pool. [_newMovies]
+  /// applies the window.
   Future<List<Map<String, dynamic>>> _fetchNewReleaseMovies({
     String? parentId,
   }) async {
-    final days = _prefs.get(UserPreferences.mediaBarNewMovieDays);
     try {
       final response = await _client.itemsApi
-          .getItems(
+          .getRecentlyReleasedItems(
             parentId: parentId,
             includeItemTypes: const ['Movie'],
             recursive: true,
-            sortBy: 'PremiereDate',
-            sortOrder: 'Descending',
-            minPremiereDate: DateTime.now().subtract(Duration(days: days)),
             limit: _poolSize,
             fields: _fields,
-            enableTotalRecordCount: false,
             enableImageTypes: 'Backdrop,Logo,Banner',
           )
           .timeout(const Duration(seconds: 15));
