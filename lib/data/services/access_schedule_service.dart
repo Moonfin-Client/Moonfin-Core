@@ -156,6 +156,7 @@ class AccessScheduleService extends ChangeNotifier {
     final generation = _generation;
     final look = ++_lookCount;
 
+    var windowFailed = false;
     final loadWindow = loadAccessWindow;
     if (loadWindow != null && !_windowUnsupported) {
       // The plugin works its durations out between this moment and its answer,
@@ -182,6 +183,7 @@ class AccessScheduleService extends ChangeNotifier {
       // and the schedule and /Users/Me decide this look, so a failing endpoint
       // can't leave the user let in on a server that turns them away.
       if (!failed && look == _lookCount) _windowUnsupported = true;
+      windowFailed = failed;
     }
 
     List<AccessSchedule>? fresh;
@@ -218,6 +220,13 @@ class AccessScheduleService extends ChangeNotifier {
         refused = await ask();
       } catch (_) {}
       if (generation != _generation || look < _appliedLook) return;
+    }
+    // With a plugin that judges the schedule, this device's clock never
+    // decides: when its window couldn't be read and the server gave no answer
+    // either, the last answer stays and the look is tried again.
+    if (windowFailed && fresh.isNotEmpty && refused == null) {
+      if (look == _lookCount) _retryLater();
+      return;
     }
     _appliedLook = look;
     _schedules = fresh;
@@ -258,16 +267,21 @@ class AccessScheduleService extends ChangeNotifier {
     _schedule(delay);
   }
 
-  /// Applies the plugin's [window], whose durations count from [asked].
+  /// Applies the plugin's [window], worked out somewhere between [asked] and
+  /// now. The next look counts from [asked], so it can only come early, and
+  /// the opening counts from now, which is nearest when it was worked out.
   void _applyWindow(AccessWindow window, DateTime asked) {
     _timer?.cancel();
+    // A schedule read by an earlier fallback look is out of date now, and
+    // would otherwise judge a later failed look on this device's clock.
+    _schedules = const [];
     final until = window.allowed ? window.untilClose : window.untilOpen;
     // Named in this device's own time, as the moment it comes on this clock,
     // to the nearest minute: a schedule opens on a minute, and a device clock a
     // moment behind the server's would otherwise name the minute before.
     final next = window.allowed || window.untilOpen == null
         ? null
-        : _nearestMinute(asked.add(window.untilOpen!));
+        : _nearestMinute(now().add(window.untilOpen!));
 
     final wasAllowed = _status.allowed;
     _setStatus(

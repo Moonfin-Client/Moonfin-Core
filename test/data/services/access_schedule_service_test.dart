@@ -66,13 +66,16 @@ class _WindowHarness {
     List<AccessSchedule> schedules = const [],
     bool? refuses,
     bool schedulesFail = false,
+    bool Function(int load)? schedulesFailOn,
   }) : clock = async.getClock(start) {
     service = AccessScheduleService(
       now: () => clock.now(),
       loadAccessWindow: () async => windows(++windowCalls),
       loadSchedules: (userId) async {
         loads++;
-        if (schedulesFail) throw Exception('offline');
+        if (schedulesFail || (schedulesFailOn?.call(loads) ?? false)) {
+          throw Exception('offline');
+        }
         return schedules;
       },
       onBlocked: () async => blocked++,
@@ -772,6 +775,84 @@ void main() {
 
         expect(h.windowCalls, 2);
         expect(h.service.isBlocked, isFalse);
+        h.service.dispose();
+      });
+    });
+
+    test('names the opening from the answer, not from a queued request', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(async, _at(19, 7, 58), (call) async {
+          // Forty seconds waiting before the server works it out at 07:58:40
+          await Future<void>.delayed(const Duration(seconds: 40));
+          return const AccessWindow(
+            allowed: false,
+            untilOpen: Duration(seconds: 80),
+          );
+        });
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(seconds: 40));
+
+        expect(h.service.status.nextAccess, _at(19, 8));
+        h.service.dispose();
+      });
+    });
+
+    test('keeps a block from the window over a schedule an earlier fallback '
+        'read', () {
+      fakeAsync((async) {
+        // Monday noon: open by the schedule on this device's clock
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (call) => switch (call) {
+            1 || 3 => throw Exception('500'),
+            _ => const AccessWindow(
+              allowed: false,
+              untilOpen: Duration(hours: 1),
+            ),
+          },
+          schedules: [_entry('Weekday', 8, 20)],
+          refuses: false,
+          schedulesFailOn: (load) => load >= 2,
+        );
+        h.service.setUser('child');
+        h.settle();
+        expect(h.service.isBlocked, isFalse);
+
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.service.isBlocked, isTrue);
+
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.windowCalls, 3);
+        expect(h.service.isBlocked, isTrue);
+        h.service.dispose();
+      });
+    });
+
+    test('keeps the last answer when the window can\'t be read and the server '
+        'gives none', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: false,
+                  untilOpen: Duration(hours: 1),
+                )
+              : throw Exception('500'),
+          schedules: [_entry('Weekday', 8, 20)],
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(AccessScheduleService.pollInterval);
+
+        expect(h.windowCalls, 2);
+        expect(h.asks, 1);
+        expect(h.service.isBlocked, isTrue);
+        h.elapse(AccessScheduleService.retryInterval);
+        expect(h.windowCalls, 3);
         h.service.dispose();
       });
     });
