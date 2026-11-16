@@ -898,7 +898,7 @@ jobs:
           set -euo pipefail
           shopt -s nullglob
           patterns=(
-            "${PREFIX}_v*.tar.gz"
+            "${PREFIX}_v*[0-9].tar.gz"
             "${PREFIX}_v*_system-libs.tar.gz"
             "${PREFIX}_v*.AppImage"
             "${PREFIX}_v*.AppImage.zsync"
