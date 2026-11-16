@@ -1381,17 +1381,35 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'newest',
       'new seasons',
       'new episodes',
+      'new movies',
     ]),
     mediaBar.leaf(
       'mediaBarNewReleaseBanner',
       l10n.mediaBarNewReleaseBanner,
-      subtitle: l10n.mediaBarNewReleaseBannerDescription,
-      keywords: ['new season', 'new episode', 'badge'],
+      subtitle: l10n.mediaBarNewReleaseBannerAllDescription,
+      keywords: ['new season', 'new episode', 'new movie', 'badge'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewReleaseKinds',
+      l10n.mediaBarNewReleaseKinds,
+      keywords: ['new movie', 'new season', 'new episode', 'new series'],
     ),
     mediaBar.leaf(
       'mediaBarNewReleaseDays',
-      l10n.mediaBarNewReleaseDays,
+      l10n.mediaBarNewEpisodeDays,
       subtitle: l10n.mediaBarNewReleaseDaysDescription,
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieDays',
+      l10n.mediaBarNewMovieDays,
+      subtitle: l10n.mediaBarNewMovieDaysDescription,
+      keywords: ['new movie'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieDetail',
+      l10n.mediaBarNewMovieDetail,
+      subtitle: l10n.mediaBarNewMovieDetailDescription,
+      keywords: ['tagline', 'slogan', 'new movie'],
     ),
     if (!PlatformDetection.useMobileUi)
       mediaBar.leaf(
