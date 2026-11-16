@@ -215,6 +215,7 @@ class _RecordingManager extends Fake implements PlaybackManager {
     bool enableTranscoding = true,
     bool autoPlay = true,
     bool carryTrackSelections = false,
+    bool stopCurrentAsFinished = false,
   }) async {
     calls.add('play');
     seeks.add(startPosition);
