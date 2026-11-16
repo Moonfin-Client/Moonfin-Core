@@ -158,6 +158,10 @@ class AccessScheduleService extends ChangeNotifier {
 
     final loadWindow = loadAccessWindow;
     if (loadWindow != null && !_windowUnsupported) {
+      // The plugin works its durations out between this moment and its answer,
+      // so they're counted from here: a slow answer can't push a look past the
+      // change it names.
+      final asked = now();
       AccessWindow? window;
       var failed = false;
       try {
@@ -166,20 +170,18 @@ class AccessScheduleService extends ChangeNotifier {
         failed = true;
       }
       if (generation != _generation) return;
-      if (failed) {
-        // The last answer stays. A look that was overtaken has nothing to
-        // say about the newer one's outcome.
-        if (look == _lookCount) _retryLater();
-        return;
-      }
       if (window != null) {
         if (look < _appliedLook) return;
         _appliedLook = look;
-        _applyWindow(window);
+        _applyWindow(window, asked);
         return;
       }
-      // A plugin that can't answer it won't start to during this session.
-      _windowUnsupported = true;
+      // A plugin that can't answer it won't start to during this session. Only
+      // the newest look says so, as one overtaken by an answered look is stale.
+      // A window that couldn't be read leaves the plugin asked again next time,
+      // and the schedule and /Users/Me decide this look, so a failing endpoint
+      // can't leave the user let in on a server that turns them away.
+      if (!failed && look == _lookCount) _windowUnsupported = true;
     }
 
     List<AccessSchedule>? fresh;
@@ -193,7 +195,16 @@ class AccessScheduleService extends ChangeNotifier {
     if (fresh == null) {
       // A schedule that couldn't be read leaves the last one in place. A look
       // that was overtaken has nothing to say about the newer one's outcome.
-      if (look == _lookCount) _apply(failed: true);
+      // A block the plugin's window applied has no schedule here to judge
+      // again, and an empty one would read as open, so it stays until a look
+      // gets an answer.
+      if (look == _lookCount) {
+        if (isBlocked && _schedules.isEmpty) {
+          _retryLater();
+        } else {
+          _apply(failed: true);
+        }
+      }
       return;
     }
     // An answer is as good as the newest one applied, even if a later look
@@ -247,7 +258,8 @@ class AccessScheduleService extends ChangeNotifier {
     _schedule(delay);
   }
 
-  void _applyWindow(AccessWindow window) {
+  /// Applies the plugin's [window], whose durations count from [asked].
+  void _applyWindow(AccessWindow window, DateTime asked) {
     _timer?.cancel();
     final until = window.allowed ? window.untilClose : window.untilOpen;
     // Named in this device's own time, as the moment it comes on this clock,
@@ -255,7 +267,7 @@ class AccessScheduleService extends ChangeNotifier {
     // moment behind the server's would otherwise name the minute before.
     final next = window.allowed || window.untilOpen == null
         ? null
-        : _nearestMinute(now().add(window.untilOpen!));
+        : _nearestMinute(asked.add(window.untilOpen!));
 
     final wasAllowed = _status.allowed;
     _setStatus(
@@ -272,7 +284,10 @@ class AccessScheduleService extends ChangeNotifier {
     var delay = window.allowed && window.untilClose == null
         ? idlePollInterval
         : pollInterval;
-    if (until != null && until < delay) delay = until;
+    if (until != null) {
+      final remaining = until - now().difference(asked);
+      if (remaining < delay) delay = remaining;
+    }
     _schedule(delay);
   }
 

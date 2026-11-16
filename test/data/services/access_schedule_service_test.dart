@@ -62,15 +62,17 @@ class _WindowHarness {
   _WindowHarness(
     this.async,
     DateTime start,
-    AccessWindow? Function(int call) windows, {
+    FutureOr<AccessWindow?> Function(int call) windows, {
     List<AccessSchedule> schedules = const [],
     bool? refuses,
+    bool schedulesFail = false,
   }) : clock = async.getClock(start) {
     service = AccessScheduleService(
       now: () => clock.now(),
       loadAccessWindow: () async => windows(++windowCalls),
       loadSchedules: (userId) async {
         loads++;
+        if (schedulesFail) throw Exception('offline');
         return schedules;
       },
       onBlocked: () async => blocked++,
@@ -688,17 +690,44 @@ void main() {
       });
     });
 
-    test('keeps the last answer when it can\'t be read, and retries', () {
+    test('judges a look by the schedule and /Users/Me when the window '
+        'can\'t be read, and asks for it again', () {
       fakeAsync((async) {
         final h = _WindowHarness(
           async,
           _at(19, 21),
-          (call) => call == 2
-              ? throw Exception('offline')
-              : const AccessWindow(
+          (_) => throw Exception('500'),
+          schedules: [_entry('Weekday', 8, 20)],
+          refuses: true,
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.isBlocked, isTrue);
+        expect(h.loads, 1);
+        expect(h.asks, 1);
+
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.windowCalls, 2);
+        expect(h.service.isBlocked, isTrue);
+        expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test('keeps a block from the window when the schedule can\'t be read '
+        'either', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 21),
+          (call) => call == 1
+              ? const AccessWindow(
                   allowed: false,
                   untilOpen: Duration(hours: 11),
-                ),
+                )
+              : throw Exception('offline'),
+          schedulesFail: true,
         );
         h.service.setUser('child');
         h.settle();
@@ -710,7 +739,63 @@ void main() {
 
         h.elapse(AccessScheduleService.retryInterval);
         expect(h.windowCalls, 3);
+        expect(h.service.isBlocked, isTrue);
         expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test('counts the durations from when it asked, not from the answer', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(async, _at(19, 7, 59, 30), (call) async {
+          if (call == 1) {
+            await Future<void>.delayed(const Duration(seconds: 20));
+            return const AccessWindow(
+              allowed: false,
+              untilOpen: Duration(seconds: 30),
+            );
+          }
+          return const AccessWindow(
+            allowed: true,
+            untilClose: Duration(hours: 12),
+          );
+        });
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(seconds: 20));
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, _at(19, 8));
+
+        h.elapse(const Duration(seconds: 9));
+        expect(h.windowCalls, 1);
+        h.elapse(const Duration(seconds: 1));
+
+        expect(h.windowCalls, 2);
+        expect(h.service.isBlocked, isFalse);
+        h.service.dispose();
+      });
+    });
+
+    test('an overtaken look that finds no window doesn\'t stop the asking', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(async, _at(19, 12), (call) async {
+          if (call == 1) {
+            await Future<void>.delayed(const Duration(seconds: 10));
+            return null;
+          }
+          return const AccessWindow(
+            allowed: true,
+            untilClose: Duration(hours: 8),
+          );
+        });
+        h.service.setUser('child');
+        h.settle();
+        unawaited(h.service.refresh());
+        h.settle();
+        h.elapse(const Duration(seconds: 10));
+        h.elapse(AccessScheduleService.pollInterval);
+
+        expect(h.windowCalls, 3);
         h.service.dispose();
       });
     });
