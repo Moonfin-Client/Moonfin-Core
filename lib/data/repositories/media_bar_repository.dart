@@ -423,6 +423,74 @@ class MediaBarRepository {
     }
   }
 
+  /// Recently released the way the home row reads it in Episode or Season
+  /// mode: series by their latest episode or season rather than their first
+  /// air date. Movies, when the type allows them, come as before.
+  Future<List<Map<String, dynamic>>> _fetchRecentlyReleasedByChild(
+    String childType,
+    List<String>? itemTypes, {
+    String? parentId,
+    bool? hideWatched,
+  }) async {
+    Future<List<Map<String, dynamic>>> released(
+      List<String> types,
+      int limit,
+    ) async {
+      final response = await _client.itemsApi
+          .getRecentlyReleasedItems(
+            includeItemTypes: types,
+            parentId: parentId,
+            recursive: true,
+            limit: limit,
+            fields: _fields,
+            enableImageTypes: 'Backdrop,Logo,Banner',
+            hideWatched: hideWatched,
+          )
+          .timeout(const Duration(seconds: 15));
+      return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+    }
+
+    Future<List<Map<String, dynamic>>> seriesOf(
+      List<Map<String, dynamic>> children,
+    ) async {
+      final seriesIds = <String>[];
+      for (final child in children) {
+        final id = child['SeriesId']?.toString();
+        if (id == null || seriesIds.contains(id)) continue;
+        seriesIds.add(id);
+        if (seriesIds.length >= _poolSize) break;
+      }
+      if (seriesIds.isEmpty) return const [];
+      final response = await _client.itemsApi
+          .getItems(
+            ids: seriesIds,
+            fields: _fields,
+            enableTotalRecordCount: false,
+            enableImageTypes: 'Backdrop,Logo,Banner',
+          )
+          .timeout(const Duration(seconds: 15));
+      final byId = {
+        for (final item
+            in (response['Items'] as List? ?? []).cast<Map<String, dynamic>>())
+          item['Id']?.toString(): item,
+      };
+      // The server answers in its own order, so the newest stay first.
+      return [for (final id in seriesIds) ?byId[id]];
+    }
+
+    final batches = await Future.wait([
+      // Several episodes or seasons share a series, so more are read to end up
+      // with as many series as the other sources give.
+      released([childType], _poolSize * 4).then(seriesOf),
+      if (itemTypes == null || itemTypes.contains('Movie'))
+        released(const ['Movie'], _poolSize),
+    ]);
+    final items = batches.expand((batch) => batch);
+    return (hideWatched ?? false)
+        ? items.where((item) => !isRawItemWatchedForRecentRow(item)).toList()
+        : items.toList();
+  }
+
   /// The newest titles a dated source offers, ordered and cut off the same way
   /// the matching home row does, so the two surfaces agree on what recent
   /// means.
@@ -438,6 +506,22 @@ class MediaBarRepository {
           )
           ? _prefs.get(UserPreferences.hideWatchedInRecentRows)
           : null;
+      if (sourceType == UserPreferences.mediaBarSourceRecentlyReleased &&
+          (itemTypes == null || itemTypes.contains('Series'))) {
+        final childType = recentlyReleasedItemTypesFor(
+          'tvshows',
+          seriesType: () =>
+              _prefs.get(UserPreferences.recentlyReleasedSeriesType),
+        )!.single;
+        if (childType != 'Series') {
+          return await _fetchRecentlyReleasedByChild(
+            childType,
+            itemTypes,
+            parentId: parentId,
+            hideWatched: hideWatched,
+          );
+        }
+      }
       final response =
           sourceType == UserPreferences.mediaBarSourceRecentlyReleased
           ? await _client.itemsApi
