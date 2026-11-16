@@ -86,8 +86,14 @@ class _TestBackend extends Fake implements PlayerBackend {
   @override
   Future<void> resume() async => playing = true;
 
+  /// Holds each stop until the test completes it.
+  Completer<void>? stopGate;
+
   @override
-  Future<void> stop() async => playing = false;
+  Future<void> stop() async {
+    playing = false;
+    await stopGate?.future;
+  }
 
   @override
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode) async {}
@@ -257,6 +263,90 @@ void main() {
     await tester.pump();
 
     expect(events, isEmpty);
+  });
+
+  group('while the stop of an ended session runs', () {
+    const refusal = PlaybackRefusedException(
+      'Ended on the server.',
+      reason: PlaybackRefusedException.sessionEndedReason,
+    );
+    const episodeA = <String, dynamic>{'Id': 'a', 'Type': 'Episode'};
+    const episodeB = <String, dynamic>{'Id': 'b', 'Type': 'Episode'};
+
+    /// Plays [items], lets the server end the first one's session and holds
+    /// the backend stop that follows.
+    Future<Completer<void>> endWithStopHeld(
+      WidgetTester tester,
+      List<dynamic> items,
+    ) async {
+      managerWith(refusal);
+      await manager.playItems(items);
+      final gate = Completer<void>();
+      backend.stopGate = gate;
+      await tester.pump(const Duration(seconds: 5));
+      expect(manager.pendingStop, isNotNull);
+      return gate;
+    }
+
+    Future<void> release(WidgetTester tester, Completer<void> gate) async {
+      backend.stopGate = null;
+      gate.complete();
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('another item picked meanwhile plays and closes nothing', (
+      tester,
+    ) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[episodeA]);
+      final launch = manager.playItems(<dynamic>[episodeB]);
+      await release(tester, gate);
+      await launch;
+
+      expect(events, isEmpty);
+      expect(manager.queueService.currentItem, same(episodeB));
+      expect(backend.playing, isTrue);
+      await manager.stop();
+    });
+
+    testWidgets('Next to a queued item plays it and closes nothing', (
+      tester,
+    ) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[
+        episodeA,
+        episodeB,
+      ]);
+      final next = manager.nextInQueue();
+      await release(tester, gate);
+      await next;
+
+      expect(events, isEmpty);
+      expect(manager.queueService.currentItem, same(episodeB));
+      expect(backend.playing, isTrue);
+      await manager.stop();
+    });
+
+    testWidgets('Stop meanwhile still lets go of the queue and closes', (
+      tester,
+    ) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[episodeA]);
+      final stop = manager.stop();
+      await release(tester, gate);
+      await stop;
+
+      expect(manager.queueService.currentItem, isNull);
+      expect(events, ['ended: Ended on the server.', 'closed']);
+    });
+
+    testWidgets('Next at the end of the queue still closes', (tester) async {
+      final gate = await endWithStopHeld(tester, <dynamic>[episodeA]);
+      final next = manager.nextInQueue();
+      await release(tester, gate);
+      await next;
+
+      expect(manager.queueService.currentItem, isNull);
+      expect(events, ['ended: Ended on the server.', 'closed']);
+    });
   });
 
   testWidgets('another progress failure leaves playback alone', (

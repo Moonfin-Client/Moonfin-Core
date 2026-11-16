@@ -650,6 +650,10 @@ class PlaybackManager implements AudioOwnable {
   /// The server session the player streams from. A replan keeps it; a fresh
   /// start replaces it, so a late refusal from the old one stops nothing.
   String? _ownedPlaySessionId;
+  /// Bumped when the viewer asks for something else to play (another item,
+  /// queue or source) and there is one, unlike a Stop or a Next at the end
+  /// of the queue. A server-ended stop reads it to tell whether to close.
+  int _replacementRequests = 0;
   final _finishedItemStopController = StreamController<dynamic>.broadcast(
     sync: true,
   );
@@ -2862,6 +2866,7 @@ class PlaybackManager implements AudioOwnable {
   Future<void> _autoNext() async {
     if (await _maybeIntercept(TransportAction.next)) return;
     _beginNewPlaybackSource('the queue advanced to another item');
+    if (queueService.hasNext) _replacementRequests++;
     _mediaSourceId = null;
     if (_isOfflinePlayback) {
       await _stopAndReportCurrent(skipQueueChange: true);
@@ -3016,6 +3021,7 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    if (pendingItem != null) _replacementRequests++;
     _setBringupState(
       PlaybackBringupState(
         phase: PlaybackBringupPhase.stoppingPrevious,
@@ -4262,7 +4268,7 @@ class PlaybackManager implements AudioOwnable {
     _diagnosticLogger?.call('The server ended the session: $message');
     _abandonLiveRecovery('the server ended the session');
     _viewerPaused = false;
-    final intent = _viewerIntentGeneration;
+    final replacements = _replacementRequests;
     // The queue stays until the stop is over: a Next, a Previous or another
     // episode picked meanwhile joins this stop and goes on from it.
     try {
@@ -4270,15 +4276,13 @@ class PlaybackManager implements AudioOwnable {
     } catch (e) {
       _diagnosticLogger?.call('Stopping a session the server ended: $e');
     }
-    if (intent != _viewerIntentGeneration) return;
-    // Nothing plays any more, so this only lets go of the queue.
-    try {
-      await _stopAndReportCurrent();
-    } catch (e) {
-      _diagnosticLogger?.call('Clearing the queue of an ended session: $e');
-    }
-    // Nothing is left to reopen once the queue is gone.
-    if (queueService.currentItem == null) _endedByServerItem = null;
+    if (replacements != _replacementRequests) return;
+    // Nothing else is coming, whether the viewer did nothing, pressed Stop
+    // or pressed Next at the end of the queue. The backend is already
+    // stopped, so let go of the queue here, with no await a Next could slip
+    // into, and close.
+    _releaseQueue();
+    _endedByServerItem = null;
     if (!_endedByServerController.isClosed) {
       _endedByServerController.add(message);
     }
@@ -4595,6 +4599,7 @@ class PlaybackManager implements AudioOwnable {
     }
     if (_isManualNexting || _isAutoNexting) return;
     _beginNewPlaybackSource('the viewer advanced the queue');
+    if (queueService.hasNext) _replacementRequests++;
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
@@ -4624,6 +4629,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     _beginNewPlaybackSource('the viewer moved to the previous item');
+    _replacementRequests++;
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -4633,6 +4639,7 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> playFromQueue(int index) async {
     _beginNewPlaybackSource('the viewer selected another queued item');
+    _replacementRequests++;
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -5650,6 +5657,7 @@ class PlaybackManager implements AudioOwnable {
     Future<void> Function(String url)? onAutoNext,
   }) async {
     _beginNewPlaybackSource('the viewer started an offline source');
+    _replacementRequests++;
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     _lastItemId = null;
@@ -5723,6 +5731,16 @@ class PlaybackManager implements AudioOwnable {
     _secondarySubtitleDelaySeconds = 0;
   }
 
+  void _releaseQueue() {
+    _forceTranscodeForQueue = false;
+    _directPlayAllowedForQueue = true;
+    _streamFromServerForQueue = false;
+    _resetBackendSelectionLock();
+    queueService.clear();
+    state.reset();
+    _setBringupState(const PlaybackBringupState.idle());
+  }
+
   Future<bool> _stopAndReportCurrent({
     bool skipQueueChange = false,
     dynamic expectedItem,
@@ -5765,13 +5783,7 @@ class PlaybackManager implements AudioOwnable {
       if (_hasNoActivePlayback(backend)) {
         if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
-          _forceTranscodeForQueue = false;
-          _directPlayAllowedForQueue = true;
-          _streamFromServerForQueue = false;
-          _resetBackendSelectionLock();
-          queueService.clear();
-          state.reset();
-          _setBringupState(const PlaybackBringupState.idle());
+          _releaseQueue();
         }
         return true;
       }
@@ -5787,13 +5799,7 @@ class PlaybackManager implements AudioOwnable {
         _waitingForMedia = false;
         if (!skipQueueChange) {
           _isOfflinePlayback = false;
-          _forceTranscodeForQueue = false;
-          _directPlayAllowedForQueue = true;
-          _streamFromServerForQueue = false;
-          _resetBackendSelectionLock();
-          queueService.clear();
-          state.reset();
-          _setBringupState(const PlaybackBringupState.idle());
+          _releaseQueue();
         }
         return true;
       }
@@ -5857,13 +5863,7 @@ class PlaybackManager implements AudioOwnable {
       _playbackStartTime = null;
       _waitingForMedia = false;
       if (!skipQueueChange) {
-        _forceTranscodeForQueue = false;
-        _directPlayAllowedForQueue = true;
-        _streamFromServerForQueue = false;
-        _resetBackendSelectionLock();
-        queueService.clear();
-        state.reset();
-        _setBringupState(const PlaybackBringupState.idle());
+        _releaseQueue();
       }
       return true;
     })();
