@@ -10008,7 +10008,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Препоруке Џелифина (Jellyfin)",
+    "recommendationSystemJellyfin": "Препоруке сервера",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -13764,7 +13764,7 @@
         "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
     },
     "sinceYouWatchedSourceLocal": "Мунфинове препоруке",
-    "sinceYouWatchedSourceServer": "Препоруке Џелифина (Jellyfin)",
+    "sinceYouWatchedSourceServer": "Препоруке сервера",
     "sinceYouWatchedSourceOnline": "Сличност према ТМДБ-у (TMDb)",
     "calendarSettingsView": "Погледај",
     "@calendarSettingsView": {

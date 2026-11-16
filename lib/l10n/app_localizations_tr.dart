@@ -505,13 +505,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Moonfin Önerileri yerel kütüphane algoritmasını, Jellyfin Önerileri sunucu motorunu veya çevrimiçi TMDb Benzerlik Metriklerini kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.';
+      'Yerel kütüphane algoritması olan Moonfin Önerileri\'ni, medya sunucunuzdan gelen Sunucu Önerileri\'ni veya çevrimiçi TMDb Benzerlik Ölçütleri\'ni kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Önerileri';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Önerileri';
+  String get recommendationSystemJellyfin => 'Sunucu Önerileri';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Benzerliği';
@@ -5288,7 +5288,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsExternalLists => 'Harici Listeler';
 
   @override
-  String get homeRowsStreamingServices => 'Streaming Services';
+  String get homeRowsStreamingServices => 'Yayın Platformları';
 
   @override
   String get perRowSettings => 'Satır Başına Ayarlar';
@@ -12521,7 +12521,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsStyleCarousel => 'Carousel';
+  String get homeRowsStyleCarousel => 'Atlıkarınca';
 
   @override
   String get homeRowsSection => 'Ana Sayfa Satırları';
@@ -12531,7 +12531,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get rowsTypeDescription =>
-      'Klasik mod, satır başına görsel türünü ve bilgi katmanını korur. Modern mod ise dikey görsellerden yatay arka planlara uzanan satırlar kullanır.';
+      'Klasik, satır bazlı görsel türünü ve bilgi katmanını korur. Modern, portreden arka plana dönüşen satırları kullanır. Atlıkarınca, her satırın altına bir ayrıntı paneli ekler.';
 
   @override
   String get modernCardsOnMyMediaRow => 'Medyam satırında modern kartlar';
@@ -12653,13 +12653,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Öneri kaynağını seçin (Moonfin Önerileri: özel yerel algoritma, Jellyfin Önerileri: sunucu motoru veya TMDb\'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).';
+      'Öneri kaynağını seçin (Moonfin Önerileri özel yerel algoritması, medya sunucunuzdan gelen Sunucu Önerileri veya TMDb\'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin Önerileri';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Önerileri';
+  String get sinceYouWatchedSourceServer => 'Sunucu Önerileri';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb Benzerliği';
@@ -15686,7 +15686,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get setupRowsCarouselHint =>
-      'Posters with a large details panel underneath.';
+      'Altında geniş bir ayrıntı paneli yer alan afişler.';
 
   @override
   String get setupDetailClassicHint =>
@@ -18243,15 +18243,15 @@ class AppLocalizationsTr extends AppLocalizations {
       'Sol ve Sağ kaydırıcıyı hareket ettirir.';
 
   @override
-  String get clickpadSeeking => 'Allow Clickpad Seeking';
+  String get clickpadSeeking => 'Clickpad ile İleri/Geri Sarmaya İzin Ver';
 
   @override
   String get clickpadSeekingDescription =>
-      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+      'Sol, Sağ ve dokunmatik yüzey kaydırmalarının ne zaman ileri/geri sarabileceğini belirler. Aksi durumda ilk hareket kontrolleri ekrana getirir.';
 
   @override
-  String get clickpadSeekingControlsVisible => 'When controls are showing';
+  String get clickpadSeekingControlsVisible => 'Kontroller ekrandayken';
 
   @override
-  String get clickpadSeekingPausedOnly => 'Only while paused';
+  String get clickpadSeekingPausedOnly => 'Yalnızca duraklatılmışken';
 }

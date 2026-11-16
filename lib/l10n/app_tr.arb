@@ -7015,7 +7015,7 @@
     "homeRowsStyleModern": "Modern",
     "homeRowsSection": "Ana Sayfa Satırları",
     "rowsType": "Satır Tipi",
-    "rowsTypeDescription": "Klasik mod, satır başına görsel türünü ve bilgi katmanını korur. Modern mod ise dikey görsellerden yatay arka planlara uzanan satırlar kullanır.",
+    "rowsTypeDescription": "Klasik, satır bazlı görsel türünü ve bilgi katmanını korur. Modern, portreden arka plana dönüşen satırları kullanır. Atlıkarınca, her satırın altına bir ayrıntı paneli ekler.",
     "displayFavoritesRows": "Favoriler Satırlarını Görüntüle",
     "displayFavoritesRowsSubtitle": "Favori Filmleri, Dizileri ve diğer favori satırlarını Ana Sayfa Bölümlerinde göster.",
     "favoritesRowSorting": "Favoriler Satırı Sıralaması",
@@ -8508,7 +8508,7 @@
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemSubtitle": "Moonfin Önerileri yerel kütüphane algoritmasını, Jellyfin Önerileri sunucu motorunu veya çevrimiçi TMDb Benzerlik Metriklerini kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.",
+    "recommendationSystemSubtitle": "Yerel kütüphane algoritması olan Moonfin Önerileri'ni, medya sunucunuzdan gelen Sunucu Önerileri'ni veya çevrimiçi TMDb Benzerlik Ölçütleri'ni kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -10477,7 +10477,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Önerileri",
+    "recommendationSystemJellyfin": "Sunucu Önerileri",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16803,9 +16803,9 @@
     "displaySinceYouWatchedRows": "İzlediğiniz İçin Satırlarını Göster",
     "displaySinceYouWatchedRowsSubtitle": "İzlediğiniz İçin satırlarını Ana Ekran Bölümleri'nde göster ve özelleştir.",
     "sinceYouWatchedSource": "Öneri Kaynağı",
-    "sinceYouWatchedSourceDescription": "Öneri kaynağını seçin (Moonfin Önerileri: özel yerel algoritma, Jellyfin Önerileri: sunucu motoru veya TMDb'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).",
+    "sinceYouWatchedSourceDescription": "Öneri kaynağını seçin (Moonfin Önerileri özel yerel algoritması, medya sunucunuzdan gelen Sunucu Önerileri veya TMDb'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).",
     "sinceYouWatchedSourceLocal": "Moonfin Önerileri",
-    "sinceYouWatchedSourceServer": "Jellyfin Önerileri",
+    "sinceYouWatchedSourceServer": "Sunucu Önerileri",
     "sinceYouWatchedSourceOnline": "TMDb Benzerliği",
     "sinceYouWatchedSourceType": "Kaynak Tipi",
     "sinceYouWatchedSourceTypeDescription": "Önerilecek öğelerin tipini seçin",
@@ -18696,5 +18696,33 @@
     "afterHoursPixelPurgeCardRemote": "Sol ve Sağ kaydırıcıyı hareket ettirir.",
     "@afterHoursPixelPurgeCardRemote": {
         "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    },
+    "homeRowsStreamingServices": "Yayın Platformları",
+    "@homeRowsStreamingServices": {
+        "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
+    },
+    "homeRowsStyleCarousel": "Atlıkarınca",
+    "@homeRowsStyleCarousel": {
+        "description": "Name of the home row style that shows a large details panel under each row's posters"
+    },
+    "setupRowsCarouselHint": "Altında geniş bir ayrıntı paneli yer alan afişler.",
+    "@setupRowsCarouselHint": {
+        "description": "What the carousel home row style gives you"
+    },
+    "clickpadSeeking": "Clickpad ile İleri/Geri Sarmaya İzin Ver",
+    "@clickpadSeeking": {
+        "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+    },
+    "clickpadSeekingDescription": "Sol, Sağ ve dokunmatik yüzey kaydırmalarının ne zaman ileri/geri sarabileceğini belirler. Aksi durumda ilk hareket kontrolleri ekrana getirir.",
+    "@clickpadSeekingDescription": {
+        "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+    },
+    "clickpadSeekingControlsVisible": "Kontroller ekrandayken",
+    "@clickpadSeekingControlsVisible": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+    },
+    "clickpadSeekingPausedOnly": "Yalnızca duraklatılmışken",
+    "@clickpadSeekingPausedOnly": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
     }
 }

@@ -97,6 +97,25 @@ void main() {
     ]);
   });
 
+  test('maps a movie\'s original title but not a track\'s, which names its '
+      'artist', () {
+    final movie = plexItemToJellyfin({
+      'ratingKey': '1',
+      'type': 'movie',
+      'title': 'Amélie',
+      'originalTitle': "Le Fabuleux Destin d'Amélie Poulain",
+    });
+    final track = plexItemToJellyfin({
+      'ratingKey': '2',
+      'type': 'track',
+      'title': 'Comptine',
+      'originalTitle': 'Yann Tiersen',
+    });
+
+    expect(movie['OriginalTitle'], "Le Fabuleux Destin d'Amélie Poulain");
+    expect(track.containsKey('OriginalTitle'), isFalse);
+  });
+
   test('points an episode at its show for series art and logo', () {
     final episode = plexItemToJellyfin({
       'ratingKey': '17100',

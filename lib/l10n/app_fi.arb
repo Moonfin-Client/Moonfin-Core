@@ -11066,7 +11066,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "recommendationSystemJellyfin": "Jellyfin Suosittelee",
+    "recommendationSystemJellyfin": "Palvelin suosittelee",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16831,7 +16831,7 @@
     "sinceYouWatchedSource": "Suosituksen lähde",
     "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
     "sinceYouWatchedSourceLocal": "Moonfin suosittelee",
-    "sinceYouWatchedSourceServer": "Jellyfin suosittelee",
+    "sinceYouWatchedSourceServer": "Palvelin suosittelee",
     "sinceYouWatchedSourceOnline": "TMDb:n samankaltaisuus",
     "sinceYouWatchedSourceType": "Lähdetyyppi",
     "sinceYouWatchedSourceTypeDescription": "Valitse suositeltavien tuotteiden tyyppi",

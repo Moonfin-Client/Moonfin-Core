@@ -526,7 +526,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Мунфинове препоруке';
 
   @override
-  String get recommendationSystemJellyfin => 'Препоруке Џелифина (Jellyfin)';
+  String get recommendationSystemJellyfin => 'Препоруке сервера';
 
   @override
   String get recommendationSystemTmdb => 'Сличност према ТМДБ-у (TMDb)';
@@ -12744,7 +12744,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Мунфинове препоруке';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Препоруке Џелифина (Jellyfin)';
+  String get sinceYouWatchedSourceServer => 'Препоруке сервера';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Сличност према ТМДБ-у (TMDb)';

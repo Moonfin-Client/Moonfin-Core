@@ -20,6 +20,7 @@ import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/screens/detail/quick_look/quick_look_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_track_chips.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -323,5 +324,48 @@ void main() {
     await tester.tapAt(const Offset(10, 10));
     await tester.pumpAndSettle();
     expect(find.text('drawer'), findsNothing);
+  });
+
+  group('on a TV', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
+    testWidgets('down from the buttons goes back to the season the row was '
+        'left from', (tester) async {
+      when(() => itemsApi.getSeasons('item-1', fields: any(named: 'fields')))
+          .thenAnswer(
+            (_) async => {
+              'Items': [
+                for (var i = 1; i <= 17; i++)
+                  {'Id': 'season-$i', 'Type': 'Season', 'Name': 'Season $i'},
+              ],
+            },
+          );
+      final play = FocusNode(debugLabel: 'play');
+      addTearDown(play.dispose);
+      await pumpContent(tester, viewModel('Series'), playNode: play);
+      await tester.pump();
+
+      play.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 8; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pumpAndSettle();
+      }
+      final ninth = Focus.of(tester.element(find.text('Season 9')));
+      expect(ninth.hasPrimaryFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(play.hasPrimaryFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(ninth.hasPrimaryFocus, isTrue);
+    });
   });
 }
