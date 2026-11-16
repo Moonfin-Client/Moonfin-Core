@@ -3378,7 +3378,10 @@ class PlaybackManager implements AudioOwnable {
       // A session the server ended on purpose is being stopped (see
       // resolve), and the player closes with its own message. Not a failure
       // for the caller (a seek, a track change, a reconnect) to report.
-      if (_endedByServer(refusal) != null) return;
+      if (_endedByServer(refusal) != null &&
+          identical(item, _endedByServerItem)) {
+        return;
+      }
       // The server's own words, which the player shows.
       if (sessionToken == _playbackSessionToken) {
         _setBringupState(
@@ -4181,9 +4184,11 @@ class PlaybackManager implements AudioOwnable {
                   }
                   return;
                 }
-                // Even from a generation a re-resolve just retired: the item
-                // still playing is the one whose session ended.
-                if (identical(generation.item, queueService.currentItem)) {
+                // Even from a generation a replan just retired: the item still
+                // playing is the one whose session ended. One the viewer
+                // retired (next, stop) is theirs to end.
+                if ((!generation.ended || generation.replanned) &&
+                    identical(generation.item, queueService.currentItem)) {
                   unawaited(_stopEndedByServer(ended.message));
                 }
               },
@@ -4221,6 +4226,8 @@ class PlaybackManager implements AudioOwnable {
     } catch (e) {
       _diagnosticLogger?.call('Stopping a session the server ended: $e');
     }
+    // Nothing is left to reopen once the queue is gone.
+    if (queueService.currentItem == null) _endedByServerItem = null;
     if (intent != _viewerIntentGeneration) return;
     if (!_endedByServerController.isClosed) {
       _endedByServerController.add(message);
@@ -4467,6 +4474,11 @@ class PlaybackManager implements AudioOwnable {
     try {
       Duration? served;
       while (_seekReplanTarget != null && _seekReplanTarget != served) {
+        // The server ended the session, and its stop is under way.
+        if (_endedByServerItem != null &&
+            identical(queueService.currentItem, _endedByServerItem)) {
+          break;
+        }
         final target = _seekReplanTarget!;
         await _reResolveAtCurrentPosition(
           reason: 'seek',

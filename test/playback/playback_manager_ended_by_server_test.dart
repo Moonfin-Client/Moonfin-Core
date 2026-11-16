@@ -127,6 +127,10 @@ class _TestService extends Fake implements PlayerService {
 
   final Object progressError;
   int progressReports = 0;
+
+  /// Keeps each report in flight until the test completes it.
+  bool hold = false;
+  final List<Completer<void>> held = <Completer<void>>[];
   int stops = 0;
 
   @override
@@ -150,6 +154,11 @@ class _TestService extends Fake implements PlayerService {
     bool? isMuted,
   }) async {
     progressReports++;
+    if (hold) {
+      final request = Completer<void>();
+      held.add(request);
+      await request.future;
+    }
     throw progressError;
   }
 
@@ -226,6 +235,28 @@ void main() {
     // Nothing reports on the ended session afterwards.
     await tester.pump(const Duration(seconds: 10));
     expect(service.progressReports, 1);
+  });
+
+  testWidgets('a report the viewer retired before it was refused closes '
+      'nothing', (tester) async {
+    managerWith(
+      const PlaybackRefusedException(
+        'Ended on the server.',
+        reason: PlaybackRefusedException.sessionEndedReason,
+      ),
+    );
+    service.hold = true;
+    await playMovie();
+    await tester.pump(const Duration(seconds: 5));
+    expect(service.held, hasLength(1));
+
+    // Retired by the viewer with the item still queued, as Next is before
+    // the queue moves on.
+    await manager.stopForBackground(manager.queueService.currentItem);
+    service.held.single.complete();
+    await tester.pump();
+
+    expect(events, isEmpty);
   });
 
   testWidgets('another progress failure leaves playback alone', (
