@@ -32,6 +32,7 @@ enum OsdButton {
   zoom('zoom'),
   orientation('orientation'),
   info('info'),
+  pictureInPicture('pictureInPicture'),
   fullscreen('fullscreen'),
   floatOnTop('floatOnTop');
 
@@ -46,6 +47,9 @@ enum OsdButton {
     OsdButton.cast => !PlatformDetection.isTV,
     OsdButton.volume => PlatformDetection.useDesktopUi,
     OsdButton.orientation => PlatformDetection.isMobile,
+    // The browser floats the video in a window of its own. Desktop apps have
+    // the mini player bar instead.
+    OsdButton.pictureInPicture => PlatformDetection.isWeb,
     OsdButton.fullscreen => PlatformDetection.useDesktopUi,
     OsdButton.floatOnTop =>
       PlatformDetection.useDesktopUi && !PlatformDetection.isWeb,
@@ -68,6 +72,7 @@ enum OsdButton {
     OsdButton.zoom => Icons.zoom_out_map,
     OsdButton.orientation => Icons.screen_rotation_outlined,
     OsdButton.info => Icons.info_outline_rounded,
+    OsdButton.pictureInPicture => Icons.picture_in_picture_alt_rounded,
     OsdButton.fullscreen => Icons.fullscreen_rounded,
     OsdButton.floatOnTop => Icons.push_pin_outlined,
   };
@@ -88,6 +93,7 @@ enum OsdButton {
     OsdButton.zoom => l10n.playerZoomMode,
     OsdButton.orientation => l10n.orientationLock,
     OsdButton.info => l10n.playbackInformation,
+    OsdButton.pictureInPicture => l10n.playerTooltipPictureInPicture,
     OsdButton.fullscreen => l10n.fullscreen,
     OsdButton.floatOnTop => l10n.playerTooltipFloatOnTop,
   };

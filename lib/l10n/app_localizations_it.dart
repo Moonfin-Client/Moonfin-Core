@@ -511,7 +511,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Suggerimenti Moonfin';
 
   @override
-  String get recommendationSystemJellyfin => 'Suggerimenti Jellyfin';
+  String get recommendationSystemJellyfin => 'Suggerimenti del server';
 
   @override
   String get recommendationSystemTmdb => 'Similarità TMDb';
@@ -12750,7 +12750,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Suggerimenti Moonfin';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Suggerimenti Jellyfin';
+  String get sinceYouWatchedSourceServer => 'Suggerimenti del server';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Similarità TMDb';
@@ -18369,4 +18369,17 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Sinistra e Destra spostano la barra di scorrimento.';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

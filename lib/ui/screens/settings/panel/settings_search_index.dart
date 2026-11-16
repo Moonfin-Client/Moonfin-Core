@@ -596,6 +596,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.showConfirmationBeforeExiting,
         keywords: ['quit', 'close'],
       ),
+    if (PlatformDetection.isAndroid && !PlatformDetection.isTV)
+      general.leaf(
+        'remote_media_notification',
+        l10n.remoteMediaNotificationTitle,
+        subtitle: l10n.remoteMediaNotificationSubtitle,
+        keywords: ['remote', 'notification', 'cast', 'media', 'controls'],
+      ),
     if (PlatformDetection.isAndroid)
       general.leaf('pref_performance_mode', l10n.performanceMode, keywords: [
         'memory',
@@ -1276,6 +1283,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.showLibrariesFromAllServers,
     ),
     libraries.leaf(
+      'merge_libraries_by_type',
+      l10n.mergeLibrariesByType,
+      subtitle: l10n.mergeLibrariesByTypeDescription,
+      keywords: [
+        'multi server',
+        'all movies',
+        'all series',
+        'tv shows',
+        'unified',
+        'duplicates',
+      ],
+    ),
+    libraries.leaf(
       'pref_show_book_discover_tab',
       l10n.showBookDiscoverTab,
       subtitle: l10n.showBookDiscoverTabDescription,
@@ -1596,6 +1616,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf('skipForwardLength', l10n.skipForwardLength, keywords: [
       'seek forward',
     ]),
+    if (PlatformDetection.isAppleTV)
+      video.leaf(
+        'appleTvClickpadSeekMode',
+        l10n.clickpadSeeking,
+        subtitle: l10n.clickpadSeekingDescription,
+        keywords: ['remote', 'touchpad', 'accidental skip', 'seek lock'],
+      ),
     video.leaf(
       'controlsHideDelay',
       l10n.settingsHideControlsAfter,

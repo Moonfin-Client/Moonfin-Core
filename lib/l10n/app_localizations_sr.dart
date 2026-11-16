@@ -526,7 +526,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Мунфинове препоруке';
 
   @override
-  String get recommendationSystemJellyfin => 'Препоруке Џелифина (Jellyfin)';
+  String get recommendationSystemJellyfin => 'Препоруке сервера';
 
   @override
   String get recommendationSystemTmdb => 'Сличност према ТМДБ-у (TMDb)';
@@ -12738,13 +12738,13 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Мунфинове препоруке';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Препоруке Џелифина (Jellyfin)';
+  String get sinceYouWatchedSourceServer => 'Препоруке сервера';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Сличност према ТМДБ-у (TMDb)';
@@ -18329,4 +18329,17 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Left and Right slide the scrubber.';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }
