@@ -136,6 +136,11 @@ Future<bool?> _serverRefusesUser() async {
   }
 }
 
+/// The signed in user's access window from the Moonfin plugin, judged on the
+/// server's clock, or null when the server can't say.
+Future<AccessWindow?> _loadAccessWindow() =>
+    _getIt<MediaServerClient>().usersApi.getAccessWindow();
+
 /// Stops whatever is playing when the user's access schedule closes.
 Future<void> _stopPlaybackForAccessSchedule() async {
   // Each step is best effort, so one that fails doesn't leave the rest undone.
@@ -179,26 +184,32 @@ void registerAppModule() {
     ),
     dispose: (controller) => controller.dispose(),
   );
-  _getIt.registerLazySingleton(() {
-    final users = _getIt<UserRepository>();
-    final service = AccessScheduleService(
-      loadSchedules: _loadAccessSchedules,
-      onBlocked: _stopPlaybackForAccessSchedule,
-      serverRefuses: _serverRefusesUser,
-    );
-    // An administrator has no schedule to enforce.
-    String? watched(User? user) =>
-        user == null || user.isAdministrator ? null : user.id;
-    service.setUser(watched(users.currentUser));
-    _accessScheduleUserSubscription = users.currentUserStream.listen(
-      (user) => service.setUser(watched(user)),
-    );
-    return service;
-  }, dispose: (service) {
-    unawaited(_accessScheduleUserSubscription?.cancel());
-    service.dispose();
-  });
-  _getIt.registerLazySingleton(() => SetupWizardGate(_getIt<UserPreferences>()));
+  _getIt.registerLazySingleton(
+    () {
+      final users = _getIt<UserRepository>();
+      final service = AccessScheduleService(
+        loadSchedules: _loadAccessSchedules,
+        onBlocked: _stopPlaybackForAccessSchedule,
+        serverRefuses: _serverRefusesUser,
+        loadAccessWindow: _loadAccessWindow,
+      );
+      // An administrator has no schedule to enforce.
+      String? watched(User? user) =>
+          user == null || user.isAdministrator ? null : user.id;
+      service.setUser(watched(users.currentUser));
+      _accessScheduleUserSubscription = users.currentUserStream.listen(
+        (user) => service.setUser(watched(user)),
+      );
+      return service;
+    },
+    dispose: (service) {
+      unawaited(_accessScheduleUserSubscription?.cancel());
+      service.dispose();
+    },
+  );
+  _getIt.registerLazySingleton(
+    () => SetupWizardGate(_getIt<UserPreferences>()),
+  );
   _getIt.registerLazySingleton(() => const NativeCastChannel());
   _getIt.registerLazySingleton(() => const NativeDlnaChannel());
   _getIt.registerLazySingleton(() => const NativeAirPlayChannel());
@@ -262,7 +273,8 @@ void registerAppModule() {
     ),
   );
   _getIt.registerLazySingleton<SyncService>(
-    () => SyncService(_getIt<OfflineRepository>(), _getIt<PendingRatingStore>()),
+    () =>
+        SyncService(_getIt<OfflineRepository>(), _getIt<PendingRatingStore>()),
   );
   _getIt.registerLazySingleton(
     () => RemoveWatchedService(

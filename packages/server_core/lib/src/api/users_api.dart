@@ -11,6 +11,12 @@ abstract class UsersApi {
   /// can still read the schedule once it has closed. Other servers have none to
   /// read and answer empty.
   Future<List<AccessSchedule>?> getAccessSchedules(String userId);
+
+  /// The signed in user's access window, judged on the server's clock by the
+  /// Moonfin plugin, or null when the server can't say: not Jellyfin, or
+  /// without a plugin that answers it. Throws when it couldn't be read. The
+  /// plugin answers it outside the user's schedule too.
+  Future<AccessWindow?> getAccessWindow();
   Future<UserConfiguration> getUserConfiguration();
   Future<void> updateUserConfiguration(UserConfiguration config);
 }

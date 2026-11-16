@@ -22,6 +22,18 @@ class JellyfinUsersApi implements UsersApi {
   }
 
   @override
+  Future<AccessWindow?> getAccessWindow() async {
+    try {
+      final response = await _dio.get('/Moonfin/AccessWindow');
+      return AccessWindow.tryParse(response.data);
+    } on DioException catch (e) {
+      // A server without the plugin, or with one from before it answered this.
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
+  @override
   Future<UserConfiguration> getUserConfiguration() async {
     final response = await _dio.get('/Users/Me');
     final data = response.data as Map<String, dynamic>;

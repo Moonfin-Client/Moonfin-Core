@@ -129,4 +129,42 @@ void main() {
       );
     });
   });
+
+  group('getAccessWindow', () {
+    test('reads the plugin window', () async {
+      final server = _FakeServer(200, {
+        'allowed': false,
+        'secondsUntilOpen': 3601,
+      });
+
+      final window = await JellyfinUsersApi(_dio(server)).getAccessWindow();
+
+      expect(server.requests.single.path, '/Moonfin/AccessWindow');
+      expect(
+        window,
+        const AccessWindow(allowed: false, untilOpen: Duration(seconds: 3601)),
+      );
+    });
+
+    test('is null for a server without the endpoint', () async {
+      final server = _FakeServer(404, 'Not Found');
+
+      expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
+    });
+
+    test('is null for an answer without allowed', () async {
+      final server = _FakeServer(200, {'secondsUntilClose': 60});
+
+      expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
+    });
+
+    test('lets any other failure through', () async {
+      final server = _FakeServer(500, 'Error processing request.');
+
+      expect(
+        JellyfinUsersApi(_dio(server)).getAccessWindow(),
+        throwsA(isA<DioException>()),
+      );
+    });
+  });
 }

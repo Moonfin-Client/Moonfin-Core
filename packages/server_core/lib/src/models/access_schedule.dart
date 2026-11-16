@@ -112,3 +112,46 @@ class AccessScheduleEvaluator {
     return earliest;
   }
 }
+
+/// The signed in user's access window as the Moonfin plugin works it out on
+/// the server's clock, with Jellyfin's own rule: whether they're let in now,
+/// and how long until that changes. The durations are relative, so they need
+/// no clock or time zone on this device to use.
+class AccessWindow {
+  const AccessWindow({required this.allowed, this.untilClose, this.untilOpen});
+
+  final bool allowed;
+
+  /// When [allowed], how long until the schedule closes, or null when it
+  /// doesn't close within a week or there is no schedule.
+  final Duration? untilClose;
+
+  /// When not [allowed], how long until the schedule next opens, or null when
+  /// it doesn't open within a week.
+  final Duration? untilOpen;
+
+  /// Reads the plugin's `{ allowed, secondsUntilClose, secondsUntilOpen }`,
+  /// or null for an answer without `allowed`.
+  static AccessWindow? tryParse(Object? json) {
+    if (json is! Map) return null;
+    final allowed = json['allowed'];
+    if (allowed is! bool) return null;
+    Duration? seconds(Object? value) =>
+        value is num && value >= 0 ? Duration(seconds: value.ceil()) : null;
+    return AccessWindow(
+      allowed: allowed,
+      untilClose: seconds(json['secondsUntilClose']),
+      untilOpen: seconds(json['secondsUntilOpen']),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is AccessWindow &&
+      other.allowed == allowed &&
+      other.untilClose == untilClose &&
+      other.untilOpen == untilOpen;
+
+  @override
+  int get hashCode => Object.hash(allowed, untilClose, untilOpen);
+}

@@ -31,9 +31,13 @@ class AccessScheduleStatus {
 /// every request fails with it. This keeps the schedule to hand, so the app can
 /// say so and stop playback at the moment it closes instead of having things
 /// start failing. Jellyfin checks the schedule against its own clock, which
-/// can be in a different time zone from this device, so for a user with a
-/// schedule the server is asked whether it's turning them away and its answer
-/// decides. The schedule times the looks and says when they can come back.
+/// can be in a different time zone from this device. With a Moonfin plugin
+/// that answers it, the plugin works the schedule out on the server's clock
+/// and says how long until it closes or opens, and that alone decides and
+/// times the looks. Without one, for a user with a schedule the server is
+/// asked whether it's turning them away and its answer decides, and the
+/// schedule on this device's clock times the looks and says when they can
+/// come back.
 ///
 /// It looks again just before an opening or closing, when the app comes back
 /// to the foreground and when the server turns a request away. In between it
@@ -44,6 +48,7 @@ class AccessScheduleService extends ChangeNotifier {
     required this.loadSchedules,
     required this.onBlocked,
     this.serverRefuses,
+    this.loadAccessWindow,
     this.now = DateTime.now,
   });
 
@@ -75,6 +80,11 @@ class AccessScheduleService extends ChangeNotifier {
   /// schedule is checked against this device's clock alone.
   final Future<bool?> Function()? serverRefuses;
 
+  /// Reads the user's access window, judged on the server's clock: null when
+  /// the server can't say, and throws when it couldn't be read. Without one,
+  /// or once it says the server can't, the schedule is read and judged here.
+  final Future<AccessWindow?> Function()? loadAccessWindow;
+
   final DateTime Function() now;
 
   AccessScheduleStatus _status = const AccessScheduleStatus.allowed();
@@ -82,6 +92,10 @@ class AccessScheduleService extends ChangeNotifier {
   List<AccessSchedule> _schedules = const [];
   Timer? _timer;
   AppLifecycleListener? _lifecycle;
+
+  /// Set when the server said it can't answer the access window, so this
+  /// user's looks stop asking for it.
+  bool _windowUnsupported = false;
 
   /// Bumped when the user changes, so a look that was under way for the
   /// previous one can't apply its answer to the next.
@@ -105,6 +119,7 @@ class AccessScheduleService extends ChangeNotifier {
     _generation++;
     _userId = userId;
     _schedules = const [];
+    _windowUnsupported = false;
     _timer?.cancel();
     _timer = null;
     _setStatus(const AccessScheduleStatus.allowed());
@@ -140,6 +155,32 @@ class AccessScheduleService extends ChangeNotifier {
     if (userId == null) return;
     final generation = _generation;
     final look = ++_lookCount;
+
+    final loadWindow = loadAccessWindow;
+    if (loadWindow != null && !_windowUnsupported) {
+      AccessWindow? window;
+      var failed = false;
+      try {
+        window = await loadWindow();
+      } catch (_) {
+        failed = true;
+      }
+      if (generation != _generation) return;
+      if (failed) {
+        // The last answer stays. A look that was overtaken has nothing to
+        // say about the newer one's outcome.
+        if (look == _lookCount) _retryLater();
+        return;
+      }
+      if (window != null) {
+        if (look < _appliedLook) return;
+        _appliedLook = look;
+        _applyWindow(window);
+        return;
+      }
+      // A plugin that can't answer it won't start to during this session.
+      _windowUnsupported = true;
+    }
 
     List<AccessSchedule>? fresh;
     try {
@@ -203,6 +244,42 @@ class AccessScheduleService extends ChangeNotifier {
       final until = boundary.difference(moment);
       if (until < delay) delay = until;
     }
+    _schedule(delay);
+  }
+
+  void _applyWindow(AccessWindow window) {
+    _timer?.cancel();
+    final until = window.allowed ? window.untilClose : window.untilOpen;
+    // Named in this device's own time, as the moment it comes on this clock
+    final next = window.allowed || window.untilOpen == null
+        ? null
+        : now().add(window.untilOpen!);
+
+    final wasAllowed = _status.allowed;
+    _setStatus(
+      window.allowed
+          ? const AccessScheduleStatus.allowed()
+          : AccessScheduleStatus.denied(next),
+    );
+    if (wasAllowed && !window.allowed) {
+      unawaited(_runOnBlocked());
+    }
+
+    // Allowed with nothing to close is a user with no schedule, or one open
+    // all week.
+    var delay = window.allowed && window.untilClose == null
+        ? idlePollInterval
+        : pollInterval;
+    if (until != null && until < delay) delay = until;
+    _schedule(delay);
+  }
+
+  void _retryLater() {
+    _timer?.cancel();
+    _schedule(retryInterval);
+  }
+
+  void _schedule(Duration delay) {
     if (delay < const Duration(seconds: 1)) delay = const Duration(seconds: 1);
     _timer = Timer(delay, () => unawaited(refresh()));
   }
