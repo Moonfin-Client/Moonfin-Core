@@ -453,6 +453,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _letterboxCropAppliedSub;
   StreamSubscription<Object?>? _letterboxCropGeometrySub;
+  StreamSubscription<LetterboxScanResult>? _letterboxScanResultSub;
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
@@ -1220,6 +1221,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
     _letterboxCropGeometrySub?.cancel();
+    _letterboxScanResultSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
     _pipChangedSub?.cancel();
@@ -7814,6 +7816,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _recropBlackBarsFromUi() {
     final cropper = _activeBackend?.letterboxCropper;
     if (cropper == null || !cropper.isSupported) return;
+    // Toasts the result of this press's scan. A later press replaces it.
+    _letterboxScanResultSub?.cancel();
+    _letterboxScanResultSub = null;
+    if (cropper is MpvLetterboxCropper &&
+        _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds) == 0) {
+      _letterboxScanResultSub = cropper.scanResults.listen((result) {
+        _letterboxScanResultSub?.cancel();
+        _letterboxScanResultSub = null;
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context);
+        _showPlayerToast(switch (result) {
+          LetterboxScanResult.cropped => l10n.playerBlackBarsCropped,
+          LetterboxScanResult.noBars => l10n.playerNoBlackBarsFound,
+          LetterboxScanResult.inconclusive =>
+            l10n.playerBlackBarsNotDetected,
+        });
+      });
+    }
     unawaited(cropper.recrop());
     if (!mounted) return;
     _showPlayerToast(AppLocalizations.of(context).playerRecroppingBlackBars);
