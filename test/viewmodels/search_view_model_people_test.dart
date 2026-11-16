@@ -188,6 +188,22 @@ void main() {
     });
   });
 
+  test('a search that answers after the screen closed is dropped', () {
+    fakeAsync((async) {
+      itemsFor('hanks', []);
+      final people = peopleFor('hanks');
+      final vm = SearchViewModel(SearchRepository(client), client);
+
+      vm.searchImmediate('hanks');
+      async.elapse(const Duration(seconds: 1));
+      vm.dispose();
+      people.complete(person('p1'));
+      async.flushMicrotasks();
+
+      expect(vm.state, SearchState.loading);
+    });
+  });
+
   test('a library scoped search never asks for people', () {
     fakeAsync((async) {
       itemsFor('dune', [('b1', 'Book')]);

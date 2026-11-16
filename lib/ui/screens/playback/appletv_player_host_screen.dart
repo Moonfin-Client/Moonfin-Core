@@ -342,6 +342,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         'stillWatchingContinue': l10n.stillWatchingContinue,
         'stillWatchingStop': l10n.stillWatchingStop,
         'fetchingSubtitles': l10n.fetchingSubtitles,
+        'paused': l10n.paused,
       }),
     );
   }
@@ -503,40 +504,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     } catch (_) {
       return null;
     }
-  }
-
-  String _artworkUrlForItem(dynamic item) {
-    final raw = _rawDataForQueueItem(item);
-    final itemId = _itemIdForQueueItem(item);
-    final imageApi = _clientForQueueItem(item)?.imageApi;
-    if (raw == null || itemId == null || itemId.isEmpty || imageApi == null) {
-      return '';
-    }
-    final imageTags = raw['ImageTags'] as Map?;
-    final primaryTag = (imageTags?['Primary'] as String?)?.trim();
-    final thumbTag = (imageTags?['Thumb'] as String?)?.trim();
-    final backdropTags = raw['BackdropImageTags'] as List?;
-    final backdropTag = backdropTags?.isNotEmpty == true
-        ? backdropTags!.first.toString().trim()
-        : null;
-    if (primaryTag != null && primaryTag.isNotEmpty) {
-      return imageApi.getPrimaryImageUrl(
-        itemId,
-        maxHeight: 420,
-        tag: primaryTag,
-      );
-    }
-    if (thumbTag != null && thumbTag.isNotEmpty) {
-      return imageApi.getThumbImageUrl(itemId, maxWidth: 960, tag: thumbTag);
-    }
-    if (backdropTag != null && backdropTag.isNotEmpty) {
-      return imageApi.getBackdropImageUrl(
-        itemId,
-        maxWidth: 1280,
-        tag: backdropTag,
-      );
-    }
-    return '';
   }
 
   List<Map<String, dynamic>> _streamInfoSections(PlaybackManager manager) {
@@ -1259,7 +1226,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         ((raw?['Taglines'] as List?)?.firstOrNull as String?)?.trim() ??
         '';
     if (overview.isEmpty) return null;
-    return {'overview': overview, 'imageUrl': _artworkUrlForItem(item)};
+    return {'overview': overview};
   }
 
   List<Map<String, dynamic>> _trackOptions(

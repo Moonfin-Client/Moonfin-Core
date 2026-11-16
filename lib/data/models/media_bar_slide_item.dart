@@ -1,20 +1,24 @@
-/// Why a series slide gets a banner: what aired lately.
-enum MediaBarNewRelease { newSeries, newSeason, newEpisodes }
+/// Why a slide gets a banner: what aired lately, or a movie that's new.
+enum MediaBarNewRelease { newSeries, newSeason, newEpisodes, newMovie }
 
-/// What a series slide's banner says, and the detail line under it.
+/// What a slide's banner says, and the detail line under it.
 class MediaBarNewReleaseInfo {
   final MediaBarNewRelease kind;
 
-  /// The season the new episodes belong to.
+  /// The season the new episodes belong to. 0 for a movie.
   final int season;
 
   /// The latest new episode, when the season comes out episode by episode.
   final int? episode;
 
+  /// A new movie's tagline, in the server's metadata language only.
+  final String? tagline;
+
   const MediaBarNewReleaseInfo({
     required this.kind,
-    required this.season,
+    this.season = 0,
     this.episode,
+    this.tagline,
   });
 }
 

@@ -10270,7 +10270,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin 추천",
+    "recommendationSystemJellyfin": "서버 추천",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16509,7 +16509,7 @@
         "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
     },
     "sinceYouWatchedSourceLocal": "Moonfin 추천",
-    "sinceYouWatchedSourceServer": "Jellyfin 추천",
+    "sinceYouWatchedSourceServer": "서버 추천",
     "sinceYouWatchedSourceOnline": "TMDb 유사도",
     "calendarSettingsView": "보기",
     "@calendarSettingsView": {

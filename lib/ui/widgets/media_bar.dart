@@ -48,6 +48,7 @@ import '../../playback/mpv_player_registry.dart';
 import '../../playback/silo_plugin_for.dart';
 import 'bounded_network_image.dart';
 import 'fullscreen_backdrop_switcher.dart';
+import 'home_row_spacing.dart';
 import 'navigation_layout.dart';
 import 'mediabar/bookshelf_layout.dart';
 import 'mediabar/aya_media_bar.dart';
@@ -2762,7 +2763,6 @@ class _MediaBarState extends State<MediaBar>
     const contentPadding = 32.0;
     const mobileHorizontalPadding = 16.0;
     const mobileBottomPadding = 16.0;
-    const tvTopNavbarHorizontalInset = 48.0;
     const desktopSidebarInset = 56.0;
     const desktopToolbarVerticalPadding = 10.0;
 
@@ -2780,13 +2780,13 @@ class _MediaBarState extends State<MediaBar>
     }
 
     final leftInset = isTvTopNavbar
-        ? tvTopNavbarHorizontalInset + contentPadding
+        ? tvTopNavbarRowInset + contentPadding
         : hasDesktopSidebar
         ? desktopSidebarInset + contentPadding
         : contentPadding;
 
     final rightInset = isTvTopNavbar
-        ? tvTopNavbarHorizontalInset + contentPadding
+        ? tvTopNavbarRowInset + contentPadding
         : contentPadding;
 
     final topInset = navbarIsTop
