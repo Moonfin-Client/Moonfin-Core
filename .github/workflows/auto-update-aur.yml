@@ -54,7 +54,9 @@ jobs:
           cd /tmp/aur-package
           CURRENT_VERSION=$(grep '^pkgver=' PKGBUILD | cut -d'=' -f2)
           CURRENT_SRCINFO_VERSION=$(awk -F' = ' '/^[[:space:]]*pkgver = / {print $2; exit}' .SRCINFO)
+          CURRENT_PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
           echo "current_version=$CURRENT_VERSION" >> "$GITHUB_ENV"
+          echo "current_pkgrel=$CURRENT_PKGREL" >> "$GITHUB_ENV"
           echo "current_srcinfo_version=$CURRENT_SRCINFO_VERSION" >> "$GITHUB_ENV"
           echo "AUR current version: $CURRENT_VERSION"
           echo "AUR .SRCINFO version: $CURRENT_SRCINFO_VERSION"
@@ -71,12 +73,19 @@ jobs:
           elif [ "$VERSION" != "$current_version" ] || [ "$VERSION" != "$current_srcinfo_version" ]; then
             echo "Update needed: PKGBUILD=$current_version, SRCINFO=$current_srcinfo_version, upstream=$VERSION"
             echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "pkgrel=1" >> "$GITHUB_OUTPUT"
           elif ! grep -q 'Moonfin-Client/Moonfin-Core' PKGBUILD \
             || ! grep -q "'mpv'" PKGBUILD \
             || ! grep -q 'org.moonfin.linux.desktop' PKGBUILD \
-            || ! grep -q "'xdg-user-dirs'" PKGBUILD; then
-            echo "PKGBUILD is stale (repo URL, mpv or xdg-user-dirs dependency, or desktop entry), re-syncing"
+            || ! grep -q "'xdg-user-dirs'" PKGBUILD \
+            || ! grep -q "'sqlite'" PKGBUILD; then
+            # Same version, new packaging. AUR helpers only offer an update
+            # when pkgver-pkgrel changes, so the fix has to raise pkgrel to
+            # reach anyone who already installed this version.
+            PKGREL=$(( ${current_pkgrel:-1} + 1 ))
+            echo "PKGBUILD is stale (repo URL, mpv, xdg-user-dirs or sqlite dependency, or desktop entry), re-syncing as pkgrel ${PKGREL}"
             echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "pkgrel=${PKGREL}" >> "$GITHUB_OUTPUT"
           else
             echo "No update needed (version: $current_version)"
             echo "needed=false" >> "$GITHUB_OUTPUT"
@@ -108,6 +117,7 @@ jobs:
         run: |
           VERSION="${{ steps.upstream.outputs.version }}"
           SHA256="${{ steps.download.outputs.sha256 }}"
+          PKGREL="${{ steps.check.outputs.pkgrel }}"
           cd /tmp/aur-package
 
           git config user.name "${{ vars.GIT_USER_NAME }}"
@@ -121,12 +131,12 @@ jobs:
           # Written by the Moonfin release workflow. Edits here are overwritten.
           pkgname=moonfin-bin
           pkgver=${VERSION}
-          pkgrel=1
+          pkgrel=${PKGREL}
           pkgdesc='Jellyfin & Emby media client for Linux (binary release)'
           arch=('x86_64')
           url='https://github.com/Moonfin-Client/Moonfin-Core'
           license=('GPL-3.0-or-later')
-          depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu' 'xdg-user-dirs')
+          depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu' 'sqlite' 'xdg-user-dirs')
           provides=('moonfin')
           conflicts=('moonfin')
           # The binary and the bundled libraries ship stripped already, and
@@ -156,8 +166,29 @@ jobs:
             # system ones.
             for lib in mpv ass secret-1 avcodec avdevice avfilter avformat \\
               avutil postproc swresample swscale va va-drm va-wayland va-x11 \\
-              vdpau; do
+              vdpau dvdnav dvdread; do
               rm -f "\${pkgdir}/usr/lib/moonfin/lib/lib\${lib}.so."*
+            done
+
+            # The tarball also carries every library its own libmpv needed,
+            # built on Ubuntu. Arch's libmpv was built against Arch's copies,
+            # and a bundled one with the same soname but an older ABI fails
+            # at the first call into it. Any bundled library the system also
+            # provides goes, so each soname resolves to the system alone.
+            local lib_dir="\${pkgdir}/usr/lib/moonfin/lib" f soname
+            for f in "\${lib_dir}"/*.so*; do
+              [ -f "\${f}" ] && [ ! -L "\${f}" ] || continue
+              soname=\$(readelf -d "\${f}" 2>/dev/null \\
+                | sed -n 's/.*(SONAME).*\\[\\(.*\\)\\].*/\\1/p')
+              if [ -n "\${soname}" ] && [ -e "/usr/lib/\${soname}" ]; then
+                rm -f "\${f}"
+              fi
+            done
+            # Links to the removed files, such as the unversioned names.
+            for f in "\${lib_dir}"/*.so*; do
+              if [ -L "\${f}" ] && [ ! -e "\${f}" ]; then
+                rm -f "\${f}"
+              fi
             done
 
             # The launcher in the bundle reads its own directory to find the
@@ -182,7 +213,7 @@ jobs:
             "pkgbase = moonfin-bin" \
             "    pkgdesc = Jellyfin & Emby media client for Linux (binary release)" \
             "    pkgver = ${VERSION}" \
-            "    pkgrel = 1" \
+            "    pkgrel = ${PKGREL}" \
             "    url = https://github.com/Moonfin-Client/Moonfin-Core" \
             "    arch = x86_64" \
             "    license = GPL-3.0-or-later" \
@@ -193,6 +224,7 @@ jobs:
             "    depends = webkit2gtk-4.1" \
             "    depends = mpv" \
             "    depends = harfbuzz-icu" \
+            "    depends = sqlite" \
             "    depends = xdg-user-dirs" \
             "    provides = moonfin" \
             "    conflicts = moonfin" \
@@ -202,5 +234,5 @@ jobs:
             "pkgname = moonfin-bin" > .SRCINFO
 
           git add PKGBUILD .SRCINFO
-          git commit -m "Update to ${VERSION}"
+          git commit -m "Update to ${VERSION}-${PKGREL}"
           git push origin master
