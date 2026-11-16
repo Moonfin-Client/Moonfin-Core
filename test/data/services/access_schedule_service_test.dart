@@ -579,6 +579,25 @@ void main() {
       });
     });
 
+    test('names the opening to the nearest minute', () {
+      fakeAsync((async) {
+        // A clock a moment behind the server's lands just short of 08:00
+        final h = _WindowHarness(
+          async,
+          DateTime(2026, 10, 19, 21, 0, 0, 750),
+          (_) => const AccessWindow(
+            allowed: false,
+            untilOpen: Duration(hours: 10, minutes: 59, seconds: 59),
+          ),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.status.nextAccess, _at(20, 8));
+        h.service.dispose();
+      });
+    });
+
     test('looks again when it closes, not a minute later', () {
       fakeAsync((async) {
         final h = _WindowHarness(

@@ -250,10 +250,12 @@ class AccessScheduleService extends ChangeNotifier {
   void _applyWindow(AccessWindow window) {
     _timer?.cancel();
     final until = window.allowed ? window.untilClose : window.untilOpen;
-    // Named in this device's own time, as the moment it comes on this clock
+    // Named in this device's own time, as the moment it comes on this clock,
+    // to the nearest minute: a schedule opens on a minute, and a device clock a
+    // moment behind the server's would otherwise name the minute before.
     final next = window.allowed || window.untilOpen == null
         ? null
-        : now().add(window.untilOpen!);
+        : _nearestMinute(now().add(window.untilOpen!));
 
     final wasAllowed = _status.allowed;
     _setStatus(
@@ -272,6 +274,17 @@ class AccessScheduleService extends ChangeNotifier {
         : pollInterval;
     if (until != null && until < delay) delay = until;
     _schedule(delay);
+  }
+
+  static DateTime _nearestMinute(DateTime moment) {
+    final rounded = moment.add(const Duration(seconds: 30));
+    return rounded.subtract(
+      Duration(
+        seconds: rounded.second,
+        milliseconds: rounded.millisecond,
+        microseconds: rounded.microsecond,
+      ),
+    );
   }
 
   void _retryLater() {
