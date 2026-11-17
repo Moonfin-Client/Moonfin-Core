@@ -7,6 +7,10 @@ class AggregatedLibrary {
   final Map<String, dynamic>? imageTags;
   final List<String>? backdropImageTags;
 
+  /// The library a merged library borrows its artwork from, since it has
+  /// none of its own.
+  final String? imageItemId;
+
   const AggregatedLibrary({
     required this.id,
     required this.name,
@@ -15,5 +19,6 @@ class AggregatedLibrary {
     this.primaryImageAspectRatio,
     this.imageTags,
     this.backdropImageTags,
+    this.imageItemId,
   });
 }

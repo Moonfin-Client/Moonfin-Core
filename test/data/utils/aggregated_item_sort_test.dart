@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/aggregated_item_sort.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 
 AggregatedItem _studio(String name, {String? sortName, String? added}) =>
     AggregatedItem(
@@ -21,6 +22,24 @@ void main() {
       sortOrder: 'Descending',
     );
     expect(sorted.map((s) => s.name), ['Pixar', 'HBO', 'A24']);
+  });
+
+  test('any other saved sort orders picked studios by name', () {
+    for (final sort in LibrarySortBy.values) {
+      if (sort == LibrarySortBy.dateAdded || sort == LibrarySortBy.random) {
+        continue;
+      }
+      final sorted = sortAggregatedItems(
+        [_studio('A24'), _studio('Pixar'), _studio('HBO')],
+        sortBy: sort.apiValue,
+        sortOrder: 'Descending',
+      );
+      expect(sorted.map((s) => s.name), [
+        'Pixar',
+        'HBO',
+        'A24',
+      ], reason: sort.name);
+    }
   });
 
   test('name order follows the sort name, so a leading article is skipped', () {

@@ -6,10 +6,13 @@ import '../utils/blocked_ratings.dart';
 class SearchRepository {
   final MediaServerClient _client;
 
+  // ProviderIds lets a title several servers hold fold into one result when
+  // libraries are merged.
   static const _searchFields =
       'Type,UserData,ProductionYear,SeriesName,ParentIndexNumber,IndexNumber,'
       'AlbumArtist,Album,ImageTags,BackdropImageTags,ParentBackdropItemId,'
-      'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag,OfficialRating';
+      'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag,OfficialRating,'
+      'ProviderIds';
 
   SearchRepository(this._client);
 

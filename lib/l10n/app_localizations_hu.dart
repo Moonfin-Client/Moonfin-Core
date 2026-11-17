@@ -511,7 +511,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin ajánlásai';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Ajánlások';
+  String get recommendationSystemJellyfin => 'Szerver ajánlások';
 
   @override
   String get recommendationSystemTmdb => 'TMDb hasonlóság';
@@ -12722,7 +12722,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Moonfin ajánlásai';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Ajánlások';
+  String get sinceYouWatchedSourceServer => 'Szerver ajánlások';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb hasonlóság';

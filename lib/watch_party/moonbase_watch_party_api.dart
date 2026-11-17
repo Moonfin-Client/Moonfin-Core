@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logger/logger.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
@@ -183,6 +184,7 @@ class MoonbaseWatchPartyApi implements WatchPartyBackend {
     Map<String, dynamic>? query,
     CancelToken? cancel,
     Duration? receiveTimeout,
+    Duration? connectTimeout,
   }) async {
     final ep = await _resolve();
     final response = await _dio.request<dynamic>(
@@ -194,6 +196,7 @@ class MoonbaseWatchPartyApi implements WatchPartyBackend {
         method: method,
         headers: {...ep.headers, roomTokenHeader: ?token},
         receiveTimeout: receiveTimeout,
+        connectTimeout: connectTimeout,
       ),
     );
     return response.data;
@@ -384,6 +387,9 @@ class MoonbaseWatchPartyApi implements WatchPartyBackend {
         query: {'cursor': cursor, 'wait': wait},
         cancel: cancel,
         receiveTimeout: _pollTimeout,
+        // A browser counts the connect timeout until the headers arrive, and a
+        // poll only answers once there's news or the wait runs out.
+        connectTimeout: kIsWeb ? _pollTimeout : null,
       ),
     );
     if (json == null) throw const FormatException('Expected room events');

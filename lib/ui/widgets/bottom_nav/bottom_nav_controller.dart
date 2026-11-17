@@ -41,7 +41,7 @@ class BottomNavController extends ChangeNotifier {
       notifyListeners();
     });
     _signature = _prefsSignature();
-    _multiServer = _prefs.get(UserPreferences.enableMultiServerLibraries);
+    _librarySource = _librarySourceSignature();
     _loadUser();
     _loadLibraries();
   }
@@ -73,7 +73,7 @@ class BottomNavController extends ChangeNotifier {
   StreamSubscription? _userSub;
   Timer? _librariesReloadDebounce;
   String _signature = '';
-  late bool _multiServer;
+  late String _librarySource;
   bool _disposed = false;
 
   List<AggregatedLibrary> _libraries = const [];
@@ -197,7 +197,7 @@ class BottomNavController extends ChangeNotifier {
         _prefs.get(UserPreferences.showServerMessagesButton),
         _prefs.get(UserPreferences.showFriendsButton),
         _prefs.get(UserPreferences.showDownloadsButton),
-        _prefs.get(UserPreferences.enableMultiServerLibraries),
+        _librarySourceSignature(),
         _prefs.get(UserPreferences.navbarColor),
         _prefs.get(UserPreferences.navbarOpacity),
         _pluginSync?.seerrAvailable ?? false,
@@ -208,14 +208,18 @@ class BottomNavController extends ChangeNotifier {
     final next = _prefsSignature();
     if (next == _signature) return;
     _signature = next;
-    // Only the multi-server switch changes where the libraries come from.
-    final multiServer = _prefs.get(UserPreferences.enableMultiServerLibraries);
-    if (multiServer != _multiServer) {
-      _multiServer = multiServer;
+    final librarySource = _librarySourceSignature();
+    if (librarySource != _librarySource) {
+      _librarySource = librarySource;
       _scheduleLibrariesReload();
     }
     notifyListeners();
   }
+
+  // Only the multi-server and merge switches change which libraries show.
+  String _librarySourceSignature() =>
+      '${_prefs.get(UserPreferences.enableMultiServerLibraries)}|'
+      '${_prefs.effectiveMergeLibrariesByType}';
 
   // Collapses a burst of change notifications, like the settings sync
   // applying a whole profile, into a single library reload.

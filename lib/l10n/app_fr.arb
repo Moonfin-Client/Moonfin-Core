@@ -10183,7 +10183,7 @@
     "@noBooksFoundDescription": {
         "description": "Description shown when a books library has no items"
     },
-    "recommendationSystemJellyfin": "Recommandé par Jellyfin",
+    "recommendationSystemJellyfin": "Recommandé par le serveur",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -15307,15 +15307,15 @@
     "@libraryCardTitlesDescription": {
         "description": "Description of the Titles Under Posters setting"
     },
-    "sinceYouWatched": "Depuis votre dernier visionnage",
+    "sinceYouWatched": "Selon vos visionnages",
     "@sinceYouWatched": {
         "description": "Settings section header for the Since You Watched rows"
     },
-    "sinceYouWatchedRowTitle": "Depuis votre dernier visionnage",
+    "sinceYouWatchedRowTitle": "Selon vos visionnages",
     "@sinceYouWatchedRowTitle": {
         "description": "Home row title for a Since You Watched row before its source item is known"
     },
-    "sinceYouWatchedItemRowTitle": "Depuis que vous avez regardé « {title} »",
+    "sinceYouWatchedItemRowTitle": "Similaire à « {title} »",
     "@sinceYouWatchedItemRowTitle": {
         "description": "Home row title for recommendations based on an item the user watched",
         "placeholders": {
@@ -15324,7 +15324,7 @@
             }
         }
     },
-    "sinceYouWatchedRowNumber": "Depuis votre dernier visionnage - Rangée {number}",
+    "sinceYouWatchedRowNumber": "Selon vos visionnages - Rangée {number}",
     "@sinceYouWatchedRowNumber": {
         "description": "Name of one of the Since You Watched rows in the home sections list",
         "placeholders": {
@@ -15333,12 +15333,12 @@
             }
         }
     },
-    "displaySinceYouWatchedRows": "Afficher les rangées « Depuis votre dernier visionnage »",
-    "displaySinceYouWatchedRowsSubtitle": "Afficher et personnaliser les rangées « Depuis votre dernier visionnage » dans les sections d'accueil.",
+    "displaySinceYouWatchedRows": "Afficher les rangées « Selon vos visionnages »",
+    "displaySinceYouWatchedRowsSubtitle": "Afficher et personnaliser les rangées « Selon vos visionnages » dans les sections d'accueil.",
     "sinceYouWatchedSource": "Source des recommandations",
     "sinceYouWatchedSourceDescription": "Choisissez la source des recommandations (l'algorithme local « Moonfin recommande », le serveur « Jellyfin recommande » ou les mesures de similarité TMDb. Remarque : les recommandations en ligne nécessitent l'intégration Seerr).",
     "sinceYouWatchedSourceLocal": "Moonfin recommande",
-    "sinceYouWatchedSourceServer": "Jellyfin recommande",
+    "sinceYouWatchedSourceServer": "Recommandé par le serveur",
     "sinceYouWatchedSourceOnline": "Similarité TMDb",
     "sinceYouWatchedSourceType": "Type de source",
     "sinceYouWatchedSourceTypeDescription": "Choisissez le type d'éléments à recommander",
@@ -15346,7 +15346,7 @@
     "sinceYouWatchedSourceItemDescription": "Choisissez l'élément source sur lequel baser les recommandations",
     "sinceYouWatchedRecentlyWatched": "Vu récemment",
     "sinceYouWatchedNumRows": "Nombre de rangées à ajouter",
-    "sinceYouWatchedNumRowsDescription": "Choisissez le nombre de rangées « Depuis votre dernier visionnage » à afficher (1-5)",
+    "sinceYouWatchedNumRowsDescription": "Choisissez le nombre de rangées « Selon vos visionnages » à afficher (1-5)",
     "sinceYouWatchedIncludeWatched": "Inclure les éléments déjà vus",
     "sinceYouWatchedIncludeWatchedSubtitle": "Inclut les éléments déjà vus dans les recommandations",
     "sorting": "Tri",

@@ -6597,7 +6597,7 @@
     "settingsDoNothing": "no hacer nada",
     "settingsMaxBitrateDescription": "Limite la tasa de bits de transmisión. El contenido que supere este umbral se transcodificará para ajustarse.",
     "settingsMaxResolutionDescription": "Limita la resolución máxima que solicitará el jugador. El contenido de mayor resolución se transcodificará hacia abajo.",
-    "settingsPlayerZoomDescription": "Cómo se debe escalar el video para que se ajuste a la pantalla.",
+    "settingsPlayerZoomDescription": "Cómo se ajusta el vídeo a la pantalla. La función Zoom para llenar amplía la imagen hasta que llena la pantalla y recorta los bordes. No detecta las barras negras.",
     "settingsPlaybackEngineAndroidTv": "Motor de reproducción (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Elija el motor de reproducción predeterminado en dispositivos Android TV. Los cambios se aplican a la siguiente sesión de reproducción.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (recomendado)",
@@ -6648,7 +6648,7 @@
     "settingsSyncplayAdvancedCorrection": "Corrección avanzada",
     "settingsSyncplayAdvancedCorrectionSubtitle": "Habilite la lógica de sincronización detallada",
     "settingsSyncplaySyncCorrection": "Corrección de sincronización",
-    "settingsSyncplaySyncCorrectionSubtitle": "Ajusta automáticamente la reproducción para mantener la sincronización",
+    "settingsSyncplaySyncCorrectionSubtitle": "Mantén este dispositivo en sintonía con la habitación",
     "settingsSyncplaySpeedToSync": "Velocidad de sincronización",
     "settingsSyncplaySpeedToSyncSubtitle": "Utilice el ajuste de velocidad de reproducción para sincronizar",
     "settingsSyncplaySkipToSync": "Saltar a sincronización",
@@ -6673,7 +6673,7 @@
             }
         }
     },
-    "latestLibraryName": "Último {libraryName}",
+    "latestLibraryName": "Añadido Recientemente en {libraryName}",
     "@latestLibraryName": {
         "description": "Row title for latest media in a specific library",
         "placeholders": {
@@ -8234,7 +8234,7 @@
     "adminLibGroupShows": "Agrupar series en colecciones",
     "adminLibExternalSuggestions": "Mostrar contenido externo en las sugerencias",
     "adminLibDateAddedSection": "Comportamiento de la fecha de adición",
-    "adminLibDateAddedLabel": "Usar la fecha de adición de",
+    "adminLibDateAddedLabel": "Usar la fecha añadida desde",
     "adminLibDateAddedImport": "Fecha de escaneo en la biblioteca",
     "adminLibDateAddedFile": "Fecha de creación del archivo",
     "adminLibMetadataTitle": "Metadatos e imágenes",
@@ -9153,7 +9153,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Recommends",
+    "recommendationSystemJellyfin": "Server Recommends",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -11876,7 +11876,7 @@
         "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
     },
     "sinceYouWatchedSourceLocal": "Moonfin Recommends",
-    "sinceYouWatchedSourceServer": "Jellyfin Recommends",
+    "sinceYouWatchedSourceServer": "Server Recommends",
     "sinceYouWatchedSourceOnline": "Similitud de TMDb",
     "calendarFullCalendar": "Calendario completo",
     "@calendarFullCalendar": {
@@ -11889,5 +11889,325 @@
     "afterHoursStart": "Inicio",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
-    }
+    },
+    "playlistTypeMixed": "Mezclado",
+    "@playlistTypeMixed": {
+        "description": "Filter checkbox label for mixed media playlists"
+    },
+    "settingsAudioPassthroughModeDescription": "Cómo llega el sonido envolvente comprimido a su televisor o receptor.",
+    "settingsDownmixToStereoDescription": "Mezclar todo el audio decodificado en dos canales.",
+    "hideDetailsMediaDescription": "Ocultar descripción multimedia",
+    "@hideDetailsMediaDescription": {
+        "description": "Setting title to hide media description on details screen"
+    },
+    "hideHomeMediaDescription": "Ocultar descripción multimedia",
+    "@hideHomeMediaDescription": {
+        "description": "Setting title to hide media description on home screen"
+    },
+    "manual": "Manual",
+    "@manual": {
+        "description": "Option: manual"
+    },
+    "loadingAnimationConfiguration": "Cargando la configuración de la animación",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "setupDetailSpotlightHint": "El héroe principal, con tarjetas desplegables para el reparto y los extras.",
+    "@setupDetailSpotlightHint": {
+        "description": "What the spotlight detail screen style gives you"
+    },
+    "friendsLastWatched": "Visto por última vez {title}",
+    "@friendsLastWatched": {
+        "description": "Status line of an offline friend with the last thing they played",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastSeen": "Visto por última vez {time}",
+    "@friendsLastSeen": {
+        "description": "Status line of an offline friend, with a relative time such as 5m ago",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "chatMakeAdmin": "Crear administrador",
+    "@chatMakeAdmin": {
+        "description": "Action that makes a group member an admin"
+    },
+    "chatLeaveBody": "¿Abandonas este grupo? Alguien tendrá que añadirte de nuevo para que puedas reincorporarte.",
+    "@chatLeaveBody": {
+        "description": "Body of the dialog leaving a group chat"
+    },
+    "detailSectionMediaInfo": "Información Multimedia",
+    "@detailSectionMediaInfo": {
+        "description": "Details screen section: file, stream and Direct Play details"
+    },
+    "libraryOrder": "Orden de la biblioteca",
+    "@libraryOrder": {
+        "description": "Title of the settings screen that reorders the user's libraries"
+    },
+    "holidayLunarNewYear": "Año Nuevo Lunar",
+    "@holidayLunarNewYear": {
+        "description": "Seasonal row title for Lunar New Year"
+    },
+    "profileLoad": "Cargar",
+    "@profileLoad": {
+        "description": "Button that replaces this device's settings with the chosen profile from the server"
+    },
+    "settingsGeneralSubtitle": "Idioma, reloj, entrada y rendimiento",
+    "@settingsGeneralSubtitle": {
+        "description": "Subtitle for the General settings root entry"
+    },
+    "settingsLibrariesEntrySubtitle": "Visibilidad, orden y páginas de la biblioteca",
+    "@settingsLibrariesEntrySubtitle": {
+        "description": "Subtitle for the Libraries entry on the Appearance settings screen"
+    },
+    "settingsDetailsPageSubtitle": "Diseño, botones, secciones, valoraciones y música de fondo",
+    "@settingsDetailsPageSubtitle": {
+        "description": "Subtitle for the Details Page entry on the Appearance settings screen"
+    },
+    "settingsLanguageSection": "Idioma",
+    "@settingsLanguageSection": {
+        "description": "Section header on the General settings screen"
+    },
+    "settingsLooksSection": "Aspecto",
+    "@settingsLooksSection": {
+        "description": "Section header on the Home Screen settings screen for how rows and cards look"
+    },
+    "jumpBackIn": "Volver a Entrar",
+    "@jumpBackIn": {
+        "description": "Heading over the albums and playlists the user played recently in a music library"
+    },
+    "keptAsComplete": "Marcado como completo",
+    "@keptAsComplete": {
+        "description": "Snackbar confirmation after Keep as Complete"
+    },
+    "rommLinkedAs": "Vinculado como {username}",
+    "@rommLinkedAs": {
+        "description": "Shown when the user's RomM account is linked",
+        "placeholders": {
+            "username": {
+                "type": "String"
+            }
+        }
+    },
+    "recordPromptUncertainMatch": "Coinciden únicamente por título y descripción. Comprueba que se trata del mismo programa.",
+    "@recordPromptUncertainMatch": {
+        "description": "Caution under the future showing when it has no season and episode numbers to confirm it is the same program"
+    },
+    "musicMix": "Mezcla",
+    "@musicMix": {
+        "description": "Small label over a music mix card, as in a playlist the app put together"
+    },
+    "setupMediaBarMoonfinHint": "Obra de arte grande con el título, los detalles y la descripción general sobre ella.",
+    "@setupMediaBarMoonfinHint": {
+        "description": "What the Moonfin media bar style looks like"
+    },
+    "setupMediaBarMakdHint": "Gran obra de arte encabezada por un gran logotipo de título.",
+    "@setupMediaBarMakdHint": {
+        "description": "What the MakD media bar style looks like"
+    },
+    "radarrCalendarHideDownloaded": "Ocultar las películas que ya están en el servidor",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Ocultar episodios que ya están en el servidor",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "calendarBadgeMidseasonFinale": "Final de mitad de temporada",
+    "@calendarBadgeMidseasonFinale": {
+        "description": "Tag on the last episode before a season's mid-season break"
+    },
+    "calendarSettingsSpoilerSafeSubtitle": "Oculta los títulos de los episodios y las imágenes fijas de las series que te has quedado atrás",
+    "@calendarSettingsSpoilerSafeSubtitle": {
+        "description": "Subtitle of the Spoiler safe calendar setting"
+    },
+    "setupMoonbaseManualSteps": "La instalación requiere algunos pasos en tu servidor. Los encontrarás todos en este enlace.",
+    "@setupMoonbaseManualSteps": {
+        "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+    },
+    "moonbaseFeatureMessages": "Mensajes del administrador de su servidor",
+    "@moonbaseFeatureMessages": {
+        "description": "Moonbase dialog feature"
+    },
+    "watchPartyJoinWithCode": "Únete con un código",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyStatusJoining": "Unirse",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyMakeHost": "Hacer anfitrión",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyLeave": "Abandonar",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "settingsPreviewRowsOffInKidsMode": "El modo infantil mantiene estas filas fuera de la pantalla de inicio, por lo que esta configuración no lo modifica.",
+    "@settingsPreviewRowsOffInKidsMode": {
+        "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
+    },
+    "settingsPreviewKeptOffByKidsMode": "El modo Niños mantiene esto desactivado de Inicio",
+    "@settingsPreviewKeptOffByKidsMode": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
+    },
+    "settingsClientCertificates": "Certificados de cliente",
+    "@settingsClientCertificates": {
+        "description": "Settings entry that lists the imported client certificates"
+    },
+    "settingsClientCertificatesSubtitle": "Certificados que esta aplicación presenta a los servidores que requieren uno (mTLS)",
+    "@settingsClientCertificatesSubtitle": {
+        "description": "Subtitle for the client certificates settings entry"
+    },
+    "settingsDateFormat": "Formato de Fecha",
+    "settingsDateFormatDescription": "Elija entre mes-día, día-mes o configuración regional predeterminada para las fechas de calendario y lanzamiento",
+    "dateFormatSystem": "Configuración Regional por defecto",
+    "dateFormatMonthDay": "Mes / Dia (Nov 10)",
+    "dateFormatDayMonth": "Dia / Mes (10 Nov)",
+    "cropBlackBars": "Recortar Barras Negras",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Detecta las barras negras laterales codificadas después de que comience la reproducción, recórtalas y luego ajusta la imagen a la pantalla. Vuelve a recortar desde el botón de zoom del reproductor.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "cropBlackBarsRecropInterval": "Intervalo de Recorte",
+    "@cropBlackBarsRecropInterval": {
+        "description": "Setting for how often to re-detect encoded letterbox bars"
+    },
+    "setupStepOf": "Paso {current} de {total}",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupTourMoreHeader": "Hay más tiempo de espera en Configuración",
+    "@setupTourMoreHeader": {
+        "description": "Heading of the closing setup screen block that lists features found in settings"
+    },
+    "setupTourBulletSyncPlay": "Fiestas de visualización de SyncPlay",
+    "@setupTourBulletSyncPlay": {
+        "description": "Bullet on the closing setup screen for SyncPlay"
+    },
+    "setupTourBulletThemes": "Temas personalizados",
+    "@setupTourBulletThemes": {
+        "description": "Bullet on the closing setup screen for custom themes"
+    },
+    "tvOfflineDownloads": "Habilitar descargas sin conexión",
+    "@tvOfflineDownloads": {
+        "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
+    },
+    "tvOfflineDownloadsSubtitle": "Mostrar acciones de descarga en las páginas de los elementos",
+    "@tvOfflineDownloadsSubtitle": {
+        "description": "Subtitle for the TV-only offline downloads toggle"
+    },
+    "setupTourBulletDownloads": "Descargas sin conexión",
+    "@setupTourBulletDownloads": {
+        "description": "Bullet on the closing setup screen for downloads"
+    },
+    "scrollSensitivity": "Sensibilidad de desplazamiento",
+    "@scrollSensitivity": {
+        "description": "Title of the desktop setting that scales mouse wheel scrolling."
+    },
+    "scrollSensitivitySubtitle": "Desplazamiento de una muesca de la rueda del ratón",
+    "@scrollSensitivitySubtitle": {
+        "description": "Explains the desktop scroll sensitivity slider."
+    },
+    "settingsHomeScreenSubtitle": "Filas, barra multimedia, apariencia y fuentes externas",
+    "@settingsHomeScreenSubtitle": {
+        "description": "Subtitle for the Home Screen entry on the Appearance settings screen"
+    },
+    "pageTransitions": "Transiciones de página",
+    "@pageTransitions": {
+        "description": "Setting title for adjusting the speed of page navigation transitions"
+    },
+    "pageTransitionsSubtitle": "Ajusta el tiempo de desvanecimiento al navegar entre páginas",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeed": "Velocidad de Navegación",
+    "@navigationSpeed": {
+        "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+    },
+    "navigationSpeedSubtitle": "Ajusta la velocidad con la que el indicador de enfoque se mueve entre elementos y filas",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "pageTransitionFadeMedium": "Desvanecimiento medio",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Desvanecimiento largo",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "pageTransitionFadeShort": "Desvanecimiento corto",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeNone": "Sin desvanecimiento",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "seasonalFollower": "Seguidor de Enfoque",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "Una pieza navideña, como la planchette de Halloween, sigue lo que selecciones en Inicio",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "settingsPreviewNotShown": "No se muestra en la vista previa",
+    "@settingsPreviewNotShown": {
+        "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
+    },
+    "settingsLivePreview": "Vista previa en directo",
+    "@settingsLivePreview": {
+        "description": "Label over the preview in Settings that redraws a screen of the app as settings change"
+    },
+    "watchPartyDuringParty": "Durante una fiesta",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "subtitleDownloadLanguagesDescription": "Idiomas para buscar al descargar subtítulos, hasta 5. La búsqueda automática selecciona un idioma de entre el idioma de subtítulos predeterminado o el del vídeo.",
+    "@subtitleDownloadLanguagesDescription": {
+        "description": "Description for the subtitle download languages setting"
+    },
+    "adminPageDescMetadata": "Idioma, país e imágenes predeterminados",
+    "adminPageDescNfo": "Lectura y guardado de archivos NFO en Kodi",
+    "adminPageDescLiveTv": "Sintonizadores, datos de guía y grabaciones",
+    "adminPageDescLibraries": "Carpetas, escáneres y recuperadores de metadatos",
+    "adminPremiereNoteLiveTv": "La TV en directo requiere Emby Premiere. Sin él, el servidor ni importa canales ni graba nada.",
+    "adminDrawerLiveTvChannels": "Canales de TV en Directo",
+    "adminPageDescLiveTvChannels": "Enciende y apaga los canales y establece su orden",
+    "adminLiveTvChannelsEmpty": "Aún no hay canales disponibles. Aparecerán aquí una vez que se configure el sintonizador y el servidor haya importado sus canales.",
+    "adminLiveTvDrmNote": "Los canales con DRM no se importarán.",
+    "adminLiveTvMapChannels": "Mapa de Canales",
+    "adminLiveTvNoTunerChannels": "No se encontraron canales de sintonización",
+    "adminLiveTvGuideDaysHelp": "Más días te permiten programar con más antelación y ver más anuncios, pero la descarga tarda más. La opción automática selecciona un valor del número de canales.",
+    "adminPageDescCinemaIntros": "Introducciones y Tráilers antes de la reproducción",
+    "adminCinemaIntrosUpcoming": "Incluir tráilers de películas nuevas y próximas",
+    "adminCinemaIntrosOlder": "Incluir tráilers de películas antiguas",
+    "adminCinemaIntrosLibrary": "Incluir trailers de películas en mis bibliotecas",
+    "adminCinemaIntrosLibraryHelp": "Es necesario instalar trailers locales.",
+    "adminCinemaIntrosCount": "Número de trailers para reproducir",
+    "adminCinemaIntrosParentalHelp": "Solo seleccionar trailers con una calificación igual o inferior a la del vídeo que se está viendo.",
+    "adminCinemaIntrosSimilarOnly": "Reproducir solo trailers similares a lo que se está viendo",
+    "adminCinemaIntrosCustomPathHelp": "Una carpeta con vídeos. Se elige uno al azar y se reproduce después de los tráileres.",
+    "adminPageDescAnalytics": "Tamaños, códecs y formatos de las Bibliotecas"
 }
