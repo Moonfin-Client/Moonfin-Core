@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -623,6 +624,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   void _refreshPosterSizeFromScope() {
     _posterSize = _readScopedPosterSize();
+  }
+
+  /// Loads again without the servers' titles read before, as after an item
+  /// was changed or deleted, which a sort change doesn't call for.
+  Future<void> refresh() {
+    _lightRead = null;
+    return load();
   }
 
   Future<void> load() async {
@@ -1442,7 +1450,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     required bool? isFavorite,
   }) {
     final sources = _mergedSources;
-    final query = [
+    // As JSON, so lists whose values hold a comma can't read as other lists.
+    final query = jsonEncode([
       for (final source in sources)
         '${source.session.server.id}:${source.libraryId}',
       genreIds,
@@ -1470,7 +1479,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _isHdFilter,
       _is4KFilter,
       _is3DFilter,
-    ].join('|');
+    ]);
     final reusable = filters == null && isFavorite != true;
     if (_lightRead case final read?
         when reusable && read.query == query && !read.failed) {

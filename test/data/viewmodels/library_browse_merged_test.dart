@@ -627,5 +627,22 @@ void main() {
         expect(serversOfFirstCard(vm), ['a']);
       },
     );
+
+    test('is read again on a refresh, though not on a plain reload', () async {
+      final list = sources();
+      final vm = await _viewModel(list);
+      addTearDown(vm.dispose);
+      await vm.load();
+      await pumpEventQueue();
+      await vm.load();
+      await pumpEventQueue();
+      await vm.refresh();
+      await pumpEventQueue();
+
+      for (final source in list) {
+        final api = source.session.client.itemsApi as _SortedItemsApi;
+        expect(api.lightReads, 2);
+      }
+    });
   });
 }
