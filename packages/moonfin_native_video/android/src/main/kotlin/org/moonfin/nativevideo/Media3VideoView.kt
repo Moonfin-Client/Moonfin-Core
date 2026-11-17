@@ -688,10 +688,7 @@ class Media3VideoView(
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
         private const val RETIME_DEBOUNCE_MS = 300L
         private const val STREAMING_MAX_BUFFER_MS = 120_000
-        // A resume on hardware that leaves its offload decoder faded out needs
-        // a volume change on the running stream, see
-        // scheduleVolumeRestoreNudge. The step is 1% and is restored after
-        // 80 ms, which is inaudible.
+        // See scheduleVolumeRestoreNudge.
         private const val RESUME_VOLUME_NUDGE_DELAY_MS = 250L
         private const val RESUME_VOLUME_RESTORE_DELAY_MS = 80L
         private const val RESUME_VOLUME_NUDGE_STEP = 0.01f
@@ -1109,8 +1106,13 @@ class Media3VideoView(
             pm.hasSystemFeature("amazon.hardware.fire_tv")
     }.getOrDefault(false)
     private var audioOffloadRetryAttemptedForCurrentSource = false
-    private var lastPlayWhenReadyForResumeNudge = false
+    // The TCL G10 fades its passthrough decoder on pause and never undoes it
+    // on resume (#2261). Widen this if other TVs show the same thing.
+    private val fadesPassthroughOnPause =
+        Build.MANUFACTURER == "TCL" && Build.DEVICE == "G10"
     private var resumeNudgeGeneration = 0
+    // Whether the open AudioTrack carries a bitstream rather than decoded PCM.
+    private var audioTrackIsPassthrough = false
     private var sessionTunnelingDisabled = Media3Bridge.sessionTunnelingDisabledEnabled()
     private var currentAudioIsBitstream = false
     // True while the active audio track is TrueHD/MLP, which must never run
@@ -1324,19 +1326,13 @@ class Media3VideoView(
         }
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
+            // A rebuffer or a transient focus loss pauses the track without
+            // touching playWhenReady, so this keys off playback restarting.
+            if (isPlaying) scheduleVolumeRestoreNudge()
             emitState()
         }
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-            // Some TV audio HALs leave the offload decoder faded out after a
-            // pause, so a resume plays silence while the stream and its
-            // position keep advancing. Nudge the volume shortly after a
-            // bitstream resume to make AudioFlinger re-apply the output
-            // volume with the fade cleared.
-            if (playWhenReady && !lastPlayWhenReadyForResumeNudge) {
-                scheduleVolumeRestoreNudge()
-            }
-            lastPlayWhenReadyForResumeNudge = playWhenReady
             // A correction's own pause is neither the viewer's nor the
             // system's, and its end resumes from what it saved.
             if (!playWhenReady && rateSession.consumeInternalPause(
@@ -1748,6 +1744,7 @@ class Media3VideoView(
             audioTrackConfig: AudioSink.AudioTrackConfig,
         ) {
             audioTrackOpenedForSource = true
+            audioTrackIsPassthrough = !Util.isEncodingLinearPcm(audioTrackConfig.encoding)
             if (rateSession.startup.awaitingEvidence) {
                 // Defensive fail-closed path: this callback is too late to gate
                 // audio, so no new display request may follow it.
@@ -2381,37 +2378,45 @@ class Media3VideoView(
     }
 
     /**
-     * Re-applies the output volume shortly after a bitstream resume.
+     * Re-applies the output volume shortly after passthrough playback starts.
      *
-     * Some TV audio HALs keep the offload decoder's gain faded out across a
-     * pause, so a plain resume plays silence even though the stream keeps
-     * advancing. Changing the volume while the stream is running makes
-     * AudioFlinger push a new volume to the output with the fade cleared, which
-     * restores the gain. That avoids rebuilding the stream, which is the other
+     * The TCL G10 keeps its offload decoder's gain faded out across a pause, so
+     * a plain resume plays silence even though the stream keeps advancing.
+     * Changing the volume while the stream is running makes AudioFlinger push a
+     * new volume to the output with the fade cleared, which restores the gain. That avoids rebuilding the stream, which is the other
      * way to fix it but costs a visible loading flash. The step is 1% and lasts
      * [RESUME_VOLUME_RESTORE_DELAY_MS], so it is inaudible.
      */
     private fun scheduleVolumeRestoreNudge() {
-        if (!currentAudioIsBitstream) return
+        if (!fadesPassthroughOnPause || !audioTrackIsPassthrough) return
         val generation = ++resumeNudgeGeneration
+        // A rebuilt player must not get a step it can never have restored.
+        val target = player
         mainHandler.postDelayed({
             if (generation != resumeNudgeGeneration ||
+                player !== target ||
                 isDisposed ||
                 isPlayerReleased ||
-                !player.playWhenReady ||
                 !player.isPlaying
             ) {
                 return@postDelayed
             }
             val volume = player.volume
             if (volume <= 0f) return@postDelayed
-            player.volume = if (volume > 0.5f) {
+            val nudged = if (volume > 0.5f) {
                 volume - RESUME_VOLUME_NUDGE_STEP
             } else {
                 volume + RESUME_VOLUME_NUDGE_STEP
             }
+            player.volume = nudged
+            // A newer nudge must not skip this restore or the step sticks, and
+            // a volume the viewer set in between (a mute) must not be undone.
             mainHandler.postDelayed({
-                if (generation == resumeNudgeGeneration && !isDisposed && !isPlayerReleased) {
+                if (player === target &&
+                    !isDisposed &&
+                    !isPlayerReleased &&
+                    player.volume == nudged
+                ) {
                     player.volume = volume
                 }
             }, RESUME_VOLUME_RESTORE_DELAY_MS)
