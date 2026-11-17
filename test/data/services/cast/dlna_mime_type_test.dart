@@ -85,6 +85,19 @@ void main() {
       );
     });
 
+    test('claims nothing for a remux', () {
+      expect(
+        dlnaFeatures(
+          _resolution(
+            'http://jf/Videos/1/stream.mkv',
+            container: 'mkv',
+            playMethod: StreamPlayMethod.directStream,
+          ),
+        ),
+        '*',
+      );
+    });
+
     test('claims nothing for a transcode or an HLS playlist', () {
       expect(
         dlnaFeatures(

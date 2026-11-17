@@ -24,6 +24,10 @@ final class DlnaController: NSObject {
     private let discoveryLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
+    // Bumped by every new cast and by the user's own pause, seek and stop, so
+    // a resume seek still waiting for the renderer gives up.
+    private let resumeLock = NSLock()
+    private var resumeGeneration = 0
     private var isDiscovering = false
 
     private let session: URLSession = {
@@ -168,6 +172,7 @@ final class DlnaController: NSObject {
         completion: @escaping (Error?) -> Void
     ) {
         emitEvent(state: "connecting")
+        let resumeToken = cancelPendingResume()
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else {
@@ -225,7 +230,8 @@ final class DlnaController: NSObject {
                 }
 
                 if let ticks = startPositionTicks, ticks > 0 {
-                    self.seekOnceStarted(controlUrl: controlUrl, target: startTime)
+                    self.seekOnceStarted(
+                        controlUrl: controlUrl, target: startTime, generation: resumeToken)
                 }
             } catch {
                 DispatchQueue.main.async { [weak self] in
@@ -237,6 +243,7 @@ final class DlnaController: NSObject {
     }
 
     func pause(completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
         withActiveDevice(completion: completion) { controlUrl in
             try self.sendSoap(
                 controlUrl: controlUrl,
@@ -260,6 +267,7 @@ final class DlnaController: NSObject {
     }
 
     func seek(positionTicks: Int64, completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
             try self.sendSoap(
@@ -275,6 +283,7 @@ final class DlnaController: NSObject {
     }
 
     func stop(completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
         withActiveDevice(completion: completion) { [weak self] controlUrl in
             try self?.sendSoap(
                 controlUrl: controlUrl,
@@ -565,12 +574,14 @@ final class DlnaController: NSObject {
     /// already connected. Some renderers (LG) refuse a Seek before Play with
     /// 711 and ignore one sent before the position moves, so the cast plays
     /// from the start rather than failing when the renderer never takes it.
-    private func seekOnceStarted(controlUrl: String, target: String) {
+    private func seekOnceStarted(controlUrl: String, target: String, generation: Int) {
+        func current() -> Bool { resumeLock.withLock { resumeGeneration == generation } }
         for _ in 0..<30 {
-            guard activeDeviceControlUrl == controlUrl else { return }
+            guard current() else { return }
             if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 { break }
             Thread.sleep(forTimeInterval: 0.5)
         }
+        guard current() else { return }
         _ = try? sendSoap(
             controlUrl: controlUrl,
             action: "Seek",
@@ -580,6 +591,14 @@ final class DlnaController: NSObject {
             <Target>\(target)</Target>
             """
         )
+    }
+
+    @discardableResult
+    private func cancelPendingResume() -> Int {
+        resumeLock.withLock {
+            resumeGeneration += 1
+            return resumeGeneration
+        }
     }
 
     private func queryTransportState(controlUrl: String) throws -> String {

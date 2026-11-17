@@ -52,6 +52,9 @@ class DlnaController(private val context: Context) {
     // these, so a plain map can be corrupted mid-write.
     private val discoveredEventSubUrls = ConcurrentHashMap<String, String>()
     private val discoveredRenderingControlUrls = ConcurrentHashMap<String, String>()
+    // Bumped by every new cast and by the user's own pause, seek and stop, so
+    // a resume seek still waiting for the renderer gives up.
+    private val resumeGeneration = AtomicInteger(0)
     @Volatile private var isDiscovering = false
 
     companion object {
@@ -197,6 +200,7 @@ class DlnaController(private val context: Context) {
         }
 
         emitEvent("connecting")
+        val resumeToken = resumeGeneration.incrementAndGet()
 
         executor.execute {
             try {
@@ -244,7 +248,7 @@ class DlnaController(private val context: Context) {
                 }
 
                 if (startTicks != null && startTicks > 0L) {
-                    seekOnceStarted(controlUrl, startTime)
+                    seekOnceStarted(controlUrl, startTime, resumeToken)
                 }
             } catch (e: Exception) {
                 handler.post {
@@ -256,6 +260,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun pause(result: MethodChannel.Result) {
+        resumeGeneration.incrementAndGet()
         withActiveDevice(result) { controlUrl ->
             sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>")
             handler.post { result.success(null) }
@@ -270,6 +275,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun seek(args: Map<*, *>, result: MethodChannel.Result) {
+        resumeGeneration.incrementAndGet()
         val positionTicks = (args["positionTicks"] as? Number)?.toLong()
         if (positionTicks == null || positionTicks < 0L) {
             result.error("BAD_ARGS", "Missing or invalid positionTicks", null)
@@ -287,6 +293,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun stop(result: MethodChannel.Result) {
+        resumeGeneration.incrementAndGet()
         withActiveDevice(result) { controlUrl ->
             sendSoap(controlUrl, "Stop", "<InstanceID>0</InstanceID>")
             stopGena()
@@ -574,13 +581,20 @@ class DlnaController(private val context: Context) {
      * 711 and ignore one sent before the position moves, so the cast plays
      * from the start rather than failing when the renderer never takes it.
      */
-    private fun seekOnceStarted(controlUrl: String, target: String) {
+    private fun seekOnceStarted(controlUrl: String, target: String, token: Int) {
+        // Runs after the channel result was answered, so it must not throw.
         for (attempt in 0 until 30) {
-            if (activeDeviceControlUrl != controlUrl) return
+            if (resumeGeneration.get() != token) return
             val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
             if (ticks > 0L) break
-            Thread.sleep(500)
+            try {
+                Thread.sleep(500)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+                return
+            }
         }
+        if (resumeGeneration.get() != token) return
         runCatching {
             sendSoap(
                 controlUrl, "Seek",

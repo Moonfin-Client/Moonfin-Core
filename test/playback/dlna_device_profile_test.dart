@@ -42,5 +42,21 @@ void main() {
       expect(hdr['dolby_vision_profiles'], [8]);
       expect(hdr['hdr10'], isTrue);
     });
+
+    // The names must match Jellyfin's VideoRangeType exactly to apply.
+    test('keeps every Dolby Vision type without an HDR10 base off HEVC', () {
+      final hevc = (dlnaDeviceProfile()['CodecProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Codec'] == 'hevc');
+      final ruledOut = [
+        for (final c in (hevc['Conditions'] as List).cast<Map<String, dynamic>>())
+          if (c['Property'] == 'VideoRangeType' && c['Condition'] == 'NotEquals')
+            c['Value'],
+      ];
+      expect(
+        ruledOut,
+        unorderedEquals(['DOVI', 'DOVIWithEL', 'DOVIWithELHDR10Plus', 'DOVIInvalid']),
+      );
+    });
   });
 }

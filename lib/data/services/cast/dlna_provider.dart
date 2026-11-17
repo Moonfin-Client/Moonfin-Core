@@ -54,10 +54,10 @@ String dlnaMimeType(StreamResolutionResult resolution) {
 
 /// The DLNA fourth field of the res protocolInfo. A file the server sends as
 /// it is takes byte-range seeks, and without that flag some renderers (LG)
-/// accept a Seek and stay where they are. A transcode or HLS playlist has no
-/// bytes to seek in, so it claims nothing.
+/// accept a Seek and stay where they are. A remux, transcode or HLS playlist
+/// is produced as it plays and has no bytes to seek in, so it claims nothing.
 String dlnaFeatures(StreamResolutionResult resolution) {
-  if (resolution.playMethod == StreamPlayMethod.transcode ||
+  if (resolution.playMethod != StreamPlayMethod.directPlay ||
       dlnaMimeType(resolution) == 'application/vnd.apple.mpegurl') {
     return '*';
   }
