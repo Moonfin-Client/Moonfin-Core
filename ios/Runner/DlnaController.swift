@@ -159,6 +159,7 @@ final class DlnaController: NSObject {
         targetId: String,
         streamUrl: String,
         title: String,
+        mimeType: String,
         startPositionTicks: Int64?,
         completion: @escaping (Error?) -> Void
     ) {
@@ -176,7 +177,13 @@ final class DlnaController: NSObject {
                 let controlUrl = targetId
                 let startTime = self.formatDlnaTime(ticks: startPositionTicks)
 
-                let metadataXml = "&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;&lt;item&gt;&lt;dc:title&gt;\(self.escapeXml(title))&lt;/dc:title&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;"
+                // Some renderers (LG) refuse a URI with Invalid Args unless the
+                // metadata gives the item a class and a res with its MIME type.
+                let upnpClass = mimeType.hasPrefix("audio/")
+                    ? "object.item.audioItem.musicTrack"
+                    : "object.item.videoItem"
+                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):*\">\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
+                let metadataXml = self.escapeXml(didl)
 
                 try self.sendSoap(
                     controlUrl: controlUrl,

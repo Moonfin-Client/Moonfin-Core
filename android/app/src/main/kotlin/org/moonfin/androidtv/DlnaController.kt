@@ -184,6 +184,7 @@ class DlnaController(private val context: Context) {
         val targetId = args["targetId"] as? String
         val streamUrl = args["streamUrl"] as? String
         val title = args["title"] as? String ?: "Moonfin"
+        val mimeType = args["mimeType"] as? String ?: "video/*"
         val startTicks = (args["startPositionTicks"] as? Number)?.toLong()
 
         if (targetId.isNullOrEmpty() || streamUrl.isNullOrEmpty()) {
@@ -197,6 +198,21 @@ class DlnaController(private val context: Context) {
             try {
                 val controlUrl = targetId
                 val startTime = formatDlnaTime(startTicks)
+                // Some renderers (LG) refuse a URI with Invalid Args unless the
+                // metadata gives the item a class and a res with its MIME type.
+                val upnpClass = if (mimeType.startsWith("audio/")) {
+                    "object.item.audioItem.musicTrack"
+                } else {
+                    "object.item.videoItem"
+                }
+                val didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" " +
+                    "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" " +
+                    "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\">" +
+                    "<item id=\"0\" parentID=\"-1\" restricted=\"1\">" +
+                    "<dc:title>${escapeXml(title)}</dc:title>" +
+                    "<upnp:class>$upnpClass</upnp:class>" +
+                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:*\">${escapeXml(streamUrl)}</res>" +
+                    "</item></DIDL-Lite>"
 
                 sendSoap(
                     controlUrl,
@@ -204,7 +220,7 @@ class DlnaController(private val context: Context) {
                     """
                     <InstanceID>0</InstanceID>
                     <CurrentURI>${escapeXml(streamUrl)}</CurrentURI>
-                    <CurrentURIMetaData>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;&lt;item&gt;&lt;dc:title&gt;${escapeXml(title)}&lt;/dc:title&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</CurrentURIMetaData>
+                    <CurrentURIMetaData>${escapeXml(didl)}</CurrentURIMetaData>
                     """.trimIndent(),
                 )
 

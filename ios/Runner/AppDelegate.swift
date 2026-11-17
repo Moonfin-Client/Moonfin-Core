@@ -454,6 +454,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
           targetId: targetId,
           streamUrl: streamUrl,
           title: title,
+          mimeType: args["mimeType"] as? String ?? "video/*",
           startPositionTicks: startPositionTicks
         ) { error in
           if let error {

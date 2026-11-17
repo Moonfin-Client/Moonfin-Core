@@ -18,6 +18,33 @@ import 'cast_transport_controls.dart';
 import 'native_dlna_channel.dart';
 import 'receiver_device_profiles.dart';
 
+/// The MIME type a DLNA renderer is told the stream has. Some renderers (LG)
+/// refuse a URI whose metadata names none, and the server's extension-less
+/// stream paths leave nothing else to go by.
+String dlnaMimeType(StreamResolutionResult resolution) {
+  final audio = resolution.mediaType.toLowerCase() == 'audio';
+  final path = Uri.tryParse(resolution.streamUrl)?.path.toLowerCase() ?? '';
+  final container = (resolution.container ?? '').toLowerCase().split(',').first;
+  if (path.endsWith('.m3u8') || container == 'hls' || container == 'm3u8') {
+    return 'application/vnd.apple.mpegurl';
+  }
+  return switch (container) {
+    'mkv' || 'matroska' => audio ? 'audio/x-matroska' : 'video/x-matroska',
+    'mp4' || 'm4v' => audio ? 'audio/mp4' : 'video/mp4',
+    'mov' => 'video/quicktime',
+    'ts' || 'mpegts' || 'm2ts' => 'video/mp2t',
+    'webm' => audio ? 'audio/webm' : 'video/webm',
+    'avi' => 'video/x-msvideo',
+    'mp3' => 'audio/mpeg',
+    'aac' => 'audio/aac',
+    'm4a' || 'm4b' => 'audio/mp4',
+    'flac' => 'audio/flac',
+    'wav' => 'audio/wav',
+    'ogg' || 'oga' => 'audio/ogg',
+    _ => audio ? 'audio/*' : 'video/*',
+  };
+}
+
 class DlnaProvider
     implements CastProvider, CastTransportControls, CastServerPlaybackSource {
   final NativeDlnaChannel _native;
@@ -98,6 +125,7 @@ class DlnaProvider
       targetId: target.id,
       streamUrl: streamUrl,
       title: item.name,
+      mimeType: dlnaMimeType(resolution),
       startPositionTicks: startPositionTicks,
     );
     _serverPlayback = castNeedsSessionReports(client)
