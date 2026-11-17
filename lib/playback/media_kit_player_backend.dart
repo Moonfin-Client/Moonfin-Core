@@ -1880,18 +1880,33 @@ class MediaKitPlayerBackend extends PlayerBackend
     if (native is! NativePlayer || !_ownsPlayback(generation)) return;
     final format = await _tryNativeGetProperty(native, 'audio-params/format');
     if (format == null || !format.startsWith('spdif')) return;
+    // A slow restart also leaves the core idle, but its output is open.
     if (await _tryNativeGetProperty(native, 'core-idle') != 'yes' ||
         await _tryNativeGetProperty(native, 'pause') != 'no' ||
-        await _tryNativeGetProperty(native, 'paused-for-cache') != 'no') {
+        await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
+        await _tryNativeGetProperty(native, 'current-ao') != null) {
       return;
     }
     if (!_ownsPlayback(generation)) return;
     debugPrint('[audio] $format output never started, decoding instead');
     await _nativeSetProperty(native, 'audio-spdif', '');
-    if (!_ownsPlayback(generation)) return;
-    // audio-spdif only takes effect when the audio decoder is recreated, and
-    // a seek in place recreates it without touching the selected track.
-    await _tryNativeCommand(native, ['seek', '0', 'relative+exact']);
+    // Before mpv 0.41, audio-spdif only takes effect once the audio decoder
+    // is recreated, which selecting the track again does. Queued with
+    // setAudioTrack so a track the viewer picks meanwhile isn't undone.
+    await _queueAudioTrackChange(() async {
+      final aid = await _tryNativeGetProperty(native, 'aid');
+      if (aid == null || !_ownsPlayback(generation)) return;
+      await _nativeSetProperty(native, 'aid', 'no');
+      await _nativeSetProperty(native, 'aid', aid);
+    });
+  }
+
+  Future<void> _audioTrackChanges = Future<void>.value();
+
+  Future<void> _queueAudioTrackChange(Future<void> Function() change) {
+    final next = _audioTrackChanges.then((_) => change());
+    _audioTrackChanges = next.catchError((_) {});
+    return next;
   }
 
   /// Maps the effective passthrough codec set to mpv spdif names. Downmixing
@@ -2706,7 +2721,10 @@ class MediaKitPlayerBackend extends PlayerBackend
   }
 
   @override
-  Future<void> setAudioTrack(int mpvTrackId) async {
+  Future<void> setAudioTrack(int mpvTrackId) =>
+      _queueAudioTrackChange(() => _setAudioTrack(mpvTrackId));
+
+  Future<void> _setAudioTrack(int mpvTrackId) async {
     if (mpvTrackId < 1) return;
     try {
       final native = _player.platform as NativePlayer;
