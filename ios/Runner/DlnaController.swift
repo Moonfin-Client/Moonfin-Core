@@ -19,6 +19,9 @@ final class DlnaController: NSObject {
     private var genaServerPort: UInt16 = 0
     private var genaRenewalTimer: DispatchSourceTimer?
     private var consecutivePollFailures: Int = 0
+    // Discovery scans run on global queues at once and cast reads these, so
+    // every access holds discoveryLock; an unguarded write crashed the app.
+    private let discoveryLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
     private var isDiscovering = false
@@ -206,9 +209,11 @@ final class DlnaController: NSObject {
                 )
 
                 self.activeDeviceControlUrl = controlUrl
+                self.discoveryLock.lock()
                 self.activeDeviceRenderingControlUrl = self.discoveredRenderingControlUrls[controlUrl]
-                self.consecutivePollFailures = 0
                 let eventSubUrl = self.discoveredEventSubUrls[controlUrl]
+                self.discoveryLock.unlock()
+                self.consecutivePollFailures = 0
                 self.activeDeviceEventSubUrl = eventSubUrl
                 self.startGenaServer()
                 if let url = eventSubUrl { self.subscribeGena(eventSubUrl: url) }
@@ -408,12 +413,14 @@ final class DlnaController: NSObject {
               let controlPath = parser.avTransportControlURL else { return nil }
 
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
+        discoveryLock.lock()
         if let renderingControlPath = parser.renderingControlURL {
             discoveredRenderingControlUrls[controlUrl] = resolveUrl(base: locationUrl, relative: renderingControlPath)
         }
         if let eventSubPath = parser.avTransportEventSubURL {
             discoveredEventSubUrls[controlUrl] = resolveUrl(base: locationUrl, relative: eventSubPath)
         }
+        discoveryLock.unlock()
         let friendlyName = parser.friendlyName ?? "DLNA Device"
         let modelName = parser.modelName ?? ""
 
