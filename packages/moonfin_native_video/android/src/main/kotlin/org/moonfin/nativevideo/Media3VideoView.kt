@@ -2397,7 +2397,9 @@ class Media3VideoView(
                 player !== target ||
                 isDisposed ||
                 isPlayerReleased ||
-                !player.isPlaying
+                !player.isPlaying ||
+                // An audio switch in the delay can open a PCM track.
+                !audioTrackIsPassthrough
             ) {
                 return@postDelayed
             }
