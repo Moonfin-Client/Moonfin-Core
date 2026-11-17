@@ -52,6 +52,18 @@ const streamStarvedError = 'stream-starved';
 /// there was no transcode left to fall back to.
 const unsupportedVideoError = 'unsupported-video';
 
+/// Reported as the bringup error when device storage is full and there is no
+/// server-served stream left to fall back to.
+const storageFullError = 'storage-full';
+
+/// Non-fatal playback notices surfaced to the viewer while playback continues.
+enum PlaybackNotice {
+  /// Device storage filled up during direct play, so playback stepped to a
+  /// server-served stream instead. Freeing space avoids playback issues and
+  /// restores direct play.
+  storageFullServerFallback,
+}
+
 /// Whether a seek actually landed. The player reports the seek target as its
 /// position while the seek is still in flight, and a seek issued early in a
 /// file's life can quietly fail and fall back to the start, so a single read
@@ -377,6 +389,10 @@ class PlaybackManager implements AudioOwnable {
   Timer? _reconnectRetry;
   Timer? _reconnectProvenTimer;
   final _reconnectingController = StreamController<bool>.broadcast();
+  final _noticeController = StreamController<PlaybackNotice>.broadcast();
+
+  /// Non-fatal notices emitted when the manager adapts playback without failing.
+  Stream<PlaybackNotice> get noticeStream => _noticeController.stream;
   bool _liveRecoveryInFlight = false;
   Timer? _liveRecoveryRetry;
 
@@ -1244,9 +1260,10 @@ class PlaybackManager implements AudioOwnable {
         noBackendActivity;
   }
 
-  void _setBringupState(PlaybackBringupState state) {
+  void _setBringupState(PlaybackBringupState state, {bool terminal = false}) {
     if (state.phase == PlaybackBringupPhase.ready) _reconnectSucceeded();
-    if (_suppressFailedBringupDuringRecovery &&
+    if (!terminal &&
+        _suppressFailedBringupDuringRecovery &&
         state.phase == PlaybackBringupPhase.failed) {
       _diagnosticLogger?.call(
         'Live recovery: dropping an intermediate failed bringup state '
@@ -2068,6 +2085,39 @@ class PlaybackManager implements AudioOwnable {
     );
   }
 
+  Future<void> _stopForStorageFull() async {
+    final item = queueService.currentItem ?? _lastPlaybackItem;
+    final resolution = _currentResolution ?? _lastPlaybackResolution;
+    final intent = _viewerIntentGeneration;
+    _isAutoNexting = true;
+    _mediaSourceId = null;
+    try {
+      await _stopAndReportCurrent(
+        skipQueueChange: true,
+        expectedItem: queueService.currentItem,
+      );
+    } catch (e) {
+      _diagnosticLogger?.call('Stopping after device storage ran out: $e');
+    } finally {
+      _isAutoNexting = false;
+    }
+    if (intent != _viewerIntentGeneration ||
+        !identical(queueService.currentItem, item)) {
+      return;
+    }
+    _setBringupState(
+      PlaybackBringupState(
+        phase: PlaybackBringupPhase.failed,
+        sessionToken: _playbackSessionToken,
+        itemId: item == null ? null : _traceItemId(item),
+        backend: _traceBackendName(_backend),
+        playMethod: resolution?.playMethod.name,
+        error: storageFullError,
+      ),
+      terminal: true,
+    );
+  }
+
   void _clearPendingItemOverrides() {
     _pendingItemOverrideId = null;
     _pendingItemAudioStreamIndex = null;
@@ -2403,6 +2453,10 @@ class PlaybackManager implements AudioOwnable {
         reason: 'connection-lost',
         allowStartupRecovery: false,
         autoPlay: !_viewerPaused,
+        shouldProceed: () =>
+            generation == _reconnectGeneration &&
+            intent == _viewerIntentGeneration &&
+            identical(item, queueService.currentItem),
       );
     } catch (error) {
       failed = true;
@@ -2499,7 +2553,8 @@ class PlaybackManager implements AudioOwnable {
     if (_teardownForReResolve &&
         (_reResolveStoppingOldPlayer ||
             !(event['event'] == 'playerError' &&
-                event['kind'] == 'video_decoder_failure'))) {
+                (event['kind'] == 'video_decoder_failure' ||
+                    event['kind'] == 'storage_full')))) {
       return;
     }
 
@@ -2541,6 +2596,7 @@ class PlaybackManager implements AudioOwnable {
     // meanwhile is its to handle: a failed attempt schedules the next one,
     // and the budget decides when to give up.
     if (_reconnecting &&
+        kind != 'storage_full' &&
         _canReconnect(resolution) &&
         (eventType == 'error' || eventType == 'playerError')) {
       if (!_reconnectInFlight) _beginReconnect('$eventType ${kind ?? ''}'.trim());
@@ -2669,7 +2725,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
-    if (!recoverable) {
+    if (!recoverable && kind != 'storage_full') {
       if (canRetryTranscodeSwitch()) {
         await retryTranscodeSwitch();
         return;
@@ -2688,6 +2744,7 @@ class PlaybackManager implements AudioOwnable {
     if (resolution != null &&
         resolution.isLocalMedia &&
         kind != 'video_decoder_failure' &&
+        kind != 'storage_full' &&
         event['audioOffloadRetryTriggered'] != true) {
       _suppressNextGenericBackendError = true;
       emitFailedBringupState('Playback failed.');
@@ -2795,6 +2852,56 @@ class PlaybackManager implements AudioOwnable {
       await _recoverStalledStream(
         trigger: 'live_source_reset',
         cheapResumeFirst: false,
+      );
+      return;
+    }
+
+    // The device ran out of room for the player's own segment cache. Nothing
+    // is wrong with the file or the codec, so re-encoding it would only cost
+    // the viewer the original picture. Only a direct-played stream has a
+    // cache-free server route to step to: a served stream is already on one,
+    // and re-resolving it with the same flags would repeat the failure.
+    if (kind == 'storage_full') {
+      _suppressNextGenericBackendError = true;
+      _endReconnect();
+      _liveRecoveryRetry?.cancel();
+      _liveRecoveryRetry = null;
+      if (_currentItemIsLive) {
+        _abandonLiveRecovery('device storage is full');
+      }
+      if (_streamRecoveryInFlight &&
+          resolution?.playMethod == StreamPlayMethod.directPlay) {
+        return;
+      }
+      if (!_currentItemIsLive) {
+        _viewerIntentGeneration++;
+      }
+      final canHandToServer =
+          resolution != null &&
+          resolution.playMethod == StreamPlayMethod.directPlay &&
+          !_isOfflinePlayback &&
+          !resolution.isLocalMedia &&
+          !_streamRecoveryInFlight;
+      if (!canHandToServer) {
+        await _stopForStorageFull();
+        return;
+      }
+      _diagnosticLogger?.call(
+        'Device storage is full, the player could not buffer '
+        '${resolution.playMethod.name}: asking the server for the stream '
+        'without direct play, video copied when it can be',
+      );
+      if (!_noticeController.isClosed) {
+        _noticeController.add(PlaybackNotice.storageFullServerFallback);
+      }
+      final recoveryIntent = _viewerIntentGeneration;
+      await recoverViaTranscode(
+        reason: 'storage-full-server-stream',
+        shouldProceed: () => recoveryIntent == _viewerIntentGeneration,
+        autoPlayIntent: () => !_viewerPaused,
+        forceTranscode: false,
+        disableDirectPlay: true,
+        allowStartupRecovery: false,
       );
       return;
     }
@@ -4392,14 +4499,18 @@ class PlaybackManager implements AudioOwnable {
     _seekReplanTarget = position;
     if (_seekReplanRunning) return;
     _seekReplanRunning = true;
+    final intent = _viewerIntentGeneration;
     try {
       Duration? served;
-      while (_seekReplanTarget != null && _seekReplanTarget != served) {
+      while (_seekReplanTarget != null &&
+          _seekReplanTarget != served &&
+          intent == _viewerIntentGeneration) {
         final target = _seekReplanTarget!;
         await _reResolveAtCurrentPosition(
           reason: 'seek',
           replanReason: ReplanReason.seek,
           atPosition: target,
+          shouldProceed: () => intent == _viewerIntentGeneration,
         );
         served = target;
       }
@@ -5128,6 +5239,10 @@ class PlaybackManager implements AudioOwnable {
     bool Function()? autoPlayIntent,
   }) {
     final previous = _reResolveQueue;
+    final enqueuedIntent = _viewerIntentGeneration;
+    bool canProceed() =>
+        enqueuedIntent == _viewerIntentGeneration &&
+        (shouldProceed == null || shouldProceed());
 
     final run = () async {
       if (previous != null) {
@@ -5136,7 +5251,7 @@ class PlaybackManager implements AudioOwnable {
         } catch (_) {}
       }
 
-      if (shouldProceed != null && !shouldProceed()) return;
+      if (!canProceed()) return;
 
       final autoPlayAfterResolve =
           autoPlayIntent?.call() ??
@@ -5154,7 +5269,7 @@ class PlaybackManager implements AudioOwnable {
             replanReason ??
             (isErrorRecovery ? ReplanReason.failure : ReplanReason.trackChange),
         atPosition: atPosition,
-        shouldProceed: shouldProceed,
+        shouldProceed: canProceed,
         autoPlayIntent: autoPlayIntent,
       );
     }();
@@ -5557,7 +5672,7 @@ class PlaybackManager implements AudioOwnable {
 
     _playbackStartTime = clock();
     _waitingForMedia = true;
-    ++_playbackSessionToken;
+    final sessionToken = ++_playbackSessionToken;
     final offlineStreams =
         (_offlineMetadataByUrl[url]?['MediaStreams'] as List?)
             ?.cast<Map<String, dynamic>>() ??
@@ -5573,12 +5688,17 @@ class PlaybackManager implements AudioOwnable {
         ),
         startPosition: startPosition,
       );
+      if (sessionToken != _playbackSessionToken) return;
       await _syncBackendRepeatModeIfSupported();
+      if (sessionToken != _playbackSessionToken) return;
       await _waitForMediaReady(timeout: const Duration(seconds: 5));
     } finally {
-      _waitingForMedia = false;
+      if (sessionToken == _playbackSessionToken) {
+        _waitingForMedia = false;
+      }
     }
 
+    if (sessionToken != _playbackSessionToken) return;
     if (startPosition > Duration.zero) {
       await _seekWhilePausedAndMaybeResume(startPosition);
     }
@@ -5772,6 +5892,7 @@ class PlaybackManager implements AudioOwnable {
     _reconnectProvenTimer?.cancel();
     _credentialsReopenTimer?.cancel();
     _reconnectingController.close();
+    _noticeController.close();
     _volumeController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();

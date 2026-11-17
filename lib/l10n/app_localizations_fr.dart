@@ -2771,6 +2771,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cet appareil ne peut pas lire le format de cette vidéo. Essayez un lecteur externe.';
 
   @override
+  String get playbackStorageFullFallback =>
+      'Device storage is full — switched away from direct play. Free up space on this device to avoid playback issues and keep original quality.';
+
+  @override
+  String get playbackStorageFullStopped =>
+      'Device storage is full, so the video could not be buffered. Free up space on this device and try again.';
+
+  @override
   String liveReconnecting(int attempt, int total) {
     return 'Reconnexion… ($attempt sur $total)';
   }

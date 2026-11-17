@@ -2739,6 +2739,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu cihaz bu videonun biçimini oynatamıyor. Harici bir oynatıcı deneyin.';
 
   @override
+  String get playbackStorageFullFallback =>
+      'Device storage is full — switched away from direct play. Free up space on this device to avoid playback issues and keep original quality.';
+
+  @override
+  String get playbackStorageFullStopped =>
+      'Device storage is full, so the video could not be buffered. Free up space on this device and try again.';
+
+  @override
   String liveReconnecting(int attempt, int total) {
     return 'Yeniden bağlanılıyor… ($attempt/$total)';
   }

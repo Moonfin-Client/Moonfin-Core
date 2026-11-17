@@ -2770,6 +2770,14 @@ class AppLocalizationsCa extends AppLocalizations {
       'Aquest dispositiu no pot reproduir el format d\'aquest vídeo. Prova un reproductor extern.';
 
   @override
+  String get playbackStorageFullFallback =>
+      'Device storage is full — switched away from direct play. Free up space on this device to avoid playback issues and keep original quality.';
+
+  @override
+  String get playbackStorageFullStopped =>
+      'Device storage is full, so the video could not be buffered. Free up space on this device and try again.';
+
+  @override
   String liveReconnecting(int attempt, int total) {
     return 'S\'està reconnectant… ($attempt de $total)';
   }

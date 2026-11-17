@@ -239,6 +239,29 @@ final class SessionErrorClassificationTests: XCTestCase {
         XCTAssertEqual(kind("sourceRefused", afterPlayback: true), "source_refused")
     }
 
+    func testAFullDeviceIsNotAnUnreadableContainer() {
+        XCTAssertEqual(kind("storageExhausted"), "storage_full")
+        XCTAssertEqual(kind("storageExhausted", afterPlayback: true), "storage_full")
+        XCTAssertEqual(kind("storageExhausted", domain: NSURLErrorDomain), "storage_full")
+
+        let posixFull = NSError(domain: NSPOSIXErrorDomain, code: Int(ENOSPC))
+        XCTAssertEqual(AetherPlayerWrapper.classifyLoadError(posixFull).kind, "storage_full")
+
+        let cocoaFull = NSError(
+            domain: NSCocoaErrorDomain,
+            code: NSFileWriteOutOfSpaceError,
+            userInfo: [NSUnderlyingErrorKey: posixFull]
+        )
+        XCTAssertEqual(AetherPlayerWrapper.classifyLoadError(cocoaFull).kind, "storage_full")
+
+        let urlWrappedFull = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorCannotWriteToFile,
+            userInfo: [NSUnderlyingErrorKey: posixFull]
+        )
+        XCTAssertEqual(AetherPlayerWrapper.classifyLoadError(urlWrappedFull).kind, "storage_full")
+    }
+
     func testAnUnclassifiedFailureStillTranscodes() {
         XCTAssertEqual(kind(nil), "unsupported_container")
     }

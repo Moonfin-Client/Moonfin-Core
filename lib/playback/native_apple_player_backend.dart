@@ -162,6 +162,10 @@ class NativeApplePlayerBackend
     'closeLabel': closeLabel,
   });
 
+  /// A non-blocking notice banner shown over the video for a few seconds.
+  Future<void> showNotice(String message) =>
+      _invoke<void>('showNotice', {'message': message});
+
   bool get isPlayerPresented => _playerPresented && !_audioOnly;
 
   Future<void> sendRemoteNavigation(String command) =>

@@ -143,6 +143,10 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             ) { [weak self] in
                 self?.send(["event": "messageAction"])
             }
+        case "showNotice":
+            if let message = args["message"] as? String {
+                playerVC?.showNotice(message)
+            }
         case "remoteNavigation":
             if let command = args["command"] as? String {
                 playerVC?.handleRemoteNavigation(command)

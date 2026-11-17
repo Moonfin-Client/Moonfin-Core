@@ -147,6 +147,12 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
   /// The stream's container: `hls` for a playlist, else a file.
   String container = 'hls';
 
+  /// How the initial stream is served.
+  StreamPlayMethod playMethod = StreamPlayMethod.directStream;
+
+  /// Whether the resolved source is a downloaded local file.
+  bool isLocalMedia = false;
+
   /// Whether the server is unreachable: every replan and resolve throws.
   bool unreachable = false;
 
@@ -155,13 +161,18 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
   int resolves = 0;
   final List<ReplanRequest> requests = <ReplanRequest>[];
 
-  StreamResolutionResult _stream(String session, int plan) =>
+  StreamResolutionResult _stream(
+    String session,
+    int plan, {
+    StreamPlayMethod? method,
+  }) =>
       StreamResolutionResult(
         streamUrl: 'https://example.test/$session/plan-$plan?token=$token',
         mediaSourceId: 'source',
         playSessionId: session,
-        playMethod: StreamPlayMethod.directStream,
+        playMethod: method ?? playMethod,
         container: container,
+        isLocalMedia: isLocalMedia,
         requestHeaders: {'Authorization': 'Bearer $token'},
       );
 
@@ -197,7 +208,15 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
     replanGate = null;
     if (gate != null) await gate.future;
     if (unreachable) throw StateError('server unreachable');
-    return _stream(current.playSessionId!, requests.length + 1);
+    final replannedMethod = !request.enableDirectPlay &&
+            !request.enableDirectStream
+        ? StreamPlayMethod.transcode
+        : (!request.enableDirectPlay ? StreamPlayMethod.directStream : null);
+    return _stream(
+      current.playSessionId!,
+      requests.length + 1,
+      method: replannedMethod,
+    );
   }
 }
 
@@ -869,6 +888,219 @@ void main() {
         expect(manager.isReconnecting, isFalse);
         expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
         expect(resolver.requests, isEmpty);
+      });
+    });
+  });
+
+  group('a device with no room left for the player to buffer', () {
+    const storageFull = <String, dynamic>{
+      'event': 'playerError',
+      'kind': 'storage_full',
+      'recoverable': true,
+      'message': 'Device storage is full: video segments cannot be written',
+    };
+
+    test('hands direct play to the server without forcing a re-encode and '
+        'notifies the viewer', () {
+      final resolver = _Resolver()
+        ..container = 'mkv'
+        ..playMethod = StreamPlayMethod.directPlay;
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final notices = <PlaybackNotice>[];
+        final sub = manager.noticeStream.listen(notices.add);
+        addTearDown(sub.cancel);
+
+        backend.errors.add(storageFull);
+        backend.errors.add({'event': 'error', 'error': 'Playback error'});
+        async.flushMicrotasks();
+
+        final request = resolver.requests.single;
+        expect(request.reason, ReplanReason.failure);
+        expect(request.position, const Duration(minutes: 20));
+        expect(request.enableDirectPlay, isFalse);
+        expect(request.enableDirectStream, isTrue);
+        expect(notices, [PlaybackNotice.storageFullServerFallback]);
+        expect(manager.isReconnecting, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.ready);
+      });
+    });
+
+    test('stops and reports full storage instead of looping once already '
+        'server-served', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final notices = <PlaybackNotice>[];
+        final sub = manager.noticeStream.listen(notices.add);
+        addTearDown(sub.cancel);
+
+        backend.errors.add(storageFull);
+        backend.errors.add({'event': 'error', 'error': 'Playback error'});
+        async.flushMicrotasks();
+
+        expect(resolver.requests, isEmpty);
+        expect(notices, isEmpty);
+        expect(service.stops, ['session-1']);
+        expect(backend.isPlaying, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(manager.bringupState.error, storageFullError);
+      });
+    });
+
+    test('hands a direct-played live channel to the server instead of running '
+        'live recovery', () {
+      final resolver = _Resolver()
+        ..container = 'ts'
+        ..playMethod = StreamPlayMethod.directPlay;
+      _withPlayback(item: _channel, resolver, (
+        async,
+        manager,
+        backend,
+        service,
+      ) {
+        final notices = <PlaybackNotice>[];
+        final sub = manager.noticeStream.listen(notices.add);
+        addTearDown(sub.cancel);
+
+        backend.errors.add(storageFull);
+        backend.errors.add({'event': 'error', 'error': 'Playback error'});
+        async.flushMicrotasks();
+
+        final request = resolver.requests.single;
+        expect(request.enableDirectPlay, isFalse);
+        expect(request.enableDirectStream, isTrue);
+        expect(notices, [PlaybackNotice.storageFullServerFallback]);
+        expect(manager.liveRecoveryStatus, isNull);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.ready);
+      });
+    });
+
+    test('stops and surfaces the storage message if the replacement server '
+        'stream also hits storage_full while opening', () {
+      final resolver = _Resolver()
+        ..container = 'mkv'
+        ..playMethod = StreamPlayMethod.directPlay;
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errorWhileOpening = storageFull;
+        backend.errors.add(storageFull);
+        backend.errors.add({'event': 'error', 'error': 'Playback error'});
+        async.flushMicrotasks();
+
+        expect(resolver.requests, hasLength(1));
+        expect(backend.isPlaying, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(manager.bringupState.error, storageFullError);
+      });
+    });
+
+    test('cancels a pending reconnect before handing direct play to the '
+        'server', () {
+      final resolver = _Resolver()
+        ..container = 'mkv'
+        ..playMethod = StreamPlayMethod.directPlay;
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+        expect(manager.isReconnecting, isTrue);
+
+        backend.errors.add(storageFull);
+        async.flushMicrotasks();
+
+        expect(manager.isReconnecting, isFalse);
+        expect(resolver.requests, hasLength(1));
+        expect(resolver.requests.single.enableDirectPlay, isFalse);
+        expect(resolver.requests.single.enableDirectStream, isTrue);
+
+        // No leftover reconnect timer fires later.
+        async.elapse(const Duration(seconds: 30));
+        expect(resolver.requests, hasLength(1));
+      });
+    });
+
+    test('stops local downloaded media with the storage message instead of a '
+        'generic failure', () {
+      final resolver = _Resolver()
+        ..container = 'mkv'
+        ..playMethod = StreamPlayMethod.directPlay
+        ..isLocalMedia = true;
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errors.add(storageFull);
+        backend.errors.add({'event': 'error', 'error': 'Playback error'});
+        async.flushMicrotasks();
+
+        expect(resolver.requests, isEmpty);
+        expect(backend.isPlaying, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(manager.bringupState.error, storageFullError);
+      });
+    });
+
+    test('surfaces the storage message when a reconnect attempt hits '
+        'storage_full while reopening', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+        expect(manager.isReconnecting, isTrue);
+
+        backend.errorWhileOpening = storageFull;
+        async.elapse(const Duration(seconds: 1));
+
+        expect(manager.isReconnecting, isFalse);
+        expect(backend.isPlaying, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(manager.bringupState.error, storageFullError);
+      });
+    });
+
+    test('stops playOffline cleanly without seeking or resuming when opening '
+        'fails with storage_full', () {
+      fakeAsync((async) {
+        final backend = _TestBackend()..errorWhileOpening = storageFull;
+        final manager = PlaybackManager()
+          ..setBackend(backend)
+          ..clock = async.getClock(DateTime(2026, 10, 30, 20)).now;
+        addTearDown(manager.dispose);
+
+        unawaited(
+          manager.playOffline(
+            'file:///var/mobile/Downloads/episode.mkv',
+            startPosition: const Duration(minutes: 5),
+          ),
+        );
+        async.flushMicrotasks();
+
+        expect(backend.seeks, isEmpty);
+        expect(backend.isPlaying, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(manager.bringupState.error, storageFullError);
+      });
+    });
+
+    test('retires a queued bitrate change when the in-flight replacement '
+        'stream stops for storage_full', () {
+      final resolver = _Resolver()
+        ..container = 'mkv'
+        ..playMethod = StreamPlayMethod.directPlay;
+      _withPlayback(resolver, (async, manager, backend, service) {
+        resolver.playMethod = StreamPlayMethod.directStream;
+        backend.errorWhileOpening = storageFull;
+
+        backend.errors.add(storageFull);
+        unawaited(manager.changeBitrate(8000000));
+        async.flushMicrotasks();
+
+        expect(resolver.requests, hasLength(1));
+        expect(backend.isPlaying, isFalse);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(manager.bringupState.error, storageFullError);
       });
     });
   });

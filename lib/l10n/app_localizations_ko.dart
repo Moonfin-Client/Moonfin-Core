@@ -2692,6 +2692,14 @@ class AppLocalizationsKo extends AppLocalizations {
       '이 기기에서는 이 영상의 형식을 재생할 수 없습니다. 외부 플레이어를 사용해 보세요.';
 
   @override
+  String get playbackStorageFullFallback =>
+      'Device storage is full — switched away from direct play. Free up space on this device to avoid playback issues and keep original quality.';
+
+  @override
+  String get playbackStorageFullStopped =>
+      'Device storage is full, so the video could not be buffered. Free up space on this device and try again.';
+
+  @override
   String liveReconnecting(int attempt, int total) {
     return '다시 연결하는 중… ($total회 중 $attempt회)';
   }

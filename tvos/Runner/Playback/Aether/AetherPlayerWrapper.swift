@@ -1222,17 +1222,26 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
     }
 
-    static func classifyLoadError(_ error: Error) -> (kind: String, message: String) {
+    nonisolated static func classifyLoadError(_ error: Error) -> (kind: String, message: String) {
         let message = (error as? LocalizedError)?.errorDescription ?? String(describing: error)
         // A transport failure is not a container the engine cannot read, and
         // labeling it as one sends the host into a transcode retry that meets
         // the same network and fails the same way.
+        var sawNetworkError = false
         var cursor: NSError? = error as NSError
         while let current = cursor {
+            if (current.domain == NSCocoaErrorDomain && current.code == NSFileWriteOutOfSpaceError)
+                || (current.domain == NSPOSIXErrorDomain && current.code == Int(ENOSPC))
+            {
+                return ("storage_full", message)
+            }
             if current.domain == NSURLErrorDomain {
-                return ("network", message)
+                sawNetworkError = true
             }
             cursor = current.userInfo[NSUnderlyingErrorKey] as? NSError
+        }
+        if sawNetworkError {
+            return ("network", message)
         }
         if let engineError = error as? AetherEngineError {
             switch engineError {
@@ -1271,14 +1280,25 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         PlaybackErrorKind.liveSourceUnavailable.rawValue,
     ]
 
+    /// Engine error kinds where the device ran out of room for the engine's
+    /// segment cache. The stream and the connection are both fine.
+    private nonisolated static let storageErrorKinds: Set<String> = [
+        PlaybackErrorKind.storageExhausted.rawValue,
+    ]
+
     /// A mid-play failure only carries a message, so the engine's `errorInfo`
     /// is the only way to tell a dropped connection from a stream it can't
     /// play. Only the second is worth a server transcode. A refusal before
     /// the stream ever played still goes to one: the server may only be
-    /// refusing this route.
+    /// refusing this route. A full device is neither: the engine could not
+    /// write its segments, so the host asks the server for the same video
+    /// without re-encoding it.
     nonisolated static func classifySessionError(
         engineKind: String?, underlyingDomain: String?, afterPlayback: Bool = false
     ) -> String {
+        // Checked first: a full volume fails every write, whatever error the
+        // write was wrapped in.
+        if let engineKind, storageErrorKinds.contains(engineKind) { return "storage_full" }
         if underlyingDomain == NSURLErrorDomain { return "network" }
         if afterPlayback, let engineKind, credentialErrorKinds.contains(engineKind) {
             return "source_refused"
