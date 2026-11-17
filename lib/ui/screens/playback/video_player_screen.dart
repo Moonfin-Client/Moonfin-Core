@@ -723,6 +723,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _ensureDesktopOverlayFocus() {
     if (!(PlatformDetection.isDesktop || PlatformDetection.isWeb)) return;
     if (_overlayFocus.hasFocus) return;
+    // A sheet or dialog on top, like the party chat, keeps its focus, or the
+    // next Backspace in its text field would act as Back.
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
     _overlayFocus.requestFocus();
   }
 
