@@ -688,6 +688,13 @@ class Media3VideoView(
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
         private const val RETIME_DEBOUNCE_MS = 300L
         private const val STREAMING_MAX_BUFFER_MS = 120_000
+        // A resume on hardware that leaves its offload decoder faded out needs
+        // a volume change on the running stream, see
+        // scheduleVolumeRestoreNudge. The step is 1% and is restored after
+        // 80 ms, which is inaudible.
+        private const val RESUME_VOLUME_NUDGE_DELAY_MS = 250L
+        private const val RESUME_VOLUME_RESTORE_DELAY_MS = 80L
+        private const val RESUME_VOLUME_NUDGE_STEP = 0.01f
         // How long a television gets to blank, renegotiate the link and come
         // back before a failure stops counting as part of the mode switch.
         private const val DISPLAY_MODE_SWITCH_RECOVERY_MS = 10_000L
@@ -1102,6 +1109,8 @@ class Media3VideoView(
             pm.hasSystemFeature("amazon.hardware.fire_tv")
     }.getOrDefault(false)
     private var audioOffloadRetryAttemptedForCurrentSource = false
+    private var lastPlayWhenReadyForResumeNudge = false
+    private var resumeNudgeGeneration = 0
     private var sessionTunnelingDisabled = Media3Bridge.sessionTunnelingDisabledEnabled()
     private var currentAudioIsBitstream = false
     // True while the active audio track is TrueHD/MLP, which must never run
@@ -1319,6 +1328,15 @@ class Media3VideoView(
         }
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+            // Some TV audio HALs leave the offload decoder faded out after a
+            // pause, so a resume plays silence while the stream and its
+            // position keep advancing. Nudge the volume shortly after a
+            // bitstream resume to make AudioFlinger re-apply the output
+            // volume with the fade cleared.
+            if (playWhenReady && !lastPlayWhenReadyForResumeNudge) {
+                scheduleVolumeRestoreNudge()
+            }
+            lastPlayWhenReadyForResumeNudge = playWhenReady
             // A correction's own pause is neither the viewer's nor the
             // system's, and its end resumes from what it saved.
             if (!playWhenReady && rateSession.consumeInternalPause(
@@ -2360,6 +2378,44 @@ class Media3VideoView(
         } else {
             player.pause()
         }
+    }
+
+    /**
+     * Re-applies the output volume shortly after a bitstream resume.
+     *
+     * Some TV audio HALs keep the offload decoder's gain faded out across a
+     * pause, so a plain resume plays silence even though the stream keeps
+     * advancing. Changing the volume while the stream is running makes
+     * AudioFlinger push a new volume to the output with the fade cleared, which
+     * restores the gain. That avoids rebuilding the stream, which is the other
+     * way to fix it but costs a visible loading flash. The step is 1% and lasts
+     * [RESUME_VOLUME_RESTORE_DELAY_MS], so it is inaudible.
+     */
+    private fun scheduleVolumeRestoreNudge() {
+        if (!currentAudioIsBitstream) return
+        val generation = ++resumeNudgeGeneration
+        mainHandler.postDelayed({
+            if (generation != resumeNudgeGeneration ||
+                isDisposed ||
+                isPlayerReleased ||
+                !player.playWhenReady ||
+                !player.isPlaying
+            ) {
+                return@postDelayed
+            }
+            val volume = player.volume
+            if (volume <= 0f) return@postDelayed
+            player.volume = if (volume > 0.5f) {
+                volume - RESUME_VOLUME_NUDGE_STEP
+            } else {
+                volume + RESUME_VOLUME_NUDGE_STEP
+            }
+            mainHandler.postDelayed({
+                if (generation == resumeNudgeGeneration && !isDisposed && !isPlayerReleased) {
+                    player.volume = volume
+                }
+            }, RESUME_VOLUME_RESTORE_DELAY_MS)
+        }, RESUME_VOLUME_NUDGE_DELAY_MS)
     }
 
     private fun completeRateStartup(
