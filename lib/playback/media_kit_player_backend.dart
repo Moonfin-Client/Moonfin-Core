@@ -197,6 +197,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   static const Duration _linuxHwdecFirstFrameTimeout = Duration(
     milliseconds: 1500,
   );
+  static const Duration _linuxPassthroughStartTimeout = Duration(seconds: 3);
   final Player _player;
   final VideoController? _videoController;
   final UserPreferences _prefs;
@@ -1005,6 +1006,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
+    unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
     if (!_useLibass) {
       _enableNativeSubtitleRendering();
     }
@@ -1861,6 +1863,35 @@ class MediaKitPlayerBackend extends PlayerBackend
         await _player.play();
       } catch (_) {}
     } catch (_) {}
+  }
+
+  /// A PipeWire output that can't take a bitstream can leave mpv stuck at the
+  /// start: the bundled mpv 0.37 has no SPDIF in its PipeWire driver and
+  /// never starts after its own PCM fallback, and 0.41 keeps reopening an
+  /// output that refuses the format. Decoding the track gets it playing.
+  /// audio-spdif then stays empty until the passthrough settings change, so
+  /// the next file doesn't stall the same way.
+  Future<void> _applyLinuxPassthroughFallbackIfNeeded(int generation) async {
+    if (!PlatformDetection.isLinux) return;
+    final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
+    if (spdif.isEmpty) return;
+    await Future<void>.delayed(_linuxPassthroughStartTimeout);
+    final native = _player.platform;
+    if (native is! NativePlayer || !_ownsPlayback(generation)) return;
+    final format = await _tryNativeGetProperty(native, 'audio-params/format');
+    if (format == null || !format.startsWith('spdif')) return;
+    if (await _tryNativeGetProperty(native, 'core-idle') != 'yes' ||
+        await _tryNativeGetProperty(native, 'pause') != 'no' ||
+        await _tryNativeGetProperty(native, 'paused-for-cache') != 'no') {
+      return;
+    }
+    final aid = await _tryNativeGetProperty(native, 'aid');
+    if (aid == null || !_ownsPlayback(generation)) return;
+    debugPrint('[audio] $format output never started, decoding instead');
+    await _nativeSetProperty(native, 'audio-spdif', '');
+    // audio-spdif only takes effect when the audio decoder is recreated.
+    await _nativeSetProperty(native, 'aid', 'no');
+    await _nativeSetProperty(native, 'aid', aid);
   }
 
   /// Maps the effective passthrough codec set to mpv spdif names. Downmixing
