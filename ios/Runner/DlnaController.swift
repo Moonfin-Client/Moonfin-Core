@@ -214,10 +214,10 @@ final class DlnaController: NSObject {
                 )
 
                 self.activeDeviceControlUrl = controlUrl
-                self.discoveryLock.lock()
-                self.activeDeviceRenderingControlUrl = self.discoveredRenderingControlUrls[controlUrl]
-                let eventSubUrl = self.discoveredEventSubUrls[controlUrl]
-                self.discoveryLock.unlock()
+                let (renderingControlUrl, eventSubUrl) = self.discoveryLock.withLock {
+                    (self.discoveredRenderingControlUrls[controlUrl], self.discoveredEventSubUrls[controlUrl])
+                }
+                self.activeDeviceRenderingControlUrl = renderingControlUrl
                 self.consecutivePollFailures = 0
                 self.activeDeviceEventSubUrl = eventSubUrl
                 self.startGenaServer()
@@ -422,14 +422,12 @@ final class DlnaController: NSObject {
               let controlPath = parser.avTransportControlURL else { return nil }
 
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
-        discoveryLock.lock()
-        if let renderingControlPath = parser.renderingControlURL {
-            discoveredRenderingControlUrls[controlUrl] = resolveUrl(base: locationUrl, relative: renderingControlPath)
+        let renderingControlUrl = parser.renderingControlURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        let eventSubUrl = parser.avTransportEventSubURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        discoveryLock.withLock {
+            if let renderingControlUrl { discoveredRenderingControlUrls[controlUrl] = renderingControlUrl }
+            if let eventSubUrl { discoveredEventSubUrls[controlUrl] = eventSubUrl }
         }
-        if let eventSubPath = parser.avTransportEventSubURL {
-            discoveredEventSubUrls[controlUrl] = resolveUrl(base: locationUrl, relative: eventSubPath)
-        }
-        discoveryLock.unlock()
         let friendlyName = parser.friendlyName ?? "DLNA Device"
         let modelName = parser.modelName ?? ""
 
