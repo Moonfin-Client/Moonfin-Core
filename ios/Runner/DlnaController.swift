@@ -160,6 +160,7 @@ final class DlnaController: NSObject {
         streamUrl: String,
         title: String,
         mimeType: String,
+        dlnaFeatures: String,
         startPositionTicks: Int64?,
         completion: @escaping (Error?) -> Void
     ) {
@@ -182,7 +183,7 @@ final class DlnaController: NSObject {
                 let upnpClass = mimeType.hasPrefix("audio/")
                     ? "object.item.audioItem.musicTrack"
                     : "object.item.videoItem"
-                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):\(self.dlnaFeatures(mimeType: mimeType))\">\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
+                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):\(self.escapeXml(dlnaFeatures))\">\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
                 let metadataXml = self.escapeXml(didl)
 
                 try self.sendSoap(
@@ -204,10 +205,6 @@ final class DlnaController: NSObject {
                     """
                 )
 
-                if let ticks = startPositionTicks, ticks > 0 {
-                    self.seekOnceStarted(controlUrl: controlUrl, target: startTime)
-                }
-
                 self.activeDeviceControlUrl = controlUrl
                 self.activeDeviceRenderingControlUrl = self.discoveredRenderingControlUrls[controlUrl]
                 self.consecutivePollFailures = 0
@@ -220,6 +217,10 @@ final class DlnaController: NSObject {
                 DispatchQueue.main.async { [weak self] in
                     self?.emitEvent(state: "connected")
                     completion(nil)
+                }
+
+                if let ticks = startPositionTicks, ticks > 0 {
+                    self.seekOnceStarted(controlUrl: controlUrl, target: startTime)
                 }
             } catch {
                 DispatchQueue.main.async { [weak self] in
@@ -553,20 +554,13 @@ final class DlnaController: NSObject {
         }
     }
 
-    /// The DLNA fourth field of a res protocolInfo. Without the byte-seek flag
-    /// some renderers (LG) take a Seek and stay where they are. An HLS playlist
-    /// has no bytes to seek in.
-    private func dlnaFeatures(mimeType: String) -> String {
-        if mimeType == "application/vnd.apple.mpegurl" { return "*" }
-        return "DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000"
-    }
-
-    /// Resumes at [target] once the renderer has started. Some renderers (LG)
-    /// refuse a Seek before Play with 711, and ignore one sent before the
-    /// position moves, so the cast plays from the start rather than failing
-    /// when the renderer never takes it.
+    /// Resumes at [target] once the renderer has started, after the cast is
+    /// already connected. Some renderers (LG) refuse a Seek before Play with
+    /// 711 and ignore one sent before the position moves, so the cast plays
+    /// from the start rather than failing when the renderer never takes it.
     private func seekOnceStarted(controlUrl: String, target: String) {
         for _ in 0..<30 {
+            guard activeDeviceControlUrl == controlUrl else { return }
             if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 { break }
             Thread.sleep(forTimeInterval: 0.5)
         }

@@ -75,4 +75,31 @@ void main() {
       );
     });
   });
+
+  group('dlnaFeatures', () {
+    // Without the byte-seek flag an LG takes a Seek and stays where it is.
+    test('lets a file sent as it is seek by byte range', () {
+      expect(
+        dlnaFeatures(_resolution('http://silo/api/v2/stream/s1', container: 'mkv')),
+        contains('DLNA.ORG_OP=01'),
+      );
+    });
+
+    test('claims nothing for a transcode or an HLS playlist', () {
+      expect(
+        dlnaFeatures(
+          _resolution(
+            'http://jf/Audio/1/stream.mp3',
+            mediaType: 'Audio',
+            playMethod: StreamPlayMethod.transcode,
+          ),
+        ),
+        '*',
+      );
+      expect(
+        dlnaFeatures(_resolution('http://silo/hls/master.m3u8', container: 'hls')),
+        '*',
+      );
+    });
+  });
 }

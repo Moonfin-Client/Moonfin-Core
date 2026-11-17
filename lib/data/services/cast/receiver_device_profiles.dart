@@ -188,6 +188,18 @@ Map<String, dynamic> dlnaDeviceProfile() {
             'Value': 'DOVIWithEL',
             'IsRequired': false,
           },
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVIWithELHDR10Plus',
+            'IsRequired': false,
+          },
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVIInvalid',
+            'IsRequired': false,
+          },
         ],
       },
     ],

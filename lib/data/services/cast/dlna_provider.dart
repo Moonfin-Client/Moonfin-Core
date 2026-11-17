@@ -52,6 +52,18 @@ String dlnaMimeType(StreamResolutionResult resolution) {
   };
 }
 
+/// The DLNA fourth field of the res protocolInfo. A file the server sends as
+/// it is takes byte-range seeks, and without that flag some renderers (LG)
+/// accept a Seek and stay where they are. A transcode or HLS playlist has no
+/// bytes to seek in, so it claims nothing.
+String dlnaFeatures(StreamResolutionResult resolution) {
+  if (resolution.playMethod == StreamPlayMethod.transcode ||
+      dlnaMimeType(resolution) == 'application/vnd.apple.mpegurl') {
+    return '*';
+  }
+  return 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000';
+}
+
 class DlnaProvider
     implements CastProvider, CastTransportControls, CastServerPlaybackSource {
   final NativeDlnaChannel _native;
@@ -133,6 +145,7 @@ class DlnaProvider
       streamUrl: streamUrl,
       title: item.name,
       mimeType: dlnaMimeType(resolution),
+      dlnaFeatures: dlnaFeatures(resolution),
       startPositionTicks: startPositionTicks,
     );
     _serverPlayback = castNeedsSessionReports(client)
