@@ -3170,6 +3170,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _focusTvSeekbar({int attempt = 0}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_controlsVisible || _isOsdLocked) return;
+      // A retry lands a few frames late, so a press may already have moved
+      // focus on to the buttons. It stays there.
+      if (attempt > 0 &&
+          FocusManager.instance.primaryFocus != _overlayFocus) {
+        return;
+      }
       _tvSeekbarFocus.requestFocus();
 
       if (!_tvSeekbarFocus.hasFocus && attempt < 8) {

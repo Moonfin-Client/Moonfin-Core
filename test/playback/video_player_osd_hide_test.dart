@@ -536,6 +536,35 @@ void main() {
       await advance(tester, 300);
     }
 
+    // The seek bar retries its focus for a few frames after the controls come
+    // up. A quick second Down used to be pulled back to it, and Right seeked.
+    group('on the TV layout', () {
+      setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+
+      testWidgets('a quick Down to the buttons stays there', (tester) async {
+        String? focused() => FocusManager.instance.primaryFocus?.debugLabel;
+        await playOnTv(tester);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await advance(tester, 30);
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await advance(tester, 20);
+        expect(focused(), 'video_player_primary_play');
+        await advance(tester, 600);
+        expect(focused(), 'video_player_primary_play', reason: 'kept');
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 100);
+        expect(focused(), isNot('video_player_primary_play'));
+        expect(focused(), isNot('video_player_tv_seekbar'));
+        expect(manager.seeks, isEmpty, reason: 'Right moved along the buttons');
+
+        await tester.pumpWidget(const SizedBox());
+      });
+    });
+
     test('grows from the set step to 30, 60 and 180 seconds', () {
       expect(
         [
