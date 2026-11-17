@@ -474,49 +474,20 @@ class MediaBarRepository {
       return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
     }
 
-    List<String> seriesIdsOf(List<Map<String, dynamic>> children) {
-      final ids = <String>[];
-      for (final child in children) {
-        // Silo lists no seasons and answers with the series themselves.
-        final id =
-            (child['Type'] == 'Series' ? child['Id'] : child['SeriesId'])
-                ?.toString();
-        if (id == null || ids.contains(id)) continue;
-        ids.add(id);
-        if (ids.length >= _poolSize) break;
-      }
-      return ids;
-    }
-
     Future<List<Map<String, dynamic>>> latestSeries() async {
       // Several episodes or seasons share a series, so more are read to end up
       // with as many series as the other sources give.
       const firstLimit = _poolSize * 4;
       final children = await released([childType], firstLimit);
-      var seriesIds = seriesIdsOf(children);
+      var seriesIds = _seriesIdsOf(children);
       // One show can fill the whole first read, so a short answer is read
       // again at the home row's ceiling. A failed retry keeps the first one.
       if (seriesIds.length < limit && children.length >= firstLimit) {
         try {
-          seriesIds = seriesIdsOf(await released([childType], 500));
+          seriesIds = _seriesIdsOf(await released([childType], 500));
         } catch (_) {}
       }
-      if (seriesIds.isEmpty) return const [];
-      final response = await _client.itemsApi
-          .getItems(
-            ids: seriesIds,
-            fields: _fields,
-            enableTotalRecordCount: false,
-            enableImageTypes: 'Backdrop,Logo,Banner',
-          )
-          .timeout(const Duration(seconds: 15));
-      final byId = {
-        for (final item
-            in (response['Items'] as List? ?? []).cast<Map<String, dynamic>>())
-          item['Id']?.toString(): item,
-      };
-      // The server answers in its own order, so the newest stay first.
-      return [for (final id in seriesIds) ?byId[id]];
+      return _fetchSeries(seriesIds);
     }
 
     final batches = await Future.wait([
@@ -646,24 +617,7 @@ class MediaBarRepository {
     if (itemTypes != null && !itemTypes.contains('Series')) return const [];
     try {
       final episodes = await _recentEpisodes(parentId: parentId, limit: 300);
-      final seriesIds = <String>[];
-      for (final episode in episodes) {
-        final id = episode['SeriesId']?.toString();
-        if (id == null || seriesIds.contains(id)) continue;
-        seriesIds.add(id);
-        if (seriesIds.length >= _poolSize) break;
-      }
-      if (seriesIds.isEmpty) return const [];
-
-      final response = await _client.itemsApi
-          .getItems(
-            ids: seriesIds,
-            fields: _fields,
-            enableTotalRecordCount: false,
-            enableImageTypes: 'Backdrop,Logo,Banner',
-          )
-          .timeout(const Duration(seconds: 15));
-      return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+      return await _fetchSeries(_seriesIdsOf(episodes));
     } catch (error) {
       // A server that fails falls back to random titles, so the bar doesn't
       // vanish as if nothing aired.
@@ -675,6 +629,33 @@ class MediaBarRepository {
       }
       return _fetchItems(itemTypes, limit, parentId: parentId, random: true);
     }
+  }
+
+  /// The series [children] belong to, in their order, up to [_poolSize]. Silo
+  /// lists no seasons and answers a season request with the series themselves.
+  static List<String> _seriesIdsOf(List<Map<String, dynamic>> children) {
+    final ids = <String>[];
+    for (final child in children) {
+      final id = (child['Type'] == 'Series' ? child['Id'] : child['SeriesId'])
+          ?.toString();
+      if (id == null || ids.contains(id)) continue;
+      ids.add(id);
+      if (ids.length >= _poolSize) break;
+    }
+    return ids;
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchSeries(List<String> ids) async {
+    if (ids.isEmpty) return const [];
+    final response = await _client.itemsApi
+        .getItems(
+          ids: ids,
+          fields: _fields,
+          enableTotalRecordCount: false,
+          enableImageTypes: 'Backdrop,Logo,Banner',
+        )
+        .timeout(const Duration(seconds: 15));
+    return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
   }
 
   /// The newest movies released within the window, newest first.
