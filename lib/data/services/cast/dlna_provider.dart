@@ -7,7 +7,6 @@ import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../util/platform_detection.dart';
-import '../../../playback/device_profile_builder.dart';
 import '../../../playback/silo_playback_environment.dart';
 import '../../../playback/silo_plugin_for.dart';
 import '../../models/aggregated_item.dart';
@@ -17,6 +16,7 @@ import 'cast_session_reporter.dart';
 import 'cast_target.dart';
 import 'cast_transport_controls.dart';
 import 'native_dlna_channel.dart';
+import 'receiver_device_profiles.dart';
 
 class DlnaProvider
     implements CastProvider, CastTransportControls, CastServerPlaybackSource {
@@ -85,7 +85,7 @@ class DlnaProvider
     final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
     final resolution = await _resolverForClient(client).resolve(
       item,
-      deviceProfile: DeviceProfileBuilder.build(),
+      deviceProfile: dlnaDeviceProfile(),
       audioStreamIndex: audioStreamIndex,
       subtitleStreamIndex: subtitleStreamIndex,
       mediaSourceId: mediaSourceId,
