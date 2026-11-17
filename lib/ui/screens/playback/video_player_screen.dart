@@ -871,6 +871,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (mounted && _isCinemaSkipVisible) _focusTvSkipSegment();
     });
     FocusManager.instance.addListener(_restoreOverlayFocus);
+    _overlayFocus.addListener(_onOverlayFocusChanged);
     // A right-click hides the controls, so the browser's own menu stays shut.
     if (kIsWeb) unawaited(BrowserContextMenu.disableContextMenu());
     if (PlatformDetection.isTV || PlatformDetection.isMobile) {
@@ -1240,6 +1241,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _completedSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
     FocusManager.instance.removeListener(_restoreOverlayFocus);
+    _overlayFocus.removeListener(_onOverlayFocusChanged);
     _overlayFocus.dispose();
     _tvSeekbarFocus.dispose();
     _tvSkipSegmentFocus.dispose();
@@ -3517,6 +3519,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   bool _canUseTvTemporarySpeedHold() => _canUseTemporarySpeed();
 
+  // A dialog that takes focus mid-hold never delivers the key-up.
+  void _onOverlayFocusChanged() {
+    if (_overlayFocus.hasFocus || _tvTemporarySpeedHoldKey == null) return;
+    if (mounted) {
+      setState(_cancelTemporarySpeed);
+    } else {
+      _cancelTemporarySpeed();
+    }
+  }
+
   bool _canUseTemporarySpeed() {
     if (_castService.activeKind != null) return false;
     if (_isCurrentPreroll) return false;
@@ -3536,6 +3548,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (event is KeyRepeatEvent) {
       return KeyEventResult.handled;
     }
+
+    // A touch hold already owns the speed and its restore value.
+    if (_temporarySpeedActive) return KeyEventResult.handled;
 
     if (!_canUseTvTemporarySpeedHold()) {
       return KeyEventResult.ignored;
@@ -3563,7 +3578,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _tvTemporarySpeedHoldKey = null;
 
     if (didTriggerHold) {
-      _cancelTemporarySpeed();
+      setState(_cancelTemporarySpeed);
       return KeyEventResult.handled;
     }
 
@@ -3793,6 +3808,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
 
       if (event is KeyUpEvent) {
+        final temporarySpeedResult = _handleTvTemporarySpeedKeyUp(event);
+        if (temporarySpeedResult != KeyEventResult.ignored) {
+          return temporarySpeedResult;
+        }
         final isBackKey = event.logicalKey.isBackKey;
         if (isBackKey) {
           return KeyEventResult.handled;
