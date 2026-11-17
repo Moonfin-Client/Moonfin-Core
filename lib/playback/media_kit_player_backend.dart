@@ -1885,13 +1885,13 @@ class MediaKitPlayerBackend extends PlayerBackend
         await _tryNativeGetProperty(native, 'paused-for-cache') != 'no') {
       return;
     }
-    final aid = await _tryNativeGetProperty(native, 'aid');
-    if (aid == null || !_ownsPlayback(generation)) return;
+    if (!_ownsPlayback(generation)) return;
     debugPrint('[audio] $format output never started, decoding instead');
     await _nativeSetProperty(native, 'audio-spdif', '');
-    // audio-spdif only takes effect when the audio decoder is recreated.
-    await _nativeSetProperty(native, 'aid', 'no');
-    await _nativeSetProperty(native, 'aid', aid);
+    if (!_ownsPlayback(generation)) return;
+    // audio-spdif only takes effect when the audio decoder is recreated, and
+    // a seek in place recreates it without touching the selected track.
+    await _tryNativeCommand(native, ['seek', '0', 'relative+exact']);
   }
 
   /// Maps the effective passthrough codec set to mpv spdif names. Downmixing
@@ -2507,6 +2507,8 @@ class MediaKitPlayerBackend extends PlayerBackend
   @override
   Future<void> resume() async {
     await _player.play();
+    // A source opened paused only meets its passthrough output now.
+    unawaited(_applyLinuxPassthroughFallbackIfNeeded(_playbackGeneration));
   }
 
   @override
