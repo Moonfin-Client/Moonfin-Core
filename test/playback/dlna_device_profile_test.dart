@@ -31,5 +31,16 @@ void main() {
       expect(original['containers'], contains('mkv'));
       expect(original['audio_decode_codecs'], containsAll(['aac', 'ac3']));
     });
+
+    test('offers Silo only Dolby Vision profile 8', () {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        dlnaDeviceProfile(),
+        traits: SiloPlayerTraits.castReceiver,
+      );
+
+      final hdr = capabilities.clientCapabilities['hdr_details'] as Map;
+      expect(hdr['dolby_vision_profiles'], [8]);
+      expect(hdr['hdr10'], isTrue);
+    });
   });
 }

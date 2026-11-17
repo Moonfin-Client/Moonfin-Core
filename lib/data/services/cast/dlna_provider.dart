@@ -24,9 +24,16 @@ import 'receiver_device_profiles.dart';
 String dlnaMimeType(StreamResolutionResult resolution) {
   final audio = resolution.mediaType.toLowerCase() == 'audio';
   final path = Uri.tryParse(resolution.streamUrl)?.path.toLowerCase() ?? '';
-  final container = (resolution.container ?? '').toLowerCase().split(',').first;
+  // ffprobe names an MP4 'mov,mp4,m4a,3gp,3g2,mj2', so MP4 wins a list.
+  final containers = (resolution.container ?? '').toLowerCase().split(',');
+  final container = containers.contains('mp4') ? 'mp4' : containers.first;
   if (path.endsWith('.m3u8') || container == 'hls' || container == 'm3u8') {
     return 'application/vnd.apple.mpegurl';
+  }
+  // Jellyfin and Emby report the source's container for a transcode too, and
+  // the DLNA profile transcodes audio to MP3.
+  if (audio && resolution.playMethod == StreamPlayMethod.transcode) {
+    return 'audio/mpeg';
   }
   return switch (container) {
     'mkv' || 'matroska' => audio ? 'audio/x-matroska' : 'video/x-matroska',

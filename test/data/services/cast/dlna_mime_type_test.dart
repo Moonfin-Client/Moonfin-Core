@@ -6,10 +6,11 @@ StreamResolutionResult _resolution(
   String url, {
   String? container,
   String mediaType = 'video',
+  StreamPlayMethod playMethod = StreamPlayMethod.directPlay,
 }) => StreamResolutionResult(
   streamUrl: url,
   mediaSourceId: 'source',
-  playMethod: StreamPlayMethod.directPlay,
+  playMethod: playMethod,
   container: container,
   mediaType: mediaType,
 );
@@ -49,6 +50,28 @@ void main() {
       expect(
         dlnaMimeType(_resolution('http://x/a', mediaType: 'Audio')),
         'audio/*',
+      );
+    });
+
+    test('reads an ffprobe MP4 container list as MP4', () {
+      expect(
+        dlnaMimeType(_resolution('http://jf/a', container: 'mov,mp4,m4a,3gp,3g2,mj2')),
+        'video/mp4',
+      );
+    });
+
+    // Jellyfin and Emby keep the source's container on a transcode.
+    test('names a transcoded audio stream MP3', () {
+      expect(
+        dlnaMimeType(
+          _resolution(
+            'http://jf/Audio/1/stream.mp3',
+            container: 'm4a',
+            mediaType: 'Audio',
+            playMethod: StreamPlayMethod.transcode,
+          ),
+        ),
+        'audio/mpeg',
       );
     });
   });

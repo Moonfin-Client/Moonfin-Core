@@ -173,10 +173,30 @@ Map<String, dynamic> dlnaDeviceProfile() {
             'Value': 'main|main 10',
             'IsRequired': false,
           },
+          // Profile 5 has no fallback layer and comes out green and purple on
+          // a TV without Dolby Vision, and profile 7 needs its enhancement
+          // layer. Profile 8 keeps an HDR10 base any HDR set shows.
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVI',
+            'IsRequired': false,
+          },
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVIWithEL',
+            'IsRequired': false,
+          },
         ],
       },
     ],
-    'SubtitleProfiles': <Map<String, dynamic>>[],
+    // TVs draw a text track carried in the file, so a default subtitle
+    // doesn't force a burn-in transcode. Bitmap and styled tracks still burn.
+    'SubtitleProfiles': <Map<String, dynamic>>[
+      <String, dynamic>{'Format': 'srt', 'Method': 'Embed'},
+      <String, dynamic>{'Format': 'subrip', 'Method': 'Embed'},
+    ],
   };
 }
 

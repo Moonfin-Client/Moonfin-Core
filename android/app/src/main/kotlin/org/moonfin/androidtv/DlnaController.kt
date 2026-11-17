@@ -211,7 +211,7 @@ class DlnaController(private val context: Context) {
                     "<item id=\"0\" parentID=\"-1\" restricted=\"1\">" +
                     "<dc:title>${escapeXml(title)}</dc:title>" +
                     "<upnp:class>$upnpClass</upnp:class>" +
-                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:*\">${escapeXml(streamUrl)}</res>" +
+                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:${dlnaFeatures(mimeType)}\">${escapeXml(streamUrl)}</res>" +
                     "</item></DIDL-Lite>"
 
                 sendSoap(
@@ -224,14 +224,11 @@ class DlnaController(private val context: Context) {
                     """.trimIndent(),
                 )
 
-                if (startTicks != null && startTicks > 0L) {
-                    sendSoap(
-                        controlUrl, "Seek",
-                        "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$startTime</Target>",
-                    )
-                }
-
                 sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
+
+                if (startTicks != null && startTicks > 0L) {
+                    seekOnceStarted(controlUrl, startTime)
+                }
 
                 activeDeviceControlUrl = controlUrl
                 activeDeviceRenderingControlUrl = discoveredRenderingControlUrls[controlUrl]
@@ -564,6 +561,36 @@ class DlnaController(private val context: Context) {
             if (consecutivePollFailures.incrementAndGet() >= 3) {
                 handler.post { handleDeviceOffline() }
             }
+        }
+    }
+
+    /**
+     * The DLNA fourth field of a res protocolInfo. Without the byte-seek flag
+     * some renderers (LG) take a Seek and stay where they are. An HLS playlist
+     * has no bytes to seek in.
+     */
+    private fun dlnaFeatures(mimeType: String): String {
+        if (mimeType == "application/vnd.apple.mpegurl") return "*"
+        return "DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000"
+    }
+
+    /**
+     * Resumes at [target] once the renderer has started. Some renderers (LG)
+     * refuse a Seek before Play with 711, and ignore one sent before the
+     * position moves, so the cast plays from the start rather than failing
+     * when the renderer never takes it.
+     */
+    private fun seekOnceStarted(controlUrl: String, target: String) {
+        for (attempt in 0 until 30) {
+            val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
+            if (ticks > 0L) break
+            Thread.sleep(500)
+        }
+        runCatching {
+            sendSoap(
+                controlUrl, "Seek",
+                "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
+            )
         }
     }
 
