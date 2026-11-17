@@ -5808,7 +5808,7 @@
     "adminTasksNoFilterMatch": "Ninguna tarea coincide con el filtro actual",
     "adminTaskCancelling": "Cancelando...",
     "adminTaskRunning": "Ejecutando...",
-    "adminTaskNeverRun": "Nunca ejecutada",
+    "adminTaskNeverRun": "Nunca ejecutar",
     "adminTaskStop": "Detener",
     "adminTaskRun": "Ejecutar",
     "adminTaskDetailLastExecution": "Última ejecución",
@@ -7054,7 +7054,7 @@
     "useExternalPlayer": "Usar reproductor externo",
     "useExternalPlayerSubtitle": "Abra la reproducción de video en su aplicación externa seleccionada en Android TV.",
     "automaticQueuing": "Cola automática",
-    "preferSdhSubtitles": "Prefiere subtítulos SDH",
+    "preferSdhSubtitles": "Preferir subtítulos SDH",
     "preferSdhSubtitlesSubtitle": "Priorice las pistas de subtítulos SDH/CC al realizar la selección automática.",
     "webDiagnostics": "Diagnóstico web",
     "webDiagnosticsTitle": "Moonfin Diagnóstico web",
@@ -12508,5 +12508,50 @@
     "watchPartyReplyNoWay": "De ninguna manera",
     "@watchPartyReplyNoWay": {
         "description": "TV quick reply in a watch party chat"
+    },
+    "subtitleDownloadLanguages": "Idiomas de descarga de subtítulos",
+    "@subtitleDownloadLanguages": {
+        "description": "Setting that picks which languages a subtitle download searches"
+    },
+    "subtitleHdrSeparateSubtitle": "El blanco es mucho más brillante en HDR que en SDR, por lo que un estilo más tenue aquí evita el deslumbramiento",
+    "@subtitleHdrSeparateSubtitle": {
+        "description": "Explains why a separate HDR subtitle style is worth setting."
+    },
+    "removeWatchedDownloads": "Eliminar Descargas Vistas",
+    "@removeWatchedDownloads": {
+        "description": "Storage setting that picks how soon an episode or movie the user downloaded themselves is removed after it was watched"
+    },
+    "removeWatchedDownloadsSubtitle": "Cuándo eliminar los episodios y películas que descargaste. Solo se eliminarán aquellos que veas después de activar esta opción",
+    "@removeWatchedDownloadsSubtitle": {
+        "description": "Explains the remove-watched-downloads setting"
+    },
+    "removeWatchedAsk": "Pregúntame",
+    "@removeWatchedAsk": {
+        "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+    },
+    "adminHiddenFromUnusedDevices": "Ocultar de las pantallas de inicio de sesión en dispositivos en los que nunca han iniciado sesión",
+    "keepDownloadedSubtitle": "Nunca eliminar esto automáticamente después de verlo",
+    "@keepDownloadedSubtitle": {
+        "description": "Explains the keep-downloaded toggle"
+    },
+    "autoDownloadNeverChecked": "Aún no se ha comprobado",
+    "@autoDownloadNeverChecked": {
+        "description": "Subtitle when no subscription check has run"
+    },
+    "afterHoursCableCrawlRemote": "Las flechas giran. El cable nunca se detiene.",
+    "@afterHoursCableCrawlRemote": {
+        "description": "Remote controls of the Cable Crawl arcade game. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "autoDownloadDeleteImmediately": "Justo después de verlo",
+    "@autoDownloadDeleteImmediately": {
+        "description": "Delete-after-watching option: remove at the next check once played"
+    },
+    "afterHoursPixelPurgeRemote": "Mueve el deslizador hacia la izquierda y hacia la derecha. La pelota sale disparada por sí sola.",
+    "@afterHoursPixelPurgeRemote": {
+        "description": "Remote controls of the Pixel Purge arcade game. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it also shows as one line on the How to play card"
+    },
+    "afterHoursPixelPurgeCardRemote": "Mueve el deslizador hacia la izquierda y hacia la derecha.",
+    "@afterHoursPixelPurgeCardRemote": {
+        "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
     }
 }
