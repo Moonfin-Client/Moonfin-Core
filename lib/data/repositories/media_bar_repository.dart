@@ -479,6 +479,9 @@ class MediaBarRepository {
       // with as many series as the other sources give.
       const firstLimit = _poolSize * 4;
       final children = await released([childType], firstLimit);
+      // A collection lists its shows but not their seasons or episodes, so it
+      // keeps its series.
+      if (children.isEmpty) return released(const ['Series'], _poolSize);
       var seriesIds = _seriesIdsOf(children);
       // One show can fill the whole first read, so a short answer is read
       // again at the home row's ceiling. A failed retry keeps the first one.

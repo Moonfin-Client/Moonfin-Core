@@ -146,6 +146,19 @@ void main() {
     expect(shown, unorderedEquals(['a', 'b']));
   });
 
+  test('a source with no seasons keeps its series', () async {
+    final (shown, asked) = await load(
+      RecentlyReleasedSeriesType.season,
+      children: (_) => const [],
+    );
+
+    expect(asked, [
+      ['Season'],
+      ['Series'],
+    ]);
+    expect(shown, ['first']);
+  });
+
   test('one show filling the first read is read again at the ceiling',
       () async {
     final (shown, asked) = await load(
