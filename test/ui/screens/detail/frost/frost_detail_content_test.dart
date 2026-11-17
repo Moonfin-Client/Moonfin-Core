@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
@@ -20,6 +21,7 @@ import 'package:moonfin/preference/preference_constants.dart'
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/detail/frost/frost_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_navbar.dart';
@@ -181,6 +183,7 @@ void main() {
     Size size = const Size(1920, 1080),
     FocusNode? playNode,
     double? bottomBar,
+    List<String>? seerrPushes,
   }) async {
     tester.view.devicePixelRatio = 1.0;
     tester.view.physicalSize = size;
@@ -197,25 +200,47 @@ void main() {
       actionsExpanded: false,
       onActionsExpandedChanged: (_) {},
     );
+    final home = Scaffold(
+      body: ListenableBuilder(
+        listenable: Listenable.merge([vm, prefs]),
+        builder: (context, _) => bottomBar == null
+            ? content(context)
+            : BottomNavInsetScope(
+                height: bottomBar,
+                child: Builder(builder: content),
+              ),
+      ),
+    );
+    final theme = AppTheme.buildTheme(ThemeRegistry.active);
     await tester.pumpWidget(
       MediaQuery(
         data: MediaQueryData(size: size),
-        child: MaterialApp(
-          theme: AppTheme.buildTheme(ThemeRegistry.active),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: ListenableBuilder(
-              listenable: Listenable.merge([vm, prefs]),
-              builder: (context, _) => bottomBar == null
-                  ? content(context)
-                  : BottomNavInsetScope(
-                      height: bottomBar,
-                      child: Builder(builder: content),
+        // With [seerrPushes] the page sits under a router that records every
+        // Seerr page it is asked to open.
+        child: seerrPushes == null
+            ? MaterialApp(
+                theme: theme,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: home,
+              )
+            : MaterialApp.router(
+                theme: theme,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: GoRouter(
+                  routes: [
+                    GoRoute(path: '/', builder: (_, _) => home),
+                    GoRoute(
+                      path: '/seerr/media/:id',
+                      builder: (_, state) {
+                        seerrPushes.add(state.uri.toString());
+                        return const SizedBox.shrink();
+                      },
                     ),
-            ),
-          ),
-        ),
+                  ],
+                ),
+              ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 500));
@@ -357,7 +382,7 @@ void main() {
   });
 
   testWidgets('a Seerr title on the Similar tab shows its TMDb poster and '
-      'request status', (tester) async {
+      'request status, and opens its Seerr page', (tester) async {
     await prefs.set(
       UserPreferences.recommendationSystemSource,
       RecommendationSystemSource.online,
@@ -376,12 +401,23 @@ void main() {
             'SeerrStatus': SeerrMediaStatus.available,
           },
         ),
+        AggregatedItem(
+          id: '1399',
+          serverId: 'seerr',
+          rawData: {
+            'Name': 'Seerr series',
+            'Type': 'Series',
+            'SeerrMediaType': 'tv',
+          },
+        ),
       ]),
     );
+    final pushes = <String>[];
     await pumpContent(
       tester,
       viewModel('Movie', data: movieWithTracks()),
       size: const Size(390, 844),
+      seerrPushes: pushes,
     );
     await tester.pump();
 
@@ -399,6 +435,12 @@ void main() {
       ),
       findsOneWidget,
     );
+
+    await tester.tap(find.text('Seerr series'));
+    await tester.pumpAndSettle();
+    expect(pushes, [
+      Destinations.seerrMedia('1399', mediaType: 'tv', title: 'Seerr series'),
+    ]);
   });
 
   testWidgets('a phone keeps its buttons above the bottom navbar', (
