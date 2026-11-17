@@ -78,6 +78,7 @@ class _FakeCastService extends Fake implements CastService {
 
 class _FakeSessionApi extends Fake implements SessionApi {
   List<Map<String, dynamic>> sessionsResponse = [];
+  List<Map<String, dynamic>> fallbackSessionsResponse = [];
   Future<List<Map<String, dynamic>>> Function()? onGetSessions;
   Future<void> Function()? onSendPlayStateCommand;
   final commands = <String>[];
@@ -87,7 +88,13 @@ class _FakeSessionApi extends Fake implements SessionApi {
     String? controllableByUserId,
     String? deviceId,
     int? activeWithinSeconds,
-  }) async => onGetSessions != null ? onGetSessions!() : sessionsResponse;
+  }) async {
+    if (onGetSessions != null) return onGetSessions!();
+    if (controllableByUserId != null) return sessionsResponse;
+    return fallbackSessionsResponse.isNotEmpty
+        ? fallbackSessionsResponse
+        : sessionsResponse;
+  }
 
   @override
   Future<void> sendPlayStateCommand(
@@ -162,7 +169,7 @@ Map<String, dynamic> _tvSession({
   String id = 'sess-tv',
   String deviceId = 'shield-tv',
   String deviceName = 'SHIELD',
-  String userId = 'user-1',
+  String? userId = 'user-1',
   String itemId = 'ep-1',
   String itemName = 'The Beast in the Jungle',
   bool supportsRemoteControl = true,
@@ -314,7 +321,7 @@ void main() {
 
     service.dismissCurrent();
     expect(service.activeSession, isNull);
-    expect(service.keepsSocketAlive, isFalse);
+    expect(service.keepsSocketAlive, isTrue);
     expect(sessionApi.commands, isEmpty);
 
     // Same paused item does not re-appear.
@@ -577,7 +584,7 @@ void main() {
     expect(switchable.activeSession?.sessionId, 'sess-new');
   });
 
-  test('keepsSocketAlive stays true while a playing session is dismissed until it pauses or stops', () async {
+  test('keepsSocketAlive stays true while enabled even when a session is dismissed or stops', () async {
     await prefs.set(UserPreferences.remoteMediaNotification, true);
     service.start();
     socket.eventsController.add(SessionsMessage([_tvSession(isPaused: false)]));
@@ -588,11 +595,11 @@ void main() {
     expect(service.activeSession, isNull);
     expect(service.keepsSocketAlive, isTrue);
 
-    // Same item pauses while dismissed -> keepsSocketAlive drops to false.
+    // Same item pauses while dismissed -> notification stays suppressed, socket stays alive.
     socket.eventsController.add(SessionsMessage([_tvSession(isPaused: true)]));
     await Future<void>.delayed(Duration.zero);
     expect(service.activeSession, isNull);
-    expect(service.keepsSocketAlive, isFalse);
+    expect(service.keepsSocketAlive, isTrue);
 
     // Next item appears -> notification returns and keepsSocketAlive is true again.
     socket.eventsController.add(
@@ -602,11 +609,11 @@ void main() {
     expect(service.activeSession?.itemId, 'ep-2');
     expect(service.keepsSocketAlive, isTrue);
 
-    // Dismiss again, then session stops -> dismissed key resets so restarting ep-2 later shows it.
+    // Dismiss again, then session stops -> dismissed key resets, socket stays alive.
     service.dismissCurrent();
     socket.eventsController.add(const SessionEndedMessage(sessionId: 'sess-tv'));
     await Future<void>.delayed(Duration.zero);
-    expect(service.keepsSocketAlive, isFalse);
+    expect(service.keepsSocketAlive, isTrue);
 
     socket.eventsController.add(
       SessionsMessage([_tvSession(itemId: 'ep-2', isPaused: false)]),
@@ -724,16 +731,156 @@ void main() {
     fakeNow = fakeNow.add(const Duration(minutes: 10));
     expect(clockedService.keepsSocketAlive, isTrue);
 
-    // Past 30 minutes from the seek, keepsSocketAlive drops to false.
+    // Past 30 minutes from the seek, keepsSocketAlive stays true while enabled so
+    // subsequent resumes can be received.
     fakeNow = fakeNow.add(const Duration(minutes: 21));
-    expect(clockedService.keepsSocketAlive, isFalse);
+    expect(clockedService.keepsSocketAlive, isTrue);
 
-    // Resuming immediately re-arms keepsSocketAlive.
+    // Resuming immediately updates activeSession.
     socket.eventsController.add(
       SessionsMessage([_tvSession(isPaused: false, positionSeconds: 181)]),
     );
     await Future<void>.delayed(Duration.zero);
+    expect(clockedService.activeSession?.isPlaying, isTrue);
     expect(clockedService.keepsSocketAlive, isTrue);
+  });
+
+  test('keepsSocketAlive is true while idle when remoteMediaNotification is enabled', () async {
+    expect(service.activeSession, isNull);
+    expect(service.keepsSocketAlive, isFalse);
+
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    await Future<void>.delayed(Duration.zero);
+
+    // No session playing yet (app sitting idle in background).
+    expect(service.activeSession, isNull);
+    expect(service.keepsSocketAlive, isTrue);
+
+    // Server pushes new playback start on another device (e.g. Shield TV).
+    service.start();
+    socket.eventsController.add(SessionsMessage([_tvSession(isPaused: false)]));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.activeSession?.itemId, 'ep-1');
+    expect(service.activeSession?.isPlaying, isTrue);
+    expect(service.keepsSocketAlive, isTrue);
+  });
+
+  test('refreshSessions falls back to unconstrained getSessions when controllableByUserId is empty', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    sessionApi.sessionsResponse = [];
+    sessionApi.fallbackSessionsResponse = [
+      _tvSession(id: 'sess-tv', itemId: 'ep-fallback'),
+    ];
+
+    service.start();
+    await service.refreshSessions();
+
+    expect(service.activeSession?.sessionId, 'sess-tv');
+    expect(service.activeSession?.itemId, 'ep-fallback');
+  });
+
+  test('UserDataChangedMessage for current user triggers refreshSessions with normalized user IDs', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    sessionApi.sessionsResponse = [];
+    service.start();
+    await service.refreshSessions();
+    expect(service.activeSession, isNull);
+
+    // Provide the new session for the event-triggered refresh.
+    sessionApi.sessionsResponse = [_tvSession(id: 'sess-tv', itemId: 'ep-user-data')];
+
+    // User ID with different casing and hyphens stripped must still match.
+    final unnormalizedId = client.userId!.replaceAll('-', '').toUpperCase();
+    socket.eventsController.add(
+      UserDataChangedMessage(userId: unnormalizedId, userDataList: const []),
+    );
+    // Allow debounce timer to fire.
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+
+    expect(service.activeSession?.itemId, 'ep-user-data');
+
+    // Events for an unrelated user are ignored.
+    sessionApi.sessionsResponse = [_tvSession(id: 'sess-tv', itemId: 'ep-other')];
+    socket.eventsController.add(
+      const UserDataChangedMessage(userId: 'other-user-uuid', userDataList: []),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    expect(service.activeSession?.itemId, 'ep-user-data');
+  });
+
+  test('refreshSessions queues and drains when a refresh is already in flight', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    final completer = Completer<List<Map<String, dynamic>>>();
+    sessionApi.onGetSessions = () => completer.future;
+
+    service.start();
+    // First refresh is now in-flight waiting on completer.
+    final firstRefresh = service.refreshSessions();
+
+    // A second refresh arrives while the first is in-flight: should be queued.
+    unawaited(service.refreshSessions());
+
+    // Resolve first refresh with empty sessions.
+    sessionApi.onGetSessions = null;
+    sessionApi.sessionsResponse = [_tvSession(id: 'sess-tv', itemId: 'ep-queued')];
+    completer.complete([]);
+    await firstRefresh;
+
+    // Allow queued refresh to drain.
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.itemId, 'ep-queued');
+  });
+
+  test('sessions with null UserId or mismatched UserId are rejected as candidates', () async {
+    await prefs.set(UserPreferences.remoteMediaNotification, true);
+    service.start();
+
+    // Session with empty UserId is rejected.
+    socket.eventsController.add(
+      SessionsMessage([
+        _tvSession(id: 'sess-empty', itemId: 'ep-empty', userId: ''),
+      ]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession, isNull);
+
+    // Session with explicit null UserId is rejected.
+    socket.eventsController.add(
+      SessionsMessage([
+        _tvSession(id: 'sess-null', itemId: 'ep-null', userId: null),
+      ]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession, isNull);
+
+    // Session with omitted UserId is rejected.
+    socket.eventsController.add(
+      SessionsMessage([
+        _tvSession(id: 'sess-omitted', itemId: 'ep-omitted')..remove('UserId'),
+      ]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession, isNull);
+
+    // Session with different UserId is rejected.
+    socket.eventsController.add(
+      SessionsMessage([
+        _tvSession(id: 'sess-other', itemId: 'ep-other', userId: 'other-user'),
+      ]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession, isNull);
+
+    // Session with same UserId (case/hyphen normalized) is accepted.
+    final unnormalizedId = client.userId!.replaceAll('-', '').toUpperCase();
+    socket.eventsController.add(
+      SessionsMessage([
+        _tvSession(id: 'sess-match', itemId: 'ep-match', userId: unnormalizedId),
+      ]),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(service.activeSession?.itemId, 'ep-match');
   });
 }
 

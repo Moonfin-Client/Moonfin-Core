@@ -133,11 +133,11 @@ class RemoteMediaNotificationService {
   bool _started = false;
   bool _subscribedToSessions = false;
   MediaServerClient? _fetchingClient;
+  bool _refreshQueued = false;
   int _sessionGeneration = 0;
   String? _dismissedIdentityKey;
   bool _dismissedWhilePaused = false;
   bool _dismissedIsCastBacked = false;
-  bool _dismissedCandidatePlaying = false;
   String? _preferredSessionId;
 
   RemoteMediaSession? get activeSession => activeSessionNotifier.value;
@@ -148,20 +148,10 @@ class RemoteMediaNotificationService {
     return _now().difference(pausedSince) < pausedSocketGrace;
   }
 
-  /// True while mirroring an actively playing or recently paused Jellyfin
-  /// remote session (or when one was locally dismissed while still playing) so
-  /// the WebSocket stays connected across screen-off / background periods.
-  bool get keepsSocketAlive {
-    if (!isEnabled) return false;
-    final session = activeSessionNotifier.value;
-    if (session != null) {
-      if (session.isCastBacked) return false;
-      return session.isPlaying || _isWithinPausedSocketGrace();
-    }
-    return _dismissedIdentityKey != null &&
-        !_dismissedIsCastBacked &&
-        _dismissedCandidatePlaying;
-  }
+  /// True when remote playback notifications are enabled on this platform,
+  /// so the WebSocket stays connected across background / idle periods to
+  /// receive playback start and state events from other devices on the account.
+  bool get keepsSocketAlive => isEnabled;
 
   void _clearPausedGrace() {
     _pausedSince = null;
@@ -199,7 +189,6 @@ class RemoteMediaNotificationService {
     _dismissedIdentityKey = null;
     _dismissedWhilePaused = false;
     _dismissedIsCastBacked = false;
-    _dismissedCandidatePlaying = false;
   }
 
   void start() {
@@ -232,6 +221,7 @@ class RemoteMediaNotificationService {
     _clearPausedGrace();
     _clearDismissedState();
     _lastSessionsPushAt = null;
+    _refreshQueued = false;
     _syncSubscription();
     _recompute();
     _syncFallbackPoll();
@@ -258,7 +248,6 @@ class RemoteMediaNotificationService {
     _dismissedIdentityKey = current.identityKey;
     _dismissedWhilePaused = !current.isPlaying;
     _dismissedIsCastBacked = current.isCastBacked;
-    _dismissedCandidatePlaying = current.isPlaying;
     _clearPausedGrace();
     activeSessionNotifier.value = null;
     _syncFallbackPoll();
@@ -300,9 +289,19 @@ class RemoteMediaNotificationService {
       case PlaystateMessage():
       case GeneralCommandMessage():
         _scheduleRefresh();
+      case UserDataChangedMessage(:final userId)
+          when _normalizeId(userId) != null &&
+              _normalizeId(userId) == _normalizeId(_activeClient()?.userId):
+        _scheduleRefresh();
       default:
         break;
     }
+  }
+
+  static String? _normalizeId(String? id) {
+    if (id == null) return null;
+    final normalized = id.replaceAll('-', '').toLowerCase();
+    return normalized.isEmpty ? null : normalized;
   }
 
   void _scheduleRefresh() {
@@ -321,13 +320,14 @@ class RemoteMediaNotificationService {
         client.accessToken!.isEmpty) {
       return;
     }
-    if (identical(_fetchingClient, client)) return;
+    if (identical(_fetchingClient, client)) {
+      _refreshQueued = true;
+      return;
+    }
     final generation = _sessionGeneration;
     _fetchingClient = client;
     try {
-      final sessions = await client.sessionApi.getSessions(
-        controllableByUserId: client.userId,
-      );
+      final sessions = await client.sessionApi.getSessions();
       if (generation != _sessionGeneration ||
           !identical(client, _activeClient())) {
         return;
@@ -336,7 +336,13 @@ class RemoteMediaNotificationService {
     } catch (_) {
       // Non-Jellyfin/Emby servers or transient network errors are ignored.
     } finally {
-      if (identical(_fetchingClient, client)) _fetchingClient = null;
+      if (identical(_fetchingClient, client)) {
+        _fetchingClient = null;
+        if (_refreshQueued) {
+          _refreshQueued = false;
+          unawaited(refreshSessions());
+        }
+      }
     }
   }
 
@@ -377,7 +383,6 @@ class RemoteMediaNotificationService {
       final resumedFromPause = _dismissedWhilePaused && candidate.isPlaying;
       if (sameItem && !resumedFromPause) {
         _dismissedIsCastBacked = candidate.isCastBacked;
-        _dismissedCandidatePlaying = candidate.isPlaying;
         _clearPausedGrace();
         _setSession(null);
         _syncFallbackPoll();
@@ -506,9 +511,10 @@ class RemoteMediaNotificationService {
       final deviceId = session['DeviceId']?.toString();
       if (deviceId != null && deviceId == selfDeviceId) continue;
 
-      if (currentUserId != null && currentUserId.isNotEmpty) {
-        final sessionUserId = session['UserId']?.toString();
-        if (sessionUserId != null && sessionUserId != currentUserId) continue;
+      final sessionUserId = session['UserId']?.toString();
+      if (_normalizeId(sessionUserId) == null ||
+          _normalizeId(sessionUserId) != _normalizeId(currentUserId)) {
+        continue;
       }
 
       final nowPlaying = session['NowPlayingItem'];
