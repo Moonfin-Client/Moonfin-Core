@@ -204,11 +204,14 @@ class AccessScheduleService extends ChangeNotifier {
       // A schedule that couldn't be read leaves the last one in place. A look
       // that was overtaken has nothing to say about the newer one's outcome.
       // While the plugin judges the schedule (its window was tried this look),
-      // or after a block its window applied, which leaves no schedule here,
-      // this device's clock doesn't get to judge the old one: the last
-      // decision stays until a look gets an answer.
+      // while an allowed window it reported hasn't closed, or after a block its
+      // window applied, which leaves no schedule here, this device's clock
+      // doesn't get to judge the old one: the last decision stays until a look
+      // gets an answer.
       if (look == _lookCount) {
-        if (windowFailed || (isBlocked && _schedules.isEmpty)) {
+        if (windowFailed ||
+            _windowCloses != null ||
+            (isBlocked && _schedules.isEmpty)) {
           _keepLastAnswer();
         } else {
           _apply(failed: true);
@@ -237,7 +240,9 @@ class AccessScheduleService extends ChangeNotifier {
     }
     _appliedLook = look;
     _schedules = fresh;
-    _windowCloses = null;
+    // An allowed answer from /Users/Me says nothing of when the window closes,
+    // so the close the plugin reported still holds for looks with no answer.
+    if (refused == true) _windowCloses = null;
     _apply(failed: false, refused: refused);
   }
 
@@ -272,6 +277,9 @@ class AccessScheduleService extends ChangeNotifier {
       final until = boundary.difference(moment);
       if (until < delay) delay = until;
     }
+    // A close the plugin reported is a moment the answer can change too
+    final closes = _windowCloses?.difference(moment);
+    if (closes != null && closes < delay) delay = closes;
     _schedule(delay);
   }
 

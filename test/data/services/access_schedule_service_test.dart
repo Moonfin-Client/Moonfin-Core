@@ -907,6 +907,63 @@ void main() {
       });
     });
 
+    test('keeps the reported close through a fallback look the server '
+        'allowed', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: true,
+                  untilClose: Duration(seconds: 90),
+                )
+              : throw Exception('500'),
+          schedules: [_entry('Weekday', 8, 20)],
+          refuses: false,
+          schedulesFailOn: (load) => load >= 2,
+        );
+        h.service.setUser('child');
+        h.settle();
+        // 12:01: the window fails, the schedule loads and /Users/Me allows
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.loads, 1);
+        expect(h.service.isBlocked, isFalse);
+
+        // Then offline: nothing can be read
+        h.elapse(const Duration(seconds: 29));
+        expect(h.service.isBlocked, isFalse);
+        h.elapse(const Duration(seconds: 1));
+        expect(h.service.isBlocked, isTrue);
+        h.service.dispose();
+      });
+    });
+
+    test('keeps the reported close when the plugin stops answering and the '
+        'schedule can\'t be read', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: true,
+                  untilClose: Duration(seconds: 90),
+                )
+              : null,
+          schedulesFail: true,
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(seconds: 89));
+        expect(h.service.isBlocked, isFalse);
+
+        h.elapse(const Duration(seconds: 1));
+        expect(h.service.isBlocked, isTrue);
+        h.service.dispose();
+      });
+    });
+
     test('names the opening from halfway through a slow answer', () {
       fakeAsync((async) {
         // Worked out at 09:00:00.8 and rounded up to an hour; the answer
