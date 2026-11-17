@@ -3508,12 +3508,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   String get _speedLabel =>
       ((_state.playbackSpeed * 100).round() / 100).toString();
 
+  // Space is a tap to toggle play/pause and a hold for temporary speed, on
+  // any platform with a hardware keyboard.
   bool _isTvTemporarySpeedKey(LogicalKeyboardKey key) {
-    return key == LogicalKeyboardKey.mediaPause;
+    return key == LogicalKeyboardKey.space ||
+        (PlatformDetection.isTV && key == LogicalKeyboardKey.mediaPause);
   }
 
-  bool _canUseTvTemporarySpeedHold() =>
-      PlatformDetection.isTV && _canUseTemporarySpeed();
+  bool _canUseTvTemporarySpeedHold() => _canUseTemporarySpeed();
 
   bool _canUseTemporarySpeed() {
     if (_castService.activeKind != null) return false;
@@ -3898,13 +3900,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return KeyEventResult.ignored;
     }
 
-    if (PlatformDetection.isTV) {
-      final temporarySpeedResult = _handleTvTemporarySpeedKeyDownOrRepeat(
-        event,
-      );
-      if (temporarySpeedResult != KeyEventResult.ignored) {
-        return temporarySpeedResult;
-      }
+    final temporarySpeedResult = _handleTvTemporarySpeedKeyDownOrRepeat(event);
+    if (temporarySpeedResult != KeyEventResult.ignored) {
+      return temporarySpeedResult;
     }
 
     final primaryFocus = FocusManager.instance.primaryFocus;
