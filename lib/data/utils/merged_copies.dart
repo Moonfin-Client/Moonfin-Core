@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:server_core/server_core.dart';
 
 import '../../util/accent_folding.dart';
@@ -141,7 +143,12 @@ List<AggregatedItem> foldCopies(
   final kept = <AggregatedItem>[];
   for (final item in items) {
     final keys = titleMatchKeys(item);
-    final holder = keys.map((key) => holders![key]).nonNulls.firstOrNull;
+    // The card holding this copy's light version comes first, so the full one
+    // replaces it rather than landing on a second card.
+    final candidates = keys.map((key) => holders![key]).nonNulls;
+    final holder =
+        candidates.where((card) => _holds(card, _copyKey(item))).firstOrNull ??
+        candidates.firstOrNull;
     if (holder != null) {
       _join(holder, item, keys, holders);
       continue;
@@ -162,6 +169,28 @@ List<AggregatedItem> foldCopies(
   return kept;
 }
 
+/// Marks a copy the index gave a card, which holds ids only.
+const _lightCopyKey = 'MergedLightCopy';
+
+String _copyKey(AggregatedItem copy) => '${copy.serverId}|${copy.id}';
+
+Map<String, int> _storedCopies(AggregatedItem holder) {
+  final copies = holder.rawData[_copiesKey] as List? ?? const [];
+  return {
+    for (var i = 0; i < copies.length; i++)
+      if (copies[i] case {
+        'serverId': final String serverId,
+        'item': final Map raw,
+      })
+        '$serverId|${raw['Id']?.toString() ?? ''}': i,
+  };
+}
+
+bool _holds(AggregatedItem holder, String copyKey) =>
+    _copyKey(holder) == copyKey || _storedCopies(holder).containsKey(copyKey);
+
+// A copy already on the card is never added twice, but the full copy paging
+// folds in takes the place of the light one the index gave the card first.
 void _join(
   AggregatedItem holder,
   AggregatedItem item,
@@ -169,15 +198,94 @@ void _join(
   Map<String, AggregatedItem> holders,
 ) {
   final copies = holder.rawData[_copiesKey] as List;
+  final holderKey = _copyKey(holder);
+  final stored = _storedCopies(holder);
   for (final copy in copiesOf(item)) {
-    copies.add({
+    final key = _copyKey(copy);
+    if (key == holderKey) continue;
+    final entry = {
       'serverId': copy.serverId,
       'item': {...copy.rawData}..remove(_copiesKey),
-    });
+    };
+    if (stored[key] case final at?) {
+      final storedIsLight = (copies[at] as Map)['item']?[_lightCopyKey] == true;
+      if (storedIsLight && copy.rawData[_lightCopyKey] != true) {
+        copies[at] = entry;
+      }
+    } else {
+      stored[key] = copies.length;
+      copies.add(entry);
+    }
   }
   for (final key in keys) {
     holders.putIfAbsent(key, () => holder);
   }
+}
+
+/// The titles more than one item holds, by match key. Two servers can name a
+/// title in different languages and so sort it far apart, so a card can't
+/// count on paging to bring its copies in.
+Map<String, List<AggregatedItem>> indexCopies(Iterable<AggregatedItem> items) {
+  final index = <String, List<AggregatedItem>>{};
+  for (final item in items) {
+    for (final key in titleMatchKeys(item)) {
+      (index[key] ??= []).add(item);
+    }
+  }
+  index.removeWhere((_, holding) => holding.map(_copyKey).toSet().length < 2);
+  return index;
+}
+
+/// Adds to [card] the copies of its title in [index] that [skip] lets through,
+/// except one another card already holds, so a copy whose ids lead to two
+/// cards sits on just one. Returns whether the card took on a copy.
+bool joinIndexedCopies(
+  AggregatedItem card,
+  Map<String, List<AggregatedItem>> index,
+  Map<String, AggregatedItem> holders,
+  bool Function(AggregatedItem copy) skip,
+) {
+  if (index.isEmpty) return false;
+  card.rawData.putIfAbsent(_copiesKey, () => []);
+  final known = copiesOf(card);
+  final onCard = {for (final copy in known) _copyKey(copy)};
+  // Every copy's ids, not just the card's: the index leaves out an id only one
+  // item holds, and a copy already on the card can carry one that leads on.
+  final pending = Queue.of([for (final copy in known) ...titleMatchKeys(copy)]);
+  final visited = <String>{};
+  final found = <(AggregatedItem, Set<String>)>[];
+  while (pending.isNotEmpty) {
+    final key = pending.removeFirst();
+    if (!visited.add(key)) continue;
+    for (final copy in index[key] ?? const <AggregatedItem>[]) {
+      final copyKeys = titleMatchKeys(copy);
+      pending.addAll(copyKeys);
+      final copyKey = _copyKey(copy);
+      if (onCard.contains(copyKey) ||
+          skip(copy) ||
+          copyKeys
+              .map((key) => holders[key])
+              .nonNulls
+              .any((other) => other != card && _holds(other, copyKey))) {
+        continue;
+      }
+      onCard.add(copyKey);
+      found.add((copy, copyKeys));
+    }
+  }
+  for (final (copy, copyKeys) in found) {
+    _join(
+      card,
+      AggregatedItem(
+        id: copy.id,
+        serverId: copy.serverId,
+        rawData: {...copy.rawData, _lightCopyKey: true},
+      ),
+      copyKeys,
+      holders,
+    );
+  }
+  return found.isNotEmpty;
 }
 
 /// Orders items the way a server does for [sortBy], its comma separated sort

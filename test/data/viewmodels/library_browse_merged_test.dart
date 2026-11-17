@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
+import 'package:moonfin/data/utils/blocked_ratings.dart';
 import 'package:moonfin/data/utils/merged_copies.dart';
 import 'package:moonfin/data/viewmodels/library_browse_view_model.dart';
 import 'package:moonfin/preference/preference_constants.dart';
@@ -18,6 +22,9 @@ class _SortedItemsApi implements ItemsApi {
     this.fails = false,
     this.originals = const {},
     this.listedOnly = const [],
+    this.played = const {},
+    this.ratings = const {},
+    this.lightGate,
   });
 
   /// Each title, with the TMDB id it carries when it has one.
@@ -30,7 +37,20 @@ class _SortedItemsApi implements ItemsApi {
   /// Titles the server lists among its provider ids but never pages in, like
   /// one hidden from this user after the list was read.
   final List<(String, String?)> listedOnly;
+
+  /// Titles this user has watched, left out by the unplayed filter.
+  final Set<String> played;
+
+  /// The rating of each title that has one.
+  final Map<String, String> ratings;
   final requests = <(int, int)>[];
+
+  /// How many times the whole library was read for its provider ids.
+  var lightReads = 0;
+
+  /// Holds the whole-library read back until it completes, like a slow
+  /// server far away.
+  final Future<void>? lightGate;
 
   @override
   Future<Map<String, dynamic>> getItems({
@@ -78,12 +98,21 @@ class _SortedItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
   }) async {
     if (fails) throw StateError('offline');
     final start = startIndex ?? 0;
     requests.add((start, limit ?? 0));
-    final sorted = [...titles, if (fields == 'ProviderIds') ...listedOnly]
-      ..sort((a, b) => a.$1.compareTo(b.$1));
+    final light = fields?.startsWith('ProviderIds') ?? false;
+    if (light) {
+      lightReads++;
+      await lightGate;
+    }
+    final unplayed = filters?.contains('IsUnplayed') ?? false;
+    final sorted = [
+      for (final title in [...titles, if (light) ...listedOnly])
+        if (!unplayed || !played.contains(title.$1)) title,
+    ]..sort((a, b) => a.$1.compareTo(b.$1));
     return {
       'TotalRecordCount': sorted.length,
       'Items': [
@@ -95,6 +124,7 @@ class _SortedItemsApi implements ItemsApi {
             'Type': 'Movie',
             'ProviderIds': {'Tmdb': ?tmdb},
             'OriginalTitle': ?originals[title],
+            'OfficialRating': ?ratings[title],
           },
       ],
     };
@@ -413,5 +443,140 @@ void main() {
     await vm.load();
 
     expect(vm.state, LibraryBrowseState.error);
+  });
+
+  group('a copy paging has not reached', () {
+    // Server a's first page ends long before server b's copy of the shared
+    // title, which sorts last there under another name.
+    List<MergedLibrarySource> sources({
+      Set<String> played = const {},
+      Map<String, String> ratings = const {},
+      Future<void>? slow,
+    }) => [
+      _source(
+        'a',
+        _SortedItemsApi([
+          ('Aaa Vortelle', '1001'),
+          for (var i = 0; i < 200; i++)
+            ('b${i.toString().padLeft(3, '0')}', null),
+        ]),
+      ),
+      _source(
+        'b',
+        _SortedItemsApi(
+          const [('Zz Vortelle', '1001')],
+          played: played,
+          ratings: ratings,
+          lightGate: slow,
+        ),
+      ),
+    ];
+
+    List<String> serversOfFirstCard(LibraryBrowseViewModel vm) => [
+      for (final copy in copiesOf(vm.items.first)) copy.serverId,
+    ];
+
+    test('joins its card once the index is in', () async {
+      final vm = await _viewModel(sources());
+      addTearDown(vm.dispose);
+      await vm.load();
+      await pumpEventQueue();
+
+      expect(vm.items.first.name, 'Aaa Vortelle');
+      expect(serversOfFirstCard(vm), ['a', 'b']);
+    });
+
+    test('is read with each server once for the index and the first '
+        "server's titles together", () async {
+      final list = sources();
+      final vm = await _viewModel(list);
+      addTearDown(vm.dispose);
+      await vm.load();
+      await pumpEventQueue();
+
+      for (final source in list) {
+        final api = source.session.client.itemsApi as _SortedItemsApi;
+        expect(api.lightReads, 1);
+      }
+    });
+
+    test('stays off the card when the filter on leaves it out', () async {
+      final vm = await _viewModel(sources(played: {'Zz Vortelle'}));
+      addTearDown(vm.dispose);
+      await vm.setPlayedFilter(PlayedStatusFilter.unwatched);
+      await pumpEventQueue();
+
+      expect(vm.items.first.name, 'Aaa Vortelle');
+      expect(serversOfFirstCard(vm), ['a']);
+    });
+
+    test('stays off the card when the viewer blocked its rating', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.blockedParentalRatings, 'Rated-Q');
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      addTearDown(() async {
+        await GetIt.instance.reset();
+        resetParentalFilterCache();
+      });
+
+      final vm = await _viewModel(sources(ratings: {'Zz Vortelle': 'Rated-Q'}));
+      addTearDown(vm.dispose);
+      await vm.load();
+      await pumpEventQueue();
+
+      expect(serversOfFirstCard(vm), ['a']);
+    });
+
+    test("shows the first page without waiting on a slow server's whole "
+        'library', () async {
+      final slow = Completer<void>();
+      final vm = await _viewModel(sources(slow: slow.future));
+      addTearDown(vm.dispose);
+
+      await vm.load().timeout(const Duration(seconds: 2));
+      expect(vm.items.first.name, 'Aaa Vortelle');
+      expect(serversOfFirstCard(vm), ['a']);
+
+      slow.complete();
+      await pumpEventQueue();
+      expect(serversOfFirstCard(vm), ['a', 'b']);
+    });
+
+    test('gives way to the full copy once paging reaches it', () async {
+      final vm = await _viewModel(sources());
+      addTearDown(vm.dispose);
+      await vm.load();
+      await pumpEventQueue();
+      expect(copiesOf(vm.items.first)[1].rawData['SortName'], isNull);
+
+      while (vm.hasMore) {
+        await vm.loadMore();
+      }
+
+      final copies = copiesOf(vm.items.first);
+      expect(copies.map((copy) => copy.serverId), ['a', 'b']);
+      expect(copies[1].rawData['SortName'], 'Zz Vortelle');
+      expect(vm.items.map((item) => item.name), isNot(contains('Zz Vortelle')));
+      expect(vm.totalCount, vm.items.length);
+    });
+
+    test('is read once, and kept when the browse loads again', () async {
+      final list = sources();
+      final vm = await _viewModel(list);
+      addTearDown(vm.dispose);
+      await vm.load();
+      await pumpEventQueue();
+      await vm.load();
+      await pumpEventQueue();
+
+      for (final source in list) {
+        final api = source.session.client.itemsApi as _SortedItemsApi;
+        expect(api.lightReads, 1);
+      }
+      expect(serversOfFirstCard(vm), ['a', 'b']);
+    });
   });
 }

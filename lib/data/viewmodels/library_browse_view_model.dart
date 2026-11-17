@@ -71,9 +71,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// while a filter is on, since that server's copy could be filtered out.
   PreferredCopies? _preferredCopies;
 
-  /// The first server's titles, kept while the query they were read with
-  /// stays the same.
-  ({String query, Set<String> titles})? _preferredTitles;
+  /// Behind the preferred copies and the copy index, kept across loads.
+  _LightRead? _lightRead;
+
+  /// Null until the background read is in.
+  Map<String, List<AggregatedItem>>? _copyIndex;
 
   static const _pageSize = 48;
   static const _firstPageSize = 75;
@@ -638,6 +640,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _renderedItemIds.clear();
     _copyHolders.clear();
     _preferredCopies = null;
+    _copyIndex = null;
     _playlistCategoryMap.clear();
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
@@ -1092,13 +1095,23 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
         isFavorite: _favoriteFilter ? true : null,
       );
-      final preferred = isMergedBrowse && startIndex == 0 && !hasActiveFilters
-          ? _readPreferredCopies(
+      final lightRead = isMergedBrowse && startIndex == 0
+          ? _lightReadFor(
+              genreIds: genreId != null ? [genreId!] : null,
+              studios: studioName != null ? [studioName!] : null,
               includeTypes: includeTypes,
               excludeTypes: excludeTypes,
               collapseBoxSets: collapseBoxSets,
               recursive: recursive,
+              filters: filters.isEmpty ? null : filters,
+              seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
+              isFavorite: _favoriteFilter ? true : null,
             )
+          : null;
+      // The first server's titles alone, so a slower server's whole library
+      // never holds up the first page.
+      final preferred = lightRead != null && !hasActiveFilters
+          ? _readPreferredCopies(lightRead)
           : null;
       final results = await Future.wait([
         if (isMergedBrowse)
@@ -1142,6 +1155,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       if (preferred != null) {
         final copies = await preferred;
         if (generation == _listGeneration) _preferredCopies = copies;
+      }
+      // After the first page, and not for a load already replaced, so going
+      // through filters doesn't read every server's whole library each time.
+      if (lightRead != null && generation == _listGeneration) {
+        _joinCopyIndexWhenRead(lightRead, generation);
       }
       response = results.first;
       if (fetchDirectories) {
@@ -1200,6 +1218,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         final unclaimed = foldCopies(preferred.takeAllWaiting(), _copyHolders);
         _filteredOutCount -= unclaimed.length;
         folded.addAll(unclaimed);
+      }
+      if (_copyIndex case final index?) {
+        for (final card in folded) {
+          joinIndexedCopies(card, index, _copyHolders, _skipIndexedCopy);
+        }
       }
       filtered = folded;
     }
@@ -1359,66 +1382,156 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     }
   }
 
-  /// Every title the first server of a merged browse holds, which is the
-  /// signed-in one whenever it has this library. Read with the pages' own
-  /// query, so a movie folded into a collection there isn't waited on.
-  Future<PreferredCopies?> _readPreferredCopies({
+  /// The rating is checked here rather than when the index is read, so the
+  /// index can be kept when the viewer changes what they block.
+  bool _skipIndexedCopy(AggregatedItem copy) =>
+      _renderedItemIds.contains('${copy.serverId}|${copy.id}') ||
+      withoutBlockedItems([copy]).isEmpty;
+
+  void _joinCopyIndexWhenRead(_LightRead read, int generation) {
+    unawaited(
+      read
+          .index()
+          .then((index) {
+            // Another load took over while the index was read.
+            if (_disposed || generation != _listGeneration) return;
+            _copyIndex = index;
+            if (!_joinIndexIntoShownCards(index)) return;
+            // The copy lists grew in place, which the search cache can't see.
+            _searchNamesSource = null;
+            _searchResultsSource = null;
+            notifyListeners();
+          })
+          .catchError((Object error, StackTrace stack) {
+            // Without the index, copies come up as paging reaches them.
+            debugPrint('Merged copy index failed: $error\n$stack');
+          }),
+    );
+  }
+
+  /// A card on screen can be a refreshed copy of the fold's own card, so the
+  /// copies go to the fold's card, whose copy list the refreshed one shares.
+  bool _joinIndexIntoShownCards(Map<String, List<AggregatedItem>> index) {
+    var grown = false;
+    for (final card in _items) {
+      final holder =
+          titleMatchKeys(
+            card,
+          ).map((key) => _copyHolders[key]).nonNulls.firstOrNull ??
+          card;
+      if (joinIndexedCopies(holder, index, _copyHolders, _skipIndexedCopy)) {
+        grown = true;
+      }
+    }
+    return grown;
+  }
+
+  /// Read with the pages' own query and filters, so a title they leave out
+  /// isn't counted. Reused while the query is the same and no server failed.
+  _LightRead _lightReadFor({
+    required List<String>? genreIds,
+    required List<String>? studios,
     required List<String>? includeTypes,
     required List<String>? excludeTypes,
     required bool? collapseBoxSets,
     required bool recursive,
-  }) async {
-    final serverId = _mergedSources.first.session.server.id;
-    final own = [
-      for (final source in _mergedSources)
-        if (source.session.server.id == serverId) source,
-    ];
-    if (own.length == _mergedSources.length) return null;
+    required List<String>? filters,
+    required List<String>? seriesStatus,
+    required bool? isFavorite,
+  }) {
+    final sources = _mergedSources;
     final query = [
-      serverId,
-      for (final source in own) source.libraryId,
+      for (final source in sources)
+        '${source.session.server.id}:${source.libraryId}',
+      genreIds,
+      studios,
       includeTypes,
       excludeTypes,
       collapseBoxSets,
       recursive,
+      filters,
+      seriesStatus,
+      isFavorite,
+      // What _getFilteredItems adds to every query on its own.
+      _genreNamesFilter,
+      _officialRatingsFilter,
+      _tagsFilter,
+      _yearsFilter,
+      _videoTypesFilter,
+      _audioLanguagesFilter,
+      _subtitleLanguagesFilter,
+      _hasSubtitlesFilter,
+      _hasTrailerFilter,
+      _hasSpecialFeatureFilter,
+      _hasThemeSongFilter,
+      _hasThemeVideoFilter,
+      _isHdFilter,
+      _is4KFilter,
+      _is3DFilter,
     ].join('|');
-    if (_preferredTitles case (query: final read, :final titles)
-        when read == query) {
-      return PreferredCopies(serverId, titles);
+    if (_lightRead case final read? when read.query == query && !read.failed) {
+      return read;
     }
-    try {
-      final responses = await Future.wait([
-        for (final source in own)
-          _getFilteredItems(
-            client: source.session.client,
-            parentId: source.libraryId,
-            includeItemTypes: includeTypes,
-            excludeItemTypes: excludeTypes,
-            collapseBoxSetItems: collapseBoxSets,
-            recursive: recursive,
-            fields: 'ProviderIds',
-            imageTypeLimit: 0,
-            enableTotalRecordCount: false,
-          ),
-      ]);
-      final titles = {
-        for (final response in responses)
-          for (final raw in response['Items'] as List? ?? const [])
-            if (raw is Map)
-              ...titleMatchKeys(
-                AggregatedItem(
-                  id: raw['Id']?.toString() ?? '',
-                  serverId: serverId,
-                  rawData: raw.cast<String, dynamic>(),
-                ),
-              ),
-      };
-      _preferredTitles = (query: query, titles: titles);
-      return PreferredCopies(serverId, titles);
-    } catch (_) {
-      // Without the list, the first copy shown keeps the card.
-      return null;
+
+    Future<List<AggregatedItem>> readSource(MergedLibrarySource source) async {
+      final serverId = source.session.server.id;
+      final response = await _getFilteredItems(
+        client: source.session.client,
+        parentId: source.libraryId,
+        genreIds: genreIds,
+        studios: studios,
+        includeItemTypes: includeTypes,
+        excludeItemTypes: excludeTypes,
+        collapseBoxSetItems: collapseBoxSets,
+        recursive: recursive,
+        fields: 'ProviderIds,OriginalTitle',
+        imageTypeLimit: 0,
+        filters: filters,
+        seriesStatus: seriesStatus,
+        isFavorite: isFavorite,
+        enableTotalRecordCount: false,
+        enableUserData: false,
+      );
+      return [
+        for (final raw in response['Items'] as List? ?? const [])
+          if (raw is Map && (raw['Id']?.toString() ?? '').isNotEmpty)
+            AggregatedItem(
+              id: raw['Id'].toString(),
+              serverId: serverId,
+              // Trimmed, so a large library doesn't sit in memory whole.
+              rawData: {
+                for (final field in _lightFields)
+                  if (raw[field] != null) field: raw[field],
+              },
+            ),
+      ];
     }
+
+    return _lightRead = _LightRead(query, sources, readSource);
+  }
+
+  static const _lightFields = [
+    'Id',
+    'Name',
+    'Type',
+    'ProviderIds',
+    'OriginalTitle',
+    'OfficialRating',
+  ];
+
+  /// Every title the first server of a merged browse holds, which is the
+  /// signed-in one whenever it has this library.
+  Future<PreferredCopies?> _readPreferredCopies(_LightRead read) async {
+    final sources = _mergedSources;
+    final serverId = sources.first.session.server.id;
+    final own = [
+      for (var i = 0; i < sources.length; i++)
+        if (sources[i].session.server.id == serverId) i,
+    ];
+    if (own.length == sources.length) return null;
+    final titles = await read.titlesOf(own);
+    // Without the whole list, the first copy shown keeps the card.
+    return titles == null ? null : PreferredCopies(serverId, titles);
   }
 
   /// The next [limit] items of a merged browse in [compare]'s order, taking
@@ -1829,6 +1942,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     List<String>? seriesStatus,
     bool? isFavorite,
     bool? enableTotalRecordCount,
+    bool? enableUserData,
   }) => (client ?? _client).itemsApi.getItems(
     ids: ids,
     parentId: parentId,
@@ -1849,6 +1963,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     seriesStatus: seriesStatus,
     isFavorite: isFavorite,
     enableTotalRecordCount: enableTotalRecordCount,
+    enableUserData: enableUserData,
     genres: _genreNamesFilter,
     officialRatings: _officialRatingsFilter,
     tags: _tagsFilter,
@@ -2298,6 +2413,51 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 /// Where a merged browse notes which server an item came from, since one
 /// list holds several servers' items.
 const _mergedServerIdKey = 'MergedServerId';
+
+/// Each server is read only when asked for, so the first server's titles
+/// don't wait on the others.
+class _LightRead {
+  _LightRead(this.query, this._sources, this._readSource);
+
+  final String query;
+  final List<MergedLibrarySource> _sources;
+  final Future<List<AggregatedItem>> Function(MergedLibrarySource) _readSource;
+
+  final _reads = <int, Future<List<AggregatedItem>?>>{};
+  Set<String>? _titles;
+  Future<Map<String, List<AggregatedItem>>>? _index;
+
+  /// A server didn't answer, so the next load reads again.
+  bool failed = false;
+
+  Future<List<AggregatedItem>?> _read(int source) =>
+      _reads[source] ??= _readSource(_sources[source])
+          .then<List<AggregatedItem>?>(
+            (items) => items,
+            onError: (Object _) {
+              failed = true;
+              return null;
+            },
+          );
+
+  /// Null when one of the first server's [sources] didn't answer.
+  Future<Set<String>?> titlesOf(List<int> sources) async {
+    if (_titles case final titles?) return titles;
+    final read = await Future.wait(sources.map(_read));
+    if (read.contains(null)) return null;
+    return _titles = {
+      for (final items in read) ...items!.expand(titleMatchKeys),
+    };
+  }
+
+  Future<Map<String, List<AggregatedItem>>> index() => _index ??=
+      Future.wait([for (var i = 0; i < _sources.length; i++) _read(i)])
+          .then((read) {
+            // Built, so the lists themselves can go.
+            _reads.clear();
+            return indexCopies(read.nonNulls.expand((items) => items));
+          });
+}
 
 /// Reads one server library of a merged browse, holding what it has read
 /// until the merge takes it.
