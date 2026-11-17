@@ -829,12 +829,16 @@ class SettingsPlayerPreview extends StatelessWidget {
         upNext &&
         airDate &&
         previewValue(context, UserPreferences.showNextAirDate);
-    // The player hides its controls when the card comes up.
-    final controls =
-        moment != _PlayerMoment.watching && !upNextCard && !airDateCard;
     final paused =
         moment == _PlayerMoment.paused &&
         previewValue(context, UserPreferences.showDescriptionOnPause);
+    // The player hides its controls when a card or the paused description
+    // comes up.
+    final controls =
+        moment != _PlayerMoment.watching &&
+        !upNextCard &&
+        !airDateCard &&
+        !paused;
     final subtitles =
         !paused &&
         previewValue(context, UserPreferences.subtitleMode) != SubtitleMode.none;
@@ -849,13 +853,20 @@ class SettingsPlayerPreview extends StatelessWidget {
       _ => const Duration(minutes: 4, seconds: 12),
     };
 
-    TextStyle text(double size, {FontWeight weight = FontWeight.w500}) =>
-        TextStyle(
-          fontSize: size * u,
-          fontWeight: weight,
-          color: Colors.white,
-          shadows: const [Shadow(blurRadius: 6, color: Colors.black)],
-        );
+    // The paused description scales by height and ignores text scaling as the
+    // player sizes it. Only a phone's wide screen sets it apart from the rest.
+    final pausedUnit = size.shortestSide / 540;
+
+    TextStyle text(
+      double size, {
+      FontWeight weight = FontWeight.w500,
+      double? unit,
+    }) => TextStyle(
+      fontSize: size * (unit ?? u),
+      fontWeight: weight,
+      color: Colors.white,
+      shadows: const [Shadow(blurRadius: 6, color: Colors.black)],
+    );
 
     return _designCanvas(
       size,
@@ -922,31 +933,44 @@ class SettingsPlayerPreview extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  left: 48 * u,
-                  top: 110 * u,
-                  width: 460 * u,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.paused.toUpperCase(),
-                        style: text(13, weight: FontWeight.w700),
-                      ),
-                      SizedBox(height: 8 * u),
-                      Text(
-                        item?.title ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: text(32, weight: FontWeight.w700),
-                      ),
-                      SizedBox(height: 8 * u),
-                      Text(
-                        item?.overview ?? '',
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                        style: text(15).copyWith(height: 1.4),
-                      ),
-                    ],
+                  left: 48 * pausedUnit,
+                  top: 110 * pausedUnit,
+                  width: 460 * pausedUnit,
+                  child: MediaQuery.withNoTextScaling(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.paused.toUpperCase(),
+                          style: text(
+                            13,
+                            weight: FontWeight.w700,
+                            unit: pausedUnit,
+                          ),
+                        ),
+                        SizedBox(height: 8 * pausedUnit),
+                        Text(
+                          item?.title ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: text(
+                            32,
+                            weight: FontWeight.w700,
+                            unit: pausedUnit,
+                          ),
+                        ),
+                        SizedBox(height: 8 * pausedUnit),
+                        Text(
+                          item?.overview ?? '',
+                          maxLines: 8,
+                          overflow: TextOverflow.ellipsis,
+                          style: text(
+                            15,
+                            unit: pausedUnit,
+                          ).copyWith(height: 1.4),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

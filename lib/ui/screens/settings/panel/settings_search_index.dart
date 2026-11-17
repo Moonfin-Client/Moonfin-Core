@@ -1355,6 +1355,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.useDetailedSubHeadings,
       subtitle: l10n.useDetailedSubHeadingsDescription,
     ),
+    libraries.leaf(
+      'pref_hide_library_watch_progress',
+      l10n.hideHomeWatchProgress,
+      subtitle: l10n.hideHomeWatchProgressSubtitle,
+      keywords: ['resume', 'played'],
+    ),
+    libraries.leaf(
+      'pref_hide_library_unwatched_count',
+      l10n.hideHomeUnwatchedCount,
+      subtitle: l10n.hideHomeUnwatchedCountSubtitle,
+      keywords: ['unplayed'],
+    ),
 
     mediaBar.screen(keywords: ['featured', 'carousel', 'banner', 'hero']),
     mediaBar.leaf('mediaBarMode', l10n.mediaBarMode),
@@ -1369,17 +1381,35 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'newest',
       'new seasons',
       'new episodes',
+      'new movies',
     ]),
     mediaBar.leaf(
       'mediaBarNewReleaseBanner',
       l10n.mediaBarNewReleaseBanner,
-      subtitle: l10n.mediaBarNewReleaseBannerDescription,
-      keywords: ['new season', 'new episode', 'badge'],
+      subtitle: l10n.mediaBarNewReleaseBannerAllDescription,
+      keywords: ['new season', 'new episode', 'new movie', 'badge'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewReleaseKinds',
+      l10n.mediaBarNewReleaseKinds,
+      keywords: ['new movie', 'new season', 'new episode', 'new series'],
     ),
     mediaBar.leaf(
       'mediaBarNewReleaseDays',
-      l10n.mediaBarNewReleaseDays,
+      l10n.mediaBarNewEpisodeDays,
       subtitle: l10n.mediaBarNewReleaseDaysDescription,
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieDays',
+      l10n.mediaBarNewMovieDays,
+      subtitle: l10n.mediaBarNewMovieDaysDescription,
+      keywords: ['new movie'],
+    ),
+    mediaBar.leaf(
+      'mediaBarNewMovieDetail',
+      l10n.mediaBarNewMovieDetail,
+      subtitle: l10n.mediaBarNewMovieDetailDescription,
+      keywords: ['tagline', 'slogan', 'new movie'],
     ),
     if (!PlatformDetection.useMobileUi)
       mediaBar.leaf(
@@ -1817,7 +1847,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         audio.leaf(
           'pref_audio_passthrough_output',
           l10n.settingsAudioPassthroughOutput,
-          keywords: ['iec', 'audiotrack', 'bitstream', 'packer', 'kodi', 'raw'],
+          subtitle: l10n.settingsAudioPassthroughOutputDescription,
+          keywords: [
+            'iec',
+            'audiotrack',
+            'bitstream',
+            'packer',
+            'kodi',
+            'raw',
+            'no sound',
+            'silent',
+            'silence',
+          ],
         ),
       audio.leaf(
         'pref_downmix_to_stereo',

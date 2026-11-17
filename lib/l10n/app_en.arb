@@ -4808,6 +4808,18 @@
   "@playerRecroppingBlackBars": {
     "description": "Toast when the player re-runs letterbox crop detection"
   },
+  "playerBlackBarsCropped": "Black bars cropped",
+  "@playerBlackBarsCropped": {
+    "description": "Toast after a manual recrop found letterbox bars and cropped them"
+  },
+  "playerNoBlackBarsFound": "No black bars found",
+  "@playerNoBlackBarsFound": {
+    "description": "Toast after a manual recrop found that the picture fills the frame"
+  },
+  "playerBlackBarsNotDetected": "Couldn't detect black bars. Try again in a brighter scene",
+  "@playerBlackBarsNotDetected": {
+    "description": "Toast after a manual recrop saw only dark or unclear frames"
+  },
   "stretch": "Stretch",
   "@stretch": {
     "description": "Zoom mode: stretch"
@@ -6702,18 +6714,9 @@
   "@mediaBarSourceRandom": {
     "description": "Media bar source: any eligible title"
   },
-  "mediaBarSourceNewReleases": "New Seasons & Episodes",
-  "@mediaBarSourceNewReleases": {
-    "description": "Media bar source: series with episodes that aired recently"
-  },
   "mediaBarNewReleaseBanner": "New Release Banner",
   "@mediaBarNewReleaseBanner": {
-    "description": "Setting that flags series in the media bar when new episodes aired recently"
-  },
-  "mediaBarNewReleaseBannerDescription": "Flag series with a new season or new episodes that aired recently.",
-  "mediaBarNewReleaseDays": "New Release Window",
-  "@mediaBarNewReleaseDays": {
-    "description": "Setting for how many days an episode counts as new in the media bar"
+    "description": "Setting that flags new series, seasons, episodes and movies in the media bar"
   },
   "mediaBarNewReleaseDaysDescription": "How long after an episode airs it still counts as new.",
   "mediaBarNewSeries": "New Series",
@@ -6727,6 +6730,46 @@
   "mediaBarNewEpisodes": "New Episodes",
   "@mediaBarNewEpisodes": {
     "description": "Media bar label on a series with one or more episodes that aired recently"
+  },
+  "mediaBarNewMovie": "New Movie",
+  "@mediaBarNewMovie": {
+    "description": "Media bar label on a movie that came out recently"
+  },
+  "mediaBarNewReleasesSection": "New Releases",
+  "@mediaBarNewReleasesSection": {
+    "description": "Media bar settings section with the new release label settings"
+  },
+  "mediaBarSourceNewReleasesAll": "New Releases",
+  "@mediaBarSourceNewReleasesAll": {
+    "description": "Media bar source showing what came out recently: new series, seasons, episodes and movies"
+  },
+  "mediaBarNewReleaseBannerAllDescription": "Flag new series, seasons, episodes and movies.",
+  "@mediaBarNewReleaseBannerAllDescription": {
+    "description": "Description of the media bar new release label setting"
+  },
+  "mediaBarNewReleaseKinds": "Labels",
+  "@mediaBarNewReleaseKinds": {
+    "description": "Setting that picks which titles get a new release label in the media bar"
+  },
+  "mediaBarNewEpisodeDays": "New Episode Window",
+  "@mediaBarNewEpisodeDays": {
+    "description": "Setting for how many days an episode counts as new in the media bar"
+  },
+  "mediaBarNewMovieDays": "New Movie Window",
+  "@mediaBarNewMovieDays": {
+    "description": "Setting for how many days after its release a movie counts as new in the media bar"
+  },
+  "mediaBarNewMovieDaysDescription": "How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.",
+  "@mediaBarNewMovieDaysDescription": {
+    "description": "Description of the new movie window setting"
+  },
+  "mediaBarNewMovieDetail": "Show Tagline",
+  "@mediaBarNewMovieDetail": {
+    "description": "Setting for whether the New Movie label has a second line"
+  },
+  "mediaBarNewMovieDetailDescription": "Under New Movie, show the movie's tagline. With none, the label stays on its own.",
+  "@mediaBarNewMovieDetailDescription": {
+    "description": "Description of the New Movie second line setting"
   },
   "moviesAndTvShows": "Movies & TV Shows",
   "@moviesAndTvShows": {
@@ -14419,19 +14462,19 @@
   },
   "hideHomeWatchProgress": "Hide Watch Progress",
   "@hideHomeWatchProgress": {
-    "description": "Setting title to hide the playback progress bar on home screen posters"
+    "description": "Setting title to hide the playback progress bar on home screen and library posters"
   },
   "hideHomeWatchProgressSubtitle": "Hide the progress bar on posters you've started watching.",
   "@hideHomeWatchProgressSubtitle": {
-    "description": "Description for setting to hide the playback progress bar on home screen posters"
+    "description": "Description for setting to hide the playback progress bar on home screen and library posters"
   },
   "hideHomeUnwatchedCount": "Hide Unwatched Count",
   "@hideHomeUnwatchedCount": {
-    "description": "Setting title to hide the unwatched episode count badge on home screen posters"
+    "description": "Setting title to hide the unwatched episode count badge on home screen and library posters"
   },
   "hideHomeUnwatchedCountSubtitle": "Hide the badge showing how many episodes are left to watch.",
   "@hideHomeUnwatchedCountSubtitle": {
-    "description": "Description for setting to hide the unwatched episode count badge on home screen posters"
+    "description": "Description for setting to hide the unwatched episode count badge on home screen and library posters"
   },
   "continueWatchingAndNextUpHeader": "Continue Watching and Next Up",
   "@continueWatchingAndNextUpHeader": {

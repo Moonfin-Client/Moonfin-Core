@@ -322,6 +322,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
 
   bool get _showCardTitles => _prefs.get(UserPreferences.libraryCardTitles);
+  bool get _hideWatchProgress =>
+      _prefs.get(UserPreferences.hideLibraryWatchProgress);
+  bool get _hideUnwatchedCount =>
+      _prefs.get(UserPreferences.hideLibraryUnwatchedCount);
 
   @override
   void didChangeDependencies() {
@@ -1856,8 +1860,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         suppressFocusGlow: isNeon,
         isPlayed: item.isPlayed,
         isFavorite: item.isFavorite,
-        unplayedCount: item.unplayedItemCount,
-        playedPercentage: _displayPlayedPercentage(item),
+        unplayedCount: _hideUnwatchedCount ? null : item.unplayedItemCount,
+        playedPercentage:
+            _hideWatchProgress ? null : _displayPlayedPercentage(item),
         watchedBehavior: watchedBehavior,
         itemType: item.type,
         onFocus: isMobile
@@ -2127,8 +2132,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         suppressFocusGlow: isNeon,
                         isPlayed: item.isPlayed,
                         isFavorite: item.isFavorite,
-                        unplayedCount: item.unplayedItemCount,
-                        playedPercentage: _displayPlayedPercentage(item),
+                        unplayedCount: _hideUnwatchedCount
+                            ? null
+                            : item.unplayedItemCount,
+                        playedPercentage: _hideWatchProgress
+                            ? null
+                            : _displayPlayedPercentage(item),
                         watchedBehavior: watchedBehavior,
                         itemType: item.type,
                         onFocus: () => _onItemFocused(item),

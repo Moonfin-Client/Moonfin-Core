@@ -608,6 +608,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_hide_home_media_description',
     'pref_hide_home_watch_progress',
     'pref_hide_home_unwatched_count',
+    'pref_hide_library_watch_progress',
+    'pref_hide_library_unwatched_count',
     'pref_display_audio_rows',
     'pref_display_since_you_watched_rows',
     'pref_since_you_watched_source',
@@ -758,6 +760,9 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarItemCount',
     'mediaBarNewReleaseBanner',
     'mediaBarNewReleaseDays',
+    'mediaBarNewReleaseKinds',
+    'mediaBarNewMovieDays',
+    'mediaBarNewMovieDetail',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
     'navbarOpacity',
@@ -2311,6 +2316,17 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_hide_backdrops_in_libraries',
     defaultValue: false,
   );
+
+  static final hideLibraryWatchProgress = Preference(
+    key: 'pref_hide_library_watch_progress',
+    defaultValue: false,
+  );
+
+  static final hideLibraryUnwatchedCount = Preference(
+    key: 'pref_hide_library_unwatched_count',
+    defaultValue: false,
+  );
+
   static final maxBitrate = Preference(
     key: 'pref_max_bitrate',
     defaultValue: '120',
@@ -3249,6 +3265,32 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarNewReleaseDays = Preference(
     key: 'mediaBarNewReleaseDays',
     defaultValue: 30,
+  );
+
+  static const mediaBarNewSeries = 'newSeries';
+  static const mediaBarNewSeason = 'newSeason';
+  static const mediaBarNewEpisodes = 'newEpisodes';
+  static const mediaBarNewMovie = 'newMovie';
+
+  /// Which labels the banner puts on, comma separated. The banner switch above
+  /// still turns them all off, since older apps only read that.
+  static final mediaBarNewReleaseKinds = Preference(
+    key: 'mediaBarNewReleaseKinds',
+    defaultValue:
+        '$mediaBarNewSeries,$mediaBarNewSeason,$mediaBarNewEpisodes,$mediaBarNewMovie',
+  );
+
+  /// How many days after its release a movie stays new. Longer than for
+  /// series, since a cinema release reaches servers months after it opens.
+  static final mediaBarNewMovieDays = Preference(
+    key: 'mediaBarNewMovieDays',
+    defaultValue: 120,
+  );
+
+  /// Whether the new movie label shows the movie's tagline under it.
+  static final mediaBarNewMovieDetail = Preference(
+    key: 'mediaBarNewMovieDetail',
+    defaultValue: true,
   );
 
   static final navbarOpacity = Preference(

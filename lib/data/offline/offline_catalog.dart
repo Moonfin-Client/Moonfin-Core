@@ -47,7 +47,7 @@ class OfflineCatalog {
 
   List<OfflineEntry> _entries = const [];
   Map<String, OfflineEntry> _byId = const {};
-  StreamSubscription<List<DownloadedItem>>? _sub;
+  StreamSubscription<void>? _sub;
   Timer? _debounce;
   final _changes = StreamController<void>.broadcast();
 
@@ -60,39 +60,57 @@ class OfflineCatalog {
   OfflineEntry? byId(String itemId) => _byId[itemId];
 
   Future<void> warm() async {
-    await _rebuild();
-    _sub ??= _repo.watchItems().listen((_) {
+    // Subscribed first, so a write that lands during the first rebuild still
+    // schedules another one. Only the signal is needed, since the rebuild
+    // reads the rows itself.
+    _sub ??= _repo.watchItemChanges().listen((_) {
       _debounce?.cancel();
       _debounce = Timer(const Duration(milliseconds: 400), () {
         _rebuild().then((_) => _changes.add(null));
       });
     });
+    await _rebuild();
   }
 
   Future<void> _rebuild() async {
     final rows = await _repo.getItems(onlyCompleted: true);
+    final previous = <(String, String), OfflineEntry>{
+      for (final entry in _entries)
+        (entry.row.serverId, entry.row.itemId): entry,
+    };
     final entries = <OfflineEntry>[];
     final byId = <String, OfflineEntry>{};
     for (final row in rows) {
-      Map<String, dynamic> metadata;
-      try {
-        final decoded = jsonDecode(row.metadataJson);
-        metadata = decoded is Map<String, dynamic>
-            ? Map<String, dynamic>.from(decoded)
-            : <String, dynamic>{};
-      } catch (_) {
-        metadata = <String, dynamic>{};
-      }
-      if (metadata.isEmpty) {
-        metadata = {'Id': row.itemId, 'Name': row.name, 'Type': row.type};
-      }
-      _mergeLivePosition(metadata, row);
-      final entry = OfflineEntry(row, metadata);
+      // Playback saves its position every 5 seconds, which rewrites one row.
+      // Parsing every row's metadata again took about half a second on a
+      // machine with many downloads and froze the video each time, so
+      // unchanged rows keep their entry.
+      final unchanged = previous[(row.serverId, row.itemId)];
+      final entry = unchanged != null && unchanged.row == row
+          ? unchanged
+          : _parse(row);
       entries.add(entry);
       byId[row.itemId] = entry;
     }
     _entries = entries;
     _byId = byId;
+  }
+
+  OfflineEntry _parse(DownloadedItem row) {
+    Map<String, dynamic> metadata;
+    try {
+      final decoded = jsonDecode(row.metadataJson);
+      metadata = decoded is Map<String, dynamic>
+          ? Map<String, dynamic>.from(decoded)
+          : <String, dynamic>{};
+    } catch (_) {
+      metadata = <String, dynamic>{};
+    }
+    if (metadata.isEmpty) {
+      metadata = {'Id': row.itemId, 'Name': row.name, 'Type': row.type};
+    }
+    _mergeLivePosition(metadata, row);
+    return OfflineEntry(row, metadata);
   }
 
   /// The metadata snapshot's UserData reflects download time, but the row's
