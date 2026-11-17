@@ -10290,5 +10290,327 @@
     "showMpvStats": "Visa mpv-statistik (Skift+I)",
     "@showMpvStats": {
         "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "bookFormatComic": "Serietidning",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
+    },
+    "hideMpvStats": "Dölj mpv-statistik (Shift+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "keyboardShortcutsTitle": "Tangentbordsgenvägar",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "keyboardShortcutsSubtitle": "Tangenter för appen, videospelaren och läsaren",
+    "@keyboardShortcutsSubtitle": {
+        "description": "Subtitle of the About tile that opens the keyboard shortcut list"
+    },
+    "keyboardShortcutsPlayerHint": "Tangenter för appen, videospelaren och läsaren",
+    "@keyboardShortcutsPlayerHint": {
+        "description": "Footnote on the keyboard shortcuts settings screen"
+    },
+    "keyboardShortcutsSectionApp": "Överallt",
+    "@keyboardShortcutsSectionApp": {
+        "description": "Keyboard shortcut section for keys that work on every screen"
+    },
+    "keyboardShortcutsSectionAppScope": "På vilken skärm som helst",
+    "@keyboardShortcutsSectionAppScope": {
+        "description": "Under the Everywhere section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionPlayer": "Videospelare",
+    "@keyboardShortcutsSectionPlayer": {
+        "description": "Keyboard shortcut section for the video player"
+    },
+    "keyboardShortcutsSectionPlayerScope": "När en video är öppen, spelas upp eller är pausad",
+    "@keyboardShortcutsSectionPlayerScope": {
+        "description": "Under the Video player section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionReader": "Bok- och serieläsare",
+    "@keyboardShortcutsSectionReader": {
+        "description": "Keyboard shortcut section for the ebook and comic reader"
+    },
+    "keyboardShortcutsSectionReaderScope": "När man läser en bok eller en serietidning",
+    "@keyboardShortcutsSectionReaderScope": {
+        "description": "Under the reader section title: when those keys apply"
+    },
+    "keyNameArrowKeys": "Piltangenterna",
+    "@keyNameArrowKeys": {
+        "description": "Key cap label standing for the four arrow keys"
+    },
+    "keyNameEnter": "Tryck på Enter",
+    "@keyNameEnter": {
+        "description": "Key cap label for the Enter key"
+    },
+    "keyNameEsc": "Esc",
+    "@keyNameEsc": {
+        "description": "Key cap label for the Escape key"
+    },
+    "keyNameBackspace": "Backspace",
+    "@keyNameBackspace": {
+        "description": "Key cap label for the Backspace key"
+    },
+    "keyNamePageUp": "Sidan upp",
+    "@keyNamePageUp": {
+        "description": "Key cap label for the Page Up key"
+    },
+    "keyNamePageDown": "Sida nedåt",
+    "@keyNamePageDown": {
+        "description": "Key cap label for the Page Down key"
+    },
+    "keyNameEnd": "Slut",
+    "@keyNameEnd": {
+        "description": "Key cap label for the End key"
+    },
+    "keyNameShift": "Skift",
+    "@keyNameShift": {
+        "description": "Key cap label for the Shift modifier"
+    },
+    "keyNameCtrl": "Ctrl",
+    "@keyNameCtrl": {
+        "description": "Key cap label for the Control modifier"
+    },
+    "keyNameAlt": "Alt",
+    "@keyNameAlt": {
+        "description": "Key cap label for the Alt modifier"
+    },
+    "keyNameScrollWheel": "Rullhjul",
+    "@keyNameScrollWheel": {
+        "description": "Key cap label standing for the mouse scroll wheel"
+    },
+    "shortcutMoveFocus": "Bläddra mellan objekten",
+    "@shortcutMoveFocus": {
+        "description": "What the arrow keys do outside the player"
+    },
+    "shortcutActivate": "Öppna det markerade objektet",
+    "@shortcutActivate": {
+        "description": "What Enter does outside the player"
+    },
+    "shortcutGoBack": "Gå tillbaka",
+    "@shortcutGoBack": {
+        "description": "What Esc and Backspace do outside the player"
+    },
+    "shortcutToggleFullscreen": "Aktivera eller inaktivera helskärmsläge",
+    "@shortcutToggleFullscreen": {
+        "description": "F11 and Alt+Enter anywhere, F in the player"
+    },
+    "shortcutQuit": "Avsluta Moonfin",
+    "@shortcutQuit": {
+        "description": "What Ctrl+Q does on desktop"
+    },
+    "shortcutPlayPause": "Spela upp eller pausa",
+    "@shortcutPlayPause": {
+        "description": "Player shortcut action"
+    },
+    "shortcutShowControlsOrPlayPause": "Visa kontrollerna, eller uppspelning/paus om de visas",
+    "@shortcutShowControlsOrPlayPause": {
+        "description": "What Enter does in the player"
+    },
+    "shortcutSeekBack": "Sök bakåt (håll ned för större hopp)",
+    "@shortcutSeekBack": {
+        "description": "Player shortcut action. The step is the skip back length from settings"
+    },
+    "shortcutSeekForward": "Titta framåt (håll kvar för större hopp)",
+    "@shortcutSeekForward": {
+        "description": "Player shortcut action. The step is the skip forward length from settings"
+    },
+    "shortcutVolumeUp": "Höj volymen",
+    "@shortcutVolumeUp": {
+        "description": "Player shortcut action"
+    },
+    "shortcutVolumeDown": "Sänk volymen",
+    "@shortcutVolumeDown": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMute": "Stäng av eller slå på ljudet",
+    "@shortcutMute": {
+        "description": "Player shortcut action"
+    },
+    "shortcutToggleSubtitles": "Slå på eller stäng av undertexter",
+    "@shortcutToggleSubtitles": {
+        "description": "Player shortcut action"
+    },
+    "shortcutSlower": "Ta det lugnt",
+    "@shortcutSlower": {
+        "description": "Player shortcut action"
+    },
+    "shortcutFaster": "Snabba upp",
+    "@shortcutFaster": {
+        "description": "Player shortcut action"
+    },
+    "shortcutPlaybackInfo": "Visa uppspelningsinformation",
+    "@shortcutPlaybackInfo": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMpvStats": "Aktivera eller inaktivera MPV-statistik",
+    "@shortcutMpvStats": {
+        "description": "Player shortcut action, Windows only"
+    },
+    "shortcutRecropBlackBars": "Beskär svarta fält",
+    "@shortcutRecropBlackBars": {
+        "description": "Player shortcut to run letterbox crop detection now"
+    },
+    "shortcutLeaveFullscreenOrStop": "Avsluta helskärmsläget, eller avbryt om det inte är helskärmsläge",
+    "@shortcutLeaveFullscreenOrStop": {
+        "description": "What Esc does in the player"
+    },
+    "shortcutHideControls": "Dölj kontrollerna",
+    "@shortcutHideControls": {
+        "description": "What Backspace and Delete do in the player: hide the controls or the panel on top of them"
+    },
+    "shortcutStopPlayback": "Avbryt uppspelningen",
+    "@shortcutStopPlayback": {
+        "description": "Player shortcut action"
+    },
+    "shortcutNextItem": "Nästa punkt",
+    "@shortcutNextItem": {
+        "description": "Player shortcut action for the next-track media key"
+    },
+    "shortcutPreviousItem": "Föregående post",
+    "@shortcutPreviousItem": {
+        "description": "Player shortcut action for the previous-track media key"
+    },
+    "shortcutSkipSegment": "Hoppa över intro eller eftertexter när det erbjuds",
+    "@shortcutSkipSegment": {
+        "description": "Player shortcut action that presses the skip intro or credits button while it is showing"
+    },
+    "shortcutShowShortcuts": "Visa den här listan",
+    "@shortcutShowShortcuts": {
+        "description": "What ? and F1 do in the player"
+    },
+    "shortcutNextPage": "Nästa sida",
+    "@shortcutNextPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutPreviousPage": "Föregående sida",
+    "@shortcutPreviousPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutScrollPage": "Bläddra på sidan (e-böcker)",
+    "@shortcutScrollPage": {
+        "description": "What the up and down arrows do in the ebook reader"
+    },
+    "shortcutFirstPage": "Första sidan eller början av kapitlet",
+    "@shortcutFirstPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutLastPage": "Sista sidan eller slutet av kapitlet",
+    "@shortcutLastPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutZoom": "Zooma in eller ut (serier)",
+    "@shortcutZoom": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutResetZoom": "Återställ zoom (serier)",
+    "@shortcutResetZoom": {
+        "description": "Reader shortcut action"
+    },
+    "videoRenderer": "Videorenderare",
+    "@videoRenderer": {
+        "description": "Settings label for choosing where Windows draws video, in its own window or inside the app"
+    },
+    "videoRendererDescription": "I ”Native”-fönstret får du den jämnaste rörelsen och HDR-bilden skickas vidare till skärmen utan att bearbetas. Prova ett annat alternativ om videon inte fungerar som den ska.",
+    "@videoRendererDescription": {
+        "description": "Settings description for the video renderer choice"
+    },
+    "videoRendererNativeWindow": "Inbyggt fönster (rekommenderas)",
+    "@videoRendererNativeWindow": {
+        "description": "Video renderer option that plays every title in its own window"
+    },
+    "keyNameSpace": "Rymden",
+    "@keyNameSpace": {
+        "description": "Key cap label for the space bar"
+    },
+    "videoRendererNativeHdrOnly": "Eget fönster endast för HDR",
+    "@videoRendererNativeHdrOnly": {
+        "description": "Video renderer option that uses its own window for HDR titles and the in-app renderer for SDR"
+    },
+    "videoRendererInApp": "I appen (äldre version)",
+    "@videoRendererInApp": {
+        "description": "Video renderer option that draws every title inside the app and converts HDR to SDR"
+    },
+    "bookReadingUnavailableTitle": "Man kan inte läsa böcker på Apple TV",
+    "@bookReadingUnavailableTitle": {
+        "description": "Title of the dialog shown on Apple TV when the user tries to open a book or comic, which tvOS has no reader for"
+    },
+    "bookReadingUnavailableMessage": "Öppna den i Moonfin på en mobil, surfplatta eller dator för att läsa den. Ljudböckerna kan fortfarande spelas upp här.",
+    "@bookReadingUnavailableMessage": {
+        "description": "Body of the dialog shown on Apple TV when the user tries to open a book or comic"
+    },
+    "noProgramData": "Inga programuppgifter",
+    "@noProgramData": {
+        "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+    },
+    "liveTvJumpToLive": "Gå till Live",
+    "@liveTvJumpToLive": {
+        "description": "Live TV player button that leaves a rewound or paused stream and returns to what is airing now"
+    },
+    "nextSeriesRecording": "Nästa inspelning av serien: {dateTime}",
+    "@nextSeriesRecording": {
+        "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Oct 5, 2026 · 8:00 PM"
+            }
+        }
+    },
+    "noUpcomingSeriesRecording": "Serien är schemalagd för inspelning, men i programguiden finns inga kommande avsnitt",
+    "@noUpcomingSeriesRecording": {
+        "description": "A series recording rule exists but no future episode timer is available"
+    },
+    "seriesRecordingSkipsShowing": "Serien kommer att hoppa över detta avsnitt vid inspelningen",
+    "@seriesRecordingSkipsShowing": {
+        "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
+    },
+    "seriesRecordingEpisodesQuestion": "Vilka avsnitt bör spelas in?",
+    "@seriesRecordingEpisodesQuestion": {
+        "description": "Prompt in the dialog that chooses which episodes a series recording takes"
+    },
+    "seriesRecordingAllEpisodesDescription": "Varje sändning, inklusive repriser",
+    "@seriesRecordingAllEpisodesDescription": {
+        "description": "Explains the All Episodes series recording choice"
+    },
+    "seriesRecordingNotRecordedEpisodes": "Avsnitt som ännu inte har spelats in",
+    "@seriesRecordingNotRecordedEpisodes": {
+        "description": "Series recording choice that skips episodes already in the library"
+    },
+    "seriesRecordingNotRecordedEpisodesDescription": "Hoppar över avsnitt som redan finns i ditt bibliotek och spelar in varje avsnitt en gång",
+    "@seriesRecordingNotRecordedEpisodesDescription": {
+        "description": "Explains the Episodes Not Already Recorded series recording choice"
+    },
+    "seriesRecordingNewEpisodesOnly": "Endast nya avsnitt",
+    "@seriesRecordingNewEpisodesOnly": {
+        "description": "Series recording choice that records only first airings"
+    },
+    "seriesRecordingNewEpisodesOnlyDescription": "Endast första sändningar, inga repriser",
+    "@seriesRecordingNewEpisodesOnlyDescription": {
+        "description": "Explains the New Episodes Only series recording choice"
+    },
+    "seriesRecordingSettings": "Serieinställningar",
+    "@seriesRecordingSettings": {
+        "description": "Action that changes which episodes an existing series recording takes"
+    },
+    "seriesRecordingUpdated": "Uppdatering av serieinspelningarna",
+    "@seriesRecordingUpdated": {
+        "description": "Confirmation after changing a series recording's settings"
+    },
+    "failedToUpdateSeriesRecording": "Det går inte att uppdatera serieinspelningen",
+    "@failedToUpdateSeriesRecording": {
+        "description": "Error after changing a series recording's settings failed"
+    },
+    "recordCurrentEpisode": "Spela in det här avsnittet",
+    "@recordCurrentEpisode": {
+        "description": "Live TV player action to record only the current episode"
+    },
+    "recordCurrentProgram": "Spela in det här programmet",
+    "@recordCurrentProgram": {
+        "description": "Live TV player action to record only the current program"
+    },
+    "cancelCurrentRecording": "Avbryt denna inspelning",
+    "@cancelCurrentRecording": {
+        "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
     }
 }
