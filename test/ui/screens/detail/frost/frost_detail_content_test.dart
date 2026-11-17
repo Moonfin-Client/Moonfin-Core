@@ -4,24 +4,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/repositories/tmdb_repository.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart'
-    show DesktopUiScale;
+    show DesktopUiScale, RecommendationSystemSource;
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/ui/screens/detail/frost/frost_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_navbar.dart';
+import 'package:moonfin/ui/widgets/offline_aware_image.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
+import 'package:moonfin/ui/widgets/seerr/seerr_image_urls.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -46,6 +50,24 @@ class _PlaybackManager extends Mock implements PlaybackManager {}
 class _OfflineRepository extends Mock implements OfflineRepository {}
 
 class _QueueService extends Mock implements QueueService {}
+
+/// Answers every recommendation lookup with [items], the way the TMDb
+/// Similarity source hands back titles from Seerr.
+class _Recommendations extends RowDataSource {
+  _Recommendations(super.client, this.items);
+
+  final List<AggregatedItem> items;
+
+  @override
+  Future<List<AggregatedItem>> getRecommendations({
+    required String serverId,
+    required AggregatedItem baseItem,
+    required bool isLocal,
+    List<String>? candidateItemTypes,
+    int limit = 15,
+    bool? includeWatched,
+  }) async => items;
+}
 
 Future<UserPreferences> _preferences() async {
   SharedPreferences.setMockInitialValues({});
@@ -332,6 +354,51 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Movie title'), findsOneWidget);
     expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+  });
+
+  testWidgets('a Seerr title on the Similar tab shows its TMDb poster and '
+      'request status', (tester) async {
+    await prefs.set(
+      UserPreferences.recommendationSystemSource,
+      RecommendationSystemSource.online,
+    );
+    GetIt.instance.unregister<RowDataSource>();
+    GetIt.instance.registerSingleton<RowDataSource>(
+      _Recommendations(client, [
+        AggregatedItem(
+          id: '603',
+          serverId: 'seerr',
+          rawData: {
+            'Name': 'Seerr title',
+            'Type': 'Movie',
+            'PosterPath': '/poster.jpg',
+            'SeerrMediaType': 'movie',
+            'SeerrStatus': SeerrMediaStatus.available,
+          },
+        ),
+      ]),
+    );
+    await pumpContent(
+      tester,
+      viewModel('Movie', data: movieWithTracks()),
+      size: const Size(390, 844),
+    );
+    await tester.pump();
+
+    await tester.tap(find.text('Similar'));
+    await tester.pump(const Duration(milliseconds: 600));
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Seerr title'), findsOneWidget);
+    expect(find.text('Available'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is OfflineAwareImage &&
+            widget.imageUrl == '$seerrPosterBase/poster.jpg',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a phone keeps its buttons above the bottom navbar', (
