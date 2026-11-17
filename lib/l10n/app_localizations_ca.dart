@@ -511,7 +511,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Recomanacions Moonfin';
 
   @override
-  String get recommendationSystemJellyfin => 'Recomanacions Jellyfin';
+  String get recommendationSystemJellyfin => 'Recomanacions del servidor';
 
   @override
   String get recommendationSystemTmdb => 'Similitud de TMDb';
@@ -12848,7 +12848,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Recomanacions Moonfin';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Recomanacions Jellyfin';
+  String get sinceYouWatchedSourceServer => 'Recomanacions del servidor';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Similitud de TMDb';

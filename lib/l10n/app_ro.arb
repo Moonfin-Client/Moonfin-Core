@@ -11066,7 +11066,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "recommendationSystemJellyfin": "Recomandări Jellyfin",
+    "recommendationSystemJellyfin": "Recomandări de la server",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -12840,7 +12840,7 @@
     },
     "sinceYouWatchedSource": "Sursa recomandărilor",
     "sinceYouWatchedSourceLocal": "Recomandări Moonfin",
-    "sinceYouWatchedSourceServer": "Recomandări Jellyfin",
+    "sinceYouWatchedSourceServer": "Recomandări de la server",
     "sinceYouWatchedSourceOnline": "Similaritate TMDb",
     "sinceYouWatchedSourceType": "Tip sursă",
     "sinceYouWatchedSourceItem": "Element sursă",

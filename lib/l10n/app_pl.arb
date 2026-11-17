@@ -10338,7 +10338,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "recommendationSystemJellyfin": "Jellyfin poleca",
+    "recommendationSystemJellyfin": "Serwer poleca",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -13942,7 +13942,7 @@
     },
     "sinceYouWatchedSource": "Źródło rekomendacji",
     "sinceYouWatchedSourceLocal": "Moonfin poleca",
-    "sinceYouWatchedSourceServer": "Jellyfin poleca",
+    "sinceYouWatchedSourceServer": "Serwer poleca",
     "sinceYouWatchedSourceOnline": "Podobieństwo TMDb",
     "sinceYouWatchedSourceType": "Typ źródła",
     "sinceYouWatchedSourceItem": "Pozycja źródłowa",

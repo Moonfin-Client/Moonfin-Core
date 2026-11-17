@@ -55,6 +55,19 @@ class HtmlVideoBackend extends PlayerBackend
         _positionSecondaryCues();
       }).toJS,
     );
+    // Also fires when the browser's own control opens or closes the window.
+    _videoElement.addEventListener(
+      'enterpictureinpicture',
+      ((web.Event _) {
+        if (!_disposed) inPictureInPicture.value = true;
+      }).toJS,
+    );
+    _videoElement.addEventListener(
+      'leavepictureinpicture',
+      ((web.Event _) {
+        if (!_disposed) inPictureInPicture.value = false;
+      }).toJS,
+    );
     _registerViewFactory();
   }
 
@@ -1713,6 +1726,58 @@ class HtmlVideoBackend extends PlayerBackend
     return HtmlElementView(viewType: _viewType);
   }
 
+  /// Whether the browser can float this video in a window of its own. Firefox
+  /// has no API for it, so the property is missing there.
+  bool get supportsPictureInPicture =>
+      web.document.has('pictureInPictureEnabled') &&
+      web.document.pictureInPictureEnabled &&
+      !_videoElement.disablePictureInPicture;
+
+  /// True while the video plays in the browser's floating window.
+  final ValueNotifier<bool> inPictureInPicture = ValueNotifier<bool>(false);
+
+  // An exit asked for while a request is still open, such as leaving the
+  // player before the window appears. The window is closed once it opens.
+  bool _pictureInPicturePending = false;
+  bool _pictureInPictureExitWanted = false;
+
+  /// Needs a recent click, so call it straight from the button's handler.
+  Future<void> enterPictureInPicture() async {
+    // A second press while the first request is open changes nothing.
+    if (_disposed || _pictureInPicturePending || !supportsPictureInPicture) {
+      return;
+    }
+    _pictureInPicturePending = true;
+    _pictureInPictureExitWanted = false;
+    try {
+      await _videoElement.requestPictureInPicture().toDart;
+    } catch (_) {
+      // Refused, for example before the video has any metadata. The button
+      // stays as it was, since no enter event follows.
+      return;
+    } finally {
+      _pictureInPicturePending = false;
+    }
+    if (_disposed || _pictureInPictureExitWanted) {
+      _pictureInPictureExitWanted = false;
+      try {
+        await web.document.exitPictureInPicture().toDart;
+      } catch (_) {}
+    }
+  }
+
+  Future<void> exitPictureInPicture() async {
+    if (_disposed) return;
+    if (_pictureInPicturePending) {
+      _pictureInPictureExitWanted = true;
+      return;
+    }
+    if (!inPictureInPicture.value) return;
+    try {
+      await web.document.exitPictureInPicture().toDart;
+    } catch (_) {}
+  }
+
   String _cssObjectFit(BoxFit fit) {
     switch (fit) {
       case BoxFit.fill:
@@ -1755,5 +1820,6 @@ class HtmlVideoBackend extends PlayerBackend
     _completedStream.close();
     _errorStream.close();
     _tracksChangedStream.close();
+    inPictureInPicture.dispose();
   }
 }

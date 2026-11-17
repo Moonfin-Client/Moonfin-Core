@@ -1530,17 +1530,47 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
-    testWidgets('shows a couple of seconds after a pause', (tester) async {
+    testWidgets('waits for the controls to hide on a TV too', (tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await pumpPlayer(tester);
+      expect(cardOpacity(tester), 0);
+
+      await tester.pump(const Duration(seconds: 10));
+      expect(cardOpacity(tester), 1);
+      expect(find.text('PAUSED'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('keeps its size whatever the text scale', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpPlayer(tester);
+      await tester.pump(const Duration(seconds: 10));
+
+      final paused = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('PAUSED'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(paused.textScaler, TextScaler.noScaling);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('shows as soon as playback pauses', (tester) async {
       await pumpPlayer(tester);
       manager.state.setPlaying(true);
       await tester.pump();
       await tester.pump();
-      manager.state.setPlaying(false);
-      await tester.pump();
-      await tester.pump();
       expect(find.byType(Slider), findsOneWidget);
 
-      await tester.pump(const Duration(milliseconds: 2100));
+      // A drop the viewer didn't ask for reads as a pause after 200 ms.
+      manager.state.setPlaying(false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.byType(Slider), findsNothing);
       expect(cardOpacity(tester), 1);
 

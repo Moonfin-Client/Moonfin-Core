@@ -110,6 +110,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> _bgMerge = Future<void>.value();
   bool _bgMergeInFlight = false;
   bool _bgResumeRefreshInFlight = false;
+  Future<void>? _onNowRefresh;
   bool _reloadRequestedWhileLoading = false;
   bool _pendingReloadPreserveExisting = true;
   bool _pendingReloadForceRefresh = false;
@@ -1043,17 +1044,79 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// Lightweight refresh for returning to home from a pushed route. Viewing or
-  /// playing an item only changes the resume and next-up rows, so this refetches
-  /// just those and updates them in place, leaving every other row (and its
-  /// pagination, scroll, and focus state) untouched. A full [refresh] still runs
-  /// on the Home button, pull-to-refresh, cold start, and periodic refresh.
+  /// playing an item changes the resume and next-up rows, and time spent away
+  /// moves On Now along, so this refetches just those and updates them in
+  /// place, leaving every other row (and its pagination, scroll, and focus
+  /// state) untouched. A full [refresh] still runs on the Home button,
+  /// pull-to-refresh, cold start, and periodic refresh.
   Future<void> refreshResumeAndNextUp() async {
     // A full load can start before the server has the playback stop and fetch
     // the old rows, so wait for it to finish and fetch again.
     while (_isLoading) {
       await _loadDone;
     }
+    await Future.wait([_refreshResumeRows(), _refreshOnNowRows()]);
+  }
 
+  /// Refetches the programs airing now for the On Now rows: the standalone
+  /// section and the row inside the Live TV section, which share one fetch.
+  Future<void> _refreshOnNowRows() async {
+    // A quick second return waits on the request already out rather than
+    // sending its own, since an older answer landing last would bring back
+    // programs that have ended.
+    if (_onNowRefresh case final running?) return running;
+    final done = Completer<void>();
+    _onNowRefresh = done.future;
+    try {
+      final ids = [
+        for (final row in _rows)
+          if ((row.id == 'onNow' || row.id == 'liveTvOnNow') && !row.isLoading)
+            row.id,
+      ];
+      if (ids.isEmpty) {
+        await _restoreMissingOnNow();
+        return;
+      }
+      final fresh = _dataSource.loadOnNow(_serverId);
+      // Each row handles a failure itself, and this keeps the shared request
+      // from surfacing one as uncaught.
+      fresh.ignore();
+      await Future.wait([
+        for (final id in ids)
+          _refreshRowInPlace(id, () => fresh, (items) => items),
+      ]);
+    } finally {
+      _onNowRefresh = null;
+      done.complete();
+    }
+  }
+
+  /// Brings On Now back when its section is on but the row was left out for
+  /// having nothing airing, e.g. the guide was filled in while the user was
+  /// away. Checks for programs first, so a section that stays empty costs one
+  /// small request per return. Once there are some, the row is loaded back
+  /// in the user's section order.
+  Future<void> _restoreMissingOnNow() async {
+    final standalone = _prefs.activeHomeSections.contains(
+      HomeSectionType.onNow,
+    );
+    // Inside Live TV, On Now only shows once that section found channels.
+    if (!standalone && !_rows.any((row) => row.id == 'liveTv')) return;
+    final HomeRow fresh;
+    try {
+      fresh = await _dataSource.loadOnNow(_serverId);
+    } catch (_) {
+      return;
+    }
+    if (filterEmptyElements(fresh.items).isEmpty) return;
+    // The standalone section has no row left, so loading only the sections
+    // missing from Home puts it back in place and leaves the other rows and
+    // their loaded pages alone. The Live TV section keeps its own row, so it
+    // takes the same full refresh as the Home button.
+    await load(preserveExisting: true, newSectionsOnly: standalone);
+  }
+
+  Future<void> _refreshResumeRows() async {
     // A row that came back empty was dropped, so there's no row to refresh in
     // place. Loading it as a new section brings it back once it has items.
     if (const ['resume', 'nextUp', 'resumeAudio'].any(
@@ -1482,15 +1545,10 @@ class HomeViewModel extends ChangeNotifier {
     bool forceRefresh = false,
     (LibrarySortBy, SortDirection)? sort,
   }) async {
-    String sortBy(
-      Preference<LibrarySortBy> saved, [
-      List<LibrarySortBy>? offered,
-    ]) {
-      var value = sort?.$1 ?? _prefs.get<LibrarySortBy>(saved);
-      // A sort the row doesn't offer reads as Name, as its setting shows.
-      if (offered != null && !offered.contains(value)) value = LibrarySortBy.name;
-      // Rows offering a list rank in the app; the rest pass it to the server.
-      return offered == null ? value.apiValue : value.rowSortValue;
+    // Studios and Genres rank in the app; the rest pass it to the server.
+    String sortBy(Preference<LibrarySortBy> saved, {bool inApp = false}) {
+      final value = sort?.$1 ?? _prefs.get<LibrarySortBy>(saved);
+      return inApp ? value.rowSortValue : value.apiValue;
     }
     String sortOrder(Preference<SortDirection> saved) =>
         (sort?.$2 ?? _prefs.get<SortDirection>(saved)).apiValue;
@@ -1501,10 +1559,7 @@ class HomeViewModel extends ChangeNotifier {
     final collectionsSortOrder = sortOrder(
       UserPreferences.collectionsRowSortOrder,
     );
-    final genresSortBy = sortBy(
-      UserPreferences.genresRowSortBy,
-      LibrarySortBy.genreValues,
-    );
+    final genresSortBy = sortBy(UserPreferences.genresRowSortBy, inApp: true);
     final genresSortOrder = sortOrder(UserPreferences.genresRowSortOrder);
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)
@@ -1681,7 +1736,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.studios:
         final studiosSortBy = sortBy(
           UserPreferences.studiosRowSortBy,
-          LibrarySortBy.studioValues,
+          inApp: true,
         );
         final studiosSortOrder = sortOrder(UserPreferences.studiosRowSortOrder);
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);

@@ -22,6 +22,7 @@ import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
+import '../utils/merged_copies.dart';
 import '../utils/next_up_cutoff.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
@@ -30,6 +31,17 @@ import 'search_repository.dart';
 import 'user_views_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
+
+/// One server's library inside a merged library.
+typedef MergedLibrarySource = ({ServerUserSession session, String libraryId});
+
+/// A merged library's name, the server libraries it reads, and whether every
+/// server answered.
+typedef MergedLibrary = ({
+  String name,
+  List<MergedLibrarySource> sources,
+  bool complete,
+});
 
 class ServerUserSession {
   final Server server;
@@ -229,7 +241,54 @@ class MultiServerRepository {
       ),
     );
 
-    return results.expand((e) => e).toList();
+    final libraries = results.expand((e) => e).toList();
+    if (!_mergesLibraries) return libraries;
+    return mergeLibrariesByType(libraries, nameOf: _mergedLibraryName);
+  }
+
+  static bool get _mergesLibraries =>
+      GetIt.instance.isRegistered<UserPreferences>() &&
+      GetIt.instance<UserPreferences>().effectiveMergeLibrariesByType;
+
+  String _mergedLibraryName(String collectionType) =>
+      collectionType == 'movies' ? _l10n.movies : _l10n.tvShows;
+
+  /// The name of the merged library of [collectionType] and every server's
+  /// library it reads, the active server's first so a tie in the sort shows
+  /// that copy. A server that doesn't answer is left out.
+  Future<MergedLibrary> mergedLibrary(String collectionType) async {
+    final sessions = await getLoggedInServers();
+    final activeServerId = _sessionRepo.activeServerId;
+    final ordered = [
+      ...sessions.where((session) => session.server.id == activeServerId),
+      ...sessions.where((session) => session.server.id != activeServerId),
+    ];
+    var complete = true;
+    Future<List<MergedLibrarySource>> sourcesOf(
+      ServerUserSession session,
+    ) async {
+      try {
+        final response = await _withTimeout(
+          () => loadVisibleUserViews(session.client),
+          label: 'merged libraries from ${session.server.name}',
+        );
+        return [
+          for (final view in response['Items'] as List? ?? const [])
+            if (view is Map && view['CollectionType'] == collectionType)
+              (session: session, libraryId: view['Id'].toString()),
+        ];
+      } catch (_) {
+        complete = false;
+        return const [];
+      }
+    }
+
+    final perServer = await Future.wait(ordered.map(sourcesOf));
+    return (
+      name: _mergedLibraryName(collectionType),
+      sources: perServer.expand((sources) => sources).toList(),
+      complete: complete,
+    );
   }
 
   Future<HomeRow> getAggregatedResume({int limit = _defaultLimit}) async {
@@ -618,7 +677,8 @@ class MultiServerRepository {
                 recursive: true,
                 startIndex: startIndex,
                 limit: limit,
-                fields: 'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
+                fields:
+                    'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
               );
 
           if (selectedSet.isEmpty) {
@@ -1198,9 +1258,20 @@ class MultiServerRepository {
               'Type': 'CollectionFolder',
               if (lib.primaryImageAspectRatio != null)
                 'PrimaryImageAspectRatio': lib.primaryImageAspectRatio,
-              if (lib.imageTags != null) 'ImageTags': lib.imageTags,
-              if (lib.backdropImageTags != null)
-                'BackdropImageTags': lib.backdropImageTags,
+              // A merged library has no artwork of its own, so the card falls
+              // back to its first library's through the parent image fields.
+              if (lib.imageItemId case final imageId?) ...{
+                'PrimaryImageItemId': imageId,
+                'PrimaryImageTag': lib.imageTags?['Primary'],
+                'ParentThumbItemId': imageId,
+                'ParentThumbImageTag': lib.imageTags?['Thumb'],
+                'ParentBackdropItemId': imageId,
+                'ParentBackdropImageTags': lib.backdropImageTags,
+              } else ...{
+                if (lib.imageTags != null) 'ImageTags': lib.imageTags,
+                if (lib.backdropImageTags != null)
+                  'BackdropImageTags': lib.backdropImageTags,
+              },
             },
           ),
         )
@@ -1228,6 +1299,8 @@ class MultiServerRepository {
         prefs?.get(UserPreferences.mergeRecentRowsByType) ?? false;
     final hideWatched =
         prefs?.get(UserPreferences.hideWatchedInRecentRows) ?? false;
+    final foldsCopies = mergeByType && _mergesLibraries;
+    final fields = foldsCopies ? '$_fields,ProviderIds' : _fields;
     final groupedItems = <String, List<AggregatedItem>>{};
 
     for (final session in sessions) {
@@ -1266,7 +1339,7 @@ class MultiServerRepository {
               () => session.client.itemsApi.getLatestItems(
                 parentId: id,
                 limit: fetchLimit,
-                fields: _fields,
+                fields: fields,
                 enableImageTypes: _imageTypes,
                 imageTypeLimit: _imageTypeLimit,
               ),
@@ -1291,7 +1364,7 @@ class MultiServerRepository {
                   () => session.client.itemsApi.getLatestItems(
                     parentId: id,
                     limit: fetchLimit,
-                    fields: _fields,
+                    fields: fields,
                     enableImageTypes: _imageTypes,
                     imageTypeLimit: _imageTypeLimit,
                   ),
@@ -1368,12 +1441,16 @@ class MultiServerRepository {
         return 0;
       });
 
-      final items = normalizeLatestMediaItems(
+      final normalized = normalizeLatestMediaItems(
         allItems,
         collectionType: collectionType,
-        limit: _defaultLimit,
+        limit: foldsCopies ? _maxItems : _defaultLimit,
         hideWatched: hideWatched,
       );
+      // A title several servers hold shows once, carrying the rest as copies.
+      final items = foldsCopies
+          ? foldCopies(normalized).take(_defaultLimit).toList()
+          : normalized;
       if (items.isEmpty) continue;
 
       final rowId = '${mergedTypeRowIdPrefix}latest_$collectionType';

@@ -18,6 +18,11 @@ class MpvLetterboxCrop {
   static const autoDelay = Duration(seconds: 4);
   static const detectDuration = Duration(seconds: 1);
 
+  /// A one-shot scan keeps reading through dark scenes for about this many
+  /// tries, a second or more apart, before it gives up.
+  static const oneShotMaxReads = 12;
+  static const oneShotRetryGap = Duration(seconds: 1);
+
   /// Long enough for cropdetect to see a few frames, short enough that a 4K
   /// download does not stay on the playback path.
   static const downloadWindow = Duration(milliseconds: 250);
@@ -213,6 +218,18 @@ abstract class MpvFrameSampleHost {
   Future<MpvFrameSample?> sampleFrame(int width, int height);
 }
 
+/// How a one-shot scan ended.
+enum LetterboxScanResult {
+  /// A crop is on screen.
+  cropped,
+
+  /// The picture fills the frame, so there are no bars to crop.
+  noBars,
+
+  /// Every reading was too dark or too busy to tell.
+  inconclusive,
+}
+
 class MpvCropGeometry {
   const MpvCropGeometry(this.rect);
 
@@ -236,6 +253,8 @@ class MpvLetterboxCropper extends LetterboxCropper {
   final LetterboxCropStabilizer _stabilizer;
   final _appliedController = StreamController<bool>.broadcast();
   final _geometryController = StreamController<MpvCropGeometry?>.broadcast();
+  final _scanResultController =
+      StreamController<LetterboxScanResult>.broadcast();
 
   /// Apply and clear each take several mpv calls. Running them one at a time
   /// keeps a disable from landing halfway through an apply.
@@ -247,17 +266,22 @@ class MpvLetterboxCropper extends LetterboxCropper {
 
   int _generation = 0;
   String? _hwdecBackup;
-  String? _subtitlePositionBackup;
   bool _enabled = false;
   Duration _recropInterval = Duration.zero;
   bool _skipStartDelay = false;
   bool _forceRestart = false;
   bool _keepAppliedCrop = false;
+  bool _recropRequested = false;
+  int? _reportGeneration;
   bool _applied = false;
   MpvCropGeometry? _geometry;
   String? _doneUrl;
   String? _loopUrl;
   bool _inFlight = false;
+
+  /// This scan read a frame with no bars, and no crop reading since has
+  /// disagreed with it.
+  bool _sawFullFrame = false;
 
   bool get _continuous => _recropInterval > Duration.zero;
 
@@ -270,6 +294,11 @@ class MpvLetterboxCropper extends LetterboxCropper {
   MpvCropGeometry? get geometry => _geometry;
 
   Stream<MpvCropGeometry?> get geometryStream => _geometryController.stream;
+
+  /// Emits when a one-shot scan started by [recrop] finishes. Scans started
+  /// by a new source don't report, so a result never answers a Recrop
+  /// press made on an earlier item.
+  Stream<LetterboxScanResult> get scanResults => _scanResultController.stream;
 
   /// The applied crop is wider than the window, so fit would show bars
   /// again and the picture has to be zoomed to fill it. An ultrawide window
@@ -349,10 +378,13 @@ class MpvLetterboxCropper extends LetterboxCropper {
     _skipStartDelay = true;
     _forceRestart = true;
     _keepAppliedCrop = _applied;
+    _recropRequested = true;
     await _sync();
   }
 
   Future<void> _sync() async {
+    final report = _recropRequested;
+    _recropRequested = false;
     if (!_enabled) {
       _generation++;
       _doneUrl = null;
@@ -391,6 +423,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
       _stabilizer.reset();
     }
     final generation = ++_generation;
+    _reportGeneration = report ? generation : null;
     if (keepCrop) {
       await _removeDetectFilter();
     } else {
@@ -429,6 +462,8 @@ class MpvLetterboxCropper extends LetterboxCropper {
       return;
     }
 
+    _sawFullFrame = false;
+    _stabilizer.holdThroughIgnored = !_continuous;
     try {
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
       if (!_skipStartDelay && _host.position < autoDelay) {
@@ -495,14 +530,53 @@ class MpvLetterboxCropper extends LetterboxCropper {
         _inFlight = false;
         await _removeDetectFilter();
         await _restoreHwdec();
+        if (!_continuous &&
+            _isCurrent(generation) &&
+            _reportGeneration == generation) {
+          _scanResultController.add(
+            _applied
+                ? LetterboxScanResult.cropped
+                : _sawFullFrame
+                ? LetterboxScanResult.noBars
+                : LetterboxScanResult.inconclusive,
+          );
+        }
       }
     }
+  }
+
+  /// A one-shot cropdetect scan widens its lit box across readings, the way
+  /// one longer cropdetect window would, since a dark scene can light one
+  /// side at a time. The widened box only counts once it reaches the frame
+  /// edges: lit shapes from different readings can add up to a centred box,
+  /// so a windowbox has to come from one reading.
+  static bool _reachesEdges(LetterboxSample? sample) =>
+      sample != null &&
+      (sample.kind == LetterboxSampleKind.fullFrame ||
+          (sample.kind == LetterboxSampleKind.crop && !sample.windowbox));
+
+  /// A one-shot sample that agrees with what is on screen: no bars while
+  /// uncropped, or the applied crop again.
+  bool _settles(LetterboxSample sample) {
+    final applied = _stabilizer.applied;
+    if (sample.kind == LetterboxSampleKind.fullFrame) {
+      if (applied == null) _sawFullFrame = true;
+      return applied == null;
+    }
+    if (sample.kind != LetterboxSampleKind.crop) return false;
+    final rect = sample.rect;
+    final settles =
+        rect != null && applied != null && LetterboxCrop.similar(rect, applied);
+    // Bars after a full frame leave the scan undecided, not bar-free.
+    if (!settles) _sawFullFrame = false;
+    return settles;
   }
 
   Future<bool> _runFrameSamples(int generation) async {
     final sampler = _host as MpvFrameSampleHost;
     var failures = 0;
     var samples = 0;
+    var settled = 0;
     var adaptiveInterval = Duration.zero;
     while (_isCurrent(generation) && _enabled) {
       if (_geometry != null) {
@@ -561,12 +635,22 @@ class MpvLetterboxCropper extends LetterboxCropper {
         if (nextMillis > adaptiveInterval.inMilliseconds) {
           adaptiveInterval = Duration(milliseconds: nextMillis);
         }
-        // Three quiet samples with nothing pending means no bars. A pending
-        // candidate still needs its hits, which can take more than three.
+        final sample = LetterboxCrop.classify(
+          width: rect?.w,
+          height: rect?.h,
+          x: rect?.x,
+          y: rect?.y,
+          sourceWidth: size.$1,
+          sourceHeight: size.$2,
+        );
+        if (_settles(sample)) settled++;
+        // Three samples that agree with the screen and nothing pending means
+        // done. Dark samples count for neither, so a dark opening keeps the
+        // scan going until the budget runs out.
         if (!_continuous &&
             (decision.changed ||
-                samples >= 6 ||
-                (samples >= 3 && !_applied && !_stabilizer.hasCandidate))) {
+                samples >= MpvLetterboxCrop.oneShotMaxReads ||
+                (settled >= 3 && !_stabilizer.hasCandidate))) {
           _doneUrl = _host.currentUrl;
           return true;
         }
@@ -585,19 +669,68 @@ class MpvLetterboxCropper extends LetterboxCropper {
     required bool needsDownload,
     required String? downloadFormat,
   }) async {
-    Future<_Measurement?> read() => _readOrCopyBack(
-      generation,
-      needsDownload: needsDownload,
-      downloadFormat: downloadFormat,
-      resetEachFrame: false,
-      window: downloadFormat != null
-          ? MpvLetterboxCrop.downloadWindow
-          : detectDuration,
-    );
-    final measured = await read();
-    if (measured == null || !_isCurrent(generation)) return;
-    if (await _windowboxHolds(generation, measured, read)) {
-      await _commitSample(generation, measured);
+    // Confirmation reads count against the same budget. A reading taken
+    // inside it may still finish confirming, so the scan stops after at most
+    // oneShotMaxReads + windowboxConfirmations readings.
+    var reads = 0;
+    LetterboxCropRect? seen;
+    var position = _host.position;
+    final sinceRead = Stopwatch()..start();
+    Future<_Measurement?> read() async {
+      reads++;
+      final speed =
+          double.tryParse(await _host.getProperty('speed') ?? '') ?? 1;
+      // Readings from before a seek showed other content.
+      if (LetterboxCrop.seeked(
+        before: position,
+        after: _host.position,
+        elapsed: sinceRead.elapsed,
+        speed: speed,
+      )) {
+        seen = null;
+      }
+      final measured = await _readOrCopyBack(
+        generation,
+        needsDownload: needsDownload,
+        downloadFormat: downloadFormat,
+        resetEachFrame: false,
+        window: downloadFormat != null
+            ? MpvLetterboxCrop.downloadWindow
+            : detectDuration,
+      );
+      position = _host.position;
+      sinceRead.reset();
+      final lit = measured?.lit;
+      if (lit != null) seen = seen?.widen(lit) ?? lit;
+      return measured;
+    }
+
+    // One reading of a dark scene sees no edges. Keep reading until one is
+    // usable instead of giving up on the first.
+    for (var attempt = 0; reads < MpvLetterboxCrop.oneShotMaxReads; attempt++) {
+      if (attempt > 0) {
+        if (!await _delay(generation, MpvLetterboxCrop.oneShotRetryGap)) {
+          return;
+        }
+        if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
+      }
+      var measured = await read();
+      if (measured == null || !_isCurrent(generation)) return;
+      final box = seen;
+      if (box != null && !measured.failed) {
+        final widened = measured.over(box);
+        if (_reachesEdges(widened.sample)) measured = widened;
+      }
+      final kind = measured.sample?.kind;
+      if (kind != null &&
+          kind != LetterboxSampleKind.ignore &&
+          await _windowboxHolds(generation, measured, read)) {
+        await _commitSample(generation, measured);
+        break;
+      }
+      if (!_isCurrent(generation)) return;
+      // Copy-back restarts the decoder on every read, so don't loop on it.
+      if (measured.copyBack) break;
     }
     if (_isCurrent(generation)) _doneUrl = _host.currentUrl;
   }
@@ -732,6 +865,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     final sample = measured.sample;
     if (sample == null || !_isCurrent(generation)) return;
     if (sample.kind == LetterboxSampleKind.fullFrame) {
+      _sawFullFrame = true;
       await _clearCrop(generation);
       return;
     }
@@ -908,7 +1042,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
     LetterboxCropRect rect,
     (int, int) source,
   ) async {
-    await _moveSubtitlesIntoCrop(rect, source.$2);
     if (_applied) {
       await _host.command([
         'vf',
@@ -939,42 +1072,12 @@ class MpvLetterboxCropper extends LetterboxCropper {
     ]);
     await _host.command(['set', 'video-crop', '']);
     await _host.command(['set', 'file-local-options/video-crop', '']);
-    await _restoreSubtitlePosition();
     _setGeometry(null);
   }
 
   void _setGeometry(MpvCropGeometry? geometry) {
     _geometry = geometry;
     _geometryController.add(geometry);
-  }
-
-  /// libmpv positions its native subtitles against the uncropped frame. A
-  /// bottom-aligned subtitle can therefore land in a letterbox bar that this
-  /// filter removes. Map the original requested position into the retained
-  /// rectangle before applying the crop, then restore it when crop is off.
-  Future<void> _moveSubtitlesIntoCrop(
-    LetterboxCropRect rect,
-    int sourceHeight,
-  ) async {
-    if (sourceHeight <= 0) return;
-
-    final backup =
-        _subtitlePositionBackup ?? await _host.getProperty('sub-pos') ?? '100';
-    _subtitlePositionBackup ??= backup;
-    final originalPosition = double.tryParse(backup) ?? 100;
-    final position =
-        (rect.y + rect.h * (originalPosition / 100)) / sourceHeight * 100;
-    await _host.setProperty(
-      'sub-pos',
-      position.clamp(0, 150).toStringAsFixed(3),
-    );
-  }
-
-  Future<void> _restoreSubtitlePosition() async {
-    final backup = _subtitlePositionBackup;
-    _subtitlePositionBackup = null;
-    if (backup == null || backup.isEmpty) return;
-    await _host.setProperty('sub-pos', backup);
   }
 
   void _setApplied(bool value) {
@@ -1022,29 +1125,51 @@ class _Measurement {
     return _Measurement(source: source, failed: true);
   }
 
-  factory _Measurement.fromLavfi(Map<String, String> lavfi, (int, int) source) {
-    final width = int.tryParse(lavfi['w'] ?? '');
-    final height = int.tryParse(lavfi['h'] ?? '');
-    final x = int.tryParse(lavfi['x'] ?? '');
-    final y = int.tryParse(lavfi['y'] ?? '');
-    return _Measurement(
-      source: source,
-      failed: false,
-      width: width,
-      height: height,
-      x: x,
-      y: y,
-      sample: LetterboxCrop.classify(
-        width: width,
-        height: height,
-        x: x,
-        y: y,
-        sourceWidth: source.$1,
-        sourceHeight: source.$2,
-        minRatio: MpvLetterboxCrop.minRatio,
-      ),
-    );
-  }
+  factory _Measurement.fromLavfi(
+    Map<String, String> lavfi,
+    (int, int) source,
+  ) => _Measurement.box(
+    source,
+    width: int.tryParse(lavfi['w'] ?? ''),
+    height: int.tryParse(lavfi['h'] ?? ''),
+    x: int.tryParse(lavfi['x'] ?? ''),
+    y: int.tryParse(lavfi['y'] ?? ''),
+  );
+
+  _Measurement.box(
+    this.source, {
+    this.width,
+    this.height,
+    this.x,
+    this.y,
+    this.copyBack = false,
+  }) : failed = false,
+       sample = LetterboxCrop.classify(
+         width: width,
+         height: height,
+         x: x,
+         y: y,
+         sourceWidth: source.$1,
+         sourceHeight: source.$2,
+         minRatio: MpvLetterboxCrop.minRatio,
+       );
+
+  /// The lit part of the frame, or null when the reading saw nothing lit.
+  LetterboxCropRect? get lit => switch ((width, height, x, y)) {
+    (final int w, final int h, final int x, final int y) when w > 0 && h > 0 =>
+      LetterboxCropRect(w: w, h: h, x: x, y: y),
+    _ => null,
+  };
+
+  /// This reading with [rect] as its lit box.
+  _Measurement over(LetterboxCropRect rect) => _Measurement.box(
+    source,
+    width: rect.w,
+    height: rect.h,
+    x: rect.x,
+    y: rect.y,
+    copyBack: copyBack,
+  );
 
   final (int, int) source;
   final bool failed;
