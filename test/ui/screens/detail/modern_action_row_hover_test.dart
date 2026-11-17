@@ -146,4 +146,29 @@ void main() {
     final tooltip = tester.widget<Tooltip>(find.byType(Tooltip).last);
     expect(find.text(tooltip.message!), findsOneWidget);
   });
+
+  testWidgets('focus grows a button in place, so it still animates', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    await pumpRow(tester, 1200);
+    // Play takes focus a frame or two in, so it settles before another button
+    // is focused.
+    await tester.pump(const Duration(milliseconds: 100));
+    final circle = find
+        .descendant(
+          of: find.byType(DetailActionButtons),
+          matching: find.byType(AnimatedContainer),
+        )
+        .last;
+    final state = tester.state(circle);
+    final restingWidth = tester.getSize(circle).width;
+
+    Focus.of(tester.element(circle)).requestFocus();
+    await tester.pump();
+    expect(tester.state(circle), same(state));
+
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.getSize(circle).width, greaterThan(restingWidth));
+  });
 }

@@ -13343,11 +13343,13 @@ class _DetailActionButtonState extends State<_DetailActionButton>
 
   /// Modern detail style. Phones show every button as a circle with its label
   /// underneath, except portrait Play, which spans the width as a pill. Larger
-  /// screens show circles that grow their label while focused or hovered.
+  /// screens show circles that grow their label while focused, and show it in
+  /// a tooltip while hovered.
   Widget _buildModernChild(
     BuildContext context, {
     required bool isMobile,
     required bool showHighlight,
+    required bool focusShown,
     required Color focusColor,
     required Color iconColor,
     required Color labelColor,
@@ -13369,14 +13371,10 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final labelUnder = host?.labelsUnderCircles ?? false;
     // With the circles' labels under them, Play keeps its own in the pill.
     final labeledPlay = widget.isPrimary && labelUnder;
-    // Only focus grows a circle. A hovered one that no longer fits its line
-    // wraps to the next, out from under the pointer, then shrinks and wraps
-    // back; hover shows the label in a tooltip instead.
-    final focusGrows = InputModeTracker.showFocusVisuals(
-      context,
-      focused || (widget.focusNode?.hasFocus ?? false),
-    );
-    final isExpanded = labeledPlay || (focusGrows && !labelUnder);
+    // Only focus grows a circle. A hovered one that no longer fit its line
+    // would wrap to the next, out from under the pointer, then shrink and wrap
+    // back.
+    final isExpanded = labeledPlay || (focusShown && !labelUnder);
     final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
         ? (isMobile ? 50.0 : 54.0 * scale)
@@ -13597,8 +13595,10 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         ),
       ),
     );
+    // The tooltip stays while focused, since taking it away would rebuild the
+    // circle and skip its grow animation.
     if (!labelUnder) {
-      return isExpanded || widget.label.isEmpty
+      return widget.label.isEmpty
           ? circle
           : Tooltip(
               message: widget.label,
@@ -13720,9 +13720,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final nodeHasFocus = widget.focusNode?.hasFocus ?? false;
     // Focus only shows while the keys are driving, or the Play button that
     // takes focus on arrival would stay lit beside whatever the mouse hovers.
-    final showHighlight =
-        hovered ||
-        InputModeTracker.showFocusVisuals(context, focused || nodeHasFocus);
+    final focusShown = InputModeTracker.showFocusVisuals(
+      context,
+      focused || nodeHasFocus,
+    );
+    final showHighlight = hovered || focusShown;
     final modern =
         context
             .findAncestorWidgetOfExactType<DetailActionButtons>()
@@ -13844,6 +13846,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                   context,
                   isMobile: isMobile,
                   showHighlight: showHighlight,
+                  focusShown: focusShown,
                   focusColor: focusColor,
                   iconColor: iconColor,
                   labelColor: labelColor,
