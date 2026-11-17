@@ -257,6 +257,10 @@ class ScreensaverController {
     try {
       if (PlatformDetection.isAppleTV) {
         await _systemChannel.invokeMethod('setIdleTimerDisabled', enabled);
+      } else if (kIsWeb && Uri.base.scheme != 'https') {
+        // Browsers only offer a wake lock over HTTPS. Without it wakelock_plus
+        // plays a hidden video instead, and iOS pauses ours to play it.
+        return;
       } else if (enabled) {
         await WakelockPlus.enable();
       } else {
