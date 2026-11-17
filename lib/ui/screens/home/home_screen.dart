@@ -4648,7 +4648,6 @@ class _ContentRowsState extends State<_ContentRows>
     required PosterSize posterSize,
   }) {
     final safeTop = MediaQuery.of(context).padding.top;
-    final desktopScale = _desktopUiScaleFactor();
     final isRowsV2 = _isHomeRowsStyleV2();
     final navbarIsTop =
         prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
@@ -4657,9 +4656,7 @@ class _ContentRowsState extends State<_ContentRows>
             ? tvTopNavbarRowInset
             : 0.0;
     final navbarLeftInset = navbarIsTop ? 16.0 + tvTopNavbarInset : 56.0;
-    final platformScale = PlatformDetection.isTV
-        ? 1.0
-        : (PlatformDetection.useMobileUi ? 1.0 : desktopScale);
+    final platformScale = homeRowPlatformScale(_desktopUiScaleFactor());
     final v2ImageHeight =
         modernImageHeight(posterSize, platformScale);
     final v2PortraitWidth = v2ImageHeight * (2 / 3);

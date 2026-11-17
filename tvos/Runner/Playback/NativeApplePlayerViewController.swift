@@ -18,10 +18,16 @@ struct PromptStrings {
     var stillWatchingContinue = "Continue"
     var stillWatchingStop = "Stop"
     var fetchingSubtitles = "Fetching subtitles"
+    var paused = "Paused"
 
     func endsIn(_ time: String) -> String {
         endsInTemplate.replacingOccurrences(of: "{time}", with: time)
     }
+}
+
+/// The scrim behind the paused description, darkest on the side its text sits.
+private final class PauseScrimView: UIView {
+    override class var layerClass: AnyClass { CAGradientLayer.self }
 }
 
 /// Mirrors the Dart PlaybackTimeSlot enum by name.
@@ -184,7 +190,7 @@ final class NativeApplePlayerViewController: UIViewController {
     private var nextUpCountdownTotalMs = 0
     private var nextUpCountdownStyle = "both"
 
-    private var pauseMeta: (overview: String, imageUrl: String)?
+    private var pauseOverview: String?
 
     private var skipSegmentActive = false
     private var cinemaSkipActive = false
@@ -390,10 +396,13 @@ final class NativeApplePlayerViewController: UIViewController {
     private var nextUpCardWidth: NSLayoutConstraint?
     private var nextUpImageHeight: NSLayoutConstraint?
 
-    private let pauseOverlay = UIView()
-    private let pauseImage = UIImageView()
+    private let pauseOverlay = PauseScrimView()
+    private let pauseHeaderLabel = UILabel()
     private let pauseTitleLabel = UILabel()
     private let pauseTextLabel = UILabel()
+    private var pauseUnit: CGFloat = 0
+    private var pausedWithDescription = false
+    private var pauseScaledConstraints: [(constraint: NSLayoutConstraint, points: CGFloat)] = []
 
     private var chapters: [(title: String, startMs: Int, imageUrl: String)] = []
     private var showChapterMarkers = false
@@ -526,7 +535,9 @@ final class NativeApplePlayerViewController: UIViewController {
         if let v = args["stillWatchingContinue"] as? String { promptStrings.stillWatchingContinue = v }
         if let v = args["stillWatchingStop"] as? String { promptStrings.stillWatchingStop = v }
         if let v = args["fetchingSubtitles"] as? String { promptStrings.fetchingSubtitles = v }
+        if let v = args["paused"] as? String { promptStrings.paused = v }
         if isViewLoaded {
+            pauseHeaderLabel.text = promptStrings.paused.uppercased()
             upNextLabel.text = promptStrings.upNext.uppercased()
             nextUpPlayLabel.text = promptStrings.playNext
             subtitleLoadingLabel.text = promptStrings.fetchingSubtitles
@@ -1207,53 +1218,85 @@ final class NativeApplePlayerViewController: UIViewController {
     private func setupPauseOverlay() {
         pauseOverlay.translatesAutoresizingMaskIntoConstraints = false
         pauseOverlay.alpha = 0
-        view.addSubview(pauseOverlay)
+        pauseOverlay.isUserInteractionEnabled = false
+        if let scrim = pauseOverlay.layer as? CAGradientLayer {
+            scrim.colors = [
+                UIColor(white: 0, alpha: 0.85).cgColor,
+                UIColor(white: 0, alpha: 0.3).cgColor,
+            ]
+            scrim.startPoint = CGPoint(x: 0, y: 0.5)
+            scrim.endPoint = CGPoint(x: 1, y: 0.5)
+        }
+        view.insertSubview(pauseOverlay, belowSubview: osdScrim)
 
-        pauseImage.translatesAutoresizingMaskIntoConstraints = false
-        pauseImage.contentMode = .scaleAspectFill
-        pauseImage.layer.cornerRadius = 10
-        pauseImage.clipsToBounds = true
-        pauseOverlay.addSubview(pauseImage)
+        pauseHeaderLabel.text = promptStrings.paused.uppercased()
+        pauseTitleLabel.lineBreakMode = .byTruncatingTail
+        pauseTextLabel.numberOfLines = 8
+        for label in [pauseHeaderLabel, pauseTitleLabel, pauseTextLabel] {
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.textColor = .white
+            label.layer.shadowColor = UIColor.black.cgColor
+            label.layer.shadowOpacity = 1
+            label.layer.shadowOffset = .zero
+            pauseOverlay.addSubview(label)
+        }
 
-        pauseTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        pauseTitleLabel.font = .systemFont(ofSize: 36, weight: .bold)
-        pauseTitleLabel.textColor = .white
-        pauseTitleLabel.numberOfLines = 2
-        pauseOverlay.addSubview(pauseTitleLabel)
-
-        pauseTextLabel.translatesAutoresizingMaskIntoConstraints = false
-        pauseTextLabel.font = .systemFont(ofSize: 26, weight: .regular)
-        pauseTextLabel.textColor = UIColor(white: 1, alpha: 0.85)
-        pauseTextLabel.numberOfLines = 6
-        pauseOverlay.addSubview(pauseTextLabel)
-
+        #if os(iOS)
+        let edges = view.safeAreaLayoutGuide
+        #else
+        let edges: UIView = view
+        #endif
+        let leading = pauseHeaderLabel.leadingAnchor.constraint(equalTo: edges.leadingAnchor)
+        let top = pauseHeaderLabel.topAnchor.constraint(equalTo: edges.topAnchor)
+        let width = pauseHeaderLabel.widthAnchor.constraint(equalToConstant: 0)
+        let titleGap = pauseTitleLabel.topAnchor.constraint(equalTo: pauseHeaderLabel.bottomAnchor)
+        let textGap = pauseTextLabel.topAnchor.constraint(equalTo: pauseTitleLabel.bottomAnchor)
+        pauseScaledConstraints = [
+            (leading, 48), (top, 110), (width, 460), (titleGap, 8), (textGap, 8),
+        ]
         NSLayoutConstraint.activate([
-            pauseOverlay.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: 90),
-            pauseOverlay.trailingAnchor.constraint(
-                lessThanOrEqualTo: view.trailingAnchor, constant: -90),
-            pauseOverlay.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 200),
-
-            pauseImage.leadingAnchor.constraint(equalTo: pauseOverlay.leadingAnchor),
-            pauseImage.topAnchor.constraint(equalTo: pauseOverlay.topAnchor),
-            pauseImage.widthAnchor.constraint(equalToConstant: 300),
-            pauseImage.heightAnchor.constraint(equalToConstant: 169),
-            pauseImage.bottomAnchor.constraint(
-                lessThanOrEqualTo: pauseOverlay.bottomAnchor),
-
-            pauseTitleLabel.leadingAnchor.constraint(
-                equalTo: pauseImage.trailingAnchor, constant: 24),
-            pauseTitleLabel.topAnchor.constraint(equalTo: pauseImage.topAnchor),
-            pauseTitleLabel.widthAnchor.constraint(equalToConstant: 820),
-
-            pauseTextLabel.leadingAnchor.constraint(equalTo: pauseTitleLabel.leadingAnchor),
-            pauseTextLabel.trailingAnchor.constraint(equalTo: pauseTitleLabel.trailingAnchor),
-            pauseTextLabel.topAnchor.constraint(
-                equalTo: pauseTitleLabel.bottomAnchor, constant: 12),
-            pauseTextLabel.bottomAnchor.constraint(
-                lessThanOrEqualTo: pauseOverlay.bottomAnchor),
+            pauseOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pauseOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            pauseOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            pauseOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            leading, top, width, titleGap, textGap,
+            pauseTitleLabel.leadingAnchor.constraint(equalTo: pauseHeaderLabel.leadingAnchor),
+            pauseTitleLabel.widthAnchor.constraint(equalTo: pauseHeaderLabel.widthAnchor),
+            pauseTextLabel.leadingAnchor.constraint(equalTo: pauseHeaderLabel.leadingAnchor),
+            pauseTextLabel.widthAnchor.constraint(equalTo: pauseHeaderLabel.widthAnchor),
         ])
+    }
+
+    /// Sizes the paused description to this screen the way the settings preview
+    /// lays it out on its 960 by 540 one, scaled by height.
+    private func layoutPauseOverlay() {
+        let unit = min(view.bounds.width, view.bounds.height) / 540
+        guard unit > 0, unit != pauseUnit else { return }
+        pauseUnit = unit
+        for scaled in pauseScaledConstraints {
+            scaled.constraint.constant = scaled.points * unit
+        }
+        pauseHeaderLabel.font = .systemFont(ofSize: 13 * unit, weight: .bold)
+        pauseTitleLabel.font = .systemFont(ofSize: 32 * unit, weight: .bold)
+        pauseTextLabel.font = .systemFont(ofSize: 15 * unit, weight: .medium)
+        for label in [pauseHeaderLabel, pauseTitleLabel, pauseTextLabel] {
+            label.layer.shadowRadius = 3 * unit
+        }
+        setPauseText(pauseTextLabel.attributedText?.string ?? "")
+    }
+
+    private func setPauseText(_ text: String) {
+        let style = NSMutableParagraphStyle()
+        style.minimumLineHeight = 21 * pauseUnit
+        style.maximumLineHeight = 21 * pauseUnit
+        pauseTextLabel.attributedText = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: pauseTextLabel.font as Any,
+                .foregroundColor: UIColor.white,
+                .paragraphStyle: style,
+            ])
+        pauseTextLabel.lineBreakMode = .byTruncatingTail
     }
 
     private func layoutHeader() {
@@ -1496,6 +1539,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         gradientLayer.frame = osdContainer.bounds
         topGradientLayer.frame = topContainer.bounds
+        layoutPauseOverlay()
         layoutChapters()
         updateTooltip()
         #if os(iOS)
@@ -1697,13 +1741,8 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func parsePauseMeta(_ raw: Any?) {
-        guard let dict = raw as? [String: Any],
-            let overview = dict["overview"] as? String, !overview.isEmpty
-        else {
-            pauseMeta = nil
-            return
-        }
-        pauseMeta = (overview: overview, imageUrl: (dict["imageUrl"] as? String) ?? "")
+        let overview = (raw as? [String: Any])?["overview"] as? String
+        pauseOverview = overview?.isEmpty == false ? overview : nil
     }
 
     /// Apply the latest Cinema Skip state, even if the button is hidden or
@@ -3798,15 +3837,12 @@ final class NativeApplePlayerViewController: UIViewController {
     }
 
     private func updatePauseOverlay() {
-        let shouldShow = !cinemaSkipActive && isPaused() && pauseMeta != nil
+        let shouldShow =
+            !cinemaSkipActive && isPaused() && pauseOverview != nil && !isOsdOnScreen
         let visible = pauseOverlay.alpha > 0.5
-        if shouldShow && !visible, let meta = pauseMeta {
+        if shouldShow && !visible, let overview = pauseOverview {
             pauseTitleLabel.text = hasLogo ? headerPrimary : (headerPrimary.isEmpty ? headerSecondary : headerPrimary)
-            pauseTextLabel.text = meta.overview
-            pauseImage.image = nil
-            loadImage(meta.imageUrl) { [weak self] image in
-                self?.pauseImage.image = image
-            }
+            setPauseText(overview)
             UIView.animate(withDuration: 0.25) { self.pauseOverlay.alpha = 1 }
         } else if !shouldShow && visible {
             UIView.animate(withDuration: 0.2) { self.pauseOverlay.alpha = 0 }
@@ -3939,9 +3975,16 @@ final class NativeApplePlayerViewController: UIViewController {
         updatePauseOverlay()
         updateLoadingOverlay()
 
+        // A pause with a description puts the controls away at once so it shows.
+        let describing = isPaused() && pauseOverview != nil
+        if describing && !pausedWithDescription {
+            osdDismissed = true
+        }
+        pausedWithDescription = describing
+
         let shouldShow =
             !cinemaSkipActive && !osdDismissed && !nextUpVisible && subtitleDelayPanel == nil
-            && (isPaused() || scrubTargetMs != nil || scrubFrozenMs != nil
+            && ((isPaused() && pauseOverview == nil) || scrubTargetMs != nil || scrubFrozenMs != nil
                 || (CACurrentMediaTime() - lastShowAt < 4.0))
         updateSubtitleLoadingPill(osdShown: shouldShow)
         let visible = osdContainer.alpha > 0.5

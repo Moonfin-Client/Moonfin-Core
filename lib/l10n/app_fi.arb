@@ -7319,7 +7319,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Käytä Moonfin Recommends sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.",
+    "recommendationSystemSubtitle": "Käytä Moonfin Recommends algoritmia paikalliskirjastosta, Server Recommends toimintoa mediakoneeltasi tai TMDb:n verkkopalvelun Similarity Metrics toimintoa. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -16829,7 +16829,7 @@
     "displaySinceYouWatchedRows": "Näytä rivit, jotka olet katsonut",
     "displaySinceYouWatchedRowsSubtitle": "Näytä ja muokkaa katsomiasi rivejä Etusivun osioissa.",
     "sinceYouWatchedSource": "Suosituksen lähde",
-    "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
+    "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfinin suositukset mukautettu paikallinen algoritmi, palvelimen suositukset mediakoneeltasi tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
     "sinceYouWatchedSourceLocal": "Moonfin suosittelee",
     "sinceYouWatchedSourceServer": "Palvelin suosittelee",
     "sinceYouWatchedSourceOnline": "TMDb:n samankaltaisuus",
@@ -18752,5 +18752,21 @@
     "setupRowsCarouselHint": "Julisteet, joiden alla on suuri yksityiskohdapaneeli.",
     "@setupRowsCarouselHint": {
         "description": "What the carousel home row style gives you"
+    },
+    "clickpadSeeking": "Salli Clickpad Etsintä",
+    "@clickpadSeeking": {
+        "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+    },
+    "clickpadSeekingDescription": "Sivuttaisliikkeet vasemmalle, oikealle kosketuslevyllä mahdollistavat kelauksen. Muussa tapauksessa ensimmäinen liike avaa ohjausvalikon.",
+    "@clickpadSeekingDescription": {
+        "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+    },
+    "clickpadSeekingControlsVisible": "Kun ohjaimet ovat näkyvissä",
+    "@clickpadSeekingControlsVisible": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+    },
+    "clickpadSeekingPausedOnly": "Vain tauolla",
+    "@clickpadSeekingPausedOnly": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
     }
 }

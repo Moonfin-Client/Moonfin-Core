@@ -6673,7 +6673,7 @@
             }
         }
     },
-    "latestLibraryName": "Último {libraryName}",
+    "latestLibraryName": "Añadido Recientemente en {libraryName}",
     "@latestLibraryName": {
         "description": "Row title for latest media in a specific library",
         "placeholders": {
@@ -8234,7 +8234,7 @@
     "adminLibGroupShows": "Agrupar series en colecciones",
     "adminLibExternalSuggestions": "Mostrar contenido externo en las sugerencias",
     "adminLibDateAddedSection": "Comportamiento de la fecha de adición",
-    "adminLibDateAddedLabel": "Usar la fecha de adición de",
+    "adminLibDateAddedLabel": "Usar la fecha añadida desde",
     "adminLibDateAddedImport": "Fecha de escaneo en la biblioteca",
     "adminLibDateAddedFile": "Fecha de creación del archivo",
     "adminLibMetadataTitle": "Metadatos e imágenes",
@@ -12058,5 +12058,156 @@
     "settingsPreviewKeptOffByKidsMode": "El modo Niños mantiene esto desactivado de Inicio",
     "@settingsPreviewKeptOffByKidsMode": {
         "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
-    }
+    },
+    "settingsClientCertificates": "Certificados de cliente",
+    "@settingsClientCertificates": {
+        "description": "Settings entry that lists the imported client certificates"
+    },
+    "settingsClientCertificatesSubtitle": "Certificados que esta aplicación presenta a los servidores que requieren uno (mTLS)",
+    "@settingsClientCertificatesSubtitle": {
+        "description": "Subtitle for the client certificates settings entry"
+    },
+    "settingsDateFormat": "Formato de Fecha",
+    "settingsDateFormatDescription": "Elija entre mes-día, día-mes o configuración regional predeterminada para las fechas de calendario y lanzamiento",
+    "dateFormatSystem": "Configuración Regional por defecto",
+    "dateFormatMonthDay": "Mes / Dia (Nov 10)",
+    "dateFormatDayMonth": "Dia / Mes (10 Nov)",
+    "cropBlackBars": "Recortar Barras Negras",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Detecta las barras negras laterales codificadas después de que comience la reproducción, recórtalas y luego ajusta la imagen a la pantalla. Vuelve a recortar desde el botón de zoom del reproductor.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "cropBlackBarsRecropInterval": "Intervalo de Recorte",
+    "@cropBlackBarsRecropInterval": {
+        "description": "Setting for how often to re-detect encoded letterbox bars"
+    },
+    "setupStepOf": "Paso {current} de {total}",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupTourMoreHeader": "Hay más tiempo de espera en Configuración",
+    "@setupTourMoreHeader": {
+        "description": "Heading of the closing setup screen block that lists features found in settings"
+    },
+    "setupTourBulletSyncPlay": "Fiestas de visualización de SyncPlay",
+    "@setupTourBulletSyncPlay": {
+        "description": "Bullet on the closing setup screen for SyncPlay"
+    },
+    "setupTourBulletThemes": "Temas personalizados",
+    "@setupTourBulletThemes": {
+        "description": "Bullet on the closing setup screen for custom themes"
+    },
+    "tvOfflineDownloads": "Habilitar descargas sin conexión",
+    "@tvOfflineDownloads": {
+        "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
+    },
+    "tvOfflineDownloadsSubtitle": "Mostrar acciones de descarga en las páginas de los elementos",
+    "@tvOfflineDownloadsSubtitle": {
+        "description": "Subtitle for the TV-only offline downloads toggle"
+    },
+    "setupTourBulletDownloads": "Descargas sin conexión",
+    "@setupTourBulletDownloads": {
+        "description": "Bullet on the closing setup screen for downloads"
+    },
+    "scrollSensitivity": "Sensibilidad de desplazamiento",
+    "@scrollSensitivity": {
+        "description": "Title of the desktop setting that scales mouse wheel scrolling."
+    },
+    "scrollSensitivitySubtitle": "Desplazamiento de una muesca de la rueda del ratón",
+    "@scrollSensitivitySubtitle": {
+        "description": "Explains the desktop scroll sensitivity slider."
+    },
+    "settingsHomeScreenSubtitle": "Filas, barra multimedia, apariencia y fuentes externas",
+    "@settingsHomeScreenSubtitle": {
+        "description": "Subtitle for the Home Screen entry on the Appearance settings screen"
+    },
+    "pageTransitions": "Transiciones de página",
+    "@pageTransitions": {
+        "description": "Setting title for adjusting the speed of page navigation transitions"
+    },
+    "pageTransitionsSubtitle": "Ajusta el tiempo de desvanecimiento al navegar entre páginas",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeed": "Velocidad de Navegación",
+    "@navigationSpeed": {
+        "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+    },
+    "navigationSpeedSubtitle": "Ajusta la velocidad con la que el indicador de enfoque se mueve entre elementos y filas",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "pageTransitionFadeMedium": "Desvanecimiento medio",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Desvanecimiento largo",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "pageTransitionFadeShort": "Desvanecimiento corto",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeNone": "Sin desvanecimiento",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "seasonalFollower": "Seguidor de Enfoque",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "Una pieza navideña, como la planchette de Halloween, sigue lo que selecciones en Inicio",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "settingsPreviewNotShown": "No se muestra en la vista previa",
+    "@settingsPreviewNotShown": {
+        "description": "Under the Settings live preview, says the focused setting has no visible effect in the preview"
+    },
+    "settingsLivePreview": "Vista previa en directo",
+    "@settingsLivePreview": {
+        "description": "Label over the preview in Settings that redraws a screen of the app as settings change"
+    },
+    "watchPartyDuringParty": "Durante una fiesta",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "subtitleDownloadLanguagesDescription": "Idiomas para buscar al descargar subtítulos, hasta 5. La búsqueda automática selecciona un idioma de entre el idioma de subtítulos predeterminado o el del vídeo.",
+    "@subtitleDownloadLanguagesDescription": {
+        "description": "Description for the subtitle download languages setting"
+    },
+    "adminPageDescMetadata": "Idioma, país e imágenes predeterminados",
+    "adminPageDescNfo": "Lectura y guardado de archivos NFO en Kodi",
+    "adminPageDescLiveTv": "Sintonizadores, datos de guía y grabaciones",
+    "adminPageDescLibraries": "Carpetas, escáneres y recuperadores de metadatos",
+    "adminPremiereNoteLiveTv": "La TV en directo requiere Emby Premiere. Sin él, el servidor ni importa canales ni graba nada.",
+    "adminDrawerLiveTvChannels": "Canales de TV en Directo",
+    "adminPageDescLiveTvChannels": "Enciende y apaga los canales y establece su orden",
+    "adminLiveTvChannelsEmpty": "Aún no hay canales disponibles. Aparecerán aquí una vez que se configure el sintonizador y el servidor haya importado sus canales.",
+    "adminLiveTvDrmNote": "Los canales con DRM no se importarán.",
+    "adminLiveTvMapChannels": "Mapa de Canales",
+    "adminLiveTvNoTunerChannels": "No se encontraron canales de sintonización",
+    "adminLiveTvGuideDaysHelp": "Más días te permiten programar con más antelación y ver más anuncios, pero la descarga tarda más. La opción automática selecciona un valor del número de canales.",
+    "adminPageDescCinemaIntros": "Introducciones y Tráilers antes de la reproducción",
+    "adminCinemaIntrosUpcoming": "Incluir tráilers de películas nuevas y próximas",
+    "adminCinemaIntrosOlder": "Incluir tráilers de películas antiguas",
+    "adminCinemaIntrosLibrary": "Incluir trailers de películas en mis bibliotecas",
+    "adminCinemaIntrosLibraryHelp": "Es necesario instalar trailers locales.",
+    "adminCinemaIntrosCount": "Número de trailers para reproducir",
+    "adminCinemaIntrosParentalHelp": "Solo seleccionar trailers con una calificación igual o inferior a la del vídeo que se está viendo.",
+    "adminCinemaIntrosSimilarOnly": "Reproducir solo trailers similares a lo que se está viendo",
+    "adminCinemaIntrosCustomPathHelp": "Una carpeta con vídeos. Se elige uno al azar y se reproduce después de los tráileres.",
+    "adminPageDescAnalytics": "Tamaños, códecs y formatos de las Bibliotecas"
 }

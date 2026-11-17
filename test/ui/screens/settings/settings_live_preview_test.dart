@@ -2156,6 +2156,125 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  testWidgets('Classic sample rows draw the image type picked for each row', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v1)
+      ..focus(
+        const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
+      );
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    final thumbHeight =
+        PosterSize.medium.landscapeHeight *
+        homeRowPlatformScale(DesktopUiScale.medium.scaleFactor);
+    final thumbs = find.byWidgetPredicate(
+      (w) =>
+          w is SizedBox &&
+          w.height == thumbHeight &&
+          w.width == thumbHeight * (16 / 9),
+    );
+
+    // Every row draws posters until one is set to something else.
+    await pump();
+    expect(thumbs, findsNothing);
+
+    controller.tryValue(
+      UserPreferences.homeRowImageType(HomeSectionType.resume).key,
+      ImageType.thumb,
+    );
+    await pump();
+    expect(thumbs, findsWidgets);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('a phone keeps the focused card\'s details inside the row', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
+      ..focus(
+        const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
+      );
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 390, height: 844, child: SettingsLivePreview()),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+
+    // The 390 wide screen less the row's 16 leading and 20 trailing inset.
+    expect(
+      find.byWidgetPredicate((w) => w is Positioned && w.width == 354),
+      findsWidgets,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Positioned && w.width != null && w.width! > 354,
+      ),
+      findsNothing,
+    );
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('the paused description shows with the controls away', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'Show Description on Pause',
+          prefKey: 'showDescriptionOnPause',
+        ),
+      )
+      ..tryValue('showDescriptionOnPause', true);
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    final controls = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_PlayerControls',
+    );
+
+    await pump();
+    expect(find.text('PAUSED'), findsOneWidget);
+    expect(controls, findsNothing);
+
+    controller.tryValue('showDescriptionOnPause', false);
+    await pump();
+    expect(find.text('PAUSED'), findsNothing);
+    expect(controls, findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   testWidgets('the classic info band clips text still at an older scale', (
     tester,
   ) async {

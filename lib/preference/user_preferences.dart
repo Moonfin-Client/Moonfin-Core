@@ -760,6 +760,9 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarItemCount',
     'mediaBarNewReleaseBanner',
     'mediaBarNewReleaseDays',
+    'mediaBarNewReleaseKinds',
+    'mediaBarNewMovieDays',
+    'mediaBarNewMovieDetail',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
     'navbarOpacity',
@@ -3262,6 +3265,32 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarNewReleaseDays = Preference(
     key: 'mediaBarNewReleaseDays',
     defaultValue: 30,
+  );
+
+  static const mediaBarNewSeries = 'newSeries';
+  static const mediaBarNewSeason = 'newSeason';
+  static const mediaBarNewEpisodes = 'newEpisodes';
+  static const mediaBarNewMovie = 'newMovie';
+
+  /// Which labels the banner puts on, comma separated. The banner switch above
+  /// still turns them all off, since older apps only read that.
+  static final mediaBarNewReleaseKinds = Preference(
+    key: 'mediaBarNewReleaseKinds',
+    defaultValue:
+        '$mediaBarNewSeries,$mediaBarNewSeason,$mediaBarNewEpisodes,$mediaBarNewMovie',
+  );
+
+  /// How many days after its release a movie stays new. Longer than for
+  /// series, since a cinema release reaches servers months after it opens.
+  static final mediaBarNewMovieDays = Preference(
+    key: 'mediaBarNewMovieDays',
+    defaultValue: 120,
+  );
+
+  /// Whether the new movie label shows the movie's tagline under it.
+  static final mediaBarNewMovieDetail = Preference(
+    key: 'mediaBarNewMovieDetail',
+    defaultValue: true,
   );
 
   static final navbarOpacity = Preference(

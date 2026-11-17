@@ -7918,5 +7918,6 @@
     "calendarSettingsActions": "Comportamiento",
     "@calendarSettingsActions": {
         "description": "Calendar settings section header for what buttons and selecting an entry do"
-    }
+    },
+    "adminPageDescTranscoding": "Aceleración por hardware, codificadores, mapeo de tonos"
 }
