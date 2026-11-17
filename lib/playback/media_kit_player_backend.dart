@@ -2721,8 +2721,14 @@ class MediaKitPlayerBackend extends PlayerBackend
   }
 
   @override
-  Future<void> setAudioTrack(int mpvTrackId) =>
-      _queueAudioTrackChange(() => _setAudioTrack(mpvTrackId));
+  Future<void> setAudioTrack(int mpvTrackId) {
+    final generation = _playbackGeneration;
+    // A change still queued when another source opens was meant for the old
+    // one, and its ordinal would pick a track in the new one.
+    return _queueAudioTrackChange(() async {
+      if (_ownsPlayback(generation)) await _setAudioTrack(mpvTrackId);
+    });
+  }
 
   Future<void> _setAudioTrack(int mpvTrackId) async {
     if (mpvTrackId < 1) return;
