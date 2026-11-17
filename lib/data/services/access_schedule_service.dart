@@ -97,6 +97,11 @@ class AccessScheduleService extends ChangeNotifier {
   /// user's looks stop asking for it.
   bool _windowUnsupported = false;
 
+  /// When the allowed window the plugin last reported closes, on this
+  /// device's clock. A look with no answer from the server keeps the last
+  /// decision, but not an allowed one past the close the plugin named for it.
+  DateTime? _windowCloses;
+
   /// Bumped when the user changes, so a look that was under way for the
   /// previous one can't apply its answer to the next.
   int _generation = 0;
@@ -120,6 +125,7 @@ class AccessScheduleService extends ChangeNotifier {
     _userId = userId;
     _schedules = const [];
     _windowUnsupported = false;
+    _windowCloses = null;
     _timer?.cancel();
     _timer = null;
     _setStatus(const AccessScheduleStatus.allowed());
@@ -197,12 +203,13 @@ class AccessScheduleService extends ChangeNotifier {
     if (fresh == null) {
       // A schedule that couldn't be read leaves the last one in place. A look
       // that was overtaken has nothing to say about the newer one's outcome.
-      // A block the plugin's window applied has no schedule here to judge
-      // again, and an empty one would read as open, so it stays until a look
-      // gets an answer.
+      // While the plugin judges the schedule (its window was tried this look),
+      // or after a block its window applied, which leaves no schedule here,
+      // this device's clock doesn't get to judge the old one: the last
+      // decision stays until a look gets an answer.
       if (look == _lookCount) {
-        if (isBlocked && _schedules.isEmpty) {
-          _retryLater();
+        if (windowFailed || (isBlocked && _schedules.isEmpty)) {
+          _keepLastAnswer();
         } else {
           _apply(failed: true);
         }
@@ -225,11 +232,12 @@ class AccessScheduleService extends ChangeNotifier {
     // decides: when its window couldn't be read and the server gave no answer
     // either, the last answer stays and the look is tried again.
     if (windowFailed && fresh.isNotEmpty && refused == null) {
-      if (look == _lookCount) _retryLater();
+      if (look == _lookCount) _keepLastAnswer();
       return;
     }
     _appliedLook = look;
     _schedules = fresh;
+    _windowCloses = null;
     _apply(failed: false, refused: refused);
   }
 
@@ -268,10 +276,14 @@ class AccessScheduleService extends ChangeNotifier {
   }
 
   /// Applies the plugin's [window], worked out somewhere between [asked] and
-  /// now. The next look counts from [asked], so it can only come early, and
-  /// the opening counts from now, which is nearest when it was worked out.
+  /// now. The next look counts from [asked], so it can only come early. The
+  /// opening counts from halfway between, which is out by at most half the
+  /// time the answer took, and the close it ends an allowed decision at counts
+  /// from now, so it can't come early.
   void _applyWindow(AccessWindow window, DateTime asked) {
     _timer?.cancel();
+    final answered = now();
+    final halfway = asked.add(answered.difference(asked) ~/ 2);
     // A schedule read by an earlier fallback look is out of date now, and
     // would otherwise judge a later failed look on this device's clock.
     _schedules = const [];
@@ -281,7 +293,10 @@ class AccessScheduleService extends ChangeNotifier {
     // moment behind the server's would otherwise name the minute before.
     final next = window.allowed || window.untilOpen == null
         ? null
-        : _nearestMinute(now().add(window.untilOpen!));
+        : _nearestMinute(halfway.add(window.untilOpen!));
+    _windowCloses = window.allowed && window.untilClose != null
+        ? answered.add(window.untilClose!)
+        : null;
 
     final wasAllowed = _status.allowed;
     _setStatus(
@@ -316,9 +331,24 @@ class AccessScheduleService extends ChangeNotifier {
     );
   }
 
-  void _retryLater() {
+  /// For a look with no answer from the server: the last decision stays and
+  /// the look is tried again, but an allowed decision ends at the close the
+  /// plugin reported for it, with no opening to name.
+  void _keepLastAnswer() {
     _timer?.cancel();
-    _schedule(retryInterval);
+    final moment = now();
+    final closes = _windowCloses;
+    if (closes != null && !moment.isBefore(closes)) {
+      _windowCloses = null;
+      if (_status.allowed) {
+        _setStatus(const AccessScheduleStatus.denied(null));
+        unawaited(_runOnBlocked());
+      }
+    }
+    var delay = retryInterval;
+    final left = _windowCloses?.difference(moment);
+    if (left != null && left < delay) delay = left;
+    _schedule(delay);
   }
 
   void _schedule(Duration delay) {

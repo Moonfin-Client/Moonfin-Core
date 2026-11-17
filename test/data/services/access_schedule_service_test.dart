@@ -779,7 +779,7 @@ void main() {
       });
     });
 
-    test('names the opening from the answer, not from a queued request', () {
+    test('names the opening near the answer, not from a queued request', () {
       fakeAsync((async) {
         final h = _WindowHarness(async, _at(19, 7, 58), (call) async {
           // Forty seconds waiting before the server works it out at 07:58:40
@@ -853,6 +853,76 @@ void main() {
         expect(h.service.isBlocked, isTrue);
         h.elapse(AccessScheduleService.retryInterval);
         expect(h.windowCalls, 3);
+        h.service.dispose();
+      });
+    });
+
+    test('keeps a block /Users/Me gave when a later look reads nothing', () {
+      fakeAsync((async) {
+        // Monday noon: open by the schedule on this device's clock, but the
+        // server refuses
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (_) => throw Exception('500'),
+          schedules: [_entry('Weekday', 8, 20)],
+          refuses: true,
+          schedulesFailOn: (load) => load >= 2,
+        );
+        h.service.setUser('child');
+        h.settle();
+        expect(h.service.isBlocked, isTrue);
+
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.loads, 2);
+        expect(h.service.isBlocked, isTrue);
+        h.service.dispose();
+      });
+    });
+
+    test('ends an allowed window at its reported close when looks get no '
+        'answer', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: true,
+                  untilClose: Duration(seconds: 90),
+                )
+              : throw Exception('500'),
+          schedules: [_entry('Weekday', 8, 20)],
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(seconds: 89));
+        expect(h.service.isBlocked, isFalse);
+
+        h.elapse(const Duration(seconds: 1));
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, isNull);
+        expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test('names the opening from halfway through a slow answer', () {
+      fakeAsync((async) {
+        // Worked out at 09:00:00.8 and rounded up to an hour; the answer
+        // arrives at 09:00:30
+        final h = _WindowHarness(async, _at(19, 9), (call) async {
+          await Future<void>.delayed(const Duration(seconds: 30));
+          return const AccessWindow(
+            allowed: false,
+            untilOpen: Duration(hours: 1),
+          );
+        });
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(seconds: 30));
+
+        expect(h.service.status.nextAccess, _at(19, 10));
         h.service.dispose();
       });
     });
