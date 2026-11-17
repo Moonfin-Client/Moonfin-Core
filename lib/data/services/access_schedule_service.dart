@@ -97,6 +97,11 @@ class AccessScheduleService extends ChangeNotifier {
   /// user's looks stop asking for it.
   bool _windowUnsupported = false;
 
+  /// When the allowed window the plugin last reported closes. Offline, where
+  /// the server can't enforce anything (downloads), a look that gets no answer
+  /// keeps the last decision, but not an allowed one past this.
+  DateTime? _windowCloses;
+
   /// Bumped when the user changes, so a look that was under way for the
   /// previous one can't apply its answer to the next.
   int _generation = 0;
@@ -120,6 +125,7 @@ class AccessScheduleService extends ChangeNotifier {
     _userId = userId;
     _schedules = const [];
     _windowUnsupported = false;
+    _windowCloses = null;
     _timer?.cancel();
     _timer = null;
     _setStatus(const AccessScheduleStatus.allowed());
@@ -166,20 +172,16 @@ class AccessScheduleService extends ChangeNotifier {
         failed = true;
       }
       if (generation != _generation) return;
-      if (failed) {
-        // The last answer stays. A look that was overtaken has nothing to
-        // say about the newer one's outcome.
-        if (look == _lookCount) _retryLater();
-        return;
-      }
       if (window != null) {
         if (look < _appliedLook) return;
         _appliedLook = look;
         _applyWindow(window);
         return;
       }
-      // A plugin that can't answer it won't start to during this session.
-      _windowUnsupported = true;
+      // A plugin that can't answer it won't start to during this session. One
+      // that failed is asked again next time, and the schedule and /Users/Me
+      // decide this look.
+      if (!failed) _windowUnsupported = true;
     }
 
     List<AccessSchedule>? fresh;
@@ -193,7 +195,15 @@ class AccessScheduleService extends ChangeNotifier {
     if (fresh == null) {
       // A schedule that couldn't be read leaves the last one in place. A look
       // that was overtaken has nothing to say about the newer one's outcome.
-      if (look == _lookCount) _apply(failed: true);
+      // An answer from the plugin leaves no schedule here to judge, so its
+      // decision stays, ending an allowed one at the close it reported.
+      if (look == _lookCount) {
+        if (_windowCloses != null || (isBlocked && _schedules.isEmpty)) {
+          _keepLastAnswer();
+        } else {
+          _apply(failed: true);
+        }
+      }
       return;
     }
     // An answer is as good as the newest one applied, even if a later look
@@ -210,6 +220,7 @@ class AccessScheduleService extends ChangeNotifier {
     }
     _appliedLook = look;
     _schedules = fresh;
+    _windowCloses = null;
     _apply(failed: false, refused: refused);
   }
 
@@ -249,6 +260,10 @@ class AccessScheduleService extends ChangeNotifier {
 
   void _applyWindow(AccessWindow window) {
     _timer?.cancel();
+    _schedules = const [];
+    _windowCloses = window.allowed && window.untilClose != null
+        ? now().add(window.untilClose!)
+        : null;
     final until = window.allowed ? window.untilClose : window.untilOpen;
     // Named in this device's own time, as the moment it comes on this clock,
     // to the nearest minute: a schedule opens on a minute, and a device clock a
@@ -287,8 +302,16 @@ class AccessScheduleService extends ChangeNotifier {
     );
   }
 
-  void _retryLater() {
+  /// No answer from the server: the last decision stays and the look is
+  /// tried again, but an allowed one ends at the close the plugin reported.
+  void _keepLastAnswer() {
     _timer?.cancel();
+    final closes = _windowCloses;
+    if (closes != null && !now().isBefore(closes) && _status.allowed) {
+      _windowCloses = null;
+      _setStatus(const AccessScheduleStatus.denied(null));
+      unawaited(_runOnBlocked());
+    }
     _schedule(retryInterval);
   }
 
