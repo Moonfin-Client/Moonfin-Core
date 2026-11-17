@@ -1427,7 +1427,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   /// Read with the pages' own query and filters, so a title they leave out
-  /// isn't counted. Reused while the query is the same and no server failed.
+  /// isn't counted. Reused while the query is the same and no server failed,
+  /// but not under a played or favorite filter, whose answer changes as the
+  /// viewer marks items without the query changing.
   _LightRead _lightReadFor({
     required List<String>? genreIds,
     required List<String>? studios,
@@ -1469,32 +1471,42 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _is4KFilter,
       _is3DFilter,
     ].join('|');
-    if (_lightRead case final read? when read.query == query && !read.failed) {
+    final reusable = filters == null && isFavorite != true;
+    if (_lightRead case final read?
+        when reusable && read.query == query && !read.failed) {
       return read;
     }
 
+    // In pages, since a server can answer a request without a limit with only
+    // its default page, as Silo does with 50.
     Future<List<AggregatedItem>> readSource(MergedLibrarySource source) async {
       final serverId = source.session.server.id;
-      final response = await _getFilteredItems(
-        client: source.session.client,
-        parentId: source.libraryId,
-        genreIds: genreIds,
-        studios: studios,
-        includeItemTypes: includeTypes,
-        excludeItemTypes: excludeTypes,
-        collapseBoxSetItems: collapseBoxSets,
-        recursive: recursive,
-        fields: 'ProviderIds,OriginalTitle',
-        imageTypeLimit: 0,
-        filters: filters,
-        seriesStatus: seriesStatus,
-        isFavorite: isFavorite,
-        enableTotalRecordCount: false,
-        enableUserData: false,
-      );
-      return [
-        for (final raw in response['Items'] as List? ?? const [])
-          if (raw is Map && (raw['Id']?.toString() ?? '').isNotEmpty)
+      final items = <AggregatedItem>[];
+      var start = 0;
+      while (true) {
+        final response = await _getFilteredItems(
+          client: source.session.client,
+          parentId: source.libraryId,
+          genreIds: genreIds,
+          studios: studios,
+          includeItemTypes: includeTypes,
+          excludeItemTypes: excludeTypes,
+          collapseBoxSetItems: collapseBoxSets,
+          startIndex: start,
+          limit: _lightPageSize,
+          recursive: recursive,
+          fields: 'ProviderIds,OriginalTitle',
+          imageTypeLimit: 0,
+          filters: filters,
+          seriesStatus: seriesStatus,
+          isFavorite: isFavorite,
+          enableTotalRecordCount: false,
+          enableUserData: false,
+        );
+        final page = response['Items'] as List? ?? const [];
+        for (final raw in page) {
+          if (raw is! Map || (raw['Id']?.toString() ?? '').isEmpty) continue;
+          items.add(
             AggregatedItem(
               id: raw['Id'].toString(),
               serverId: serverId,
@@ -1504,11 +1516,22 @@ class LibraryBrowseViewModel extends ChangeNotifier {
                   if (raw[field] != null) field: raw[field],
               },
             ),
-      ];
+          );
+        }
+        start += page.length;
+        // A short page ends the list unless the server counts more after it,
+        // as one that drops items from a page after reading it can.
+        final total = response['TotalRecordCount'] as int? ?? 0;
+        if (page.isEmpty || (page.length < _lightPageSize && total <= start)) {
+          return items;
+        }
+      }
     }
 
     return _lightRead = _LightRead(query, sources, readSource);
   }
+
+  static const _lightPageSize = 1000;
 
   static const _lightFields = [
     'Id',

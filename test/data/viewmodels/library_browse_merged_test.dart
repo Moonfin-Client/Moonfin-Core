@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -25,6 +26,7 @@ class _SortedItemsApi implements ItemsApi {
     this.played = const {},
     this.ratings = const {},
     this.lightGate,
+    this.pageCap,
   });
 
   /// Each title, with the TMDB id it carries when it has one.
@@ -51,6 +53,9 @@ class _SortedItemsApi implements ItemsApi {
   /// Holds the whole-library read back until it completes, like a slow
   /// server far away.
   final Future<void>? lightGate;
+
+  /// The most items one request answers with, whatever it asks for.
+  final int? pageCap;
 
   @override
   Future<Map<String, dynamic>> getItems({
@@ -102,11 +107,12 @@ class _SortedItemsApi implements ItemsApi {
   }) async {
     if (fails) throw StateError('offline');
     final start = startIndex ?? 0;
-    requests.add((start, limit ?? 0));
     final light = fields?.startsWith('ProviderIds') ?? false;
     if (light) {
       lightReads++;
       await lightGate;
+    } else {
+      requests.add((start, limit ?? 0));
     }
     final unplayed = filters?.contains('IsUnplayed') ?? false;
     final sorted = [
@@ -116,7 +122,8 @@ class _SortedItemsApi implements ItemsApi {
     return {
       'TotalRecordCount': sorted.length,
       'Items': [
-        for (final (title, tmdb) in sorted.skip(start).take(limit ?? 100))
+        for (final (title, tmdb)
+            in sorted.skip(start).take(min(limit ?? 100, pageCap ?? 100000)))
           {
             'Id': '$parentId-$title',
             'Name': title,
@@ -452,6 +459,8 @@ void main() {
       Set<String> played = const {},
       Map<String, String> ratings = const {},
       Future<void>? slow,
+      List<(String, String?)> before = const [],
+      int? pageCap,
     }) => [
       _source(
         'a',
@@ -464,10 +473,11 @@ void main() {
       _source(
         'b',
         _SortedItemsApi(
-          const [('Zz Vortelle', '1001')],
+          [...before, ('Zz Vortelle', '1001')],
           played: played,
           ratings: ratings,
           lightGate: slow,
+          pageCap: pageCap,
         ),
       ),
     ];
@@ -578,5 +588,44 @@ void main() {
       }
       expect(serversOfFirstCard(vm), ['a', 'b']);
     });
+
+    test(
+      'is found when a server answers in pages shorter than asked',
+      () async {
+        final vm = await _viewModel(
+          sources(
+            before: [
+              for (var i = 0; i < 150; i++)
+                ('C${i.toString().padLeft(3, '0')}', null),
+            ],
+            pageCap: 50,
+          ),
+        );
+        addTearDown(vm.dispose);
+        await vm.load();
+        await pumpEventQueue();
+
+        expect(vm.items.first.name, 'Aaa Vortelle');
+        expect(serversOfFirstCard(vm), ['a', 'b']);
+      },
+    );
+
+    test(
+      'is read again under the unplayed filter once it is watched',
+      () async {
+        final played = <String>{};
+        final vm = await _viewModel(sources(played: played));
+        addTearDown(vm.dispose);
+        await vm.setPlayedFilter(PlayedStatusFilter.unwatched);
+        await pumpEventQueue();
+        expect(serversOfFirstCard(vm), ['a', 'b']);
+
+        played.add('Zz Vortelle');
+        await vm.load();
+        await pumpEventQueue();
+
+        expect(serversOfFirstCard(vm), ['a']);
+      },
+    );
   });
 }

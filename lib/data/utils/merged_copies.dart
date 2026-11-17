@@ -143,12 +143,11 @@ List<AggregatedItem> foldCopies(
   final kept = <AggregatedItem>[];
   for (final item in items) {
     final keys = titleMatchKeys(item);
-    // The card holding this copy's light version comes first, so the full one
-    // replaces it rather than landing on a second card.
-    final candidates = keys.map((key) => holders![key]).nonNulls;
+    // The card already holding this copy, as a light one from the index,
+    // comes first, so the full one replaces it rather than landing elsewhere.
     final holder =
-        candidates.where((card) => _holds(card, _copyKey(item))).firstOrNull ??
-        candidates.firstOrNull;
+        holders[_ownerKey(item)] ??
+        keys.map((key) => holders![key]).nonNulls.firstOrNull;
     if (holder != null) {
       _join(holder, item, keys, holders);
       continue;
@@ -159,6 +158,7 @@ List<AggregatedItem> foldCopies(
     // Made up front so a refreshed card, which copies the map, still shares
     // the list later copies are added to.
     item.rawData.putIfAbsent(_copiesKey, () => []);
+    holders[_ownerKey(item)] = item;
     for (final key in keys) {
       holders[key] = item;
     }
@@ -174,6 +174,11 @@ const _lightCopyKey = 'MergedLightCopy';
 
 String _copyKey(AggregatedItem copy) => '${copy.serverId}|${copy.id}';
 
+/// Where [holders] keeps the card a copy sits on, beside the title keys. A
+/// title key can lead to another card than the one holding the copy, when a
+/// copy's ids bridge two cards.
+String _ownerKey(AggregatedItem copy) => 'copy:${_copyKey(copy)}';
+
 Map<String, int> _storedCopies(AggregatedItem holder) {
   final copies = holder.rawData[_copiesKey] as List? ?? const [];
   return {
@@ -185,9 +190,6 @@ Map<String, int> _storedCopies(AggregatedItem holder) {
         '$serverId|${raw['Id']?.toString() ?? ''}': i,
   };
 }
-
-bool _holds(AggregatedItem holder, String copyKey) =>
-    _copyKey(holder) == copyKey || _storedCopies(holder).containsKey(copyKey);
 
 // A copy already on the card is never added twice, but the full copy paging
 // folds in takes the place of the light one the index gave the card first.
@@ -216,6 +218,7 @@ void _join(
       stored[key] = copies.length;
       copies.add(entry);
     }
+    holders[_ownerKey(copy)] = holder;
   }
   for (final key in keys) {
     holders.putIfAbsent(key, () => holder);
@@ -247,12 +250,13 @@ bool joinIndexedCopies(
 ) {
   if (index.isEmpty) return false;
   card.rawData.putIfAbsent(_copiesKey, () => []);
-  final known = copiesOf(card);
-  final onCard = {for (final copy in known) _copyKey(copy)};
   // Every copy's ids, not just the card's: the index leaves out an id only one
   // item holds, and a copy already on the card can carry one that leads on.
-  final pending = Queue.of([for (final copy in known) ...titleMatchKeys(copy)]);
+  final pending = Queue.of([
+    for (final copy in copiesOf(card)) ...titleMatchKeys(copy),
+  ]);
   final visited = <String>{};
+  final taken = <String>{};
   final found = <(AggregatedItem, Set<String>)>[];
   while (pending.isNotEmpty) {
     final key = pending.removeFirst();
@@ -260,16 +264,9 @@ bool joinIndexedCopies(
     for (final copy in index[key] ?? const <AggregatedItem>[]) {
       final copyKeys = titleMatchKeys(copy);
       pending.addAll(copyKeys);
-      final copyKey = _copyKey(copy);
-      if (onCard.contains(copyKey) ||
-          skip(copy) ||
-          copyKeys
-              .map((key) => holders[key])
-              .nonNulls
-              .any((other) => other != card && _holds(other, copyKey))) {
-        continue;
-      }
-      onCard.add(copyKey);
+      // Already on this card or another one.
+      if (holders.containsKey(_ownerKey(copy)) || skip(copy)) continue;
+      if (!taken.add(_copyKey(copy))) continue;
       found.add((copy, copyKeys));
     }
   }

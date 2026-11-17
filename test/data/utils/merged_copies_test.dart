@@ -363,5 +363,37 @@ void main() {
       expect(copiesOf(cards[1]).map((copy) => copy.serverId), ['b', 'c']);
       expect(copiesOf(cards[1])[1].rawData['SortName'], 'Quillmere');
     });
+
+    test('a copy another copy brought to one card stays off the next', () {
+      final holders = <String, AggregatedItem>{};
+      final cards = foldCopies([
+        _movie('1', 'a', ids: {'Tmdb': '1001'}),
+        _movie('2', 'b', ids: {'Imdb': 'tt9000001'}),
+      ], holders);
+      final index = indexCopies([
+        ...cards,
+        _movie('3', 'c', ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'}),
+        _movie('4', 'd', ids: {'Tmdb': '1001'}),
+      ]);
+      final shown = {'a|1', 'b|2'};
+      bool isShown(AggregatedItem copy) =>
+          shown.contains('${copy.serverId}|${copy.id}');
+
+      // The second card reaches d through c's ids.
+      joinIndexedCopies(cards[1], index, holders, isShown);
+      expect(joinIndexedCopies(cards[0], index, holders, isShown), isFalse);
+      expect(copiesOf(cards[0]).map((copy) => copy.serverId), ['a']);
+      expect(copiesOf(cards[1]).map((copy) => copy.serverId), ['b', 'c', 'd']);
+
+      final full = _movie(
+        '4',
+        'd',
+        ids: {'Tmdb': '1001'},
+        sortName: 'Quillmere',
+      );
+      expect(foldCopies([full], holders), isEmpty);
+      expect(copiesOf(cards[0]).map((copy) => copy.serverId), ['a']);
+      expect(copiesOf(cards[1]).last.rawData['SortName'], 'Quillmere');
+    });
   });
 }
