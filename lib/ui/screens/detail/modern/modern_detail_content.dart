@@ -2417,7 +2417,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               fit: BoxFit.contain,
                               imageBuilder: (context, imageProvider) {
                                 return Container(
-                                  color: Colors.white,
+                                  color: imageUrl.contains('duotone,ffffff')
+                                      ? const Color(0xFF1A1A1A)
+                                      : Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
                                     vertical: 8,
