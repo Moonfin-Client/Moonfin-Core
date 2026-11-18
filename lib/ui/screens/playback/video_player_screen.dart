@@ -3066,7 +3066,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _restoreSystemUiForExit() async {
     setImmersive(false);
-    await SystemChrome.setPreferredOrientations([]);
+    // Safari has no screen.orientation.unlock(), so on web this never
+    // completes and waiting on it would leave the player stuck.
+    final unlock = SystemChrome.setPreferredOrientations([]);
+    if (!kIsWeb) await unlock;
   }
 
   void _updateDisplayPlaying(bool playing) {
