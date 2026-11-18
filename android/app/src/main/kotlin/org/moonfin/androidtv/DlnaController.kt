@@ -194,6 +194,7 @@ class DlnaController(private val context: Context) {
         val mimeType = args["mimeType"] as? String ?: "video/*"
         val dlnaFeatures = args["dlnaFeatures"] as? String ?: "*"
         val startTicks = (args["startPositionTicks"] as? Number)?.toLong()
+        val durationTicks = (args["durationTicks"] as? Number)?.toLong()
 
         if (targetId.isNullOrEmpty() || streamUrl.isNullOrEmpty()) {
             result.error("BAD_ARGS", "Missing targetId or streamUrl", null)
@@ -220,7 +221,9 @@ class DlnaController(private val context: Context) {
                     "<item id=\"0\" parentID=\"-1\" restricted=\"1\">" +
                     "<dc:title>${escapeXml(title)}</dc:title>" +
                     "<upnp:class>$upnpClass</upnp:class>" +
-                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:${escapeXml(dlnaFeatures)}\">${escapeXml(streamUrl)}</res>" +
+                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:${escapeXml(dlnaFeatures)}\"" +
+                    (durationTicks?.let { " duration=\"${formatDlnaTime(it)}.000\"" } ?: "") +
+                    ">${escapeXml(streamUrl)}</res>" +
                     "</item></DIDL-Lite>"
 
                 sendSoap(

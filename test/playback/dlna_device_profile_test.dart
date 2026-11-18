@@ -10,7 +10,7 @@ void main() {
     test('gives Silo H264 and HEVC to play and to keep over HLS', () {
       final capabilities = siloCapabilitiesFromDeviceProfile(
         dlnaDeviceProfile(),
-        traits: SiloPlayerTraits.castReceiver,
+        traits: SiloPlayerTraits.dlnaRenderer,
       );
 
       final codecs = capabilities.clientCapabilities['codecs_video'] as List;
@@ -24,7 +24,7 @@ void main() {
     test('plays a Matroska original as it is', () {
       final capabilities = siloCapabilitiesFromDeviceProfile(
         dlnaDeviceProfile(),
-        traits: SiloPlayerTraits.castReceiver,
+        traits: SiloPlayerTraits.dlnaRenderer,
       );
 
       final original = capabilities.deliveries['original_http']!;
@@ -32,10 +32,23 @@ void main() {
       expect(original['audio_decode_codecs'], containsAll(['aac', 'ac3']));
     });
 
+    // Silo's copied-video HLS playlist grows as it copies, and an LG plays
+    // that as live (no runtime, no pause), so a remux goes progressive.
+    test('takes a progressive remux before HLS', () {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        dlnaDeviceProfile(),
+        traits: SiloPlayerTraits.dlnaRenderer,
+      );
+
+      final progressive = capabilities.deliveries['progressive']!;
+      expect(progressive['supported_on_device'], isTrue);
+      expect(capabilities.deliveries['hls']!['supported_on_device'], isTrue);
+    });
+
     test('offers Silo only Dolby Vision profile 8', () {
       final capabilities = siloCapabilitiesFromDeviceProfile(
         dlnaDeviceProfile(),
-        traits: SiloPlayerTraits.castReceiver,
+        traits: SiloPlayerTraits.dlnaRenderer,
       );
 
       final hdr = capabilities.clientCapabilities['hdr_details'] as Map;

@@ -12,6 +12,15 @@ class NativeDlnaChannel {
   );
   static Stream<Map<String, dynamic>>? _cachedEventStream;
 
+  /// Where the stream on the renderer starts on the media's timeline. A
+  /// renderer counts from its stream's start, so a stream Silo started past
+  /// the beginning (a seek or resume of a remux) reports positions that need
+  /// it added.
+  static int _positionOffsetTicks = 0;
+
+  /// The renderer's last reported position, on the media's timeline.
+  static int _lastPositionTicks = 0;
+
   const NativeDlnaChannel();
 
   static bool get _supported => PlatformDetection.isMobile;
@@ -67,10 +76,14 @@ class NativeDlnaChannel {
     required String mimeType,
     required String dlnaFeatures,
     int? startPositionTicks,
+    int? durationTicks,
+    int positionOffsetTicks = 0,
   }) async {
     if (!_supported) {
       return;
     }
+    _positionOffsetTicks = positionOffsetTicks;
+    _lastPositionTicks = positionOffsetTicks;
     await _channel.invokeMethod<void>('playToDlnaDevice', {
       'targetId': targetId,
       'streamUrl': streamUrl,
@@ -78,6 +91,7 @@ class NativeDlnaChannel {
       'mimeType': mimeType,
       'dlnaFeatures': dlnaFeatures,
       'startPositionTicks': ?startPositionTicks,
+      'durationTicks': ?durationTicks,
     });
   }
 
@@ -134,15 +148,26 @@ class NativeDlnaChannel {
     )
         .map((event) {
           if (event is Map) {
-            return event.cast<String, dynamic>();
+            final map = Map<String, dynamic>.of(event.cast<String, dynamic>());
+            final position = map['positionTicks'];
+            if (position is int) {
+              map['positionTicks'] = position + _positionOffsetTicks;
+              _lastPositionTicks = map['positionTicks'] as int;
+            }
+            return map;
           }
           return <String, dynamic>{};
         })
         .where((event) => event.isNotEmpty);
   }
 
+  /// The renderer's last reported position, on the media's timeline.
+  int get lastPositionTicks => _lastPositionTicks;
+
   @visibleForTesting
   static void resetForTesting() {
     _cachedEventStream = null;
+    _positionOffsetTicks = 0;
+    _lastPositionTicks = 0;
   }
 }

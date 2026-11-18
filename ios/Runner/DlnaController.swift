@@ -169,6 +169,7 @@ final class DlnaController: NSObject {
         mimeType: String,
         dlnaFeatures: String,
         startPositionTicks: Int64?,
+        durationTicks: Int64?,
         completion: @escaping (Error?) -> Void
     ) {
         emitEvent(state: "connecting")
@@ -191,7 +192,12 @@ final class DlnaController: NSObject {
                 let upnpClass = mimeType.hasPrefix("audio/")
                     ? "object.item.audioItem.musicTrack"
                     : "object.item.videoItem"
-                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):\(self.escapeXml(dlnaFeatures))\">\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
+                // The runtime the stream covers. A stream produced as it plays
+                // has no length for the renderer to read one from.
+                let resDuration = durationTicks.map {
+                    " duration=\"\(self.formatDlnaTime(ticks: $0)).000\""
+                } ?? ""
+                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):\(self.escapeXml(dlnaFeatures))\"\(resDuration)>\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
                 let metadataXml = self.escapeXml(didl)
 
                 try self.sendSoap(

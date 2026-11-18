@@ -76,6 +76,13 @@ class DlnaProvider
   /// The last cast's Silo session, for the cast service to report.
   CastServerPlayback? _serverPlayback;
 
+  /// The cast on the renderer, for a seek its stream can't do itself.
+  _DlnaCast? _cast;
+
+  /// When the renderer was paused, for a stream the server drops after a
+  /// while ([StreamResolutionResult.reopenAfterPause]).
+  DateTime? _pausedAt;
+
   @override
   CastServerPlayback? takeServerPlayback() {
     final playback = _serverPlayback;
@@ -129,24 +136,39 @@ class DlnaProvider
     final client =
         _clientFactory.getClientIfExists(item.serverId) ?? GetIt.instance<MediaServerClient>();
     final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
-    final resolution = await _resolverForClient(client).resolve(
+    final resolver = _resolverForClient(client);
+    final silo = client.serverType == ServerType.silo;
+    final resolution = await resolver.resolve(
       item,
       deviceProfile: dlnaDeviceProfile(),
       audioStreamIndex: audioStreamIndex,
       subtitleStreamIndex: subtitleStreamIndex,
+      // Silo starts a remux there; a file it sends as it is is seeked on the
+      // renderer once it plays.
+      startTimeTicks: silo ? startPositionTicks : null,
       mediaSourceId: mediaSourceId,
       enableDirectPlay: !hasExplicitIndices,
       enableDirectStream: !hasExplicitIndices,
     );
-    final streamUrl = resolution.streamUrl;
+    _cast = _DlnaCast(
+      target: target,
+      item: item,
+      resolver: resolver,
+      resolution: resolution,
+      audioStreamIndex: audioStreamIndex,
+      subtitleStreamIndex: subtitleStreamIndex,
+      mediaSourceId: mediaSourceId,
+      directAllowed: !hasExplicitIndices,
+    );
+    _pausedAt = null;
 
-    await _native.playToDlnaDevice(
-      targetId: target.id,
-      streamUrl: streamUrl,
-      title: item.name,
-      mimeType: dlnaMimeType(resolution),
-      dlnaFeatures: dlnaFeatures(resolution),
-      startPositionTicks: startPositionTicks,
+    await _send(
+      target,
+      item,
+      resolution,
+      startPositionTicks: resolution.seeksThroughServer
+          ? null
+          : startPositionTicks,
     );
     _serverPlayback = castNeedsSessionReports(client)
         ? CastServerPlayback(
@@ -157,12 +179,66 @@ class DlnaProvider
         : null;
   }
 
+  /// Hands [resolution]'s stream to [target], told its MIME type, flags and
+  /// the runtime it covers (from where it starts to the end).
+  Future<void> _send(
+    CastTarget target,
+    AggregatedItem item,
+    StreamResolutionResult resolution, {
+    int? startPositionTicks,
+  }) {
+    final offset = resolution.timelineOffset.inMicroseconds * 10;
+    final runtime = item.runTimeTicks;
+    return _native.playToDlnaDevice(
+      targetId: target.id,
+      streamUrl: resolution.streamUrl,
+      title: item.name,
+      mimeType: dlnaMimeType(resolution),
+      dlnaFeatures: dlnaFeatures(resolution),
+      startPositionTicks: startPositionTicks,
+      durationTicks: runtime != null && runtime > offset ? runtime - offset : null,
+      positionOffsetTicks: offset,
+    );
+  }
+
+  /// [cast]'s stream replaced by one Silo starts at [positionTicks], for a
+  /// stream the renderer can't seek in. False when it can.
+  Future<bool> _replanAt(int positionTicks) async {
+    final cast = _cast;
+    if (cast == null) return false;
+    if (!cast.resolution.seeksThroughServer) return false;
+    final resolver = cast.resolver;
+    if (resolver is! StreamReplanner) return false;
+    final replanner = resolver as StreamReplanner;
+    if (!replanner.canReplan(cast.resolution)) return false;
+    final next = await replanner.replan(
+      cast.item,
+      cast.resolution,
+      ReplanRequest(
+        reason: ReplanReason.seek,
+        position: Duration(microseconds: positionTicks ~/ 10),
+        deviceProfile: dlnaDeviceProfile(),
+        audioStreamIndex: cast.audioStreamIndex,
+        subtitleStreamIndex: cast.subtitleStreamIndex,
+        mediaSourceId: cast.mediaSourceId,
+        enableDirectPlay: cast.directAllowed,
+        enableDirectStream: cast.directAllowed,
+      ),
+    );
+    if (!identical(_cast, cast)) return true;
+    _cast = cast.withResolution(next);
+    _pausedAt = null;
+    await _send(cast.target, cast.item, next);
+    return true;
+  }
+
   @override
   Future<void> pause(CastTargetKind kind) async {
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
     await _native.pauseDlna();
+    _pausedAt = DateTime.now();
   }
 
   @override
@@ -170,7 +246,18 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
+    // The server has dropped a stream paused this long: start a new one at
+    // the position instead.
+    final idle = _cast?.resolution.reopenAfterPause;
+    final pausedAt = _pausedAt;
+    if (idle != null &&
+        pausedAt != null &&
+        DateTime.now().difference(pausedAt) >= idle &&
+        await _replanAt(_native.lastPositionTicks)) {
+      return;
+    }
     await _native.playDlna();
+    _pausedAt = null;
   }
 
   @override
@@ -178,6 +265,7 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
+    if (await _replanAt(positionTicks)) return;
     await _native.seekDlna(positionTicks: positionTicks);
   }
 
@@ -187,6 +275,8 @@ class DlnaProvider
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
     await _native.stopDlna();
+    _cast = null;
+    _pausedAt = null;
   }
 
   @override
@@ -204,4 +294,39 @@ class DlnaProvider
     }
     await _native.setDlnaVolume(volume: volume);
   }
+}
+
+/// A cast on a DLNA renderer: what [DlnaProvider] needs to ask the server for
+/// the same stream starting elsewhere.
+class _DlnaCast {
+  const _DlnaCast({
+    required this.target,
+    required this.item,
+    required this.resolver,
+    required this.resolution,
+    required this.audioStreamIndex,
+    required this.subtitleStreamIndex,
+    required this.mediaSourceId,
+    required this.directAllowed,
+  });
+
+  final CastTarget target;
+  final AggregatedItem item;
+  final MediaStreamResolver resolver;
+  final StreamResolutionResult resolution;
+  final int? audioStreamIndex;
+  final int? subtitleStreamIndex;
+  final String? mediaSourceId;
+  final bool directAllowed;
+
+  _DlnaCast withResolution(StreamResolutionResult next) => _DlnaCast(
+    target: target,
+    item: item,
+    resolver: resolver,
+    resolution: next,
+    audioStreamIndex: audioStreamIndex,
+    subtitleStreamIndex: subtitleStreamIndex,
+    mediaSourceId: mediaSourceId,
+    directAllowed: directAllowed,
+  );
 }

@@ -109,6 +109,16 @@ class SiloPlayerTraits {
     authorizesByStreamReference: true,
   );
 
+  /// A DLNA renderer: a cast receiver that takes a progressive remux. It
+  /// can't seek in one, so Moonfin seeks by asking Silo for a stream that
+  /// starts there. HLS is its last resort: Silo's copied-video playlist grows
+  /// as Silo copies, and an LG plays that as live, with no runtime and no
+  /// pause.
+  static const dlnaRenderer = SiloPlayerTraits(
+    sendsRequestHeaders: false,
+    authorizesByStreamReference: true,
+  );
+
   /// libmpv on Android (media_kit, the other engine there): as on the
   /// desktop, except that it decodes through MediaCodec onto the surface,
   /// so it doesn't map HDR to an SDR screen.
