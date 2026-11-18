@@ -572,18 +572,23 @@ final class DlnaController: NSObject {
     /// Resumes at [target] once the renderer has started, after the cast is
     /// already connected. Some renderers (LG) refuse a Seek before Play with
     /// 711 and ignore one sent before the position moves, so the cast plays
-    /// from the start rather than failing when the renderer never takes it.
+    /// from the start rather than failing when the renderer never takes it,
+    /// or never reports its position moving within the wait.
     private func seekOnceStarted(controlUrl: String, target: String, generation: Int) {
         func current() -> Bool { resumeLock.withLock { resumeGeneration == generation } }
         // A slow renderer takes a while to answer each query, so the wait is
         // timed rather than counted.
         let deadline = Date().addingTimeInterval(15)
+        var started = false
         while Date() < deadline {
             guard current() else { return }
-            if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 { break }
+            if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 {
+                started = true
+                break
+            }
             Thread.sleep(forTimeInterval: 0.5)
         }
-        guard current() else { return }
+        guard started, current() else { return }
         _ = try? sendSoap(
             controlUrl: controlUrl,
             action: "Seek",

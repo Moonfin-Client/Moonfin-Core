@@ -582,17 +582,22 @@ class DlnaController(private val context: Context) {
      * Resumes at [target] once the renderer has started, after the cast is
      * already connected. Some renderers (LG) refuse a Seek before Play with
      * 711 and ignore one sent before the position moves, so the cast plays
-     * from the start rather than failing when the renderer never takes it.
+     * from the start rather than failing when the renderer never takes it,
+     * or never reports its position moving within the wait.
      */
     private fun seekOnceStarted(controlUrl: String, target: String, token: Int) {
         // Runs after the channel result was answered, so it must not throw.
         // A slow renderer takes a while to answer each query, so the wait is
         // timed rather than counted.
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15)
+        var started = false
         while (System.nanoTime() < deadline) {
             if (resumeGeneration.get() != token) return
             val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
-            if (ticks > 0L) break
+            if (ticks > 0L) {
+                started = true
+                break
+            }
             try {
                 Thread.sleep(500)
             } catch (e: InterruptedException) {
@@ -600,7 +605,7 @@ class DlnaController(private val context: Context) {
                 return
             }
         }
-        if (resumeGeneration.get() != token) return
+        if (!started || resumeGeneration.get() != token) return
         runCatching {
             sendSoap(
                 controlUrl, "Seek",
