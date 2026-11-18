@@ -148,9 +148,8 @@ class RemoteMediaNotificationService {
     return _now().difference(pausedSince) < pausedSocketGrace;
   }
 
-  /// True when remote playback notifications are enabled on this platform,
-  /// so the WebSocket stays connected across background / idle periods to
-  /// receive playback start and state events from other devices on the account.
+  /// The socket stays open in the background while the setting is on, since
+  /// playback starting on another device only arrives through it.
   bool get keepsSocketAlive => isEnabled;
 
   void _clearPausedGrace() {
@@ -288,10 +287,6 @@ class RemoteMediaNotificationService {
       case PlayMessage():
       case PlaystateMessage():
       case GeneralCommandMessage():
-        _scheduleRefresh();
-      case UserDataChangedMessage(:final userId)
-          when _normalizeId(userId) != null &&
-              _normalizeId(userId) == _normalizeId(_activeClient()?.userId):
         _scheduleRefresh();
       default:
         break;

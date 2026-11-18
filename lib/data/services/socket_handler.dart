@@ -279,14 +279,7 @@ class JellyfinWebSocketClient extends _ReconnectingWebSocketClient {
   Uri? buildUri() {
     final wsUrl = client.baseUrl.replaceFirst('http', 'ws');
     final token = client.accessToken ?? '';
-    String? deviceId;
-    try {
-      deviceId = client.deviceInfo.id;
-    } catch (_) {}
-    final deviceParam = deviceId != null && deviceId.isNotEmpty
-        ? '&deviceId=${Uri.encodeComponent(deviceId)}'
-        : '';
-    return Uri.parse('$wsUrl/socket?api_key=$token&ApiKey=$token$deviceParam');
+    return Uri.parse('$wsUrl/socket?ApiKey=$token');
   }
 
   @override

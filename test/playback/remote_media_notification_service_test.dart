@@ -780,35 +780,6 @@ void main() {
     expect(service.activeSession?.itemId, 'ep-fallback');
   });
 
-  test('UserDataChangedMessage for current user triggers refreshSessions with normalized user IDs', () async {
-    await prefs.set(UserPreferences.remoteMediaNotification, true);
-    sessionApi.sessionsResponse = [];
-    service.start();
-    await service.refreshSessions();
-    expect(service.activeSession, isNull);
-
-    // Provide the new session for the event-triggered refresh.
-    sessionApi.sessionsResponse = [_tvSession(id: 'sess-tv', itemId: 'ep-user-data')];
-
-    // User ID with different casing and hyphens stripped must still match.
-    final unnormalizedId = client.userId!.replaceAll('-', '').toUpperCase();
-    socket.eventsController.add(
-      UserDataChangedMessage(userId: unnormalizedId, userDataList: const []),
-    );
-    // Allow debounce timer to fire.
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-
-    expect(service.activeSession?.itemId, 'ep-user-data');
-
-    // Events for an unrelated user are ignored.
-    sessionApi.sessionsResponse = [_tvSession(id: 'sess-tv', itemId: 'ep-other')];
-    socket.eventsController.add(
-      const UserDataChangedMessage(userId: 'other-user-uuid', userDataList: []),
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    expect(service.activeSession?.itemId, 'ep-user-data');
-  });
-
   test('refreshSessions queues and drains when a refresh is already in flight', () async {
     await prefs.set(UserPreferences.remoteMediaNotification, true);
     final completer = Completer<List<Map<String, dynamic>>>();
