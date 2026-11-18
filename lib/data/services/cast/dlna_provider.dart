@@ -82,6 +82,9 @@ class DlnaProvider
   /// The position the latest seek asked for, while one is being served.
   int? _seekTarget;
 
+  /// Whether a seek is being served for [_cast].
+  bool _seekRunning = false;
+
   @override
   CastServerPlayback? takeServerPlayback() {
     final playback = _serverPlayback;
@@ -135,6 +138,8 @@ class DlnaProvider
     final client =
         _clientFactory.getClientIfExists(item.serverId) ?? GetIt.instance<MediaServerClient>();
     final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
+    // A seek still served for the cast before is dropped.
+    _cast = null;
     final resolver = _resolverForClient(client);
     final silo = client.serverType == ServerType.silo;
     final resolution = await resolver.resolve(
@@ -161,6 +166,7 @@ class DlnaProvider
     );
     final cast = _cast!;
     _seekTarget = null;
+    _seekRunning = false;
 
     await _send(
       target,
@@ -205,22 +211,20 @@ class DlnaProvider
 
   /// The cast's stream replaced by one Silo starts at [positionTicks], for
   /// a stream the renderer can't seek in. False when it can. Seeks made while
-  /// one is being served only move its target; the latest is served next. A
-  /// paused renderer is paused again on the new stream unless [play].
-  Future<bool> _replanAt(int positionTicks, {bool play = false}) async {
+  /// one is being served only move its target; the latest is served next.
+  Future<bool> _replanAt(int positionTicks) async {
     final cast = _cast;
     if (cast == null || !cast.resolution.seeksThroughServer) return false;
+    _seekTarget = positionTicks;
+    if (_seekRunning) return true;
     final resolver = cast.resolver;
     if (resolver is! StreamReplanner) return false;
     final replanner = resolver as StreamReplanner;
     if (!replanner.canReplan(cast.resolution)) return false;
-    final running = _seekTarget != null;
-    _seekTarget = positionTicks;
-    if (running) return true;
-    final paused = !play && _native.lastReportedPaused;
+    _seekRunning = true;
     try {
       int? served;
-      while (_seekTarget != null && _seekTarget != served) {
+      while (identical(_cast, cast) && _seekTarget != served) {
         final target = _seekTarget!;
         final next = await replanner.replan(
           cast.item,
@@ -236,6 +240,10 @@ class DlnaProvider
             enableDirectStream: cast.directAllowed,
           ),
         );
+        // Silo's session plays the new stream from here, whatever the
+        // renderer does with it.
+        cast.resolution = next;
+        served = target;
         // Stopped, or another cast started, while Silo answered.
         if (!identical(_cast, cast)) return true;
         await _send(
@@ -245,12 +253,11 @@ class DlnaProvider
           // A stream that doesn't start there is seeked on the renderer.
           startPositionTicks: next.seeksThroughServer ? null : target,
         );
-        cast.resolution = next;
-        served = target;
+        // A stop that crossed the send: the renderer may have started it.
+        if (_cast == null) await _native.stopDlna();
       }
-      if (paused && identical(_cast, cast)) await _native.pauseDlna();
     } finally {
-      if (identical(_cast, cast)) _seekTarget = null;
+      if (identical(_cast, cast)) _seekRunning = false;
     }
     return true;
   }
@@ -270,12 +277,14 @@ class DlnaProvider
     }
     // The server has dropped a stream paused this long (by the phone or the
     // TV's remote): start a new one at the position instead.
+    // A seek being served starts its stream playing.
+    if (_seekRunning) return;
     final idle = _cast?.resolution.reopenAfterPause;
     final pausedSince = _native.pausedSince;
     if (idle != null &&
         pausedSince != null &&
         DateTime.now().difference(pausedSince) >= idle &&
-        await _replanAt(_native.lastPositionTicks, play: true)) {
+        await _replanAt(_native.lastPositionTicks)) {
       return;
     }
     await _native.playDlna();
@@ -298,6 +307,7 @@ class DlnaProvider
     // Cleared first, so a seek Silo is still answering doesn't recast.
     _cast = null;
     _seekTarget = null;
+    _seekRunning = false;
     await _native.stopDlna();
   }
 
