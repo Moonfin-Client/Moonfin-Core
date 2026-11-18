@@ -2,6 +2,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
 
+import 'silo_media_stream_resolver.dart' show siloEndedOnServerRefusal;
 import 'silo_playback_sessions.dart';
 
 /// Reports playback to Silo.
@@ -63,8 +64,11 @@ class SiloPlaySessionService implements PlayerService {
   ///   one was overtaken by a newer sample).
   /// - `409 progress_conflict`: Silo has another sample under this
   ///   sequence, so the sample goes once more under the next one.
-  /// - `404`, `410 playback_session_ended`, `409 installation_changed`: the
-  ///   session is over, and nothing more is reported on it.
+  /// - `404`, `409 installation_changed`: the session is over, and nothing
+  ///   more is reported on it.
+  /// - `410 playback_session_ended`: an administrator ended it. Nothing more
+  ///   is reported, and the sample throws a [PlaybackRefusedException] so the
+  ///   player stops and says why instead of playing what it has buffered.
   @override
   Future<void> onPlaybackProgress(
     dynamic mediaItem,
@@ -102,7 +106,14 @@ class SiloPlaySessionService implements PlayerService {
   }
 
   /// Marks [session] over when [error] says so, and answers whether it did.
+  /// Throws when an administrator ended it; Silo has then recorded the play,
+  /// so the item's user data changed too.
   bool _ends(Object error, SiloPlaybackSession session) {
+    if (SiloPlaybackApi.isEndedByServer(error)) {
+      session.ended = true;
+      _noteEnded(session);
+      throw siloEndedOnServerRefusal;
+    }
     if (SiloPlaybackApi.isSessionGone(error) ||
         SiloPlaybackApi.isInstallationChanged(error)) {
       session.ended = true;

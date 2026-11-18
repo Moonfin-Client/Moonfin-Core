@@ -194,6 +194,8 @@ void main() {
     final s = await _started(
       SiloTestServer.problemRoute(410, 'playback_session_ended', 'Ended'),
     );
+    final heard = <String>[];
+    s.client.ownUserDataChanges.listen(heard.add);
     await expectLater(
       s.resolver.replan(
         _item,
@@ -209,6 +211,8 @@ void main() {
       ),
     );
     expect(SiloPlaybackSessions.of(s.client)[_session]!.ended, isTrue);
+    await Future<void>.delayed(Duration.zero);
+    expect(heard, ['movie-imdb-tt0295701']);
   });
 
   test('a session that expired throws, for a new start', () async {
