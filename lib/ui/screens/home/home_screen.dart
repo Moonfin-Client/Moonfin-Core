@@ -76,6 +76,7 @@ import '../../widgets/left_sidebar.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
+import '../../widgets/mediabar/makd_classic.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/merged_copy_picker.dart';
@@ -633,12 +634,6 @@ class _HomeShellState extends State<_HomeShell>
       _userPrefs.get(UserPreferences.seasonalSurprise),
     );
     final seasonalFollower = _userPrefs.get(UserPreferences.seasonalFollower);
-    final mediaBarMode = UserPreferences.normalizeMediaBarMode(
-      _userPrefs.get(UserPreferences.mediaBarMode),
-    );
-    final useMakdBackdropFx =
-        PlatformDetection.useMobileUi &&
-        mediaBarMode == UserPreferences.mediaBarModeMakd;
 
     return PopScope(
       canPop: false,
@@ -669,7 +664,6 @@ class _HomeShellState extends State<_HomeShell>
                         return HomeBackdrop(
                           url: url,
                           blurAmount: blurAmount,
-                          useMakdBackdropFx: useMakdBackdropFx,
                           style: PlatformDetection.useMobileUi
                               ? UserPreferences.homeBackdropFullScreen
                               : backdropStyle,
@@ -2623,7 +2617,7 @@ class _ContentRowsState extends State<_ContentRows>
       widget.prefs.get(UserPreferences.mediaBarMode),
     );
     if (mediaBarMode == UserPreferences.mediaBarModeMakd) {
-      return screenHeight * 0.46;
+      return screenHeight;
     }
 
     return screenHeight * 0.55;
@@ -2636,7 +2630,8 @@ class _ContentRowsState extends State<_ContentRows>
       : _mediaBarHeight();
 
   /// Places the middle of the first row's artwork on the bottom edge of the
-  /// screen when Peek Home Rows is on, on TV and desktop only.
+  /// screen when Peek Home Rows is on. MakD off TV starts the rows at 65%
+  /// instead, and phones only peek under MakD.
   void _computeRowPeek(
     List<HomeRow> rows,
     List<double> rowExtents,
@@ -2645,14 +2640,26 @@ class _ContentRowsState extends State<_ContentRows>
     _rowPeek = 0;
     _rowPeekCover = 0;
     final prefs = widget.prefs;
-    if (PlatformDetection.useMobileUi ||
-        !prefs.get(UserPreferences.mediaBarRowPeek) ||
-        !UserPreferences.mediaBarModeAllowsRowPeek(
-          prefs.get(UserPreferences.mediaBarMode),
-        ) ||
+    final mode = prefs.get(UserPreferences.mediaBarMode);
+    final makd =
+        UserPreferences.normalizeMediaBarMode(mode) ==
+        UserPreferences.mediaBarModeMakd;
+    // Phones have no Peek Home Rows setting, and MakD's first row always peeks
+    // there.
+    final peeks = PlatformDetection.useMobileUi
+        ? makd
+        : prefs.get(UserPreferences.mediaBarRowPeek) &&
+              UserPreferences.mediaBarModeAllowsRowPeek(mode);
+    if (!peeks ||
         expandedHomeRows(prefs) ||
         !_isMediaBarIncluded() ||
         rows.isEmpty) {
+      return;
+    }
+    if (!PlatformDetection.isTV && makd) {
+      _rowPeek = _rowPeekCover = MakdMetrics(
+        MediaQuery.sizeOf(context),
+      ).classicPeek;
       return;
     }
     final row = rows.first;

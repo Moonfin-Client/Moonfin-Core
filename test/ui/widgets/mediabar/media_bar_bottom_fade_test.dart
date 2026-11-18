@@ -96,12 +96,37 @@ void main() {
     expect(await fades(tester, rowPeek: 120), isTrue);
   });
 
-  testWidgets('so does the MakD layout', (tester) async {
+  testWidgets('MakD fades into the page on desktop and TV alike', (
+    tester,
+  ) async {
     await prefs.set(
       UserPreferences.mediaBarMode,
       UserPreferences.mediaBarModeMakd,
     );
-    expect(await fades(tester, rowPeek: 120), isTrue);
+    Future<bool> makdFades() async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: const [Locale('en')],
+          home: Scaffold(
+            body: MediaBar(viewModel: _ViewModel(), prefs: prefs, height: 1080),
+          ),
+        ),
+      );
+      final found = find
+          .byKey(const ValueKey('makd-bottom-fade'))
+          .evaluate()
+          .isNotEmpty;
+      await tester.pumpWidget(const SizedBox());
+      return found;
+    }
+
+    expect(await makdFades(), isTrue);
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    expect(await makdFades(), isTrue);
   });
 
   testWidgets('the backdrop still fades with no row peeking', (tester) async {
