@@ -3598,6 +3598,7 @@ class RowDataSource {
                     'BackdropPath': item.backdropPath ?? '',
                     'ProductionYear': _extractYear(item.releaseDate ?? item.firstAirDate),
                     'SeerrMediaType': item.mediaType,
+                    'SeerrStatus': item.mediaInfo?.status,
                   },
                 );
               }).take(limit).toList();
