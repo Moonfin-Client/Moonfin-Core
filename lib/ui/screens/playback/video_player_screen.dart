@@ -115,6 +115,7 @@ import 'playback_takeover.dart';
 import 'episode_browser.dart';
 import 'episode_browser_panel.dart';
 import 'osd_buttons.dart';
+import 'playback_ended_by_server.dart';
 import 'trickplay_housing_inset.dart';
 
 class _SubtitleLoadingSpinner extends StatefulWidget {
@@ -415,6 +416,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<bool>? _screenLockSub;
   StreamSubscription<bool>? _screensaverPlayingSub;
   StreamSubscription<void>? _completedSub;
+  StreamSubscription<String>? _endedByServerSub;
   bool _isRestoringPosition = false;
   DateTime? _suppressSeekPromptsUntil;
   bool _wasPlayingBeforeScreenLock = false;
@@ -874,6 +876,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (mounted && _isCinemaSkipVisible) _focusTvSkipSegment();
     });
     FocusManager.instance.addListener(_restoreOverlayFocus);
+    _overlayFocus.addListener(_onOverlayFocusChanged);
     // A right-click hides the controls, so the browser's own menu stays shut.
     if (kIsWeb) unawaited(BrowserContextMenu.disableContextMenu());
     if (PlatformDetection.isTV || PlatformDetection.isMobile) {
@@ -969,6 +972,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     unawaited(_loadNextAirDate());
     unawaited(_syncAutoHdrSwitching());
     _positionSub = _state.positionStream.listen(_onPositionUpdate);
+    _endedByServerSub = _manager.endedByServerStream.listen((message) {
+      // Throttled like the player's other errors, so a repeat of the same
+      // text doesn't stack.
+      if (mounted) {
+        _showThrottledPlaybackError(
+          playbackEndedByServerText(context, message),
+        );
+      }
+    });
     _completedSub = _manager.sessionEndedStream.listen((_) {
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
@@ -1235,8 +1247,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _aetherRemoteCommandSub?.cancel();
     _screenLockSub?.cancel();
     _completedSub?.cancel();
+    _endedByServerSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
     FocusManager.instance.removeListener(_restoreOverlayFocus);
+    _overlayFocus.removeListener(_onOverlayFocusChanged);
     _overlayFocus.dispose();
     _tvSeekbarFocus.dispose();
     _tvSkipSegmentFocus.dispose();
@@ -3054,7 +3068,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _restoreSystemUiForExit() async {
     setImmersive(false);
-    await SystemChrome.setPreferredOrientations([]);
+    // Safari has no screen.orientation.unlock(), so on web this never
+    // completes and waiting on it would leave the player stuck.
+    final unlock = SystemChrome.setPreferredOrientations([]);
+    if (!kIsWeb) await unlock;
   }
 
   void _updateDisplayPlaying(bool playing) {
@@ -3520,12 +3537,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   String get _speedLabel =>
       ((_state.playbackSpeed * 100).round() / 100).toString();
 
+  // Space is a tap to toggle play/pause and a hold for temporary speed, on
+  // any platform with a hardware keyboard.
   bool _isTvTemporarySpeedKey(LogicalKeyboardKey key) {
-    return key == LogicalKeyboardKey.mediaPause;
+    return key == LogicalKeyboardKey.space ||
+        (PlatformDetection.isTV && key == LogicalKeyboardKey.mediaPause);
   }
 
-  bool _canUseTvTemporarySpeedHold() =>
-      PlatformDetection.isTV && _canUseTemporarySpeed();
+  // A dialog that takes focus mid-hold never delivers the key-up.
+  void _onOverlayFocusChanged() {
+    if (_overlayFocus.hasFocus || _tvTemporarySpeedHoldKey == null) return;
+    setState(_cancelTemporarySpeed);
+  }
 
   bool _canUseTemporarySpeed() {
     if (_castService.activeKind != null) return false;
@@ -3547,7 +3570,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return KeyEventResult.handled;
     }
 
-    if (!_canUseTvTemporarySpeedHold()) {
+    // A touch hold already owns the speed and its restore value.
+    if (_temporarySpeedActive) return KeyEventResult.handled;
+
+    if (!_canUseTemporarySpeed()) {
       return KeyEventResult.ignored;
     }
 
@@ -3573,23 +3599,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _tvTemporarySpeedHoldKey = null;
 
     if (didTriggerHold) {
-      _cancelTemporarySpeed();
+      setState(_cancelTemporarySpeed);
       return KeyEventResult.handled;
     }
 
     if (key == LogicalKeyboardKey.mediaPause) {
       _manager.pause();
+      _showControls();
+      _focusTvPrimaryButton();
     } else {
       _togglePlayPause();
+      _revealControlsAfterTransport();
     }
-    _showControls();
-    _focusTvPrimaryButton();
     return KeyEventResult.handled;
   }
 
   Future<void> _activateTvTemporarySpeedHold(LogicalKeyboardKey key) async {
     if (!mounted || _tvTemporarySpeedHoldKey != key) return;
-    if (!_canUseTvTemporarySpeedHold()) return;
+    if (!_canUseTemporarySpeed()) return;
     await _startTemporarySpeed();
   }
 
@@ -3803,6 +3830,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
 
       if (event is KeyUpEvent) {
+        final temporarySpeedResult = _handleTvTemporarySpeedKeyUp(event);
+        if (temporarySpeedResult != KeyEventResult.ignored) {
+          return temporarySpeedResult;
+        }
         final isBackKey = event.logicalKey.isBackKey;
         if (isBackKey) {
           return KeyEventResult.handled;
@@ -3910,13 +3941,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return KeyEventResult.ignored;
     }
 
-    if (PlatformDetection.isTV) {
-      final temporarySpeedResult = _handleTvTemporarySpeedKeyDownOrRepeat(
-        event,
-      );
-      if (temporarySpeedResult != KeyEventResult.ignored) {
-        return temporarySpeedResult;
-      }
+    final temporarySpeedResult = _handleTvTemporarySpeedKeyDownOrRepeat(event);
+    if (temporarySpeedResult != KeyEventResult.ignored) {
+      return temporarySpeedResult;
     }
 
     final primaryFocus = FocusManager.instance.primaryFocus;

@@ -19,9 +19,8 @@ final class DlnaController: NSObject {
     private var genaServerPort: UInt16 = 0
     private var genaRenewalTimer: DispatchSourceTimer?
     private var consecutivePollFailures: Int = 0
-    // Discovery scans run on global queues at once and cast reads these, so
-    // every access holds discoveryLock; an unguarded write crashed the app.
-    private let discoveryLock = NSLock()
+    // The one-shot and continuous scans run on separate threads and both write these.
+    private let discoveredUrlsLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
     // Bumped by every new cast and by the user's own pause, seek and stop, so
@@ -214,7 +213,7 @@ final class DlnaController: NSObject {
                 )
 
                 self.activeDeviceControlUrl = controlUrl
-                let (renderingControlUrl, eventSubUrl) = self.discoveryLock.withLock {
+                let (renderingControlUrl, eventSubUrl) = self.discoveredUrlsLock.withLock {
                     (self.discoveredRenderingControlUrls[controlUrl], self.discoveredEventSubUrls[controlUrl])
                 }
                 self.activeDeviceRenderingControlUrl = renderingControlUrl
@@ -425,7 +424,7 @@ final class DlnaController: NSObject {
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
         let renderingControlUrl = parser.renderingControlURL.map { resolveUrl(base: locationUrl, relative: $0) }
         let eventSubUrl = parser.avTransportEventSubURL.map { resolveUrl(base: locationUrl, relative: $0) }
-        discoveryLock.withLock {
+        discoveredUrlsLock.withLock {
             if let renderingControlUrl { discoveredRenderingControlUrls[controlUrl] = renderingControlUrl }
             if let eventSubUrl { discoveredEventSubUrls[controlUrl] = eventSubUrl }
         }

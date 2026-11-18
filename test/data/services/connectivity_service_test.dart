@@ -198,6 +198,9 @@ void main() {
 
   test('leaves the server alone while the device itself is offline', () async {
     failuresLeft = 99;
+    // On another machine, so losing the network cuts it off.
+    when(() => GetIt.instance<MediaServerClient>().baseUrl)
+        .thenReturn('http://192.168.1.20:8096');
     final service = serviceOnline(online: false);
     addTearDown(service.dispose);
 
@@ -206,5 +209,14 @@ void main() {
 
     await Future<void>.delayed(const Duration(milliseconds: 300));
     expect(probes, 0);
+  });
+
+  test('a server on this device is reached with every radio off', () async {
+    final service = serviceOnline(online: false);
+    addTearDown(service.dispose);
+
+    await service.recheckNow();
+    expect(service.canReachServer, isTrue);
+    expect(probes, 1);
   });
 }

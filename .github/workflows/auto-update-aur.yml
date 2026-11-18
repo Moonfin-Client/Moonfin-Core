@@ -87,7 +87,7 @@ jobs:
         id: download
         run: |
           VERSION="${{ steps.upstream.outputs.version }}"
-          URL="https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}.tar.gz"
+          URL="https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}_system-libs.tar.gz"
           for attempt in 1 2 3 4 5 6; do
             if curl -fL --retry 3 -o /tmp/moonfin-linux.tar.gz "$URL"; then
               break
@@ -126,13 +126,13 @@ jobs:
           arch=('x86_64')
           url='https://github.com/Moonfin-Client/Moonfin-Core'
           license=('GPL-3.0-or-later')
-          depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu' 'xdg-user-dirs')
+          depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu' 'sqlite' 'xdg-user-dirs')
           provides=('moonfin')
           conflicts=('moonfin')
-          # The binary and the bundled libraries ship stripped already, and
+          # The binary and its libraries ship stripped already, and
           # makepkg's pass over a prebuilt Flutter bundle can break it.
           options=('!strip')
-          source=("\${pkgname}-\${pkgver}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/\${pkgver}/Moonfin_Linux_v\${pkgver}.tar.gz")
+          source=("\${pkgname}-\${pkgver}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/\${pkgver}/Moonfin_Linux_v\${pkgver}_system-libs.tar.gz")
           sha256sums=('${SHA256}')
 
           package() {
@@ -150,15 +150,6 @@ jobs:
             done
             chmod 755 "\${pkgdir}/usr/lib/moonfin/moonfin" \\
               "\${pkgdir}/usr/lib/moonfin/moonfin-bin"
-
-            # These come from the depends list, and the launcher searches the
-            # bundled lib directory first, so leftover copies would shadow the
-            # system ones.
-            for lib in mpv ass secret-1 avcodec avdevice avfilter avformat \\
-              avutil postproc swresample swscale va va-drm va-wayland va-x11 \\
-              vdpau; do
-              rm -f "\${pkgdir}/usr/lib/moonfin/lib/lib\${lib}.so."*
-            done
 
             # The launcher in the bundle reads its own directory to find the
             # libraries, so it is called by its real path rather than linked to.
@@ -193,10 +184,11 @@ jobs:
             "    depends = webkit2gtk-4.1" \
             "    depends = mpv" \
             "    depends = harfbuzz-icu" \
+            "    depends = sqlite" \
             "    depends = xdg-user-dirs" \
             "    provides = moonfin" \
             "    conflicts = moonfin" \
-            "    source = moonfin-bin-${VERSION}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}.tar.gz" \
+            "    source = moonfin-bin-${VERSION}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}_system-libs.tar.gz" \
             "    sha256sums = ${SHA256}" \
             "" \
             "pkgname = moonfin-bin" > .SRCINFO

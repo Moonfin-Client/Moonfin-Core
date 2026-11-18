@@ -241,6 +241,30 @@ class ServerRepository {
     return null;
   }
 
+  /// [server] with its type checked against what its address reports now,
+  /// saved when it was stored as Jellyfin but is Emby or the other way round.
+  /// It waits at most two seconds and otherwise hands [server] back as it was,
+  /// though an answer that comes later is still saved for next time.
+  Future<Server> withCheckedType(Server server) => _checkedType(
+    server,
+  ).timeout(const Duration(seconds: 2), onTimeout: () => server);
+
+  Future<Server> _checkedType(Server server) async {
+    const switchable = {ServerType.jellyfin, ServerType.emby};
+    if (!switchable.contains(server.serverType)) return server;
+    try {
+      final (_, detected, _) = await _probeServer(server.address);
+      if (!switchable.contains(detected) || detected == server.serverType) {
+        return server;
+      }
+      final corrected = server.copyWith(serverType: detected);
+      await saveServer(corrected);
+      return corrected;
+    } catch (_) {
+      return server;
+    }
+  }
+
   /// Adds [server] as is, or replaces the one with its id, for servers that
   /// can't go through the [addServer] probe.
   Future<void> saveServer(Server server) async {

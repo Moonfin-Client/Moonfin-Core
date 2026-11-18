@@ -477,8 +477,28 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     if (_vm.isSeerrOnly || !sections.shows(DetailSection.moreLikeThis)) {
       return const [];
     }
-    return [for (final item in _vm.similar) _libraryPoster(item)];
+    return [for (final item in _vm.similar) _itemPoster(item)];
   }
+
+  /// A title the library lacks carries its request status and opens Seerr's
+  /// page, since its id is a TMDB number the server can't look up.
+  _Poster _itemPoster(AggregatedItem item) => item.serverId == 'seerr'
+      ? (
+          title: item.name,
+          imageUrl: switch (item.rawData['PosterPath']) {
+            final String path when path.isNotEmpty => '$seerrPosterBase$path',
+            _ => null,
+          },
+          seerrStatus: item.seerrStatus ?? SeerrMediaStatus.unknown,
+          open: () => context.push(
+            Destinations.seerrMedia(
+              item.id,
+              mediaType: item.seerrMediaType,
+              title: item.name,
+            ),
+          ),
+        )
+      : _libraryPoster(item);
 
   _Poster _libraryPoster(AggregatedItem item) => (
     title: item.name,
@@ -502,25 +522,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
       widget.prefs,
       AppLocalizations.of(context),
     ))
-      for (final item in items)
-        item.serverId == 'seerr'
-            ? (
-                title: item.name,
-                imageUrl: switch (item.rawData['PosterPath']) {
-                  final String path when path.isNotEmpty =>
-                    '$seerrPosterBase$path',
-                  _ => null,
-                },
-                seerrStatus: item.seerrStatus ?? SeerrMediaStatus.unknown,
-                open: () => context.push(
-                  Destinations.seerrMedia(
-                    item.id,
-                    mediaType: item.seerrMediaType,
-                    title: item.name,
-                  ),
-                ),
-              )
-            : _libraryPoster(item),
+      for (final item in items) _itemPoster(item),
   ];
 
   List<SeerrDiscoverItem> _seerrItems(_Seg seg, SeerrDetailPieces pieces) =>

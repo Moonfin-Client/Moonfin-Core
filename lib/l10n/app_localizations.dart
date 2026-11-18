@@ -6208,6 +6208,24 @@ abstract class AppLocalizations {
   /// **'Recropping black bars'**
   String get playerRecroppingBlackBars;
 
+  /// Toast after a manual recrop found letterbox bars and cropped them
+  ///
+  /// In en, this message translates to:
+  /// **'Black bars cropped'**
+  String get playerBlackBarsCropped;
+
+  /// Toast after a manual recrop found that the picture fills the frame
+  ///
+  /// In en, this message translates to:
+  /// **'No black bars found'**
+  String get playerNoBlackBarsFound;
+
+  /// Toast after a manual recrop saw only dark or unclear frames
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t detect black bars. Try again in a brighter scene'**
+  String get playerBlackBarsNotDetected;
+
   /// Zoom mode: stretch
   ///
   /// In en, this message translates to:
@@ -8518,6 +8536,30 @@ abstract class AppLocalizations {
   /// **'Show libraries from all connected servers'**
   String get showLibrariesFromAllServers;
 
+  /// Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Movie and TV Show Libraries'**
+  String get mergeLibrariesByType;
+
+  /// Description for the setting that merges movie and series libraries across servers
+  ///
+  /// In en, this message translates to:
+  /// **'With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.'**
+  String get mergeLibrariesByTypeDescription;
+
+  /// Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{On {count} servers}}'**
+  String mergedServerCount(int count);
+
+  /// Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names
+  ///
+  /// In en, this message translates to:
+  /// **'Not changed on {servers}'**
+  String mergedCopiesNotChanged(String servers);
+
   /// Section title for Recently Added and Recently Released home row settings
   ///
   /// In en, this message translates to:
@@ -8944,29 +8986,11 @@ abstract class AppLocalizations {
   /// **'Random'**
   String get mediaBarSourceRandom;
 
-  /// Media bar source: series with episodes that aired recently
-  ///
-  /// In en, this message translates to:
-  /// **'New Seasons & Episodes'**
-  String get mediaBarSourceNewReleases;
-
-  /// Setting that flags series in the media bar when new episodes aired recently
+  /// Setting that flags new series, seasons, episodes and movies in the media bar
   ///
   /// In en, this message translates to:
   /// **'New Release Banner'**
   String get mediaBarNewReleaseBanner;
-
-  /// No description provided for @mediaBarNewReleaseBannerDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Flag series with a new season or new episodes that aired recently.'**
-  String get mediaBarNewReleaseBannerDescription;
-
-  /// Setting for how many days an episode counts as new in the media bar
-  ///
-  /// In en, this message translates to:
-  /// **'New Release Window'**
-  String get mediaBarNewReleaseDays;
 
   /// No description provided for @mediaBarNewReleaseDaysDescription.
   ///
@@ -8991,6 +9015,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Episodes'**
   String get mediaBarNewEpisodes;
+
+  /// Media bar label on a movie that came out recently
+  ///
+  /// In en, this message translates to:
+  /// **'New Movie'**
+  String get mediaBarNewMovie;
+
+  /// Media bar settings section with the new release label settings
+  ///
+  /// In en, this message translates to:
+  /// **'New Releases'**
+  String get mediaBarNewReleasesSection;
+
+  /// Media bar source showing what came out recently: new series, seasons, episodes and movies
+  ///
+  /// In en, this message translates to:
+  /// **'New Releases'**
+  String get mediaBarSourceNewReleasesAll;
+
+  /// Description of the media bar new release label setting
+  ///
+  /// In en, this message translates to:
+  /// **'Flag new series, seasons, episodes and movies.'**
+  String get mediaBarNewReleaseBannerAllDescription;
+
+  /// Setting that picks which titles get a new release label in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get mediaBarNewReleaseKinds;
+
+  /// Setting for how many days an episode counts as new in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'New Episode Window'**
+  String get mediaBarNewEpisodeDays;
+
+  /// Setting for how many days after its release a movie counts as new in the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'New Movie Window'**
+  String get mediaBarNewMovieDays;
+
+  /// Description of the new movie window setting
+  ///
+  /// In en, this message translates to:
+  /// **'How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.'**
+  String get mediaBarNewMovieDaysDescription;
+
+  /// Setting for whether the New Movie label has a second line
+  ///
+  /// In en, this message translates to:
+  /// **'Show Tagline'**
+  String get mediaBarNewMovieDetail;
+
+  /// Description of the New Movie second line setting
+  ///
+  /// In en, this message translates to:
+  /// **'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.'**
+  String get mediaBarNewMovieDetailDescription;
 
   /// Content type: movies and TV shows
   ///
@@ -10492,11 +10576,41 @@ abstract class AppLocalizations {
   /// **'Import blocked'**
   String get seerrImportBlocked;
 
-  /// Shown where the Seerr download bar would be, when a request was approved and Radarr has the released movie but has not found a release to download yet
+  /// Shown where the Seerr download bar would be, when a request was approved and Radarr or Sonarr has the released movie or aired episodes but has not found a release to download yet
   ///
   /// In en, this message translates to:
   /// **'Not found yet'**
   String get seerrNotFoundYet;
+
+  /// Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now
+  ///
+  /// In en, this message translates to:
+  /// **'Searching indexers'**
+  String get seerrSearchingIndexers;
+
+  /// Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'
+  ///
+  /// In en, this message translates to:
+  /// **'Not found yet · searched {when}'**
+  String seerrNotFoundYetSearched(String when);
+
+  /// Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet'**
+  String get seerrNotAvailableYet;
+
+  /// Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'
+  ///
+  /// In en, this message translates to:
+  /// **'Available {date}'**
+  String seerrAvailableOn(String date);
+
+  /// Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'
+  ///
+  /// In en, this message translates to:
+  /// **'Next episode {date}'**
+  String seerrNextEpisodeOn(String date);
 
   /// Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one
   ///
@@ -20446,6 +20560,24 @@ abstract class AppLocalizations {
   /// **'Disable float on top'**
   String get playerTooltipExitFloatOnTop;
 
+  /// Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings
+  ///
+  /// In en, this message translates to:
+  /// **'Picture-in-picture'**
+  String get playerTooltipPictureInPicture;
+
+  /// Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window
+  ///
+  /// In en, this message translates to:
+  /// **'Exit picture-in-picture'**
+  String get playerTooltipExitPictureInPicture;
+
+  /// Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window
+  ///
+  /// In en, this message translates to:
+  /// **'Playing in picture-in-picture'**
+  String get playerPlayingInPictureInPicture;
+
   /// Tooltip label for locking landscape orientation in player
   ///
   /// In en, this message translates to:
@@ -27229,25 +27361,25 @@ abstract class AppLocalizations {
   /// **'Hide the movie or episode descriptive text.'**
   String get hideHomeMediaDescriptionSubtitle;
 
-  /// Setting title to hide the playback progress bar on home screen posters
+  /// Setting title to hide the playback progress bar on home screen and library posters
   ///
   /// In en, this message translates to:
   /// **'Hide Watch Progress'**
   String get hideHomeWatchProgress;
 
-  /// Description for setting to hide the playback progress bar on home screen posters
+  /// Description for setting to hide the playback progress bar on home screen and library posters
   ///
   /// In en, this message translates to:
   /// **'Hide the progress bar on posters you\'ve started watching.'**
   String get hideHomeWatchProgressSubtitle;
 
-  /// Setting title to hide the unwatched episode count badge on home screen posters
+  /// Setting title to hide the unwatched episode count badge on home screen and library posters
   ///
   /// In en, this message translates to:
   /// **'Hide Unwatched Count'**
   String get hideHomeUnwatchedCount;
 
-  /// Description for setting to hide the unwatched episode count badge on home screen posters
+  /// Description for setting to hide the unwatched episode count badge on home screen and library posters
   ///
   /// In en, this message translates to:
   /// **'Hide the badge showing how many episodes are left to watch.'**
@@ -31420,6 +31552,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Left and Right slide the scrubber.'**
   String get afterHoursPixelPurgeCardRemote;
+
+  /// Toggle in General settings on Android mobile to show a system media notification when another device on the same account is playing
+  ///
+  /// In en, this message translates to:
+  /// **'Remote playback notification'**
+  String get remoteMediaNotificationTitle;
+
+  /// Subtitle for the remote playback notification toggle in General settings on Android mobile
+  ///
+  /// In en, this message translates to:
+  /// **'Show system media controls when watching on another device'**
+  String get remoteMediaNotificationSubtitle;
+
+  /// Line in the Android media notification that mirrors a video another device on the same account is playing. Moonfin is the app name
+  ///
+  /// In en, this message translates to:
+  /// **'Watching on Moonfin'**
+  String get remoteActivityWatching;
+
+  /// Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name
+  ///
+  /// In en, this message translates to:
+  /// **'Listening on Moonfin'**
+  String get remoteActivityListening;
 
   /// Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video
   ///

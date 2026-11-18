@@ -49,8 +49,6 @@ class DlnaController(private val context: Context) {
     private var genaServerPort: Int = 0
     private var genaRenewFuture: ScheduledFuture<*>? = null
     private val consecutivePollFailures = AtomicInteger(0)
-    // Discovery scans run on the executor's threads at once and cast reads
-    // these, so a plain map can be corrupted mid-write.
     private val discoveredEventSubUrls = ConcurrentHashMap<String, String>()
     private val discoveredRenderingControlUrls = ConcurrentHashMap<String, String>()
     // Bumped by every new cast and by the user's own pause, seek and stop, so

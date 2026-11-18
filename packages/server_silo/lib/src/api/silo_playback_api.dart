@@ -170,7 +170,9 @@ class SiloPlaybackApi implements PlaybackApi {
   /// Whether [error] is `410 playback_session_ended`: an administrator
   /// ended the session, and the player must not start it again by itself.
   static bool isEndedByServer(Object error) =>
-      error is DioException && error.response?.statusCode == 410;
+      error is DioException &&
+      error.response?.statusCode == 410 &&
+      SiloProblem.codeOf(error) == 'playback_session_ended';
 
   /// Whether [error] is `409 progress_conflict`: a sample with this
   /// sequence and different contents was already applied.

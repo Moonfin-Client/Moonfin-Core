@@ -565,7 +565,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           )
           .then((result) {
             if (result == true && mounted) {
-              _vm.load();
+              _vm.refresh();
             }
           });
     });

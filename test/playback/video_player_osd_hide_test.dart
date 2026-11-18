@@ -147,6 +147,7 @@ class _Users extends Fake implements UserRepository {
 class _Manager extends PlaybackManager {
   final transport = <String>[];
   final seeks = <Duration>[];
+  final speeds = <double>[];
   int stopCalls = 0;
   int finishedStopCalls = 0;
   int nextInQueueCalls = 0;
@@ -178,6 +179,12 @@ class _Manager extends PlaybackManager {
   Future<void> seekTo(Duration position) async {
     seeks.add(position);
     await super.seekTo(position);
+  }
+
+  @override
+  Future<void> setPlaybackSpeed(double speed) async {
+    speeds.add(speed);
+    state.setPlaybackSpeed(speed);
   }
 
   @override
@@ -496,6 +503,40 @@ void main() {
     expect(skip.hasPrimaryFocus, isFalse, reason: 'the seek bar comes first');
     await press(LogicalKeyboardKey.arrowUp);
     expect(skip.hasPrimaryFocus, isTrue);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('holding Space plays at 2x until it is let go', (tester) async {
+    await mountPlayer(tester);
+    manager.state.setPlaying(true);
+    await tester.pump();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+    await tester.pump(const Duration(milliseconds: 500));
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.space);
+    }
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(manager.speeds, [2.0, 1.0]);
+    expect(manager.transport, isEmpty, reason: 'a hold never toggles');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(manager.transport, ['pause'], reason: 'a tap still toggles');
+
+    // A dialog that opens mid-hold gets the key-up instead, so opening it ends
+    // the hold.
+    manager.state.setPlaying(true);
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+    await tester.pump(const Duration(milliseconds: 500));
+    final player = tester.element(find.byType(VideoPlayerScreen));
+    showDialog<void>(context: player, builder: (_) => const SizedBox());
+    await tester.pump();
+    expect(manager.speeds, [2.0, 1.0, 2.0, 1.0]);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
 
     await tester.pumpWidget(const SizedBox());
   });

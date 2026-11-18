@@ -264,12 +264,13 @@ class SessionRepository {
       GetIt.instance<ServerMessagesService>().clear();
     }
 
-    final server = _serverRepository.getServer(serverId);
-    if (server == null) {
+    final stored = _serverRepository.getServer(serverId);
+    if (stored == null) {
       _logger.w('Server $serverId not found in stored servers');
       _setState(SessionState.ready);
       return false;
     }
+    final server = await _serverRepository.withCheckedType(stored);
 
     final users = _authStore.getUsers(serverId);
     final userIndex = users.indexWhere((u) => u.id == userId);
