@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -113,6 +114,13 @@ FocusNode _nodeLabelled(WidgetTester tester, String label) => tester
     .whereType<FocusNode>()
     .firstWhere((node) => node.debugLabel == label);
 
+Future<void> _activateGuideControl(WidgetTester tester, String label) async {
+  _nodeLabelled(tester, label).requestFocus();
+  await _pumpFrames(tester);
+  await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+  await _pumpFrames(tester);
+}
+
 String? _focusedLabel() => FocusManager.instance.primaryFocus?.debugLabel;
 
 String _windowRangeText(WidgetTester tester) => tester
@@ -150,6 +158,7 @@ void main() {
 
   /// Overridable per test so a lineup can outgrow a single program batch.
   late int channelCount;
+  Exception? guideFailure;
 
   /// When set, any guide request covering this channel is held open until the
   /// test releases it, so its row can be observed mid-load.
@@ -169,6 +178,7 @@ void main() {
       LiveTvCategoryDisplay.programmes,
     );
     channelCount = _channelCount;
+    guideFailure = null;
     _fixtureWindowStart = guideLeftEdge(DateTime.now());
     deferredChannelId = null;
     releaseDeferredGuide = <VoidCallback>[];
@@ -217,6 +227,7 @@ void main() {
         userId: any(named: 'userId'),
       ),
     ).thenAnswer((invocation) async {
+      if (guideFailure case final failure?) throw failure;
       final ids =
           (invocation.namedArguments[#channelIds] as List?)?.cast<String>() ??
           const <String>[];
@@ -1075,6 +1086,258 @@ void main() {
       expect(_focusedLabel(), 'GuideWindowBar:2');
     },
   );
+
+  for (final first in [0, 2]) {
+    testWidgets('opposite chevrons cancel the pending move from button $first', (
+      tester,
+    ) async {
+      channelCount = 2;
+      await pumpGuide(tester);
+      final start = _windowRangeText(tester);
+      deferredChannelId = 'ch0';
+      await _activateGuideControl(tester, 'GuideWindowBar:$first');
+      await _activateGuideControl(tester, 'GuideWindowBar:${2 - first}');
+      expect(releaseDeferredGuide, hasLength(1));
+      releaseDeferredGuide.single();
+      await _pumpFrames(tester);
+      expect(_windowRangeText(tester), start);
+    });
+  }
+
+  testWidgets('Next pages Sports while its initial listings are pending', (
+    tester,
+  ) async {
+    channelCount = 2;
+    await pumpGuide(tester);
+    final start = _windowRangeText(tester);
+    deferredChannelId = 'ch0';
+    await _activateGuideControl(
+      tester,
+      'GuideFilter:${GuideFilter.sports.index}',
+    );
+    await _activateGuideControl(tester, 'GuideWindowBar:2');
+    expect(releaseDeferredGuide, hasLength(2));
+    expect(_windowRangeText(tester), start);
+    releaseDeferredGuide.last();
+    await _pumpFrames(tester);
+    final next = _windowRangeText(tester);
+    expect(next, isNot(start));
+    releaseDeferredGuide.first();
+    await _pumpFrames(tester);
+    expect(_windowRangeText(tester), next);
+  });
+
+  testWidgets('Next can page Favorites while the All request is pending', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => ChannelGroupLineup({}, channels: [
+        _channelRaw(0),
+        {..._channelRaw(1), 'UserData': {'IsFavorite': true}},
+      ]),
+    );
+    await pumpGuide(tester);
+    final start = _windowRangeText(tester);
+    deferredChannelId = 'ch1';
+    const next = 'GuideWindowBar:2';
+    await _activateGuideControl(tester, next);
+    await _activateGuideControl(tester, next);
+    expect(releaseDeferredGuide, hasLength(1));
+    await _activateGuideControl(tester, 'GuideFilter:${GuideFilter.favorites.index}');
+    final channel = find.byType(EpgChannelCell);
+    expect(tester.widget<EpgChannelCell>(channel).name, 'Channel 1');
+    await _activateGuideControl(tester, next);
+    expect(releaseDeferredGuide, hasLength(2));
+    expect(_windowRangeText(tester), start);
+
+    releaseDeferredGuide.last();
+    await _pumpFrames(tester);
+    final favoritesRange = _windowRangeText(tester);
+    expect(favoritesRange, isNot(start));
+    releaseDeferredGuide.first();
+    await _pumpFrames(tester);
+    expect(_windowRangeText(tester), favoritesRange);
+    expect(tester.widget<EpgChannelCell>(channel).name, 'Channel 1');
+  });
+
+  for (final action in ['opening listings', 'Now', 'channel search']) {
+    testWidgets('Next works with an older request pending after $action', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      addTearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+      when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+        (_) async => ChannelGroupLineup(
+          {
+            'ch1': {'News'},
+          },
+          channels: [_channelRaw(0), _channelRaw(1)],
+        ),
+      );
+      if (action == 'opening listings') deferredChannelId = 'ch1';
+      await pumpGuide(tester);
+      final initial = _windowRangeText(tester);
+      const next = 'GuideWindowBar:2';
+      if (action != 'opening listings') {
+        deferredChannelId = 'ch1';
+        await _activateGuideControl(tester, next);
+      }
+      expect(releaseDeferredGuide, hasLength(1));
+      deferredChannelId = null;
+      if (action == 'Now') {
+        await _activateGuideControl(tester, 'GuideWindowBar:1');
+      } else if (action == 'channel search') {
+        final search = tester.widget<LocalSearchField>(
+          find.byType(LocalSearchField),
+        );
+        search.controller.text = 'Channel 1';
+        await _pumpFrames(tester);
+        final channel = tester.widget<EpgChannelCell>(
+          find.byType(EpgChannelCell),
+        );
+        expect(channel.name, 'Channel 1');
+      }
+      await _activateGuideControl(tester, next);
+      final nextRange = _windowRangeText(tester);
+      expect(nextRange, isNot(initial));
+      releaseDeferredGuide.single();
+      await _pumpFrames(tester);
+      expect(_windowRangeText(tester), nextRange);
+    });
+  }
+
+  Future<void> checkPendingRightCancellation(
+    WidgetTester tester, {
+    required Future<void> Function() navigate,
+    required String expectedFocus,
+  }) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvLastChannelId,
+      'ch4',
+    );
+    await pumpGuide(tester);
+    _nodeLabelled(tester, 'GuideProgramRow4:0').requestFocus();
+    await _pumpFrames(tester);
+    final live = _windowRangeText(tester);
+    deferredChannelId = 'ch4';
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await _pumpFrames(tester);
+    expect(releaseDeferredGuide, isNotEmpty);
+    await navigate();
+    await _pumpFrames(tester);
+    expect(_focusedLabel(), expectedFocus);
+    deferredChannelId = null;
+    for (final release in releaseDeferredGuide) {
+      release();
+    }
+    await _pumpFrames(tester);
+    expect(_windowRangeText(tester), live);
+    expect(_focusedLabel(), expectedFocus);
+  }
+
+  testWidgets(
+    'Back keeps the live time and header focus after a pending Right',
+    (tester) => checkPendingRightCancellation(
+      tester,
+      navigate: tester.binding.handlePopRoute,
+      expectedFocus: 'GuideFilter:0',
+    ),
+  );
+
+  testWidgets(
+    'Left keeps the live time and channel focus after a pending Right',
+    (tester) => checkPendingRightCancellation(
+      tester,
+      navigate: () => tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft),
+      expectedFocus: 'GuideChannel:4',
+    ),
+  );
+
+  testWidgets('Right retries a failed page without moving remote focus', (
+    tester,
+  ) async {
+    await pumpGuide(tester);
+    // Row 4 has one long program spanning the fixture's current window.
+    final cell = _nodeLabelled(tester, 'GuideProgramRow4:0');
+    cell.requestFocus();
+    await _pumpFrames(tester);
+    final range = _windowRangeText(tester);
+    final notice = find.textContaining('Couldn’t load');
+
+    guideFailure = Exception('offline');
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await _pumpFrames(tester);
+    expect(_windowRangeText(tester), range);
+    expect(FocusManager.instance.primaryFocus, same(cell));
+    expect(notice, findsOneWidget);
+
+    guideFailure = null;
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await _pumpFrames(tester);
+    expect(_windowRangeText(tester), isNot(range));
+    expect(notice, findsNothing);
+  });
+
+  for (final startAtLive in [true, false]) {
+    testWidgets(
+      'Back returns to the tuned channel after denied paging from '
+      '${startAtLive ? 'live' : 'a future window'}',
+      (tester) async {
+        PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+        addTearDown(
+          () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+        );
+        await GetIt.instance<UserPreferences>().set(
+          UserPreferences.liveTvLastChannelId,
+          'ch3',
+        );
+        await pumpGuide(tester);
+        final liveRange = _windowRangeText(tester);
+        _nodeLabelled(tester, 'GuideProgramRow4:0').requestFocus();
+        await _pumpFrames(tester);
+        if (!startAtLive) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+          await _pumpFrames(tester);
+          expect(_windowRangeText(tester), isNot(liveRange));
+        }
+
+        final beforeFailure = _windowRangeText(tester);
+        final request = RequestOptions(path: '/LiveTv/Programs');
+        guideFailure = DioException.badResponse(
+          statusCode: 403,
+          requestOptions: request,
+          response: Response(requestOptions: request, statusCode: 403),
+        );
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await _pumpFrames(tester);
+        expect(_windowRangeText(tester), beforeFailure);
+
+        clearInteractions(liveTvApi);
+        await tester.binding.handlePopRoute();
+        await _pumpFrames(tester);
+        expect(_windowRangeText(tester), liveRange);
+        expect(_focusedLabel(), 'GuideChannel:3');
+        if (startAtLive) {
+          verifyNever(() => liveTvApi.getChannelGroups(userId: 'user'));
+        } else {
+          verify(() => liveTvApi.getChannelGroups(userId: 'user')).called(1);
+        }
+        await tester.binding.handlePopRoute();
+        await _pumpFrames(tester);
+        expect(_focusedLabel(), 'GuideFilter:0');
+      },
+    );
+  }
 
   testWidgets('the channel column handles ordinary vertical arrows', (
     tester,

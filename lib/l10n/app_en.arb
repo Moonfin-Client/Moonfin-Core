@@ -11200,6 +11200,13 @@
   "@guideAllChannels": {
     "description": "Browse option that shows all accessible Live TV channels, without a category or channel-group filter."
   },
+  "guideWindowLoadFailed": "Couldn’t load {time} listings.",
+  "@guideWindowLoadFailed": {
+    "description": "Brief notice when the guide stays on its current time after a paging request fails.",
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
   "guideSearchChannels": "Search channels",
   "@guideSearchChannels": {
     "description": "Placeholder for the Live TV guide search field that searches channel names and numbers."
