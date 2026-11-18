@@ -64,6 +64,43 @@ String dlnaFeatures(StreamResolutionResult resolution) {
   return 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000';
 }
 
+/// Whether the cast needs the server to apply the track pick. A DLNA TV
+/// playing the file plays its default audio track and no subtitle, so only
+/// another audio track or a subtitle has to be converted in. The cast sheet
+/// passes the default audio track too, and treating that as a pick converted
+/// every cast, which Emby and Jellyfin then send as HLS that some TVs (LG)
+/// never start.
+bool dlnaNeedsServerTrackPick(
+  AggregatedItem item, {
+  String? mediaSourceId,
+  int? audioStreamIndex,
+  int? subtitleStreamIndex,
+}) {
+  if (subtitleStreamIndex != null && subtitleStreamIndex >= 0) return true;
+  if (audioStreamIndex == null) return false;
+  final sources = item.mediaSources;
+  final source = sources
+      .where((s) => mediaSourceId == null || s['Id'] == mediaSourceId)
+      .firstOrNull;
+  if (source == null) return true;
+  final defaultIndex =
+      source['DefaultAudioStreamIndex'] as int? ??
+      _defaultAudioIndex(_toStreams(source['MediaStreams']));
+  return defaultIndex == null || audioStreamIndex != defaultIndex;
+}
+
+List<Map<String, dynamic>> _toStreams(Object? value) => value is List
+    ? value.whereType<Map>().map((m) => m.cast<String, dynamic>()).toList()
+    : const [];
+
+int? _defaultAudioIndex(List<Map<String, dynamic>> streams) {
+  final audio = streams.where((s) => s['Type'] == 'Audio');
+  final chosen =
+      audio.where((s) => s['IsDefault'] == true).firstOrNull ??
+      audio.firstOrNull;
+  return chosen?['Index'] as int?;
+}
+
 class DlnaProvider
     implements CastProvider, CastTransportControls, CastServerPlaybackSource {
   final NativeDlnaChannel _native;
@@ -127,8 +164,14 @@ class DlnaProvider
     int? subtitleStreamIndex,
   }) async {
     final client =
-        _clientFactory.getClientIfExists(item.serverId) ?? GetIt.instance<MediaServerClient>();
-    final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
+        _clientFactory.getClientIfExists(item.serverId) ??
+        GetIt.instance<MediaServerClient>();
+    final hasExplicitIndices = dlnaNeedsServerTrackPick(
+      item,
+      mediaSourceId: mediaSourceId,
+      audioStreamIndex: audioStreamIndex,
+      subtitleStreamIndex: subtitleStreamIndex,
+    );
     final resolution = await _resolverForClient(client).resolve(
       item,
       deviceProfile: dlnaDeviceProfile(),
