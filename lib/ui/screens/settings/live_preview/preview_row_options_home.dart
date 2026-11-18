@@ -395,7 +395,11 @@ class _PreviewRowOptionsHomeState extends State<PreviewRowOptionsHome> {
     var x = 0.0;
     for (final (index, item) in row.items.indexed) {
       if (x > frame.size.width) break;
-      final card = frame.card(row, item, focused: index == 0 && !frame.phone);
+      final card = frame.card(
+        row,
+        item,
+        focused: index == 0 && frame.focuses(row),
+      );
       x += card.width + frame.spacing(row);
       final url = card.url;
       if (url == null) continue;
@@ -908,6 +912,10 @@ class _HomeFrame {
 
   bool isModern(HomeRow row) => isHomeRowModern(row, prefs);
 
+  /// Whether [row] holds its first card in focus. A phone has no focus, so
+  /// only a Modern card grows there, the way a tap grows it on Home.
+  bool focuses(HomeRow row) => !phone || isModern(row);
+
   bool isCarousel(HomeRow row) => isHomeRowCarousel(row, prefs);
 
   /// The Carousel panel for [row]'s first card, which is the one Home shows
@@ -980,7 +988,11 @@ class _HomeFrame {
               _useSeriesThumbs,
               1.0,
             );
-      return (url: wide ?? poster, width: height * 16 / 9, aspectRatio: 16 / 9);
+      // A phone caps a grown card at the row's width, the way Home does.
+      final width = phone
+          ? math.min(height * 16 / 9, size.width - rowLeftInset - 32)
+          : height * 16 / 9;
+      return (url: wide ?? poster, width: width, aspectRatio: width / height);
     }
     if (api == null) {
       final ar = rowModern
@@ -1038,8 +1050,10 @@ class _HomeFrame {
       ? maxImageHeight(row) * (MediaCard.focusScale - 1)
       : 0.0;
 
-  /// The room under the artwork for the labels, or Modern's details.
-  double metadataHeight(HomeRow row) {
+  /// The room under the artwork for the labels, or Modern's details. A phone
+  /// only keeps room for details in the [focused] row, as Home does for the
+  /// row a tap grew.
+  double metadataHeight(HomeRow row, bool focused) {
     if (isSquareRow(row)) return 56.0 * _metadataScale;
     if (!isModern(row)) return 50.0 * _metadataScale;
     if (isCarousel(row)) {
@@ -1047,6 +1061,8 @@ class _HomeFrame {
     }
     final budget = row.rowType == HomeRowType.libraryTiles
         ? 38.0
+        : phone && !focused
+        ? modernLabelBudget
         : modernMetadataBudget(prefs, UserPreferences.homeRowsRatings);
     return budget * _metadataScale;
   }
@@ -1163,7 +1179,7 @@ class _Rows extends StatelessWidget {
     var top = frame.focusTop;
     for (final (index, row) in rows.indexed) {
       if (top > frame.size.height) break;
-      final focused = index == 0 && !frame.phone;
+      final focused = index == 0 && frame.focuses(row);
       final rowWidget = _Row(
         row: row,
         title: localizeHomeRowTitle(
@@ -1174,7 +1190,7 @@ class _Rows extends StatelessWidget {
         frame: frame,
         focused: focused,
       );
-      final extent = _Row.extent(frame, row);
+      final extent = _Row.extent(frame, row, focused);
       // A TV moves the focused row's content down 20 when there's no
       // InfoArea, inside the room laid out for the row, so the row after it
       // doesn't move.
@@ -1263,13 +1279,13 @@ class _Row extends StatelessWidget {
       : row.subtitle;
 
   /// How tall Home lays [row] out, from _staticRowHeight.
-  static double extent(_HomeFrame frame, HomeRow row) {
+  static double extent(_HomeFrame frame, HomeRow row, bool focused) {
     final cards = _HomeFrame.isSquareRow(row)
         ? frame.maxImageHeight(row) +
-              frame.metadataHeight(row) +
+              frame.metadataHeight(row, focused) +
               frame.headroom(row)
         : frame.maxImageHeight(row) +
-              frame.metadataHeight(row) +
+              frame.metadataHeight(row, focused) +
               frame.classicPadding(row) +
               10 * frame.desktopScale +
               frame.headroom(row);
@@ -1293,14 +1309,17 @@ class _Row extends StatelessWidget {
 
   /// Home centres a Classic row's content in the room laid out for it, and
   /// sits a Modern one near the top of it.
-  static double _extraTop(_HomeFrame frame, HomeRow row) {
+  static double _extraTop(_HomeFrame frame, HomeRow row, bool focused) {
     final content =
         frame.maxImageHeight(row) +
-        frame.metadataHeight(row) +
+        frame.metadataHeight(row, focused) +
         frame.classicPadding(row) +
         frame.headroom(row) +
         34 * frame.desktopScale;
-    final spare = (extent(frame, row) - content).clamp(0.0, double.infinity);
+    final spare = (extent(frame, row, focused) - content).clamp(
+      0.0,
+      double.infinity,
+    );
     return frame.isModern(row) ? spare * 0.1 : spare / 2;
   }
 
@@ -1335,11 +1354,11 @@ class _Row extends StatelessWidget {
       x += image.width + spacing;
     }
     return SizedBox(
-      height: extent(frame, row),
+      height: extent(frame, row, focused),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: _extraTop(frame, row)),
+          SizedBox(height: _extraTop(frame, row, focused)),
           Padding(
             padding: EdgeInsetsDirectional.fromSTEB(
               16,
