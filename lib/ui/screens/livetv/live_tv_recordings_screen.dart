@@ -366,6 +366,8 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
           ..._vm.movieRecordings,
           ..._vm.sportsRecordings,
           ..._vm.kidsRecordings,
+          // Can hold older recordings past the other rows' limits.
+          if (_mine != null && !_mineOnly) ..._vm.myRecordings,
         ])
           item.id,
       }.length;
