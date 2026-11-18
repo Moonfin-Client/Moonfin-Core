@@ -513,10 +513,10 @@ final class DlnaController: NSObject {
                 )
             } catch let error as URLError where error.code == .timedOut && action == "Play" {
                 // An LG playing HLS stays TRANSITIONING and never answers
-                // Play, though it plays. A renderer that took the Play is
-                // playing or on its way there.
+                // Play, though it plays. Its LG_TRANSITIONING is a stream it
+                // couldn't open, which stays a failure.
                 let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
-                if state.contains("PLAYING") || state.contains("TRANSITIONING") { return "" }
+                if state == "PLAYING" || state == "TRANSITIONING" { return "" }
                 throw error
             }
         }

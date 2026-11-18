@@ -532,10 +532,10 @@ class DlnaController(private val context: Context) {
         } catch (e: SocketTimeoutException) {
             if (action != "Play") throw e
             // An LG playing HLS stays TRANSITIONING and never answers Play,
-            // though it plays. A renderer that took the Play is playing or
-            // on its way there.
+            // though it plays. Its LG_TRANSITIONING is a stream it couldn't
+            // open, which stays a failure.
             val state = runCatching { queryTransportState(controlUrl) }.getOrDefault("")
-            if ("PLAYING" in state || "TRANSITIONING" in state) return ""
+            if (state == "PLAYING" || state == "TRANSITIONING") return ""
             throw e
         }
     }
