@@ -286,6 +286,8 @@ class LogService extends ChangeNotifier {
       ..writeln('Device: ${_deviceInfo.name} (${_deviceInfo.id})')
       ..writeln('Entries: ${_entries.length - start}')
       ..writeln('Platform: ${defaultTargetPlatform.name}');
+    final arch = PlatformDetection.cpuArch;
+    if (arch != null) buffer.writeln('Architecture: $arch');
     final renderer = PlatformDetection.renderer;
     if (renderer != null) buffer.writeln('Renderer: $renderer');
     final uptime = PlatformDetection.systemUptime;

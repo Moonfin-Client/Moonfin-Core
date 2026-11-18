@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -336,6 +339,26 @@ void main() {
         contains('Renderer: Impeller (auto, GPU Mali-G31)'),
       );
     });
+
+    test(
+      'names the CPU architecture on Windows and Linux only',
+      () async {
+        final logs = await _service(loggingEnabled: true);
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        expect(logs.exportText(), isNot(contains('Architecture:')));
+
+        debugDefaultTargetPlatformOverride = Platform.isWindows
+            ? TargetPlatform.windows
+            : TargetPlatform.linux;
+        expect(
+          logs.exportText(),
+          matches(RegExp(r'Architecture: (x64|arm64)')),
+        );
+      },
+      skip: !Platform.isWindows && !Platform.isLinux,
+    );
 
     test('can be bounded to the newest entries', () async {
       final logs = await _service(loggingEnabled: true);
