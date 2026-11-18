@@ -79,6 +79,10 @@ class DlnaProvider
   /// The cast on the renderer, for a seek its stream can't do itself.
   _DlnaCast? _cast;
 
+  /// Bumped by each cast request and by Stop, so a request that one of them
+  /// overtook while it waited leaves the renderer and the controls alone.
+  int _castGeneration = 0;
+
   @override
   CastServerPlayback? takeServerPlayback() {
     final playback = _serverPlayback;
@@ -136,6 +140,13 @@ class DlnaProvider
     // cast is back if this one can't start.
     final previous = _cast;
     _cast = null;
+    final generation = ++_castGeneration;
+    // The cast before is back when this one can't start, unless Stop or a
+    // newer cast came in meanwhile.
+    void restorePrevious() {
+      if (generation != _castGeneration) return;
+      _cast = previous != null && !previous.stopped ? previous : null;
+    }
     final resolver = _resolverForClient(client);
     final silo = client.serverType == ServerType.silo;
     final StreamResolutionResult resolution;
@@ -153,10 +164,11 @@ class DlnaProvider
         enableDirectStream: !hasExplicitIndices,
       );
     } catch (_) {
-      if (_cast == null && previous != null && !previous.stopped) {
-        _cast = previous;
-      }
+      restorePrevious();
       rethrow;
+    }
+    if (generation != _castGeneration) {
+      throw StateError('DLNA cast was stopped or replaced before it started');
     }
     _cast = _DlnaCast(
       target: target,
@@ -170,14 +182,32 @@ class DlnaProvider
     );
     final cast = _cast!;
 
-    await _send(
-      target,
-      item,
-      resolution,
-      startPositionTicks: resolution.seeksThroughServer
-          ? null
-          : startPositionTicks,
-    );
+    try {
+      await _send(
+        target,
+        item,
+        resolution,
+        startPositionTicks: resolution.seeksThroughServer
+            ? null
+            : startPositionTicks,
+      );
+    } catch (_) {
+      // The controls and the session reports still describe the cast before.
+      if (identical(_cast, cast)) {
+        _cast = null;
+        restorePrevious();
+      }
+      rethrow;
+    }
+    if (cast.stopped) {
+      // A stop that crossed the send: the renderer may have started it.
+      if (_cast == null) {
+        try {
+          await _native.stopDlna();
+        } catch (_) {}
+      }
+      throw StateError('DLNA cast was stopped before it started');
+    }
     _serverPlayback = castNeedsSessionReports(client)
         ? CastServerPlayback(
             service: siloPluginFor(client).createPlaySessionService(),
@@ -229,7 +259,8 @@ class DlnaProvider
     if (!replanner.canReplan(cast.resolution)) return false;
     cast
       ..seekTarget = positionTicks
-      ..seekRunning = true;
+      ..seekRunning = true
+      ..pauseWanted = false;
     try {
       int? served;
       while (identical(_cast, cast) && cast.seekTarget != served) {
@@ -262,9 +293,18 @@ class DlnaProvider
           startPositionTicks: next.seeksThroughServer ? null : target,
         );
         // A stop that crossed the send: the renderer may have started it.
+        // Unless another cast has the renderer now.
         if (cast.stopped) {
+          if (_cast == null) {
+            try {
+              await _native.stopDlna();
+            } catch (_) {}
+          }
+        } else if (cast.pauseWanted && identical(_cast, cast)) {
+          // Paused while Silo answered: the new stream starts playing.
+          cast.pauseWanted = false;
           try {
-            await _native.stopDlna();
+            await _native.pauseDlna();
           } catch (_) {}
         }
       }
@@ -279,6 +319,8 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
+    final cast = _cast;
+    if (cast != null && cast.seekRunning) cast.pauseWanted = true;
     await _native.pauseDlna();
   }
 
@@ -290,7 +332,10 @@ class DlnaProvider
     // The server has dropped a stream paused this long (by the phone or the
     // TV's remote): start a new one at the position instead.
     // A seek being served starts its stream playing.
-    if (_cast?.seekRunning ?? false) return;
+    if (_cast?.seekRunning ?? false) {
+      _cast!.pauseWanted = false;
+      return;
+    }
     final idle = _cast?.resolution.reopenAfterPause;
     final pausedSince = _native.pausedSince;
     if (idle != null &&
@@ -316,9 +361,11 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
-    // Cleared first, so a seek Silo is still answering doesn't recast.
+    // Cleared first, so a seek Silo is still answering doesn't recast, and a
+    // cast still being resolved doesn't start.
     _cast?.stopped = true;
     _cast = null;
+    _castGeneration++;
     await _native.stopDlna();
   }
 
@@ -364,6 +411,10 @@ class _DlnaCast {
   /// served.
   int? seekTarget;
   bool seekRunning = false;
+
+  /// Whether the viewer paused while a seek was being served, which the
+  /// new stream then takes.
+  bool pauseWanted = false;
 
   /// Whether the viewer stopped this cast.
   bool stopped = false;
