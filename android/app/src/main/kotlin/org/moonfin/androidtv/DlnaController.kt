@@ -11,6 +11,7 @@ import java.net.DatagramPacket
 import java.net.HttpURLConnection
 import java.net.InetAddress
 import java.net.MulticastSocket
+import java.net.SocketTimeoutException
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 import org.xml.sax.InputSource
@@ -470,7 +471,21 @@ class DlnaController(private val context: Context) {
             // LG_TRANSITIONING by a cast that never started) refuses a new
             // one with 701 until it is stopped.
             runCatching { sendSoapOnce(controlUrl, "Stop", "<InstanceID>0</InstanceID>") }
+            // It takes a moment to leave TRANSITIONING after Stop.
+            for (attempt in 0 until 12) {
+                val state = runCatching { queryTransportState(controlUrl) }.getOrDefault("")
+                if (!state.contains("TRANSITIONING")) break
+                Thread.sleep(250)
+            }
             return sendSoapOnce(controlUrl, action, innerBody, serviceUrn, timeoutMs)
+        } catch (e: SocketTimeoutException) {
+            if (action != "Play") throw e
+            // An LG playing HLS stays TRANSITIONING and never answers Play,
+            // though it plays. A renderer that took the Play is playing or
+            // on its way there.
+            val state = runCatching { queryTransportState(controlUrl) }.getOrDefault("")
+            if ("PLAYING" in state || "TRANSITIONING" in state) return ""
+            throw e
         }
     }
 

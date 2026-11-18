@@ -456,12 +456,25 @@ final class DlnaController: NSObject {
                     action: "Stop",
                     innerBody: "<InstanceID>0</InstanceID>"
                 )
+                // It takes a moment to leave TRANSITIONING after Stop.
+                for _ in 0..<12 {
+                    let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
+                    if !state.contains("TRANSITIONING") { break }
+                    Thread.sleep(forTimeInterval: 0.25)
+                }
                 return try sendSoapOnce(
                     controlUrl: controlUrl,
                     action: action,
                     innerBody: innerBody,
                     serviceURN: serviceURN
                 )
+            } catch let error as URLError where error.code == .timedOut && action == "Play" {
+                // An LG playing HLS stays TRANSITIONING and never answers
+                // Play, though it plays. A renderer that took the Play is
+                // playing or on its way there.
+                let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
+                if state.contains("PLAYING") || state.contains("TRANSITIONING") { return "" }
+                throw error
             }
         }
 
