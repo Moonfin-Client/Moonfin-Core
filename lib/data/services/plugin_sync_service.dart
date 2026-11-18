@@ -1126,11 +1126,10 @@ class PluginSyncService extends ChangeNotifier {
     } catch (_) {}
   }
 
-  /// Triggers Moonbase to dispatch an immediate test notification to the signed-in
-  /// user via both in-app SSE and background push (FCM / relay).
-  Future<({bool success, bool pushEnabled, int devicesCount})?> sendTestNotification(
-    MediaServerClient client,
-  ) async {
+  /// Asks the plugin to send the signed-in user a test notification, in-app and
+  /// as a push.
+  Future<({bool success, bool pushEnabled, int devicesCount})?>
+  sendTestNotification(MediaServerClient client) async {
     if (!_pluginAvailable || !client.features.supportsPushNotifications) {
       return null;
     }
@@ -1138,20 +1137,18 @@ class PluginSyncService extends ChangeNotifier {
     try {
       final ep = await moonbaseEndpoint(client, _dio);
       if (ep == null) return null;
-      final headers = ep.headers;
-
       final response = await _dio.post(
         '${ep.base}/Moonfin/Notifications/Test',
-        options: Options(
-          headers: {...headers, 'Content-Type': 'application/json'},
-        ),
+        options: Options(headers: ep.headers),
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
         return (
           success: data['success'] == true,
           pushEnabled: data['pushEnabled'] == true,
-          devicesCount: data['devicesCount'] is int ? data['devicesCount'] as int : 0,
+          devicesCount: data['devicesCount'] is int
+              ? data['devicesCount'] as int
+              : 0,
         );
       }
       return null;

@@ -35,8 +35,11 @@ class PushMessagingService extends ChangeNotifier {
   /// True when this device holds a registered push token with the active server.
   bool get isRegistered => _lastRegisteredToken != null;
 
-  /// The active token registered with the server, if any.
-  String? get lastRegisteredToken => _lastRegisteredToken;
+  void _setRegisteredToken(String? token) {
+    if (token == _lastRegisteredToken) return;
+    _lastRegisteredToken = token;
+    notifyListeners();
+  }
 
   /// Set when a registration attempt was skipped or failed because the plugin
   /// wasn't reachable or couldn't push yet, so the availability listener can
@@ -108,7 +111,7 @@ class PushMessagingService extends ChangeNotifier {
   /// Registers the current FCM token after login, starting Firebase first if
   /// the plugin can deliver push. Otherwise it waits for the availability
   /// listener, which retries once a server can.
-  Future<void> registerWithCurrentToken({bool force = false}) async {
+  Future<void> registerWithCurrentToken() async {
     if (!PlatformDetection.isMobile) return;
     _attachAvailabilityListener();
     final sync = GetIt.instance.isRegistered<PluginSyncService>()
@@ -126,14 +129,12 @@ class PushMessagingService extends ChangeNotifier {
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
       // A server switch reuses the same FCM token, so drop the dedupe and let
       // the new server get its own registration.
-      final resetChanged = _lastRegisteredToken != null;
-      _lastRegisteredToken = null;
-      if (resetChanged) notifyListeners();
+      _setRegisteredToken(null);
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
       }
-      await _registerToken(token, force: force);
+      await _registerToken(token);
     } catch (e) {
       debugPrint('PushMessagingService: register failed: $e');
       _pendingRegistration = true;
@@ -156,13 +157,13 @@ class PushMessagingService extends ChangeNotifier {
     });
   }
 
-  Future<void> _registerToken(String? token, {bool force = false}) async {
+  Future<void> _registerToken(String? token) async {
     if (!PlatformDetection.isMobile) return;
     if (token == null || token.isEmpty) {
       debugPrint('PushMessagingService: skip register, no FCM token');
       return;
     }
-    if (!force && token == _lastRegisteredToken) return;
+    if (token == _lastRegisteredToken) return;
 
     final client = GetIt.instance.isRegistered<MediaServerClient>()
         ? GetIt.instance<MediaServerClient>()
@@ -193,9 +194,7 @@ class PushMessagingService extends ChangeNotifier {
       return;
     }
     _pendingRegistration = false;
-    final registeredChanged = _lastRegisteredToken != token;
-    _lastRegisteredToken = token;
-    if (registeredChanged) notifyListeners();
+    _setRegisteredToken(token);
   }
 
   /// Unregister this device with the plugin, e.g. on logout. With
@@ -213,9 +212,7 @@ class PushMessagingService extends ChangeNotifier {
         deviceId: _deviceId(_lastRegisteredToken),
       );
     }
-    final unregisterChanged = _lastRegisteredToken != null;
-    _lastRegisteredToken = null;
-    if (unregisterChanged) notifyListeners();
+    _setRegisteredToken(null);
 
     final started = _startFuture;
     if (deleteToken && started != null) {

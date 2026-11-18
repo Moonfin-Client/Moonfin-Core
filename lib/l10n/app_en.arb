@@ -7613,10 +7613,6 @@
   "@seerrTestNotificationDesc": {
     "description": "Subtitle for the send test notification button"
   },
-  "seerrTestNotificationSent": "Test Notification Sent",
-  "@seerrTestNotificationSent": {
-    "description": "Title shown when a test notification was successfully triggered"
-  },
   "seerrTestNotificationSentBody": "Dispatched to {count, plural, =1{1 device} other{{count} devices}}.",
   "@seerrTestNotificationSentBody": {
     "description": "Body message shown when a test notification is sent to registered devices",
@@ -7638,14 +7634,6 @@
   "seerrPushServerStatus": "Server Push",
   "@seerrPushServerStatus": {
     "description": "Label for the server push delivery status"
-  },
-  "seerrPushServerEnabled": "Enabled",
-  "@seerrPushServerEnabled": {
-    "description": "Status indicating server push delivery is enabled"
-  },
-  "seerrPushServerDisabled": "Unavailable",
-  "@seerrPushServerDisabled": {
-    "description": "Status indicating server push delivery is disabled or unavailable"
   },
   "seerrPushDeviceStatus": "Device Push",
   "@seerrPushDeviceStatus": {

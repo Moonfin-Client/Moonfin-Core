@@ -51,6 +51,11 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   bool _statusLoading = false;
   bool _canManageRequests = false;
   bool _sendingTestNotification = false;
+  final _push =
+      PlatformDetection.isMobile &&
+          GetIt.instance.isRegistered<PushMessagingService>()
+      ? GetIt.instance<PushMessagingService>()
+      : null;
   late List<SeerrRowConfig> _rows;
   final _focusNodes = <FocusNode>[];
 
@@ -79,9 +84,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     }
     _rebuildFocusNodes();
     _syncService.addListener(_onSyncStateChanged);
-    if (GetIt.instance.isRegistered<PushMessagingService>()) {
-      GetIt.instance<PushMessagingService>().addListener(_onPushStateChanged);
-    }
+    _push?.addListener(_onPushStateChanged);
     _loadSeerrStatus(showLoading: true);
 
     _enableSeerrFocusNode.onKeyEvent = (node, event) {
@@ -120,9 +123,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   @override
   void dispose() {
     _syncService.removeListener(_onSyncStateChanged);
-    if (GetIt.instance.isRegistered<PushMessagingService>()) {
-      GetIt.instance<PushMessagingService>().removeListener(_onPushStateChanged);
-    }
+    _push?.removeListener(_onPushStateChanged);
     for (final n in _focusNodes) {
       n.dispose();
     }
@@ -338,15 +339,13 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       final result = await _syncService.sendTestNotification(client);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      final messenger = ScaffoldMessenger.maybeOf(context);
-      if (result != null && result.success) {
-        final message = result.pushEnabled
-            ? l10n.seerrTestNotificationSentBody(result.devicesCount)
-            : l10n.seerrTestNotificationPushDisabled;
-        messenger?.showSnackBar(SnackBar(content: Text(message)));
-      } else {
-        messenger?.showSnackBar(SnackBar(content: Text(l10n.seerrTestNotificationFailed)));
-      }
+      final message = result == null || !result.success
+          ? l10n.seerrTestNotificationFailed
+          : result.pushEnabled
+          ? l10n.seerrTestNotificationSentBody(result.devicesCount)
+          : l10n.seerrTestNotificationPushDisabled;
+      ScaffoldMessenger.maybeOf(context)
+          ?.showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) {
         setState(() => _sendingTestNotification = false);
@@ -703,70 +702,70 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
             value: _seerrPrefs.notifyOnNewMedia,
             onChanged: _setNotifyOnNewMedia,
           ),
-          TvFocusHighlight(
-            builder: (context, focused) => ListTile(
-              leading: Icon(
-                Icons.notification_add_outlined,
-                color: focused ? AppColors.black.withValues(alpha: 0.54) : null,
-              ),
-              title: Text(
-                l10n.seerrTestNotification,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: focused
-                      ? AppColors.black.withValues(alpha: 0.87)
-                      : AppColorScheme.onSurface,
-                ),
-              ),
-              subtitle: Text(
-                l10n.seerrTestNotificationDesc,
-                style: TextStyle(
-                  fontSize: 12,
+          if (GetIt.instance.isRegistered<MediaServerClient>() &&
+              GetIt.instance<MediaServerClient>()
+                  .features
+                  .supportsPushNotifications) ...[
+            TvFocusHighlight(
+              builder: (context, focused) => ListTile(
+                leading: Icon(
+                  Icons.notification_add_outlined,
                   color: focused
                       ? AppColors.black.withValues(alpha: 0.54)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                      : null,
                 ),
-              ),
-              trailing: _sendingTestNotification
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : null,
-              onTap: _sendingTestNotification ? null : _sendTestNotification,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Wrap(
-              spacing: 16,
-              runSpacing: 4,
-              children: [
-                Text(
-                  '${l10n.seerrPushServerStatus}: ${_syncService.pushSupported ? l10n.seerrPushServerEnabled : l10n.seerrPushServerDisabled}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: _syncService.pushSupported
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.outline,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-                if (PlatformDetection.isMobile)
-                  Text(
-                    '${l10n.seerrPushDeviceStatus}: ${GetIt.instance.isRegistered<PushMessagingService>() && GetIt.instance<PushMessagingService>().isRegistered ? l10n.seerrPushDeviceRegistered : l10n.seerrPushDeviceNotRegistered}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: GetIt.instance.isRegistered<PushMessagingService>() &&
-                                  GetIt.instance<PushMessagingService>().isRegistered
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.outline,
-                          fontWeight: FontWeight.w500,
-                        ),
+                title: Text(
+                  l10n.seerrTestNotification,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.87)
+                        : AppColorScheme.onSurface,
                   ),
-              ],
+                ),
+                subtitle: Text(
+                  l10n.seerrTestNotificationDesc,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                trailing: _sendingTestNotification
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : null,
+                onTap: _sendingTestNotification ? null : _sendTestNotification,
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Wrap(
+                spacing: 16,
+                runSpacing: 4,
+                children: [
+                  _buildPushStatus(
+                    l10n.seerrPushServerStatus,
+                    _syncService.pushSupported,
+                    l10n.enabled,
+                    l10n.unavailable,
+                  ),
+                  if (_push != null)
+                    _buildPushStatus(
+                      l10n.seerrPushDeviceStatus,
+                      _push.isRegistered,
+                      l10n.seerrPushDeviceRegistered,
+                      l10n.seerrPushDeviceNotRegistered,
+                    ),
+                ],
+              ),
+            ),
+          ],
         ],
         if (showSeerrSettings)
           Padding(
@@ -797,6 +796,22 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildPushStatus(
+    String label,
+    bool on,
+    String onText,
+    String offText,
+  ) {
+    final theme = Theme.of(context);
+    return Text(
+      '$label: ${on ? onText : offText}',
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: on ? theme.colorScheme.primary : theme.colorScheme.outline,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 

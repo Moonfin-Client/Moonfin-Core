@@ -19,11 +19,6 @@ class _MockSessionRepository extends Mock implements SessionRepository {}
 
 class _RecordingAdapter implements HttpClientAdapter {
   final List<String> requests = [];
-  Map<String, dynamic> testEndpointResponse = {
-    'success': true,
-    'pushEnabled': true,
-    'devicesCount': 2,
-  };
   bool failTestEndpoint = false;
 
   @override
@@ -37,7 +32,11 @@ class _RecordingAdapter implements HttpClientAdapter {
 
     if (path.endsWith('/Moonfin/Ping')) {
       return ResponseBody.fromString(
-        jsonEncode({'installed': true, 'settingsSyncEnabled': true, 'pushSupported': true}),
+        jsonEncode({
+          'installed': true,
+          'settingsSyncEnabled': true,
+          'pushSupported': true,
+        }),
         200,
         headers: {
           Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -50,7 +49,7 @@ class _RecordingAdapter implements HttpClientAdapter {
         return ResponseBody.fromString('{"error":"failed"}', 500);
       }
       return ResponseBody.fromString(
-        jsonEncode(testEndpointResponse),
+        jsonEncode({'success': true, 'pushEnabled': true, 'devicesCount': 2}),
         200,
         headers: {
           Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -58,9 +57,13 @@ class _RecordingAdapter implements HttpClientAdapter {
       );
     }
 
-    return ResponseBody.fromString('{}', 200, headers: {
-      Headers.contentTypeHeader: [Headers.jsonContentType],
-    });
+    return ResponseBody.fromString(
+      '{}',
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
   }
 
   @override
@@ -115,17 +118,17 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  test('sendTestNotification posts to test endpoint and returns result', () async {
-    final result = await service.sendTestNotification(client);
-    expect(result, isNotNull);
-    expect(result!.success, isTrue);
-    expect(result.pushEnabled, isTrue);
-    expect(result.devicesCount, equals(2));
-    expect(
-      adapter.requests,
-      contains('POST /Moonfin/Notifications/Test'),
-    );
-  });
+  test(
+    'sendTestNotification posts to test endpoint and returns result',
+    () async {
+      final result = await service.sendTestNotification(client);
+      expect(result, isNotNull);
+      expect(result!.success, isTrue);
+      expect(result.pushEnabled, isTrue);
+      expect(result.devicesCount, equals(2));
+      expect(adapter.requests, contains('POST /Moonfin/Notifications/Test'));
+    },
+  );
 
   test('sendTestNotification returns null on error', () async {
     adapter.failTestEndpoint = true;
