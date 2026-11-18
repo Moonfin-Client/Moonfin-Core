@@ -571,8 +571,14 @@ class _MediaBarState extends State<MediaBar>
         state is MediaBarReady &&
         state.items.isNotEmpty) {
       _startAutoAdvance();
-      if (_activeTrailerItemId == null && _currentIndex < state.items.length) {
-        _scheduleTrailerPreview(state.items[_currentIndex]);
+      final current = state.items.elementAtOrNull(_currentIndex);
+      // A new set can put another title under a trailer that is still playing.
+      if (_activeTrailerItemId != null &&
+          _activeTrailerItemId != current?.itemId) {
+        _cancelTrailerPreview(retainYouTubePlayer: true);
+      }
+      if (_activeTrailerItemId == null && current != null) {
+        _scheduleTrailerPreview(current);
       }
       _syncMakdBackdropWithCurrentSlide();
     }
