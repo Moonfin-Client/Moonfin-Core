@@ -36,6 +36,48 @@ class _Capture extends Interceptor {
 }
 
 void main() {
+  test(
+    'a missing groups endpoint is remembered only for that server and user',
+    () async {
+      final dio = Dio(BaseOptions(baseUrl: 'https://one.test'));
+      final statuses = [404, 503, 200, 200];
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (request, handler) {
+            final status = statuses.removeAt(0);
+            final response = Response(
+              requestOptions: request,
+              statusCode: status,
+              data: {'supported': false, 'channels': []},
+            );
+            if (status == 200) {
+              handler.resolve(response);
+            } else {
+              handler.reject(
+                DioException.badResponse(
+                  statusCode: status,
+                  requestOptions: request,
+                  response: response,
+                ),
+              );
+            }
+          },
+        ),
+      );
+      final api = JellyfinLiveTvApi(dio);
+      Future<bool> groupsAvailable(String userId) async =>
+          (await api.getChannelGroups(userId: userId)).endpointAvailable;
+
+      expect(await groupsAvailable('one'), isFalse);
+      expect(await groupsAvailable('one'), isFalse);
+      await expectLater(groupsAvailable('two'), throwsA(isA<DioException>()));
+      expect(await groupsAvailable('two'), isTrue);
+      dio.options.baseUrl = 'https://two.test';
+      expect(await groupsAvailable('one'), isTrue);
+      expect(statuses, isEmpty);
+    },
+  );
+
   group('JellyfinLiveTvApi.getGuide /LiveTv/Programs transport', () {
     test('small channel list → GET with comma-joined ChannelIds string', () async {
       final cap = _Capture();

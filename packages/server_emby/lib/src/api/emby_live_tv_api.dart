@@ -34,7 +34,7 @@ class EmbyLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
           item['Id'] is! String ||
           (item['Id'] as String).isEmpty ||
           item['Name'] is! String) {
-        throw const FormatException('Invalid Emby Live TV channel');
+        continue;
       }
       channels.add(item);
       final tagged = item['TagItems'];

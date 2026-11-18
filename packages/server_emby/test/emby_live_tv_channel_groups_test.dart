@@ -6,7 +6,7 @@ import 'admin_fake.dart';
 
 void main() {
   test(
-    'Emby reads native tags and rejects invalid or denied lineups',
+    'Emby skips malformed channel rows and rejects invalid or denied lineups',
     () async {
       final fake = AdminFake({
         '/LiveTv/Channels': {
@@ -20,6 +20,10 @@ void main() {
                 {'Name': 'US|SPORTS'},
               ],
             },
+            null,
+            {'Name': 'Missing ID'},
+            {'Id': '', 'Name': 'Empty ID'},
+            {'Id': 'bad-name', 'Name': 123, 'Tags': ['Bad group']},
             {
               'Id': 'two',
               'Name': 'News',
@@ -34,7 +38,7 @@ void main() {
       expect(fake.requests, hasLength(1));
       expect(fake.last.queryParameters['UserId'], 'viewer');
       expect(fake.last.queryParameters['Fields'], 'ImageTags,UserData,Tags');
-      expect(lineup.channels, hasLength(3));
+      expect(lineup.channels!.map((row) => row['Id']), ['one', 'two', 'three']);
       expect(lineup.groupsByChannelId, {
         'one': {'US | SPORTS', 'US|SPORTS'},
         'two': {'CA | NEWS'},
