@@ -13,6 +13,7 @@ import java.net.InetAddress
 import java.net.MulticastSocket
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
+import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import java.io.StringReader
 import java.net.NetworkInterface
@@ -37,9 +38,14 @@ class DlnaController(private val context: Context) {
     private val xmlFactory: DocumentBuilderFactory by lazy {
         DocumentBuilderFactory.newInstance().apply {
             isNamespaceAware = true
-            setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-            setFeature("http://xml.org/sax/features/external-general-entities", false)
-            setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+            // Android's parser rejects all three with ParserConfigurationException,
+            // which failed every DLNA parse there. It never loads external
+            // entities anyway, and parseXml refuses a DOCTYPE itself.
+            listOf(
+                "http://apache.org/xml/features/disallow-doctype-decl" to true,
+                "http://xml.org/sax/features/external-general-entities" to false,
+                "http://xml.org/sax/features/external-parameter-entities" to false,
+            ).forEach { (feature, value) -> runCatching { setFeature(feature, value) } }
         }
     }
 
@@ -421,8 +427,7 @@ class DlnaController(private val context: Context) {
             val xml = conn.inputStream.bufferedReader().use { it.readText() }
             conn.disconnect()
 
-            val builder = xmlFactory.newDocumentBuilder()
-            val doc = builder.parse(InputSource(StringReader(xml)))
+            val doc = parseXml(xml)
 
             val friendlyName = doc.getElementsByTagName("friendlyName").item(0)?.textContent ?: "DLNA Device"
             val modelName = doc.getElementsByTagName("modelName").item(0)?.textContent ?: ""
@@ -624,9 +629,14 @@ class DlnaController(private val context: Context) {
     }
 
     private fun parseXmlElement(xml: String, elementName: String): String? {
-        val builder = xmlFactory.newDocumentBuilder()
-        val doc = builder.parse(InputSource(StringReader(xml)))
-        return doc.getElementsByTagName(elementName).item(0)?.textContent
+        return parseXml(xml).getElementsByTagName(elementName).item(0)?.textContent
+    }
+
+    // A renderer has no reason to send a DTD, and refusing one rules out
+    // entity expansion on parsers that ignore the factory's features.
+    private fun parseXml(xml: String): Document {
+        require(!xml.contains("<!DOCTYPE", ignoreCase = true)) { "XML with a DOCTYPE" }
+        return xmlFactory.newDocumentBuilder().parse(InputSource(StringReader(xml)))
     }
 
     private fun parseDlnaTime(time: String): Long {
@@ -813,11 +823,10 @@ class DlnaController(private val context: Context) {
 
     private fun handleGenaNotify(body: String) {
         try {
-            val builder = xmlFactory.newDocumentBuilder()
-            val outerDoc = builder.parse(InputSource(StringReader(body)))
+            val outerDoc = parseXml(body)
             val lastChangeText = outerDoc.getElementsByTagName("LastChange")
                 .item(0)?.textContent?.trim() ?: return
-            val innerDoc = builder.parse(InputSource(StringReader(lastChangeText)))
+            val innerDoc = parseXml(lastChangeText)
             val state = innerDoc.getElementsByTagName("TransportState")
                 .item(0)?.attributes?.getNamedItem("val")?.textContent ?: return
             val relTimeStr = innerDoc.getElementsByTagName("RelativeTimePosition")
