@@ -46,6 +46,7 @@ abstract class ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
   });
 
   /// The values a library actually holds for the facet filters, so the picker

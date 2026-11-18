@@ -80,6 +80,7 @@ class _RecordingItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
   }) async {
     this.filters = filters;
     this.seriesStatus = seriesStatus;
