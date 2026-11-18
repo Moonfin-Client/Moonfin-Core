@@ -3544,16 +3544,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         (PlatformDetection.isTV && key == LogicalKeyboardKey.mediaPause);
   }
 
-  bool _canUseTvTemporarySpeedHold() => _canUseTemporarySpeed();
-
   // A dialog that takes focus mid-hold never delivers the key-up.
   void _onOverlayFocusChanged() {
     if (_overlayFocus.hasFocus || _tvTemporarySpeedHoldKey == null) return;
-    if (mounted) {
-      setState(_cancelTemporarySpeed);
-    } else {
-      _cancelTemporarySpeed();
-    }
+    setState(_cancelTemporarySpeed);
   }
 
   bool _canUseTemporarySpeed() {
@@ -3579,7 +3573,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // A touch hold already owns the speed and its restore value.
     if (_temporarySpeedActive) return KeyEventResult.handled;
 
-    if (!_canUseTvTemporarySpeedHold()) {
+    if (!_canUseTemporarySpeed()) {
       return KeyEventResult.ignored;
     }
 
@@ -3611,17 +3605,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     if (key == LogicalKeyboardKey.mediaPause) {
       _manager.pause();
+      _showControls();
+      _focusTvPrimaryButton();
     } else {
       _togglePlayPause();
+      _revealControlsAfterTransport();
     }
-    _showControls();
-    _focusTvPrimaryButton();
     return KeyEventResult.handled;
   }
 
   Future<void> _activateTvTemporarySpeedHold(LogicalKeyboardKey key) async {
     if (!mounted || _tvTemporarySpeedHoldKey != key) return;
-    if (!_canUseTvTemporarySpeedHold()) return;
+    if (!_canUseTemporarySpeed()) return;
     await _startTemporarySpeed();
   }
 
