@@ -142,6 +142,38 @@ void main() {
     },
   );
 
+  test('a cast receiver goes by the stream reference alone', () async {
+    Future<String> urlFor(String streamUrl) async {
+      final server = _server(_decisionWithStream(streamUrl));
+      final result =
+          await SiloPlugin(
+            siloTestClient(server),
+            environment: () => const SiloPlaybackEnvironment(
+              formFactor: 'tv',
+              platform: 'dlna',
+              traits: SiloPlayerTraits.castReceiver,
+            ),
+          ).createStreamResolver().resolve(
+            siloTestItem('silo/watch_movie.json'),
+            deviceProfile: _profile,
+          );
+      return result.streamUrl;
+    }
+
+    expect(
+      await urlFor(
+        '/api/v2/playback/transcode/$_session/master.m3u8?st=c2lnbmVk',
+      ),
+      'https://silo.example/api/v2/playback/transcode/$_session/master.m3u8'
+      '?st=c2lnbmVk',
+    );
+    // Without a reference it still needs the token.
+    expect(
+      await urlFor('/api/v2/stream/$_session'),
+      'https://silo.example/api/v2/stream/$_session?token=access-1',
+    );
+  });
+
   test('a cast receiver gets a nearly fresh token', () async {
     Future<int> refreshesWith(Duration left, SiloPlayerTraits traits) async {
       final server = _server(
@@ -326,6 +358,29 @@ void main() {
           reason: url,
         );
       }
+    });
+
+    test('none for a receiver when the URL carries a reference', () {
+      for (final url in [
+        '$base/api/v2/playback/transcode/s/master.m3u8?st=x',
+        '$base/api/v2/stream/s/subtitles/0.vtt?st=x',
+      ]) {
+        expect(
+          siloAuthorizeUrl(url, base, 't', allMedia: true, referenceOnly: true),
+          url,
+          reason: url,
+        );
+      }
+      expect(
+        siloAuthorizeUrl(
+          '$base/api/v2/stream/s',
+          base,
+          't',
+          allMedia: true,
+          referenceOnly: true,
+        ),
+        '$base/api/v2/stream/s?token=t',
+      );
     });
 
     test('a URL that has one keeps it; the token is encoded', () {

@@ -77,14 +77,21 @@ bool siloIsServerUrl(String url, String baseUrl) {
 /// With [allMedia] (a player that sends no headers at all) Silo's HLS
 /// routes (`/api/v2/playback/`) get it too: Silo copies the manifest's query
 /// onto every playlist and segment URI, so the token reaches each request.
+///
+/// With [referenceOnly] (a cast receiver) a URL that carries the plan's
+/// signed stream reference (`st`) gets none: Silo accepts `st` alone on
+/// these routes, the token stays off the receiver, and the URL stays short
+/// enough for a DLNA renderer that cuts it at about 1024 characters.
 String siloAuthorizeUrl(
   String url,
   String baseUrl,
   String accessToken, {
   bool allMedia = false,
+  bool referenceOnly = false,
 }) {
   if (accessToken.isEmpty || !siloIsServerUrl(url, baseUrl)) return url;
   final uri = Uri.parse(url);
+  if (referenceOnly && uri.queryParameters.containsKey('st')) return url;
   final media =
       uri.path.contains('/api/v2/stream/') ||
       (allMedia && uri.path.contains('/api/v2/playback/'));
@@ -203,7 +210,8 @@ const _warningReasons = {
 ///   headers on every request, `stream.headers` on top, and an
 ///   `/api/v2/stream/` URL also carries `token=` ([siloAuthorizeUrl]). With
 ///   [tokenInEveryUrl] (a player that sends no headers) the HLS URL carries
-///   it too.
+///   it too. With [referenceOnly] (a cast receiver) a URL that carries `st`
+///   gets no `token=`, sidecars included.
 StreamResolutionResult siloPlanToResolution({
   required Map<String, dynamic> plan,
   required String sessionId,
@@ -212,6 +220,7 @@ StreamResolutionResult siloPlanToResolution({
   bool directPlayRequested = true,
   SiloStreamAuth? auth,
   bool tokenInEveryUrl = false,
+  bool referenceOnly = false,
   int? requestedSubtitleStreamIndex,
 }) {
   final stream = (plan['stream'] as Map?)?.cast<String, dynamic>() ?? const {};
@@ -243,6 +252,7 @@ StreamResolutionResult siloPlanToResolution({
     source: mediaSource,
     baseUrl: baseUrl,
     accessToken: auth?.accessToken,
+    referenceOnly: referenceOnly,
     requestedStreamIndex: requestedSubtitleStreamIndex,
   );
   final offset = timeline['timeline_offset_seconds'];
@@ -256,6 +266,7 @@ StreamResolutionResult siloPlanToResolution({
           baseUrl,
           auth.accessToken,
           allMedia: tokenInEveryUrl,
+          referenceOnly: referenceOnly,
         );
 
   return StreamResolutionResult(

@@ -55,6 +55,7 @@ class SiloPlayerTraits {
     this.drawsAssStyling = true,
     this.loadsFontAttachments = true,
     this.sendsRequestHeaders = true,
+    this.authorizesByStreamReference = false,
   });
 
   /// The libmpv backend's traits (Windows, Linux): it decodes in software,
@@ -105,6 +106,7 @@ class SiloPlayerTraits {
   static const castReceiver = SiloPlayerTraits(
     sendsRequestHeaders: false,
     playsProgressive: false,
+    authorizesByStreamReference: true,
   );
 
   /// libmpv on Android (media_kit, the other engine there): as on the
@@ -142,6 +144,11 @@ class SiloPlayerTraits {
   /// that can't (a browser's media element, a cast receiver) gets the
   /// account's token in every media URL instead.
   final bool sendsRequestHeaders;
+
+  /// Plays by the plan URL's signed stream reference (`st`) alone, without
+  /// the account's token: a cast receiver, which shouldn't hold the token
+  /// and may cut a long URL (an LG TV over DLNA, at about 1024 characters).
+  final bool authorizesByStreamReference;
 }
 
 /// The capability half of a Silo playback start: `client_capabilities`, the
