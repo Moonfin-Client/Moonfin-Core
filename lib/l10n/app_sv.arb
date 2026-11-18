@@ -10756,5 +10756,393 @@
     "settingsSearchHint": "Sökinställningar",
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
+    },
+    "recordSeries": "Rekordserie",
+    "@recordSeries": {
+        "description": "Button label to record every showing of a live TV series"
+    },
+    "showPosterLabels": "Etiketter för affischer",
+    "@showPosterLabels": {
+        "description": "Setting that shows or hides the labels the server admin adds to posters"
+    },
+    "showPosterLabelsSubtitle": "Visa märkningarna på affischerna, till exempel 4K eller HDR.",
+    "@showPosterLabelsSubtitle": {
+        "description": "Subtitle of the Poster Labels setting"
+    },
+    "mixedRowsOnly": "Endast blandade rader",
+    "@mixedRowsOnly": {
+        "description": "Option: only show the label on rows holding both movies and series"
+    },
+    "loadingAnimation": "Laddningsanimation",
+    "@loadingAnimation": {
+        "description": "Setting title for custom loading animation"
+    },
+    "loadingAnimationDescription": "Anpassa de laddningsanimationer som används i hela Moonfin",
+    "@loadingAnimationDescription": {
+        "description": "Description for loading animation customization settings"
+    },
+    "loadingAnimationConfiguration": "Konfiguration av laddningsanimation",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "loadingAnimationImage": "Bild",
+    "@loadingAnimationImage": {
+        "description": "Title for loading animation image selection"
+    },
+    "loadingAnimationImageMoonfinLogo": "Moonfin logotypen",
+    "@loadingAnimationImageMoonfinLogo": {
+        "description": "Loading animation image option: Moonfin Logo"
+    },
+    "loadingAnimationImageSpinner": "Spinner",
+    "@loadingAnimationImageSpinner": {
+        "description": "Loading animation image option: Spinner"
+    },
+    "loadingAnimationImageRunner": "Löpare",
+    "@loadingAnimationImageRunner": {
+        "description": "Loading animation image option: Runner"
+    },
+    "loadingAnimationImageMoonPhases": "Månfaser",
+    "@loadingAnimationImageMoonPhases": {
+        "description": "Loading animation image option: Moon Phases"
+    },
+    "loadingAnimationImageMoonfinPhases": "Moonfin-faser",
+    "@loadingAnimationImageMoonfinPhases": {
+        "description": "Loading animation image option: Moonfin Phases in brand gradient"
+    },
+    "loadingAnimationImageNeonfinPhases": "Neonfins faser",
+    "@loadingAnimationImageNeonfinPhases": {
+        "description": "Loading animation image option: Neonfin Phases in neon colors"
+    },
+    "loadingAnimationSize": "Animationens storlek",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationPosition": "Animationsposition",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationPositionTopLeft": "Övre vänstra hörnet",
+    "@loadingAnimationPositionTopLeft": {
+        "description": "Loading animation position: Top-Left"
+    },
+    "loadingAnimationPositionTopCenter": "Övre mitten",
+    "@loadingAnimationPositionTopCenter": {
+        "description": "Loading animation position: Top-Center"
+    },
+    "loadingAnimationPositionTopRight": "Övre högra hörnet",
+    "@loadingAnimationPositionTopRight": {
+        "description": "Loading animation position: Top-Right"
+    },
+    "loadingAnimationPositionMiddleLeft": "Mitten-vänster",
+    "@loadingAnimationPositionMiddleLeft": {
+        "description": "Loading animation position: Middle-Left"
+    },
+    "loadingAnimationPositionMiddle": "Mitten",
+    "@loadingAnimationPositionMiddle": {
+        "description": "Loading animation position: Middle"
+    },
+    "loadingAnimationPositionMiddleRight": "Mitten-höger",
+    "@loadingAnimationPositionMiddleRight": {
+        "description": "Loading animation position: Middle-Right"
+    },
+    "loadingAnimationPositionBottomLeft": "Nederst till vänster",
+    "@loadingAnimationPositionBottomLeft": {
+        "description": "Loading animation position: Bottom-Left"
+    },
+    "loadingAnimationPositionBottomCenter": "Längst ner i mitten",
+    "@loadingAnimationPositionBottomCenter": {
+        "description": "Loading animation position: Bottom-Center"
+    },
+    "loadingAnimationPositionBottomRight": "Nederst till höger",
+    "@loadingAnimationPositionBottomRight": {
+        "description": "Loading animation position: Bottom-Right"
+    },
+    "loadingAnimationSpeed": "Animationshastighet",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "loadingAnimationSpeedSlow": "Långsamt",
+    "@loadingAnimationSpeedSlow": {
+        "description": "Loading animation speed option: Slow"
+    },
+    "loadingAnimationSpeedModerate": "Måttlig",
+    "@loadingAnimationSpeedModerate": {
+        "description": "Loading animation speed option: Moderate"
+    },
+    "loadingAnimationSpeedFast": "Snabbt",
+    "@loadingAnimationSpeedFast": {
+        "description": "Loading animation speed option: Fast"
+    },
+    "loadingAnimationSpeedUltra": "Ultra",
+    "@loadingAnimationSpeedUltra": {
+        "description": "Loading animation speed option: Ultra"
+    },
+    "showLoadingAnimationText": "Visa text",
+    "@showLoadingAnimationText": {
+        "description": "Setting toggle for showing loading animation text"
+    },
+    "loadingAnimationPreview": "Förhandsgranskning",
+    "@loadingAnimationPreview": {
+        "description": "Label for loading animation preview window"
+    },
+    "seasonalChristmas": "Jul",
+    "@seasonalChristmas": {
+        "description": "Seasonal effect: snow with falling baubles and stars"
+    },
+    "seasonalPetals": "Vårens blomblad",
+    "@seasonalPetals": {
+        "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+    },
+    "seasonalFireflies": "Tulikärpäset",
+    "@seasonalFireflies": {
+        "description": "Seasonal effect: glowing fireflies for summer"
+    },
+    "seasonalHalloween": "Halloween",
+    "@seasonalHalloween": {
+        "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+    },
+    "seasonalDensity": "Densitet",
+    "@seasonalDensity": {
+        "description": "Setting for how many seasonal effect particles are on screen at once"
+    },
+    "seasonalDensityLight": "Ljus",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "seasonalDensityHeavy": "Tung",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
+    },
+    "seasonalFollower": "Focus Follower",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "Ett högtidsinslag, som planchettan till Halloween, följer det du väljer på startsidan",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "seasonalFollowerPointerDescription": "Ett högtidssymbol, till exempel en planchette till Halloween, ersätter muspekaren på startsidan",
+    "@seasonalFollowerPointerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer"
+    },
+    "seasonalRow": "Säsongsrad",
+    "@seasonalRow": {
+        "description": "Name of the Home row that shows holiday movies"
+    },
+    "seasonalRowDescription": "Visa en rad julfilmer från ditt bibliotek, med förslag från Seerr om sådana finns.",
+    "@seasonalRowDescription": {
+        "description": "Explains the seasonal Home row setting"
+    },
+    "seasonalRowSubtitle": "Säsongsbetonat",
+    "@seasonalRowSubtitle": {
+        "description": "Source label shown under the seasonal row's title"
+    },
+    "countryUnitedStates": "Förenta staterna",
+    "@countryUnitedStates": {
+        "description": "Country name"
+    },
+    "countryCanada": "Kanada",
+    "@countryCanada": {
+        "description": "Country name"
+    },
+    "seasonalRowHolidays": "Helgdagar",
+    "@seasonalRowHolidays": {
+        "description": "Heading for the list of holidays the seasonal row can show"
+    },
+    "seasonalRowHolidaysHint": "Avmarkera en helgdag för att dölja raden med den.",
+    "@seasonalRowHolidaysHint": {
+        "description": "Hint under the holiday checklist"
+    },
+    "seasonalRowAllYear": "Visa hela året",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Visa en rad med helgdagar även utanför helgdagarna, med en annan markerad helgdag för varje dag.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "holidayNewYear": "Nyår",
+    "@holidayNewYear": {
+        "description": "Seasonal row title for New Year's"
+    },
+    "holidayValentines": "Alla hjärtans dag",
+    "@holidayValentines": {
+        "description": "Seasonal row title for Valentine's Day"
+    },
+    "holidayEaster": "Påsk",
+    "@holidayEaster": {
+        "description": "Seasonal row title for Easter"
+    },
+    "holidayPride": "Stolthet",
+    "@holidayPride": {
+        "description": "Seasonal row title for Pride month"
+    },
+    "holidayHalloween": "Halloween",
+    "@holidayHalloween": {
+        "description": "Seasonal row title for Halloween"
+    },
+    "holidayThanksgiving": "Tacksägelsedagen",
+    "@holidayThanksgiving": {
+        "description": "Seasonal row title for Thanksgiving"
+    },
+    "holidayChristmas": "Julfilmer",
+    "@holidayChristmas": {
+        "description": "Seasonal row title for Christmas"
+    },
+    "holidayLunarNewYear": "Det kinesiska nyåret",
+    "@holidayLunarNewYear": {
+        "description": "Seasonal row title for Lunar New Year"
+    },
+    "holidayDiwali": "Ljusfestivalen",
+    "@holidayDiwali": {
+        "description": "Seasonal row title for Diwali"
+    },
+    "detailsBackgroundOpacity": "Bakgrundens opacitet",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "cropBlackBars": "Beskär svarta fält",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Identifiera kodade letterbox-ränder efter att uppspelningen har startat, beskär dem och fyll sedan skärmen. Beskär på nytt med hjälp av spelarens zoomknapp.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "cropBlackBarsRecropInterval": "Intervall mellan skördar",
+    "@cropBlackBarsRecropInterval": {
+        "description": "Setting for how often to re-detect encoded letterbox bars"
+    },
+    "cropBlackBarsOnce": "När man väl är vid start",
+    "@cropBlackBarsOnce": {
+        "description": "Letterbox recrop interval: detect once after playback starts"
+    },
+    "cropBlackBarsEverySecond": "Varje sekund",
+    "@cropBlackBarsEverySecond": {
+        "description": "Letterbox recrop interval: scan about once a second"
+    },
+    "settingsCropBlackBarsIntervalDescription": "Följ förändringar i bildförhållandet under uppspelningen.",
+    "@settingsCropBlackBarsIntervalDescription": {
+        "description": "Description for the letterbox recrop-interval setting"
+    },
+    "playerRecroppingBlackBars": "Ombeskärning av svarta fält",
+    "@playerRecroppingBlackBars": {
+        "description": "Toast when the player re-runs letterbox crop detection"
+    },
+    "playerBlackBarsCropped": "Svarta fält har beskärts",
+    "@playerBlackBarsCropped": {
+        "description": "Toast after a manual recrop found letterbox bars and cropped them"
+    },
+    "playerNoBlackBarsFound": "Inga svarta fält hittades",
+    "@playerNoBlackBarsFound": {
+        "description": "Toast after a manual recrop found that the picture fills the frame"
+    },
+    "playerBlackBarsNotDetected": "Det gick inte att upptäcka svarta fält. Försök igen i en ljusare scen",
+    "@playerBlackBarsNotDetected": {
+        "description": "Toast after a manual recrop saw only dark or unclear frames"
+    },
+    "manual": "Handbok",
+    "@manual": {
+        "description": "Option: manual"
+    },
+    "autoDetect": "Automatisk detektering",
+    "@autoDetect": {
+        "description": "Option: detect the value automatically"
+    },
+    "trickplayDisplayStyleSingle": "Enstaka miniatyrbild",
+    "@trickplayDisplayStyleSingle": {
+        "description": "Trickplay display style option: one thumbnail at the scrub position"
+    },
+    "trickplayDisplayStyleStrip": "Filmremsa",
+    "@trickplayDisplayStyleStrip": {
+        "description": "Trickplay display style option: a row of 5 thumbnails around the scrub position"
+    },
+    "trickplayModeFull": "Helskärm",
+    "@trickplayModeFull": {
+        "description": "Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing"
+    },
+    "trickplaySettingsPreviewHint": "Dra i skjutreglaget för att förhandsgranska skrubbningen",
+    "@trickplaySettingsPreviewHint": {
+        "description": "Hint shown below the live trickplay settings preview"
+    },
+    "trickplayPreviewScale": "Förhandsgranskningsstorlek",
+    "@trickplayPreviewScale": {
+        "description": "Setting for the size of the trickplay seek preview"
+    },
+    "trickplayVerticalOffset": "Avstånd från sökfältet",
+    "@trickplayVerticalOffset": {
+        "description": "Setting for the vertical position of the trickplay seek preview relative to the seekbar"
+    },
+    "trickplayFollowScrubPosition": "Följ skrubbpositionen",
+    "@trickplayFollowScrubPosition": {
+        "description": "Setting for whether the trickplay preview horizontally tracks the scrub handle"
+    },
+    "trickplayFollowScrubPositionSubtitle": "Förhandsgranska bilderna längs sökreglaget när du drar med fingret, istället för att de förblir centrerade",
+    "@trickplayFollowScrubPositionSubtitle": {
+        "description": "Description for the trickplay follow-scrub-position setting"
+    },
+    "trickplayPauseWhileScrubbing": "Paus under skrubbning",
+    "@trickplayPauseWhileScrubbing": {
+        "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+    },
+    "trickplayPauseWhileScrubbingSubtitle": "Uppspelningen pausas medan du söker och återupptas när du trycker på uppspelningsknappen. Stäng av den här funktionen för att fortsätta uppspelningen och hoppa direkt till den nya platsen",
+    "@trickplayPauseWhileScrubbingSubtitle": {
+        "description": "Description for the trickplay pause-while-scrubbing setting"
+    },
+    "showChapterMarkers": "Kapitelmarkeringar",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "showChapterMarkersDescription": "Markera var varje kapitel börjar på sökreglaget",
+    "@showChapterMarkersDescription": {
+        "description": "Description for the chapter marks setting"
+    },
+    "playerSwipeGestures": "Markera var varje kapitel börjar på sökreglaget",
+    "@playerSwipeGestures": {
+        "description": "Setting for player swipe gestures"
+    },
+    "playerSwipeGesturesDescription": "Dra uppåt eller nedåt på spelaren för att justera ljusstyrkan till vänster och volymen till höger",
+    "@playerSwipeGesturesDescription": {
+        "description": "Description for player swipe gestures"
+    },
+    "invertGestureIndicators": "Vänd gestindikatorer",
+    "@invertGestureIndicators": {
+        "description": "Setting title for inverting placement of brightness and volume gesture indicators"
+    },
+    "invertGestureIndicatorsDescription": "Placera de visuella indikatorerna för ljusstyrka och volym på samma sida eller på motsatt sida av skärmen i förhållande till svepningen",
+    "@invertGestureIndicatorsDescription": {
+        "description": "Description explaining gesture indicator placement relative to the swipe side"
+    },
+    "gestureIndicatorSame": "Samma",
+    "@gestureIndicatorSame": {
+        "description": "Option to display gesture indicators on the same side as the swipe"
+    },
+    "gestureIndicatorInverted": "Upp och ned",
+    "@gestureIndicatorInverted": {
+        "description": "Option to display gesture indicators on the opposite side from the swipe"
+    },
+    "osdButtons": "Spelarknappar",
+    "@osdButtons": {
+        "description": "Settings screen for choosing which buttons the player shows"
+    },
+    "osdButtonsDescription": "Välj vilka knappar som ska visas i spelaren",
+    "@osdButtonsDescription": {
+        "description": "Subtitle for the player buttons settings tile"
+    },
+    "osdButtonsSectionDescription": "Uppspelningskontrollerna visas alltid. Allt nedan är upp till dig, och varje typ av enhet har sin egen lista.",
+    "@osdButtonsSectionDescription": {
+        "description": "Explains that transport controls can't be hidden and that the list is per device kind"
+    },
+    "detailButtons": "Åtgärdsknappar",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "detailButtonsDescription": "Välj vilka knappar som ska visas på informationsskärmen",
+    "@detailButtonsDescription": {
+        "description": "Subtitle for the details action buttons settings tile"
+    },
+    "detailButtonsSectionDescription": "Spel är alltid prioriterat och de låsta knapparna visas alltid. Allt annat bestämmer du själv, och varje typ av enhet har sin egen lista.",
+    "@detailButtonsSectionDescription": {
+        "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
     }
 }
