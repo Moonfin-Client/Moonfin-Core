@@ -79,12 +79,6 @@ class DlnaProvider
   /// The cast on the renderer, for a seek its stream can't do itself.
   _DlnaCast? _cast;
 
-  /// The position the latest seek asked for, while one is being served.
-  int? _seekTarget;
-
-  /// Whether a seek is being served for [_cast].
-  bool _seekRunning = false;
-
   @override
   CastServerPlayback? takeServerPlayback() {
     final playback = _serverPlayback;
@@ -138,22 +132,32 @@ class DlnaProvider
     final client =
         _clientFactory.getClientIfExists(item.serverId) ?? GetIt.instance<MediaServerClient>();
     final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
-    // A seek still served for the cast before is dropped.
+    // A seek still served for the cast before stops sending its stream; the
+    // cast is back if this one can't start.
+    final previous = _cast;
     _cast = null;
     final resolver = _resolverForClient(client);
     final silo = client.serverType == ServerType.silo;
-    final resolution = await resolver.resolve(
-      item,
-      deviceProfile: dlnaDeviceProfile(),
-      audioStreamIndex: audioStreamIndex,
-      subtitleStreamIndex: subtitleStreamIndex,
-      // Silo starts a remux there; a file it sends as it is is seeked on the
-      // renderer once it plays.
-      startTimeTicks: silo ? startPositionTicks : null,
-      mediaSourceId: mediaSourceId,
-      enableDirectPlay: !hasExplicitIndices,
-      enableDirectStream: !hasExplicitIndices,
-    );
+    final StreamResolutionResult resolution;
+    try {
+      resolution = await resolver.resolve(
+        item,
+        deviceProfile: dlnaDeviceProfile(),
+        audioStreamIndex: audioStreamIndex,
+        subtitleStreamIndex: subtitleStreamIndex,
+        // Silo starts a remux there; a file it sends as it is is seeked
+        // on the renderer once it plays.
+        startTimeTicks: silo ? startPositionTicks : null,
+        mediaSourceId: mediaSourceId,
+        enableDirectPlay: !hasExplicitIndices,
+        enableDirectStream: !hasExplicitIndices,
+      );
+    } catch (_) {
+      if (_cast == null && previous != null && !previous.stopped) {
+        _cast = previous;
+      }
+      rethrow;
+    }
     _cast = _DlnaCast(
       target: target,
       item: item,
@@ -165,8 +169,6 @@ class DlnaProvider
       directAllowed: !hasExplicitIndices,
     );
     final cast = _cast!;
-    _seekTarget = null;
-    _seekRunning = false;
 
     await _send(
       target,
@@ -182,6 +184,7 @@ class DlnaProvider
             item: item,
             resolution: resolution,
             currentResolution: () => cast.resolution,
+            replacing: () => cast.seekRunning,
             positionsOnMediaTimeline: true,
           )
         : null;
@@ -214,18 +217,23 @@ class DlnaProvider
   /// one is being served only move its target; the latest is served next.
   Future<bool> _replanAt(int positionTicks) async {
     final cast = _cast;
-    if (cast == null || !cast.resolution.seeksThroughServer) return false;
-    _seekTarget = positionTicks;
-    if (_seekRunning) return true;
+    if (cast == null) return false;
+    if (cast.seekRunning) {
+      cast.seekTarget = positionTicks;
+      return true;
+    }
+    if (!cast.resolution.seeksThroughServer) return false;
     final resolver = cast.resolver;
     if (resolver is! StreamReplanner) return false;
     final replanner = resolver as StreamReplanner;
     if (!replanner.canReplan(cast.resolution)) return false;
-    _seekRunning = true;
+    cast
+      ..seekTarget = positionTicks
+      ..seekRunning = true;
     try {
       int? served;
-      while (identical(_cast, cast) && _seekTarget != served) {
-        final target = _seekTarget!;
+      while (identical(_cast, cast) && cast.seekTarget != served) {
+        final target = cast.seekTarget!;
         final next = await replanner.replan(
           cast.item,
           cast.resolution,
@@ -254,10 +262,14 @@ class DlnaProvider
           startPositionTicks: next.seeksThroughServer ? null : target,
         );
         // A stop that crossed the send: the renderer may have started it.
-        if (_cast == null) await _native.stopDlna();
+        if (cast.stopped) {
+          try {
+            await _native.stopDlna();
+          } catch (_) {}
+        }
       }
     } finally {
-      if (identical(_cast, cast)) _seekRunning = false;
+      cast.seekRunning = false;
     }
     return true;
   }
@@ -278,7 +290,7 @@ class DlnaProvider
     // The server has dropped a stream paused this long (by the phone or the
     // TV's remote): start a new one at the position instead.
     // A seek being served starts its stream playing.
-    if (_seekRunning) return;
+    if (_cast?.seekRunning ?? false) return;
     final idle = _cast?.resolution.reopenAfterPause;
     final pausedSince = _native.pausedSince;
     if (idle != null &&
@@ -305,9 +317,8 @@ class DlnaProvider
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
     // Cleared first, so a seek Silo is still answering doesn't recast.
+    _cast?.stopped = true;
     _cast = null;
-    _seekTarget = null;
-    _seekRunning = false;
     await _native.stopDlna();
   }
 
@@ -348,6 +359,14 @@ class _DlnaCast {
 
   /// The stream on the renderer, replaced by a seek Silo serves.
   StreamResolutionResult resolution;
+
+  /// The position the latest seek asked for, and whether one is being
+  /// served.
+  int? seekTarget;
+  bool seekRunning = false;
+
+  /// Whether the viewer stopped this cast.
+  bool stopped = false;
   final int? audioStreamIndex;
   final int? subtitleStreamIndex;
   final String? mediaSourceId;

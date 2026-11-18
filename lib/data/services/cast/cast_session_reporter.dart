@@ -51,13 +51,16 @@ class CastSessionReporter {
   ///
   /// [currentResolution] gives the stream the receiver plays now, for a
   /// provider that replaces it in the same session (a seek the receiver
-  /// can't do itself). [positionsOnMediaTimeline] says the receiver's
-  /// positions already include the stream's timeline offset.
+  /// can't do itself), and [replacing] whether it's doing so: the receiver
+  /// going idle meanwhile is the new stream loading, not the cast ending.
+  /// [positionsOnMediaTimeline] says the receiver's positions already
+  /// include the stream's timeline offset.
   Future<void> begin({
     required PlayerService service,
     required AggregatedItem item,
     required StreamResolutionResult resolution,
     StreamResolutionResult Function()? currentResolution,
+    bool Function()? replacing,
     bool positionsOnMediaTimeline = false,
   }) async {
     await end();
@@ -66,6 +69,7 @@ class CastSessionReporter {
       item,
       resolution,
       currentResolution,
+      replacing,
       positionsOnMediaTimeline,
     );
     _current = reporting;
@@ -81,7 +85,9 @@ class CastSessionReporter {
     final over =
         !receiver.active ||
         (receiver.itemId != null && receiver.itemId != reporting.item.id) ||
-        (receiver.state == 'idle' && reporting.played);
+        (receiver.state == 'idle' &&
+            reporting.played &&
+            !(reporting.replacing?.call() ?? false));
     if (over) {
       await end();
       return;
@@ -140,6 +146,7 @@ class _Reporting {
     this.item,
     this.resolution,
     this.currentResolution,
+    this.replacing,
     this.positionsOnMediaTimeline,
   ) : position = resolution.timelineOffset;
 
@@ -147,19 +154,17 @@ class _Reporting {
   final AggregatedItem item;
   StreamResolutionResult resolution;
   final StreamResolutionResult Function()? currentResolution;
+  final bool Function()? replacing;
   final bool positionsOnMediaTimeline;
   Timer? timer;
   Duration position;
   bool played = false;
   bool busy = false;
 
-  /// Takes the stream the receiver plays now. A new one is loading, so the
-  /// receiver going idle meanwhile doesn't end the cast until it has played.
+  /// Takes the stream the receiver plays now.
   void follow() {
     final current = currentResolution?.call();
-    if (current == null || identical(current, resolution)) return;
-    resolution = current;
-    played = false;
+    if (current != null) resolution = current;
   }
 }
 
@@ -171,6 +176,7 @@ class CastServerPlayback {
     required this.item,
     required this.resolution,
     this.currentResolution,
+    this.replacing,
     this.positionsOnMediaTimeline = false,
   });
 
@@ -180,6 +186,9 @@ class CastServerPlayback {
 
   /// The stream the receiver plays now, when the provider can replace it.
   final StreamResolutionResult Function()? currentResolution;
+
+  /// Whether the provider is replacing the receiver's stream.
+  final bool Function()? replacing;
 
   /// Whether the receiver's positions already include the timeline offset.
   final bool positionsOnMediaTimeline;

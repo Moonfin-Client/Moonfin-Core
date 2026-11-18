@@ -587,7 +587,7 @@ final class DlnaController: NSObject {
             "state": state,
         ]
         if let message, !message.isEmpty { event["message"] = message }
-        if let positionTicks, positionTicks > 0 { event["positionTicks"] = positionTicks }
+        if let positionTicks, positionTicks >= 0 { event["positionTicks"] = positionTicks }
         eventSink?(event)
     }
 

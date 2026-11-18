@@ -128,11 +128,13 @@ void main() {
   // A DLNA seek on a remux replaces the stream in the same session.
   test('follows a replaced stream, through the idle while it loads', () async {
     var current = _resolution;
+    var replacing = false;
     await reporter.begin(
       service: service,
       item: _film,
       resolution: _resolution,
       currentResolution: () => current,
+      replacing: () => replacing,
       positionsOnMediaTimeline: true,
     );
     final reported = <StreamResolutionResult>[];
@@ -151,6 +153,7 @@ void main() {
       playMethod: StreamPlayMethod.directStream,
       timelineOffset: Duration(minutes: 30),
     );
+    replacing = true;
     receiver = (
       active: true,
       itemId: _film.id,
@@ -161,6 +164,11 @@ void main() {
     expect(reporter.reporting, isTrue);
     expect(reported, [_resolution, current]);
     expect(service.calls.last, 'progress ${_film.id} 1800');
+    // A stream that never plays: idle ends the cast once it isn't loading.
+    replacing = false;
+    await reporter.tick();
+    expect(reporter.reporting, isFalse);
+    expect(service.calls.last, 'stop ${_film.id} 1800');
   });
 
   test('stops when the cast ends, at the last position', () async {

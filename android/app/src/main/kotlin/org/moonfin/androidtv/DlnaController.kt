@@ -584,7 +584,7 @@ class DlnaController(private val context: Context) {
             "state" to state,
         )
         if (!message.isNullOrBlank()) payload["message"] = message
-        if (positionTicks != null && positionTicks > 0L) payload["positionTicks"] = positionTicks
+        if (positionTicks != null && positionTicks >= 0L) payload["positionTicks"] = positionTicks
         handler.post { eventSink?.success(payload) }
     }
 

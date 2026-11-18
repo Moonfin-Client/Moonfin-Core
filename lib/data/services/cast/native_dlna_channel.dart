@@ -24,6 +24,11 @@ class NativeDlnaChannel {
   /// When the renderer was first seen paused, by the phone or its remote.
   static DateTime? _pausedSince;
 
+  /// The latest stream handed to the renderer, and whether it's still being
+  /// handed over. Positions heard meanwhile may be the old stream's.
+  static int _sendSeq = 0;
+  static bool _sending = false;
+
   const NativeDlnaChannel();
 
   static bool get _supported => PlatformDetection.isMobile;
@@ -85,12 +90,14 @@ class NativeDlnaChannel {
     if (!_supported) {
       return;
     }
-    // Once the renderer has the stream its positions count from its start;
-    // the one it played is gone by then.
+    // The renderer's positions count from the new stream's start once it
+    // has it. Until then they may be the old stream's, so none are taken.
+    final seq = ++_sendSeq;
     final offsetBefore = _positionOffsetTicks;
     final lastBefore = _lastPositionTicks;
     _positionOffsetTicks = positionOffsetTicks;
     _lastPositionTicks = positionOffsetTicks;
+    _sending = true;
     try {
       await _channel.invokeMethod<void>('playToDlnaDevice', {
         'targetId': targetId,
@@ -102,9 +109,14 @@ class NativeDlnaChannel {
         'durationTicks': ?durationTicks,
       });
     } catch (_) {
-      _positionOffsetTicks = offsetBefore;
-      _lastPositionTicks = lastBefore;
+      // Only the latest send's failure leaves the old stream on.
+      if (seq == _sendSeq) {
+        _positionOffsetTicks = offsetBefore;
+        _lastPositionTicks = lastBefore;
+      }
       rethrow;
+    } finally {
+      if (seq == _sendSeq) _sending = false;
     }
     _pausedSince = null;
   }
@@ -165,10 +177,9 @@ class NativeDlnaChannel {
             final map = Map<String, dynamic>.of(event.cast<String, dynamic>());
             final state = map['state'];
             if (state is String && _playbackStates.contains(state)) {
-              // A notify carries no position, and the native side leaves 0
-              // out: the last one heard stands.
+              // A notify carries no position: the last one heard stands.
               final position = map['positionTicks'];
-              if (position is int) {
+              if (position is int && !_sending) {
                 _lastPositionTicks = position + _positionOffsetTicks;
               }
               map['positionTicks'] = _lastPositionTicks;
@@ -199,5 +210,6 @@ class NativeDlnaChannel {
     _positionOffsetTicks = 0;
     _lastPositionTicks = 0;
     _pausedSince = null;
+    _sending = false;
   }
 }
