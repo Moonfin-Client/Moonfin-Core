@@ -493,17 +493,20 @@ final class DlnaController: NSObject {
                 where failed == "SetAVTransportURI" && upnpCode == 701 {
                 // A renderer still holding an earlier URI (an LG left in
                 // LG_TRANSITIONING by a cast that never started) refuses a
-                // new one with 701 until it is stopped.
-                _ = try? sendSoapOnce(
-                    controlUrl: controlUrl,
-                    action: "Stop",
-                    innerBody: "<InstanceID>0</InstanceID>"
-                )
-                // It takes a moment to leave TRANSITIONING after Stop.
-                for _ in 0..<12 {
+                // new one with 701 until it is stopped. While it is still
+                // opening that URI (TRANSITIONING, about 20 s for HLS) it
+                // doesn't answer Stop, so stopping is retried until it gives
+                // up and takes it.
+                let deadline = Date().addingTimeInterval(25)
+                while true {
+                    _ = try? sendSoapOnce(
+                        controlUrl: controlUrl,
+                        action: "Stop",
+                        innerBody: "<InstanceID>0</InstanceID>"
+                    )
                     let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
-                    if !state.contains("TRANSITIONING") { break }
-                    Thread.sleep(forTimeInterval: 0.25)
+                    if !state.contains("TRANSITIONING") || Date() >= deadline { break }
+                    Thread.sleep(forTimeInterval: 1)
                 }
                 return try sendSoapOnce(
                     controlUrl: controlUrl,
