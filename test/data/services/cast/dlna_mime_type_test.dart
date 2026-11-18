@@ -85,6 +85,30 @@ void main() {
         'audio/mpeg',
       );
     });
+
+    // Emby names CT06's conversion mkv though it sends MPEG-TS.
+    test('names a converted video MPEG-TS', () {
+      expect(
+        dlnaMimeType(
+          _resolution(
+            'http://emby/videos/54/stream.ts?a=b',
+            container: 'mkv',
+            playMethod: StreamPlayMethod.transcode,
+          ),
+        ),
+        'video/mp2t',
+      );
+      expect(
+        dlnaMimeType(
+          _resolution(
+            'http://emby/videos/54/stream.ts',
+            container: 'mkv',
+            playMethod: StreamPlayMethod.directStream,
+          ),
+        ),
+        'video/mp2t',
+      );
+    });
   });
 
   group('dlnaFeatures', () {

@@ -133,6 +133,18 @@ Map<String, dynamic> dlnaDeviceProfile() {
       },
     ],
     'TranscodingProfiles': <Map<String, dynamic>>[
+      // Jellyfin and Emby take the first profile, and many TVs (LG) can't
+      // open HLS, so a conversion goes out as one MPEG-TS stream. Silo only
+      // converts over HLS and skips this profile.
+      <String, dynamic>{
+        'Type': 'Video',
+        'Context': 'Streaming',
+        'Container': 'ts',
+        'Protocol': 'http',
+        'VideoCodec': 'h264,hevc',
+        'AudioCodec': 'aac,ac3',
+        'CopyTimestamps': false,
+      },
       <String, dynamic>{
         'Type': 'Video',
         'Context': 'Streaming',

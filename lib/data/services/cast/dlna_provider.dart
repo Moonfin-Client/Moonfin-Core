@@ -30,10 +30,13 @@ String dlnaMimeType(StreamResolutionResult resolution) {
   if (path.endsWith('.m3u8') || container == 'hls' || container == 'm3u8') {
     return 'application/vnd.apple.mpegurl';
   }
-  // Jellyfin and Emby report the source's container for a transcode too, and
-  // the DLNA profile transcodes audio to MP3.
+  // Jellyfin and Emby report the source's container for a conversion too.
+  // The DLNA profile converts audio to MP3 and video to one MPEG-TS stream.
   if (audio && resolution.playMethod == StreamPlayMethod.transcode) {
     return 'audio/mpeg';
+  }
+  if (!audio && resolution.playMethod != StreamPlayMethod.directPlay) {
+    return 'video/mp2t';
   }
   return switch (container) {
     'mkv' || 'matroska' => audio ? 'audio/x-matroska' : 'video/x-matroska',
