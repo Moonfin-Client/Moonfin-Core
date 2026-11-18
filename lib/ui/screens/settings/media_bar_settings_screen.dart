@@ -235,6 +235,53 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
     }
   }
 
+  Map<String, String> _newReleaseKindNames(AppLocalizations l10n) => {
+    UserPreferences.mediaBarNewSeries: l10n.mediaBarNewSeries,
+    UserPreferences.mediaBarNewSeason: l10n.mediaBarNewSeason,
+    UserPreferences.mediaBarNewEpisodes: l10n.mediaBarNewEpisodes,
+    UserPreferences.mediaBarNewMovie: l10n.mediaBarNewMovie,
+  };
+
+  Future<void> _showNewReleaseKindSelector() async {
+    if (_selectorOpen) return;
+    _selectorOpen = true;
+    try {
+      final names = _newReleaseKindNames(AppLocalizations.of(context));
+      final result = await showMultiSelectDialog(
+        context: context,
+        title: AppLocalizations.of(context).mediaBarNewReleaseKinds,
+        items: names,
+        sortByLabel: false,
+        selected: _splitCsv(
+          UserPreferences.mediaBarNewReleaseKinds,
+        ).where(names.containsKey).toSet(),
+      );
+      // Kept in the dialog's order, so the stored list reads the same
+      // whatever order the boxes were ticked in.
+      if (result != null) {
+        _saveCsv(UserPreferences.mediaBarNewReleaseKinds, [
+          for (final kind in names.keys)
+            if (result.contains(kind)) kind,
+        ]);
+      }
+    } finally {
+      _selectorOpen = false;
+    }
+  }
+
+  String _newReleaseKindsSubtitle(AppLocalizations l10n) {
+    final names = _newReleaseKindNames(l10n);
+    final kinds = _splitCsv(UserPreferences.mediaBarNewReleaseKinds);
+    return kinds.isEmpty
+        ? l10n.noneSelected
+        : [for (final kind in kinds) ?names[kind]].join(', ');
+  }
+
+  void _pushSyncAndRebuild() {
+    _pushSync();
+    if (mounted) setState(() {});
+  }
+
   String _sourceSubtitle(
     Preference<String> pref,
     String noneLabel,
@@ -321,25 +368,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     UserPreferences.mediaBarSourceRecentlyReleased:
                         l10n.recentlyReleased,
                     UserPreferences.mediaBarSourceNewReleases:
-                        l10n.mediaBarSourceNewReleases,
-                  },
-                  onChanged: _pushSync,
-                ),
-                SwitchPreferenceTile(
-                  preference: UserPreferences.mediaBarNewReleaseBanner,
-                  title: l10n.mediaBarNewReleaseBanner,
-                  subtitle: l10n.mediaBarNewReleaseBannerDescription,
-                  icon: Icons.new_releases_outlined,
-                  onChanged: _pushSync,
-                ),
-                IntPickerPreferenceTile(
-                  preference: UserPreferences.mediaBarNewReleaseDays,
-                  title: l10n.mediaBarNewReleaseDays,
-                  description: l10n.mediaBarNewReleaseDaysDescription,
-                  icon: Icons.date_range,
-                  options: {
-                    for (final days in const [7, 14, 30, 60, 90])
-                      days: l10n.daysValue(days),
+                        l10n.mediaBarSourceNewReleasesAll,
                   },
                   onChanged: _pushSync,
                 ),
@@ -355,6 +384,55 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     '25': '25',
                     '30': '30',
                   },
+                  onChanged: _pushSync,
+                ),
+              ],
+            ),
+
+            SettingsSectionHeader(l10n.mediaBarNewReleasesSection),
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseBanner,
+                  title: l10n.mediaBarNewReleaseBanner,
+                  subtitle: l10n.mediaBarNewReleaseBannerAllDescription,
+                  icon: Icons.new_releases_outlined,
+                  onChanged: _pushSyncAndRebuild,
+                ),
+                if (_prefs.get(UserPreferences.mediaBarNewReleaseBanner))
+                  _MediaBarActionTile(
+                    icon: const Icon(Icons.label_outline),
+                    title: Text(l10n.mediaBarNewReleaseKinds),
+                    subtitle: Text(_newReleaseKindsSubtitle(l10n)),
+                    onTap: _showNewReleaseKindSelector,
+                  ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarNewReleaseDays,
+                  title: l10n.mediaBarNewEpisodeDays,
+                  description: l10n.mediaBarNewReleaseDaysDescription,
+                  icon: Icons.date_range,
+                  options: {
+                    for (final days in const [7, 14, 30, 60, 90])
+                      days: l10n.daysValue(days),
+                  },
+                  onChanged: _pushSync,
+                ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarNewMovieDays,
+                  title: l10n.mediaBarNewMovieDays,
+                  description: l10n.mediaBarNewMovieDaysDescription,
+                  icon: Icons.event_outlined,
+                  options: {
+                    for (final days in const [30, 60, 90, 120, 180, 365])
+                      days: l10n.daysValue(days),
+                  },
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarNewMovieDetail,
+                  title: l10n.mediaBarNewMovieDetail,
+                  subtitle: l10n.mediaBarNewMovieDetailDescription,
+                  icon: Icons.format_quote_outlined,
                   onChanged: _pushSync,
                 ),
               ],

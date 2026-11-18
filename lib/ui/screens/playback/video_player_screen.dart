@@ -115,6 +115,7 @@ import 'playback_takeover.dart';
 import 'episode_browser.dart';
 import 'episode_browser_panel.dart';
 import 'osd_buttons.dart';
+import 'playback_ended_by_server.dart';
 import 'trickplay_housing_inset.dart';
 
 class _SubtitleLoadingSpinner extends StatefulWidget {
@@ -415,6 +416,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<bool>? _screenLockSub;
   StreamSubscription<bool>? _screensaverPlayingSub;
   StreamSubscription<void>? _completedSub;
+  StreamSubscription<String>? _endedByServerSub;
   bool _isRestoringPosition = false;
   DateTime? _suppressSeekPromptsUntil;
   bool _wasPlayingBeforeScreenLock = false;
@@ -723,6 +725,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _ensureDesktopOverlayFocus() {
     if (!(PlatformDetection.isDesktop || PlatformDetection.isWeb)) return;
     if (_overlayFocus.hasFocus) return;
+    // A sheet or dialog on top, like the party chat, keeps its focus, or the
+    // next Backspace in its text field would act as Back.
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
     _overlayFocus.requestFocus();
   }
 
@@ -967,6 +972,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     unawaited(_loadNextAirDate());
     unawaited(_syncAutoHdrSwitching());
     _positionSub = _state.positionStream.listen(_onPositionUpdate);
+    _endedByServerSub = _manager.endedByServerStream.listen((message) {
+      // Throttled like the player's other errors, so a repeat of the same
+      // text doesn't stack.
+      if (mounted) {
+        _showThrottledPlaybackError(
+          playbackEndedByServerText(context, message),
+        );
+      }
+    });
     _completedSub = _manager.sessionEndedStream.listen((_) {
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
@@ -1085,15 +1099,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _updateDisplayPlaying(playing);
       _syncCinemaSkip();
       // The hide timer passes over a player that hasn't started yet, so a
-      // start or resume slower than its delay needs it armed again here. A
-      // pause with a description card clears the controls sooner so the card
-      // shows quickly.
-      if (_controlsVisible && !_isSeeking) {
-        if (playing) {
-          _scheduleHide();
-        } else if (_hasPausedDescriptionCard) {
-          _scheduleHide(delay: const Duration(seconds: 2));
-        }
+      // start or resume slower than its delay needs it armed again here.
+      if (playing && _controlsVisible && !_isSeeking) {
+        _scheduleHide();
       }
       if (isMobilePlayback) {
         _pipService.updatePiPActions(isPlaying: playing);
@@ -1239,6 +1247,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _aetherRemoteCommandSub?.cancel();
     _screenLockSub?.cancel();
     _completedSub?.cancel();
+    _endedByServerSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
     FocusManager.instance.removeListener(_restoreOverlayFocus);
     _overlayFocus.removeListener(_onOverlayFocusChanged);
@@ -3059,7 +3068,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _restoreSystemUiForExit() async {
     setImmersive(false);
-    await SystemChrome.setPreferredOrientations([]);
+    // Safari has no screen.orientation.unlock(), so on web this never
+    // completes and waiting on it would leave the player stuck.
+    final unlock = SystemChrome.setPreferredOrientations([]);
+    if (!kIsWeb) await unlock;
   }
 
   void _updateDisplayPlaying(bool playing) {
@@ -3080,6 +3092,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (pauseAsked) {
       if (_displayPlaying && mounted) {
         setState(() => _displayPlaying = false);
+        _clearControlsForPausedDescription();
       }
       return;
     }
@@ -3089,8 +3102,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _displayPlayingDebounce = Timer(delay, () {
       if (mounted && !_state.isPlaying) {
         setState(() => _displayPlaying = false);
+        _clearControlsForPausedDescription();
       }
     });
+  }
+
+  /// A pause with a description card clears the controls at once, so the card
+  /// shows as soon as the player reads as paused.
+  void _clearControlsForPausedDescription() {
+    if (_controlsVisible && !_isSeeking && _hasPausedDescriptionCard) {
+      _scheduleHide(delay: Duration.zero);
+    }
   }
 
   void _startEndsAtTicker() {
@@ -3131,11 +3153,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  // Off TV the transport sits in the middle of the picture, right where the
-  // paused description card goes, so with a card to show the controls still
-  // hide while paused and the card shows once they do.
+  // The paused description covers the picture where the controls sit, so
+  // with one to show the controls still hide while paused and it shows once
+  // they do.
   bool get _hasPausedDescriptionCard =>
-      !PlatformDetection.useLeanbackUi &&
       _bringupState.phase == PlaybackBringupPhase.ready &&
       _prefs.get(UserPreferences.showDescriptionOnPause) &&
       _currentItemDescription() != null;
@@ -3166,6 +3187,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _focusTvSeekbar({int attempt = 0}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_controlsVisible || _isOsdLocked) return;
+      // A retry lands a few frames late, so a press may already have moved
+      // focus on to the buttons. It stays there.
+      if (attempt > 0 &&
+          FocusManager.instance.primaryFocus != _overlayFocus) {
+        return;
+      }
       _tvSeekbarFocus.requestFocus();
 
       if (!_tvSeekbarFocus.hasFocus && attempt < 8) {
@@ -4984,67 +5011,74 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       initialData: _state.isPlaying,
       builder: (context, snap) {
         final isPlaying = _isPlayingShown;
-        final centerControlsShowing =
-            !PlatformDetection.useLeanbackUi &&
-            _controlsVisible &&
-            !_isOsdLocked;
+        final controlsShowing = _controlsVisible && !_isOsdLocked;
+        // Laid out on the settings preview's 960 by 540 screen and scaled to
+        // this one by height, so a wide phone keeps the whole block on screen.
+        // It's sized by the screen alone, so UI Scaling and the system font
+        // size stay out of it.
+        final u = MediaQuery.sizeOf(context).shortestSide / 540;
+        TextStyle text(double size, FontWeight weight) => TextStyle(
+          color: Colors.white,
+          fontSize: size * u,
+          fontWeight: weight,
+          shadows: const [Shadow(blurRadius: 6, color: Colors.black)],
+        );
         return Positioned.fill(
           child: IgnorePointer(
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 220),
-              opacity: isPlaying || centerControlsShowing ? 0.0 : 1.0,
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.58),
+              opacity: isPlaying || controlsShowing ? 0.0 : 1.0,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withValues(alpha: 0.85),
+                      Colors.black.withValues(alpha: 0.3),
+                    ],
+                  ),
+                ),
                 child: SafeArea(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 960),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.spaceXl,
-                          vertical: AppSpacing.spaceLg,
-                        ),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: const Color(0xCC111111),
-                            borderRadius: AppRadius.circular(18),
-                            border: Border.fromBorderSide(
-                              ThemeRegistry.active.borders.cardBorder.copyWith(
-                                color: Colors.white.withValues(alpha: 0.18),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      48 * u,
+                      110 * u,
+                      48 * u,
+                      0,
+                    ),
+                    child: Align(
+                      alignment: AlignmentDirectional.topStart,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 460 * u),
+                        child: MediaQuery.withNoTextScaling(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context).paused
+                                    .toUpperCase(),
+                                style: text(13, FontWeight.w700),
                               ),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.spaceXl),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (title.isNotEmpty)
-                                    Text(
-                                      title,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTypography.fontSizeXl,
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.2,
-                                      ),
-                                    ),
-                                  if (title.isNotEmpty)
-                                    const SizedBox(height: AppSpacing.spaceMd),
-                                  Text(
-                                    description,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: AppTypography.fontSizeLg,
-                                      height: 1.45,
-                                    ),
-                                  ),
-                                ],
+                              if (title.isNotEmpty) ...[
+                                SizedBox(height: 8 * u),
+                                Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: text(32, FontWeight.w700),
+                                ),
+                              ],
+                              SizedBox(height: 8 * u),
+                              Text(
+                                description,
+                                maxLines: 8,
+                                overflow: TextOverflow.ellipsis,
+                                style: text(
+                                  15,
+                                  FontWeight.w500,
+                                ).copyWith(height: 1.4),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),

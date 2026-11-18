@@ -2235,6 +2235,46 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  testWidgets('the paused description shows with the controls away', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'Show Description on Pause',
+          prefKey: 'showDescriptionOnPause',
+        ),
+      )
+      ..tryValue('showDescriptionOnPause', true);
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    final controls = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_PlayerControls',
+    );
+
+    await pump();
+    expect(find.text('PAUSED'), findsOneWidget);
+    expect(controls, findsNothing);
+
+    controller.tryValue('showDescriptionOnPause', false);
+    await pump();
+    expect(find.text('PAUSED'), findsNothing);
+    expect(controls, findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   testWidgets('the classic info band clips text still at an older scale', (
     tester,
   ) async {

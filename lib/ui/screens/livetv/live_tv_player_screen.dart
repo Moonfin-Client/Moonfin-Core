@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -1555,7 +1556,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   Future<void> _releasePlayerDisplayMode() async {
     setImmersive(false);
-    await SystemChrome.setPreferredOrientations([]);
+    // Safari has no screen.orientation.unlock(), so this never finishes on web.
+    final unlock = SystemChrome.setPreferredOrientations([]);
+    if (!kIsWeb) await unlock;
   }
 
   void _showPlaybackInfo() {

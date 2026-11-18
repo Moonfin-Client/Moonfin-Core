@@ -536,6 +536,35 @@ void main() {
       await advance(tester, 300);
     }
 
+    // The seek bar retries its focus for a few frames after the controls come
+    // up. A quick second Down used to be pulled back to it, and Right seeked.
+    group('on the TV layout', () {
+      setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+
+      testWidgets('a quick Down to the buttons stays there', (tester) async {
+        String? focused() => FocusManager.instance.primaryFocus?.debugLabel;
+        await playOnTv(tester);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await advance(tester, 30);
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await advance(tester, 20);
+        expect(focused(), 'video_player_primary_play');
+        await advance(tester, 600);
+        expect(focused(), 'video_player_primary_play', reason: 'kept');
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 100);
+        expect(focused(), isNot('video_player_primary_play'));
+        expect(focused(), isNot('video_player_tv_seekbar'));
+        expect(manager.seeks, isEmpty, reason: 'Right moved along the buttons');
+
+        await tester.pumpWidget(const SizedBox());
+      });
+    });
+
     test('grows from the set step to 30, 60 and 180 seconds', () {
       expect(
         [
@@ -1530,17 +1559,47 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
-    testWidgets('shows a couple of seconds after a pause', (tester) async {
+    testWidgets('waits for the controls to hide on a TV too', (tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await pumpPlayer(tester);
+      expect(cardOpacity(tester), 0);
+
+      await tester.pump(const Duration(seconds: 10));
+      expect(cardOpacity(tester), 1);
+      expect(find.text('PAUSED'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('keeps its size whatever the text scale', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpPlayer(tester);
+      await tester.pump(const Duration(seconds: 10));
+
+      final paused = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('PAUSED'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(paused.textScaler, TextScaler.noScaling);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('shows as soon as playback pauses', (tester) async {
       await pumpPlayer(tester);
       manager.state.setPlaying(true);
       await tester.pump();
       await tester.pump();
-      manager.state.setPlaying(false);
-      await tester.pump();
-      await tester.pump();
       expect(find.byType(Slider), findsOneWidget);
 
-      await tester.pump(const Duration(milliseconds: 2100));
+      // A drop the viewer didn't ask for reads as a pause after 200 ms.
+      manager.state.setPlaying(false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.byType(Slider), findsNothing);
       expect(cardOpacity(tester), 1);
 

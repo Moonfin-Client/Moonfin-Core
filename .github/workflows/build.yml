@@ -896,9 +896,10 @@ jobs:
           PREFIX: ${{ matrix.artifact_prefix }}
         run: |
           set -euo pipefail
-          shopt -s nullglob
+          shopt -s nullglob extglob
           patterns=(
-            "${PREFIX}_v*.tar.gz"
+            "${PREFIX}_v!(*_system-libs).tar.gz"
+            "${PREFIX}_v*_system-libs.tar.gz"
             "${PREFIX}_v*.AppImage"
             "${PREFIX}_v*.AppImage.zsync"
             "${PREFIX}_v*.deb"
