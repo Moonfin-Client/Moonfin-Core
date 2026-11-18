@@ -64,6 +64,8 @@ class NativeDlnaChannel {
     required String targetId,
     required String streamUrl,
     required String title,
+    required String mimeType,
+    required String dlnaFeatures,
     int? startPositionTicks,
   }) async {
     if (!_supported) {
@@ -73,6 +75,8 @@ class NativeDlnaChannel {
       'targetId': targetId,
       'streamUrl': streamUrl,
       'title': title,
+      'mimeType': mimeType,
+      'dlnaFeatures': dlnaFeatures,
       'startPositionTicks': ?startPositionTicks,
     });
   }

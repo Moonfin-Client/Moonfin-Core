@@ -19,8 +19,15 @@ final class DlnaController: NSObject {
     private var genaServerPort: UInt16 = 0
     private var genaRenewalTimer: DispatchSourceTimer?
     private var consecutivePollFailures: Int = 0
+    // Discovery scans run on global queues at once and cast reads these, so
+    // every access holds discoveryLock; an unguarded write crashed the app.
+    private let discoveryLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
+    // Bumped by every new cast and by the user's own pause, seek and stop, so
+    // a resume seek still waiting for the renderer gives up.
+    private let resumeLock = NSLock()
+    private var resumeGeneration = 0
     private var isDiscovering = false
 
     private let session: URLSession = {
@@ -159,10 +166,13 @@ final class DlnaController: NSObject {
         targetId: String,
         streamUrl: String,
         title: String,
+        mimeType: String,
+        dlnaFeatures: String,
         startPositionTicks: Int64?,
         completion: @escaping (Error?) -> Void
     ) {
         emitEvent(state: "connecting")
+        let resumeToken = cancelPendingResume()
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else {
@@ -176,7 +186,13 @@ final class DlnaController: NSObject {
                 let controlUrl = targetId
                 let startTime = self.formatDlnaTime(ticks: startPositionTicks)
 
-                let metadataXml = "&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;&lt;item&gt;&lt;dc:title&gt;\(self.escapeXml(title))&lt;/dc:title&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;"
+                // Some renderers (LG) refuse a URI with Invalid Args unless the
+                // metadata gives the item a class and a res with its MIME type.
+                let upnpClass = mimeType.hasPrefix("audio/")
+                    ? "object.item.audioItem.musicTrack"
+                    : "object.item.videoItem"
+                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):\(self.escapeXml(dlnaFeatures))\">\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
+                let metadataXml = self.escapeXml(didl)
 
                 try self.sendSoap(
                     controlUrl: controlUrl,
@@ -188,18 +204,6 @@ final class DlnaController: NSObject {
                     """
                 )
 
-                if let ticks = startPositionTicks, ticks > 0 {
-                    try self.sendSoap(
-                        controlUrl: controlUrl,
-                        action: "Seek",
-                        innerBody: """
-                        <InstanceID>0</InstanceID>
-                        <Unit>REL_TIME</Unit>
-                        <Target>\(startTime)</Target>
-                        """
-                    )
-                }
-
                 try self.sendSoap(
                     controlUrl: controlUrl,
                     action: "Play",
@@ -210,9 +214,11 @@ final class DlnaController: NSObject {
                 )
 
                 self.activeDeviceControlUrl = controlUrl
-                self.activeDeviceRenderingControlUrl = self.discoveredRenderingControlUrls[controlUrl]
+                let (renderingControlUrl, eventSubUrl) = self.discoveryLock.withLock {
+                    (self.discoveredRenderingControlUrls[controlUrl], self.discoveredEventSubUrls[controlUrl])
+                }
+                self.activeDeviceRenderingControlUrl = renderingControlUrl
                 self.consecutivePollFailures = 0
-                let eventSubUrl = self.discoveredEventSubUrls[controlUrl]
                 self.activeDeviceEventSubUrl = eventSubUrl
                 self.startGenaServer()
                 if let url = eventSubUrl { self.subscribeGena(eventSubUrl: url) }
@@ -221,6 +227,11 @@ final class DlnaController: NSObject {
                 DispatchQueue.main.async { [weak self] in
                     self?.emitEvent(state: "connected")
                     completion(nil)
+                }
+
+                if let ticks = startPositionTicks, ticks > 0 {
+                    self.seekOnceStarted(
+                        controlUrl: controlUrl, target: startTime, generation: resumeToken)
                 }
             } catch {
                 DispatchQueue.main.async { [weak self] in
@@ -232,6 +243,7 @@ final class DlnaController: NSObject {
     }
 
     func pause(completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
         withActiveDevice(completion: completion) { controlUrl in
             try self.sendSoap(
                 controlUrl: controlUrl,
@@ -255,6 +267,7 @@ final class DlnaController: NSObject {
     }
 
     func seek(positionTicks: Int64, completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
             try self.sendSoap(
@@ -270,6 +283,7 @@ final class DlnaController: NSObject {
     }
 
     func stop(completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
         withActiveDevice(completion: completion) { [weak self] controlUrl in
             try self?.sendSoap(
                 controlUrl: controlUrl,
@@ -408,11 +422,11 @@ final class DlnaController: NSObject {
               let controlPath = parser.avTransportControlURL else { return nil }
 
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
-        if let renderingControlPath = parser.renderingControlURL {
-            discoveredRenderingControlUrls[controlUrl] = resolveUrl(base: locationUrl, relative: renderingControlPath)
-        }
-        if let eventSubPath = parser.avTransportEventSubURL {
-            discoveredEventSubUrls[controlUrl] = resolveUrl(base: locationUrl, relative: eventSubPath)
+        let renderingControlUrl = parser.renderingControlURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        let eventSubUrl = parser.avTransportEventSubURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        discoveryLock.withLock {
+            if let renderingControlUrl { discoveredRenderingControlUrls[controlUrl] = renderingControlUrl }
+            if let eventSubUrl { discoveredEventSubUrls[controlUrl] = eventSubUrl }
         }
         let friendlyName = parser.friendlyName ?? "DLNA Device"
         let modelName = parser.modelName ?? ""
@@ -611,6 +625,37 @@ final class DlnaController: NSObject {
                     self.handleDeviceOffline()
                 }
             }
+        }
+    }
+
+    /// Resumes at [target] once the renderer has started, after the cast is
+    /// already connected. Some renderers (LG) refuse a Seek before Play with
+    /// 711 and ignore one sent before the position moves, so the cast plays
+    /// from the start rather than failing when the renderer never takes it.
+    private func seekOnceStarted(controlUrl: String, target: String, generation: Int) {
+        func current() -> Bool { resumeLock.withLock { resumeGeneration == generation } }
+        for _ in 0..<30 {
+            guard current() else { return }
+            if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 { break }
+            Thread.sleep(forTimeInterval: 0.5)
+        }
+        guard current() else { return }
+        _ = try? sendSoap(
+            controlUrl: controlUrl,
+            action: "Seek",
+            innerBody: """
+            <InstanceID>0</InstanceID>
+            <Unit>REL_TIME</Unit>
+            <Target>\(target)</Target>
+            """
+        )
+    }
+
+    @discardableResult
+    private func cancelPendingResume() -> Int {
+        resumeLock.withLock {
+            resumeGeneration += 1
+            return resumeGeneration
         }
     }
 

@@ -19,6 +19,7 @@ import java.io.StringReader
 import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -48,8 +49,13 @@ class DlnaController(private val context: Context) {
     private var genaServerPort: Int = 0
     private var genaRenewFuture: ScheduledFuture<*>? = null
     private val consecutivePollFailures = AtomicInteger(0)
-    private val discoveredEventSubUrls = mutableMapOf<String, String>()
-    private val discoveredRenderingControlUrls = mutableMapOf<String, String>()
+    // Discovery scans run on the executor's threads at once and cast reads
+    // these, so a plain map can be corrupted mid-write.
+    private val discoveredEventSubUrls = ConcurrentHashMap<String, String>()
+    private val discoveredRenderingControlUrls = ConcurrentHashMap<String, String>()
+    // Bumped by every new cast and by the user's own pause, seek and stop, so
+    // a resume seek still waiting for the renderer gives up.
+    private val resumeGeneration = AtomicInteger(0)
     @Volatile private var isDiscovering = false
 
     companion object {
@@ -185,6 +191,8 @@ class DlnaController(private val context: Context) {
         val targetId = args["targetId"] as? String
         val streamUrl = args["streamUrl"] as? String
         val title = args["title"] as? String ?: "Moonfin"
+        val mimeType = args["mimeType"] as? String ?: "video/*"
+        val dlnaFeatures = args["dlnaFeatures"] as? String ?: "*"
         val startTicks = (args["startPositionTicks"] as? Number)?.toLong()
 
         if (targetId.isNullOrEmpty() || streamUrl.isNullOrEmpty()) {
@@ -193,11 +201,27 @@ class DlnaController(private val context: Context) {
         }
 
         emitEvent("connecting")
+        val resumeToken = resumeGeneration.incrementAndGet()
 
         executor.execute {
             try {
                 val controlUrl = targetId
                 val startTime = formatDlnaTime(startTicks)
+                // Some renderers (LG) refuse a URI with Invalid Args unless the
+                // metadata gives the item a class and a res with its MIME type.
+                val upnpClass = if (mimeType.startsWith("audio/")) {
+                    "object.item.audioItem.musicTrack"
+                } else {
+                    "object.item.videoItem"
+                }
+                val didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" " +
+                    "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" " +
+                    "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\">" +
+                    "<item id=\"0\" parentID=\"-1\" restricted=\"1\">" +
+                    "<dc:title>${escapeXml(title)}</dc:title>" +
+                    "<upnp:class>$upnpClass</upnp:class>" +
+                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:${escapeXml(dlnaFeatures)}\">${escapeXml(streamUrl)}</res>" +
+                    "</item></DIDL-Lite>"
 
                 sendSoap(
                     controlUrl,
@@ -205,16 +229,9 @@ class DlnaController(private val context: Context) {
                     """
                     <InstanceID>0</InstanceID>
                     <CurrentURI>${escapeXml(streamUrl)}</CurrentURI>
-                    <CurrentURIMetaData>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;&lt;item&gt;&lt;dc:title&gt;${escapeXml(title)}&lt;/dc:title&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</CurrentURIMetaData>
+                    <CurrentURIMetaData>${escapeXml(didl)}</CurrentURIMetaData>
                     """.trimIndent(),
                 )
-
-                if (startTicks != null && startTicks > 0L) {
-                    sendSoap(
-                        controlUrl, "Seek",
-                        "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$startTime</Target>",
-                    )
-                }
 
                 sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
 
@@ -230,6 +247,10 @@ class DlnaController(private val context: Context) {
                     emitEvent("connected")
                     result.success(null)
                 }
+
+                if (startTicks != null && startTicks > 0L) {
+                    seekOnceStarted(controlUrl, startTime, resumeToken)
+                }
             } catch (e: Exception) {
                 handler.post {
                     emitEvent("error", e.message ?: "Failed to start DLNA playback")
@@ -240,6 +261,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun pause(result: MethodChannel.Result) {
+        resumeGeneration.incrementAndGet()
         withActiveDevice(result) { controlUrl ->
             sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>")
             handler.post { result.success(null) }
@@ -254,6 +276,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun seek(args: Map<*, *>, result: MethodChannel.Result) {
+        resumeGeneration.incrementAndGet()
         val positionTicks = (args["positionTicks"] as? Number)?.toLong()
         if (positionTicks == null || positionTicks < 0L) {
             result.error("BAD_ARGS", "Missing or invalid positionTicks", null)
@@ -271,6 +294,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun stop(result: MethodChannel.Result) {
+        resumeGeneration.incrementAndGet()
         withActiveDevice(result) { controlUrl ->
             sendSoap(controlUrl, "Stop", "<InstanceID>0</InstanceID>")
             stopGena()
@@ -588,6 +612,34 @@ class DlnaController(private val context: Context) {
             if (consecutivePollFailures.incrementAndGet() >= 3) {
                 handler.post { handleDeviceOffline() }
             }
+        }
+    }
+
+    /**
+     * Resumes at [target] once the renderer has started, after the cast is
+     * already connected. Some renderers (LG) refuse a Seek before Play with
+     * 711 and ignore one sent before the position moves, so the cast plays
+     * from the start rather than failing when the renderer never takes it.
+     */
+    private fun seekOnceStarted(controlUrl: String, target: String, token: Int) {
+        // Runs after the channel result was answered, so it must not throw.
+        for (attempt in 0 until 30) {
+            if (resumeGeneration.get() != token) return
+            val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
+            if (ticks > 0L) break
+            try {
+                Thread.sleep(500)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+                return
+            }
+        }
+        if (resumeGeneration.get() != token) return
+        runCatching {
+            sendSoap(
+                controlUrl, "Seek",
+                "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
+            )
         }
     }
 
