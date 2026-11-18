@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
@@ -2657,9 +2658,12 @@ class _ContentRowsState extends State<_ContentRows>
       return;
     }
     if (!PlatformDetection.isTV && makd) {
-      _rowPeek = _rowPeekCover = MakdMetrics(
-        MediaQuery.sizeOf(context),
-      ).classicPeek;
+      // A bottom navbar floats over the foot of the screen, so the row's
+      // title starts above it.
+      _rowPeek = _rowPeekCover = math.max(
+        MakdMetrics(MediaQuery.sizeOf(context)).classicPeek,
+        _bottomNavbarInset() + _rowHeaderHeight(rows.first),
+      );
       return;
     }
     final row = rows.first;

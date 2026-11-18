@@ -63,6 +63,10 @@ const _kBackdropEdgeBlendWidthTV =
     _kExpandedWidthTV - _kExpandedBackdropWidthTV;
 
 class LeftSidebar extends StatefulWidget {
+  /// The room the menu button takes in a phone's top left corner, its 40
+  /// point circle and the 8 around it.
+  static const double mobileMenuExtent = 56;
+
   final String? activeRoute;
   final FocusNode? contentFocusNode;
   final bool showBackButton;

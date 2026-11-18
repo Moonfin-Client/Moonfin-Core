@@ -105,6 +105,13 @@ void main() {
     expect(shade.r, greaterThan(shade.g), reason: 'it keeps a hint of the hue');
   });
 
+  test('a short landscape phone drops the plot line under a toolbar', () {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    const size = Size(851, 393);
+    expect(MakdMetrics(size, topInset: 84).plotLines, 0);
+    expect(MakdMetrics(size, topInset: 24).plotLines, 1);
+  });
+
   test('past five titles each dot stands for a share of them', () {
     expect(makdActiveDot(2, 4), 2);
     expect(makdActiveDot(0, 12), 0);

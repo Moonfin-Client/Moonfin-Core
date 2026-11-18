@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../offline_aware_image.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,10 @@ class BookshelfLayout extends StatelessWidget {
   final VoidCallback? onPlay;
 
   final VoidCallback? onHoverOff;
+
+  /// Room a phone's navigation takes at the top and bottom of the bar.
+  final double topInset;
+  final double bottomInset;
   final BookshelfDetail? Function(String itemId) detailFor;
 
   const BookshelfLayout({
@@ -31,6 +37,8 @@ class BookshelfLayout extends StatelessWidget {
     this.onPlay,
     required this.detailFor,
     this.onHoverOff,
+    this.topInset = 0,
+    this.bottomInset = 0,
   });
 
   @override
@@ -45,7 +53,9 @@ class BookshelfLayout extends StatelessWidget {
         final totalHeight = constraints.maxHeight;
 
         // Heights and dimensions relative to content height
-        final contentHeight = totalHeight - (isMobile ? 108.0 : 0.0);
+        final topPadding = math.max(isMobile ? 88.0 : 0.0, topInset);
+        final bottomPadding = math.max(isMobile ? 20.0 : 0.0, bottomInset);
+        final contentHeight = totalHeight - topPadding - bottomPadding;
         final activeBookHeight = contentHeight * 0.84;
         final activeBookWidth = activeBookHeight * 0.72;
         final shelfSpineHeight = contentHeight * 0.76;
@@ -88,8 +98,8 @@ class BookshelfLayout extends StatelessWidget {
           },
           child: Padding(
             padding: EdgeInsets.only(
-              top: isMobile ? 88.0 : 0.0,
-              bottom: isMobile ? 20.0 : 0.0,
+              top: topPadding,
+              bottom: bottomPadding,
             ),
             child: Stack(
               fit: StackFit.expand,

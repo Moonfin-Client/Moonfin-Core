@@ -596,6 +596,10 @@ void main() {
   });
 
   testWidgets('a tried option stands in for the saved value', (tester) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.navbarPosition,
+      NavbarPosition.top,
+    );
     final controller = SettingsPreviewController();
     late BuildContext context;
     await tester.pumpWidget(
@@ -809,6 +813,10 @@ void main() {
   testWidgets('a picker previews the option in focus until it closes', (
     tester,
   ) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.navbarPosition,
+      NavbarPosition.top,
+    );
     final controller = SettingsPreviewController();
     await tester.pumpWidget(
       host(
