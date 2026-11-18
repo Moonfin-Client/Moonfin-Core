@@ -21,6 +21,12 @@ class NativeDlnaChannel {
   /// The renderer's last reported position, on the media's timeline.
   static int _lastPositionTicks = 0;
 
+  /// The renderer's last playback state (`playing`, `paused`, ...).
+  static String? _lastState;
+
+  /// When the renderer was first seen paused, by the phone or its remote.
+  static DateTime? _pausedSince;
+
   const NativeDlnaChannel();
 
   static bool get _supported => PlatformDetection.isMobile;
@@ -82,8 +88,6 @@ class NativeDlnaChannel {
     if (!_supported) {
       return;
     }
-    _positionOffsetTicks = positionOffsetTicks;
-    _lastPositionTicks = positionOffsetTicks;
     await _channel.invokeMethod<void>('playToDlnaDevice', {
       'targetId': targetId,
       'streamUrl': streamUrl,
@@ -93,6 +97,10 @@ class NativeDlnaChannel {
       'startPositionTicks': ?startPositionTicks,
       'durationTicks': ?durationTicks,
     });
+    // The renderer took the stream: its positions count from its start now.
+    _positionOffsetTicks = positionOffsetTicks;
+    _lastPositionTicks = positionOffsetTicks;
+    _pausedSince = null;
   }
 
   Future<void> pauseDlna() async {
@@ -149,10 +157,19 @@ class NativeDlnaChannel {
         .map((event) {
           if (event is Map) {
             final map = Map<String, dynamic>.of(event.cast<String, dynamic>());
-            final position = map['positionTicks'];
-            if (position is int) {
-              map['positionTicks'] = position + _positionOffsetTicks;
+            final state = map['state'];
+            if (state is String && _playbackStates.contains(state)) {
+              // The native side leaves a position of 0 out.
+              final position = map['positionTicks'];
+              map['positionTicks'] =
+                  (position is int ? position : 0) + _positionOffsetTicks;
               _lastPositionTicks = map['positionTicks'] as int;
+              if (state == 'paused') {
+                _pausedSince ??= DateTime.now();
+              } else if (state == 'playing') {
+                _pausedSince = null;
+              }
+              _lastState = state;
             }
             return map;
           }
@@ -161,13 +178,23 @@ class NativeDlnaChannel {
         .where((event) => event.isNotEmpty);
   }
 
+  static const _playbackStates = {'playing', 'paused', 'buffering', 'idle'};
+
   /// The renderer's last reported position, on the media's timeline.
   int get lastPositionTicks => _lastPositionTicks;
+
+  /// Whether the renderer last said it was paused.
+  bool get lastReportedPaused => _lastState == 'paused';
+
+  /// When the renderer was first seen paused, or null when it isn't.
+  DateTime? get pausedSince => _pausedSince;
 
   @visibleForTesting
   static void resetForTesting() {
     _cachedEventStream = null;
     _positionOffsetTicks = 0;
     _lastPositionTicks = 0;
+    _lastState = null;
+    _pausedSince = null;
   }
 }

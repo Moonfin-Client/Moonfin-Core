@@ -26,10 +26,15 @@ class _Service extends PlayerService {
     int? subtitleStreamIndex,
     int? volumeLevel,
     bool? isMuted,
-  }) async => calls.add(
-    'progress ${(mediaItem as AggregatedItem).id} ${position.inSeconds}'
-    '${isPaused ? ' paused' : ''}',
-  );
+  }) async {
+    onProgress?.call(resolution);
+    calls.add(
+      'progress ${(mediaItem as AggregatedItem).id} ${position.inSeconds}'
+      '${isPaused ? ' paused' : ''}',
+    );
+  }
+
+  void Function(StreamResolutionResult)? onProgress;
 
   @override
   Future<void> onPlaybackStop(
@@ -101,6 +106,61 @@ void main() {
       'progress ${_film.id} 663',
       'progress ${_film.id} 673 paused',
     ]);
+  });
+
+  test('a receiver on the film\'s timeline gets no second offset', () async {
+    await reporter.begin(
+      service: service,
+      item: _film,
+      resolution: _resolution,
+      positionsOnMediaTimeline: true,
+    );
+    receiver = (
+      active: true,
+      itemId: _film.id,
+      state: 'playing',
+      positionTicks: 663 * 10000000,
+    );
+    await reporter.tick();
+    expect(service.calls, ['progress ${_film.id} 663']);
+  });
+
+  // A DLNA seek on a remux replaces the stream in the same session.
+  test('follows a replaced stream, through the idle while it loads', () async {
+    var current = _resolution;
+    await reporter.begin(
+      service: service,
+      item: _film,
+      resolution: _resolution,
+      currentResolution: () => current,
+      positionsOnMediaTimeline: true,
+    );
+    final reported = <StreamResolutionResult>[];
+    service.onProgress = reported.add;
+    receiver = (
+      active: true,
+      itemId: _film.id,
+      state: 'playing',
+      positionTicks: 600 * 10000000,
+    );
+    await reporter.tick();
+    current = const StreamResolutionResult(
+      streamUrl: 'https://silo.example/api/v2/stream/s?seek=1800',
+      mediaSourceId: '4598',
+      playSessionId: 's',
+      playMethod: StreamPlayMethod.directStream,
+      timelineOffset: Duration(minutes: 30),
+    );
+    receiver = (
+      active: true,
+      itemId: _film.id,
+      state: 'idle',
+      positionTicks: 1800 * 10000000,
+    );
+    await reporter.tick();
+    expect(reporter.reporting, isTrue);
+    expect(reported, [_resolution, current]);
+    expect(service.calls.last, 'progress ${_film.id} 1800');
   });
 
   test('stops when the cast ends, at the last position', () async {

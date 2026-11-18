@@ -292,6 +292,8 @@ class CastService {
           service: playback.service,
           item: playback.item,
           resolution: playback.resolution,
+          currentResolution: playback.currentResolution,
+          positionsOnMediaTimeline: playback.positionsOnMediaTimeline,
         ),
       );
     }

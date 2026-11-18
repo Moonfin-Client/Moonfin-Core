@@ -48,13 +48,26 @@ class CastSessionReporter {
 
   /// Starts reporting [resolution] of [item] through [service]. A cast
   /// already reported is stopped first.
+  ///
+  /// [currentResolution] gives the stream the receiver plays now, for a
+  /// provider that replaces it in the same session (a seek the receiver
+  /// can't do itself). [positionsOnMediaTimeline] says the receiver's
+  /// positions already include the stream's timeline offset.
   Future<void> begin({
     required PlayerService service,
     required AggregatedItem item,
     required StreamResolutionResult resolution,
+    StreamResolutionResult Function()? currentResolution,
+    bool positionsOnMediaTimeline = false,
   }) async {
     await end();
-    final reporting = _Reporting(service, item, resolution);
+    final reporting = _Reporting(
+      service,
+      item,
+      resolution,
+      currentResolution,
+      positionsOnMediaTimeline,
+    );
     _current = reporting;
     reporting.timer = Timer.periodic(interval, (_) => unawaited(tick()));
   }
@@ -63,6 +76,7 @@ class CastSessionReporter {
   Future<void> tick() async {
     final reporting = _current;
     if (reporting == null || reporting.busy) return;
+    reporting.follow();
     final receiver = read();
     final over =
         !receiver.active ||
@@ -99,6 +113,7 @@ class CastSessionReporter {
     if (reporting == null) return;
     _current = null;
     reporting.timer?.cancel();
+    reporting.follow();
     try {
       await reporting.service.onPlaybackStop(
         reporting.item,
@@ -111,21 +126,41 @@ class CastSessionReporter {
   /// Whether a cast is being reported (tests).
   bool get reporting => _current != null;
 
-  static Duration _mediaPosition(_Reporting r, int ticks) =>
-      Duration(microseconds: ticks ~/ 10) + r.resolution.timelineOffset;
+  static Duration _mediaPosition(_Reporting r, int ticks) {
+    final position = Duration(microseconds: ticks ~/ 10);
+    return r.positionsOnMediaTimeline
+        ? position
+        : position + r.resolution.timelineOffset;
+  }
 }
 
 class _Reporting {
-  _Reporting(this.service, this.item, this.resolution)
-    : position = resolution.timelineOffset;
+  _Reporting(
+    this.service,
+    this.item,
+    this.resolution,
+    this.currentResolution,
+    this.positionsOnMediaTimeline,
+  ) : position = resolution.timelineOffset;
 
   final PlayerService service;
   final AggregatedItem item;
-  final StreamResolutionResult resolution;
+  StreamResolutionResult resolution;
+  final StreamResolutionResult Function()? currentResolution;
+  final bool positionsOnMediaTimeline;
   Timer? timer;
   Duration position;
   bool played = false;
   bool busy = false;
+
+  /// Takes the stream the receiver plays now. A new one is loading, so the
+  /// receiver going idle meanwhile doesn't end the cast until it has played.
+  void follow() {
+    final current = currentResolution?.call();
+    if (current == null || identical(current, resolution)) return;
+    resolution = current;
+    played = false;
+  }
 }
 
 /// A cast's stream and the server session it plays under, as a cast
@@ -135,11 +170,19 @@ class CastServerPlayback {
     required this.service,
     required this.item,
     required this.resolution,
+    this.currentResolution,
+    this.positionsOnMediaTimeline = false,
   });
 
   final PlayerService service;
   final AggregatedItem item;
   final StreamResolutionResult resolution;
+
+  /// The stream the receiver plays now, when the provider can replace it.
+  final StreamResolutionResult Function()? currentResolution;
+
+  /// Whether the receiver's positions already include the timeline offset.
+  final bool positionsOnMediaTimeline;
 }
 
 /// A cast provider whose last cast may need [CastSessionReporter]. The cast

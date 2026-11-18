@@ -79,9 +79,8 @@ class DlnaProvider
   /// The cast on the renderer, for a seek its stream can't do itself.
   _DlnaCast? _cast;
 
-  /// When the renderer was paused, for a stream the server drops after a
-  /// while ([StreamResolutionResult.reopenAfterPause]).
-  DateTime? _pausedAt;
+  /// The position the latest seek asked for, while one is being served.
+  int? _seekTarget;
 
   @override
   CastServerPlayback? takeServerPlayback() {
@@ -160,7 +159,8 @@ class DlnaProvider
       mediaSourceId: mediaSourceId,
       directAllowed: !hasExplicitIndices,
     );
-    _pausedAt = null;
+    final cast = _cast!;
+    _seekTarget = null;
 
     await _send(
       target,
@@ -175,6 +175,8 @@ class DlnaProvider
             service: siloPluginFor(client).createPlaySessionService(),
             item: item,
             resolution: resolution,
+            currentResolution: () => cast.resolution,
+            positionsOnMediaTimeline: true,
           )
         : null;
   }
@@ -201,34 +203,55 @@ class DlnaProvider
     );
   }
 
-  /// [cast]'s stream replaced by one Silo starts at [positionTicks], for a
-  /// stream the renderer can't seek in. False when it can.
-  Future<bool> _replanAt(int positionTicks) async {
+  /// The cast's stream replaced by one Silo starts at [positionTicks], for
+  /// a stream the renderer can't seek in. False when it can. Seeks made while
+  /// one is being served only move its target; the latest is served next. A
+  /// paused renderer is paused again on the new stream unless [play].
+  Future<bool> _replanAt(int positionTicks, {bool play = false}) async {
     final cast = _cast;
-    if (cast == null) return false;
-    if (!cast.resolution.seeksThroughServer) return false;
+    if (cast == null || !cast.resolution.seeksThroughServer) return false;
     final resolver = cast.resolver;
     if (resolver is! StreamReplanner) return false;
     final replanner = resolver as StreamReplanner;
     if (!replanner.canReplan(cast.resolution)) return false;
-    final next = await replanner.replan(
-      cast.item,
-      cast.resolution,
-      ReplanRequest(
-        reason: ReplanReason.seek,
-        position: Duration(microseconds: positionTicks ~/ 10),
-        deviceProfile: dlnaDeviceProfile(),
-        audioStreamIndex: cast.audioStreamIndex,
-        subtitleStreamIndex: cast.subtitleStreamIndex,
-        mediaSourceId: cast.mediaSourceId,
-        enableDirectPlay: cast.directAllowed,
-        enableDirectStream: cast.directAllowed,
-      ),
-    );
-    if (!identical(_cast, cast)) return true;
-    _cast = cast.withResolution(next);
-    _pausedAt = null;
-    await _send(cast.target, cast.item, next);
+    final running = _seekTarget != null;
+    _seekTarget = positionTicks;
+    if (running) return true;
+    final paused = !play && _native.lastReportedPaused;
+    try {
+      int? served;
+      while (_seekTarget != null && _seekTarget != served) {
+        final target = _seekTarget!;
+        final next = await replanner.replan(
+          cast.item,
+          cast.resolution,
+          ReplanRequest(
+            reason: ReplanReason.seek,
+            position: Duration(microseconds: target ~/ 10),
+            deviceProfile: dlnaDeviceProfile(),
+            audioStreamIndex: cast.audioStreamIndex,
+            subtitleStreamIndex: cast.subtitleStreamIndex,
+            mediaSourceId: cast.mediaSourceId,
+            enableDirectPlay: cast.directAllowed,
+            enableDirectStream: cast.directAllowed,
+          ),
+        );
+        // Stopped, or another cast started, while Silo answered.
+        if (!identical(_cast, cast)) return true;
+        await _send(
+          cast.target,
+          cast.item,
+          next,
+          // A stream that doesn't start there is seeked on the renderer.
+          startPositionTicks: next.seeksThroughServer ? null : target,
+        );
+        cast.resolution = next;
+        served = target;
+      }
+      if (paused && identical(_cast, cast)) await _native.pauseDlna();
+    } finally {
+      if (identical(_cast, cast)) _seekTarget = null;
+    }
     return true;
   }
 
@@ -238,7 +261,6 @@ class DlnaProvider
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
     await _native.pauseDlna();
-    _pausedAt = DateTime.now();
   }
 
   @override
@@ -246,18 +268,17 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
-    // The server has dropped a stream paused this long: start a new one at
-    // the position instead.
+    // The server has dropped a stream paused this long (by the phone or the
+    // TV's remote): start a new one at the position instead.
     final idle = _cast?.resolution.reopenAfterPause;
-    final pausedAt = _pausedAt;
+    final pausedSince = _native.pausedSince;
     if (idle != null &&
-        pausedAt != null &&
-        DateTime.now().difference(pausedAt) >= idle &&
-        await _replanAt(_native.lastPositionTicks)) {
+        pausedSince != null &&
+        DateTime.now().difference(pausedSince) >= idle &&
+        await _replanAt(_native.lastPositionTicks, play: true)) {
       return;
     }
     await _native.playDlna();
-    _pausedAt = null;
   }
 
   @override
@@ -274,9 +295,10 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
-    await _native.stopDlna();
+    // Cleared first, so a seek Silo is still answering doesn't recast.
     _cast = null;
-    _pausedAt = null;
+    _seekTarget = null;
+    await _native.stopDlna();
   }
 
   @override
@@ -299,7 +321,7 @@ class DlnaProvider
 /// A cast on a DLNA renderer: what [DlnaProvider] needs to ask the server for
 /// the same stream starting elsewhere.
 class _DlnaCast {
-  const _DlnaCast({
+  _DlnaCast({
     required this.target,
     required this.item,
     required this.resolver,
@@ -313,20 +335,11 @@ class _DlnaCast {
   final CastTarget target;
   final AggregatedItem item;
   final MediaStreamResolver resolver;
-  final StreamResolutionResult resolution;
+
+  /// The stream on the renderer, replaced by a seek Silo serves.
+  StreamResolutionResult resolution;
   final int? audioStreamIndex;
   final int? subtitleStreamIndex;
   final String? mediaSourceId;
   final bool directAllowed;
-
-  _DlnaCast withResolution(StreamResolutionResult next) => _DlnaCast(
-    target: target,
-    item: item,
-    resolver: resolver,
-    resolution: next,
-    audioStreamIndex: audioStreamIndex,
-    subtitleStreamIndex: subtitleStreamIndex,
-    mediaSourceId: mediaSourceId,
-    directAllowed: directAllowed,
-  );
 }
