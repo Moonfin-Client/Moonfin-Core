@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/local_notification_bootstrap.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/push_messaging_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_models.dart';
 import '../../../l10n/app_localizations.dart';
@@ -49,6 +50,12 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   MoonfinStatusResponse? _seerrStatus;
   bool _statusLoading = false;
   bool _canManageRequests = false;
+  bool _sendingTestNotification = false;
+  final _push =
+      PlatformDetection.isMobile &&
+          GetIt.instance.isRegistered<PushMessagingService>()
+      ? GetIt.instance<PushMessagingService>()
+      : null;
   late List<SeerrRowConfig> _rows;
   final _focusNodes = <FocusNode>[];
 
@@ -77,6 +84,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     }
     _rebuildFocusNodes();
     _syncService.addListener(_onSyncStateChanged);
+    _push?.addListener(_onPushStateChanged);
     _loadSeerrStatus(showLoading: true);
 
     _enableSeerrFocusNode.onKeyEvent = (node, event) {
@@ -115,6 +123,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   @override
   void dispose() {
     _syncService.removeListener(_onSyncStateChanged);
+    _push?.removeListener(_onPushStateChanged);
     for (final n in _focusNodes) {
       n.dispose();
     }
@@ -122,6 +131,11 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     _accountCardFocusNode.dispose();
     _refreshFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onPushStateChanged() {
+    if (!mounted) return;
+    setState(() {});
   }
 
   void _onSyncStateChanged() {
@@ -313,6 +327,30 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
     await _syncService.pushNotificationPrefs(client);
+  }
+
+  Future<void> _sendTestNotification() async {
+    if (_sendingTestNotification) return;
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final client = GetIt.instance<MediaServerClient>();
+
+    setState(() => _sendingTestNotification = true);
+    try {
+      final result = await _syncService.sendTestNotification(client);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      final message = result == null || !result.success
+          ? l10n.seerrTestNotificationFailed
+          : result.pushEnabled
+          ? l10n.seerrTestNotificationSentBody(result.devicesCount)
+          : l10n.seerrTestNotificationPushDisabled;
+      ScaffoldMessenger.maybeOf(context)
+          ?.showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) {
+        setState(() => _sendingTestNotification = false);
+      }
+    }
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -664,6 +702,70 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
             value: _seerrPrefs.notifyOnNewMedia,
             onChanged: _setNotifyOnNewMedia,
           ),
+          if (GetIt.instance.isRegistered<MediaServerClient>() &&
+              GetIt.instance<MediaServerClient>()
+                  .features
+                  .supportsPushNotifications) ...[
+            TvFocusHighlight(
+              builder: (context, focused) => ListTile(
+                leading: Icon(
+                  Icons.notification_add_outlined,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.54)
+                      : null,
+                ),
+                title: Text(
+                  l10n.seerrTestNotification,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.87)
+                        : AppColorScheme.onSurface,
+                  ),
+                ),
+                subtitle: Text(
+                  l10n.seerrTestNotificationDesc,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                trailing: _sendingTestNotification
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : null,
+                onTap: _sendingTestNotification ? null : _sendTestNotification,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Wrap(
+                spacing: 16,
+                runSpacing: 4,
+                children: [
+                  _buildPushStatus(
+                    l10n.seerrPushServerStatus,
+                    _syncService.pushSupported,
+                    l10n.enabled,
+                    l10n.unavailable,
+                  ),
+                  if (_push != null)
+                    _buildPushStatus(
+                      l10n.seerrPushDeviceStatus,
+                      _push.isRegistered,
+                      l10n.seerrPushDeviceRegistered,
+                      l10n.seerrPushDeviceNotRegistered,
+                    ),
+                ],
+              ),
+            ),
+          ],
         ],
         if (showSeerrSettings)
           Padding(
@@ -694,6 +796,22 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildPushStatus(
+    String label,
+    bool on,
+    String onText,
+    String offText,
+  ) {
+    final theme = Theme.of(context);
+    return Text(
+      '$label: ${on ? onText : offText}',
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: on ? theme.colorScheme.primary : theme.colorScheme.outline,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 
