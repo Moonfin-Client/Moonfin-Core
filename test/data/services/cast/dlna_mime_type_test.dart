@@ -109,6 +109,20 @@ void main() {
         'video/mp2t',
       );
     });
+
+    // Silo's progressive remux is a direct stream in its own container.
+    test('keeps the container of a direct stream that isn\'t MPEG-TS', () {
+      expect(
+        dlnaMimeType(
+          _resolution(
+            'http://silo/api/v2/playback/s1/remux',
+            container: 'mp4',
+            playMethod: StreamPlayMethod.directStream,
+          ),
+        ),
+        'video/mp4',
+      );
+    });
   });
 
   group('dlnaFeatures', () {
@@ -156,8 +170,8 @@ void main() {
   });
 
   group('dlnaNeedsServerTrackPick', () {
-    // Emby's shape for CT04: the audio stream isn't flagged default, the
-    // source names it.
+    // Emby's shape for CT04: no audio stream is flagged default, so the TV
+    // plays the first.
     const item = AggregatedItem(
       id: '52',
       serverId: 'emby',
@@ -228,6 +242,96 @@ void main() {
       );
       expect(dlnaNeedsServerTrackPick(flagged, audioStreamIndex: 2), isFalse);
       expect(dlnaNeedsServerTrackPick(flagged, audioStreamIndex: 1), isTrue);
+    });
+
+    // Jellyfin and Emby set DefaultAudioStreamIndex from the user's language
+    // preference, but the TV plays the track the file flags.
+    test(
+      'a preferred language that isn\'t the file\'s default needs the server',
+      () {
+        const anime = AggregatedItem(
+          id: 'c',
+          serverId: 's',
+          rawData: {
+            'MediaSources': [
+              {
+                'Id': 'src',
+                'DefaultAudioStreamIndex': 2,
+                'MediaStreams': [
+                  {'Index': 1, 'Type': 'Audio', 'IsDefault': true},
+                  {'Index': 2, 'Type': 'Audio'},
+                ],
+              },
+            ],
+          },
+        );
+        expect(
+          dlnaNeedsServerTrackPick(
+            anime,
+            mediaSourceId: 'src',
+            audioStreamIndex: 2,
+          ),
+          isTrue,
+        );
+        expect(
+          dlnaNeedsServerTrackPick(
+            anime,
+            mediaSourceId: 'src',
+            audioStreamIndex: 1,
+          ),
+          isFalse,
+        );
+      },
+    );
+
+    test('an unknown version among several needs the server', () {
+      const versions = AggregatedItem(
+        id: 'd',
+        serverId: 's',
+        rawData: {
+          'MediaSources': [
+            {
+              'Id': 'v1',
+              'MediaStreams': [
+                {'Index': 1, 'Type': 'Audio'},
+              ],
+            },
+            {
+              'Id': 'v2',
+              'MediaStreams': [
+                {'Index': 2, 'Type': 'Audio'},
+              ],
+            },
+          ],
+        },
+      );
+      expect(dlnaNeedsServerTrackPick(versions, audioStreamIndex: 1), isTrue);
+      expect(
+        dlnaNeedsServerTrackPick(
+          versions,
+          mediaSourceId: 'v2',
+          audioStreamIndex: 2,
+        ),
+        isFalse,
+      );
+    });
+
+    test('reads an index stored as a double', () {
+      const doubles = AggregatedItem(
+        id: 'e',
+        serverId: 's',
+        rawData: {
+          'MediaSources': [
+            {
+              'Id': 'src',
+              'MediaStreams': [
+                {'Index': 1.0, 'Type': 'Audio'},
+              ],
+            },
+          ],
+        },
+      );
+      expect(dlnaNeedsServerTrackPick(doubles, audioStreamIndex: 1), isFalse);
     });
 
     test('an unknown default keeps the server converting the pick', () {

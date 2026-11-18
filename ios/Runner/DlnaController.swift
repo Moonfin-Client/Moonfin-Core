@@ -283,9 +283,12 @@ final class DlnaController: NSObject {
                     <Speed>1</Speed>
                     """
                 )
+                // Paused it stays, even when the seek still fails.
+                defer {
+                    _ = try? self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+                }
                 self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
                 try self.sendSeek(controlUrl: controlUrl, target: target)
-                try self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
             }
         }
     }

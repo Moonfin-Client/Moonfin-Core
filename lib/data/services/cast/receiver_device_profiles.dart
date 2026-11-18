@@ -129,7 +129,8 @@ Map<String, dynamic> dlnaDeviceProfile() {
       <String, dynamic>{
         'Type': 'Audio',
         'Container': 'mp3,aac,m4a,flac,wav',
-        'AudioCodec': 'mp3,aac,flac,wav',
+        // Jellyfin and Emby name WAV audio by its PCM format.
+        'AudioCodec': 'mp3,aac,flac,wav,pcm_s16le,pcm_s24le',
       },
     ],
     'TranscodingProfiles': <Map<String, dynamic>>[

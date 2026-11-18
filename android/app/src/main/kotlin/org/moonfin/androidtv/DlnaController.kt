@@ -297,9 +297,13 @@ class DlnaController(private val context: Context) {
                 // play, seek once playing, and pause again.
                 if (runCatching { queryTransportState(controlUrl) }.getOrNull() != "PAUSED_PLAYBACK") throw e
                 sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
-                awaitTransportState(controlUrl, "PLAYING")
-                sendSeek(controlUrl, target)
-                sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>")
+                try {
+                    awaitTransportState(controlUrl, "PLAYING")
+                    sendSeek(controlUrl, target)
+                } finally {
+                    // Paused it stays, even when the seek still fails.
+                    runCatching { sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>") }
+                }
             }
             handler.post { result.success(null) }
         }
