@@ -273,7 +273,9 @@ class DlnaProvider
       rethrow;
     }
     if (generation != _castGeneration) {
-      throw StateError('DLNA cast was stopped or replaced before it started');
+      throw const DlnaCastSuperseded(
+        'DLNA cast was stopped or replaced before it started',
+      );
     }
     _cast = _DlnaCast(
       target: target,
@@ -312,7 +314,7 @@ class DlnaProvider
           await _native.stopDlna();
         } catch (_) {}
       }
-      throw StateError('DLNA cast was stopped before it started');
+      throw const DlnaCastSuperseded('DLNA cast was stopped before it started');
     }
     _serverPlayback = castNeedsSessionReports(client)
         ? CastServerPlayback(

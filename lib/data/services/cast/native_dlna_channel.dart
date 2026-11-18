@@ -6,6 +6,17 @@ import 'resilient_event_stream.dart';
 import '../../../l10n/current_app_localizations.dart';
 import '../../../util/platform_detection.dart';
 
+/// A DLNA cast that a newer cast or a Stop took over while it was starting.
+/// That one reports itself, so this isn't a failure to show.
+class DlnaCastSuperseded implements Exception {
+  const DlnaCastSuperseded(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class NativeDlnaChannel {
   static const MethodChannel _channel = MethodChannel(
     'com.moonfin/native_dlna',
@@ -108,11 +119,14 @@ class NativeDlnaChannel {
         'startPositionTicks': ?startPositionTicks,
         'durationTicks': ?durationTicks,
       });
-    } catch (_) {
+    } catch (e) {
       // Only the latest send's failure leaves the old stream on.
       if (seq == _sendSeq) {
         _positionOffsetTicks = offsetBefore;
         _lastPositionTicks = lastBefore;
+      }
+      if (e is PlatformException && e.code == 'DLNA_CAST_SUPERSEDED') {
+        throw DlnaCastSuperseded(e.message ?? 'DLNA cast superseded');
       }
       rethrow;
     } finally {

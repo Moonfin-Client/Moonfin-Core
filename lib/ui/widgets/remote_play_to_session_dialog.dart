@@ -1,15 +1,16 @@
 import 'dart:async';
+
 import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/cast/cast_service.dart';
 import '../../data/services/cast/cast_target.dart';
+import '../../data/services/cast/native_dlna_channel.dart';
 import '../../l10n/app_localizations.dart';
 import '../util/error_message.dart';
 import 'overlay_sheet.dart';
@@ -73,7 +74,7 @@ Future<void> showRemotePlayToSessionDialog(
     }
   } catch (e) {
     // A newer cast or a Stop took over while this DLNA cast was starting.
-    if (e is PlatformException && e.code == 'DLNA_CAST_SUPERSEDED') return;
+    if (e is DlnaCastSuperseded) return;
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context);
     messenger.showSnackBar(
@@ -157,7 +158,8 @@ class _CastTargetSheetState extends State<_CastTargetSheet> {
 
     return SafeArea(
       child: Material(
-        color: theme.bottomSheetTheme.backgroundColor ?? theme.colorScheme.surface,
+        color:
+            theme.bottomSheetTheme.backgroundColor ?? theme.colorScheme.surface,
         child: Column(
           children: [
             Padding(
