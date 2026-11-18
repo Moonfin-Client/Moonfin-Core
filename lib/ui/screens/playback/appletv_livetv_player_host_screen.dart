@@ -968,6 +968,8 @@ class _AppleTvLiveTvPlayerHostScreenState
             }
           });
         }
+        // The schedule listener sends the lineup when listings change.
+        return;
       case 'selectChannel':
         final id = action['channelId']?.toString();
         if (id != null && id.isNotEmpty) {

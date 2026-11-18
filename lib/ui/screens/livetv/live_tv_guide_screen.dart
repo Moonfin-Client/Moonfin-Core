@@ -3035,14 +3035,14 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   Future<void> _watchChannel(String channelId) async {
     unawaited(_prefs.set(UserPreferences.liveTvLastChannelId, channelId));
+    final channels = _vm.filteredChannels;
     if (widget.embedded || widget.miniPlayerMode) {
-      widget.onChannelSelected?.call(channelId, _vm.playbackChannels);
+      widget.onChannelSelected?.call(channelId, channels);
       if (widget.embedded) return;
       Navigator.of(context).pop(channelId);
       return;
     }
 
-    final channels = _vm.playbackChannels;
     final index = channels.indexWhere((channel) => channel.id == channelId);
     if (index < 0) return;
     _vm.resetWindowOnExit(windowStart: guideLeftEdge(DateTime.now()));

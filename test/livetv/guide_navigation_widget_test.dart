@@ -268,7 +268,7 @@ void main() {
     await _pumpFrames(tester);
   }
 
-  testWidgets('searched playback can tune a channel shown in its mini guide', (
+  testWidgets('playback uses the guide filter until a mini-guide selection', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(900, 700);
@@ -278,7 +278,14 @@ void main() {
       UserPreferences.liveTvCategoryDisplay,
       LiveTvCategoryDisplay.both,
     );
-    List<GuideChannel> lineup = [];
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => const ChannelGroupLineup({
+        'ch1': {'Local'},
+        'ch46': {'Local'},
+        'ch47': {'Local'},
+      }),
+    );
+    late List<GuideChannel> lineup;
     String? picked;
     final router = GoRouter(
       routes: [
@@ -312,19 +319,29 @@ void main() {
       ),
     );
     await _pumpFrames(tester);
-    await tester.enterText(find.byType(TextField), 'Channel 47');
+    await tester.tap(find.text('All channels'));
+    await _pumpFrames(tester);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(GuideFilterPicker),
+        matching: find.text('Local'),
+      ),
+    );
+    await _pumpFrames(tester);
+    await tester.enterText(find.byType(TextField), 'Channel 4');
     await _pumpFrames(tester);
     _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
     await _pumpFrames(tester);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await _pumpFrames(tester);
-    final first = find.byType(EpgChannelCell).first;
-    expect(first, findsOneWidget);
+    expect(lineup.map((channel) => channel.id), ['ch46', 'ch47']);
     final visible = tester
         .widgetList<EpgChannelCell>(find.byType(EpgChannelCell).hitTestable())
         .map((w) => w.name)
         .toList();
-    final other = visible.firstWhere((n) => n != 'Channel 47');
+    final other = visible.firstWhere(
+      (name) => name != 'Channel 46' && name != 'Channel 47',
+    );
     final node = find
         .byWidgetPredicate((w) => w is EpgChannelCell && w.name == other)
         .hitTestable()
@@ -332,7 +349,7 @@ void main() {
     await tester.tap(node);
     await _pumpFrames(tester);
     expect(picked, isNotNull);
-    expect(lineup.map((c) => c.id), contains(picked));
+    expect(lineup.map((channel) => channel.id), isNot(contains(picked)));
   });
   testWidgets(
     'mobile picker filters groups and keeps channel search in the guide',
