@@ -141,6 +141,9 @@ class _TestServerRepository extends Fake implements ServerRepository {
 
   @override
   Future<Server> withCheckedType(Server server) async => server;
+
+  @override
+  Future<Server> withFollowedEntryAddress(Server server) async => server;
 }
 
 class _TestUserRepository extends Fake implements UserRepository {

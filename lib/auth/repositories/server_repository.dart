@@ -148,6 +148,8 @@ class ServerRepository {
           }
         }
         final serverAddress = resolvedUrl.isNotEmpty ? resolvedUrl : candidate;
+        final redirected = _isRedirectToOtherOrigin(candidate, serverAddress);
+        final entryServerId = redirected ? info['Id']?.toString() : null;
 
         final existingIndex = _servers.indexWhere(
           (s) =>
@@ -166,6 +168,8 @@ class ServerRepository {
             clearDisplayAddress: displayAddress == null,
             version: info['Version'] as String? ?? existing.version,
             serverType: serverType,
+            entryAddress: redirected ? candidate : null,
+            entryServerId: entryServerId,
             dateLastAccessed: DateTime.now(),
           );
           await _authStore.putServer(updated);
@@ -185,6 +189,8 @@ class ServerRepository {
           name: info['ServerName'] as String? ?? displayAddress ?? address,
           address: serverAddress,
           displayAddress: displayAddress,
+          entryAddress: redirected ? candidate : null,
+          entryServerId: entryServerId,
           version: info['Version'] as String? ?? '',
           serverType: serverType,
           loginDisclaimer: info['LoginDisclaimer'] as String?,
@@ -263,6 +269,48 @@ class ServerRepository {
     } catch (_) {
       return server;
     }
+  }
+
+  /// [server] at the address its [Server.entryAddress] redirects to now,
+  /// saved when that changed. A server added through a redirect to another
+  /// host or port (a stable name in front of a dynamic `host:port`) would
+  /// otherwise keep the old target after it moves. The new target is only
+  /// taken when it answers with the same server `Id`. It waits at most two
+  /// seconds and otherwise hands [server] back as it was, though an answer
+  /// that comes later is still saved for next time.
+  Future<Server> withFollowedEntryAddress(Server server) => _followedEntry(
+    server,
+  ).timeout(const Duration(seconds: 2), onTimeout: () => server);
+
+  Future<Server> _followedEntry(Server server) async {
+    final entry = server.entryAddress;
+    final entryServerId = server.entryServerId;
+    if (entry == null || entryServerId == null) return server;
+    try {
+      final (info, _, resolvedUrl) = await _probeServer(entry);
+      if (resolvedUrl.isEmpty || resolvedUrl == server.address) return server;
+      if (info['Id']?.toString() != entryServerId) return server;
+      final moved = server.copyWith(address: resolvedUrl);
+      await updateServer(moved);
+      _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
+      return moved;
+    } catch (_) {
+      return server;
+    }
+  }
+
+  /// Whether probing [entered] ended on another scheme, host or port than it
+  /// started on, which only a redirect does. A path the probe added (Emby's
+  /// `/emby`) doesn't count.
+  bool _isRedirectToOtherOrigin(String entered, String resolved) {
+    final from = Uri.tryParse(entered);
+    final to = Uri.tryParse(resolved);
+    if (from == null || to == null || !from.hasAuthority || !to.hasAuthority) {
+      return false;
+    }
+    return from.scheme != to.scheme ||
+        from.host.toLowerCase() != to.host.toLowerCase() ||
+        from.port != to.port;
   }
 
   /// Adds [server] as is, or replaces the one with its id, for servers that

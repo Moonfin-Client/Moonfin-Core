@@ -270,7 +270,9 @@ class SessionRepository {
       _setState(SessionState.ready);
       return false;
     }
-    final server = await _serverRepository.withCheckedType(stored);
+    final server = await _serverRepository.withCheckedType(
+      await _serverRepository.withFollowedEntryAddress(stored),
+    );
 
     final users = _authStore.getUsers(serverId);
     final userIndex = users.indexWhere((u) => u.id == userId);
