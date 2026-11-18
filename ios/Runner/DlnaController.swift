@@ -302,6 +302,7 @@ final class DlnaController: NSObject {
     }
 
     func cleanup() {
+        cancelPendingResume()
         stopPlaybackPolling()
         stopGena()
         consecutivePollFailures = 0
