@@ -417,8 +417,10 @@ class FavoritesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// [card] with the backdrop, overview, date, age rating and (for a movie)
-  /// runtime its detail adds, keeping what the watchlist already gave.
+  /// [card] with the name, poster, backdrop, overview, date, age rating and
+  /// (for a movie) runtime its detail adds, keeping what the watchlist already
+  /// gave. Seerr's watchlist names titles by TMDB id only, so its cards start
+  /// with no name or poster.
   Future<AggregatedItem?> _withDetail(
     SeerrRepository repo,
     AggregatedItem card,
@@ -426,6 +428,8 @@ class FavoritesViewModel extends ChangeNotifier {
     final tmdbId = int.tryParse(card.id) ?? 0;
     if (tmdbId <= 0) return null;
     final raw = card.rawData;
+    String? name;
+    String? posterPath;
     String? backdropPath;
     String? overview;
     String? date;
@@ -435,6 +439,8 @@ class FavoritesViewModel extends ChangeNotifier {
     try {
       if (raw['SeerrMediaType'] == 'tv') {
         final d = await repo.getTvDetails(tmdbId);
+        name = d.displayTitle;
+        posterPath = d.posterPath;
         backdropPath = d.backdropPath;
         overview = d.overview;
         date = d.firstAirDate;
@@ -442,6 +448,8 @@ class FavoritesViewModel extends ChangeNotifier {
         voteAverage = d.voteAverage;
       } else {
         final d = await repo.getMovieDetails(tmdbId);
+        name = d.title;
+        posterPath = d.posterPath;
         backdropPath = d.backdropPath;
         overview = d.overview;
         date = d.releaseDate;
@@ -457,6 +465,8 @@ class FavoritesViewModel extends ChangeNotifier {
       serverId: card.serverId,
       rawData: {
         ...raw,
+        'Name': _text(raw['Name'] as String?) ?? _text(name) ?? '',
+        'PosterPath': _text(raw['PosterPath'] as String?) ?? posterPath ?? '',
         'BackdropPath':
             _text(raw['BackdropPath'] as String?) ?? backdropPath ?? '',
         'Overview': _text(raw['Overview'] as String?) ?? overview ?? '',
