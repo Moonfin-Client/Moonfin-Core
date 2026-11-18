@@ -47,6 +47,9 @@ class _PluginAdapter implements HttpClientAdapter {
   /// The JSON body sent with a [failing] status; empty when not set.
   final failingBody = <String, Map<String, dynamic>>{};
 
+  /// When set, every answer waits for it, as a slow server's does.
+  Completer<void>? hold;
+
   static Map<String, dynamic> _json(RecordingOwner o) => {
     'userId': o.userId,
     'name': o.name,
@@ -60,6 +63,7 @@ class _PluginAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     requests.add('${options.method} ${options.uri.path}');
+    await hold?.future;
     for (final e in failing.entries) {
       if (options.uri.path.endsWith(e.key)) {
         final body = failingBody[e.key];
@@ -450,6 +454,19 @@ void main() {
         await service.lookup(timerIds: ['t1']);
         expect(service.supported, isFalse);
         expect(supportedRecordingOwners(), isNull);
+      });
+
+      test('a gone answer to a Lookup from a replaced session leaves owners on',
+          () async {
+        adapter.failing['/Owners/Lookup'] = 404;
+        adapter.hold = Completer<void>();
+        final pending = service.lookup(timerIds: ['t1']);
+        // The session changes while the old server's answer is on its way.
+        service.setSupported(false);
+        service.setSupported(true);
+        adapter.hold!.complete();
+        await pending;
+        expect(service.supported, isTrue);
       });
 
       test('a Lookup 404 naming another reason keeps owners on', () async {

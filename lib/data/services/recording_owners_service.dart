@@ -255,7 +255,10 @@ class RecordingOwnersService extends ChangeNotifier {
         'itemIds': items,
       });
     } catch (e) {
-      if (_ownersEndpointGone(e)) _ownersWentAway(this);
+      // A reply from a session since replaced says nothing about this one.
+      if (generation == _generation && _ownersEndpointGone(e)) {
+        _ownersWentAway(this);
+      }
       return;
     }
     if (generation != _generation || data is! Map) return;
