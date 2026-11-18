@@ -31475,6 +31475,12 @@ abstract class AppLocalizations {
   /// **'Add to My Recordings'**
   String get addToMyRecordings;
 
+  /// Confirmation after the user adds a recording, or one being scheduled, to their own recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Added to My Recordings'**
+  String get addedToMyRecordings;
+
   /// Action: join a series recording another user already scheduled
   ///
   /// In en, this message translates to:

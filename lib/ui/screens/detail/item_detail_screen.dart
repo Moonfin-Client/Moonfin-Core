@@ -7046,7 +7046,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     try {
       await joinRecording(OwnedKind.item, item.id);
       messenger.showSnackBar(
-        SnackBar(content: Text(l10n.programSetToRecord)),
+        SnackBar(content: Text(l10n.addedToMyRecordings)),
       );
     } catch (_) {
       messenger.showSnackBar(

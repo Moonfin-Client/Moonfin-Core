@@ -18188,6 +18188,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get addToMyRecordings => 'Add to My Recordings';
 
   @override
+  String get addedToMyRecordings => 'Added to My Recordings';
+
+  @override
   String get addSeriesToMyRecordings => 'Add Series to My Recordings';
 
   @override

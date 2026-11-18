@@ -17855,6 +17855,10 @@
   "@addToMyRecordings": {
     "description": "Action: join a recording another user already scheduled"
   },
+  "addedToMyRecordings": "Added to My Recordings",
+  "@addedToMyRecordings": {
+    "description": "Confirmation after the user adds a recording, or one being scheduled, to their own recordings"
+  },
   "addSeriesToMyRecordings": "Add Series to My Recordings",
   "@addSeriesToMyRecordings": {
     "description": "Action: join a series recording another user already scheduled"
