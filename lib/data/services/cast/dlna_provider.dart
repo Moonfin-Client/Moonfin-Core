@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
@@ -119,6 +121,11 @@ StreamResolutionResult dlnaServerTimeline(
     return resolution;
   }
   if (resolution.playMethod == StreamPlayMethod.directPlay) return resolution;
+  // A live TV feed has no timeline to start a conversion in.
+  if (resolution.liveStreamId != null ||
+      resolution.streamUrl.toLowerCase().contains('/livetv/')) {
+    return resolution;
+  }
   final r = resolution;
   final start = startTicks ?? 0;
   final hasStart =
@@ -273,6 +280,7 @@ class DlnaProvider
       rethrow;
     }
     if (generation != _castGeneration) {
+      _discard(client, item, resolution, startPositionTicks);
       throw const DlnaCastSuperseded(
         'DLNA cast was stopped or replaced before it started',
       );
@@ -305,6 +313,7 @@ class DlnaProvider
         _cast = null;
         restorePrevious();
       }
+      _discard(client, item, cast.resolution, startPositionTicks);
       rethrow;
     }
     if (cast.stopped) {
@@ -314,7 +323,15 @@ class DlnaProvider
           await _native.stopDlna();
         } catch (_) {}
       }
+      _discard(client, item, cast.resolution, startPositionTicks);
       throw const DlnaCastSuperseded('DLNA cast was stopped before it started');
+    }
+    // A newer cast took over while this one was sent; its reports stand.
+    if (!identical(_cast, cast)) {
+      _discard(client, item, cast.resolution, startPositionTicks);
+      throw const DlnaCastSuperseded(
+        'DLNA cast was replaced before it started',
+      );
     }
     _serverPlayback = castNeedsSessionReports(client)
         ? CastServerPlayback(
@@ -326,6 +343,28 @@ class DlnaProvider
             positionsOnMediaTimeline: true,
           )
         : null;
+  }
+
+  /// Closes the server session of a cast that never got to play, so it
+  /// isn't left open until it times out. It ends at the position it would
+  /// have started from, which keeps the saved resume point.
+  void _discard(
+    MediaServerClient client,
+    AggregatedItem item,
+    StreamResolutionResult resolution,
+    int? startPositionTicks,
+  ) {
+    if (!castNeedsSessionReports(client)) return;
+    unawaited(
+      siloPluginFor(client)
+          .createPlaySessionService()
+          .onPlaybackStop(
+            item,
+            resolution,
+            Duration(microseconds: (startPositionTicks ?? 0) ~/ 10),
+          )
+          .catchError((Object _) {}),
+    );
   }
 
   /// Hands [resolution]'s stream to [target], told its MIME type, flags and
@@ -355,7 +394,7 @@ class DlnaProvider
   /// The cast's stream replaced by one Silo starts at [positionTicks], for
   /// a stream the renderer can't seek in. False when it can. Seeks made while
   /// one is being served only move its target; the latest is served next.
-  Future<bool> _replanAt(int positionTicks) async {
+  Future<bool> _replanAt(int positionTicks, {bool keepPaused = false}) async {
     final cast = _cast;
     if (cast == null) return false;
     if (cast.seekRunning) {
@@ -375,67 +414,83 @@ class DlnaProvider
     cast
       ..seekTarget = positionTicks
       ..seekRunning = true
-      ..pauseWanted = false;
+      ..pauseWanted = keepPaused
+      ..playWanted = false;
     try {
       int? served;
       while (identical(_cast, cast) && cast.seekTarget != served) {
         final target = cast.seekTarget!;
-        final next = replanner != null
-            ? await replanner.replan(
-                cast.item,
-                cast.resolution,
-                ReplanRequest(
-                  reason: ReplanReason.seek,
-                  position: Duration(microseconds: target ~/ 10),
-                  deviceProfile: dlnaDeviceProfile(),
-                  audioStreamIndex: cast.audioStreamIndex,
-                  subtitleStreamIndex: cast.subtitleStreamIndex,
-                  mediaSourceId: cast.mediaSourceId,
-                  enableDirectPlay: cast.directAllowed,
-                  enableDirectStream: cast.directAllowed,
-                ),
-              )
-            : dlnaServerTimeline(
-                cast.serverType,
-                await resolver.resolve(
+        try {
+          final next = replanner != null
+              ? await replanner.replan(
                   cast.item,
-                  deviceProfile: dlnaDeviceProfile(),
-                  audioStreamIndex: cast.audioStreamIndex,
-                  subtitleStreamIndex: cast.subtitleStreamIndex,
-                  startTimeTicks: target,
-                  mediaSourceId: cast.mediaSourceId,
-                  enableDirectPlay: cast.directAllowed,
-                  enableDirectStream: cast.directAllowed,
-                ),
-                target,
-              );
-        // Silo's session plays the new stream from here, whatever the
-        // renderer does with it.
-        cast.resolution = next;
-        served = target;
-        // Stopped, or another cast started, while Silo answered.
-        if (!identical(_cast, cast)) return true;
-        await _send(
-          cast.target,
-          cast.item,
-          next,
-          // A stream that doesn't start there is seeked on the renderer.
-          startPositionTicks: next.seeksThroughServer ? null : target,
-        );
-        // A stop that crossed the send: the renderer may have started it.
-        // Unless another cast has the renderer now.
-        if (cast.stopped) {
-          if (_cast == null) {
+                  cast.resolution,
+                  ReplanRequest(
+                    reason: ReplanReason.seek,
+                    position: Duration(microseconds: target ~/ 10),
+                    deviceProfile: dlnaDeviceProfile(),
+                    audioStreamIndex: cast.audioStreamIndex,
+                    subtitleStreamIndex: cast.subtitleStreamIndex,
+                    mediaSourceId: cast.mediaSourceId,
+                    enableDirectPlay: cast.directAllowed,
+                    enableDirectStream: cast.directAllowed,
+                  ),
+                )
+              : dlnaServerTimeline(
+                  cast.serverType,
+                  await resolver.resolve(
+                    cast.item,
+                    deviceProfile: dlnaDeviceProfile(),
+                    audioStreamIndex: cast.audioStreamIndex,
+                    subtitleStreamIndex: cast.subtitleStreamIndex,
+                    startTimeTicks: target,
+                    mediaSourceId: cast.mediaSourceId,
+                    enableDirectPlay: cast.directAllowed,
+                    enableDirectStream: cast.directAllowed,
+                  ),
+                  target,
+                );
+          // Silo's session plays the new stream from here, whatever the
+          // renderer does with it.
+          cast.resolution = next;
+          served = target;
+          // Stopped, or another cast started, while Silo answered.
+          if (!identical(_cast, cast)) return true;
+          await _send(
+            cast.target,
+            cast.item,
+            next,
+            // A stream that doesn't start there is seeked on the renderer.
+            startPositionTicks: next.seeksThroughServer ? null : target,
+          );
+          // A stop that crossed the send: the renderer may have started it.
+          // Unless another cast has the renderer now.
+          if (cast.stopped) {
+            if (_cast == null) {
+              try {
+                await _native.stopDlna();
+              } catch (_) {}
+            }
+          } else if (cast.pauseWanted && identical(_cast, cast)) {
+            // Paused before or while the server answered: the new stream
+            // starts playing.
+            cast.pauseWanted = false;
             try {
-              await _native.stopDlna();
+              await _native.pauseDlna();
             } catch (_) {}
+            // Play pressed while that Pause was on its way.
+            if (cast.playWanted && identical(_cast, cast)) {
+              cast.playWanted = false;
+              try {
+                await _native.playDlna();
+              } catch (_) {}
+            }
           }
-        } else if (cast.pauseWanted && identical(_cast, cast)) {
-          // Paused while Silo answered: the new stream starts playing.
-          cast.pauseWanted = false;
-          try {
-            await _native.pauseDlna();
-          } catch (_) {}
+        } catch (_) {
+          // A newer seek is queued: serve it rather than drop it with this
+          // one's error.
+          if (identical(_cast, cast) && cast.seekTarget != target) continue;
+          rethrow;
         }
       }
     } finally {
@@ -450,7 +505,11 @@ class DlnaProvider
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
     final cast = _cast;
-    if (cast != null && cast.seekRunning) cast.pauseWanted = true;
+    if (cast != null && cast.seekRunning) {
+      cast
+        ..pauseWanted = true
+        ..playWanted = false;
+    }
     await _native.pauseDlna();
   }
 
@@ -463,7 +522,9 @@ class DlnaProvider
     // TV's remote): start a new one at the position instead.
     // A seek being served starts its stream playing.
     if (_cast?.seekRunning ?? false) {
-      _cast!.pauseWanted = false;
+      _cast!
+        ..pauseWanted = false
+        ..playWanted = true;
       return;
     }
     final idle = _cast?.resolution.reopenAfterPause;
@@ -482,7 +543,13 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
-    if (await _replanAt(positionTicks)) return;
+    // A paused cast stays paused on the stream that starts there.
+    if (await _replanAt(
+      positionTicks,
+      keepPaused: _native.pausedSince != null,
+    )) {
+      return;
+    }
     await _native.seekDlna(positionTicks: positionTicks);
   }
 
@@ -547,6 +614,10 @@ class _DlnaCast {
   /// Whether the viewer paused while a seek was being served, which the
   /// new stream then takes.
   bool pauseWanted = false;
+
+  /// Whether the viewer pressed Play while the new stream's Pause was on
+  /// its way.
+  bool playWanted = false;
 
   /// Whether the viewer stopped this cast.
   bool stopped = false;

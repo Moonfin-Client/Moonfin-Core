@@ -227,6 +227,8 @@ final class DlnaController: NSObject {
                     <Speed>1</Speed>
                     """
                 )
+                // A newer cast keeps the controls even when this one finishes last.
+                guard self.isCurrentCast(castToken) else { throw DlnaError.castSuperseded }
 
                 self.activeDeviceControlUrl = controlUrl
                 let (renderingControlUrl, eventSubUrl) = self.discoveredUrlsLock.withLock {
@@ -297,23 +299,33 @@ final class DlnaController: NSObject {
                 // Some renderers (LG) refuse a Seek while paused with 501, so
                 // play, seek once playing, and pause again.
                 guard (try? self.queryTransportState(controlUrl: controlUrl)) == "PAUSED_PLAYBACK" else { throw error }
+                var seekError: Error?
+                do {
+                    try self.sendSoap(
+                        controlUrl: controlUrl,
+                        action: "Play",
+                        innerBody: """
+                        <InstanceID>0</InstanceID>
+                        <Speed>1</Speed>
+                        """
+                    )
+                    self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
+                    try self.sendSeek(controlUrl: controlUrl, target: target)
+                } catch {
+                    seekError = error
+                }
                 // Paused it stays, even when Play or the seek fails, unless a
-                // newer command (a Play) came in meanwhile.
-                defer {
-                    if self.resumeLock.withLock({ self.transportGeneration == transportToken }) {
-                        _ = try? self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+                // newer command (a Play) came in meanwhile. A seek that left
+                // the renderer playing isn't reported as done.
+                var pauseError: Error?
+                if self.resumeLock.withLock({ self.transportGeneration == transportToken }) {
+                    do {
+                        try self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+                    } catch {
+                        pauseError = error
                     }
                 }
-                try self.sendSoap(
-                    controlUrl: controlUrl,
-                    action: "Play",
-                    innerBody: """
-                    <InstanceID>0</InstanceID>
-                    <Speed>1</Speed>
-                    """
-                )
-                self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
-                try self.sendSeek(controlUrl: controlUrl, target: target)
+                if let error = seekError ?? pauseError { throw error }
             }
         }
     }
@@ -537,8 +549,10 @@ final class DlnaController: NSObject {
                         action: "Stop",
                         innerBody: "<InstanceID>0</InstanceID>"
                     )
-                    let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
-                    if !state.contains("TRANSITIONING") || Date() >= deadline { break }
+                    // An unanswered query isn't a renderer that has moved on.
+                    let state = try? queryTransportState(controlUrl: controlUrl)
+                    let settled = state.map { !$0.contains("TRANSITIONING") } ?? false
+                    if settled || Date() >= deadline { break }
                     Thread.sleep(forTimeInterval: 1)
                 }
                 guard current() else { throw DlnaError.castSuperseded }
@@ -671,6 +685,7 @@ final class DlnaController: NSObject {
         guard let controlUrl = activeDeviceControlUrl else { return }
         do {
             let state = try queryTransportState(controlUrl: controlUrl)
+            // An unknown position is left out, not sent as 0.
             let positionTicks = try queryPositionTicks(controlUrl: controlUrl)
             let mappedState: String
             switch state {
@@ -750,9 +765,10 @@ final class DlnaController: NSObject {
         return parseXmlElement(xml: response, elementName: "CurrentTransportState") ?? "STOPPED"
     }
 
-    private func queryPositionTicks(controlUrl: String) throws -> Int64 {
+    /// The renderer's position, or nil when it gives none it knows.
+    private func queryPositionTicks(controlUrl: String) throws -> Int64? {
         let response = try sendSoap(controlUrl: controlUrl, action: "GetPositionInfo", innerBody: "<InstanceID>0</InstanceID>")
-        let relTime = parseXmlElement(xml: response, elementName: "RelTime") ?? "00:00:00"
+        guard let relTime = parseXmlElement(xml: response, elementName: "RelTime") else { return nil }
         return parseDlnaTime(relTime)
     }
 
@@ -762,13 +778,15 @@ final class DlnaController: NSObject {
         return parser.parse()
     }
 
-    private func parseDlnaTime(_ time: String) -> Int64 {
-        let parts = time.split(separator: ":")
-        guard parts.count == 3 else { return 0 }
-        let hours = Int64(parts[0]) ?? 0
-        let minutes = Int64(parts[1]) ?? 0
-        let secondsPart = parts[2].split(separator: ".")
-        let seconds = Int64(secondsPart[0]) ?? 0
+    // Nil for a time the renderer doesn't know (UPnP's NOT_IMPLEMENTED).
+    private func parseDlnaTime(_ time: String) -> Int64? {
+        let parts = time.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: ":")
+        guard parts.count == 3,
+              let hours = Int64(parts[0]),
+              let minutes = Int64(parts[1]),
+              let secondsPart = parts[2].split(separator: ".").first,
+              let seconds = Int64(secondsPart)
+        else { return nil }
         return (hours * 3600 + minutes * 60 + seconds) * 10_000_000
     }
 
@@ -996,7 +1014,7 @@ final class DlnaController: NSObject {
         case "TRANSITIONING": mappedState = "buffering"
         default: mappedState = "idle"
         }
-        let positionTicks = relTimeStr.map { parseDlnaTime($0) }
+        let positionTicks = relTimeStr.flatMap { parseDlnaTime($0) }
         DispatchQueue.main.async { [weak self] in
             self?.consecutivePollFailures = 0
             self?.emitEvent(state: mappedState, positionTicks: positionTicks)

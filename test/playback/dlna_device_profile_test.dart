@@ -116,5 +116,26 @@ void main() {
         ]),
       );
     });
+
+    // Jellyfin writes each range condition to one hevc-rangetype option of
+    // a conversion, so a list of exclusions keeps only the last there.
+    test('ends with an HEVC range allowlist without Dolby Vision 5 or 7', () {
+      final hevc = (dlnaDeviceProfile()['CodecProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Codec'] == 'hevc');
+      final last = (hevc['Conditions'] as List).cast<Map<String, dynamic>>().last;
+      expect(last['Condition'], 'EqualsAny');
+      expect(last['Property'], 'VideoRangeType');
+      final allowed = (last['Value'] as String).split('|');
+      expect(allowed, containsAll(['SDR', 'HDR10', 'DOVIWithHDR10']));
+      for (final excluded in [
+        'DOVI',
+        'DOVIWithEL',
+        'DOVIWithELHDR10Plus',
+        'DOVIInvalid',
+      ]) {
+        expect(allowed, isNot(contains(excluded)));
+      }
+    });
   });
 }
