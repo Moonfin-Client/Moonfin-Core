@@ -11196,6 +11196,17 @@
   "@liveTvChannelGroups": {
     "description": "Heading for channel groups supplied by the Live TV tuner or M3U playlist, not program categories."
   },
+  "guideFavoriteGroupsAndCategories": "Favorite groups and categories",
+  "guideHoldOk": "Hold OK",
+  "guideUnfavorite": "Unfavorite",
+  "guideGroupShortcut": "{name} (group)",
+  "@guideGroupShortcut": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "guideCategoryShortcut": "{name} (category)",
+  "@guideCategoryShortcut": {
+    "placeholders": {"name": {"type": "String"}}
+  },
   "guideAllChannels": "All channels",
   "@guideAllChannels": {
     "description": "Browse option that shows all accessible Live TV channels, without a category or channel-group filter."

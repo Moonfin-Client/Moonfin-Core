@@ -20,7 +20,10 @@ class EpgNowNextCard extends StatelessWidget {
   final bool isLive;
   final bool apple;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+  final bool isFavorite;
   final FocusNode? focusNode;
+  final FocusOnKeyEventCallback? onKeyEvent;
 
   const EpgNowNextCard({
     super.key,
@@ -34,7 +37,10 @@ class EpgNowNextCard extends StatelessWidget {
     required this.isLive,
     required this.apple,
     required this.onTap,
+    this.onLongPress,
+    this.isFavorite = false,
     this.focusNode,
+    this.onKeyEvent,
   });
 
   @override
@@ -63,6 +69,15 @@ class EpgNowNextCard extends StatelessWidget {
                       style: textTheme.titleMedium,
                     ),
                   ),
+                  if (isFavorite)
+                    const Padding(
+                      padding: EdgeInsetsDirectional.only(start: 4),
+                      child: Icon(
+                        Icons.favorite,
+                        size: 12,
+                        color: AppColors.red500,
+                      ),
+                    ),
                   if (channelNumber != null) ...[
                     const SizedBox(width: 8),
                     _numberChip(channelNumber!),
@@ -132,6 +147,9 @@ class EpgNowNextCard extends StatelessWidget {
     return FocusableWrapper(
       focusNode: focusNode,
       onSelect: onTap,
+      onLongPress: onLongPress,
+      onKeyEvent: onKeyEvent,
+      enableLongPress: onKeyEvent == null && onLongPress != null,
       borderRadius: radius,
       child: apple
           ? adaptiveGlass(

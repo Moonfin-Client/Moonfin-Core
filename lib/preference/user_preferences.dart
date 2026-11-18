@@ -507,6 +507,7 @@ class UserPreferences extends ChangeNotifier {
     'live_tv_category_display',
     'live_tv_channel_sort_by',
     'live_tv_last_channel_id',
+    'live_tv_saved_filters',
     'music_playback_time_display',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
@@ -4183,6 +4184,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'live_tv_channel_sort_by',
     defaultValue: ChannelSortBy.number,
     values: ChannelSortBy.values,
+  );
+
+  static const liveTvSavedFilters = Preference<List<String>>(
+    key: 'live_tv_saved_filters',
+    defaultValue: [],
   );
 
   /// Last Live TV channel watched on this server/account. Channel IDs are

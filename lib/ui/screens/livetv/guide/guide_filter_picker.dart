@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -6,10 +8,14 @@ import '../../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/platform_detection.dart';
+import '../../../../util/focus/key_event_utils.dart';
 import '../../../widgets/local_search_field.dart';
 import '../../../widgets/overlay_sheet.dart';
 
-typedef GuideFilterChoice = (GuideFilter, String?);
+export '../../../../data/viewmodels/live_tv_guide_view_model.dart'
+    show GuideFilterChoice;
+
+typedef _RowId = (GuideFilterChoice, bool);
 
 class GuideFilterPicker extends StatefulWidget {
   const GuideFilterPicker({
@@ -31,20 +37,18 @@ class GuideFilterPicker extends StatefulWidget {
   State<GuideFilterPicker> createState() => _GuideFilterPickerState();
 }
 
-typedef _Row = ({
-  String label,
-  GuideFilterChoice? choice,
-  IconData? icon,
-  int? count,
-});
+typedef _Row = ({String label, _RowId? id, IconData? icon, int? count});
 
 class _GuideFilterPickerState extends State<GuideFilterPicker> {
   final _searchFieldKey = GlobalKey();
   final _search = TextEditingController();
   final _searchFocus = FocusNode();
-  final _selectedRowFocus = FocusNode();
+  final _nodes = <_RowId, FocusNode>{};
+  final _focusedRow = ValueNotifier<_RowId?>(null);
+  final _hold = FocusedKeyHold();
   ScrollController? _scroll;
   String _query = '';
+  List<_Row> _visibleRows = const [];
 
   GuideFilterChoice get _selected =>
       (widget.vm.filter, widget.vm.selectedGroup);
@@ -55,63 +59,125 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
     if (!PlatformDetection.isTV || !widget.sidePanel) return;
     // The TV route observer can give Search focus before the list lays out.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted ||
-          ModalRoute.isCurrentOf(context) != true ||
-          _selectedRowFocus.context == null) {
-        return;
-      }
-      FocusTraversalPolicy.defaultTraversalRequestFocusCallback(
-        _selectedRowFocus,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-      );
+      if (!mounted || ModalRoute.isCurrentOf(context) != true) return;
+      final active = _visibleRows
+          .where((row) => row.id?.$1 == _selected)
+          .firstOrNull
+          ?.id;
+      if (active != null) _focusRow(active);
     });
   }
 
-  List<_Row> _rows(AppLocalizations l10n) {
-    final rows = <_Row>[];
-    bool matches(String label) => label.toLowerCase().contains(_query);
-    void addFilter(GuideFilter filter, String label, IconData icon) {
-      if (matches(label)) {
-        rows.add((
-          label: label,
-          choice: (filter, null),
-          icon: icon,
-          count: null,
-        ));
+  List<GuideFilterChoice> get _saved => widget.vm.availableSavedFilters(
+    includeCategories: widget.includeCategories,
+  );
+
+  void _focusRow(_RowId id) {
+    final index = _visibleRows.indexWhere((row) => row.id == id);
+    final scroll = _scroll;
+    if (index < 0 || scroll == null || !scroll.hasClients) return;
+    final height = _rowHeight;
+    final top = index * height;
+    final position = scroll.position;
+    final visibleRoom = (position.viewportDimension - height).clamp(
+      0.0,
+      double.infinity,
+    );
+    final offset = position.pixels
+        .clamp(top - visibleRoom, top)
+        .clamp(0.0, position.maxScrollExtent);
+    if (position.pixels != offset) scroll.jumpTo(offset);
+    // Lazy rows beyond the old viewport attach during the next layout.
+    final node = _nodes.putIfAbsent(id, FocusNode.new);
+    node.requestFocus();
+  }
+
+  double get _rowHeight => MediaQuery.textScalerOf(context).scale(20) + 36;
+
+  Future<void> _toggle(_RowId id) async {
+    final (choice, savedCopy) = id;
+    final restore = PlatformDetection.isTV && _nodes[id]?.hasFocus == true;
+    var target = id;
+    if (restore && savedCopy) {
+      final saved = _saved;
+      final index = saved.indexOf(choice);
+      if (index < 0) return;
+      if (saved.length == 1) {
+        target = (choice, false);
+      } else {
+        final neighbor = index == saved.length - 1 ? index - 1 : index + 1;
+        target = (saved[neighbor], true);
       }
     }
+    await widget.vm.toggleSavedFilter(choice);
+    if (!mounted || !restore || _query.isNotEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || ModalRoute.isCurrentOf(context) != true) return;
+      final focused = _focusedRow.value;
+      if (_searchFocus.hasFocus || (focused != null && focused != id)) return;
+      _focusRow(target);
+    });
+    WidgetsBinding.instance.scheduleFrame();
+  }
 
-    void header(String label) =>
-        rows.add((label: label, choice: null, icon: null, count: null));
+  List<_Row> _rows(AppLocalizations l10n, Set<GuideFilterChoice> saved) {
+    final rows = <_Row>[];
+    void section(String label) =>
+        rows.add((label: label, id: null, icon: null, count: null));
 
-    addFilter(GuideFilter.all, l10n.guideAllChannels, Icons.live_tv);
-    addFilter(GuideFilter.favorites, l10n.favorites, Icons.star_outline);
-    final groups = widget.vm.availableGroups.where(matches);
-    if (groups.isNotEmpty) header(l10n.liveTvChannelGroups);
-    for (final group in groups) {
+    void add(GuideFilterChoice choice, {bool savedCopy = false}) {
+      final (filter, group) = choice;
+      final label =
+          group ??
+          (filter == GuideFilter.all
+              ? l10n.guideAllChannels
+              : widget.filterLabel(filter));
+      if (!label.toLowerCase().contains(_query)) return;
       rows.add((
-        label: group,
-        choice: (GuideFilter.all, group),
-        icon: Icons.folder_outlined,
-        count: widget.vm.channelCountForGroup(group),
+        id: (choice, savedCopy),
+        label: label,
+        icon: group != null
+            ? Icons.folder_outlined
+            : switch (filter) {
+                GuideFilter.movies => Icons.movie_outlined,
+                GuideFilter.series => Icons.tv,
+                GuideFilter.sports => Icons.sports_soccer,
+                GuideFilter.news => Icons.newspaper,
+                GuideFilter.kids => Icons.child_care,
+                GuideFilter.premiere => Icons.new_releases_outlined,
+                GuideFilter.favorites => Icons.favorite_border,
+                GuideFilter.all => Icons.live_tv,
+              },
+        count: group == null ? null : widget.vm.channelCountForGroup(group),
       ));
     }
-    if (widget.includeCategories) {
-      final filters = widget.vm.availableProgrammeCategories.where(
-        (filter) => matches(widget.filterLabel(filter)),
-      );
-      if (filters.isNotEmpty) header(l10n.liveTvProgrammeCategories);
-      for (final filter in filters) {
-        addFilter(filter, widget.filterLabel(filter), switch (filter) {
-          GuideFilter.movies => Icons.movie_outlined,
-          GuideFilter.series => Icons.tv,
-          GuideFilter.sports => Icons.sports_soccer,
-          GuideFilter.news => Icons.newspaper,
-          GuideFilter.kids => Icons.child_care,
-          GuideFilter.premiere => Icons.new_releases_outlined,
-          _ => Icons.live_tv,
-        });
+
+    add((GuideFilter.all, null));
+    add((GuideFilter.favorites, null));
+    if (_query.isEmpty && saved.isNotEmpty) {
+      section(l10n.guideFavoriteGroupsAndCategories);
+      for (final choice in saved) {
+        add(choice, savedCopy: true);
       }
+    }
+    void addSection(String title, Iterable<GuideFilterChoice> choices) {
+      final start = rows.length;
+      section(title);
+      for (final choice in choices) {
+        add(choice);
+      }
+      if (rows.length == start + 1) rows.removeLast();
+    }
+
+    addSection(
+      l10n.liveTvChannelGroups,
+      widget.vm.availableGroups.map((g) => (GuideFilter.all, g)),
+    );
+    if (widget.includeCategories) {
+      addSection(
+        l10n.liveTvProgrammeCategories,
+        widget.vm.availableProgrammeCategories.map((f) => (f, null)),
+      );
     }
     return rows;
   }
@@ -139,7 +205,11 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
     _scroll?.dispose();
     _search.dispose();
     _searchFocus.dispose();
-    _selectedRowFocus.dispose();
+    _hold.dispose();
+    _focusedRow.dispose();
+    for (final node in _nodes.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -167,6 +237,31 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
     return Focus(
       canRequestFocus: false,
       onKeyEvent: (_, event) {
+        final id = _focusedRow.value;
+        if (PlatformDetection.isTV &&
+            id != null &&
+            _nodes[id]?.hasFocus == true) {
+          bool stillFocused() =>
+              mounted &&
+              ModalRoute.isCurrentOf(context) == true &&
+              _nodes[id]?.hasFocus == true;
+          if (event.logicalKey.isUpKey) {
+            return _hold.start(
+              event,
+              stillFocused: stillFocused,
+              onTap: () => _nodes[id]!.focusInDirection(TraversalDirection.up),
+              onHold: _searchFocus.requestFocus,
+            );
+          }
+          if (event.logicalKey.isSelectKey && id.$1.canFavorite) {
+            return _hold.start(
+              event,
+              stillFocused: stillFocused,
+              onTap: () => Navigator.of(context).pop(id.$1),
+              onHold: () => unawaited(_toggle(id)),
+            );
+          }
+        }
         if (event.isActionable &&
             event.logicalKey.isBackKey &&
             !(event.logicalKey == LogicalKeyboardKey.backspace &&
@@ -220,11 +315,15 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                   child: ListenableBuilder(
                     listenable: widget.vm,
                     builder: (context, _) {
-                      final rows = _rows(l10n);
-                      final rowHeight =
-                          MediaQuery.textScalerOf(context).scale(20) + 36;
+                      final saved = _saved.toSet();
+                      final rows = _visibleRows = _rows(l10n, saved);
+                      final rowHeight = _rowHeight;
+                      final indices = {
+                        for (var i = 0; i < rows.length; i++)
+                          if (rows[i].id != null) rows[i].id!: i,
+                      };
                       final selected = rows.indexWhere(
-                        (row) => row.choice == _selected,
+                        (row) => row.id?.$1 == _selected,
                       );
                       _scroll ??= ScrollController(
                         initialScrollOffset: selected > 2
@@ -236,12 +335,14 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                       }
                       return ListView.builder(
                         controller: _scroll,
+                        findChildIndexCallback: (key) =>
+                            key is ValueKey<_RowId> ? indices[key.value] : null,
                         itemCount: rows.length,
                         itemExtent: rowHeight,
                         itemBuilder: (context, index) {
                           final row = rows[index];
-                          final choice = row.choice;
-                          if (choice == null) {
+                          final id = row.id;
+                          if (id == null) {
                             return Align(
                               alignment: AlignmentDirectional.centerStart,
                               child: Text(
@@ -250,14 +351,22 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                               ),
                             );
                           }
+                          final choice = id.$1;
                           final active = choice == _selected;
                           return ListTile(
-                            key: ValueKey(choice),
-                            focusNode: widget.sidePanel && active
-                                ? _selectedRowFocus
-                                : null,
+                            key: ValueKey(id),
+                            focusNode: _nodes.putIfAbsent(id, FocusNode.new),
+                            onFocusChange: (focused) {
+                              if (focused) {
+                                _focusedRow.value = id;
+                              } else if (_focusedRow.value == id) {
+                                _focusedRow.value = null;
+                              }
+                            },
                             autofocus:
-                                widget.sidePanel && active && _query.isEmpty,
+                                widget.sidePanel &&
+                                index == selected &&
+                                _query.isEmpty,
                             selected: active,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -271,7 +380,12 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                             selectedTileColor: widget.sidePanel
                                 ? null
                                 : AppColorScheme.accent,
-                            leading: Icon(row.icon),
+                            leading: Icon(
+                              row.icon,
+                              color: choice.$1 == GuideFilter.favorites
+                                  ? AppColorScheme.onSurface
+                                  : null,
+                            ),
                             title: Text(
                               row.label,
                               maxLines: 1,
@@ -280,11 +394,23 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                if (saved.contains(choice))
+                                  const Padding(
+                                    padding: EdgeInsetsDirectional.only(end: 4),
+                                    child: Icon(
+                                      Icons.favorite,
+                                      size: 12,
+                                      color: AppColors.red500,
+                                    ),
+                                  ),
                                 if (row.count != null) Text('${row.count}'),
                                 if (active) const Icon(Icons.check),
                               ],
                             ),
                             onTap: () => Navigator.of(context).pop(choice),
+                            onLongPress: choice.canFavorite
+                                ? () => _toggle(id)
+                                : null,
                           );
                         },
                       );
@@ -299,7 +425,24 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                       children: [
                         _remoteHint(l10n.ok, l10n.select),
                         if (widget.sidePanel) _remoteHint('→', l10n.close),
-                        _remoteHint(l10n.back, l10n.close),
+                        ListenableBuilder(
+                          listenable: Listenable.merge([
+                            _focusedRow,
+                            widget.vm,
+                          ]),
+                          builder: (context, _) {
+                            final choice = _focusedRow.value?.$1;
+                            if (choice == null || !choice.canFavorite) {
+                              return const SizedBox.shrink();
+                            }
+                            return _remoteHint(
+                              l10n.guideHoldOk,
+                              _saved.contains(choice)
+                                  ? l10n.guideUnfavorite
+                                  : l10n.favorite,
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),

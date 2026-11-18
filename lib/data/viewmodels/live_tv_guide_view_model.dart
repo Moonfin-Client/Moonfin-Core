@@ -229,6 +229,15 @@ enum GuideFilter {
   favorites,
 }
 
+typedef GuideFilterChoice = (GuideFilter, String?);
+
+extension GuideFilterChoiceKind on GuideFilterChoice {
+  bool get canFavorite =>
+      $2 != null || ($1 != GuideFilter.all && $1 != GuideFilter.favorites);
+  String get preferenceKey =>
+      $2 == null ? 'category:${$1.name}' : 'group:${$2}';
+}
+
 enum GuideState { loading, ready, error }
 
 /// Per-channel program fetch state, distinct from the guide-wide [GuideState].
@@ -479,6 +488,36 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   int channelCountForGroup(String group) => _groupCounts[group] ?? 0;
   List<String> _availableGroups = const [];
   List<String> get availableGroups => _availableGroups;
+  List<GuideFilterChoice> availableSavedFilters({
+    required bool includeCategories,
+  }) {
+    final keys = GetIt.instance<UserPreferences>().get(
+      UserPreferences.liveTvSavedFilters,
+    );
+    final categories = {
+      if (includeCategories)
+        for (final filter in availableProgrammeCategories)
+          'category:${filter.name}': filter,
+    };
+    return [
+      for (final key in keys.toSet())
+        if (categories[key] case final category?)
+          (category, null)
+        else if (key.startsWith('group:') &&
+            _groupCounts.containsKey(key.substring(6)))
+          (GuideFilter.all, key.substring(6)),
+    ];
+  }
+
+  Future<void> toggleSavedFilter(GuideFilterChoice choice) async {
+    if (!choice.canFavorite) return;
+    final prefs = GetIt.instance<UserPreferences>();
+    final keys = prefs.get(UserPreferences.liveTvSavedFilters).toSet();
+    if (!keys.remove(choice.preferenceKey)) keys.add(choice.preferenceKey);
+    await prefs.set(UserPreferences.liveTvSavedFilters, keys.toList());
+    _notifyListeners();
+  }
+
   String? _selectedGroup;
   String? get selectedGroup => _selectedGroup;
   String _channelQuery = '';
