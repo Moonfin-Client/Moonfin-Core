@@ -266,6 +266,31 @@ void main() {
       expect(service.canReachServer, isTrue);
     });
 
+    test('a lost stream follows the entry address at once', () async {
+      final repo = _FakeServerRepository((_) async {
+        currentBase = liveBase;
+        return liveBase;
+      });
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      // Reachable at sign-in: the old address still answered then.
+      currentBase = liveBase;
+      await service.onServerClientReady('server-1');
+      expect(service.canReachServer, isTrue);
+      repo.asked.clear();
+      // The port changed while playing.
+      currentBase = 'http://127.0.0.1:1';
+      final pingsBefore = probes;
+
+      await service.onStreamConnectionLost();
+
+      expect(repo.asked, ['server-1']);
+      expect(service.canReachServer, isTrue);
+      // The new address answered the first ping: no ping to the old one.
+      expect(probes, pingsBefore + 1);
+    });
+
     test('stays unreachable when the entry address leads nowhere new',
         () async {
       final repo = _FakeServerRepository((_) async => null);

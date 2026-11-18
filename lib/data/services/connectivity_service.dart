@@ -341,6 +341,20 @@ class ConnectivityService extends ChangeNotifier {
     }
   }
 
+  /// The player lost its stream and starts reconnecting. A server that moved
+  /// behind its entry address (a VPN reconnect changing the forwarded port)
+  /// doesn't flip the device's network, so nothing else would check now.
+  /// The entry address is followed first, before pings to the old address
+  /// time out, so the player's next reconnect attempt already uses the new
+  /// one. If nothing moved yet, the reachability check and its retries keep
+  /// following it.
+  Future<void> onStreamConnectionLost() async {
+    final getIt = GetIt.instance;
+    if (!_isOnline || !getIt.isRegistered<MediaServerClient>()) return;
+    await _followEntryAddress(getIt<MediaServerClient>());
+    await _checkServerReachability();
+  }
+
   void _scheduleRetry() {
     _retryTimer?.cancel();
     final delay = _retryBase * (1 << _retryAttempt);

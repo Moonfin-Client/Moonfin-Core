@@ -711,6 +711,13 @@ void registerPlaybackModule() {
   };
 
   _getIt.registerSingleton<PlaybackManager>(manager);
+  // A lost stream may mean the server moved behind its entry address; the
+  // check then hands the client the new address before the next reconnect.
+  manager.reconnectingStream.where((reconnecting) => reconnecting).listen((_) {
+    if (_getIt.isRegistered<ConnectivityService>()) {
+      unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
+    }
+  });
 
   _getIt.registerLazySingleton<OfflineStreamResolver>(
     () => OfflineStreamResolver(_getIt<OfflineRepository>()),
