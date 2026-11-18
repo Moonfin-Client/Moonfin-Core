@@ -459,9 +459,12 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
           startPositionTicks: startPositionTicks
         ) { error in
           if let error {
+            // A newer cast or a Stop took over while this one was starting.
+            let superseded: Bool
+            if case DlnaError.castSuperseded = error { superseded = true } else { superseded = false }
             result(
               FlutterError(
-                code: "DLNA_PLAY_FAILED",
+                code: superseded ? "DLNA_CAST_SUPERSEDED" : "DLNA_PLAY_FAILED",
                 message: error.localizedDescription,
                 details: nil
               )

@@ -27,6 +27,12 @@ final class DlnaController: NSObject {
     // a resume seek still waiting for the renderer gives up.
     private let resumeLock = NSLock()
     private var resumeGeneration = 0
+    // Bumped by every new cast and by Stop: a cast still starting (waiting out
+    // a stuck renderer) gives up rather than replace a newer one.
+    private var castGeneration = 0
+    // Bumped by every transport command, so a paused seek doesn't pause again
+    // over a Play sent while it worked.
+    private var transportGeneration = 0
     private var isDiscovering = false
 
     private let session: URLSession = {
@@ -172,6 +178,8 @@ final class DlnaController: NSObject {
     ) {
         emitEvent(state: "connecting")
         let resumeToken = cancelPendingResume()
+        let castToken = bumpCastGeneration()
+        bumpTransportGeneration()
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else {
@@ -200,9 +208,11 @@ final class DlnaController: NSObject {
                     <InstanceID>0</InstanceID>
                     <CurrentURI>\(self.escapeXml(streamUrl))</CurrentURI>
                     <CurrentURIMetaData>\(metadataXml)</CurrentURIMetaData>
-                    """
+                    """,
+                    current: { [weak self] in self?.isCurrentCast(castToken) ?? false }
                 )
 
+                guard self.isCurrentCast(castToken) else { throw DlnaError.castSuperseded }
                 try self.sendSoap(
                     controlUrl: controlUrl,
                     action: "Play",
@@ -232,6 +242,9 @@ final class DlnaController: NSObject {
                     self.seekOnceStarted(
                         controlUrl: controlUrl, target: startTime, generation: resumeToken)
                 }
+            } catch DlnaError.castSuperseded {
+                // A newer cast or a Stop took over; that one reports itself.
+                DispatchQueue.main.async { completion(DlnaError.castSuperseded) }
             } catch {
                 DispatchQueue.main.async { [weak self] in
                     self?.emitEvent(state: "error", message: error.localizedDescription)
@@ -243,6 +256,7 @@ final class DlnaController: NSObject {
 
     func pause(completion: @escaping (Error?) -> Void) {
         cancelPendingResume()
+        bumpTransportGeneration()
         withActiveDevice(completion: completion) { controlUrl in
             try self.sendSoap(
                 controlUrl: controlUrl,
@@ -253,6 +267,7 @@ final class DlnaController: NSObject {
     }
 
     func play(completion: @escaping (Error?) -> Void) {
+        bumpTransportGeneration()
         withActiveDevice(completion: completion) { controlUrl in
             try self.sendSoap(
                 controlUrl: controlUrl,
@@ -267,6 +282,7 @@ final class DlnaController: NSObject {
 
     func seek(positionTicks: Int64, completion: @escaping (Error?) -> Void) {
         cancelPendingResume()
+        let transportToken = bumpTransportGeneration()
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
             do {
@@ -275,6 +291,13 @@ final class DlnaController: NSObject {
                 // Some renderers (LG) refuse a Seek while paused with 501, so
                 // play, seek once playing, and pause again.
                 guard (try? self.queryTransportState(controlUrl: controlUrl)) == "PAUSED_PLAYBACK" else { throw error }
+                // Paused it stays, even when Play or the seek fails, unless a
+                // newer command (a Play) came in meanwhile.
+                defer {
+                    if self.resumeLock.withLock({ self.transportGeneration == transportToken }) {
+                        _ = try? self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+                    }
+                }
                 try self.sendSoap(
                     controlUrl: controlUrl,
                     action: "Play",
@@ -283,10 +306,6 @@ final class DlnaController: NSObject {
                     <Speed>1</Speed>
                     """
                 )
-                // Paused it stays, even when the seek still fails.
-                defer {
-                    _ = try? self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
-                }
                 self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
                 try self.sendSeek(controlUrl: controlUrl, target: target)
             }
@@ -315,6 +334,8 @@ final class DlnaController: NSObject {
 
     func stop(completion: @escaping (Error?) -> Void) {
         cancelPendingResume()
+        bumpCastGeneration()
+        bumpTransportGeneration()
         withActiveDevice(completion: completion) { [weak self] controlUrl in
             try self?.sendSoap(
                 controlUrl: controlUrl,
@@ -334,6 +355,7 @@ final class DlnaController: NSObject {
 
     func cleanup() {
         cancelPendingResume()
+        bumpCastGeneration()
         stopPlaybackPolling()
         stopGena()
         consecutivePollFailures = 0
@@ -483,7 +505,8 @@ final class DlnaController: NSObject {
             controlUrl: String,
             action: String,
             innerBody: String,
-            serviceURN: String? = nil
+            serviceURN: String? = nil,
+            current: () -> Bool = { true }
         ) throws -> String {
             do {
                 return try sendSoapOnce(
@@ -502,6 +525,7 @@ final class DlnaController: NSObject {
                 // up and takes it.
                 let deadline = Date().addingTimeInterval(25)
                 while true {
+                    guard current() else { throw DlnaError.castSuperseded }
                     _ = try? sendSoapOnce(
                         controlUrl: controlUrl,
                         action: "Stop",
@@ -511,6 +535,7 @@ final class DlnaController: NSObject {
                     if !state.contains("TRANSITIONING") || Date() >= deadline { break }
                     Thread.sleep(forTimeInterval: 1)
                 }
+                guard current() else { throw DlnaError.castSuperseded }
                 return try sendSoapOnce(
                     controlUrl: controlUrl,
                     action: action,
@@ -684,6 +709,26 @@ final class DlnaController: NSObject {
         }
         guard started, current() else { return }
         try? sendSeek(controlUrl: controlUrl, target: target)
+    }
+
+    @discardableResult
+    private func bumpCastGeneration() -> Int {
+        resumeLock.withLock {
+            castGeneration += 1
+            return castGeneration
+        }
+    }
+
+    private func isCurrentCast(_ token: Int) -> Bool {
+        resumeLock.withLock { castGeneration == token }
+    }
+
+    @discardableResult
+    private func bumpTransportGeneration() -> Int {
+        resumeLock.withLock {
+            transportGeneration += 1
+            return transportGeneration
+        }
     }
 
     @discardableResult
@@ -1098,6 +1143,7 @@ enum DlnaError: LocalizedError {
     case noActiveSession
     case invalidUrl
     case controllerDeallocated
+    case castSuperseded
     case httpError(action: String, statusCode: Int, upnpCode: Int?)
 
     var errorDescription: String? {
@@ -1105,6 +1151,7 @@ enum DlnaError: LocalizedError {
         case .noActiveSession: return "No active DLNA session."
         case .invalidUrl: return "Invalid DLNA control URL."
         case .controllerDeallocated: return "DLNA controller was deallocated."
+        case .castSuperseded: return "A newer DLNA cast or a stop took over."
         case .httpError(let action, let code, let upnpCode):
             if let upnpCode {
                 return "DLNA \(action) failed with HTTP \(code) (UPnP \(upnpCode))."
