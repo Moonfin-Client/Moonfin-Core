@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../util/platform_detection.dart';
 import 'sync_service.dart';
@@ -294,6 +295,11 @@ class ConnectivityService extends ChangeNotifier {
         // Ping shouldn't throw, but a client that does still means no answer.
       }
     }
+    if (!reachable && _isOnline && await _followEntryAddress(client)) {
+      try {
+        reachable = await client.systemApi.ping();
+      } catch (_) {}
+    }
     _serverReachable = reachable;
     if (!_serverReachable && wasReachable) {
       ServerLog.network(
@@ -310,6 +316,29 @@ class ConnectivityService extends ChangeNotifier {
       _scheduleRetry();
     }
     notifyListeners();
+  }
+
+  /// Whether the server's entry address now redirects to a new address, which
+  /// [client] then uses. A server added through a redirect to a dynamic
+  /// `host:port` (VPN port forwarding behind a stable name) stops answering
+  /// when the target moves, and only the entry address knows where it went.
+  Future<bool> _followEntryAddress(MediaServerClient client) async {
+    final serverId = _serverId;
+    final getIt = GetIt.instance;
+    if (serverId == null || !getIt.isRegistered<ServerRepository>()) {
+      return false;
+    }
+    try {
+      final moved = await getIt<ServerRepository>().followEntryAddressOf(
+        serverId,
+      );
+      if (moved == null) return false;
+      if (client.baseUrl != moved) client.baseUrl = moved;
+      ServerLog.network('Server moved, following its entry address');
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   void _scheduleRetry() {

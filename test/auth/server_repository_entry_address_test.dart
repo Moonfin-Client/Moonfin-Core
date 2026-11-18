@@ -111,6 +111,15 @@ void main() {
     expect(store.saved.single.address, targetUrl());
   });
 
+  test('a saved server that moved reports its new address', () async {
+    await repo.saveServer(saved());
+
+    expect(await repo.followEntryAddressOf('server-1'), targetUrl());
+    expect(repo.getServer('server-1')!.address, targetUrl());
+    // Asked again, nothing moved any more.
+    expect(await repo.followEntryAddressOf('server-1'), isNull);
+  });
+
   test('a redirect to a different server is not followed', () async {
     targetId = 'other';
 

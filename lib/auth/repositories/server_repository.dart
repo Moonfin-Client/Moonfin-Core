@@ -289,6 +289,18 @@ class ServerRepository {
     server,
   ).timeout(const Duration(seconds: 2), onTimeout: () => server);
 
+  /// The new address of the saved server [serverId] when its entry address
+  /// now redirects somewhere else that answers with the same server `Id`,
+  /// saved and handed to a cached client; null when nothing moved. Asked by
+  /// the reachability check once the current address stops answering, so a
+  /// target that moves while the app is open is found without a restart.
+  Future<String?> followEntryAddressOf(String serverId) async {
+    final server = getServer(serverId);
+    if (server == null || server.entryAddress == null) return null;
+    final followed = await _followedEntry(server);
+    return followed.address == server.address ? null : followed.address;
+  }
+
   Future<Server> _followedEntry(Server server) async {
     final entry = server.entryAddress;
     final entryServerId = server.entryServerId;

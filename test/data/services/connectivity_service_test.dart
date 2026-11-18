@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/auth/repositories/server_repository.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_emby/server_emby.dart';
@@ -14,6 +15,19 @@ import 'package:server_silo/server_silo.dart';
 class _MockConnectivity extends Mock implements Connectivity {}
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
+
+class _FakeServerRepository extends Fake implements ServerRepository {
+  _FakeServerRepository(this.onFollow);
+
+  final Future<String?> Function(String serverId) onFollow;
+  final asked = <String>[];
+
+  @override
+  Future<String?> followEntryAddressOf(String serverId) {
+    asked.add(serverId);
+    return onFollow(serverId);
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -218,5 +232,52 @@ void main() {
     await service.recheckNow();
     expect(service.canReachServer, isTrue);
     expect(probes, 1);
+  });
+
+  group('a server added through a redirect', () {
+    // The saved target stopped answering, e.g. a VPN reconnect moved the
+    // forwarded port while the app was open.
+    late String currentBase;
+    late String liveBase;
+
+    setUp(() {
+      liveBase = 'http://${server.address.address}:${server.port}';
+      currentBase = 'http://127.0.0.1:1';
+      final client = GetIt.instance<MediaServerClient>();
+      when(() => client.systemApi).thenAnswer(
+        (_) => EmbySystemApi(Dio(BaseOptions(baseUrl: currentBase))),
+      );
+    });
+
+    test('follows its entry address and is reachable again', () async {
+      final repo = _FakeServerRepository((_) async {
+        // The repository hands the cached client the new address.
+        currentBase = liveBase;
+        return liveBase;
+      });
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      await service.recheckNow();
+
+      await service.onServerClientReady('server-1');
+
+      expect(repo.asked, contains('server-1'));
+      expect(service.canReachServer, isTrue);
+    });
+
+    test('stays unreachable when the entry address leads nowhere new',
+        () async {
+      final repo = _FakeServerRepository((_) async => null);
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      await service.recheckNow();
+
+      await service.onServerClientReady('server-1');
+
+      expect(repo.asked, contains('server-1'));
+      expect(service.canReachServer, isFalse);
+    });
   });
 }
