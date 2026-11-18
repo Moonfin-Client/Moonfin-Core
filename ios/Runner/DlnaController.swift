@@ -482,6 +482,38 @@ final class DlnaController: NSObject {
             innerBody: String,
             serviceURN: String? = nil
         ) throws -> String {
+            do {
+                return try sendSoapOnce(
+                    controlUrl: controlUrl,
+                    action: action,
+                    innerBody: innerBody,
+                    serviceURN: serviceURN
+                )
+            } catch DlnaError.httpError(let failed, _, let upnpCode)
+                where failed == "SetAVTransportURI" && upnpCode == 701 {
+                // A renderer still holding an earlier URI (an LG left in
+                // LG_TRANSITIONING by a cast that never started) refuses a
+                // new one with 701 until it is stopped.
+                _ = try? sendSoapOnce(
+                    controlUrl: controlUrl,
+                    action: "Stop",
+                    innerBody: "<InstanceID>0</InstanceID>"
+                )
+                return try sendSoapOnce(
+                    controlUrl: controlUrl,
+                    action: action,
+                    innerBody: innerBody,
+                    serviceURN: serviceURN
+                )
+            }
+        }
+
+        private func sendSoapOnce(
+            controlUrl: String,
+            action: String,
+            innerBody: String,
+            serviceURN: String? = nil
+        ) throws -> String {
                 guard let url = URL(string: controlUrl) else {
                         throw DlnaError.invalidUrl
                 }
@@ -521,10 +553,25 @@ final class DlnaController: NSObject {
 
                 if let error = responseError { throw error }
                 if statusCode < 200 || statusCode >= 300 {
-                        throw DlnaError.httpError(action: action, statusCode: statusCode)
+                        throw DlnaError.httpError(
+                            action: action,
+                            statusCode: statusCode,
+                            upnpCode: upnpErrorCode(responseData)
+                        )
                 }
                 return String(data: responseData ?? Data(), encoding: .utf8) ?? ""
         }
+
+    /// The `errorCode` of a SOAP fault's UPnPError, if the body has one.
+    private func upnpErrorCode(_ data: Data?) -> Int? {
+        guard let body = data.flatMap({ String(data: $0, encoding: .utf8) }),
+              let range = body.range(
+                of: "<errorCode>\\s*(\\d+)\\s*</errorCode>",
+                options: .regularExpression
+              )
+        else { return nil }
+        return Int(body[range].filter(\.isNumber))
+    }
 
     private func formatDlnaTime(ticks: Int64?) -> String {
         guard let ticks, ticks > 0 else { return "00:00:00" }
@@ -1032,14 +1079,18 @@ enum DlnaError: LocalizedError {
     case noActiveSession
     case invalidUrl
     case controllerDeallocated
-    case httpError(action: String, statusCode: Int)
+    case httpError(action: String, statusCode: Int, upnpCode: Int?)
 
     var errorDescription: String? {
         switch self {
         case .noActiveSession: return "No active DLNA session."
         case .invalidUrl: return "Invalid DLNA control URL."
         case .controllerDeallocated: return "DLNA controller was deallocated."
-        case .httpError(let action, let code): return "DLNA \(action) failed with HTTP \(code)."
+        case .httpError(let action, let code, let upnpCode):
+            if let upnpCode {
+                return "DLNA \(action) failed with HTTP \(code) (UPnP \(upnpCode))."
+            }
+            return "DLNA \(action) failed with HTTP \(code)."
         }
     }
 }
