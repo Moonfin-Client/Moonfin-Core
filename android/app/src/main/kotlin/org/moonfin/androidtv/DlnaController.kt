@@ -313,6 +313,7 @@ class DlnaController(private val context: Context) {
     }
 
     fun onDestroy() {
+        resumeGeneration.incrementAndGet()
         stopContinuousDiscovery()
         stopPlaybackPolling()
         stopGena()
@@ -626,7 +627,10 @@ class DlnaController(private val context: Context) {
      */
     private fun seekOnceStarted(controlUrl: String, target: String, token: Int) {
         // Runs after the channel result was answered, so it must not throw.
-        for (attempt in 0 until 30) {
+        // A slow renderer takes a while to answer each query, so the wait is
+        // timed rather than counted.
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15)
+        while (System.nanoTime() < deadline) {
             if (resumeGeneration.get() != token) return
             val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
             if (ticks > 0L) break
@@ -870,6 +874,7 @@ class DlnaController(private val context: Context) {
 
     private fun handleDeviceOffline() {
         if (activeDeviceControlUrl == null) return
+        resumeGeneration.incrementAndGet()
         stopPlaybackPolling()
         stopGena()
         activeDeviceControlUrl = null

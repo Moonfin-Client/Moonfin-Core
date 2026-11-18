@@ -56,6 +56,26 @@ void main() {
       expect(hdr['hdr10'], isTrue);
     });
 
+    test('direct plays MPEG-TS under both names', () {
+      final video = (dlnaDeviceProfile()['DirectPlayProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Type'] == 'Video');
+      expect((video['Container'] as String).split(','), containsAll(['ts', 'mpegts']));
+    });
+
+    test('converts H264 profiles a TV cannot decode, such as High 10', () {
+      final h264 = (dlnaDeviceProfile()['CodecProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Codec'] == 'h264');
+      final profiles = (h264['Conditions'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((c) => c['Property'] == 'VideoProfile');
+      expect(profiles['Condition'], 'EqualsAny');
+      final allowed = (profiles['Value'] as String).split('|');
+      expect(allowed, contains('high'));
+      expect(allowed, isNot(contains('high 10')));
+    });
+
     // The names must match Jellyfin's VideoRangeType exactly to apply.
     test('keeps every Dolby Vision type without an HDR10 base off HEVC', () {
       final hevc = (dlnaDeviceProfile()['CodecProfiles'] as List)
