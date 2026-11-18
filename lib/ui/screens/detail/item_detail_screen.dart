@@ -264,6 +264,7 @@ Future<bool?> _confirmSharedRecordingDelete(
   AggregatedItem item,
 ) async {
   if (item.isFolder || item.type == 'Playlist') return null;
+  if (!ownersCoverServer(item.serverId)) return null;
   final others = await freshOtherOwners(OwnedKind.item, item.id);
   if (others.isEmpty || !context.mounted) return null;
   return confirmSharedDelete(context, others);
@@ -6970,6 +6971,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   bool _canClaimRecording(AggregatedItem item) {
     final owners = _recordingOwners;
     if (owners == null || !owners.supported) return false;
+    if (!ownersCoverServer(item.serverId)) return false;
     if (owners.isMine(OwnedKind.item, item.id) != false) return false;
     return item.type == 'Recording' ||
         owners.isRecording(item.id) == true ||
@@ -6981,7 +6983,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   /// that same reference is released in dispose.
   void _loadRecordingOwners() {
     final item = viewModel.item;
-    if (item == null || item.isFolder) return;
+    if (item == null || item.isFolder || !ownersCoverServer(item.serverId)) {
+      return;
+    }
     if (_recordingOwners == null) {
       final getIt = GetIt.instance;
       if (!getIt.isRegistered<RecordingOwnersService>()) return;

@@ -444,6 +444,21 @@ void main() {
         );
       }
 
+      test('a Lookup answering that the endpoints are gone turns owners off',
+          () async {
+        adapter.failing['/Owners/Lookup'] = 404;
+        await service.lookup(timerIds: ['t1']);
+        expect(service.supported, isFalse);
+        expect(supportedRecordingOwners(), isNull);
+      });
+
+      test('a Lookup 404 naming another reason keeps owners on', () async {
+        adapter.failing['/Owners/Lookup'] = 404;
+        adapter.failingBody['/Owners/Lookup'] = {'error': 'Something else'};
+        await service.lookup(timerIds: ['t1']);
+        expect(service.supported, isTrue);
+      });
+
       test('a 404 saying the feature is off turns owners off', () async {
         adapter.failing['/Owners/Record'] = 404;
         adapter.failingBody['/Owners/Record'] = {

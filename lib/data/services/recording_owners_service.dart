@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/user_repository.dart';
 import '../models/live_tv_recording_state.dart';
+import 'media_server_client_factory.dart';
 import 'plugin_sync_service.dart';
 
 /// A user who owns (asked for) a recording.
@@ -233,7 +234,8 @@ class RecordingOwnersService extends ChangeNotifier {
   }
 
   /// Reads the owners of these ids into the cache. A failure leaves the cache
-  /// as it was.
+  /// as it was; an answer saying the owner endpoints are gone turns owners off
+  /// here too, as the other owner calls do.
   Future<void> lookup({
     Iterable<String> timerIds = const [],
     Iterable<String> seriesTimerIds = const [],
@@ -252,7 +254,8 @@ class RecordingOwnersService extends ChangeNotifier {
         'seriesTimerIds': series,
         'itemIds': items,
       });
-    } catch (_) {
+    } catch (e) {
+      if (_ownersEndpointGone(e)) _ownersWentAway(this);
       return;
     }
     if (generation != _generation || data is! Map) return;
@@ -397,6 +400,23 @@ void _ownersWentAway(RecordingOwnersService owners) {
 
 /// The owners service when the server's plugin keeps owners, else null.
 RecordingOwnersService? supportedRecordingOwners() => _supportedOwners();
+
+/// Whether an item from [serverId] is on the active server, the one the owners
+/// service asks. An item opened from another signed-in server has owners only
+/// on that server, so owner features stay off for it. Unknown servers, and
+/// apps without a client factory, count as the active one.
+bool ownersCoverServer(String? serverId) {
+  if (serverId == null || serverId.isEmpty) return true;
+  final getIt = GetIt.instance;
+  if (!getIt.isRegistered<MediaServerClient>() ||
+      !getIt.isRegistered<MediaServerClientFactory>()) {
+    return true;
+  }
+  final client = getIt<MediaServerClientFactory>().getClientIfExists(serverId);
+  if (client == null) return true;
+  final active = getIt<MediaServerClient>();
+  return identical(client, active) || client.baseUrl == active.baseUrl;
+}
 
 /// Adds the current user to the owners of a timer or series rule as it
 /// stands (joining a series never asks which episodes, so it can't change the

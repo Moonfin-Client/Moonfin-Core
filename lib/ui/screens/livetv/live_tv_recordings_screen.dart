@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -203,7 +204,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
 
   void _focusMyRecordingsRow() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _myRowFocus.context == null) return;
+      if (!mounted || _myRowFocus.context?.mounted != true) return;
       final primary = FocusManager.instance.primaryFocus;
       final untouched = primary == null ||
           _headerFocus.hasFocus ||
@@ -291,14 +292,23 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     // What the user owns may have changed with it. The filters follow
     // whichever scope is showing once the ids are back, so a switch made
     // meanwhile still gets them.
+    final before = _mine!.itemIds;
     final mine = await _readMine(owners);
     if (!mounted || _mine == null) return;
     if (mine != null) _mine = mine;
     _applyOwnerFilters();
+    // A recording claimed or left from a page opened over this one changes
+    // the finished rows, not just the timers.
+    final itemsChanged = mine != null && !setEquals(before, mine.itemIds);
     await Future.wait([
       scheduleRefresh,
       seriesRefresh,
-      _vm.refreshScheduled(mine: _mine),
+      if (itemsChanged && _mineOnly)
+        _vm.loadMine(_mine!)
+      else ...[
+        _vm.refreshScheduled(mine: _mine),
+        if (itemsChanged) _vm.loadMyRecordings(_mine!),
+      ],
     ]);
     if (!mounted) return;
     _lookupOwners();
