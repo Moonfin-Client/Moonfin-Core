@@ -462,6 +462,25 @@ class DlnaController(private val context: Context) {
                 serviceUrn: String = AVTRANSPORT_URN,
                 timeoutMs: Int = 5000,
         ): String {
+        try {
+            return sendSoapOnce(controlUrl, action, innerBody, serviceUrn, timeoutMs)
+        } catch (e: DlnaSoapException) {
+            if (action != "SetAVTransportURI" || e.upnpCode != 701) throw e
+            // A renderer still holding an earlier URI (an LG left in
+            // LG_TRANSITIONING by a cast that never started) refuses a new
+            // one with 701 until it is stopped.
+            runCatching { sendSoapOnce(controlUrl, "Stop", "<InstanceID>0</InstanceID>") }
+            return sendSoapOnce(controlUrl, action, innerBody, serviceUrn, timeoutMs)
+        }
+    }
+
+        private fun sendSoapOnce(
+                controlUrl: String,
+                action: String,
+                innerBody: String,
+                serviceUrn: String = AVTRANSPORT_URN,
+                timeoutMs: Int = 5000,
+        ): String {
         val envelope = """<?xml version="1.0" encoding="utf-8"?>
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <s:Body>
@@ -486,8 +505,14 @@ class DlnaController(private val context: Context) {
         val responseBody = if (responseCode in 200..299) {
             conn.inputStream.bufferedReader().use { it.readText() }
         } else {
+            val fault = runCatching {
+                conn.errorStream?.bufferedReader()?.use { it.readText() }
+            }.getOrNull()
             conn.disconnect()
-            throw RuntimeException("DLNA $action failed with HTTP $responseCode")
+            val upnpCode = fault?.let {
+                Regex("<errorCode>\\s*(\\d+)\\s*</errorCode>").find(it)
+            }?.groupValues?.get(1)?.toIntOrNull()
+            throw DlnaSoapException(action, responseCode, upnpCode)
         }
         conn.disconnect()
         return responseBody
@@ -783,3 +808,13 @@ class DlnaController(private val context: Context) {
         emitEvent("disconnected", message = "Device unreachable")
     }
 }
+
+/**
+ * A SOAP action the renderer refused, with the UPnP `errorCode` of its
+ * fault when it gave one.
+ */
+class DlnaSoapException(action: String, statusCode: Int, val upnpCode: Int?) :
+    RuntimeException(
+        "DLNA $action failed with HTTP $statusCode" +
+            (upnpCode?.let { " (UPnP $it)" } ?: ""),
+    )
