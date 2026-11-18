@@ -136,6 +136,43 @@ void main() {
     expect(store.saved, isEmpty);
   });
 
+  group('what counts as a redirect', () {
+    bool redirect(String from, String to) =>
+        ServerRepository.isRedirectToOtherOrigin(from, to);
+
+    test('another port or host does', () {
+      expect(redirect('https://name.example', 'https://1.2.3.4:51234'), isTrue);
+      expect(redirect('http://a.example', 'http://b.example'), isTrue);
+    });
+
+    test('an HTTPS upgrade on the same host and default ports does not', () {
+      expect(
+        redirect('http://media.example.com', 'https://media.example.com'),
+        isFalse,
+      );
+      expect(
+        redirect('http://Media.example.com:80', 'https://media.example.com/'),
+        isFalse,
+      );
+    });
+
+    test('an HTTPS upgrade that changes the port or host still does', () {
+      expect(
+        redirect('http://media.example.com', 'https://media.example.com:8920'),
+        isTrue,
+      );
+      expect(
+        redirect('http://media.example.com', 'https://other.example.com'),
+        isTrue,
+      );
+    });
+
+    test('a path the probe added does not', () {
+      expect(redirect('http://emby.local:8096', 'http://emby.local:8096/emby'),
+          isFalse);
+    });
+  });
+
   test('the entry address survives a save and load', () {
     final server = saved();
     final restored = Server.fromJson(server.id, server.toJson());

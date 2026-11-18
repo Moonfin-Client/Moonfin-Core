@@ -125,6 +125,13 @@ class ServerRepository {
     for (final candidate in candidates) {
       try {
         var (info, serverType, resolvedUrl) = await _probeServer(candidate);
+        // Only a redirect the entered address answered with counts. Switching
+        // to Silo's native API below lands on another port too, but following
+        // the entry address again would lead back to the compat service.
+        var redirected = isRedirectToOtherOrigin(
+          candidate,
+          resolvedUrl.isNotEmpty ? resolvedUrl : candidate,
+        );
         if (serverType == ServerType.jellyfin && offerSiloNative != null) {
           final jellyfinAddress = resolvedUrl.isNotEmpty
               ? resolvedUrl
@@ -139,6 +146,7 @@ class ServerRepository {
                 ),
               )) {
             (info, serverType, resolvedUrl) = native;
+            redirected = false;
           }
         }
         if (serverType == ServerType.silo) {
@@ -148,7 +156,6 @@ class ServerRepository {
           }
         }
         final serverAddress = resolvedUrl.isNotEmpty ? resolvedUrl : candidate;
-        final redirected = _isRedirectToOtherOrigin(candidate, serverAddress);
         final entryServerId = redirected ? info['Id']?.toString() : null;
 
         final existingIndex = _servers.indexWhere(
@@ -301,16 +308,24 @@ class ServerRepository {
 
   /// Whether probing [entered] ended on another scheme, host or port than it
   /// started on, which only a redirect does. A path the probe added (Emby's
-  /// `/emby`) doesn't count.
-  bool _isRedirectToOtherOrigin(String entered, String resolved) {
+  /// `/emby`) doesn't count, and neither does a proxy upgrading plain HTTP to
+  /// HTTPS on the same host and default ports: following that again would
+  /// only send an unencrypted request that always lands on the same address.
+  @visibleForTesting
+  static bool isRedirectToOtherOrigin(String entered, String resolved) {
     final from = Uri.tryParse(entered);
     final to = Uri.tryParse(resolved);
     if (from == null || to == null || !from.hasAuthority || !to.hasAuthority) {
       return false;
     }
-    return from.scheme != to.scheme ||
-        from.host.toLowerCase() != to.host.toLowerCase() ||
-        from.port != to.port;
+    final sameHost = from.host.toLowerCase() == to.host.toLowerCase();
+    final httpsUpgrade = sameHost &&
+        from.scheme == 'http' &&
+        to.scheme == 'https' &&
+        from.port == 80 &&
+        to.port == 443;
+    if (httpsUpgrade) return false;
+    return from.scheme != to.scheme || !sameHost || from.port != to.port;
   }
 
   /// Adds [server] as is, or replaces the one with its id, for servers that
