@@ -357,12 +357,18 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     );
   }
 
-  int get _recordingsCount =>
-      _vm.recentRecordings.length +
-      _vm.seriesRecordings.length +
-      _vm.movieRecordings.length +
-      _vm.sportsRecordings.length +
-      _vm.kidsRecordings.length;
+  // A recording can sit in several rows (Recent and TV Series, say), so each
+  // is counted once.
+  int get _recordingsCount => {
+        for (final item in [
+          ..._vm.recentRecordings,
+          ..._vm.seriesRecordings,
+          ..._vm.movieRecordings,
+          ..._vm.sportsRecordings,
+          ..._vm.kidsRecordings,
+        ])
+          item.id,
+      }.length;
 
   int get _scheduledCount =>
       _scheduleVm.groups.fold(0, (sum, g) => sum + g.items.length);
