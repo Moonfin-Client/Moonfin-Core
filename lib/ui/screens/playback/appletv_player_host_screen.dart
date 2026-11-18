@@ -50,6 +50,7 @@ import '../../../util/platform_detection.dart';
 import 'appletv_playback_prompt_controller.dart';
 import 'episode_browser.dart';
 import 'osd_buttons.dart';
+import 'playback_ended_by_server.dart';
 
 class AppleTvPlayerHostScreen extends StatefulWidget {
   const AppleTvPlayerHostScreen({super.key});
@@ -63,6 +64,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<void>? _exitSub;
   StreamSubscription<void>? _queueSub;
   StreamSubscription<void>? _sessionEndedSub;
+  StreamSubscription<String>? _endedByServerSub;
   StreamSubscription<dynamic>? _finishedItemStopSub;
   String? _lastMarkedPlayedItemId;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
@@ -196,6 +198,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _queueSub = manager.queueService.queueChangedStream.listen(
         (_) => _onQueueChanged(),
       );
+      _endedByServerSub = manager.endedByServerStream.listen((message) {
+        if (mounted) showPlaybackEndedByServer(context, message);
+      });
       _sessionEndedSub = manager.sessionEndedStream.listen(
         (_) => _handleExit(),
       );
@@ -1966,6 +1971,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _exitSub?.cancel();
     _queueSub?.cancel();
     _sessionEndedSub?.cancel();
+    _endedByServerSub?.cancel();
     _finishedItemStopSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();

@@ -882,13 +882,10 @@ class SyncPlayManager extends ChangeNotifier {
 
   String? _resolveActiveServerId(MediaServerClient client) {
     try {
-      final factory = GetIt.instance<MediaServerClientFactory>();
-      final entries = factory.clients.entries;
-      for (final entry in entries) {
-        if (identical(entry.value, client)) return entry.key;
-      }
-    } catch (_) {}
-    return null;
+      return GetIt.instance<MediaServerClientFactory>().serverIdOf(client);
+    } catch (_) {
+      return null;
+    }
   }
 
   void _handleUnpause(SyncPlayCommand command) {

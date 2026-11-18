@@ -793,12 +793,12 @@ build_tarball() {
 
   local version="$(get_app_version)"
   local tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.tar.gz"
+  local system_tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}_system-libs.tar.gz"
   local tar_dir="$TEMP_DIR/tarball/moonfin-${version}"
 
   rm -rf "$TEMP_DIR/tarball"
   mkdir -p "$tar_dir"
   cp -r "$BUILD_DIR"/* "$tar_dir/"
-  inject_linux_runtime_libs "$tar_dir"
 
   if [ -f "$tar_dir/moonfin" ]; then
     mv "$tar_dir/moonfin" "$tar_dir/moonfin-bin"
@@ -890,9 +890,14 @@ EOF
   install_icons "$tar_dir/share"
 
   cd "$TEMP_DIR/tarball"
+  # Without the bundled libraries, for distro packages like the AUR's that
+  # take every library from the system.
+  tar -czf "$system_tarball_name" "moonfin-${version}"
+  inject_linux_runtime_libs "$tar_dir"
   tar -czf "$tarball_name" "moonfin-${version}"
-  mv "$tarball_name" "$REPO_ROOT/"
+  mv "$tarball_name" "$system_tarball_name" "$REPO_ROOT/"
   echo "✓ Created: $REPO_ROOT/$tarball_name"
+  echo "✓ Created: $REPO_ROOT/$system_tarball_name"
 }
 
 # The newest glibc anything in the installed tree asks for, which is the oldest
