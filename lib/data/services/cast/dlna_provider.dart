@@ -104,6 +104,48 @@ int? _defaultAudioIndex(List<Map<String, dynamic>> streams) {
   return (chosen?['Index'] as num?)?.toInt();
 }
 
+/// [resolution] as the renderer sees it. A Jellyfin or Emby conversion is
+/// produced as it plays, so the renderer can't seek in it: it starts where
+/// it was asked ([startTicks]), and a seek asks the server for a new one, as
+/// Silo's remuxes say of themselves. Anything else is returned as it is.
+StreamResolutionResult dlnaServerTimeline(
+  ServerType serverType,
+  StreamResolutionResult resolution,
+  int? startTicks,
+) {
+  if (serverType != ServerType.jellyfin && serverType != ServerType.emby) {
+    return resolution;
+  }
+  if (resolution.playMethod == StreamPlayMethod.directPlay) return resolution;
+  final r = resolution;
+  return StreamResolutionResult(
+    streamUrl: r.streamUrl,
+    mediaSourceId: r.mediaSourceId,
+    liveStreamId: r.liveStreamId,
+    playSessionId: r.playSessionId,
+    requestHeaders: r.requestHeaders,
+    playMethod: r.playMethod,
+    container: r.container,
+    videoRangeType: r.videoRangeType,
+    mediaType: r.mediaType,
+    normalizationGainDb: r.normalizationGainDb,
+    externalSubtitles: r.externalSubtitles,
+    embeddedTextSubtitles: r.embeddedTextSubtitles,
+    mediaStreams: r.mediaStreams,
+    selectedAudioStreamIndex: r.selectedAudioStreamIndex,
+    selectedSubtitleStreamIndex: r.selectedSubtitleStreamIndex,
+    transcodingReasons: r.transcodingReasons,
+    hybridAudioUrl: r.hybridAudioUrl,
+    serverOfferedDirectPlay: r.serverOfferedDirectPlay,
+    directPlayRequested: r.directPlayRequested,
+    sourceBitrate: r.sourceBitrate,
+    isLocalMedia: r.isLocalMedia,
+    timelineOffset: Duration(microseconds: (startTicks ?? 0) ~/ 10),
+    seeksThroughServer: true,
+    reopenAfterPause: r.reopenAfterPause,
+  );
+}
+
 class DlnaProvider
     implements CastProvider, CastTransportControls, CastServerPlaybackSource {
   final NativeDlnaChannel _native;
@@ -193,21 +235,28 @@ class DlnaProvider
       if (generation != _castGeneration) return;
       _cast = previous != null && !previous.stopped ? previous : null;
     }
+
     final resolver = _resolverForClient(client);
-    final silo = client.serverType == ServerType.silo;
+    final serverType = client.serverType;
     final StreamResolutionResult resolution;
     try {
-      resolution = await resolver.resolve(
-        item,
-        deviceProfile: dlnaDeviceProfile(),
-        audioStreamIndex: audioStreamIndex,
-        subtitleStreamIndex: subtitleStreamIndex,
-        // Silo starts a remux there; a file it sends as it is is seeked
-        // on the renderer once it plays.
-        startTimeTicks: silo ? startPositionTicks : null,
-        mediaSourceId: mediaSourceId,
-        enableDirectPlay: !hasExplicitIndices,
-        enableDirectStream: !hasExplicitIndices,
+      resolution = dlnaServerTimeline(
+        serverType,
+        await resolver.resolve(
+          item,
+          deviceProfile: dlnaDeviceProfile(),
+          audioStreamIndex: audioStreamIndex,
+          subtitleStreamIndex: subtitleStreamIndex,
+          // Silo starts a remux there, and Jellyfin and Emby a conversion; a
+          // file sent as it is is seeked on the renderer once it plays.
+          startTimeTicks: serverType == ServerType.plex
+              ? null
+              : startPositionTicks,
+          mediaSourceId: mediaSourceId,
+          enableDirectPlay: !hasExplicitIndices,
+          enableDirectStream: !hasExplicitIndices,
+        ),
+        startPositionTicks,
       );
     } catch (_) {
       restorePrevious();
@@ -220,6 +269,7 @@ class DlnaProvider
       target: target,
       item: item,
       resolver: resolver,
+      serverType: serverType,
       resolution: resolution,
       audioStreamIndex: audioStreamIndex,
       subtitleStreamIndex: subtitleStreamIndex,
@@ -283,7 +333,9 @@ class DlnaProvider
       mimeType: dlnaMimeType(resolution),
       dlnaFeatures: dlnaFeatures(resolution),
       startPositionTicks: startPositionTicks,
-      durationTicks: runtime != null && runtime > offset ? runtime - offset : null,
+      durationTicks: runtime != null && runtime > offset
+          ? runtime - offset
+          : null,
       positionOffsetTicks: offset,
     );
   }
@@ -300,9 +352,14 @@ class DlnaProvider
     }
     if (!cast.resolution.seeksThroughServer) return false;
     final resolver = cast.resolver;
-    if (resolver is! StreamReplanner) return false;
-    final replanner = resolver as StreamReplanner;
-    if (!replanner.canReplan(cast.resolution)) return false;
+    // Silo replans its session; Jellyfin and Emby are asked for a new
+    // conversion that starts there.
+    final replanner = resolver is StreamReplanner
+        ? resolver as StreamReplanner
+        : null;
+    if (replanner != null && !replanner.canReplan(cast.resolution)) {
+      return false;
+    }
     cast
       ..seekTarget = positionTicks
       ..seekRunning = true
@@ -311,20 +368,35 @@ class DlnaProvider
       int? served;
       while (identical(_cast, cast) && cast.seekTarget != served) {
         final target = cast.seekTarget!;
-        final next = await replanner.replan(
-          cast.item,
-          cast.resolution,
-          ReplanRequest(
-            reason: ReplanReason.seek,
-            position: Duration(microseconds: target ~/ 10),
-            deviceProfile: dlnaDeviceProfile(),
-            audioStreamIndex: cast.audioStreamIndex,
-            subtitleStreamIndex: cast.subtitleStreamIndex,
-            mediaSourceId: cast.mediaSourceId,
-            enableDirectPlay: cast.directAllowed,
-            enableDirectStream: cast.directAllowed,
-          ),
-        );
+        final next = replanner != null
+            ? await replanner.replan(
+                cast.item,
+                cast.resolution,
+                ReplanRequest(
+                  reason: ReplanReason.seek,
+                  position: Duration(microseconds: target ~/ 10),
+                  deviceProfile: dlnaDeviceProfile(),
+                  audioStreamIndex: cast.audioStreamIndex,
+                  subtitleStreamIndex: cast.subtitleStreamIndex,
+                  mediaSourceId: cast.mediaSourceId,
+                  enableDirectPlay: cast.directAllowed,
+                  enableDirectStream: cast.directAllowed,
+                ),
+              )
+            : dlnaServerTimeline(
+                cast.serverType,
+                await resolver.resolve(
+                  cast.item,
+                  deviceProfile: dlnaDeviceProfile(),
+                  audioStreamIndex: cast.audioStreamIndex,
+                  subtitleStreamIndex: cast.subtitleStreamIndex,
+                  startTimeTicks: target,
+                  mediaSourceId: cast.mediaSourceId,
+                  enableDirectPlay: cast.directAllowed,
+                  enableDirectStream: cast.directAllowed,
+                ),
+                target,
+              );
         // Silo's session plays the new stream from here, whatever the
         // renderer does with it.
         cast.resolution = next;
@@ -439,6 +511,7 @@ class _DlnaCast {
     required this.target,
     required this.item,
     required this.resolver,
+    required this.serverType,
     required this.resolution,
     required this.audioStreamIndex,
     required this.subtitleStreamIndex,
@@ -449,6 +522,7 @@ class _DlnaCast {
   final CastTarget target;
   final AggregatedItem item;
   final MediaStreamResolver resolver;
+  final ServerType serverType;
 
   /// The stream on the renderer, replaced by a seek Silo serves.
   StreamResolutionResult resolution;
