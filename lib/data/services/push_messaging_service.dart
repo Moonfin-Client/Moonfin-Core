@@ -32,6 +32,12 @@ class PushMessagingService {
   String? _lastRegisteredToken;
   bool _listenerAttached = false;
 
+  /// True when this device holds a registered push token with the active server.
+  bool get isRegistered => _lastRegisteredToken != null;
+
+  /// The active token registered with the server, if any.
+  String? get lastRegisteredToken => _lastRegisteredToken;
+
   /// Set when a registration attempt was skipped or failed because the plugin
   /// wasn't reachable or couldn't push yet, so the availability listener can
   /// retry it.
@@ -102,7 +108,7 @@ class PushMessagingService {
   /// Registers the current FCM token after login, starting Firebase first if
   /// the plugin can deliver push. Otherwise it waits for the availability
   /// listener, which retries once a server can.
-  Future<void> registerWithCurrentToken() async {
+  Future<void> registerWithCurrentToken({bool force = false}) async {
     if (!PlatformDetection.isMobile) return;
     _attachAvailabilityListener();
     final sync = GetIt.instance.isRegistered<PluginSyncService>()
@@ -125,7 +131,7 @@ class PushMessagingService {
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
       }
-      await _registerToken(token);
+      await _registerToken(token, force: force);
     } catch (e) {
       debugPrint('PushMessagingService: register failed: $e');
       _pendingRegistration = true;
@@ -148,13 +154,13 @@ class PushMessagingService {
     });
   }
 
-  Future<void> _registerToken(String? token) async {
+  Future<void> _registerToken(String? token, {bool force = false}) async {
     if (!PlatformDetection.isMobile) return;
     if (token == null || token.isEmpty) {
       debugPrint('PushMessagingService: skip register, no FCM token');
       return;
     }
-    if (token == _lastRegisteredToken) return;
+    if (!force && token == _lastRegisteredToken) return;
 
     final client = GetIt.instance.isRegistered<MediaServerClient>()
         ? GetIt.instance<MediaServerClient>()

@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/local_notification_bootstrap.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/push_messaging_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_models.dart';
 import '../../../l10n/app_localizations.dart';
@@ -25,6 +26,7 @@ import '../../../util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../util/home_row_title_localizer.dart';
+import '../../widgets/floating_notification.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -49,6 +51,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   MoonfinStatusResponse? _seerrStatus;
   bool _statusLoading = false;
   bool _canManageRequests = false;
+  bool _sendingTestNotification = false;
   late List<SeerrRowConfig> _rows;
   final _focusNodes = <FocusNode>[];
 
@@ -313,6 +316,41 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
     await _syncService.pushNotificationPrefs(client);
+  }
+
+  Future<void> _sendTestNotification() async {
+    if (_sendingTestNotification) return;
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final client = GetIt.instance<MediaServerClient>();
+
+    setState(() => _sendingTestNotification = true);
+    try {
+      final result = await _syncService.sendTestNotification(client);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      if (result != null && result.success) {
+        final message = result.pushEnabled
+            ? l10n.seerrTestNotificationSentBody(result.devicesCount)
+            : l10n.seerrTestNotificationPushDisabled;
+        FloatingNotification.show(
+          context,
+          l10n.seerrTestNotificationSent,
+          message,
+          null,
+        );
+      } else {
+        FloatingNotification.show(
+          context,
+          l10n.seerrTestNotificationFailed,
+          '',
+          null,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _sendingTestNotification = false);
+      }
+    }
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -663,6 +701,70 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
             subtitle: l10n.seerrNotifyNewMediaSubtitle,
             value: _seerrPrefs.notifyOnNewMedia,
             onChanged: _setNotifyOnNewMedia,
+          ),
+          TvFocusHighlight(
+            builder: (context, focused) => ListTile(
+              leading: Icon(
+                Icons.notification_add_outlined,
+                color: focused ? AppColors.black.withValues(alpha: 0.54) : null,
+              ),
+              title: Text(
+                l10n.seerrTestNotification,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.87)
+                      : AppColorScheme.onSurface,
+                ),
+              ),
+              subtitle: Text(
+                l10n.seerrTestNotificationDesc,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.54)
+                      : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+              ),
+              trailing: _sendingTestNotification
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : null,
+              onTap: _sendingTestNotification ? null : _sendTestNotification,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Row(
+              children: [
+                Text(
+                  '${l10n.seerrPushServerStatus}: ${_syncService.pushSupported ? l10n.seerrPushServerEnabled : l10n.seerrPushServerDisabled}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: _syncService.pushSupported
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outline,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                if (PlatformDetection.isMobile) ...[
+                  const SizedBox(width: 16),
+                  Text(
+                    '${l10n.seerrPushDeviceStatus}: ${GetIt.instance.isRegistered<PushMessagingService>() && GetIt.instance<PushMessagingService>().isRegistered ? l10n.seerrPushDeviceRegistered : l10n.seerrPushDeviceNotRegistered}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: GetIt.instance.isRegistered<PushMessagingService>() &&
+                                  GetIt.instance<PushMessagingService>().isRegistered
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.outline,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
         if (showSeerrSettings)

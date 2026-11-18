@@ -7605,6 +7605,60 @@
   "@seerrNotifyNewMediaSubtitle": {
     "description": "Subtitle for the new media notifications toggle"
   },
+  "seerrTestNotification": "Send Test Notification",
+  "@seerrTestNotification": {
+    "description": "Title for the button that sends a test notification from the server"
+  },
+  "seerrTestNotificationDesc": "Verify in-app and background push delivery",
+  "@seerrTestNotificationDesc": {
+    "description": "Subtitle for the send test notification button"
+  },
+  "seerrTestNotificationSent": "Test Notification Sent",
+  "@seerrTestNotificationSent": {
+    "description": "Title shown when a test notification was successfully triggered"
+  },
+  "seerrTestNotificationSentBody": "Dispatched to {count, plural, =1{1 device} other{{count} devices}}.",
+  "@seerrTestNotificationSentBody": {
+    "description": "Body message shown when a test notification is sent to registered devices",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "seerrTestNotificationPushDisabled": "In-app notification sent. Server push is not enabled.",
+  "@seerrTestNotificationPushDisabled": {
+    "description": "Message shown when a test notification was sent in-app but server push is off"
+  },
+  "seerrTestNotificationFailed": "Failed to send test notification",
+  "@seerrTestNotificationFailed": {
+    "description": "Message shown when sending a test notification fails"
+  },
+  "seerrPushServerStatus": "Server Push",
+  "@seerrPushServerStatus": {
+    "description": "Label for the server push delivery status"
+  },
+  "seerrPushServerEnabled": "Enabled",
+  "@seerrPushServerEnabled": {
+    "description": "Status indicating server push delivery is enabled"
+  },
+  "seerrPushServerDisabled": "Unavailable",
+  "@seerrPushServerDisabled": {
+    "description": "Status indicating server push delivery is disabled or unavailable"
+  },
+  "seerrPushDeviceStatus": "Device Push",
+  "@seerrPushDeviceStatus": {
+    "description": "Label for the device push registration status"
+  },
+  "seerrPushDeviceRegistered": "Registered",
+  "@seerrPushDeviceRegistered": {
+    "description": "Status indicating this device has a registered push token"
+  },
+  "seerrPushDeviceNotRegistered": "Not registered",
+  "@seerrPushDeviceNotRegistered": {
+    "description": "Status indicating this device is not registered for push"
+  },
   "loggedInAs": "Logged in as: {username}",
   "@loggedInAs": {
     "description": "Label showing logged in username",
