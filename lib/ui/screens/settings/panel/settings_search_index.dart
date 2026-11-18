@@ -613,6 +613,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.gamepadNavigationDescription,
         keywords: ['gamepad', 'controller', 'input'],
       ),
+    if (liveTvOnAnyServer)
+      style.leaf(
+        'live_tv_category_display',
+        l10n.liveTvCategoryDisplay,
+        header: l10n.layout,
+        keywords: ['live tv', 'guide', 'channel groups', 'categories'],
+      ),
     style.leaf('pref_interface_style', l10n.interfaceStyle, keywords: [
       'classic',
       'modern',
@@ -1675,12 +1682,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       '1080p',
       'transcode',
     ]),
-    if (liveTvOnAnyServer)
-      quality.leaf(
-        'live_tv_category_display',
-        l10n.liveTvCategoryDisplay,
-        keywords: ['live tv', 'guide', 'channel groups', 'categories'],
-      ),
     if (liveTvOnAnyServer)
       quality.leaf(
         'pref_live_direct',
