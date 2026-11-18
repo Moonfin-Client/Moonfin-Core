@@ -121,7 +121,8 @@ Map<String, dynamic> dlnaDeviceProfile() {
     'DirectPlayProfiles': <Map<String, dynamic>>[
       <String, dynamic>{
         'Type': 'Video',
-        'Container': 'mp4,m4v,mkv,ts',
+        // Emby names an MPEG-TS source mpegts and matches names exactly.
+        'Container': 'mp4,m4v,mkv,ts,mpegts',
         'VideoCodec': 'h264,hevc',
         'AudioCodec': 'aac,mp3,ac3,eac3',
       },
@@ -155,6 +156,13 @@ Map<String, dynamic> dlnaDeviceProfile() {
         'Type': 'Video',
         'Codec': 'h264',
         'Conditions': <Map<String, dynamic>>[
+          // TVs decode eight-bit H264 only, so High 10 converts.
+          <String, dynamic>{
+            'Condition': 'EqualsAny',
+            'Property': 'VideoProfile',
+            'Value': 'high|main|baseline|constrained baseline',
+            'IsRequired': false,
+          },
           <String, dynamic>{
             'Condition': 'LessThanEqual',
             'Property': 'VideoLevel',

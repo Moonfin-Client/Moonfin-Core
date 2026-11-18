@@ -574,7 +574,10 @@ final class DlnaController: NSObject {
     /// from the start rather than failing when the renderer never takes it.
     private func seekOnceStarted(controlUrl: String, target: String, generation: Int) {
         func current() -> Bool { resumeLock.withLock { resumeGeneration == generation } }
-        for _ in 0..<30 {
+        // A slow renderer takes a while to answer each query, so the wait is
+        // timed rather than counted.
+        let deadline = Date().addingTimeInterval(15)
+        while Date() < deadline {
             guard current() else { return }
             if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 { break }
             Thread.sleep(forTimeInterval: 0.5)
@@ -630,6 +633,7 @@ final class DlnaController: NSObject {
 
     private func handleDeviceOffline() {
         guard activeDeviceControlUrl != nil else { return }
+        cancelPendingResume()
         stopPlaybackPolling()
         stopGena()
         activeDeviceControlUrl = nil
