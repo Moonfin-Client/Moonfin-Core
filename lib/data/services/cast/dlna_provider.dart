@@ -107,7 +107,9 @@ int? _defaultAudioIndex(List<Map<String, dynamic>> streams) {
 /// [resolution] as the renderer sees it. A Jellyfin or Emby conversion is
 /// produced as it plays, so the renderer can't seek in it: it starts where
 /// it was asked ([startTicks]), and a seek asks the server for a new one, as
-/// Silo's remuxes say of themselves. Anything else is returned as it is.
+/// Silo's remuxes say of themselves. Emby leaves the start out of the
+/// conversion URL it answers, so it is added there. Anything else is returned
+/// as it is.
 StreamResolutionResult dlnaServerTimeline(
   ServerType serverType,
   StreamResolutionResult resolution,
@@ -118,8 +120,16 @@ StreamResolutionResult dlnaServerTimeline(
   }
   if (resolution.playMethod == StreamPlayMethod.directPlay) return resolution;
   final r = resolution;
+  final start = startTicks ?? 0;
+  final hasStart =
+      Uri.tryParse(r.streamUrl)?.queryParameters.keys
+          .any((k) => k.toLowerCase() == 'starttimeticks') ??
+      false;
+  final streamUrl = start > 0 && !hasStart
+      ? '${r.streamUrl}${r.streamUrl.contains('?') ? '&' : '?'}StartTimeTicks=$start'
+      : r.streamUrl;
   return StreamResolutionResult(
-    streamUrl: r.streamUrl,
+    streamUrl: streamUrl,
     mediaSourceId: r.mediaSourceId,
     liveStreamId: r.liveStreamId,
     playSessionId: r.playSessionId,
@@ -140,7 +150,7 @@ StreamResolutionResult dlnaServerTimeline(
     directPlayRequested: r.directPlayRequested,
     sourceBitrate: r.sourceBitrate,
     isLocalMedia: r.isLocalMedia,
-    timelineOffset: Duration(microseconds: (startTicks ?? 0) ~/ 10),
+    timelineOffset: Duration(microseconds: start ~/ 10),
     seeksThroughServer: true,
     reopenAfterPause: r.reopenAfterPause,
   );

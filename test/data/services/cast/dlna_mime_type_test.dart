@@ -357,9 +357,28 @@ void main() {
           );
           expect(r.seeksThroughServer, isTrue);
           expect(r.timelineOffset, const Duration(minutes: 1));
-          expect(r.streamUrl, 'http://emby/videos/54/stream.ts');
+          // Emby answers the conversion URL without the start.
+          expect(
+            r.streamUrl,
+            'http://emby/videos/54/stream.ts?StartTimeTicks=600000000',
+          );
         }
       }
+    });
+
+    test('keeps a start the URL already has', () {
+      final r = dlnaServerTimeline(
+        ServerType.jellyfin,
+        _resolution(
+          'http://jf/videos/1/stream.ts?a=b&StartTimeTicks=600000000',
+          playMethod: StreamPlayMethod.transcode,
+        ),
+        600000000,
+      );
+      expect(
+        r.streamUrl,
+        'http://jf/videos/1/stream.ts?a=b&StartTimeTicks=600000000',
+      );
     });
 
     test('a conversion from the start has no offset', () {
