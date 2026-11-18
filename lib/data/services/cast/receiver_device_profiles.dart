@@ -129,10 +129,23 @@ Map<String, dynamic> dlnaDeviceProfile() {
       <String, dynamic>{
         'Type': 'Audio',
         'Container': 'mp3,aac,m4a,flac,wav',
-        'AudioCodec': 'mp3,aac,flac,wav',
+        // Jellyfin and Emby name WAV audio by its PCM format.
+        'AudioCodec': 'mp3,aac,flac,wav,pcm_s16le,pcm_s24le',
       },
     ],
     'TranscodingProfiles': <Map<String, dynamic>>[
+      // Jellyfin and Emby take the first profile, and many TVs (LG) can't
+      // open HLS, so a conversion goes out as one MPEG-TS stream. Silo only
+      // converts over HLS and skips this profile.
+      <String, dynamic>{
+        'Type': 'Video',
+        'Context': 'Streaming',
+        'Container': 'ts',
+        'Protocol': 'http',
+        'VideoCodec': 'h264,hevc',
+        'AudioCodec': 'aac,ac3',
+        'CopyTimestamps': false,
+      },
       <String, dynamic>{
         'Type': 'Video',
         'Context': 'Streaming',

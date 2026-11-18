@@ -88,6 +88,9 @@ class _Servers extends Fake implements ServerRepository {
 
   @override
   Server? getServer(String id) => server;
+
+  @override
+  Future<Server> withCheckedType(Server server) async => server;
 }
 
 class _Users extends Fake implements UserRepository {

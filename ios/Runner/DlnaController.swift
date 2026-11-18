@@ -19,9 +19,8 @@ final class DlnaController: NSObject {
     private var genaServerPort: UInt16 = 0
     private var genaRenewalTimer: DispatchSourceTimer?
     private var consecutivePollFailures: Int = 0
-    // Discovery scans run on global queues at once and cast reads these, so
-    // every access holds discoveryLock; an unguarded write crashed the app.
-    private let discoveryLock = NSLock()
+    // The one-shot and continuous scans run on separate threads and both write these.
+    private let discoveredUrlsLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
     // Bumped by every new cast and by the user's own pause, seek and stop, so
@@ -220,7 +219,7 @@ final class DlnaController: NSObject {
                 )
 
                 self.activeDeviceControlUrl = controlUrl
-                let (renderingControlUrl, eventSubUrl) = self.discoveryLock.withLock {
+                let (renderingControlUrl, eventSubUrl) = self.discoveredUrlsLock.withLock {
                     (self.discoveredRenderingControlUrls[controlUrl], self.discoveredEventSubUrls[controlUrl])
                 }
                 self.activeDeviceRenderingControlUrl = renderingControlUrl
@@ -276,15 +275,47 @@ final class DlnaController: NSObject {
         cancelPendingResume()
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
-            try self.sendSoap(
-                controlUrl: controlUrl,
-                action: "Seek",
-                innerBody: """
-                <InstanceID>0</InstanceID>
-                <Unit>REL_TIME</Unit>
-                <Target>\(target)</Target>
-                """
-            )
+            do {
+                try self.sendSeek(controlUrl: controlUrl, target: target)
+            } catch {
+                // Some renderers (LG) refuse a Seek while paused with 501, so
+                // play, seek once playing, and pause again.
+                guard (try? self.queryTransportState(controlUrl: controlUrl)) == "PAUSED_PLAYBACK" else { throw error }
+                try self.sendSoap(
+                    controlUrl: controlUrl,
+                    action: "Play",
+                    innerBody: """
+                    <InstanceID>0</InstanceID>
+                    <Speed>1</Speed>
+                    """
+                )
+                // Paused it stays, even when the seek still fails.
+                defer {
+                    _ = try? self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+                }
+                self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
+                try self.sendSeek(controlUrl: controlUrl, target: target)
+            }
+        }
+    }
+
+    private func sendSeek(controlUrl: String, target: String) throws {
+        try sendSoap(
+            controlUrl: controlUrl,
+            action: "Seek",
+            innerBody: """
+            <InstanceID>0</InstanceID>
+            <Unit>REL_TIME</Unit>
+            <Target>\(target)</Target>
+            """
+        )
+    }
+
+    private func awaitTransportState(controlUrl: String, state: String) {
+        let deadline = Date().addingTimeInterval(3)
+        while Date() < deadline {
+            if (try? queryTransportState(controlUrl: controlUrl)) == state { return }
+            Thread.sleep(forTimeInterval: 0.25)
         }
     }
 
@@ -431,7 +462,7 @@ final class DlnaController: NSObject {
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
         let renderingControlUrl = parser.renderingControlURL.map { resolveUrl(base: locationUrl, relative: $0) }
         let eventSubUrl = parser.avTransportEventSubURL.map { resolveUrl(base: locationUrl, relative: $0) }
-        discoveryLock.withLock {
+        discoveredUrlsLock.withLock {
             if let renderingControlUrl { discoveredRenderingControlUrls[controlUrl] = renderingControlUrl }
             if let eventSubUrl { discoveredEventSubUrls[controlUrl] = eventSubUrl }
         }
@@ -471,17 +502,20 @@ final class DlnaController: NSObject {
                 where failed == "SetAVTransportURI" && upnpCode == 701 {
                 // A renderer still holding an earlier URI (an LG left in
                 // LG_TRANSITIONING by a cast that never started) refuses a
-                // new one with 701 until it is stopped.
-                _ = try? sendSoapOnce(
-                    controlUrl: controlUrl,
-                    action: "Stop",
-                    innerBody: "<InstanceID>0</InstanceID>"
-                )
-                // It takes a moment to leave TRANSITIONING after Stop.
-                for _ in 0..<12 {
+                // new one with 701 until it is stopped. While it is still
+                // opening that URI (TRANSITIONING, about 20 s for HLS) it
+                // doesn't answer Stop, so stopping is retried until it gives
+                // up and takes it.
+                let deadline = Date().addingTimeInterval(25)
+                while true {
+                    _ = try? sendSoapOnce(
+                        controlUrl: controlUrl,
+                        action: "Stop",
+                        innerBody: "<InstanceID>0</InstanceID>"
+                    )
                     let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
-                    if !state.contains("TRANSITIONING") { break }
-                    Thread.sleep(forTimeInterval: 0.25)
+                    if !state.contains("TRANSITIONING") || Date() >= deadline { break }
+                    Thread.sleep(forTimeInterval: 1)
                 }
                 return try sendSoapOnce(
                     controlUrl: controlUrl,
@@ -638,27 +672,24 @@ final class DlnaController: NSObject {
     /// Resumes at [target] once the renderer has started, after the cast is
     /// already connected. Some renderers (LG) refuse a Seek before Play with
     /// 711 and ignore one sent before the position moves, so the cast plays
-    /// from the start rather than failing when the renderer never takes it.
+    /// from the start rather than failing when the renderer never takes it,
+    /// or never reports its position moving within the wait.
     private func seekOnceStarted(controlUrl: String, target: String, generation: Int) {
         func current() -> Bool { resumeLock.withLock { resumeGeneration == generation } }
         // A slow renderer takes a while to answer each query, so the wait is
         // timed rather than counted.
         let deadline = Date().addingTimeInterval(15)
+        var started = false
         while Date() < deadline {
             guard current() else { return }
-            if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 { break }
+            if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 {
+                started = true
+                break
+            }
             Thread.sleep(forTimeInterval: 0.5)
         }
-        guard current() else { return }
-        _ = try? sendSoap(
-            controlUrl: controlUrl,
-            action: "Seek",
-            innerBody: """
-            <InstanceID>0</InstanceID>
-            <Unit>REL_TIME</Unit>
-            <Target>\(target)</Target>
-            """
-        )
+        guard started, current() else { return }
+        try? sendSeek(controlUrl: controlUrl, target: target)
     }
 
     @discardableResult

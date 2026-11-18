@@ -14,6 +14,7 @@ import java.net.MulticastSocket
 import java.net.SocketTimeoutException
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
+import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import java.io.StringReader
 import java.net.NetworkInterface
@@ -38,9 +39,14 @@ class DlnaController(private val context: Context) {
     private val xmlFactory: DocumentBuilderFactory by lazy {
         DocumentBuilderFactory.newInstance().apply {
             isNamespaceAware = true
-            setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-            setFeature("http://xml.org/sax/features/external-general-entities", false)
-            setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+            // Android's parser rejects all three with ParserConfigurationException,
+            // which failed every DLNA parse there. It never loads external
+            // entities anyway, and parseXml refuses a DOCTYPE itself.
+            listOf(
+                "http://apache.org/xml/features/disallow-doctype-decl" to true,
+                "http://xml.org/sax/features/external-general-entities" to false,
+                "http://xml.org/sax/features/external-parameter-entities" to false,
+            ).forEach { (feature, value) -> runCatching { setFeature(feature, value) } }
         }
     }
 
@@ -50,8 +56,6 @@ class DlnaController(private val context: Context) {
     private var genaServerPort: Int = 0
     private var genaRenewFuture: ScheduledFuture<*>? = null
     private val consecutivePollFailures = AtomicInteger(0)
-    // Discovery scans run on the executor's threads at once and cast reads
-    // these, so a plain map can be corrupted mid-write.
     private val discoveredEventSubUrls = ConcurrentHashMap<String, String>()
     private val discoveredRenderingControlUrls = ConcurrentHashMap<String, String>()
     // Bumped by every new cast and by the user's own pause, seek and stop, so
@@ -289,11 +293,37 @@ class DlnaController(private val context: Context) {
 
         withActiveDevice(result) { controlUrl ->
             val target = formatDlnaTime(positionTicks)
-            sendSoap(
-                controlUrl, "Seek",
-                "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
-            )
+            try {
+                sendSeek(controlUrl, target)
+            } catch (e: Exception) {
+                // Some renderers (LG) refuse a Seek while paused with 501, so
+                // play, seek once playing, and pause again.
+                if (runCatching { queryTransportState(controlUrl) }.getOrNull() != "PAUSED_PLAYBACK") throw e
+                sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
+                try {
+                    awaitTransportState(controlUrl, "PLAYING")
+                    sendSeek(controlUrl, target)
+                } finally {
+                    // Paused it stays, even when the seek still fails.
+                    runCatching { sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>") }
+                }
+            }
             handler.post { result.success(null) }
+        }
+    }
+
+    private fun sendSeek(controlUrl: String, target: String) {
+        sendSoap(
+            controlUrl, "Seek",
+            "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
+        )
+    }
+
+    private fun awaitTransportState(controlUrl: String, state: String) {
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3)
+        while (System.nanoTime() < deadline) {
+            if (runCatching { queryTransportState(controlUrl) }.getOrNull() == state) return
+            Thread.sleep(250)
         }
     }
 
@@ -427,8 +457,7 @@ class DlnaController(private val context: Context) {
             val xml = conn.inputStream.bufferedReader().use { it.readText() }
             conn.disconnect()
 
-            val builder = xmlFactory.newDocumentBuilder()
-            val doc = builder.parse(InputSource(StringReader(xml)))
+            val doc = parseXml(xml)
 
             val friendlyName = doc.getElementsByTagName("friendlyName").item(0)?.textContent ?: "DLNA Device"
             val modelName = doc.getElementsByTagName("modelName").item(0)?.textContent ?: ""
@@ -498,13 +527,17 @@ class DlnaController(private val context: Context) {
             if (action != "SetAVTransportURI" || e.upnpCode != 701) throw e
             // A renderer still holding an earlier URI (an LG left in
             // LG_TRANSITIONING by a cast that never started) refuses a new
-            // one with 701 until it is stopped.
-            runCatching { sendSoapOnce(controlUrl, "Stop", "<InstanceID>0</InstanceID>") }
-            // It takes a moment to leave TRANSITIONING after Stop.
-            for (attempt in 0 until 12) {
+            // one with 701 until it is stopped. While it is still opening that
+            // URI (TRANSITIONING, about 20 s for HLS) it doesn't answer Stop,
+            // so stopping is retried until it gives up and takes it.
+            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(25)
+            while (true) {
+                runCatching {
+                    sendSoapOnce(controlUrl, "Stop", "<InstanceID>0</InstanceID>", timeoutMs = 3000)
+                }
                 val state = runCatching { queryTransportState(controlUrl) }.getOrDefault("")
-                if (!state.contains("TRANSITIONING")) break
-                Thread.sleep(250)
+                if (!state.contains("TRANSITIONING") || System.nanoTime() >= deadline) break
+                Thread.sleep(1000)
             }
             return sendSoapOnce(controlUrl, action, innerBody, serviceUrn, timeoutMs)
         } catch (e: SocketTimeoutException) {
@@ -625,17 +658,22 @@ class DlnaController(private val context: Context) {
      * Resumes at [target] once the renderer has started, after the cast is
      * already connected. Some renderers (LG) refuse a Seek before Play with
      * 711 and ignore one sent before the position moves, so the cast plays
-     * from the start rather than failing when the renderer never takes it.
+     * from the start rather than failing when the renderer never takes it,
+     * or never reports its position moving within the wait.
      */
     private fun seekOnceStarted(controlUrl: String, target: String, token: Int) {
         // Runs after the channel result was answered, so it must not throw.
         // A slow renderer takes a while to answer each query, so the wait is
         // timed rather than counted.
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15)
+        var started = false
         while (System.nanoTime() < deadline) {
             if (resumeGeneration.get() != token) return
             val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
-            if (ticks > 0L) break
+            if (ticks > 0L) {
+                started = true
+                break
+            }
             try {
                 Thread.sleep(500)
             } catch (e: InterruptedException) {
@@ -643,13 +681,8 @@ class DlnaController(private val context: Context) {
                 return
             }
         }
-        if (resumeGeneration.get() != token) return
-        runCatching {
-            sendSoap(
-                controlUrl, "Seek",
-                "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
-            )
-        }
+        if (!started || resumeGeneration.get() != token) return
+        runCatching { sendSeek(controlUrl, target) }
     }
 
     private fun queryTransportState(controlUrl: String): String {
@@ -664,9 +697,14 @@ class DlnaController(private val context: Context) {
     }
 
     private fun parseXmlElement(xml: String, elementName: String): String? {
-        val builder = xmlFactory.newDocumentBuilder()
-        val doc = builder.parse(InputSource(StringReader(xml)))
-        return doc.getElementsByTagName(elementName).item(0)?.textContent
+        return parseXml(xml).getElementsByTagName(elementName).item(0)?.textContent
+    }
+
+    // A renderer has no reason to send a DTD, and refusing one rules out
+    // entity expansion on parsers that ignore the factory's features.
+    private fun parseXml(xml: String): Document {
+        require(!xml.contains("<!DOCTYPE", ignoreCase = true)) { "XML with a DOCTYPE" }
+        return xmlFactory.newDocumentBuilder().parse(InputSource(StringReader(xml)))
     }
 
     private fun parseDlnaTime(time: String): Long {
@@ -853,11 +891,10 @@ class DlnaController(private val context: Context) {
 
     private fun handleGenaNotify(body: String) {
         try {
-            val builder = xmlFactory.newDocumentBuilder()
-            val outerDoc = builder.parse(InputSource(StringReader(body)))
+            val outerDoc = parseXml(body)
             val lastChangeText = outerDoc.getElementsByTagName("LastChange")
                 .item(0)?.textContent?.trim() ?: return
-            val innerDoc = builder.parse(InputSource(StringReader(lastChangeText)))
+            val innerDoc = parseXml(lastChangeText)
             val state = innerDoc.getElementsByTagName("TransportState")
                 .item(0)?.attributes?.getNamedItem("val")?.textContent ?: return
             val relTimeStr = innerDoc.getElementsByTagName("RelativeTimePosition")

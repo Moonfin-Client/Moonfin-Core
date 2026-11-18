@@ -165,6 +165,9 @@ class GuideProgram {
 
   bool get isRepeat => rawData['IsRepeat'] == true;
 
+  /// Only Emby sends this flag.
+  bool get isNew => rawData['IsNew'] == true;
+
   /// `S{season}:E{episode}`, matching the quick channel changer's format.
   String? get seasonEpisodeLabel {
     final season = rawData['ParentIndexNumber'];

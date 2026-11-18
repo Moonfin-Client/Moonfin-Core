@@ -52,6 +52,11 @@ class MediaServerClientFactory {
     required String baseUrl,
   }) {
     final normalizedBaseUrl = normalizeServerBaseUrl(baseUrl);
+    // A server whose saved type was corrected needs the other kind of client.
+    if (_clients[serverId]?.serverType case final cached?
+        when cached != serverType) {
+      removeClient(serverId);
+    }
     return _clients.putIfAbsent(serverId, () {
       return _createClient(
         serverType: serverType,

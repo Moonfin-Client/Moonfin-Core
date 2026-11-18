@@ -52,6 +52,18 @@ class ConnectivityService extends ChangeNotifier {
   bool get isCellularOnly => _isCellularOnly;
   bool _isCellularOnly = false;
 
+  /// A server on this device answers with every radio off, so only the ping
+  /// decides for it.
+  static bool _hasNetwork(List<ConnectivityResult> results) =>
+      results.any((r) => r != ConnectivityResult.none) || _serverOnDevice();
+
+  static bool _serverOnDevice() {
+    final getIt = GetIt.instance;
+    if (!getIt.isRegistered<MediaServerClient>()) return false;
+    final host = Uri.tryParse(getIt<MediaServerClient>().baseUrl)?.host ?? '';
+    return host == 'localhost' || host == '::1' || host.startsWith('127.');
+  }
+
   static bool _cellularOnly(List<ConnectivityResult> results) {
     final live = results.where((r) => r != ConnectivityResult.none).toList();
     return live.isNotEmpty &&
@@ -106,7 +118,7 @@ class ConnectivityService extends ChangeNotifier {
       return;
     }
     final results = await _connectivity.checkConnectivity();
-    _isOnline = results.any((r) => r != ConnectivityResult.none);
+    _isOnline = _hasNetwork(results);
     _isCellularOnly = _cellularOnly(results);
     if (_isOnline) {
       await _checkServerReachability();
@@ -125,7 +137,7 @@ class ConnectivityService extends ChangeNotifier {
 
     final wasOnline = _isOnline;
     final wasReachable = _serverReachable;
-    _isOnline = results.any((r) => r != ConnectivityResult.none);
+    _isOnline = _hasNetwork(results);
     _isCellularOnly = _cellularOnly(results);
 
     if (!_isOnline) {
@@ -173,6 +185,9 @@ class ConnectivityService extends ChangeNotifier {
   /// moment that reconciles progress recorded offline.
   Future<void> onServerClientReady(String serverId) async {
     _serverId = serverId;
+    // The launch check runs before a client exists, so a server on this
+    // device is only known now.
+    if (!_isOnline && _serverOnDevice()) _isOnline = true;
     if (!_isOnline) return;
     // Straight to the probe rather than recheckNow, which would add a
     // connectivity_plus call on Apple TV, where the service never makes one.
@@ -334,7 +349,7 @@ class ConnectivityService extends ChangeNotifier {
 
   Future<void> recheckNow() async {
     final results = await _connectivity.checkConnectivity();
-    _isOnline = results.any((r) => r != ConnectivityResult.none);
+    _isOnline = _hasNetwork(results);
     _isCellularOnly = _cellularOnly(results);
     if (_isOnline) {
       await _checkServerReachability();

@@ -194,4 +194,206 @@ void main() {
       expect(mergedSortComparator('Random', descending: false), isNull);
     });
   });
+
+  group('joinIndexedCopies', () {
+    test('a card takes on the copy another server sorts far away, which '
+        'folds in when paging reaches it', () {
+      final original = _movie(
+        '1',
+        'a',
+        ids: {'Tmdb': '1001'},
+        sortName: 'Quillmere',
+      );
+      final translated = _movie(
+        '9',
+        'b',
+        ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'},
+        sortName: 'Les Jardins de Vortelle',
+      );
+      final index = indexCopies([
+        original,
+        translated,
+        _movie('5', 'b', ids: {'Tmdb': '1'}),
+      ]);
+      final holders = <String, AggregatedItem>{};
+      final card = foldCopies([original], holders).single;
+      final shown = {'a|1'};
+      bool isShown(AggregatedItem copy) =>
+          shown.contains('${copy.serverId}|${copy.id}');
+
+      expect(joinIndexedCopies(card, index, holders, isShown), isTrue);
+      expect(copiesOf(card).map((copy) => copy.serverId), ['a', 'b']);
+
+      final later = _movie(
+        '9',
+        'b',
+        ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'},
+      );
+      expect(foldCopies([later], holders), isEmpty);
+      expect(copiesOf(card), hasLength(2));
+      expect(serverCountOf(card), 2);
+    });
+
+    test('the full copy paging folds in takes the place of the light one '
+        'the index gave the card', () {
+      final original = _movie(
+        '1',
+        'a',
+        ids: {'Tmdb': '1001'},
+        sortName: 'Quillmere',
+      );
+      final light = _movie('9', 'b', ids: {'Tmdb': '1001'});
+      final index = indexCopies([original, light]);
+      final holders = <String, AggregatedItem>{};
+      final card = foldCopies([original], holders).single;
+      final shown = {'a|1'};
+
+      expect(
+        joinIndexedCopies(
+          card,
+          index,
+          holders,
+          (copy) => shown.contains('${copy.serverId}|${copy.id}'),
+        ),
+        isTrue,
+      );
+      expect(copiesOf(card)[1].rawData.containsKey('UserData'), isFalse);
+
+      final full = _movie(
+        '9',
+        'b',
+        ids: {'Tmdb': '1001'},
+        sortName: 'Les Jardins de Vortelle',
+      );
+      full.rawData['UserData'] = {'Played': true};
+      full.rawData['ImageTags'] = {'Primary': 'tag-9'};
+      expect(foldCopies([full], holders), isEmpty);
+
+      final copies = copiesOf(card);
+      expect(copies, hasLength(2));
+      expect(copies.first.rawData['Id'], '1');
+      expect(copies[1].serverId, 'b');
+      expect(copies[1].id, '9');
+      expect(copies[1].rawData['UserData'], {'Played': true});
+      expect(copies[1].rawData['ImageTags'], {'Primary': 'tag-9'});
+      expect(copies[1].rawData['SortName'], 'Les Jardins de Vortelle');
+    });
+
+    test('a title only one item holds stays out of the index', () {
+      final index = indexCopies([
+        _movie('1', 'a', ids: {'Tmdb': '1002'}),
+        _movie('2', 'b', ids: {'Tmdb': '1002'}),
+        _movie('3', 'a', ids: {'Tmdb': '1003'}),
+      ]);
+      expect(index.keys, ['Movie:tmdb:1002']);
+    });
+
+    test('a copy already on the card still leads to the copies its ids '
+        'point at', () {
+      final holders = <String, AggregatedItem>{};
+      final card = foldCopies([
+        _movie('1', 'a', ids: {'Tmdb': '1'}),
+        _movie('2', 'b', ids: {'Tmdb': '1', 'Imdb': 'tt2'}),
+      ], holders).single;
+      final index = indexCopies([
+        _movie('2', 'b', ids: {'Tmdb': '1', 'Imdb': 'tt2'}),
+        _movie('3', 'c', ids: {'Imdb': 'tt2'}),
+      ]);
+      final shown = {'a|1', 'b|2'};
+      joinIndexedCopies(
+        card,
+        index,
+        holders,
+        (copy) => shown.contains('${copy.serverId}|${copy.id}'),
+      );
+      expect(copiesOf(card).map((copy) => copy.serverId), ['a', 'b', 'c']);
+    });
+
+    test('a copy whose ids lead to two cards joins only one of them', () {
+      final holders = <String, AggregatedItem>{};
+      final cards = foldCopies([
+        _movie('1', 'a', ids: {'Tmdb': '1001'}),
+        _movie('2', 'b', ids: {'Imdb': 'tt9000001'}),
+      ], holders);
+      expect(cards, hasLength(2));
+      final bridge = _movie(
+        '3',
+        'c',
+        ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'},
+      );
+      final index = indexCopies([...cards, bridge]);
+      final shown = {'a|1', 'b|2'};
+      bool isShown(AggregatedItem copy) =>
+          shown.contains('${copy.serverId}|${copy.id}');
+
+      expect(joinIndexedCopies(cards[0], index, holders, isShown), isTrue);
+      expect(joinIndexedCopies(cards[1], index, holders, isShown), isFalse);
+      expect(copiesOf(cards[0]).map((copy) => copy.serverId), ['a', 'c']);
+      expect(copiesOf(cards[1]).map((copy) => copy.serverId), ['b']);
+    });
+
+    test('the full copy folds into the card holding its light copy, not the '
+        'first card its ids lead to', () {
+      final holders = <String, AggregatedItem>{};
+      final cards = foldCopies([
+        _movie('1', 'a', ids: {'Tmdb': '1001'}),
+        _movie('2', 'b', ids: {'Imdb': 'tt9000001'}),
+      ], holders);
+      final light = _movie(
+        '3',
+        'c',
+        ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'},
+      );
+      final index = indexCopies([...cards, light]);
+      final shown = {'a|1', 'b|2'};
+      bool isShown(AggregatedItem copy) =>
+          shown.contains('${copy.serverId}|${copy.id}');
+      // The second card is up first, so the copy lands there.
+      joinIndexedCopies(cards[1], index, holders, isShown);
+      joinIndexedCopies(cards[0], index, holders, isShown);
+
+      final full = _movie(
+        '3',
+        'c',
+        ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'},
+        sortName: 'Quillmere',
+      );
+      expect(foldCopies([full], holders), isEmpty);
+      expect(copiesOf(cards[0]).map((copy) => copy.serverId), ['a']);
+      expect(copiesOf(cards[1]).map((copy) => copy.serverId), ['b', 'c']);
+      expect(copiesOf(cards[1])[1].rawData['SortName'], 'Quillmere');
+    });
+
+    test('a copy another copy brought to one card stays off the next', () {
+      final holders = <String, AggregatedItem>{};
+      final cards = foldCopies([
+        _movie('1', 'a', ids: {'Tmdb': '1001'}),
+        _movie('2', 'b', ids: {'Imdb': 'tt9000001'}),
+      ], holders);
+      final index = indexCopies([
+        ...cards,
+        _movie('3', 'c', ids: {'Tmdb': '1001', 'Imdb': 'tt9000001'}),
+        _movie('4', 'd', ids: {'Tmdb': '1001'}),
+      ]);
+      final shown = {'a|1', 'b|2'};
+      bool isShown(AggregatedItem copy) =>
+          shown.contains('${copy.serverId}|${copy.id}');
+
+      // The second card reaches d through c's ids.
+      joinIndexedCopies(cards[1], index, holders, isShown);
+      expect(joinIndexedCopies(cards[0], index, holders, isShown), isFalse);
+      expect(copiesOf(cards[0]).map((copy) => copy.serverId), ['a']);
+      expect(copiesOf(cards[1]).map((copy) => copy.serverId), ['b', 'c', 'd']);
+
+      final full = _movie(
+        '4',
+        'd',
+        ids: {'Tmdb': '1001'},
+        sortName: 'Quillmere',
+      );
+      expect(foldCopies([full], holders), isEmpty);
+      expect(copiesOf(cards[0]).map((copy) => copy.serverId), ['a']);
+      expect(copiesOf(cards[1]).last.rawData['SortName'], 'Quillmere');
+    });
+  });
 }

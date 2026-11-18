@@ -21,6 +21,21 @@ void main() {
       expect(hls['video_codecs'], containsAll(['h264', 'hevc']));
     });
 
+    // Jellyfin and Emby take the first transcoding profile, and an LG can't
+    // open HLS: a converted title stuck the TV until it was stopped.
+    test(
+      'converts video for Jellyfin and Emby to one MPEG-TS stream first',
+      () {
+        final video = (dlnaDeviceProfile()['TranscodingProfiles'] as List)
+            .cast<Map<String, dynamic>>()
+            .where((p) => p['Type'] == 'Video')
+            .toList();
+        expect(video.first['Protocol'], 'http');
+        expect(video.first['Container'], 'ts');
+        expect(video.last['Protocol'], 'hls');
+      },
+    );
+
     test('plays a Matroska original as it is', () {
       final capabilities = siloCapabilitiesFromDeviceProfile(
         dlnaDeviceProfile(),
@@ -60,7 +75,10 @@ void main() {
       final video = (dlnaDeviceProfile()['DirectPlayProfiles'] as List)
           .cast<Map<String, dynamic>>()
           .firstWhere((p) => p['Type'] == 'Video');
-      expect((video['Container'] as String).split(','), containsAll(['ts', 'mpegts']));
+      expect(
+        (video['Container'] as String).split(','),
+        containsAll(['ts', 'mpegts']),
+      );
     });
 
     test('converts H264 profiles a TV cannot decode, such as High 10', () {
@@ -82,13 +100,20 @@ void main() {
           .cast<Map<String, dynamic>>()
           .firstWhere((p) => p['Codec'] == 'hevc');
       final ruledOut = [
-        for (final c in (hevc['Conditions'] as List).cast<Map<String, dynamic>>())
-          if (c['Property'] == 'VideoRangeType' && c['Condition'] == 'NotEquals')
+        for (final c
+            in (hevc['Conditions'] as List).cast<Map<String, dynamic>>())
+          if (c['Property'] == 'VideoRangeType' &&
+              c['Condition'] == 'NotEquals')
             c['Value'],
       ];
       expect(
         ruledOut,
-        unorderedEquals(['DOVI', 'DOVIWithEL', 'DOVIWithELHDR10Plus', 'DOVIInvalid']),
+        unorderedEquals([
+          'DOVI',
+          'DOVIWithEL',
+          'DOVIWithELHDR10Plus',
+          'DOVIInvalid',
+        ]),
       );
     });
   });

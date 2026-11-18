@@ -30,11 +30,13 @@ String dlnaMimeType(StreamResolutionResult resolution) {
   if (path.endsWith('.m3u8') || container == 'hls' || container == 'm3u8') {
     return 'application/vnd.apple.mpegurl';
   }
-  // Jellyfin and Emby report the source's container for a transcode too, and
-  // the DLNA profile transcodes audio to MP3.
+  // Jellyfin and Emby report the source's container for a conversion too.
+  // The DLNA profile converts audio to MP3, and video to one MPEG-TS stream
+  // whose path ends in .ts.
   if (audio && resolution.playMethod == StreamPlayMethod.transcode) {
     return 'audio/mpeg';
   }
+  if (!audio && path.endsWith('.ts')) return 'video/mp2t';
   return switch (container) {
     'mkv' || 'matroska' => audio ? 'audio/x-matroska' : 'video/x-matroska',
     'mp4' || 'm4v' => audio ? 'audio/mp4' : 'video/mp4',
@@ -62,6 +64,44 @@ String dlnaFeatures(StreamResolutionResult resolution) {
     return '*';
   }
   return 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000';
+}
+
+/// Whether the cast needs the server to apply the track pick. A DLNA TV
+/// playing the file plays the audio track the file flags as default (or its
+/// first) and no subtitle, so only another audio track or a subtitle has to
+/// be converted in. The server's DefaultAudioStreamIndex follows the user's
+/// language preference, not the file, so it doesn't count. When the version
+/// or its tracks are unknown, the server applies the pick. The cast sheet
+/// passes the default audio track too, and treating that as a pick converted
+/// every cast, which Emby and Jellyfin then send as HLS that some TVs (LG)
+/// never start.
+bool dlnaNeedsServerTrackPick(
+  AggregatedItem item, {
+  String? mediaSourceId,
+  int? audioStreamIndex,
+  int? subtitleStreamIndex,
+}) {
+  if (subtitleStreamIndex != null && subtitleStreamIndex >= 0) return true;
+  if (audioStreamIndex == null) return false;
+  final sources = item.mediaSources;
+  final source = mediaSourceId == null
+      ? (sources.length == 1 ? sources.single : null)
+      : sources.where((s) => s['Id'] == mediaSourceId).firstOrNull;
+  if (source == null) return true;
+  final fileDefault = _defaultAudioIndex(_toStreams(source['MediaStreams']));
+  return fileDefault == null || audioStreamIndex != fileDefault;
+}
+
+List<Map<String, dynamic>> _toStreams(Object? value) => value is List
+    ? value.whereType<Map>().map((m) => m.cast<String, dynamic>()).toList()
+    : const [];
+
+int? _defaultAudioIndex(List<Map<String, dynamic>> streams) {
+  final audio = streams.where((s) => s['Type'] == 'Audio');
+  final chosen =
+      audio.where((s) => s['IsDefault'] == true).firstOrNull ??
+      audio.firstOrNull;
+  return (chosen?['Index'] as num?)?.toInt();
 }
 
 class DlnaProvider
@@ -134,8 +174,14 @@ class DlnaProvider
     int? subtitleStreamIndex,
   }) async {
     final client =
-        _clientFactory.getClientIfExists(item.serverId) ?? GetIt.instance<MediaServerClient>();
-    final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
+        _clientFactory.getClientIfExists(item.serverId) ??
+        GetIt.instance<MediaServerClient>();
+    final hasExplicitIndices = dlnaNeedsServerTrackPick(
+      item,
+      mediaSourceId: mediaSourceId,
+      audioStreamIndex: audioStreamIndex,
+      subtitleStreamIndex: subtitleStreamIndex,
+    );
     // A seek still served for the cast before stops sending its stream; the
     // cast is back if this one can't start.
     final previous = _cast;

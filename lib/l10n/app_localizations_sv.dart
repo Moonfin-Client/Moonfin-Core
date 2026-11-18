@@ -13,7 +13,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get animeMarkerFiller => 'Filler';
+  String get animeMarkerFiller => 'Fyllmedel';
 
   @override
   String get animeMarkerMixed => 'Mixat';
@@ -25,13 +25,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get animeMarkerMangaCanon => 'Manga Canon';
 
   @override
-  String get animeMarkerSubbed => 'Subbed';
+  String get animeMarkerSubbed => 'Undertextad';
 
   @override
-  String get animeMarkerDubbed => 'Dubbed';
+  String get animeMarkerDubbed => 'Dubbad';
 
   @override
-  String get animeMarkerSubbedAndDubbed => 'Subbed/Dubbed';
+  String get animeMarkerSubbedAndDubbed => 'Undertextad/dubbad';
 
   @override
   String get animeMarkerSubbedShort => 'Sub';
@@ -46,7 +46,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get animeMarkerPending => 'I avvaktan på';
 
   @override
-  String get animeMarkerRecap => 'Recap';
+  String get animeMarkerRecap => 'Sammanfattning';
 
   @override
   String get interfaceLanguage => 'Gränssnittsspråk';
@@ -58,7 +58,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get signIn => 'Logga in';
 
   @override
-  String get signingIn => 'Signing in...';
+  String get signingIn => 'Loggar in...';
 
   @override
   String get empty => 'Tom';
@@ -86,31 +86,31 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get quickConnectScanHint =>
-      'Or scan this with a phone that\'s signed in to your server';
+      'Eller skanna den här koden med en telefon som är inloggad på din server';
 
   @override
   String get quickConnectTapOrScanHint =>
-      'Tap to approve in your browser, or scan this with another device';
+      'Tryck för att godkänna i din webbläsare, eller skanna den här koden med en annan enhet';
 
   @override
-  String get timesUpTitle => 'Time\'s up';
+  String get timesUpTitle => 'Tiden är ute';
 
   @override
-  String get timesUpMessage => 'This account isn\'t available right now.';
+  String get timesUpMessage => 'Det här kontot är inte tillgängligt just nu.';
 
   @override
   String timesUpResumesToday(String time) {
-    return 'You can use it again today at $time.';
+    return 'Du kan använda den igen idag kl. $time.';
   }
 
   @override
   String timesUpResumesTomorrow(String time) {
-    return 'You can use it again tomorrow at $time.';
+    return 'Du kan använda den igen i morgon kl. $time.';
   }
 
   @override
   String timesUpResumesOn(String day, String time) {
-    return 'You can use it again on $day at $time.';
+    return 'Du kan använda den igen på $day at $time.';
   }
 
   @override
@@ -127,7 +127,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get loginForbidden =>
-      'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.';
+      'Det går inte att logga in med det här kontot just nu. Det kan bero på att det är utanför de tillåtna tiderna, att kontot är spärrat eller inaktiverat. Försök igen senare eller kontakta en administratör.';
 
   @override
   String quickConnectUnavailable(String detail) {
@@ -143,27 +143,27 @@ class AppLocalizationsSv extends AppLocalizations {
   String get whosWatching => 'Vem tittar?';
 
   @override
-  String get signedInOnThisDevice => 'Signed in on this device';
+  String get signedInOnThisDevice => 'Inloggad på den här enheten';
 
   @override
-  String get pinRequired => 'PIN required';
+  String get pinRequired => 'PIN-kod krävs';
 
   @override
-  String get passwordRequired => 'Password required';
+  String get passwordRequired => 'Lösenord krävs';
 
   @override
   String continueAsUser(String name) {
-    return 'Continue as $name';
+    return 'Fortsätt som $name';
   }
 
   @override
   String switchToUser(String name) {
-    return 'Switch to $name';
+    return 'Byt till $name';
   }
 
   @override
   String signedInAsOnServer(String user, String server) {
-    return 'Signed in as $user on $server';
+    return 'Inloggad som $user på $server';
   }
 
   @override
@@ -242,7 +242,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Klassisk är Moonfins ursprungliga centrerade layout. Modern är en responsiv, filmisk layout.';
+      'Hur en film eller serie ser ut när man öppnar den.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klassisk';
@@ -254,43 +254,44 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailScreenStyleSpotlight => 'Spotlight';
 
   @override
-  String get spotlightMoreActions => 'More Actions';
+  String get spotlightMoreActions => 'Fler åtgärder';
 
   @override
-  String get spotlightCastCrewStudios => 'Cast, Crew, and Studios';
+  String get spotlightCastCrewStudios =>
+      'Skådespelare, filmteam och produktionsbolag';
 
   @override
-  String get spotlightChaptersExtras => 'Chapters and Extras';
+  String get spotlightChaptersExtras => 'Kapitel och extramaterial';
 
   @override
-  String get spotlightFileDetails => 'File Details';
+  String get spotlightFileDetails => 'Filinformation';
 
   @override
-  String get spotlightSimilarRecommendations => 'Similar and Recommendations';
+  String get spotlightSimilarRecommendations => 'Liknande och rekommendationer';
 
   @override
-  String get spotlightSeasonsEpisodes => 'Seasons and Episodes';
+  String get spotlightSeasonsEpisodes => 'Säsonger och avsnitt';
 
   @override
-  String get spotlightMoreEpisodes => 'More Episodes';
+  String get spotlightMoreEpisodes => 'Fler avsnitt';
 
   @override
-  String get spotlightFilmography => 'Filmography';
+  String get spotlightFilmography => 'Filmografi';
 
   @override
   String get spotlightCollectionsCard => 'Samlingar';
 
   @override
-  String get spotlightPlaylistOrder => 'Playlist Order';
+  String get spotlightPlaylistOrder => 'Spellistans ordning';
 
   @override
-  String get spotlightMoviesAndShows => 'Movies & Shows';
+  String get spotlightMoviesAndShows => 'Filmer och serier';
 
   @override
-  String get spotlightSimilarSeerr => 'Similar (Seerr)';
+  String get spotlightSimilarSeerr => 'Liknande (Seerr)';
 
   @override
-  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
+  String get spotlightRecommendationsSeerr => 'Rekommendationer (Seerr)';
 
   @override
   String spotlightPeopleCount(int count) {
@@ -461,7 +462,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailScreenStyleNouveau => 'Nouveau';
 
   @override
-  String get detailScreenStyleMinimalist => 'Minimalist';
+  String get detailScreenStyleMinimalist => 'Minimalistisk';
 
   @override
   String get detailScreenStyleStage => 'Stage';
@@ -470,16 +471,16 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailScreenStylePremiere => 'Premiär';
 
   @override
-  String get detailScreenStyleQuickLook => 'Quick Look';
+  String get detailScreenStyleQuickLook => 'Översikt';
 
   @override
   String get detailScreenStyleFrost => 'Frost';
 
   @override
-  String get quickLookOpenFullPage => 'Open full page';
+  String get quickLookOpenFullPage => 'Öppna helsida';
 
   @override
-  String get quickLookBackToClose => 'Back to close';
+  String get quickLookBackToClose => 'Tillbaka till stängning';
 
   @override
   String quickLookSeasonPlayed(int played, int total) {
@@ -505,20 +506,20 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Använd Moonfin Recommends lokala biblioteksalgoritm eller TMDb:s likhetsmått online. Obs: Onlinerekommendationer kräver Seerr-integration.';
+      'Använd algoritmen ”Moonfin Recommends” för lokala bibliotek, ”Server Recommends” från din mediaserver eller likhetsmått från TMDb online. Obs! Online-rekommendationer kräver integration med Seerr.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemJellyfin => 'Server Recommends';
+  String get recommendationSystemJellyfin => 'Serverens rekommendationer';
 
   @override
   String get recommendationSystemTmdb => 'TMDb-likhet';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Begränsa efter åldersgräns?';
+      'Tillämpa betygsgräns på rekommendationer';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -541,11 +542,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get interfaceLayout => 'Interface Layout';
+  String get interfaceLayout => 'Gränssnittets utformning';
 
   @override
   String get interfaceLayoutSubtitle =>
-      'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
+      'Åsidosätt den upptäckta layouten om enheten avläses felaktigt. Starta om Moonfin för att ändringarna ska träda i kraft.';
 
   @override
   String get interfaceLayoutAutomatic => 'Automatiskt';
@@ -557,20 +558,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get interfaceLayoutDesktop => 'Skrivbord';
 
   @override
-  String get interfaceLayoutPhone => 'Phone';
+  String get interfaceLayoutPhone => 'Telefon';
 
   @override
   String get glassQuality => 'Glaskvalitet';
 
   @override
-  String get oledMode => 'OLED Mode';
+  String get oledMode => 'OLED-läge';
 
   @override
   String get oledModeSubtitle =>
-      'Deepen blacks and enrich artwork. Best on OLED displays.';
+      'Förstärk svarta nyanser och ge bilderna mer djup. Fungerar bäst på OLED-skärmar.';
 
   @override
-  String get oledModeSubtle => 'Subtle';
+  String get oledModeSubtle => 'Subtil';
 
   @override
   String get oledModeVivid => 'Vivid';
@@ -593,7 +594,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get performanceModeSubtitle =>
-      'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
+      'Funktionen mäter automatiskt enheten och begränsar användningen på enheter med begränsat minne, vilket innebär att färre bilder sparas i minnet och att trailrar sparas som stillbilder. Ändringen träder i kraft vid nästa start.';
 
   @override
   String get performanceModeAuto => 'Auto';
@@ -602,14 +603,14 @@ class AppLocalizationsSv extends AppLocalizations {
   String get performanceModeStandard => 'Standard';
 
   @override
-  String get performanceModeReduced => 'Reduced';
+  String get performanceModeReduced => 'Nedsatt';
 
   @override
-  String get rendererMode => 'Renderer';
+  String get rendererMode => 'Renderare';
 
   @override
   String get rendererModeSubtitle =>
-      'Auto uses Impeller on boxes whose graphics run it smoothly and Skia everywhere else. Pick Skia if animations or video look wrong. Takes effect on the next launch.';
+      'Auto använder Impeller på enheter där grafiken körs smidigt och Skia på alla andra enheter. Välj Skia om animationer eller video ser fel ut. Träder i kraft vid nästa start.';
 
   @override
   String get rendererModeAuto => 'Auto';
@@ -619,11 +620,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get trailerPreviewHeldBack =>
-      'Off because Performance is set to Reduced for this device';
+      'Avstängd eftersom prestandan är inställd på ”Reducerad” för den här enheten';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
-      'Växla mellan Moonfin och Neon Pulse utan att starta om appen';
+      'Använd ett helt anpassat tema och växla mellan ett användargränssnitt inspirerat av Apple eller Material.';
 
   @override
   String get customThemeTitle => 'Anpassat tema';
@@ -633,11 +634,11 @@ class AppLocalizationsSv extends AppLocalizations {
       'Anpassade teman ändrar visuella element i hela Moonfin. Välj ett av alternativen som passar din stil.';
 
   @override
-  String get keyboardStyle => 'Keyboard Style';
+  String get keyboardStyle => 'Tangentbordsstil';
 
   @override
   String get keyboardStyleDescription =>
-      'Native uses your TV\'s own keyboard. Classic is the original Moonfin keyboard. Glass is a frosted panel with larger keys. Docked fills the bottom of the screen and shows what you type above the keys.';
+      'I läget ”Native” används TV:ns eget tangentbord. ”Classic” är det ursprungliga Moonfin-tangentbordet. ”Glass” är en frostat panel med större tangenter. I läget ”Docked” fyller tangentbordet hela skärmens nedre del och visar vad du skriver ovanför tangenterna.';
 
   @override
   String get keyboardStyleNative => 'Native';
@@ -649,33 +650,33 @@ class AppLocalizationsSv extends AppLocalizations {
   String get keyboardStyleGlass => 'Glass';
 
   @override
-  String get keyboardStyleDocked => 'Docked';
+  String get keyboardStyleDocked => 'I docka';
 
   @override
-  String get keyboardSpace => 'space';
+  String get keyboardSpace => 'mellanslag';
 
   @override
-  String get keyboardHoldForAccents => 'hold for accents';
+  String get keyboardHoldForAccents => 'lämna utrymme för accenter';
 
   @override
-  String get keyboardClose => 'close';
+  String get keyboardClose => 'stäng';
 
   @override
-  String get controller => 'Controller';
+  String get controller => 'Styrenhet';
 
   @override
-  String get gamepadNavigation => 'Gamepad Navigation';
+  String get gamepadNavigation => 'Navigering med spelkontroll';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'Låt en ansluten spelkontroll flytta fokus och välja objekt';
 
   @override
   String get themeMoonfin => 'Moonfin';
 
   @override
   String get themeMoonfinSubtitle =>
-      'Nuvarande Moonfin look som ni alla har börjat älska';
+      'Den ursprungliga, rena standardversionen av Moonfin.';
 
   @override
   String get themeNeonPulse => 'Neon Pulse';
@@ -731,26 +732,26 @@ class AppLocalizationsSv extends AppLocalizations {
       'Nätverksfel vid kontakt med Emby Connect eller den valda servern';
 
   @override
-  String get signInWithPlex => 'Sign in with Plex';
+  String get signInWithPlex => 'Logga in med Plex';
 
   @override
   String get plexLinkInstructions =>
-      'Go to plex.tv/link on any device and enter this code';
+      'Gå till plex.tv/link på valfri enhet och ange den här koden';
 
   @override
-  String get plexOpenLink => 'Open plex.tv/link';
+  String get plexOpenLink => 'Öppna plex.tv/link';
 
   @override
-  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+  String get plexWaitingForApproval => 'Väntar på att du ska godkänna koden...';
 
   @override
-  String get plexSignInWithPassword => 'Sign in with a password';
+  String get plexSignInWithPassword => 'Logga in med lösenord';
 
   @override
-  String get plexVerificationCode => 'Verification code';
+  String get plexVerificationCode => 'Bekräftelsekod';
 
   @override
-  String get plexNoServers => 'No Plex servers found on this account';
+  String get plexNoServers => 'Inga Plex-servrar hittades för detta konto';
 
   @override
   String get loadingLinkedServers => 'Laddar länkade servrar...';
@@ -798,17 +799,16 @@ class AppLocalizationsSv extends AppLocalizations {
   String get gameFastForward => 'Snabbspolning framåt';
 
   @override
-  String get gameOrientation => 'Game orientation';
+  String get gameOrientation => 'Spelets inriktning';
 
   @override
-  String get gameOrientationSubtitle =>
-      'Screen orientation while playing games';
+  String get gameOrientationSubtitle => 'Skärmens orientering vid spelande';
 
   @override
-  String get landscape => 'Landscape';
+  String get landscape => 'Landskap';
 
   @override
-  String get portrait => 'Portrait';
+  String get portrait => 'Porträtt';
 
   @override
   String get gameEmulatorSettings => 'Emulatorinställningar';
@@ -821,20 +821,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Håll in för att öppna menyn';
 
   @override
-  String get gameKeepPlaying => 'Keep playing';
+  String get gameKeepPlaying => 'Fortsätt spela';
 
   @override
-  String get gameSaveAndExit => 'Save & exit';
+  String get gameSaveAndExit => 'Spara och avsluta';
 
   @override
-  String get gameExitGame => 'Exit game';
+  String get gameExitGame => 'Avsluta spelet';
 
   @override
-  String get gameSavingBeforeExit => 'Saving…';
+  String get gameSavingBeforeExit => 'Sparar…';
 
   @override
   String get gameSaveFailedStillPlaying =>
-      'Could not save state. Still playing.';
+      'Det gick inte att spara speltillståndet. Spelet pågår fortfarande.';
 
   @override
   String get gamePlaybackUnsupported =>
@@ -974,19 +974,19 @@ class AppLocalizationsSv extends AppLocalizations {
   String get extraLarge => 'Extra large';
 
   @override
-  String get uiScaleGrandparents => 'Grandparents';
+  String get uiScaleGrandparents => 'Far- och morföräldrar';
 
   @override
-  String get uiScaleGreatGrandparents => 'Great-Grandparents';
+  String get uiScaleGreatGrandparents => 'Farfar- och farmorföräldrar';
 
   @override
-  String get scrollDirection => 'Scroll Direction';
+  String get scrollDirection => 'Rullningsriktning';
 
   @override
-  String get scrollDirectionVertical => 'Vertical';
+  String get scrollDirectionVertical => 'Vertikal';
 
   @override
-  String get scrollDirectionHorizontal => 'Horizontal';
+  String get scrollDirectionHorizontal => 'Horisontellt';
 
   @override
   String libraryGenresTitle(String name) {
@@ -1063,7 +1063,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get scrollRight => 'Bläddra åt höger';
 
   @override
-  String get scrollToTop => 'Scroll to top';
+  String get scrollToTop => 'Bläddra till toppen';
 
   @override
   String get couldNotLoadGenre =>
@@ -1246,10 +1246,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get latestAudiobooks => 'Senaste ljudböckerna';
 
   @override
-  String get latestComics => 'Latest Comics';
+  String get latestComics => 'Senaste serierna';
 
   @override
-  String get comics => 'Comics';
+  String get comics => 'Serier';
 
   @override
   String bookSeriesItemCount(int count) {
@@ -1269,14 +1269,14 @@ class AppLocalizationsSv extends AppLocalizations {
   String get bookFormatAudiobook => 'Ljudbok';
 
   @override
-  String get bookFormatComic => 'Comic';
+  String get bookFormatComic => 'Serietidning';
 
   @override
   String get noBooksFound => 'Inga böcker hittades för denna författare.';
 
   @override
   String get noBooksFoundDescription =>
-      'This library does not contain any books, audiobooks, or comics yet.';
+      'Det här biblioteket innehåller ännu inga böcker, ljudböcker eller serietidningar.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1490,7 +1490,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get extras => 'Extramaterial';
 
   @override
-  String get additionalParts => 'Additional Parts';
+  String get additionalParts => 'Tilläggsdelar';
 
   @override
   String get behindTheScenes => 'Bakom kulisserna';
@@ -1586,7 +1586,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get downloaded => 'Nedladdat';
 
   @override
-  String get finalizingDownload => 'Finalizing…';
+  String get finalizingDownload => 'Slutför…';
 
   @override
   String get queuedDownload => 'Queued';
@@ -1644,7 +1644,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return 'Raderingen misslyckades med följande felmeddelande: $error';
   }
 
   @override
@@ -1701,7 +1701,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get audioTrack => 'Ljudspår';
 
   @override
-  String get noOtherAudioTracks => 'No other audio tracks';
+  String get noOtherAudioTracks => 'Inga andra ljudspår';
 
   @override
   String get subtitleTrack => 'Undertextspår';
@@ -1720,13 +1720,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get downloadSubtitles => 'Ladda ner undertexter';
 
   @override
-  String get searchingSubtitles => 'Searching for subtitles…';
+  String get searchingSubtitles => 'Söker efter undertexter…';
 
   @override
-  String get fetchingSubtitles => 'Fetching subtitles';
+  String get fetchingSubtitles => 'Hämta undertexter';
 
   @override
-  String get downloadingSubtitle => 'Downloading subtitle…';
+  String get downloadingSubtitle => 'Hämtar undertexter…';
 
   @override
   String get selectedSubtitleInvalid => 'Den valda undertexten är ogiltig.';
@@ -1769,29 +1769,29 @@ class AppLocalizationsSv extends AppLocalizations {
   String get noEpisodesLoaded => 'Inga avsnitt laddade';
 
   @override
-  String get downloadScopeTitle => 'What to download';
+  String get downloadScopeTitle => 'Vad ska man ladda ner?';
 
   @override
-  String get downloadAllEpisodes => 'All episodes';
+  String get downloadAllEpisodes => 'Alla avsnitt';
 
   @override
-  String get downloadUnwatchedEpisodes => 'All unwatched episodes';
+  String get downloadUnwatchedEpisodes => 'Alla avsnitt som jag inte har sett';
 
   @override
-  String get downloadAllMovies => 'All movies';
+  String get downloadAllMovies => 'Alla filmer';
 
   @override
-  String get downloadUnwatchedMovies => 'All unwatched movies';
+  String get downloadUnwatchedMovies => 'Alla filmer jag inte har sett';
 
   @override
-  String get downloadScopeLoading => 'Loading items...';
+  String get downloadScopeLoading => 'Laddar objekt...';
 
   @override
-  String get downloadScopeLoadFailed => 'Could not load items to download';
+  String get downloadScopeLoadFailed => 'Det gick inte att ladda ner filerna';
 
   @override
   String downloadEstimateTotal(String size) {
-    return '~$size total';
+    return '~$size totalt';
   }
 
   @override
@@ -1806,12 +1806,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String downloadSizeTotal(String size) {
-    return '$size total';
+    return '$size totalt';
   }
 
   @override
   String downloadEstimateUnknownCount(int count) {
-    return '$count unknown';
+    return '$count okänt';
   }
 
   @override
@@ -1840,7 +1840,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get director => 'DIREKTÖR';
 
   @override
-  String get starring => 'STARRING';
+  String get starring => 'MED';
 
   @override
   String get directors => 'REGISSÖRER';
@@ -1852,27 +1852,27 @@ class AppLocalizationsSv extends AppLocalizations {
   String get writers => 'MANUSFÖRFATTARE';
 
   @override
-  String get episodeDirector => 'Episode Director';
+  String get episodeDirector => 'Avsnittsregissör';
 
   @override
   String episodeDirectorWithRole(String role) {
-    return '$role (Episode Director)';
+    return '$role (Avsnitt Direktör)';
   }
 
   @override
-  String get episodeWriter => 'Episode Writer';
+  String get episodeWriter => 'Manusförfattare för avsnittet';
 
   @override
   String episodeWriterWithRole(String role) {
-    return '$role (Episode Writer)';
+    return '$role (Manusförfattare)';
   }
 
   @override
-  String get guestStar => 'Guest Star';
+  String get guestStar => 'Gästskådespelare';
 
   @override
   String guestStarWithRole(String role) {
-    return '$role (Guest Star)';
+    return '$role (Gästroll)';
   }
 
   @override
@@ -1950,7 +1950,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get shuffle => 'Blanda';
 
   @override
-  String get shuffleAll => 'Shuffle All';
+  String get shuffleAll => 'Blanda alla';
 
   @override
   String get shuffleAllMusic => 'Blanda all musik';
@@ -1970,10 +1970,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get perfectMatch => 'Perfekt matchning';
 
   @override
-  String get aiTranslated => 'AI Translated';
+  String get aiTranslated => 'Översatt med AI';
 
   @override
-  String get machineTranslated => 'Machine Translated';
+  String get machineTranslated => 'Maskinöversatt';
 
   @override
   String get hearingImpaired => 'SDH';
@@ -2148,50 +2148,50 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playbackInformation => 'Uppspelningsinformation';
 
   @override
-  String get showMpvStats => 'Show mpv Statistics (Shift+I)';
+  String get showMpvStats => 'Visa mpv-statistik (Skift+I)';
 
   @override
-  String get hideMpvStats => 'Hide mpv Statistics (Shift+I)';
+  String get hideMpvStats => 'Dölj mpv-statistik (Shift+I)';
 
   @override
-  String get keyboardShortcutsTitle => 'Keyboard shortcuts';
+  String get keyboardShortcutsTitle => 'Tangentbordsgenvägar';
 
   @override
   String get keyboardShortcutsSubtitle =>
-      'Keys for the app, video player and reader';
+      'Tangenter för appen, videospelaren och läsaren';
 
   @override
   String get keyboardShortcutsPlayerHint =>
-      'Press ? or F1 while a video plays to see this list without leaving the player.';
+      'Tangenter för appen, videospelaren och läsaren';
 
   @override
-  String get keyboardShortcutsSectionApp => 'Everywhere';
+  String get keyboardShortcutsSectionApp => 'Överallt';
 
   @override
-  String get keyboardShortcutsSectionAppScope => 'On any screen';
+  String get keyboardShortcutsSectionAppScope => 'På vilken skärm som helst';
 
   @override
-  String get keyboardShortcutsSectionPlayer => 'Video player';
+  String get keyboardShortcutsSectionPlayer => 'Videospelare';
 
   @override
   String get keyboardShortcutsSectionPlayerScope =>
-      'While a video is open, playing or paused';
+      'När en video är öppen, spelas upp eller är pausad';
 
   @override
-  String get keyboardShortcutsSectionReader => 'Book and comic reader';
+  String get keyboardShortcutsSectionReader => 'Bok- och serieläsare';
 
   @override
   String get keyboardShortcutsSectionReaderScope =>
-      'While reading a book or comic';
+      'När man läser en bok eller en serietidning';
 
   @override
-  String get keyNameArrowKeys => 'Arrow keys';
+  String get keyNameArrowKeys => 'Piltangenterna';
 
   @override
-  String get keyNameSpace => 'Space';
+  String get keyNameSpace => 'Rymden';
 
   @override
-  String get keyNameEnter => 'Enter';
+  String get keyNameEnter => 'Tryck på Enter';
 
   @override
   String get keyNameEsc => 'Esc';
@@ -2203,19 +2203,19 @@ class AppLocalizationsSv extends AppLocalizations {
   String get keyNameDelete => 'Radera';
 
   @override
-  String get keyNamePageUp => 'Page Up';
+  String get keyNamePageUp => 'Sidan upp';
 
   @override
-  String get keyNamePageDown => 'Page Down';
+  String get keyNamePageDown => 'Sida nedåt';
 
   @override
   String get keyNameHome => 'Hem';
 
   @override
-  String get keyNameEnd => 'End';
+  String get keyNameEnd => 'Slut';
 
   @override
-  String get keyNameShift => 'Shift';
+  String get keyNameShift => 'Skift';
 
   @override
   String get keyNameCtrl => 'Ctrl';
@@ -2224,105 +2224,107 @@ class AppLocalizationsSv extends AppLocalizations {
   String get keyNameAlt => 'Alt';
 
   @override
-  String get keyNameScrollWheel => 'Scroll wheel';
+  String get keyNameScrollWheel => 'Rullhjul';
 
   @override
-  String get shortcutMoveFocus => 'Move between items';
+  String get shortcutMoveFocus => 'Bläddra mellan objekten';
 
   @override
-  String get shortcutActivate => 'Open the selected item';
+  String get shortcutActivate => 'Öppna det markerade objektet';
 
   @override
-  String get shortcutGoBack => 'Go back';
+  String get shortcutGoBack => 'Gå tillbaka';
 
   @override
-  String get shortcutToggleFullscreen => 'Fullscreen on or off';
+  String get shortcutToggleFullscreen =>
+      'Aktivera eller inaktivera helskärmsläge';
 
   @override
-  String get shortcutQuit => 'Quit Moonfin';
+  String get shortcutQuit => 'Avsluta Moonfin';
 
   @override
-  String get shortcutPlayPause => 'Play or pause';
+  String get shortcutPlayPause => 'Spela upp eller pausa';
 
   @override
   String get shortcutShowControlsOrPlayPause =>
-      'Show controls, or play/pause if shown';
+      'Visa kontrollerna, eller uppspelning/paus om de visas';
 
   @override
-  String get shortcutSeekBack => 'Seek back (hold for bigger jumps)';
+  String get shortcutSeekBack => 'Sök bakåt (håll ned för större hopp)';
 
   @override
-  String get shortcutSeekForward => 'Seek forward (hold for bigger jumps)';
+  String get shortcutSeekForward => 'Titta framåt (håll kvar för större hopp)';
 
   @override
-  String get shortcutVolumeUp => 'Volume up';
+  String get shortcutVolumeUp => 'Höj volymen';
 
   @override
-  String get shortcutVolumeDown => 'Volume down';
+  String get shortcutVolumeDown => 'Sänk volymen';
 
   @override
-  String get shortcutMute => 'Mute or unmute';
+  String get shortcutMute => 'Stäng av eller slå på ljudet';
 
   @override
-  String get shortcutToggleSubtitles => 'Subtitles on or off';
+  String get shortcutToggleSubtitles => 'Slå på eller stäng av undertexter';
 
   @override
-  String get shortcutSlower => 'Slow down';
+  String get shortcutSlower => 'Ta det lugnt';
 
   @override
-  String get shortcutFaster => 'Speed up';
+  String get shortcutFaster => 'Snabba upp';
 
   @override
-  String get shortcutPlaybackInfo => 'Show playback information';
+  String get shortcutPlaybackInfo => 'Visa uppspelningsinformation';
 
   @override
-  String get shortcutMpvStats => 'mpv statistics on or off';
+  String get shortcutMpvStats => 'Aktivera eller inaktivera MPV-statistik';
 
   @override
-  String get shortcutRecropBlackBars => 'Recrop black bars';
+  String get shortcutRecropBlackBars => 'Beskär svarta fält';
 
   @override
   String get shortcutLeaveFullscreenOrStop =>
-      'Exit fullscreen, or stop if not fullscreen';
+      'Avsluta helskärmsläget, eller avbryt om det inte är helskärmsläge';
 
   @override
-  String get shortcutHideControls => 'Hide controls';
+  String get shortcutHideControls => 'Dölj kontrollerna';
 
   @override
-  String get shortcutStopPlayback => 'Stop playback';
+  String get shortcutStopPlayback => 'Avbryt uppspelningen';
 
   @override
-  String get shortcutNextItem => 'Next item';
+  String get shortcutNextItem => 'Nästa punkt';
 
   @override
-  String get shortcutPreviousItem => 'Previous item';
+  String get shortcutPreviousItem => 'Föregående post';
 
   @override
-  String get shortcutSkipSegment => 'Skip intro or credits when offered';
+  String get shortcutSkipSegment =>
+      'Hoppa över intro eller eftertexter när det erbjuds';
 
   @override
-  String get shortcutShowShortcuts => 'Show this list';
+  String get shortcutShowShortcuts => 'Visa den här listan';
 
   @override
-  String get shortcutNextPage => 'Next page';
+  String get shortcutNextPage => 'Nästa sida';
 
   @override
-  String get shortcutPreviousPage => 'Previous page';
+  String get shortcutPreviousPage => 'Föregående sida';
 
   @override
-  String get shortcutScrollPage => 'Scroll the page (ebooks)';
+  String get shortcutScrollPage => 'Bläddra på sidan (e-böcker)';
 
   @override
-  String get shortcutFirstPage => 'First page, or start of chapter';
+  String get shortcutFirstPage => 'Första sidan eller början av kapitlet';
 
   @override
-  String get shortcutLastPage => 'Last page, or end of chapter';
+  String get shortcutLastPage => 'Sista sidan eller slutet av kapitlet';
 
   @override
-  String get shortcutZoom => 'Zoom in or out (comics)';
+  String get shortcutZoom => 'Zooma in eller ut (serier)';
 
   @override
-  String get shortcutResetZoom => 'Reset zoom (comics)';
+  String get shortcutResetZoom => 'Återställ zoom (serier)';
 
   @override
   String get playback => 'Uppspelning';
@@ -2361,20 +2363,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get hdr => 'HDR';
 
   @override
-  String get videoRenderer => 'Video Renderer';
+  String get videoRenderer => 'Videorenderare';
 
   @override
   String get videoRendererDescription =>
-      'Native window gives the smoothest motion and sends HDR to the display untouched. Try another option if video misbehaves.';
+      'I ”Native”-fönstret får du den jämnaste rörelsen och HDR-bilden skickas vidare till skärmen utan att bearbetas. Prova ett annat alternativ om videon inte fungerar som den ska.';
 
   @override
-  String get videoRendererNativeWindow => 'Native window (recommended)';
+  String get videoRendererNativeWindow => 'Inbyggt fönster (rekommenderas)';
 
   @override
-  String get videoRendererNativeHdrOnly => 'Native window for HDR only';
+  String get videoRendererNativeHdrOnly => 'Eget fönster endast för HDR';
 
   @override
-  String get videoRendererInApp => 'In-app (legacy)';
+  String get videoRendererInApp => 'I appen (äldre version)';
 
   @override
   String get track => 'Spår';
@@ -2406,11 +2408,12 @@ class AppLocalizationsSv extends AppLocalizations {
       'EPUB-rendering i appen är inte tillgänglig på den här plattformen ännu.';
 
   @override
-  String get bookReadingUnavailableTitle => 'Books can\'t be read on Apple TV';
+  String get bookReadingUnavailableTitle =>
+      'Man kan inte läsa böcker på Apple TV';
 
   @override
   String get bookReadingUnavailableMessage =>
-      'Open it in Moonfin on a phone, tablet or computer to read it. Audiobooks still play here.';
+      'Öppna den i Moonfin på en mobil, surfplatta eller dator för att läsa den. Ljudböckerna kan fortfarande spelas upp här.';
 
   @override
   String formatCannotRenderInApp(String extension) {
@@ -2593,13 +2596,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get noChannelsFound => 'Inga kanaler hittades';
 
   @override
-  String get noProgramData => 'No program data';
+  String get noProgramData => 'Inga programuppgifter';
 
   @override
   String get liveBadge => 'BO';
 
   @override
-  String get liveTvJumpToLive => 'Jump to Live';
+  String get liveTvJumpToLive => 'Gå till Live';
 
   @override
   String guideNextProgram(String time, String title) {
@@ -2645,61 +2648,60 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String nextSeriesRecording(String dateTime) {
-    return 'Next series recording: $dateTime';
+    return 'Nästa inspelning av serien: $dateTime';
   }
 
   @override
   String get noUpcomingSeriesRecording =>
-      'Series recording is scheduled, but the guide has no upcoming episodes';
+      'Serien är schemalagd för inspelning, men i programguiden finns inga kommande avsnitt';
 
   @override
   String get seriesRecordingSkipsShowing =>
-      'The series recording will skip this showing';
+      'Serien kommer att hoppa över detta avsnitt vid inspelningen';
 
   @override
-  String get seriesRecordingEpisodesQuestion =>
-      'Which episodes should be recorded?';
+  String get seriesRecordingEpisodesQuestion => 'Vilka avsnitt bör spelas in?';
 
   @override
   String get seriesRecordingAllEpisodes => 'Alla avsnitt';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
-      'Every showing, including repeats';
+      'Varje sändning, inklusive repriser';
 
   @override
   String get seriesRecordingNotRecordedEpisodes =>
-      'Episodes Not Already Recorded';
+      'Avsnitt som ännu inte har spelats in';
 
   @override
   String get seriesRecordingNotRecordedEpisodesDescription =>
-      'Skips episodes already in your library and records each episode once';
+      'Hoppar över avsnitt som redan finns i ditt bibliotek och spelar in varje avsnitt en gång';
 
   @override
-  String get seriesRecordingNewEpisodesOnly => 'New Episodes Only';
+  String get seriesRecordingNewEpisodesOnly => 'Endast nya avsnitt';
 
   @override
   String get seriesRecordingNewEpisodesOnlyDescription =>
-      'First airings only, no repeats';
+      'Endast första sändningar, inga repriser';
 
   @override
-  String get seriesRecordingSettings => 'Series Settings';
+  String get seriesRecordingSettings => 'Serieinställningar';
 
   @override
-  String get seriesRecordingUpdated => 'Series recording updated';
+  String get seriesRecordingUpdated => 'Uppdatering av serieinspelningarna';
 
   @override
   String get failedToUpdateSeriesRecording =>
-      'Unable to update series recording';
+      'Det går inte att uppdatera serieinspelningen';
 
   @override
-  String get recordCurrentEpisode => 'Record This Episode';
+  String get recordCurrentEpisode => 'Spela in det här avsnittet';
 
   @override
-  String get recordCurrentProgram => 'Record This Program';
+  String get recordCurrentProgram => 'Spela in det här programmet';
 
   @override
-  String get cancelCurrentRecording => 'Cancel This Recording';
+  String get cancelCurrentRecording => 'Avbryt denna inspelning';
 
   @override
   String get cancelRecordingAction => 'Avbryt inspelning';
@@ -2717,20 +2719,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get recordSeries => 'Record Series';
 
   @override
-  String get seriesSetToRecord => 'Series set to record';
+  String get seriesSetToRecord => 'Serien är redo att slå rekord';
 
   @override
-  String get seriesRecordingCancelled => 'Series recording cancelled';
+  String get seriesRecordingCancelled => 'Serieinspelningen har ställts in';
 
   @override
   String get unableToCreateSeriesRecording =>
-      'Unable to create series recording';
+      'Det går inte att skapa en serieinspelning';
 
   @override
   String get watch => 'Titta';
 
   @override
-  String get watchChannelLive => 'Watch channel live';
+  String get watchChannelLive => 'Se kanalen live';
 
   @override
   String get close => 'Stäng';
@@ -2742,20 +2744,20 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get playbackStreamLost =>
-      'Playback stopped and could not be recovered.';
+      'Uppspelningen avbröts och kunde inte återupptas.';
 
   @override
   String get playbackVideoUnsupported =>
-      'This device can\'t play this video\'s format. Try an external player.';
+      'Den här enheten kan inte spela upp den här videon på grund av formatet. Prova med en extern spelare.';
 
   @override
   String liveReconnecting(int attempt, int total) {
-    return 'Reconnecting… ($attempt of $total)';
+    return 'Återansluter… ($attempt of $total)';
   }
 
   @override
   String playerMatchingDisplayRate(String fps) {
-    return 'Matching display to $fps fps…';
+    return 'Anpassa skärmen till $fps fps…';
   }
 
   @override
@@ -2847,7 +2849,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get localAccount => 'Lokal';
 
   @override
-  String get savedMedia => 'Sparade media';
+  String get savedMedia => 'Nedladdningar';
 
   @override
   String get tvShows => 'TV-program';
@@ -2979,7 +2981,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get downloadedItems => 'Nedladdade objekt';
 
   @override
-  String get activeDownloads => 'Active Downloads';
+  String get activeDownloads => 'Aktiva nedladdningar';
 
   @override
   String savedMediaCount(int count) {
@@ -2998,33 +3000,35 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get savedMediaSelectItems => 'Select items';
+  String get savedMediaSelectItems => 'Välj artiklar';
 
   @override
-  String get savedMediaNoDownloads => 'Nothing saved yet';
+  String get savedMediaNoDownloads => 'Inget har sparats ännu';
 
   @override
   String get savedMediaNoDownloadsDetail =>
-      'Downloads you start appear here and play without a connection.';
+      'Nedladdningar som du startar visas här och kan spelas upp utan internetanslutning.';
 
   @override
-  String get savedMediaNoActiveDownloads => 'Nothing downloading right now';
+  String get savedMediaNoActiveDownloads =>
+      'Det pågår ingen nedladdning just nu';
 
   @override
-  String get savedMediaNoResults => 'No downloads match that search';
+  String get savedMediaNoResults =>
+      'Inga nedladdningar stämmer överens med den sökningen';
 
   @override
-  String get savedMediaPlayFromStart => 'Play from start';
+  String get savedMediaPlayFromStart => 'Spela från början';
 
   @override
-  String get savedMediaGoToDetails => 'Go to details';
+  String get savedMediaGoToDetails => 'Gå till detaljer';
 
   @override
-  String get savedMediaDeleteDownload => 'Delete download';
+  String get savedMediaDeleteDownload => 'Ta bort nedladdning';
 
   @override
   String savedMediaDeleteSeason(String season) {
-    return 'Delete $season';
+    return 'Ta bort $season';
   }
 
   @override
@@ -3039,25 +3043,26 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get savedMediaOpenShow => 'Open show';
+  String get savedMediaOpenShow => 'Öppen utställning';
 
   @override
-  String get savedMediaPlayNextUnwatched => 'Play next unwatched';
+  String get savedMediaPlayNextUnwatched =>
+      'Spela upp nästa som du inte har sett';
 
   @override
   String get savedMediaRead => 'Läsa';
 
   @override
-  String get savedMediaCancelDownload => 'Cancel download';
+  String get savedMediaCancelDownload => 'Avbryt nedladdningen';
 
   @override
-  String get sortBySize => 'Size';
+  String get sortBySize => 'Storlek';
 
   @override
   String get sortByName => 'Namn';
 
   @override
-  String get sortByDateAdded => 'Date added';
+  String get sortByDateAdded => 'Datum för tillägg';
 
   @override
   String get storageLimit => 'Lagringsgräns';
@@ -3101,7 +3106,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settings => 'Installningar';
 
   @override
-  String get settingsSearchHint => 'Search settings';
+  String get settingsSearchHint => 'Sökinställningar';
 
   @override
   String get authentication => 'Autentisering';
@@ -3559,6 +3564,16 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get playerRecroppingBlackBars => 'Recropping black bars';
+
+  @override
+  String get playerBlackBarsCropped => 'Black bars cropped';
+
+  @override
+  String get playerNoBlackBarsFound => 'No black bars found';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Couldn\'t detect black bars. Try again in a brighter scene';
 
   @override
   String get stretch => 'Sträcka';
@@ -4832,6 +4847,28 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa bibliotek från alla anslutna servrar';
 
   @override
+  String get mergeLibrariesByType => 'Merge Movie and TV Show Libraries';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Not changed on $servers';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Recently Added and Released';
 
   @override
@@ -5079,17 +5116,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get mediaBarSourceRandom => 'Random';
 
   @override
-  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
-
-  @override
   String get mediaBarNewReleaseBanner => 'New Release Banner';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Flag series with a new season or new episodes that aired recently.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'New Release Window';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5103,6 +5130,39 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'New Episodes';
+
+  @override
+  String get mediaBarNewMovie => 'New Movie';
+
+  @override
+  String get mediaBarNewReleasesSection => 'New Releases';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'New Releases';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Flag new series, seasons, episodes and movies.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Labels';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'New Episode Window';
+
+  @override
+  String get mediaBarNewMovieDays => 'New Movie Window';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Show Tagline';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
   String get moviesAndTvShows => 'Filmer och TV-program';
@@ -5941,6 +6001,27 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrSearchingIndexers => 'Searching indexers';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Not found yet · searched $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Not available yet';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Available $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Next episode $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Get a different release';
@@ -11618,6 +11699,15 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get playerTooltipExitFloatOnTop => 'Inaktivera flytande på toppen';
+
+  @override
+  String get playerTooltipPictureInPicture => 'Picture-in-picture';
+
+  @override
+  String get playerTooltipExitPictureInPicture => 'Exit picture-in-picture';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Playing in picture-in-picture';
 
   @override
   String get playerTooltipLockLandscape => 'Lås landskap';
@@ -18208,6 +18298,19 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Left and Right slide the scrubber.';
+
+  @override
+  String get remoteMediaNotificationTitle => 'Remote playback notification';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Show system media controls when watching on another device';
+
+  @override
+  String get remoteActivityWatching => 'Watching on Moonfin';
+
+  @override
+  String get remoteActivityListening => 'Listening on Moonfin';
 
   @override
   String get clickpadSeeking => 'Allow Clickpad Seeking';
