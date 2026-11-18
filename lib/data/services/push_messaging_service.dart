@@ -113,6 +113,9 @@ class PushMessagingService extends ChangeNotifier {
   /// listener, which retries once a server can.
   Future<void> registerWithCurrentToken() async {
     if (!PlatformDetection.isMobile) return;
+    // A server switch reuses the same FCM token, so drop the last server's
+    // registration first and let this one get its own.
+    _setRegisteredToken(null);
     _attachAvailabilityListener();
     final sync = GetIt.instance.isRegistered<PluginSyncService>()
         ? GetIt.instance<PluginSyncService>()
@@ -127,9 +130,6 @@ class PushMessagingService extends ChangeNotifier {
       final settings =
           await FirebaseMessaging.instance.getNotificationSettings();
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
-      // A server switch reuses the same FCM token, so drop the dedupe and let
-      // the new server get its own registration.
-      _setRegisteredToken(null);
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
