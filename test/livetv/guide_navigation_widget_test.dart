@@ -7,12 +7,14 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin_design/moonfin_design.dart' show AppColorScheme;
 import 'package:playback_core/playback_core.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
+import 'package:moonfin/ui/navigation/focus_route_observer.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_filter_picker.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_filter_rail.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_channel_cell.dart';
@@ -240,6 +242,7 @@ void main() {
     WidgetTester tester, {
     bool miniPlayerMode = false,
     Size surface = const Size(900, 700),
+    List<NavigatorObserver> observers = const [],
   }) async {
     // Wide enough for a multi-hour window and tall enough for a dozen rows.
     // The guide sizes its own time density to whatever surface it is given.
@@ -249,6 +252,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        navigatorObservers: observers,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         // Embedded mode drops the guide's own Scaffold because the host
@@ -319,7 +323,7 @@ void main() {
       ),
     );
     await _pumpFrames(tester);
-    await tester.tap(find.text('All channels'));
+    await tester.tap(find.byTooltip('Filters'));
     await _pumpFrames(tester);
     await tester.tap(
       find.descendant(
@@ -388,12 +392,22 @@ void main() {
       expect(firstMatch.hitTestable(), findsOneWidget);
       await tester.enterText(find.byType(TextField), '');
       await tester.pump(const Duration(milliseconds: 200));
-      await tester.tap(find.text('All channels'));
+      final filters = find.byTooltip('Filters');
+      expect(
+        find.descendant(of: filters, matching: find.byIcon(Icons.filter_list)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: filters, matching: find.text('All channels')),
+        findsOneWidget,
+      );
+      await tester.tap(filters);
       await _pumpFrames(tester);
       expect(tester.getSize(find.byType(GuideFilterPicker)).width, 390);
       final picker = find.byType(GuideFilterPicker);
       Finder inside(Finder match) =>
           find.descendant(of: picker, matching: match);
+      expect(inside(find.text('All channels')), findsOneWidget);
       expect(inside(find.text('Sports')), findsNWidgets(2));
       expect(inside(find.text('2')), findsOneWidget);
       expect(inside(find.text('News')), findsNothing);
@@ -402,6 +416,10 @@ void main() {
       expect(inside(find.text('Sports')), findsNothing);
       await tester.tap(inside(find.text('US | PRIME')));
       await _pumpFrames(tester);
+      expect(
+        find.descendant(of: filters, matching: find.text('US | PRIME')),
+        findsOneWidget,
+      );
       expect(find.text('Channel 47'), findsOneWidget);
       await tester.enterText(find.byType(TextField), 'Channel 1');
       await _pumpFrames(tester);
@@ -420,12 +438,22 @@ void main() {
     },
   );
   testWidgets('empty group mode keeps categories', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
     await GetIt.instance<UserPreferences>().set(
       UserPreferences.liveTvCategoryDisplay,
       LiveTvCategoryDisplay.groups,
     );
     await pumpGuide(tester);
     expect(find.byType(EpgFilterRail), findsOneWidget);
+    _nodeLabelled(tester, 'GuideWindowBar:0').requestFocus();
+    await _pumpFrames(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await _pumpFrames(tester);
+    expect(_focusedLabel(), 'GuideWindowBar:0');
+    expect(find.byType(GuideFilterPicker), findsNothing);
   });
 
   testWidgets('TV picker OK selects and Right or Back cancels', (tester) async {
@@ -437,14 +465,15 @@ void main() {
       UserPreferences.liveTvCategoryDisplay,
       LiveTvCategoryDisplay.groups,
     );
+    const extraGroups = 16; // Place Sports beyond the first screen of rows.
     when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
-      (_) async => const ChannelGroupLineup({
+      (_) async => ChannelGroupLineup({
         'ch1': {'Sports'},
         'ch2': {'Sports'},
-        'ch3': {'News'},
+        'ch3': {'News', for (var i = 0; i < extraGroups; i++) 'Group $i'},
       }),
     );
-    await pumpGuide(tester);
+    await pumpGuide(tester, observers: [FocusRouteObserver()]);
     Future<void> key(LogicalKeyboardKey key) async {
       await tester.sendKeyEvent(key);
       await _pumpFrames(tester);
@@ -454,14 +483,29 @@ void main() {
     await _pumpFrames(tester);
     await key(LogicalKeyboardKey.arrowLeft);
     final picker = find.byType(GuideFilterPicker);
+    Finder label(String name) =>
+        find.descendant(of: picker, matching: find.text(name));
+    bool focused(String name) =>
+        Focus.of(tester.element(label(name))).hasPrimaryFocus;
+    expect(focused('All channels'), isTrue);
+    await key(LogicalKeyboardKey.arrowUp);
+    final pickerSearch = find.descendant(
+      of: picker,
+      matching: find.byType(LocalSearchField),
+    );
+    expect(
+      tester.widget<LocalSearchField>(pickerSearch).focusNode.hasFocus,
+      isTrue,
+    );
+    await key(LogicalKeyboardKey.arrowDown);
     expect(tester.getSize(picker).width, lessThan(450));
     expect(
       find.descendant(of: picker, matching: find.text('Movies')),
       findsNothing,
     );
-    await key(LogicalKeyboardKey.arrowDown);
-    await key(LogicalKeyboardKey.arrowDown);
-    await key(LogicalKeyboardKey.arrowDown);
+    for (var i = 0; i < extraGroups + 3; i++) {
+      await key(LogicalKeyboardKey.arrowDown);
+    }
     await key(LogicalKeyboardKey.select);
     expect(picker, findsNothing);
     expect(find.text('Sports'), findsOneWidget);
@@ -487,7 +531,14 @@ void main() {
     await key(LogicalKeyboardKey.arrowLeft);
     expect(search.text, isEmpty);
     expect(picker, findsOneWidget);
-    await key(LogicalKeyboardKey.arrowUp); // Highlight News without selecting.
+    expect(label('Sports').hitTestable(), findsOneWidget);
+    expect(focused('Sports'), isTrue);
+    await key(LogicalKeyboardKey.arrowUp);
+    expect(focused('News'), isTrue);
+    expect(
+      tester.widget<ListTile>(find.widgetWithText(ListTile, 'Sports')).selected,
+      isTrue,
+    );
     await key(LogicalKeyboardKey.arrowRight);
     expect(picker, findsNothing);
     expect(_focusedLabel(), 'GuideChannel:1');
@@ -505,6 +556,37 @@ void main() {
     expect(picker, findsNothing);
     expect(find.text('Sports'), findsOneWidget);
     expect(_focusedLabel(), 'GuideChannel:0');
+
+    final range = _windowRangeText(tester);
+    Color? filterFill() => tester
+        .widget<Material>(
+          find.descendant(
+            of: find.byTooltip('Filters'),
+            matching: find.byType(Material),
+          ),
+        )
+        .color;
+    final idleFill = Colors.white.withValues(alpha: 0.10);
+    expect(filterFill(), idleFill);
+    for (final control in ['GuideWindowBar:0', 'GuideBrowse']) {
+      await key(LogicalKeyboardKey.arrowUp);
+      expect(_focusedLabel(), control);
+      expect(
+        filterFill(),
+        control == 'GuideBrowse' ? AppColorScheme.accent : idleFill,
+      );
+      await key(LogicalKeyboardKey.arrowLeft);
+      expect(picker, findsOneWidget);
+      expect(focused('Sports'), isTrue);
+      await key(LogicalKeyboardKey.arrowRight);
+      expect(picker, findsNothing);
+      expect(_focusedLabel(), control);
+      expect(_windowRangeText(tester), range);
+    }
+    await key(LogicalKeyboardKey.arrowDown);
+    expect(filterFill(), idleFill);
+    await key(LogicalKeyboardKey.select);
+    expect(_windowRangeText(tester), isNot(range));
   });
 
   // Opening the picker clears the channel search. A program category then

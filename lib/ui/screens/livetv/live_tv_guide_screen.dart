@@ -1675,11 +1675,30 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   Widget _buildBrowseControls({bool compact = false}) {
     final l10n = AppLocalizations.of(context);
-    final title =
+    final filterLabel =
         _vm.selectedGroup ??
         (_vm.filter == GuideFilter.all
             ? l10n.guideAllChannels
-            : _filterLabel(_vm.filter));
+            : _filterLabel(_vm.filter, l10n));
+    final filterButtonStyle = FilledButton.styleFrom(
+      shape: const StadiumBorder(),
+      minimumSize: Size.zero,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      iconSize: 16,
+      textStyle: const TextStyle(fontSize: 13),
+    ).copyWith(
+      backgroundColor: WidgetStateProperty.resolveWith(
+        (states) => _guidePillFill(states.contains(WidgetState.focused)),
+      ),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => _guidePillInk(states.contains(WidgetState.focused)),
+      ),
+      overlayColor: const WidgetStateProperty.fromMap({
+        WidgetState.pressed: Colors.white12,
+        WidgetState.hovered: Colors.white10,
+        WidgetState.any: Colors.transparent,
+      }),
+    );
     return LayoutBuilder(
       builder: (context, constraints) => Row(
         children: [
@@ -1689,6 +1708,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               canRequestFocus: false,
               onKeyEvent: (_, event) {
                 if (!event.isActionable) return KeyEventResult.ignored;
+                if (event.logicalKey.isLeftKey && PlatformDetection.isTV) {
+                  unawaited(_openFilterPicker());
+                  return KeyEventResult.handled;
+                }
                 if (event.logicalKey.isRightKey) {
                   _pendingPickerRestore = null;
                   _channelSearchFocus.requestFocus();
@@ -1701,20 +1724,18 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 }
                 return KeyEventResult.ignored;
               },
-              child: FilledButton.icon(
-                focusNode: _browseFocus,
-                onPressed: _openFilterPicker,
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColorScheme.accent,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                ),
-                iconAlignment: IconAlignment.end,
-                icon: const Icon(Icons.arrow_drop_down),
-                label: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+              child: Tooltip(
+                message: l10n.filters,
+                child: FilledButton.icon(
+                  focusNode: _browseFocus,
+                  onPressed: _openFilterPicker,
+                  style: filterButtonStyle,
+                  icon: const Icon(Icons.filter_list),
+                  label: Text(
+                    filterLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
@@ -2228,7 +2249,13 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         if (!event.isActionable) return KeyEventResult.ignored;
         final key = event.logicalKey;
         if (key.isLeftKey) {
-          _focusWindowBar(index - 1);
+          if (index == _kWindowBarPrevious &&
+              _usesPicker &&
+              PlatformDetection.isTV) {
+            unawaited(_openFilterPicker());
+          } else {
+            _focusWindowBar(index - 1);
+          }
           return KeyEventResult.handled;
         }
         if (key.isRightKey) {
@@ -3460,6 +3487,12 @@ class _GuideGridView extends StatelessWidget {
   }
 }
 
+Color _guidePillFill(bool focused) =>
+    focused ? AppColorScheme.accent : Colors.white.withValues(alpha: 0.10);
+
+Color _guidePillInk(bool focused) =>
+    Colors.white.withValues(alpha: focused ? 1.0 : 0.8);
+
 class _GuidePillButton extends StatefulWidget {
   final String? label;
   final IconData? icon;
@@ -3501,9 +3534,7 @@ class _GuidePillButtonState extends State<_GuidePillButton> {
             ? const EdgeInsets.symmetric(horizontal: 12, vertical: 5)
             : const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: active
-              ? AppColorScheme.accent.withValues(alpha: _focused ? 1.0 : 0.7)
-              : Colors.white.withValues(alpha: 0.10),
+          color: _guidePillFill(active),
           borderRadius: AppRadius.circular(20),
         ),
         child: _buildChild(active),
@@ -3512,7 +3543,7 @@ class _GuidePillButtonState extends State<_GuidePillButton> {
   }
 
   Widget _buildChild(bool active) {
-    final color = Colors.white.withValues(alpha: active ? 1.0 : 0.8);
+    final color = _guidePillInk(active);
     if (widget.icon != null && widget.label != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,

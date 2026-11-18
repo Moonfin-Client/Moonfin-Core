@@ -42,11 +42,30 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
   final _searchFieldKey = GlobalKey();
   final _search = TextEditingController();
   final _searchFocus = FocusNode();
+  final _selectedRowFocus = FocusNode();
   ScrollController? _scroll;
   String _query = '';
 
   GuideFilterChoice get _selected =>
       (widget.vm.filter, widget.vm.selectedGroup);
+
+  @override
+  void initState() {
+    super.initState();
+    if (!PlatformDetection.isTV || !widget.sidePanel) return;
+    // The TV route observer can give Search focus before the list lays out.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          ModalRoute.isCurrentOf(context) != true ||
+          _selectedRowFocus.context == null) {
+        return;
+      }
+      FocusTraversalPolicy.defaultTraversalRequestFocusCallback(
+        _selectedRowFocus,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
+  }
 
   List<_Row> _rows(AppLocalizations l10n) {
     final rows = <_Row>[];
@@ -120,6 +139,7 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
     _scroll?.dispose();
     _search.dispose();
     _searchFocus.dispose();
+    _selectedRowFocus.dispose();
     super.dispose();
   }
 
@@ -184,7 +204,7 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                       child: compact
                           ? search
                           : Text(
-                              l10n.guideBrowse,
+                              l10n.filters,
                               style: Theme.of(context).textTheme.titleLarge,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -233,6 +253,9 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                           final active = choice == _selected;
                           return ListTile(
                             key: ValueKey(choice),
+                            focusNode: widget.sidePanel && active
+                                ? _selectedRowFocus
+                                : null,
                             autofocus:
                                 widget.sidePanel && active && _query.isEmpty,
                             selected: active,
