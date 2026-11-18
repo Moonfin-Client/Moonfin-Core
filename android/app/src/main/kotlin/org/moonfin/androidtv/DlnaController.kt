@@ -289,11 +289,33 @@ class DlnaController(private val context: Context) {
 
         withActiveDevice(result) { controlUrl ->
             val target = formatDlnaTime(positionTicks)
-            sendSoap(
-                controlUrl, "Seek",
-                "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
-            )
+            try {
+                sendSeek(controlUrl, target)
+            } catch (e: Exception) {
+                // Some renderers (LG) refuse a Seek while paused with 501, so
+                // play, seek once playing, and pause again.
+                if (runCatching { queryTransportState(controlUrl) }.getOrNull() != "PAUSED_PLAYBACK") throw e
+                sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
+                awaitTransportState(controlUrl, "PLAYING")
+                sendSeek(controlUrl, target)
+                sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>")
+            }
             handler.post { result.success(null) }
+        }
+    }
+
+    private fun sendSeek(controlUrl: String, target: String) {
+        sendSoap(
+            controlUrl, "Seek",
+            "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
+        )
+    }
+
+    private fun awaitTransportState(controlUrl: String, state: String) {
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3)
+        while (System.nanoTime() < deadline) {
+            if (runCatching { queryTransportState(controlUrl) }.getOrNull() == state) return
+            Thread.sleep(250)
         }
     }
 
@@ -609,12 +631,7 @@ class DlnaController(private val context: Context) {
             }
         }
         if (!started || resumeGeneration.get() != token) return
-        runCatching {
-            sendSoap(
-                controlUrl, "Seek",
-                "<InstanceID>0</InstanceID>\n<Unit>REL_TIME</Unit>\n<Target>$target</Target>",
-            )
-        }
+        runCatching { sendSeek(controlUrl, target) }
     }
 
     private fun queryTransportState(controlUrl: String): String {

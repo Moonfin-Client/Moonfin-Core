@@ -269,15 +269,44 @@ final class DlnaController: NSObject {
         cancelPendingResume()
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
-            try self.sendSoap(
-                controlUrl: controlUrl,
-                action: "Seek",
-                innerBody: """
-                <InstanceID>0</InstanceID>
-                <Unit>REL_TIME</Unit>
-                <Target>\(target)</Target>
-                """
-            )
+            do {
+                try self.sendSeek(controlUrl: controlUrl, target: target)
+            } catch {
+                // Some renderers (LG) refuse a Seek while paused with 501, so
+                // play, seek once playing, and pause again.
+                guard (try? self.queryTransportState(controlUrl: controlUrl)) == "PAUSED_PLAYBACK" else { throw error }
+                try self.sendSoap(
+                    controlUrl: controlUrl,
+                    action: "Play",
+                    innerBody: """
+                    <InstanceID>0</InstanceID>
+                    <Speed>1</Speed>
+                    """
+                )
+                self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
+                try self.sendSeek(controlUrl: controlUrl, target: target)
+                try self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+            }
+        }
+    }
+
+    private func sendSeek(controlUrl: String, target: String) throws {
+        try sendSoap(
+            controlUrl: controlUrl,
+            action: "Seek",
+            innerBody: """
+            <InstanceID>0</InstanceID>
+            <Unit>REL_TIME</Unit>
+            <Target>\(target)</Target>
+            """
+        )
+    }
+
+    private func awaitTransportState(controlUrl: String, state: String) {
+        let deadline = Date().addingTimeInterval(3)
+        while Date() < deadline {
+            if (try? queryTransportState(controlUrl: controlUrl)) == state { return }
+            Thread.sleep(forTimeInterval: 0.25)
         }
     }
 
@@ -588,15 +617,7 @@ final class DlnaController: NSObject {
             Thread.sleep(forTimeInterval: 0.5)
         }
         guard started, current() else { return }
-        _ = try? sendSoap(
-            controlUrl: controlUrl,
-            action: "Seek",
-            innerBody: """
-            <InstanceID>0</InstanceID>
-            <Unit>REL_TIME</Unit>
-            <Target>\(target)</Target>
-            """
-        )
+        try? sendSeek(controlUrl: controlUrl, target: target)
     }
 
     @discardableResult
