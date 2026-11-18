@@ -486,6 +486,21 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   int _lineupRequest = 0;
   (String, String?)? _groupAccount;
 
+  List<String> groupsForChannel(String channelId) {
+    final groups = _channelGroups[channelId];
+    if (groups == null || groups.isEmpty) return const [];
+    final selected = _selectedGroup;
+    final others = groups.where((group) => group != selected).toList()
+      ..sort((a, b) {
+        final order = a.toLowerCase().compareTo(b.toLowerCase());
+        return order == 0 ? a.compareTo(b) : order;
+      });
+    return [
+      if (selected != null && groups.contains(selected)) selected,
+      ...others,
+    ];
+  }
+
   // Search the full channel list first, so a match appears even if its
   // guide data hasn't loaded.
   void _updatePageRows() {

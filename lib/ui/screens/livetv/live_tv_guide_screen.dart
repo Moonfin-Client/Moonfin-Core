@@ -3181,6 +3181,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     );
     var defaultActionFocusRequested = false;
     final episodeLine = program.episodeLine;
+    final chipLabels = [
+      ..._vm.groupsForChannel(program.channelId),
+      if (program.isMovie) l10n.movie,
+      if (program.isSeries) l10n.series,
+      if (program.isSports) l10n.sports,
+      if (program.isNews) l10n.news,
+      if (program.isKids) l10n.kids,
+      if (program.isPremiere) l10n.premiere,
+    ];
 
     showFocusRestoringDialog(
       context: context,
@@ -3241,34 +3250,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 Wrap(
                   spacing: 8,
                   children: [
-                    if (program.isMovie)
+                    for (final label in chipLabels)
                       Chip(
-                        label: Text(l10n.movie),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    if (program.isSeries)
-                      Chip(
-                        label: Text(l10n.series),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    if (program.isSports)
-                      Chip(
-                        label: Text(l10n.sports),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    if (program.isNews)
-                      Chip(
-                        label: Text(l10n.news),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    if (program.isKids)
-                      Chip(
-                        label: Text(l10n.kids),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    if (program.isPremiere)
-                      Chip(
-                        label: Text(l10n.premiere),
+                        label: Text(label),
                         visualDensity: VisualDensity.compact,
                       ),
                   ],
