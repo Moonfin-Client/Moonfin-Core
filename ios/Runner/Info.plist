@@ -115,6 +115,12 @@
 	<string>Moonfin needs microphone access for voice search.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Moonfin only uses photos you pick yourself, like artwork you upload for your media.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Moonfin never uses your camera. iOS asks for this text because of a photo picker library Moonfin includes.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Moonfin never uses your location. iOS asks for this text because of a photo picker library Moonfin includes.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Moonfin never uses your location. iOS asks for this text because of a photo picker library Moonfin includes.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Moonfin needs speech recognition access for voice search.</string>
 	<key>NSBonjourServices</key>
