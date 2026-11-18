@@ -27,7 +27,7 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {}
 ///
 /// Firebase stays untouched until a signed-in server's plugin can deliver
 /// push, so a phone that never meets one never contacts Google.
-class PushMessagingService {
+class PushMessagingService extends ChangeNotifier {
   Future<void>? _startFuture;
   String? _lastRegisteredToken;
   bool _listenerAttached = false;
@@ -126,7 +126,9 @@ class PushMessagingService {
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
       // A server switch reuses the same FCM token, so drop the dedupe and let
       // the new server get its own registration.
+      final resetChanged = _lastRegisteredToken != null;
       _lastRegisteredToken = null;
+      if (resetChanged) notifyListeners();
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
@@ -191,7 +193,9 @@ class PushMessagingService {
       return;
     }
     _pendingRegistration = false;
+    final registeredChanged = _lastRegisteredToken != token;
     _lastRegisteredToken = token;
+    if (registeredChanged) notifyListeners();
   }
 
   /// Unregister this device with the plugin, e.g. on logout. With
@@ -209,7 +213,9 @@ class PushMessagingService {
         deviceId: _deviceId(_lastRegisteredToken),
       );
     }
+    final unregisterChanged = _lastRegisteredToken != null;
     _lastRegisteredToken = null;
+    if (unregisterChanged) notifyListeners();
 
     final started = _startFuture;
     if (deleteToken && started != null) {

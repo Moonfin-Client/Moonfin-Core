@@ -26,7 +26,6 @@ import '../../../util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../util/home_row_title_localizer.dart';
-import '../../widgets/floating_notification.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -80,6 +79,9 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     }
     _rebuildFocusNodes();
     _syncService.addListener(_onSyncStateChanged);
+    if (GetIt.instance.isRegistered<PushMessagingService>()) {
+      GetIt.instance<PushMessagingService>().addListener(_onPushStateChanged);
+    }
     _loadSeerrStatus(showLoading: true);
 
     _enableSeerrFocusNode.onKeyEvent = (node, event) {
@@ -118,6 +120,9 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   @override
   void dispose() {
     _syncService.removeListener(_onSyncStateChanged);
+    if (GetIt.instance.isRegistered<PushMessagingService>()) {
+      GetIt.instance<PushMessagingService>().removeListener(_onPushStateChanged);
+    }
     for (final n in _focusNodes) {
       n.dispose();
     }
@@ -125,6 +130,11 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     _accountCardFocusNode.dispose();
     _refreshFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onPushStateChanged() {
+    if (!mounted) return;
+    setState(() {});
   }
 
   void _onSyncStateChanged() {
@@ -328,23 +338,14 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       final result = await _syncService.sendTestNotification(client);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
+      final messenger = ScaffoldMessenger.maybeOf(context);
       if (result != null && result.success) {
         final message = result.pushEnabled
             ? l10n.seerrTestNotificationSentBody(result.devicesCount)
             : l10n.seerrTestNotificationPushDisabled;
-        FloatingNotification.show(
-          context,
-          l10n.seerrTestNotificationSent,
-          message,
-          null,
-        );
+        messenger?.showSnackBar(SnackBar(content: Text(message)));
       } else {
-        FloatingNotification.show(
-          context,
-          l10n.seerrTestNotificationFailed,
-          '',
-          null,
-        );
+        messenger?.showSnackBar(SnackBar(content: Text(l10n.seerrTestNotificationFailed)));
       }
     } finally {
       if (mounted) {
@@ -739,7 +740,9 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Row(
+            child: Wrap(
+              spacing: 16,
+              runSpacing: 4,
               children: [
                 Text(
                   '${l10n.seerrPushServerStatus}: ${_syncService.pushSupported ? l10n.seerrPushServerEnabled : l10n.seerrPushServerDisabled}',
@@ -750,8 +753,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                 ),
-                if (PlatformDetection.isMobile) ...[
-                  const SizedBox(width: 16),
+                if (PlatformDetection.isMobile)
                   Text(
                     '${l10n.seerrPushDeviceStatus}: ${GetIt.instance.isRegistered<PushMessagingService>() && GetIt.instance<PushMessagingService>().isRegistered ? l10n.seerrPushDeviceRegistered : l10n.seerrPushDeviceNotRegistered}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -762,7 +764,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                   ),
-                ],
               ],
             ),
           ),
