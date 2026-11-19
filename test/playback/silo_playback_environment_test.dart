@@ -66,7 +66,10 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     PlatformDetection.setTvMode(false);
     PlatformDetection.setDisplayHdrTypes(const ['HDR10', 'HLG']);
-    addTearDown(() => PlatformDetection.setDisplayHdrTypes(null));
+    addTearDown(() {
+      PlatformDetection.setDisplayHdrTypes(null);
+      PlatformDetection.setTvMode(false);
+    });
     final hdr = siloPlaybackEnvironment().displayHdr;
     expect(hdr?['hdr10'], isTrue);
     expect(hdr?['hlg'], isTrue);

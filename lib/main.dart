@@ -431,17 +431,12 @@ Future<void> _detectAndSetDeviceMemory() async {
 }
 
 /// Runs before the first frame, so only the single attempt is awaited here.
-/// The retries and the listener are deliberately left to run on their own: a
-/// box whose TV is still asleep would otherwise hold the launch for the whole
-/// half-minute retry window.
+/// On a TV the retries and the listener are deliberately left to run on their
+/// own: a box whose TV is still asleep would otherwise hold the launch for the
+/// whole half-minute retry window. A phone or tablet reads its own panel once.
 Future<void> _detectAndSetDisplayCapabilities() async {
   if (DisplayHdrProbe.readsBuiltInDisplay) {
-    try {
-      DisplayHdrProbe.applyBuiltIn(
-        await DisplayHdrProbe.query(trigger: 'launch'),
-      );
-    } catch (_) {}
-    return;
+    return DisplayHdrProbe.readBuiltInDisplay('launch');
   }
   if (!DisplayHdrProbe.isSupported) return;
   // Its own try/catch for the same reason the memory probe has one: this runs
@@ -794,9 +789,8 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
     if (DisplayHdrProbe.isSupported) {
       DisplayHdrProbe.apply(await DisplayHdrProbe.query(trigger: 'resume'));
     } else if (DisplayHdrProbe.readsBuiltInDisplay) {
-      DisplayHdrProbe.applyBuiltIn(
-        await DisplayHdrProbe.query(trigger: 'resume'),
-      );
+      // A phone's own panel answers at once, so its answer always stands.
+      await DisplayHdrProbe.readBuiltInDisplay('resume');
     }
     // The launch retries all run inside the first half minute, which covers
     // a slow enumeration but not an engine that had no Activity to answer

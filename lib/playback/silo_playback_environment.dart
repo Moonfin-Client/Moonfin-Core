@@ -10,7 +10,8 @@ import '../util/platform_detection.dart';
 /// known, and the player's traits.
 ///
 /// The display's HDR formats are only known on Android, which asks its
-/// display (`DisplayHdrProbe`; a phone or tablet only when it names some). Elsewhere they're left unknown, and
+/// display (`DisplayHdrProbe`; a phone or tablet only when it names
+/// some). Elsewhere they're left unknown, and
 /// Silo then claims no native HDR output, which costs nothing for an
 /// original file where the player maps HDR to the screen itself (see
 /// [SiloPlayerTraits.managesDynamicRange]).

@@ -311,10 +311,33 @@ void main() {
       expect(PlatformDetection.supportsAnyHdr, isFalse);
     });
 
-    test('no result leaves the last answer alone', () {
+    test('no result or no answer leaves the last answer alone', () {
       PlatformDetection.setDisplayHdrTypes(const ['HDR10']);
       DisplayHdrProbe.applyBuiltIn(null);
+      DisplayHdrProbe.applyBuiltIn(
+        DisplayHdrSnapshot.fromMap({..._attachedSdr(), 'answered': false}),
+      );
       expect(PlatformDetection.supportsHdr10, isTrue);
+    });
+
+    test('an unknown HDR type alone is not an SDR claim', () {
+      DisplayHdrProbe.applyBuiltIn(
+        DisplayHdrSnapshot.fromMap({
+          ..._attachedSdr(),
+          'types': <String>['-1'],
+        }),
+      );
+      expect(PlatformDetection.hasDisplayHdrCapabilities, isFalse);
+    });
+
+    test('goes by the hardware, not the TV layout', () {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      addTearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+      expect(PlatformDetection.isTV, isTrue);
+      expect(DisplayHdrProbe.readsBuiltInDisplay, isTrue);
+      expect(DisplayHdrProbe.isSupported, isFalse);
     });
   });
 }
