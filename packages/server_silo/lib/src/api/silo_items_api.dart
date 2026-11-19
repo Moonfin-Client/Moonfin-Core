@@ -264,11 +264,7 @@ class SiloItemsApi
       if (!search.canSearch) return _empty(startIndex);
     }
     final scope = search != null
-        ? siloSearchScopeFor(
-            types,
-            withEpisodes: search.videoWithEpisodes,
-            viewerScope: types == null ? await _searchMediaScope() : null,
-          )
+        ? siloSearchScopeFor(types, withEpisodes: search.videoWithEpisodes)
         : types == null
         ? null
         : siloCatalogScopeFor(types);
@@ -1547,9 +1543,7 @@ class SiloItemsApi
   /// - Credits are limited to what Moonfin shows (`media_scope`): films,
   ///   series and episodes (`video_with_episodes`) when the search
   ///   capabilities offer that scope, else films and series (`video`), and
-  ///   none when Silo takes no scope. For the search screen ([forSearch])
-  ///   episodes count only when the profile's `search.media_scope` is `all`,
-  ///   as on Silo's web app.
+  ///   none when Silo takes no scope.
   /// - Nothing is asked when the capabilities say search isn't available.
   /// - `limit` is capped at Silo's 100, and none asks for Silo's default (20).
   /// - A blank `searchTerm` lists the first people, as on Jellyfin.
@@ -1561,20 +1555,16 @@ class SiloItemsApi
     int? limit,
     String? fields,
     String? enableImageTypes,
-    bool forSearch = false,
   }) async {
     final search = await searchCapabilities();
     if (!search.canSearch) return _empty(0);
-    final viewerScope = search.peopleMediaScope && forSearch
-        ? await _searchMediaScope()
-        : 'all';
     final response = await _dio.get<dynamic>(
       '/api/v2/catalog/people',
       queryParameters: {
         'q': ?_searchTextOf(searchTerm),
         'limit': ?(limit == null || limit <= 0 ? null : limit.clamp(1, 100)),
         if (search.peopleMediaScope)
-          'media_scope': search.videoWithEpisodes && viewerScope == 'all'
+          'media_scope': search.videoWithEpisodes
               ? 'video_with_episodes'
               : 'video',
       },
@@ -1892,44 +1882,6 @@ class SiloItemsApi
     return text == null || text.isEmpty ? null : text;
   }
 
-  /// Silo's per-profile setting `search.media_scope`, the scope its web app
-  /// searches in: `video` (films and series, the default), `all` or
-  /// `audiobook`. Global search uses it so it finds what the web app finds.
-  ///
-  /// Read from the effective settings once a minute. A setting that can't be
-  /// read counts as `video`, Silo's default.
-  Future<String> _searchMediaScope() => _searchScope
-      .get(_searchScopeKey, _readSearchMediaScope)
-      .catchError((Object _) => 'video');
-
-  static const _searchScopeKey = 'search.media_scope';
-  late final _searchScope = SiloKeptReads<String, String>(
-    lifetime: const Duration(minutes: 1),
-    clock: _clock,
-  );
-
-  Future<String> _readSearchMediaScope() async {
-    final response = await _dio.get<dynamic>(
-      '/api/v2/settings/values/effective',
-      queryParameters: const {'keys': _searchScopeKey},
-    );
-    final items = asJsonMap(response.data)?['items'];
-    if (items is! List) {
-      throw FormatException(
-        'Expected settings from Silo, got ${response.data.runtimeType}',
-      );
-    }
-    for (final item in items) {
-      final setting = asJsonMap(item);
-      if (setting?['key'] != _searchScopeKey) continue;
-      final value = setting?['value'];
-      if (value == 'all' || value == 'video' || value == 'audiobook') {
-        return value as String;
-      }
-    }
-    return 'video';
-  }
-
   static const _searchCapabilitiesTtl = Duration(minutes: 10);
   late final _searchCapabilities =
       SiloKeptReads<String, SiloSearchCapabilities>(
@@ -2008,7 +1960,6 @@ class SiloItemsApi
   void noteProfileChanged() {
     noteCatalogChanged();
     _hideWatched.forget();
-    _searchScope.forget();
     _changedItems.clear();
     _changedSeries.clear();
   }

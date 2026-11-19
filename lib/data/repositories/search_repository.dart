@@ -74,7 +74,6 @@ class SearchRepository {
       limit: limit,
       fields: 'PrimaryImageAspectRatio',
       enableImageTypes: 'Primary',
-      forSearch: true,
     );
 
     final items = response['Items'] as List? ?? const [];

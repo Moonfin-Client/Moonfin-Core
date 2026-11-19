@@ -149,7 +149,6 @@ class JellyfinItemsApi implements ItemsApi {
     int? limit,
     String? fields,
     String? enableImageTypes,
-    bool forSearch = false,
   }) async {
     final response = await _dio.get(
       '/Persons',

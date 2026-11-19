@@ -58,15 +58,11 @@ abstract class ItemsApi {
     List<String>? includeItemTypes,
   });
 
-  /// [forSearch] is set by the search screen, so a server whose profile
-  /// picks what search covers (Silo's `search.media_scope`) applies it.
-  /// Lookups by name (a request's cast, a detail's people) leave it unset.
   Future<Map<String, dynamic>> getPersons({
     required String searchTerm,
     int? limit,
     String? fields,
     String? enableImageTypes,
-    bool forSearch = false,
   });
 
   /// Full metadata by default. Pass [fields] to request a leaner set, e.g. an

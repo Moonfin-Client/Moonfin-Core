@@ -359,7 +359,6 @@ class PlexItemsApi implements ItemsApi {
     int? limit,
     String? fields,
     String? enableImageTypes,
-    bool forSearch = false,
   }) async {
     final container = await plexContainer(_dio, '/hubs/search', {
       'query': searchTerm,

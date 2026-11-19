@@ -130,7 +130,6 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     int? limit,
     String? fields,
     String? enableImageTypes,
-    bool forSearch = false,
   }) => (people ??= Completer()).future;
 
   @override

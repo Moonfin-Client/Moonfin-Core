@@ -439,7 +439,6 @@ class OfflineItemsApi implements ItemsApi {
     int? limit,
     String? fields,
     String? enableImageTypes,
-    bool forSearch = false,
   }) async {
     return _envelope(const []);
   }

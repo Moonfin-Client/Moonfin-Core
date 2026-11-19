@@ -9,11 +9,7 @@ const _peoplePath = '/api/v2/catalog/people';
 FixtureServer _server({
   ResponseBody Function(RequestOptions)? capabilities,
   ResponseBody Function(RequestOptions)? people,
-  String? searchScope = 'all',
 }) => FixtureServer({
-  '/api/v2/settings/values/effective': siloEffectiveSettings({
-    'search.media_scope': searchScope,
-  }),
   '/api/v2/catalog/search/capabilities':
       capabilities ?? FixtureServer.file('silo/search_capabilities.json'),
   _peoplePath: people ?? FixtureServer.file('silo/people_search.json'),
@@ -83,31 +79,6 @@ void main() {
       await scope({...base, 'video_with_episodes_scope': true}),
       isNull,
       reason: 'people search takes no scope',
-    );
-  });
-
-  test('the search screen\'s media scope follows the profile\'s search '
-      'scope', () async {
-    Future<String?> scope(String? searchScope, {bool forSearch = true}) async {
-      final server = _server(searchScope: searchScope);
-      await siloTestClient(
-        server,
-      ).itemsApi.getPersons(searchTerm: 'vin', forSearch: forSearch);
-      return _peopleQuery(server)['media_scope'];
-    }
-
-    expect(await scope('all'), 'video_with_episodes');
-    expect(await scope('video'), 'video', reason: 'as Silo\'s web app');
-    expect(await scope(null), 'video', reason: 'Silo\'s default');
-    expect(
-      await scope('audiobook'),
-      'video',
-      reason: 'Moonfin can\'t open audiobooks',
-    );
-    expect(
-      await scope('video', forSearch: false),
-      'video_with_episodes',
-      reason: 'a lookup by name finds people credited only in episodes',
     );
   });
 

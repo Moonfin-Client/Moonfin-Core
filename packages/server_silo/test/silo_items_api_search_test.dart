@@ -33,12 +33,9 @@ ResponseBody Function(RequestOptions) _whole({
 FixtureServer _server({
   ResponseBody Function(RequestOptions)? capabilities,
   ResponseBody Function(RequestOptions)? catalog,
-  String? searchScope = 'all',
 }) => FixtureServer({
   '/api/v2/user/libraries': FixtureServer.file('silo/user_libraries.json'),
-  '/api/v2/settings/values/effective': siloEffectiveSettings({
-    'search.media_scope': searchScope,
-  }),
+  '/api/v2/settings/values/effective': siloEffectiveSettings({}),
   _capabilitiesPath:
       capabilities ?? FixtureServer.file('silo/search_capabilities.json'),
   _catalogPath: catalog ?? _whole(),
@@ -140,71 +137,6 @@ void main() {
       'Episode',
       'Episode',
     ], reason: 'the series was not asked for');
-  });
-
-  test('a search with no type follows the profile\'s search scope', () async {
-    Future<(String?, List<Object?>)> search(String? searchScope) async {
-      final server = _server(searchScope: searchScope);
-      final page = await siloTestClient(
-        server,
-      ).itemsApi.getItems(searchTerm: 'justice');
-      return (
-        _catalogRequests(server).single.uri.queryParameters['type'],
-        [for (final i in page['Items'] as List) (i as Map)['Type']],
-      );
-    }
-
-    final all = await search('all');
-    expect(all.$1, 'video_with_episodes');
-    expect(all.$2, [
-      'Movie',
-      'Episode',
-      'Episode',
-      'Episode',
-      'Episode',
-      'Series',
-    ]);
-    // Silo's web app searches films and series unless the profile picked
-    // All, so episodes only come up there.
-    expect((await search('video')).$1, 'video');
-    expect((await search(null)).$1, 'video', reason: 'Silo\'s default');
-    expect(
-      (await search('audiobook')).$1,
-      'video',
-      reason: 'Moonfin can\'t open audiobooks',
-    );
-  });
-
-  test('a profile switch reads the search scope again', () async {
-    var searchScope = 'all';
-    final server = FixtureServer({
-      '/api/v2/user/libraries': FixtureServer.file('silo/user_libraries.json'),
-      '/api/v2/settings/values/effective': (o) =>
-          siloEffectiveSettings({'search.media_scope': searchScope})(o),
-      _capabilitiesPath: FixtureServer.file('silo/search_capabilities.json'),
-      _catalogPath: _whole(),
-    });
-    final api = siloTestClient(server).itemsApi;
-    await api.getItems(searchTerm: 'justice');
-    searchScope = 'video';
-    api.noteProfileChanged();
-    await api.getItems(searchTerm: 'justice');
-    expect(
-      [for (final r in _catalogRequests(server)) r.uri.queryParameters['type']],
-      ['video_with_episodes', 'video'],
-    );
-  });
-
-  test('a scoped search ignores the profile\'s search scope', () async {
-    final server = _server(searchScope: 'video');
-    await siloTestClient(server).itemsApi.getItems(
-      searchTerm: 'justice',
-      includeItemTypes: ['Episode'],
-    );
-    expect(
-      _catalogRequests(server).single.uri.queryParameters['type'],
-      'episode',
-    );
   });
 
   test('without the episodes scope the search is unscoped', () async {

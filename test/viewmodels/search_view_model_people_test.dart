@@ -66,7 +66,6 @@ void main() {
         limit: any(named: 'limit'),
         fields: any(named: 'fields'),
         enableImageTypes: any(named: 'enableImageTypes'),
-        forSearch: any(named: 'forSearch'),
       ),
     ).thenAnswer((_) => people.future);
     return people;
@@ -81,28 +80,6 @@ void main() {
   List<String> groupTypes(SearchViewModel vm) => [
     for (final group in vm.results) group.itemTypes.first,
   ];
-
-  test('the search screen asks people in the profile\'s search scope', () {
-    fakeAsync((async) {
-      itemsFor('alien', [('m1', 'Movie')]);
-      peopleFor('alien').complete(person('p1'));
-      final vm = SearchViewModel(SearchRepository(client), client);
-
-      vm.searchImmediate('alien');
-      async.flushMicrotasks();
-
-      verify(
-        () => itemsApi.getPersons(
-          searchTerm: 'alien',
-          limit: any(named: 'limit'),
-          fields: any(named: 'fields'),
-          enableImageTypes: any(named: 'enableImageTypes'),
-          forSearch: true,
-        ),
-      ).called(1);
-      vm.dispose();
-    });
-  });
 
   test('on Silo one letter asks for no requests, as Silo\'s web app', () {
     fakeAsync((async) {
@@ -281,8 +258,7 @@ void main() {
           limit: any(named: 'limit'),
           fields: any(named: 'fields'),
           enableImageTypes: any(named: 'enableImageTypes'),
-          forSearch: any(named: 'forSearch'),
-        ),
+          ),
       );
       vm.dispose();
     });
