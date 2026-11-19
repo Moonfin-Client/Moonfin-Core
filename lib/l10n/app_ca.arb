@@ -18885,5 +18885,47 @@
     "remoteActivityListening": "S'està escoltant a Moonfin",
     "@remoteActivityListening": {
         "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+    },
+    "seerrTestNotification": "Envia una notificació de prova",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "Comprova el lliurament de notificacions push dins de l'aplicació i en segon pla",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "S'ha enviat a {count, plural, =1{1 dispositiu} other{{count} dispositius}}.",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "S'ha enviat la notificació dins de l'aplicació. Les notificacions push del servidor no estan activades.",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "No s'ha pogut enviar la notificació de prova",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "Push del servidor",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "Push del dispositiu",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "Registrat",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "No registrat",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
     }
 }
