@@ -1360,12 +1360,8 @@ finish-args:
   # in CI is too old to build it.
   - --device=all
   - --socket=pulseaudio
-  # MPRIS media controls
-  - --own-name=org.mpris.MediaPlayer2.moonfin
   # Saved logins (flutter_secure_storage via libsecret)
   - --talk-name=org.freedesktop.secrets
-  # Keep the screen awake during playback (wakelock_plus)
-  - --talk-name=org.freedesktop.ScreenSaver
   # Desktop notifications (flutter_local_notifications)
   - --talk-name=org.freedesktop.Notifications
   # Online/offline detection (connectivity_plus)
