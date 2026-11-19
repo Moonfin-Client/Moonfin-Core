@@ -2181,11 +2181,14 @@ class MediaKitPlayerBackend extends PlayerBackend
     final entries = <(String, String)>[];
     var inProfile = false;
     for (final rawLine in content.split('\n')) {
-      final line = _stripInlineComment(rawLine.trim());
+      final line = rawLine.trim();
       // Keys under [name] belong to an mpv profile, which only applies when
-      // that profile is used. [default] goes back to the top level.
-      if (line.startsWith('[') && line.endsWith(']')) {
-        inProfile = line != '[default]';
+      // that profile is used. [default] or [] goes back to the top level.
+      // Like mpv, the name runs to the first ], before any # comment.
+      final close = line.startsWith('[') ? line.indexOf(']') : -1;
+      if (close > 0) {
+        final name = line.substring(1, close);
+        inProfile = name.isNotEmpty && name != 'default';
         continue;
       }
       if (inProfile) continue;

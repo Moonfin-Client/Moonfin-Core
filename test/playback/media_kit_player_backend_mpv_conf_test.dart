@@ -31,6 +31,22 @@ void main() {
     );
   });
 
+  test('a # inside a profile name does not end the header', () {
+    expect(
+      MediaKitPlayerBackend.parseMpvConf('[HDR # TV]\ndeband=yes\n'),
+      isEmpty,
+    );
+  });
+
+  test('an empty profile name [] is the top level', () {
+    expect(
+      MediaKitPlayerBackend.parseMpvConf(
+        '[hdr]\ndeband=yes\n[]\nscale=spline36\n',
+      ),
+      [('scale', 'spline36')],
+    );
+  });
+
   test('a Windows shader list keeps every path after a semicolon', () {
     expect(
       MediaKitPlayerBackend.parseMpvConf(
