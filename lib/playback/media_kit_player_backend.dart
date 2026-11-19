@@ -1776,7 +1776,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   }) async {
     final on = displayHdr ?? _passthroughHintOn;
     _passthroughHintOn = on;
-    // mpv 0.40+ defaults the mode to `target`, which adapts to the monitor's
+    // mpv 0.41+ defaults the mode to `target`, which adapts to the monitor's
     // EDID and leaves weak-HDR panels dim and double-tone-mapped. `source`
     // passes the stream's own metadata. Older builds ignore the write.
     await _nativeSetProperty(native, 'target-colorspace-hint-mode', 'source');
@@ -2141,15 +2141,9 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
 
     final content = await file.readAsString();
-    final entries = <(String, String)>[];
-    for (final rawLine in content.split('\n')) {
-      final parsed = _parseMpvConfLine(rawLine);
-      if (parsed != null) {
-        entries.add(parsed);
-      }
-    }
-
-    final immutable = List<(String, String)>.unmodifiable(entries);
+    final immutable = List<(String, String)>.unmodifiable(
+      parseMpvConf(content),
+    );
     _parsedMpvConfCache[path] = _ParsedMpvConfCacheEntry(
       modified: modified,
       length: length,
@@ -2182,12 +2176,30 @@ class MediaKitPlayerBackend extends PlayerBackend
     return null;
   }
 
-  (String, String)? _parseMpvConfLine(String line) {
-    final trimmed = line.trim();
-    if (trimmed.isEmpty || trimmed.startsWith('#') || trimmed.startsWith(';')) {
-      return null;
+  @visibleForTesting
+  static List<(String, String)> parseMpvConf(String content) {
+    final entries = <(String, String)>[];
+    var inProfile = false;
+    for (final rawLine in content.split('\n')) {
+      final line = _stripInlineComment(rawLine.trim());
+      // Keys under [name] belong to an mpv profile, which only applies when
+      // that profile is used. [default] goes back to the top level.
+      if (line.startsWith('[') && line.endsWith(']')) {
+        inProfile = line != '[default]';
+        continue;
+      }
+      if (inProfile) continue;
+      final parsed = _parseMpvConfLine(line);
+      if (parsed != null) {
+        entries.add(parsed);
+      }
     }
-    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    return entries;
+  }
+
+  static (String, String)? _parseMpvConfLine(String line) {
+    final trimmed = line.trim();
+    if (trimmed.isEmpty || trimmed.startsWith('#')) {
       return null;
     }
 
@@ -2219,6 +2231,12 @@ class MediaKitPlayerBackend extends PlayerBackend
 
     var key = rawKey.toLowerCase();
     var value = (rawValue == null || rawValue.isEmpty) ? 'yes' : rawValue;
+    // mpv drops one pair of quotes around a value.
+    if (value.length >= 2 &&
+        (value[0] == '"' || value[0] == "'") &&
+        value.endsWith(value[0])) {
+      value = value.substring(1, value.length - 1);
+    }
 
     if (key.startsWith('no-') && (rawValue == null || rawValue.isEmpty)) {
       key = key.substring(3);
@@ -2228,7 +2246,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     return (key, value);
   }
 
-  String _stripInlineComment(String input) {
+  static String _stripInlineComment(String input) {
     var inSingleQuote = false;
     var inDoubleQuote = false;
     for (var i = 0; i < input.length; i++) {
@@ -2241,7 +2259,7 @@ class MediaKitPlayerBackend extends PlayerBackend
         inSingleQuote = !inSingleQuote;
         continue;
       }
-      if (!inSingleQuote && !inDoubleQuote && (ch == '#' || ch == ';')) {
+      if (!inSingleQuote && !inDoubleQuote && ch == '#') {
         return input.substring(0, i).trimRight();
       }
     }
@@ -2298,6 +2316,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     'video-sync',
     'tone-mapping',
     'tone-mapping-param',
+    // Removed in mpv 0.37, but Android still bundles a 0.36 build.
     'tone-mapping-mode',
     'gamut-mapping-mode',
     'target-trc',
@@ -2313,7 +2332,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     // gpu-api and gpu-context deliberately stay OUT of this list: they belong
     // to the unsafe-advanced tier, and listing them here would bypass that
     // gate on every platform - a wrong gpu-context blacks out all playback.
-    'target-inverse-tone-mapping',
+    'inverse-tone-mapping',
     // media_kit initializes every native platform with dither=no, which bands
     // dark gradients on desktop. Let a conf turn it back on.
     'dither',
