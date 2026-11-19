@@ -707,26 +707,7 @@ build_appimage() {
   cat > "$appimage_dir/AppRun" << 'EOF'
 #!/bin/bash
 APPDIR="$(cd "$(dirname "$0")" && pwd)"
-
-# Use the system's libva when it has all of it, since only that one matches
-# the system's VA drivers. The bundled copy just lets Moonfin start without it.
-# Bytes 18 and 19 of a library name its CPU, so 32-bit copies don't count.
-# nix-ld adds its paths after ours, so they count as the system's too.
-va_lib="$APPDIR/lib/libva"
-va_cpu="$(od -An -tx1 -j18 -N2 "$va_lib/libva.so.2" 2>/dev/null)"
-va_dirs="$LD_LIBRARY_PATH:$NIX_LD_LIBRARY_PATH:/usr/lib64:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu"
-old_ifs="$IFS"
-IFS=':'
-for lib_dir in $va_dirs; do
-  if [ -e "$lib_dir/libva.so.2" ] && [ -e "$lib_dir/libva-drm.so.2" ] &&
-    [ -e "$lib_dir/libva-x11.so.2" ] && [ -e "$lib_dir/libva-wayland.so.2" ] &&
-    [ "$(od -An -tx1 -j18 -N2 "$lib_dir/libva.so.2")" = "$va_cpu" ]; then
-    va_lib=""
-    break
-  fi
-done
-IFS="$old_ifs"
-export LD_LIBRARY_PATH="$APPDIR/lib${va_lib:+:$va_lib}:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$APPDIR/lib:$LD_LIBRARY_PATH"
 
 # nix-ld only hands NixOS programs their libraries once they start, and ldd
 # runs Nix's own loader, which never looks there, so the check adds them.
@@ -749,6 +730,14 @@ resolve_exact_lib() {
 }
 
 ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin" 2>/dev/null || true)"
+
+# Use the system's libva when the loader finds it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+if printf '%s\n' "$ldd_output" | grep -Eq '^[[:space:]]*libva(-[a-z0-9]+)?[.]so[.]2 => not found'; then
+  export LD_LIBRARY_PATH="$APPDIR/lib/libva:$LD_LIBRARY_PATH"
+  check_lib_path="$APPDIR/lib/libva:$check_lib_path"
+  ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin" 2>/dev/null || true)"
+fi
 
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
@@ -840,26 +829,7 @@ build_tarball() {
     cat > "$tar_dir/moonfin" << 'EOF'
 #!/bin/sh
 APPDIR="$(cd "$(dirname "$0")" && pwd)"
-
-# Use the system's libva when it has all of it, since only that one matches
-# the system's VA drivers. The bundled copy just lets Moonfin start without it.
-# Bytes 18 and 19 of a library name its CPU, so 32-bit copies don't count.
-# nix-ld adds its paths after ours, so they count as the system's too.
-va_lib="$APPDIR/lib/libva"
-va_cpu="$(od -An -tx1 -j18 -N2 "$va_lib/libva.so.2" 2>/dev/null)"
-va_dirs="$LD_LIBRARY_PATH:$NIX_LD_LIBRARY_PATH:/usr/lib64:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu"
-old_ifs="$IFS"
-IFS=':'
-for lib_dir in $va_dirs; do
-  if [ -e "$lib_dir/libva.so.2" ] && [ -e "$lib_dir/libva-drm.so.2" ] &&
-    [ -e "$lib_dir/libva-x11.so.2" ] && [ -e "$lib_dir/libva-wayland.so.2" ] &&
-    [ "$(od -An -tx1 -j18 -N2 "$lib_dir/libva.so.2")" = "$va_cpu" ]; then
-    va_lib=""
-    break
-  fi
-done
-IFS="$old_ifs"
-export LD_LIBRARY_PATH="$APPDIR/lib${va_lib:+:$va_lib}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="$APPDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 # nix-ld only hands NixOS programs their libraries once they start, and ldd
 # runs Nix's own loader, which never looks there, so the check adds them.
@@ -882,6 +852,14 @@ resolve_exact_lib() {
 }
 
 ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin-bin" 2>/dev/null || true)"
+
+# Use the system's libva when the loader finds it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+if printf '%s\n' "$ldd_output" | grep -Eq '^[[:space:]]*libva(-[a-z0-9]+)?[.]so[.]2 => not found'; then
+  export LD_LIBRARY_PATH="$APPDIR/lib/libva:$LD_LIBRARY_PATH"
+  check_lib_path="$APPDIR/lib/libva:$check_lib_path"
+  ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin-bin" 2>/dev/null || true)"
+fi
 
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
