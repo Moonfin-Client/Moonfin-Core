@@ -50,6 +50,7 @@ import 'playback/mpris_service.dart';
 import 'playback/playback_lifecycle_handler.dart';
 import 'playback/subtitle_fonts.dart';
 import 'platform/background_refresh.dart';
+import 'platform/flatpak_portals.dart';
 import 'platform/web_runtime_config.dart';
 import 'preference/preference_constants.dart';
 import 'preference/user_preferences.dart';
@@ -858,6 +859,7 @@ Future<void> autoDownloadBackgroundMain() =>
     auto_download_bg.autoDownloadBackgroundMain();
 
 void main() async {
+  if (PlatformDetection.isFlatpak) installFlatpakPortals();
   configureHttpOverrides();
   ScrollSensitivityBinding.ensureInitialized();
   MacosTouchInput.install();

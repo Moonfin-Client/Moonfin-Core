@@ -82,6 +82,7 @@ dependencies:
 
   # Connectivity
   connectivity_plus: ^7.1.1
+  connectivity_plus_platform_interface: ^2.1.0
 
   # Gamepad UI navigation on desktop and iOS. Android is left out on purpose,
   # because this plugin's setup wants to override the same Activity methods

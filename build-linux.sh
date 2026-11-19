@@ -1362,10 +1362,6 @@ finish-args:
   - --socket=pulseaudio
   # Saved logins (flutter_secure_storage via libsecret)
   - --talk-name=org.freedesktop.secrets
-  # Desktop notifications (flutter_local_notifications)
-  - --talk-name=org.freedesktop.Notifications
-  # Online/offline detection (connectivity_plus)
-  - --system-talk-name=org.freedesktop.NetworkManager
   # Earlier builds kept the offline database here. It's read once to copy it
   # into the app's own data folder.
   - --filesystem=xdg-documents/Moonfin:ro
