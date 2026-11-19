@@ -445,6 +445,18 @@ copy_runtime_libs() {
   printf '%s\n' "$count"
 }
 
+# libva has to match the system's VA drivers. A copy from the build host can't
+# load drivers built for a newer libva, and it looks for them in the build
+# host's driver folder, so hardware decoding never starts. The AppImage and
+# tarball launchers put this folder on the library path only when the system
+# is missing part of libva, so Moonfin still starts there. The deb and rpm drop
+# it and depend on the system's libva instead.
+separate_bundled_libva() {
+  local dest_lib="$1"
+  mkdir -p "$dest_lib/libva" || return 1
+  find "$dest_lib" -maxdepth 1 -name 'libva[.-]*' -exec mv -f -t "$dest_lib/libva/" {} +
+}
+
 inject_linux_runtime_libs() {
   local bundle_dir="$1"
 
@@ -469,6 +481,7 @@ inject_linux_runtime_libs() {
   fix_absolute_needed "$bundle_dir/lib" || return 1
   ensure_sqlite_unversioned_link "$bundle_dir/lib" || return 1
   ensure_mpv_compat_symlinks "$bundle_dir/lib" || return 1
+  separate_bundled_libva "$bundle_dir/lib" || return 1
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
 
   verify_host_dependencies "$bundle_dir"
@@ -488,6 +501,7 @@ host_dependencies() {
   done | sort -u | while IFS= read -r name; do
     [ -n "$name" ] || continue
     [ -e "$bundle_dir/lib/$name" ] && continue
+    [ -e "$bundle_dir/lib/libva/$name" ] && continue
     printf '%s\n' "$name"
   done
 }
@@ -552,6 +566,8 @@ inject_flatpak_libs() {
   fix_absolute_needed "$dest_lib"
   ensure_sqlite_unversioned_link "$dest_lib"
   ensure_mpv_compat_symlinks "$dest_lib"
+  # The runtime's libva matches the VA drivers in its GL extension.
+  rm -f "$dest_lib"/libva[.-]*
 
   echo "Bundled $count runtime libraries for Flatpak"
 }
@@ -691,7 +707,18 @@ build_appimage() {
   cat > "$appimage_dir/AppRun" << 'EOF'
 #!/bin/bash
 APPDIR="$(cd "$(dirname "$0")" && pwd)"
-export LD_LIBRARY_PATH="$APPDIR/lib:$LD_LIBRARY_PATH"
+
+# Use the system's libva when it has all of it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+va_lib="$APPDIR/lib/libva"
+for lib_dir in /usr/lib64 /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu; do
+  if [ -e "$lib_dir/libva.so.2" ] && [ -e "$lib_dir/libva-drm.so.2" ] &&
+    [ -e "$lib_dir/libva-x11.so.2" ] && [ -e "$lib_dir/libva-wayland.so.2" ]; then
+    va_lib=""
+    break
+  fi
+done
+export LD_LIBRARY_PATH="$APPDIR/lib${va_lib:+:$va_lib}:$LD_LIBRARY_PATH"
 
 # nix-ld only hands NixOS programs their libraries once they start, and ldd
 # runs Nix's own loader, which never looks there, so the check adds them.
@@ -805,7 +832,18 @@ build_tarball() {
     cat > "$tar_dir/moonfin" << 'EOF'
 #!/bin/sh
 APPDIR="$(cd "$(dirname "$0")" && pwd)"
-export LD_LIBRARY_PATH="$APPDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+# Use the system's libva when it has all of it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+va_lib="$APPDIR/lib/libva"
+for lib_dir in /usr/lib64 /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu; do
+  if [ -e "$lib_dir/libva.so.2" ] && [ -e "$lib_dir/libva-drm.so.2" ] &&
+    [ -e "$lib_dir/libva-x11.so.2" ] && [ -e "$lib_dir/libva-wayland.so.2" ]; then
+    va_lib=""
+    break
+  fi
+done
+export LD_LIBRARY_PATH="$APPDIR/lib${va_lib:+:$va_lib}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 # nix-ld only hands NixOS programs their libraries once they start, and ldd
 # runs Nix's own loader, which never looks there, so the check adds them.
@@ -937,6 +975,8 @@ build_deb() {
   cp -r "$BUILD_DIR"/* "$pkg_root/usr/lib/moonfin/"
 
   inject_linux_runtime_libs "$pkg_root/usr/lib/moonfin"
+  # The libva packages in Depends match the system's VA drivers.
+  rm -rf "$pkg_root/usr/lib/moonfin/lib/libva"
 
   cat > "$pkg_root/usr/bin/moonfin" << 'EOF'
 #!/bin/sh
@@ -956,6 +996,7 @@ EOF
   # one the package can run on. Declaring it turns a wall of loader errors at
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0, xdg-user-dirs"
+  depends="$depends, libva2, libva-drm2, libva-x11-2, libva-wayland2"
   local glibc
   glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
   if [ -n "$glibc" ]; then
@@ -1075,6 +1116,8 @@ build_rpm() {
     return 1
   fi
   verify_bundled_video_decoders "$stage_dir/lib" || return 1
+  # rpm then requires the system's libva, which matches its VA drivers.
+  rm -rf "$stage_dir/lib/libva"
 
   # The bundled libraries are private to Moonfin. Keep rpm from advertising
   # them to the rest of the system, and from asking the system for them.
