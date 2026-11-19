@@ -120,7 +120,8 @@ class DisplayHdrSnapshot {
       'displays=$displayCount sdk=$sdkInt';
 }
 
-/// Front-end for the native display HDR probe on Android TV.
+/// Front-end for the native display HDR probe on Android (TV, phone and
+/// tablet).
 ///
 /// Two jobs. It reads the display's HDR support without mistaking silence for
 /// an answer, and it keeps listening afterwards so a TV or AVR that wakes up
@@ -135,8 +136,7 @@ class DisplayHdrProbe {
 
   static StreamSubscription<dynamic>? _subscription;
 
-  static bool get isSupported =>
-      PlatformDetection.isAndroid && PlatformDetection.isTV;
+  static bool get isSupported => PlatformDetection.isAndroid;
 
   /// Queries the native probe once. Falls back to the format-list method when
   /// running against a native side that predates the fact-collecting one,
