@@ -94,7 +94,7 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 - **Kids Mode** that strips the app back to what a child needs and locks the way out with a PIN, plus blocked ratings that apply everywhere in the app.
 - **Achievement Badges** drawn natively when your Jellyfin server runs the Achievement Badges plugin, including its friends list and chat.
 - **Anime markers** for filler, recap, canon, and subbed or dubbed episodes, served by the Moonbase plugin.
-- **Home rows your way**, in Classic, Modern or Carousel style, with IMDb, TMDB, MDBList and streaming service charts, Seerr rows, and a seasonal holiday row.
+- **Home rows your way**, in Classic, Modern or Carousel style, with IMDb, TMDB, MDBList and streaming service charts, Seerr rows, and a seasonal holiday row. See [Home Rows](https://github.com/Moonfin-Client/Plugin/wiki/Home-Rows).
 - **Privacy built in.** Crash reports only go to your own server, push notifications only start when your server can send them, and logs scrub addresses and tokens. See [Where Your Data Is Stored](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Where-Your-Data-Is-Stored).
 - **Ratings from MDBList and TMDB**, and in-app update checks.
 
