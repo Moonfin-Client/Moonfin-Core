@@ -264,7 +264,11 @@ class SiloItemsApi
       if (!search.canSearch) return _empty(startIndex);
     }
     final scope = search != null
-        ? siloSearchScopeFor(types, withEpisodes: search.videoWithEpisodes)
+        ? siloSearchScopeFor(
+            types,
+            withEpisodes: search.videoWithEpisodes,
+            viewerScope: types == null ? await _searchMediaScope() : null,
+          )
         : types == null
         ? null
         : siloCatalogScopeFor(types);
@@ -1558,13 +1562,16 @@ class SiloItemsApi
   }) async {
     final search = await searchCapabilities();
     if (!search.canSearch) return _empty(0);
+    final viewerScope = search.peopleMediaScope
+        ? await _searchMediaScope()
+        : null;
     final response = await _dio.get<dynamic>(
       '/api/v2/catalog/people',
       queryParameters: {
         'q': ?_searchTextOf(searchTerm),
         'limit': ?(limit == null || limit <= 0 ? null : limit.clamp(1, 100)),
         if (search.peopleMediaScope)
-          'media_scope': search.videoWithEpisodes
+          'media_scope': search.videoWithEpisodes && viewerScope == 'all'
               ? 'video_with_episodes'
               : 'video',
       },
@@ -1880,6 +1887,44 @@ class SiloItemsApi
   static String? _searchTextOf(String? searchTerm) {
     final text = searchTerm?.trim();
     return text == null || text.isEmpty ? null : text;
+  }
+
+  /// Silo's per-profile setting `search.media_scope`, the scope its web app
+  /// searches in: `video` (films and series, the default), `all` or
+  /// `audiobook`. Global search uses it so it finds what the web app finds.
+  ///
+  /// Read from the effective settings once a minute. A setting that can't be
+  /// read counts as `video`, Silo's default.
+  Future<String> _searchMediaScope() => _searchScope
+      .get(_searchScopeKey, _readSearchMediaScope)
+      .catchError((Object _) => 'video');
+
+  static const _searchScopeKey = 'search.media_scope';
+  late final _searchScope = SiloKeptReads<String, String>(
+    lifetime: const Duration(minutes: 1),
+    clock: _clock,
+  );
+
+  Future<String> _readSearchMediaScope() async {
+    final response = await _dio.get<dynamic>(
+      '/api/v2/settings/values/effective',
+      queryParameters: const {'keys': _searchScopeKey},
+    );
+    final items = asJsonMap(response.data)?['items'];
+    if (items is! List) {
+      throw FormatException(
+        'Expected settings from Silo, got ${response.data.runtimeType}',
+      );
+    }
+    for (final item in items) {
+      final setting = asJsonMap(item);
+      if (setting?['key'] != _searchScopeKey) continue;
+      final value = setting?['value'];
+      if (value == 'all' || value == 'video' || value == 'audiobook') {
+        return value as String;
+      }
+    }
+    return 'video';
   }
 
   static const _searchCapabilitiesTtl = Duration(minutes: 10);

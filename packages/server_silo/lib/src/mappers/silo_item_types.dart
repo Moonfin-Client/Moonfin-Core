@@ -169,7 +169,19 @@ const Set<String> _siloVideoWithEpisodes = {'movie', 'series', 'episode'};
 /// or for any type ([types] null) while Moonfin shows only video. Otherwise
 /// the scope is the browse one ([siloCatalogScopeFor]). With no type the
 /// search is unscoped and the caller keeps what it can show.
-String? siloSearchScopeFor(Set<String>? types, {required bool withEpisodes}) {
+///
+/// [viewerScope] is the profile's `search.media_scope` for a search with no
+/// type, so it finds the same titles as Silo's web app: films and series
+/// for `video` (and for `audiobook`, which Moonfin can't open), and
+/// episodes too only for `all`.
+String? siloSearchScopeFor(
+  Set<String>? types, {
+  required bool withEpisodes,
+  String? viewerScope,
+}) {
+  if (types == null && viewerScope != null && viewerScope != 'all') {
+    return 'video';
+  }
   final wanted = types ?? siloSupportedTypes.difference({'season'});
   if (withEpisodes &&
       wanted.length > 1 &&

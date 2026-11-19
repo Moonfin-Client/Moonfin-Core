@@ -184,6 +184,46 @@ void main() {
     expect(severance.mediaInfo!.requests!.single.requestedBy!.id, 7);
   });
 
+  test('search keeps what Silo\'s web app offers to request', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/search': (
+        200,
+        {
+          'page': 1,
+          'total_pages': 1,
+          'total_results': 3,
+          'results': [
+            _heat,
+            {
+              'media_type': 'series',
+              'tmdb_id': 456,
+              'title': 'The Simpsons',
+              'availability': 'partial',
+              'library_content_id': 'series-tvdb-71663',
+              'request': {'requestable': true, 'following': false},
+            },
+            {..._heat, 'tmdb_id': 950, 'availability': null},
+          ],
+        },
+      ),
+    });
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+    final page = SeerrDiscoverPage.fromJson(await client.search('the'));
+
+    expect(
+      page.results.map((r) => r.id),
+      [456],
+      reason: 'a partly available series stays for its missing seasons',
+    );
+    expect(page.results.single.mediaInfo!.status, 4, reason: 'partial');
+
+    final calls = silo.calls.length;
+    expect(SeerrDiscoverPage.fromJson(await client.search(' t ')).results, isEmpty);
+    expect(silo.calls, hasLength(calls), reason: 'one letter asks nothing');
+  });
+
   test('an admin row on Silo is a slider that reads that row', () async {
     final silo = _Silo({
       ..._base(),
