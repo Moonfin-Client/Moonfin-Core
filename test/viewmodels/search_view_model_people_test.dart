@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/repositories/search_repository.dart';
+import 'package:moonfin/data/repositories/seerr_repository.dart';
+import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/search_view_model.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
@@ -14,6 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockItemsApi extends Mock implements ItemsApi {}
+
+class _MockSeerr extends Mock implements SeerrRepository {}
 
 void main() {
   late _MockClient client;
@@ -77,6 +81,58 @@ void main() {
   List<String> groupTypes(SearchViewModel vm) => [
     for (final group in vm.results) group.itemTypes.first,
   ];
+
+  test('the search screen asks people in the profile\'s search scope', () {
+    fakeAsync((async) {
+      itemsFor('alien', [('m1', 'Movie')]);
+      peopleFor('alien').complete(person('p1'));
+      final vm = SearchViewModel(SearchRepository(client), client);
+
+      vm.searchImmediate('alien');
+      async.flushMicrotasks();
+
+      verify(
+        () => itemsApi.getPersons(
+          searchTerm: 'alien',
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+          forSearch: true,
+        ),
+      ).called(1);
+      vm.dispose();
+    });
+  });
+
+  test('on Silo one letter asks for no requests, as Silo\'s web app', () {
+    fakeAsync((async) {
+      when(() => client.serverType).thenReturn(ServerType.silo);
+      final seerr = _MockSeerr();
+      when(() => seerr.ensureInitialized()).thenAnswer((_) async {});
+      when(() => seerr.isAvailable).thenReturn(true);
+      when(
+        () => seerr.search(any(), limit: any(named: 'limit')),
+      ).thenAnswer((_) async => const SeerrDiscoverPage());
+      for (final term in ['a', 'al']) {
+        itemsFor(term, [('m1', 'Movie')]);
+        peopleFor(term).complete(person('p1'));
+      }
+      final vm = SearchViewModel(
+        SearchRepository(client),
+        client,
+        seerrRepository: seerr,
+      );
+
+      vm.searchImmediate('a');
+      async.flushMicrotasks();
+      vm.searchImmediate('al');
+      async.flushMicrotasks();
+
+      verifyNever(() => seerr.search('a', limit: any(named: 'limit')));
+      verify(() => seerr.search('al', limit: any(named: 'limit'))).called(1);
+      vm.dispose();
+    });
+  });
 
   test('a slow people search fills in after the other results are up', () {
     fakeAsync((async) {
