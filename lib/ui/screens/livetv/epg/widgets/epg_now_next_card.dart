@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../../../data/viewmodels/live_tv_guide_view_model.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../widgets/adaptive/adaptive_glass.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/offline_aware_image.dart';
@@ -17,6 +19,7 @@ class EpgNowNextCard extends StatelessWidget {
   final double nowProgress; // 0..1
   final String? remainingLabel;
   final String? nextLabel;
+  final GuideChannelLoadState loadState;
   final bool isLive;
   final bool apple;
   final VoidCallback onTap;
@@ -34,6 +37,7 @@ class EpgNowNextCard extends StatelessWidget {
     required this.nowProgress,
     required this.remainingLabel,
     required this.nextLabel,
+    this.loadState = GuideChannelLoadState.loaded,
     required this.isLive,
     required this.apple,
     required this.onTap,
@@ -70,10 +74,11 @@ class EpgNowNextCard extends StatelessWidget {
                     ),
                   ),
                   if (isFavorite)
-                    const Padding(
-                      padding: EdgeInsetsDirectional.only(start: 4),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 4),
                       child: Icon(
                         Icons.favorite,
+                        semanticLabel: AppLocalizations.of(context).favorited,
                         size: 12,
                         color: AppColors.red500,
                       ),
@@ -85,7 +90,41 @@ class EpgNowNextCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              if (nowTitle != null)
+              if (loadState == GuideChannelLoadState.loading)
+                Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('Loading listings…', style: textTheme.bodyMedium),
+                  ],
+                )
+              else if (loadState == GuideChannelLoadState.failed)
+                Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 18,
+                      color: AppColorScheme.statusError,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      AppLocalizations.of(context).failedToLoad,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColorScheme.statusError,
+                      ),
+                    ),
+                  ],
+                )
+              else if (nowTitle == null && nextLabel == null)
+                Text(
+                  AppLocalizations.of(context).noProgramData,
+                  style: textTheme.bodyMedium?.copyWith(color: muted),
+                ),
+              if (loadState == GuideChannelLoadState.loaded && nowTitle != null)
                 Row(
                   children: [
                     if (isLive) ...[
@@ -102,32 +141,37 @@ class EpgNowNextCard extends StatelessWidget {
                     ),
                   ],
                 ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: AppRadius.circular(2),
-                      child: LinearProgressIndicator(
-                        value: nowProgress.clamp(0.0, 1.0),
-                        minHeight: 4,
-                        backgroundColor:
-                            AppColorScheme.onSurface.withValues(alpha: 0.18),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColorScheme.accent),
+              if (loadState == GuideChannelLoadState.loaded &&
+                  nowTitle != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: AppRadius.circular(2),
+                        child: LinearProgressIndicator(
+                          value: nowProgress.clamp(0.0, 1.0),
+                          minHeight: 4,
+                          backgroundColor:
+                              AppColorScheme.onSurface.withValues(alpha: 0.18),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColorScheme.accent,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  if (remainingLabel != null) ...[
-                    const SizedBox(width: 12),
-                    Text(
-                      remainingLabel!,
-                      style: textTheme.labelSmall?.copyWith(color: muted),
-                    ),
+                    if (remainingLabel != null) ...[
+                      const SizedBox(width: 12),
+                      Text(
+                        remainingLabel!,
+                        style: textTheme.labelSmall?.copyWith(color: muted),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-              if (nextLabel != null) ...[
+                ),
+              ],
+              if (loadState == GuideChannelLoadState.loaded &&
+                  nextLabel != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   nextLabel!,

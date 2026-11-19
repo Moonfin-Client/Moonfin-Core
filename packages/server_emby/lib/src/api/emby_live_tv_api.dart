@@ -36,7 +36,24 @@ class EmbyLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
           item['Name'] is! String) {
         continue;
       }
-      channels.add(item);
+      // Optional metadata also travels to the player in the raw channel DTO.
+      final channel = Map<String, dynamic>.of(item);
+      if (channel['ChannelNumber'] is! String) channel.remove('ChannelNumber');
+      final userData = channel['UserData'];
+      if (userData is! Map<String, dynamic>) {
+        channel.remove('UserData');
+      } else if (userData.containsKey('IsFavorite') && userData['IsFavorite'] is! bool) {
+        channel['UserData'] = Map.of(userData)..remove('IsFavorite');
+      }
+      if (channel['ImageTags'] case Map<String, dynamic> tags) {
+        channel['ImageTags'] = {
+          for (final entry in tags.entries)
+            if (entry.value is String) entry.key: entry.value,
+        };
+      } else {
+        channel.remove('ImageTags');
+      }
+      channels.add(channel);
       final tagged = item['TagItems'];
       final labels = tagged is List
           ? names(tagged.map((tag) => tag is Map ? tag['Name'] : null))

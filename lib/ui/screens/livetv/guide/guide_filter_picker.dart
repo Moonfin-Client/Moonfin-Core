@@ -109,7 +109,12 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
         target = (saved[neighbor], true);
       }
     }
-    await widget.vm.toggleSavedFilter(choice);
+    try {
+      await widget.vm.toggleSavedFilter(choice);
+    } catch (error) {
+      debugPrint('Could not save guide favorites (${error.runtimeType})');
+      return;
+    }
     if (!mounted || !restore || _query.isNotEmpty) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || ModalRoute.isCurrentOf(context) != true) return;
@@ -241,22 +246,27 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
         if (PlatformDetection.isTV &&
             id != null &&
             _nodes[id]?.hasFocus == true) {
-          bool stillFocused() =>
+          bool stillFocused(_RowId? row) =>
               mounted &&
               ModalRoute.isCurrentOf(context) == true &&
-              _nodes[id]?.hasFocus == true;
-          if (event.logicalKey.isUpKey) {
-            return _hold.start(
-              event,
-              stillFocused: stillFocused,
-              onTap: () => _nodes[id]!.focusInDirection(TraversalDirection.up),
-              onHold: _searchFocus.requestFocus,
-            );
+              _nodes[row]?.hasFocus == true;
+          if (event.isActionable && event.logicalKey.isUpKey) {
+            final previous = _visibleRows
+                .takeWhile((row) => row.id != id)
+                .map((row) => row.id)
+                .nonNulls
+                .lastOrNull;
+            if (previous == null) {
+              _searchFocus.requestFocus();
+            } else {
+              _focusRow(previous);
+            }
+            return KeyEventResult.handled;
           }
           if (event.logicalKey.isSelectKey && id.$1.canFavorite) {
             return _hold.start(
               event,
-              stillFocused: stillFocused,
+              stillFocused: () => stillFocused(id),
               onTap: () => Navigator.of(context).pop(id.$1),
               onHold: () => unawaited(_toggle(id)),
             );
@@ -395,10 +405,11 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (saved.contains(choice))
-                                  const Padding(
-                                    padding: EdgeInsetsDirectional.only(end: 4),
+                                  Padding(
+                                    padding: const EdgeInsetsDirectional.only(end: 4),
                                     child: Icon(
                                       Icons.favorite,
+                                      semanticLabel: l10n.favorited,
                                       size: 12,
                                       color: AppColors.red500,
                                     ),

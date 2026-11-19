@@ -117,23 +117,31 @@ class FocusedKeyHold {
   Timer? _timer;
   VoidCallback? _tap;
 
+  /// [onPress] runs immediately. [onTap] runs on release unless the hold
+  /// triggers [onHold] instead. [stillFocused] guards callbacks.
   KeyEventResult start(
     KeyEvent event, {
     required bool Function() stillFocused,
-    required VoidCallback onTap,
+    VoidCallback? onPress,
+    VoidCallback? onTap,
     required VoidCallback onHold,
   }) {
+    assert((onPress == null) != (onTap == null));
+    if (event.synthesized) return KeyEventResult.handled;
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     dispose();
     _key = event.physicalKey;
-    _tap = () {
-      if (stillFocused()) onTap();
-    };
+    if (onTap != null) {
+      _tap = () {
+        if (stillFocused()) onTap();
+      };
+    }
     _timer = Timer(_remoteHoldDuration, () {
       _tap = null;
       if (stillFocused()) onHold();
     });
     FocusManager.instance.addEarlyKeyEventHandler(_finish);
+    onPress?.call();
     return KeyEventResult.handled;
   }
 
@@ -143,7 +151,7 @@ class FocusedKeyHold {
     final tap = _tap;
     dispose();
     if (event is! KeyUpEvent) return KeyEventResult.ignored;
-    tap?.call();
+    if (!event.synthesized) tap?.call();
     return KeyEventResult.handled;
   }
 

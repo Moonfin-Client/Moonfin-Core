@@ -40,7 +40,8 @@ void main() {
     'a missing groups endpoint is remembered only for that server and user',
     () async {
       final dio = Dio(BaseOptions(baseUrl: 'https://one.test'));
-      final statuses = [404, 503, 200, 200];
+      var now = DateTime.utc(2026, 11, 18);
+      final statuses = [404, 503, 200, 200, 200];
       dio.interceptors.add(
         InterceptorsWrapper(
           onRequest: (request, handler) {
@@ -64,7 +65,7 @@ void main() {
           },
         ),
       );
-      final api = JellyfinLiveTvApi(dio);
+      final api = JellyfinLiveTvApi(dio, now: () => now);
       Future<bool> groupsAvailable(String userId) async =>
           (await api.getChannelGroups(userId: userId)).endpointAvailable;
 
@@ -73,6 +74,9 @@ void main() {
       await expectLater(groupsAvailable('two'), throwsA(isA<DioException>()));
       expect(await groupsAvailable('two'), isTrue);
       dio.options.baseUrl = 'https://two.test';
+      expect(await groupsAvailable('one'), isTrue);
+      now = now.add(const Duration(minutes: 5));
+      dio.options.baseUrl = 'https://one.test';
       expect(await groupsAvailable('one'), isTrue);
       expect(statuses, isEmpty);
     },

@@ -3,19 +3,25 @@ import 'package:server_core/server_core.dart';
 
 class JellyfinLiveTvApi implements LiveTvApi, ChannelGroupApi {
   final Dio _dio;
-  final _missingGroupEndpoints = <(String, String?)>{};
+  final DateTime Function() _now;
+  final _missingGroupEndpoints = <(String, String?), DateTime>{};
+  static const _missingEndpointTtl = Duration(minutes: 5);
   static const _postChannelIdsThreshold = 1800;
 
-  JellyfinLiveTvApi(this._dio);
+  JellyfinLiveTvApi(this._dio, {DateTime Function()? now}) : _now = now ?? DateTime.now;
 
   @override
   Future<ChannelGroupLineup> getChannelGroups({String? userId}) async {
     final account = (_dio.options.baseUrl, userId);
-    if (_missingGroupEndpoints.contains(account)) {
+    final now = _now();
+    _missingGroupEndpoints.removeWhere((_, expiry) => !expiry.isAfter(now));
+    if (_missingGroupEndpoints.containsKey(account)) {
       return const ChannelGroupLineup({}, endpointAvailable: false);
     }
     final lineup = await ChannelGroupLineup.fetch(_dio);
-    if (!lineup.endpointAvailable) _missingGroupEndpoints.add(account);
+    if (!lineup.endpointAvailable) {
+      _missingGroupEndpoints[account] = _now().add(_missingEndpointTtl);
+    }
     return lineup;
   }
 
