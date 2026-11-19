@@ -13178,5 +13178,9 @@
     "profileLoadSubtitle": "Servidor a este dispositivo",
     "@profileLoadSubtitle": {
         "description": "Line under the Load button saying which way the settings go"
+    },
+    "settingsMotionSection": "Movimiento",
+    "@settingsMotionSection": {
+        "description": "Section header on the Appearance settings screen for animation speeds"
     }
 }
