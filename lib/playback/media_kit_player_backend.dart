@@ -3831,7 +3831,10 @@ class MediaKitPlayerBackend extends PlayerBackend
     final hasBackground = ((color >> 24) & 0xff) != 0;
     final hasShadow = !hasBackground && shadowColor != 0;
     return {
-      'sub-back-color': _argbToMpvColor(hasShadow ? shadowColor : color),
+      'sub-back-color': _argbToMpvColor(color),
+      // Before 0.39 mpv draws a box for any sub-back-color with alpha. From
+      // 0.39 this is an alias of sub-back-color, so it has to come after it.
+      if (hasShadow) 'sub-shadow-color': _argbToMpvColor(shadowColor),
       'sub-border-style': hasBackground
           ? 'background-box'
           : 'outline-and-shadow',
