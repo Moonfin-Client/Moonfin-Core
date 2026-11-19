@@ -59,6 +59,7 @@ import 'mediabar/media_bar_nav_arrow.dart';
 import 'mediabar/media_bar_status_focus.dart';
 import 'mediabar/media_bar_new_release_label.dart';
 import 'mediabar/makd_classic.dart';
+import 'mediabar/mobile_chrome_insets.dart';
 import 'mediabar/media_bar_title.dart';
 import 'rating_display.dart';
 import 'web_local_trailer.dart';
@@ -2033,9 +2034,8 @@ class _MediaBarState extends State<MediaBar>
         isMobile &&
         (widget.prefs.get(UserPreferences.navbarPosition) ==
             NavbarPosition.top);
-    final toolbarInset = navbarAtTop
-        ? MediaQuery.of(context).padding.top + 60.0
-        : 0.0;
+    final chrome = mobileChromeInsets(context, widget.prefs, widget.height);
+    final toolbarInset = navbarAtTop ? chrome.top : 0.0;
     final hasVisibleTrailerVideo =
         (_activeYouTubeVideoId != null ||
             _activeWebTrailerUrl != null ||
@@ -2073,7 +2073,7 @@ class _MediaBarState extends State<MediaBar>
                   ..._buildVideoOverlays(allowPersistentMedia3: true),
                   if (items.length > 1 && !_isTrailerPlaying)
                     Positioned(
-                      bottom: 8 + widget.rowPeek,
+                      bottom: 8 + widget.rowPeek + chrome.bottom,
                       left: 0,
                       right: 0,
                       child: _IndicatorDots(
@@ -2128,7 +2128,7 @@ class _MediaBarState extends State<MediaBar>
                         duration: const Duration(milliseconds: 200),
                         bottom: NavigationLayout.trailerHidesChrome
                             ? 0
-                            : widget.rowPeek,
+                            : widget.rowPeek + chrome.bottom,
                         left: 0,
                         right: 0,
                         child: child!,
@@ -2225,6 +2225,7 @@ class _MediaBarState extends State<MediaBar>
     final m = MakdMetrics(
       Size(MediaQuery.sizeOf(context).width, widget.height),
       rowPeek: widget.rowPeek,
+      topInset: mobileChromeInsets(context, widget.prefs, widget.height).top,
     );
     final item = items.elementAtOrNull(_currentIndex);
     final trailerShown =
@@ -2516,6 +2517,7 @@ class _MediaBarState extends State<MediaBar>
     if (widget.viewModel.bookshelfDetailFor(activeItem.itemId) == null) {
       unawaited(widget.viewModel.ensureBookshelfDetail(activeItem.itemId));
     }
+    final chrome = mobileChromeInsets(context, widget.prefs, widget.height);
 
     return MouseRegion(
       onEnter: (_) => _setPaused(true),
@@ -2539,6 +2541,8 @@ class _MediaBarState extends State<MediaBar>
                 onInfo: () => _navigateToItem(context, items),
                 onPlay: () => _playFromBookshelf(context, items),
                 detailFor: widget.viewModel.bookshelfDetailFor,
+                topInset: chrome.top,
+                bottomInset: chrome.bottom,
               ),
               if (_bookshelfLoadingOverlay)
                 const Positioned.fill(child: _TheaterLoadingOverlay()),
@@ -2626,6 +2630,7 @@ class _MediaBarState extends State<MediaBar>
         ? null
         : Stack(fit: StackFit.expand, children: trailerOverlays);
 
+    final chrome = mobileChromeInsets(context, widget.prefs, widget.height);
     final Widget gallery = useCoverflow
         ? GalleryCoverflow(
             items: items,
@@ -2639,6 +2644,7 @@ class _MediaBarState extends State<MediaBar>
             // Narrow web reaches the coverflow through useMobileUi too, so
             // keep the band on native mobile.
             fullWidthTrailer: PlatformDetection.isMobile,
+            topInset: chrome.top,
           )
         : GalleryLayout(
             items: items,
@@ -2650,6 +2656,8 @@ class _MediaBarState extends State<MediaBar>
             activeTrailer: activeTrailer,
             trailerActive: trailerVisible,
             leftInset: _sidebarInset,
+            topInset: chrome.top,
+            bottomInset: chrome.bottom,
           );
 
     return MouseRegion(
@@ -2695,8 +2703,11 @@ class _MediaBarState extends State<MediaBar>
 
     if (isMobile) {
       final topInset =
-          safePadding.top +
-          (navbarIsTop ? TopToolbar.heightFor(context) + 12.0 : 16.0);
+          mobileChromeInsets(context, widget.prefs, widget.height).top +
+          (widget.prefs.get(UserPreferences.navbarPosition) ==
+                  NavbarPosition.bottom
+              ? 16.0
+              : 12.0);
 
       return EdgeInsets.fromLTRB(
         mobileHorizontalPadding + safePadding.left,

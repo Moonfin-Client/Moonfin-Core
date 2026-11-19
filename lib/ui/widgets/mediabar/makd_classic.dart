@@ -35,7 +35,10 @@ class MakdMetrics {
   /// How far the first home row peeks up into the bar, or zero.
   final double rowPeek;
 
-  factory MakdMetrics(Size screen, {double rowPeek = 0}) {
+  /// Room a phone's toolbar or menu button takes above the content.
+  final double topInset;
+
+  factory MakdMetrics(Size screen, {double rowPeek = 0, double topInset = 0}) {
     final tv = PlatformDetection.isTV;
     final w = screen.width;
     final h = screen.height;
@@ -49,6 +52,7 @@ class MakdMetrics {
       px: px,
       rem: tv ? 20 * px : (PlatformDetection.useMobileUi ? 14.4 : 14.88),
       rowPeek: rowPeek,
+      topInset: topInset,
     );
   }
 
@@ -61,6 +65,7 @@ class MakdMetrics {
     required this.px,
     required this.rem,
     required this.rowPeek,
+    required this.topInset,
   });
 
   bool get _wide => w >= 2560 * px;
@@ -83,7 +88,9 @@ class MakdMetrics {
   double get contentWidth =>
       touchPortrait ? 0.92 * w : math.min(0.46 * w, 46 * rem);
 
-  double get maxContentHeight => contentTop - 0.05 * h;
+  double get maxContentHeight => topInset > 0
+      ? math.min(contentTop - 0.05 * h, contentBottom - topInset - 0.02 * h)
+      : contentTop - 0.05 * h;
 
   double get gap => smallLandscape
       ? 0.35 * rem
@@ -99,10 +106,12 @@ class MakdMetrics {
       ? 0.26 * h
       : 0.22 * h;
 
+  // On a short landscape screen a toolbar or menu button takes the room the
+  // plot line would use, so the logo keeps it.
   int get plotLines => touchPortrait
       ? 0
       : smallLandscape
-      ? 1
+      ? (topInset > 0.15 * h ? 0 : 1)
       : 3;
 
   double get buttonScale => touchPortrait

@@ -596,6 +596,10 @@ void main() {
   });
 
   testWidgets('a tried option stands in for the saved value', (tester) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.navbarPosition,
+      NavbarPosition.top,
+    );
     final controller = SettingsPreviewController();
     late BuildContext context;
     await tester.pumpWidget(
@@ -809,6 +813,10 @@ void main() {
   testWidgets('a picker previews the option in focus until it closes', (
     tester,
   ) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.navbarPosition,
+      NavbarPosition.top,
+    );
     final controller = SettingsPreviewController();
     await tester.pumpWidget(
       host(
@@ -4438,6 +4446,56 @@ void main() {
       await prefs.set(UserPreferences.hideHomeWatchProgress, true);
       await show(tester, controller);
       expect(card(tester, 'Dune').playedPercentage, isNull);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a phone grows the first Modern card the way a tap does', (
+      tester,
+    ) async {
+      tv();
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+      await prefs.set(UserPreferences.posterSize, PosterSize.extraLarge);
+      await homeRows([HomeSectionType.resume]);
+      home([
+        HomeRow(
+          id: 'resume',
+          title: 'Continue Watching',
+          rowType: HomeRowType.resume,
+          items: [watched('Dune', {}), watched('Arrival', {})],
+        ),
+      ]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Row Padding',
+            prefKey: 'pref_modern_home_rows_padding',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (_) async => throw StateError('Home has every row'));
+      await show(tester, controller);
+
+      // Grown at Extra Large the card would be wider than the phone, so it
+      // stops at the row's width as on Home.
+      final dune = card(tester, 'Dune');
+      expect(dune.externalIsFocused, isTrue);
+      expect(dune.width, setupPreviewSize().width - 32);
+      expect(dune.aspectRatio, greaterThan(1));
+      expect(card(tester, 'Arrival').externalIsFocused, isFalse);
+
+      // A phone's Classic cards never show focus.
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await show(tester, controller);
+      expect(
+        tester
+            .widgetList<MediaCard>(find.byType(MediaCard))
+            .where((card) => card.externalIsFocused == true),
+        isEmpty,
+      );
+      expect(find.text('Dune'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
       debugDefaultTargetPlatformOverride = null;
     });
