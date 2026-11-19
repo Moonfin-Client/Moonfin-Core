@@ -2790,7 +2790,10 @@ class UserPreferences extends ChangeNotifier {
 
   static final hardwareDecoding = Preference(
     key: 'hardware_decoding',
-    defaultValue: PlatformDetection.isAndroid || PlatformDetection.isIOS,
+    defaultValue:
+        PlatformDetection.isAndroid ||
+        PlatformDetection.isIOS ||
+        PlatformDetection.isWindows,
   );
 
   static final playbackEnginePreference = EnumPreference(
