@@ -285,12 +285,15 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     };
   }
 
+  /// A partly available title stays partial once an earlier request of it
+  /// was fulfilled, since seasons are still missing.
   static int _mediaStatusOf(Object? availability, String? state) {
     if (availability == 'available') return _mediaAvailable;
     return switch (state) {
       'pending' => _mediaPending,
       'approved' || 'processing' => _mediaProcessing,
       'partially_available' => _mediaPartial,
+      'available' when availability == 'partial' => _mediaPartial,
       'available' => _mediaAvailable,
       _ => availability == 'partial' ? _mediaPartial : _mediaUnknown,
     };
@@ -433,8 +436,6 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     int limit = 20,
     int offset = 0,
   }) async {
-    // Silo's web app asks nothing for a single character.
-    if (query.trim().length < 2) return _page(const {'results': []});
     final body = await _get('/requests/search', {
       'q': query,
       'media_type': mediaType == null ? 'all' : _siloType(mediaType),

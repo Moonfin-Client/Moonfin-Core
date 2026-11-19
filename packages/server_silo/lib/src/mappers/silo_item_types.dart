@@ -167,8 +167,9 @@ const Set<String> _siloVideoWithEpisodes = {'movie', 'series', 'episode'};
 /// when [withEpisodes] (the server's `video_with_episodes_scope`
 /// capability) and the search asks for episodes along with films or series,
 /// or for any type ([types] null) while Moonfin shows only video. Otherwise
-/// the scope is the browse one ([siloCatalogScopeFor]). With no type the
-/// search is unscoped and the caller keeps what it can show.
+/// the scope is the browse one ([siloCatalogScopeFor]). With no type and
+/// no [viewerScope] the search is unscoped and the caller keeps what it can
+/// show.
 ///
 /// [viewerScope] is the profile's `search.media_scope` for a search with no
 /// type, so it finds the same titles as Silo's web app: films and series

@@ -86,10 +86,13 @@ void main() {
     );
   });
 
-  test('media scope follows the profile\'s search scope', () async {
-    Future<String?> scope(String? searchScope) async {
+  test('the search screen\'s media scope follows the profile\'s search '
+      'scope', () async {
+    Future<String?> scope(String? searchScope, {bool forSearch = true}) async {
       final server = _server(searchScope: searchScope);
-      await siloTestClient(server).itemsApi.getPersons(searchTerm: 'vin');
+      await siloTestClient(
+        server,
+      ).itemsApi.getPersons(searchTerm: 'vin', forSearch: forSearch);
       return _peopleQuery(server)['media_scope'];
     }
 
@@ -100,6 +103,11 @@ void main() {
       await scope('audiobook'),
       'video',
       reason: 'Moonfin can\'t open audiobooks',
+    );
+    expect(
+      await scope('video', forSearch: false),
+      'video_with_episodes',
+      reason: 'a lookup by name finds people credited only in episodes',
     );
   });
 

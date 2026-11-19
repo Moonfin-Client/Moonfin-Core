@@ -1547,7 +1547,9 @@ class SiloItemsApi
   /// - Credits are limited to what Moonfin shows (`media_scope`): films,
   ///   series and episodes (`video_with_episodes`) when the search
   ///   capabilities offer that scope, else films and series (`video`), and
-  ///   none when Silo takes no scope.
+  ///   none when Silo takes no scope. For the search screen ([forSearch])
+  ///   episodes count only when the profile's `search.media_scope` is `all`,
+  ///   as on Silo's web app.
   /// - Nothing is asked when the capabilities say search isn't available.
   /// - `limit` is capped at Silo's 100, and none asks for Silo's default (20).
   /// - A blank `searchTerm` lists the first people, as on Jellyfin.
@@ -1559,12 +1561,13 @@ class SiloItemsApi
     int? limit,
     String? fields,
     String? enableImageTypes,
+    bool forSearch = false,
   }) async {
     final search = await searchCapabilities();
     if (!search.canSearch) return _empty(0);
-    final viewerScope = search.peopleMediaScope
+    final viewerScope = search.peopleMediaScope && forSearch
         ? await _searchMediaScope()
-        : null;
+        : 'all';
     final response = await _dio.get<dynamic>(
       '/api/v2/catalog/people',
       queryParameters: {
@@ -2005,6 +2008,7 @@ class SiloItemsApi
   void noteProfileChanged() {
     noteCatalogChanged();
     _hideWatched.forget();
+    _searchScope.forget();
     _changedItems.clear();
     _changedSeries.clear();
   }

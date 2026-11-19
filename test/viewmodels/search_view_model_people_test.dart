@@ -62,6 +62,7 @@ void main() {
         limit: any(named: 'limit'),
         fields: any(named: 'fields'),
         enableImageTypes: any(named: 'enableImageTypes'),
+        forSearch: any(named: 'forSearch'),
       ),
     ).thenAnswer((_) => people.future);
     return people;
@@ -224,6 +225,7 @@ void main() {
           limit: any(named: 'limit'),
           fields: any(named: 'fields'),
           enableImageTypes: any(named: 'enableImageTypes'),
+          forSearch: any(named: 'forSearch'),
         ),
       );
       vm.dispose();

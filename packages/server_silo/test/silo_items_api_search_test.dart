@@ -175,6 +175,26 @@ void main() {
     );
   });
 
+  test('a profile switch reads the search scope again', () async {
+    var searchScope = 'all';
+    final server = FixtureServer({
+      '/api/v2/user/libraries': FixtureServer.file('silo/user_libraries.json'),
+      '/api/v2/settings/values/effective': (o) =>
+          siloEffectiveSettings({'search.media_scope': searchScope})(o),
+      _capabilitiesPath: FixtureServer.file('silo/search_capabilities.json'),
+      _catalogPath: _whole(),
+    });
+    final api = siloTestClient(server).itemsApi;
+    await api.getItems(searchTerm: 'justice');
+    searchScope = 'video';
+    api.noteProfileChanged();
+    await api.getItems(searchTerm: 'justice');
+    expect(
+      [for (final r in _catalogRequests(server)) r.uri.queryParameters['type']],
+      ['video_with_episodes', 'video'],
+    );
+  });
+
   test('a scoped search ignores the profile\'s search scope', () async {
     final server = _server(searchScope: 'video');
     await siloTestClient(server).itemsApi.getItems(

@@ -204,6 +204,14 @@ void main() {
               'request': {'requestable': true, 'following': false},
             },
             {..._heat, 'tmdb_id': 950, 'availability': null},
+            {
+              'media_type': 'series',
+              'tmdb_id': 457,
+              'title': 'Futurama',
+              'availability': 'partial',
+              'library_content_id': 'series-tvdb-73871',
+              'request': {'state': 'available', 'request_id': '12'},
+            },
           ],
         },
       ),
@@ -214,14 +222,14 @@ void main() {
 
     expect(
       page.results.map((r) => r.id),
-      [456],
+      [456, 457],
       reason: 'a partly available series stays for its missing seasons',
     );
-    expect(page.results.single.mediaInfo!.status, 4, reason: 'partial');
-
-    final calls = silo.calls.length;
-    expect(SeerrDiscoverPage.fromJson(await client.search(' t ')).results, isEmpty);
-    expect(silo.calls, hasLength(calls), reason: 'one letter asks nothing');
+    expect(
+      page.results.map((r) => r.mediaInfo!.status),
+      [4, 4],
+      reason: 'partial, also after an earlier request was fulfilled',
+    );
   });
 
   test('an admin row on Silo is a slider that reads that row', () async {
