@@ -11144,5 +11144,62 @@
     "detailButtonsSectionDescription": "Spel är alltid prioriterat och de låsta knapparna visas alltid. Allt annat bestämmer du själv, och varje typ av enhet har sin egen lista.",
     "@detailButtonsSectionDescription": {
         "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+    },
+    "screensaverComponentMoonfinLogo": "Moonfin logotypen",
+    "@screensaverComponentMoonfinLogo": {
+        "description": "Screensaver component: Moonfin Logo"
+    },
+    "screensaverComponentRunner": "Löpare",
+    "@screensaverComponentRunner": {
+        "description": "Screensaver component: Runner"
+    },
+    "setupStyleSpotlight": "Spotlight",
+    "@setupStyleSpotlight": {
+        "description": "Name of the hero-first detail layout, offered in the setup wizard"
+    },
+    "animationSpeedSlow": "Långsamt",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedFast": "Snabbt",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "achievementsRecap": "Sammanfattning",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "setupStyleMinimalist": "Minimalistisk",
+    "@setupStyleMinimalist": {
+        "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+    },
+    "libraryStyleDocked": "I docka",
+    "@libraryStyleDocked": {
+        "description": "Library style option: a side panel on TV and desktop, a bottom bar on phones"
+    },
+    "librarySortPlaylistOrder": "Spellistans ordning",
+    "@librarySortPlaylistOrder": {
+        "description": "Sort option: the playlist's own track order"
+    },
+    "playerTransportDocked": "I docka",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "setupStyleStage": "Stage",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupStyleQuickLook": "Översikt",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupStyleFrost": "Frost",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "sinceYouWatchedSourceServer": "Serverens rekommendationer",
+    "watchPartyBackToClose": "Tillbaka till stängning",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
     }
 }
