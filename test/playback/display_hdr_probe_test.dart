@@ -295,13 +295,24 @@ void main() {
 
       expect(DisplayHdrProbe.isSupported, isFalse);
       expect(DisplayHdrProbe.readsBuiltInDisplay, isTrue);
-      DisplayHdrProbe.applyBuiltIn(await DisplayHdrProbe.query());
+      await DisplayHdrProbe.readBuiltInDisplay('resume');
       expect(PlatformDetection.hasDisplayHdrCapabilities, isTrue);
       expect(PlatformDetection.supportsHdr10, isTrue);
 
       // Nothing is saved for the next launch.
       await Future<void>.delayed(Duration.zero);
       expect(await DisplayHdrProbe.seedFromCache(), isNull);
+    });
+
+    test('a TV never takes the phone path', () async {
+      PlatformDetection.setTvMode(true);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_platform, (call) async {
+            return {..._attachedSdr(), 'types': <String>['HDR10']};
+          });
+
+      await DisplayHdrProbe.readBuiltInDisplay('resume');
+      expect(PlatformDetection.hasDisplayHdrCapabilities, isFalse);
     });
 
     test('a panel that names no HDR format is left unknown', () {

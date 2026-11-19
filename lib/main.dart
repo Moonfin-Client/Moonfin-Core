@@ -778,6 +778,9 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
+    // A phone's own panel is cheap to read and may have changed since the
+    // last resume (an external screen unplugged), so it skips the throttle.
+    unawaited(DisplayHdrProbe.readBuiltInDisplay('resume'));
     final now = DateTime.now();
     final last = _lastRefresh;
     if (last != null && now.difference(last) < _throttle) return;
@@ -788,9 +791,6 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
   Future<void> _refresh() async {
     if (DisplayHdrProbe.isSupported) {
       DisplayHdrProbe.apply(await DisplayHdrProbe.query(trigger: 'resume'));
-    } else if (DisplayHdrProbe.readsBuiltInDisplay) {
-      // A phone's own panel answers at once, so its answer always stands.
-      await DisplayHdrProbe.readBuiltInDisplay('resume');
     }
     // The launch retries all run inside the first half minute, which covers
     // a slow enumeration but not an engine that had no Activity to answer

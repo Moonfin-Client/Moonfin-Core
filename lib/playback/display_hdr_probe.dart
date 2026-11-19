@@ -233,8 +233,11 @@ class DisplayHdrProbe {
   }
 
   /// Reads a phone's or tablet's display and publishes it, without saving.
-  static Future<void> readBuiltInDisplay(String trigger) async =>
-      applyBuiltIn(await query(trigger: trigger));
+  /// Does nothing on any other device.
+  static Future<void> readBuiltInDisplay(String trigger) async {
+    if (!readsBuiltInDisplay) return;
+    applyBuiltIn(await query(trigger: trigger));
+  }
 
   /// Publishes a phone's or tablet's snapshot, without saving it. Only the
   /// HDR formats Moonfin knows are believed: a built-in SDR panel rarely

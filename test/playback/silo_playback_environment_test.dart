@@ -1,11 +1,16 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/playback/display_hdr_probe.dart';
 import 'package:moonfin/playback/silo_playback_environment.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_silo/playback_silo.dart';
 
+const _platform = MethodChannel('org.moonfin.androidtv/platform');
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   tearDown(() => debugDefaultTargetPlatformOverride = null);
 
   test('a Mac: a desktop playing through AetherEngine', () {
@@ -62,14 +67,29 @@ void main() {
     expect(SiloPlayerTraits.mpvAndroid.managesDynamicRange, isFalse);
   });
 
-  test('an Android phone whose panel named HDR10 tells Silo so', () {
+  test('an Android phone whose panel named HDR10 tells Silo so', () async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     PlatformDetection.setTvMode(false);
-    PlatformDetection.setDisplayHdrTypes(const ['HDR10', 'HLG']);
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(_platform, (call) async {
+      // What the Pixel 10 Pro's own panel answers.
+      return call.method == 'displayCapabilities'
+          ? <String, dynamic>{
+              'present': true,
+              'valid': true,
+              'state': 'on',
+              'answered': true,
+              'types': <String>['HDR10', 'HLG', 'HDR10_PLUS'],
+            }
+          : null;
+    });
     addTearDown(() {
+      messenger.setMockMethodCallHandler(_platform, null);
       PlatformDetection.setDisplayHdrTypes(null);
       PlatformDetection.setTvMode(false);
     });
+    await DisplayHdrProbe.readBuiltInDisplay('launch');
     final hdr = siloPlaybackEnvironment().displayHdr;
     expect(hdr?['hdr10'], isTrue);
     expect(hdr?['hlg'], isTrue);
