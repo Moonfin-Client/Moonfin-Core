@@ -25,7 +25,14 @@ class JellyfinUsersApi implements UsersApi {
   Future<AccessWindow?> getAccessWindow() async {
     try {
       final response = await _dio.get('/Moonfin/AccessWindow');
-      return AccessWindow.tryParse(response.data);
+      // If a 200 response contains something other than a window (such as a
+      // proxy's HTML page), treat it as a failed read so it can be retried,
+      // rather than as an unavailable access window.
+      final window = AccessWindow.tryParse(response.data);
+      if (window == null) {
+        throw const FormatException('Moonfin/AccessWindow gave no window');
+      }
+      return window;
     } on DioException catch (e) {
       // A server without the plugin or with one from before it answered this
       // (404), or a plugin that can't read the schedule there (501).

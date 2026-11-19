@@ -62,7 +62,7 @@ class _WindowHarness {
   _WindowHarness(
     this.async,
     DateTime start,
-    AccessWindow? Function(int call) windows, {
+    FutureOr<AccessWindow?> Function(int call) windows, {
     List<AccessSchedule> schedules = const [],
     bool? refuses,
     bool schedulesFail = false,
@@ -742,6 +742,57 @@ void main() {
         expect(h.service.isBlocked, isTrue);
         expect(h.service.status.nextAccess, isNull);
         expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test(
+      'offline, ends a block from the window at the opening it reported',
+      () {
+        fakeAsync((async) {
+          final h = _WindowHarness(
+            async,
+            _at(19, 21),
+            (call) => call == 1
+                ? const AccessWindow(
+                    allowed: false,
+                    untilOpen: Duration(seconds: 90),
+                  )
+                : throw Exception('offline'),
+            schedulesFail: true,
+          );
+          h.service.setUser('child');
+          h.settle();
+          h.elapse(const Duration(seconds: 89));
+          expect(h.service.isBlocked, isTrue);
+
+          h.elapse(const Duration(seconds: 1));
+          expect(h.service.isBlocked, isFalse);
+          h.service.dispose();
+        });
+      },
+    );
+
+    test('an overtaken look that finds no window doesn\'t stop the asking', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(async, _at(19, 12), (call) async {
+          if (call == 1) {
+            await Future<void>.delayed(const Duration(seconds: 10));
+            return null;
+          }
+          return const AccessWindow(
+            allowed: true,
+            untilClose: Duration(hours: 8),
+          );
+        });
+        h.service.setUser('child');
+        h.settle();
+        unawaited(h.service.refresh());
+        h.settle();
+        h.elapse(const Duration(seconds: 10));
+        h.elapse(AccessScheduleService.pollInterval);
+
+        expect(h.windowCalls, 3);
         h.service.dispose();
       });
     });

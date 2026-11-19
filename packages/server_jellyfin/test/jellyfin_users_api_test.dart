@@ -158,10 +158,13 @@ void main() {
       expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
     });
 
-    test('is null for an answer without allowed', () async {
-      final server = _FakeServer(200, {'secondsUntilClose': 60});
+    test('fails on a 200 that isn\'t a window, so it is asked again', () async {
+      final server = _FakeServer(200, '<html>Proxy error</html>');
 
-      expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
+      expect(
+        JellyfinUsersApi(_dio(server)).getAccessWindow(),
+        throwsA(isA<FormatException>()),
+      );
     });
 
     test('lets any other failure through', () async {
