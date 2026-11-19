@@ -75,7 +75,10 @@ class ServerRepository {
         await _authStore.putServer(normalizedServer);
       }
 
-      final endpointKey = _endpointIdentity(normalizedServer.address);
+      // Keep Cloud accounts separate even though they share the plex.tv address.
+      final endpointKey = normalizedServer.cloudOnly
+          ? normalizedServer.id
+          : _endpointIdentity(normalizedServer.address);
       final existingServerId = seenEndpoints[endpointKey];
       if (existingServerId != null && existingServerId != normalizedServer.id) {
         await _authStore.removeServer(normalizedServer.id);

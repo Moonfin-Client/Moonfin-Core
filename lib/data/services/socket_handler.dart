@@ -12,6 +12,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../auth/services/silo_token_storage.dart';
 import 'log_service.dart';
+import 'media_server_client_factory.dart';
 import 'websocket_message_parser.dart';
 
 part 'silo_events_socket_client.dart';
@@ -353,6 +354,7 @@ class PlexWebSocketClient extends _ReconnectingWebSocketClient {
 
   @override
   Uri? buildUri() {
+    if (isCloudOnlyPlexClient(client)) return null;
     final token = client.accessToken;
     if (token == null) return null;
     final wsUrl = client.baseUrl.replaceFirst('http', 'ws');
@@ -483,6 +485,7 @@ class SocketHandler {
 
   void connectTo(MediaServerClient client) {
     disconnect();
+    if (isCloudOnlyPlexClient(client)) return;
     _wsClient = _clientFactory(client);
     _forwardSub = _wsClient!.messages.listen(_eventController.add);
     _connectionSub = _wsClient!.connections.listen((_) {

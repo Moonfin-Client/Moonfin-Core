@@ -12,6 +12,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/series_recording_episodes.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../l10n/app_localizations.dart';
@@ -77,7 +78,6 @@ const int _kWindowBarNext = 2;
 const int _kWindowBarSort = 3;
 const int _kWindowBarDate = 4;
 const int _kWindowBarRecordings = 5;
-const int _kWindowBarLast = _kWindowBarRecordings;
 
 /// Handed to an embedded [LiveTvGuideScreen] so its host's [PopScope] can
 /// offer it a back press before closing the guide outright.
@@ -162,6 +162,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     with WidgetsBindingObserver {
   late final LiveTvGuideViewModel _vm;
   final _prefs = GetIt.instance<UserPreferences>();
+  final _client = GetIt.instance<MediaServerClient>();
+
+  bool get _canOpenRecordings => !isCloudOnlyPlexClient(_client);
+  int get _maxWindowBarIndex =>
+      _canOpenRecordings ? _kWindowBarRecordings : _kWindowBarDate;
   final _channelScrollController = ScrollController();
   final _programScrollController = ScrollController();
   final _nowNextScrollController = ScrollController();
@@ -274,7 +279,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     super.initState();
     _categoryDisplay = _prefs.get(UserPreferences.liveTvCategoryDisplay);
     _vm = LiveTvGuideViewModel(
-      GetIt.instance<MediaServerClient>(),
+      _client,
       initialSortBy: _prefs.get(UserPreferences.liveTvChannelSortBy),
     );
     _prefs.addListener(_onCategoryDisplayChanged);
@@ -899,7 +904,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   /// Moves within the controls row, refusing a move off either end.
   void _focusWindowBar(int index) {
-    if (index < _kWindowBarPrevious || index > _kWindowBarLast) return;
+    if (index < _kWindowBarPrevious || index > _maxWindowBarIndex) return;
     if (!_mayTakeFocus) return;
     _cancelPendingVerticalMove();
     _lastWindowBarIndex = index;
@@ -1019,7 +1024,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   }
 
   Future<void> _openRecordings() async {
-    if (_isOpeningRecordings) return;
+    if (!_canOpenRecordings || _isOpeningRecordings) return;
     _cancelPendingVerticalMove();
     _isOpeningRecordings = true;
     try {
@@ -1156,7 +1161,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         if (!event.logicalKey.isRecordingsKey) {
           return KeyEventResult.ignored;
         }
-        if (event is KeyDownEvent) unawaited(_openRecordings());
+        if (_canOpenRecordings && event is KeyDownEvent) {
+          unawaited(_openRecordings());
+        }
         return KeyEventResult.handled;
       },
       child: NotificationListener<ScrollStartNotification>(
@@ -2126,9 +2133,28 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   Widget _buildGuideError() {
     final l10n = AppLocalizations.of(context);
     return Center(
-      child: Text(
-        l10n.failedToLoadGuide(describeError(_vm.error!, l10n)),
-        style: TextStyle(color: Colors.white.withAlpha(179)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            l10n.failedToLoadGuide(describeError(_vm.error!, l10n)),
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white.withAlpha(179)),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            autofocus: true,
+            onPressed: () => unawaited(
+              _vm.load(
+                window: _vm.guideWindow,
+                windowStart: _vm.windowStart,
+                livePosition: _vm.atLivePosition,
+              ),
+            ),
+            icon: const Icon(Icons.refresh),
+            label: Text(l10n.retry),
+          ),
+        ],
       ),
     );
   }
@@ -2481,13 +2507,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             icon: Icons.calendar_today,
             onPressed: _openDatePicker,
           ),
-          const SizedBox(width: 4),
-          _windowBarButton(
-            _kWindowBarRecordings,
-            icon: Icons.fiber_dvr,
-            label: AppLocalizations.of(context).recordings,
-            onPressed: _openRecordings,
-          ),
+          if (_canOpenRecordings) ...[
+            const SizedBox(width: 4),
+            _windowBarButton(
+              _kWindowBarRecordings,
+              icon: Icons.fiber_dvr,
+              label: AppLocalizations.of(context).recordings,
+              onPressed: _openRecordings,
+            ),
+          ],
         ],
       ),
     );
@@ -3456,6 +3484,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _cancelPendingVerticalMove();
     final pageContext = context;
     final channel = _vm.channelForId(program.channelId);
+    final canRecord = _vm.canRecordChannel(program.channelId);
     final isFavoriteChannel = channel?.isFavorite ?? false;
     final hasTimer = program.hasTimer;
     final hasSeriesTimer = program.hasSeriesTimer;
@@ -3555,7 +3584,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           ),
           actions: [
             // That airing is over. Single-episode recording no longer applies.
-            if (!isEnded)
+            if (canRecord && !isEnded)
               adaptiveDialogAction(
                 autofocus: isRecordingNow,
                 focusNode: isRecordingNow ? defaultActionFocusNode : null,
@@ -3616,7 +3645,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                   hasTimer ? l10n.cancelRecordingAction : l10n.record,
                 ),
               ),
-            if (hasSeriesTimer)
+            if (canRecord && hasSeriesTimer)
               adaptiveDialogAction(
                 onPressed: () async {
                   if (dialogActionInProgress) return;
@@ -3654,7 +3683,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 },
                 child: Text(l10n.seriesRecordingSettings),
               ),
-            if (program.isSeries)
+            if (canRecord && program.isSeries)
               adaptiveDialogAction(
                 onPressed: () async {
                   if (dialogActionInProgress) return;

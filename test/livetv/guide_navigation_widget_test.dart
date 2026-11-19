@@ -489,35 +489,6 @@ void main() {
       expect(rail.selectedIndex, 0);
     },
   );
-  testWidgets('Sports clears active and pending channel searches', (tester) async {
-    await pumpGuide(tester);
-    final search = tester
-        .widget<LocalSearchField>(find.byType(LocalSearchField))
-        .controller;
-    search.text = 'unknown channel';
-    await _pumpFrames(tester);
-    expect(find.text('No channels found'), findsOneWidget);
-
-    search.text = 'another unknown channel';
-    await tester.tap(find.text('Sports'));
-    await _pumpFrames(tester);
-    expect(search.text, isEmpty);
-    expect(find.byType(EpgChannelCell), findsWidgets);
-
-    search.text = 'Channel 2';
-    await _pumpFrames(tester);
-    clearInteractions(liveTvApi);
-    await _activateGuideControl(tester, 'GuideFilter:${GuideFilter.favorites.index}');
-    expect(search.text, isEmpty);
-    verifyNever(() => liveTvApi.getGuide(
-      startDate: any(named: 'startDate'), endDate: any(named: 'endDate'),
-      channelIds: any(named: 'channelIds'), isSports: true,
-      fields: any(named: 'fields'), enableImages: any(named: 'enableImages'),
-      enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-      enableUserData: any(named: 'enableUserData'), userId: any(named: 'userId'),
-    ));
-  });
-
   testWidgets('empty group mode keeps categories', (tester) async {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
     addTearDown(

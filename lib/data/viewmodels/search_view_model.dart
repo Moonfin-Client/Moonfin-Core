@@ -12,6 +12,7 @@ import '../models/aggregated_item.dart';
 import '../repositories/multi_server_repository.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
+import '../services/media_server_client_factory.dart';
 import '../services/plugin_sync_service.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../utils/blocked_ratings.dart';
@@ -409,10 +410,21 @@ class SearchViewModel extends ChangeNotifier {
   Future<List<List<AggregatedItem>>> _searchEachServer(
     Future<List<AggregatedItem>> Function(SearchRepository repository) search, {
     required String label,
+    bool includeCloudOnly = false,
   }) async {
     final multiServer = _multiServerRepository;
-    if (multiServer == null) return [await search(_searchRepository)];
-    return multiServer.searchEachServer(search, label: label);
+    if (multiServer == null) {
+      // Cloud accounts can search Live TV channels, but not media libraries.
+      if (!includeCloudOnly && isCloudOnlyPlexClient(_client)) {
+        return const <List<AggregatedItem>>[];
+      }
+      return [await search(_searchRepository)];
+    }
+    return multiServer.searchEachServer(
+      search,
+      label: label,
+      includeCloudOnly: includeCloudOnly,
+    );
   }
 
   /// Takes one result from each server in turn, so every server keeps its own
@@ -438,6 +450,7 @@ class SearchViewModel extends ChangeNotifier {
     _channelsFuture ??= _searchEachServer(
       (repository) => repository.fetchLiveTvChannels(),
       label: 'channel lineup',
+      includeCloudOnly: true,
     ).then((perServer) => perServer.expand((channels) => channels).toList());
     try {
       final all = await _channelsFuture!;

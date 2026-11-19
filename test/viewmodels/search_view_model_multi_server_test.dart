@@ -19,6 +19,8 @@ class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockItemsApi extends Mock implements ItemsApi {}
 
+class _MockLiveTvApi extends Mock implements LiveTvApi {}
+
 class _MockImageApi extends Mock implements ImageApi {}
 
 class _MockAuthStore extends Mock implements AuthenticationStore {}
@@ -33,6 +35,10 @@ void main() {
   late Map<String, _MockClient> clients;
   late Map<String, _MockItemsApi> itemsApis;
   late MultiServerRepository multiServer;
+  late _MockAuthStore authStore;
+  late _MockCredentialStore credentials;
+  late _MockClientFactory factory;
+  late List<Server> servers;
 
   Future<Map<String, dynamic>> itemsSearch(_MockItemsApi api) => api.getItems(
     searchTerm: any(named: 'searchTerm'),
@@ -57,22 +63,32 @@ void main() {
     await store.init();
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
 
-    final authStore = _MockAuthStore();
-    final credentials = _MockCredentialStore();
-    final factory = _MockClientFactory();
+    authStore = _MockAuthStore();
+    credentials = _MockCredentialStore();
+    factory = _MockClientFactory();
     final session = _MockSessionRepository();
     clients = {};
     itemsApis = {};
-    final servers = <Server>[];
+    servers = <Server>[];
     for (final id in ['a', 'b']) {
       final client = _MockClient();
       final itemsApi = _MockItemsApi();
+      final liveTvApi = _MockLiveTvApi();
       clients[id] = client;
       itemsApis[id] = itemsApi;
       when(() => client.itemsApi).thenReturn(itemsApi);
       when(() => client.imageApi).thenReturn(_MockImageApi());
       when(() => client.gamesApi).thenReturn(null);
       when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      when(() => client.userId).thenReturn('user-$id');
+      when(() => client.liveTvApi).thenReturn(liveTvApi);
+      when(
+        () => liveTvApi.getChannels(
+          fields: 'ImageTags',
+          enableTotalRecordCount: false,
+          userId: 'user-$id',
+        ),
+      ).thenAnswer((_) async => {'Items': []});
       when(() => itemsApi.getPersons(
         searchTerm: any(named: 'searchTerm'),
         limit: any(named: 'limit'),
@@ -104,6 +120,7 @@ void main() {
           serverId: id,
           serverType: ServerType.jellyfin,
           baseUrl: 'http://$id',
+          cloudOnly: false,
         ),
       ).thenReturn(client);
       when(() => factory.getClientIfExists(id)).thenReturn(client);

@@ -62,8 +62,9 @@ typedef _Grab = ({Map op, Map<String, dynamic> program});
 /// Plex's free channels, which plex.tv serves itself.
 class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
   final Dio _dio;
+  final bool cloudOnly;
 
-  PlexLiveTvApi(this._dio);
+  PlexLiveTvApi(this._dio, {this.cloudOnly = false});
 
   static final _cloudOptions = Options(
     headers: {'X-Plex-Provider-Version': '7.2'},
@@ -132,8 +133,9 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
     return loading;
   }
 
-  Future<List<_Dvr>> _dvrList() =>
-      _cached(() => _dvrs, (f) => _dvrs = f, () async {
+  Future<List<_Dvr>> _dvrList() => cloudOnly
+      ? Future.value(<_Dvr>[])
+      : _cached(() => _dvrs, (f) => _dvrs = f, () async {
         final container = await plexContainer(_dio, '/livetv/dvrs');
         return [
           for (final dvr in container['Dvr'] as List? ?? const [])
@@ -195,10 +197,18 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
 
   /// One source failing, like plex.tv being unreachable, still leaves the
   /// other's channels.
-  Future<(_Channels, _Channels)> _channelSources() => (
-    _dvrChannels().catchError((_) => <Map<String, dynamic>>[]),
-    _freeChannels().catchError((_) => <Map<String, dynamic>>[]),
-  ).wait;
+  Future<(_Channels, _Channels)> _channelSources() async {
+    // Future.wait preserves the original DioException (including 401/403)
+    // rather than wrapping failures in ParallelWaitError as record .wait does.
+    final results = await Future.wait<_Channels>([
+      _dvrChannels().catchError((_) => <Map<String, dynamic>>[]),
+      // A failed Cloud-only lineup is an error, not an empty channel list.
+      cloudOnly
+          ? _freeChannels()
+          : _freeChannels().catchError((_) => <Map<String, dynamic>>[]),
+    ]);
+    return (results[0], results[1]);
+  }
 
   static const _featuredPath = '/lineups/plex/channels/featured';
 
@@ -258,7 +268,17 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
   @override
   Future<ChannelGroupLineup> getChannelGroups({String? userId}) async {
     final (dvr, free) = await _channelSources();
-    if (free.isEmpty) return ChannelGroupLineup({}, channels: dvr);
+    if (free.isEmpty) {
+      // Keep DVR channels in their own group when Free TV is unavailable.
+      return ChannelGroupLineup(
+        {
+          for (final channel in dvr)
+            channel['Id'] as String: {ChannelGroupSource.dvr.groupId},
+        },
+        channels: dvr,
+        sources: dvr.isEmpty ? const [] : const [ChannelGroupSource.dvr],
+      );
+    }
     // Don't hold up the channel list if Plex's group metadata is slow.
     final catalog = await _providerGroups()
         .timeout(const Duration(seconds: 5))
@@ -482,7 +502,7 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
           channel,
     ];
     final results = await Future.wait([
-      if (channelIds == null || channelIds.length > free.length)
+      if (!cloudOnly && (channelIds == null || channelIds.length > free.length))
         _dvrAirings(
           start,
           end,
@@ -551,6 +571,7 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
     int? limit,
     bool? isAiring,
   }) async {
+    if (cloudOnly) return plexItemsResult([]);
     final now = DateTime.now();
     final programs = await _dvrAirings(now, now);
     return plexItemsResult(
@@ -594,7 +615,8 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
 
   @override
   Future<Map<String, dynamic>> getTimers() async => plexItemsResult([
-    for (final grab in await _grabs())
+    if (!cloudOnly)
+      for (final grab in await _grabs())
       {
         'Id': grab.op['id'],
         'Type': 'Timer',
@@ -616,6 +638,7 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
 
   @override
   Future<Map<String, dynamic>> getSeriesTimers() async {
+    if (cloudOnly) return plexItemsResult([]);
     final container = await plexContainer(_dio, '/media/subscriptions');
     return plexItemsResult([
       for (final rule in container['MediaSubscription'] as List? ?? const [])

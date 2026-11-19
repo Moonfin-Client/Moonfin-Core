@@ -120,6 +120,9 @@ class _AppleTvLiveTvPlayerHostScreenState
 
   GuideChannel get _currentChannel => _syncedChannels[_currentIndex];
 
+  bool get _canRecordCurrentProgram =>
+      canRecordChannelAiring(_client, _currentChannel.id, _currentProgram);
+
   @override
   void initState() {
     super.initState();
@@ -454,7 +457,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     final program = _currentProgram;
     if (backend == null ||
         program == null ||
-        !canRecordAiring(program) ||
+        !_canRecordCurrentProgram ||
         _recordingFlow ||
         _inGuide ||
         _switching ||
@@ -695,7 +698,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   /// recorded. Since it's on now, a timer of its own means it's recording.
   Map<String, dynamic>? _liveRecordPayload() {
     final program = _currentProgram;
-    if (program == null || !canRecordAiring(program)) return null;
+    if (program == null || !_canRecordCurrentProgram) return null;
     return {'series': program.hasSeriesTimer, 'timer': program.hasTimer};
   }
 

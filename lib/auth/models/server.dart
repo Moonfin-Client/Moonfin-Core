@@ -16,6 +16,8 @@ class Server {
   final List<String> candidateAddresses;
   final String version;
   final ServerType serverType;
+  /// Plex Free TV connection without a media server.
+  final bool cloudOnly;
   final String? loginDisclaimer;
   final bool splashscreenEnabled;
   final bool setupCompleted;
@@ -30,6 +32,7 @@ class Server {
     this.candidateAddresses = const [],
     required this.version,
     required this.serverType,
+    this.cloudOnly = false,
     this.loginDisclaimer,
     this.splashscreenEnabled = false,
     this.setupCompleted = true,
@@ -44,6 +47,7 @@ class Server {
     bool clearDisplayAddress = false,
     String? version,
     ServerType? serverType,
+    bool? cloudOnly,
     String? loginDisclaimer,
     bool? splashscreenEnabled,
     bool? setupCompleted,
@@ -59,6 +63,7 @@ class Server {
       candidateAddresses: candidateAddresses,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
+      cloudOnly: cloudOnly ?? this.cloudOnly,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,
       splashscreenEnabled: splashscreenEnabled ?? this.splashscreenEnabled,
       setupCompleted: setupCompleted ?? this.setupCompleted,
@@ -74,6 +79,7 @@ class Server {
         'candidateAddresses': candidateAddresses,
         'version': version,
         'serverType': serverType.name,
+        'cloudOnly': cloudOnly,
         'loginDisclaimer': loginDisclaimer,
         'splashscreenEnabled': splashscreenEnabled,
         'setupCompleted': setupCompleted,
@@ -95,6 +101,7 @@ class Server {
         (t) => t.name == json['serverType'],
         orElse: () => ServerType.jellyfin,
       ),
+      cloudOnly: json['cloudOnly'] as bool? ?? false,
       loginDisclaimer: json['loginDisclaimer'] as String?,
       splashscreenEnabled: json['splashscreenEnabled'] as bool? ?? false,
       setupCompleted: json['setupCompleted'] as bool? ?? true,

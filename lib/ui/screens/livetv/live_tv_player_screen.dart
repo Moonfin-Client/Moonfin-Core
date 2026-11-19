@@ -14,6 +14,7 @@ import 'package:volume_controller/volume_controller.dart';
 
 import '../../../data/services/log_service.dart';
 import '../../../data/services/user_data_sync.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
@@ -1162,7 +1163,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
   }
 
-  bool get _canRecordCurrentProgram => canRecordAiring(_currentProgram);
+  bool get _canRecordCurrentProgram =>
+      canRecordChannelAiring(_client, _currentChannel.id, _currentProgram);
 
   Future<void> _showRecordingDialog() async {
     if (_recordingActionInProgress || _isSwitching || _isStopping) return;
@@ -1909,8 +1911,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         subtitleStreamIndex: _manager.subtitleStreamIndex,
       );
 
-  Future<void> _openRecordings() =>
-      _leavePlayerFor(Destinations.liveTvRecordings);
+  Future<void> _openRecordings() async {
+    if (isCloudOnlyPlexClient(_client)) return;
+    await _leavePlayerFor(Destinations.liveTvRecordings);
+  }
 
   Future<void> _openFullGuide() => _leavePlayerFor(Destinations.liveTvGuide);
 

@@ -102,6 +102,12 @@ const _authRoutes = {
 /// through to Home costs nothing next to stranding them outside it.
 bool _shouldRunSetupWizard() {
   try {
+    final session = GetIt.instance<SessionRepository>();
+    final serverId = session.activeServerId;
+    if (serverId != null &&
+        GetIt.instance<ServerRepository>().getServer(serverId)?.cloudOnly == true) {
+      return false;
+    }
     final client = SetupWizardGate.activeClient();
     if (client == null) return false;
     return GetIt.instance<SetupWizardGate>().shouldRun(client);
@@ -246,6 +252,18 @@ final appRouter = GoRouter(
     final connectivity = GetIt.instance<ConnectivityService>();
     if (!connectivity.canReachServer && _isOfflineBlocked(path)) {
       return Destinations.home;
+    }
+
+    // Block Cloud DVR deep links too; hiding the buttons isn't enough.
+    if (path == Destinations.liveTvRecordings ||
+        path == Destinations.liveTvSchedule ||
+        path == Destinations.liveTvSeriesRecordings) {
+      final server = GetIt.instance<ServerRepository>().getServer(
+        session.activeServerId ?? '',
+      );
+      if (server?.serverType == ServerType.plex && server?.cloudOnly == true) {
+        return Destinations.liveTvGuide;
+      }
     }
 
     if (_shouldRedirectVideoToExternalPlayer(path)) {

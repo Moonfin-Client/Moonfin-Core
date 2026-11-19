@@ -5,7 +5,10 @@ import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:server_core/server_core.dart';
 
-class _MockClient extends Mock implements MediaServerClient {}
+class _MockClient extends Mock implements MediaServerClient {
+  @override
+  ServerType get serverType => ServerType.silo;
+}
 
 class _MockItemsApi extends Mock implements ItemsApi {}
 

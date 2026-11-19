@@ -91,6 +91,7 @@ void main() {
 
     itemsApi = _MockItemsApi();
     client = _MockClient();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.itemsApi).thenReturn(itemsApi);
 
     nextUp = Completer();

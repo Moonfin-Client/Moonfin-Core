@@ -263,6 +263,45 @@ void main() {
     expect(server.requests.last.headers['X-Plex-Provider-Version'], '7.2');
   });
 
+  test('cloud-only lineup failures propagate while Plex DVRs remain usable', () async {
+    final (dio, server) = _server();
+    dio.interceptors.insert(
+      0,
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (options.uri.path == '/lineups/plex/channels') {
+            handler.reject(
+              DioException(
+                requestOptions: options,
+                type: DioExceptionType.connectionError,
+              ),
+            );
+          } else {
+            handler.next(options);
+          }
+        },
+      ),
+    );
+
+    final cloud = PlexLiveTvApi(dio, cloudOnly: true);
+    final cloudFailure = isA<DioException>().having(
+      (error) => error.type,
+      'Free TV connection failure',
+      DioExceptionType.connectionError,
+    );
+    await expectLater(cloud.getChannelGroups(), throwsA(cloudFailure));
+    await expectLater(cloud.getChannels(), throwsA(cloudFailure));
+    expect(server.requests, isEmpty);
+
+    final serverWithDvr = PlexLiveTvApi(dio);
+    final lineup = await serverWithDvr.getChannelGroups();
+    expect(lineup.channels?.map((channel) => channel['Id']), ['channel-2-4']);
+    expect(lineup.groupsByChannelId, {
+      'channel-2-4': {'source:dvr'},
+    });
+    expect(lineup.sources.map((source) => source.groupId), ['source:dvr']);
+  });
+
   test('every showing of a program is a program of its own', () async {
     final (dio, server) = _server();
     final result = await PlexLiveTvApi(dio).getGuide(
