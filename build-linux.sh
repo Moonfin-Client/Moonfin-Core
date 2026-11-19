@@ -144,6 +144,17 @@ resolve_build_dir() {
 resolve_shared_lib() {
   local soname="$1"
 
+  # A libmpv built by scripts/ci/build-libmpv-linux.sh replaces the distro's.
+  # Once asked for, it has to be there rather than fall back to the older one.
+  if [ -n "${MOONFIN_LIBMPV_DIR:-}" ] && [[ "$soname" == libmpv.so* ]]; then
+    if [ -f "$MOONFIN_LIBMPV_DIR/$soname" ]; then
+      printf '%s\n' "$MOONFIN_LIBMPV_DIR/$soname"
+      return 0
+    fi
+    echo "Error: MOONFIN_LIBMPV_DIR has no $soname." >&2
+    return 1
+  fi
+
   # Prefer distro packages to avoid /usr/local builds that dpkg-query cannot map.
   if command -v dpkg-query >/dev/null 2>&1; then
     local pkg_candidates=()
