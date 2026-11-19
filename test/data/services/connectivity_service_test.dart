@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/repositories/server_repository.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
+import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_emby/server_emby.dart';
 import 'package:server_silo/server_silo.dart';
@@ -15,6 +16,8 @@ import 'package:server_silo/server_silo.dart';
 class _MockConnectivity extends Mock implements Connectivity {}
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
+
+class _MockPlaybackManager extends Mock implements PlaybackManager {}
 
 class _FakeServerRepository extends Fake implements ServerRepository {
   _FakeServerRepository(this.onFollow);
@@ -96,6 +99,8 @@ void main() {
     return ConnectivityService(
       connectivity: connectivity,
       retryBase: const Duration(milliseconds: 50),
+      entryFollowInterval: const Duration(milliseconds: 20),
+      entryFollowBudget: const Duration(milliseconds: 300),
     );
   }
 
@@ -289,6 +294,78 @@ void main() {
       expect(service.canReachServer, isTrue);
       // The new address answered the first ping: no ping to the old one.
       expect(probes, pingsBefore + 1);
+    });
+
+    test('keeps following while the player reconnects until it moves',
+        () async {
+      var calls = 0;
+      final repo = _FakeServerRepository((_) async {
+        // The redirect catches up on the third ask.
+        if (++calls < 3) return null;
+        currentBase = liveBase;
+        return liveBase;
+      });
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final player = _MockPlaybackManager();
+      when(() => player.state).thenReturn(PlayerState());
+      when(() => player.isReconnecting).thenReturn(true);
+      GetIt.instance.registerSingleton<PlaybackManager>(player);
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      currentBase = liveBase;
+      await service.onServerClientReady('server-1');
+      repo.asked.clear();
+      currentBase = 'http://127.0.0.1:1';
+
+      await service.onStreamConnectionLost();
+
+      expect(repo.asked, ['server-1', 'server-1', 'server-1']);
+      expect(service.canReachServer, isTrue);
+    });
+
+    test('stops following when the stream dropped but nothing moved',
+        () async {
+      final repo = _FakeServerRepository((_) async => null);
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final player = _MockPlaybackManager();
+      when(() => player.state).thenReturn(PlayerState());
+      when(() => player.isReconnecting).thenReturn(false);
+      GetIt.instance.registerSingleton<PlaybackManager>(player);
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      currentBase = liveBase;
+      await service.onServerClientReady('server-1');
+      repo.asked.clear();
+
+      // A brief drop: the server still answers at its address.
+      await service.onStreamConnectionLost();
+
+      expect(repo.asked, ['server-1']);
+      expect(service.canReachServer, isTrue);
+    });
+
+    test('keeps following a server that is down until the budget ends',
+        () async {
+      final repo = _FakeServerRepository((_) async => null);
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final player = _MockPlaybackManager();
+      when(() => player.state).thenReturn(PlayerState());
+      // The player already gave up; the server still doesn't answer.
+      when(() => player.isReconnecting).thenReturn(false);
+      GetIt.instance.registerSingleton<PlaybackManager>(player);
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      currentBase = liveBase;
+      await service.onServerClientReady('server-1');
+      repo.asked.clear();
+      currentBase = 'http://127.0.0.1:1';
+
+      await service.onStreamConnectionLost();
+
+      // Asked again and again, not once and done (exact count depends on
+      // timing).
+      expect(repo.asked.length, greaterThan(1));
+      expect(service.canReachServer, isFalse);
     });
 
     test('stays unreachable when the entry address leads nowhere new',

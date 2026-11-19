@@ -96,8 +96,14 @@ class ConnectivityService extends ChangeNotifier {
   ConnectivityService({
     @visibleForTesting Connectivity? connectivity,
     @visibleForTesting Duration retryBase = const Duration(seconds: 5),
+    @visibleForTesting
+    Duration entryFollowInterval = const Duration(seconds: 2),
+    @visibleForTesting
+    Duration entryFollowBudget = const Duration(minutes: 5),
   }) : _connectivity = connectivity ?? Connectivity(),
-       _retryBase = retryBase;
+       _retryBase = retryBase,
+       _entryFollowInterval = entryFollowInterval,
+       _entryFollowBudget = entryFollowBudget;
 
   void initialize() {
     if (!PlatformDetection.isAppleTV) {
@@ -344,15 +350,49 @@ class ConnectivityService extends ChangeNotifier {
   /// The player lost its stream and starts reconnecting. A server that moved
   /// behind its entry address (a VPN reconnect changing the forwarded port)
   /// doesn't flip the device's network, so nothing else would check now.
-  /// The entry address is followed first, before pings to the old address
-  /// time out, so the player's next reconnect attempt already uses the new
-  /// one. If nothing moved yet, the reachability check and its retries keep
-  /// following it.
+  ///
+  /// The redirect catches up some time after the stream broke (the new port
+  /// has to be mapped and published first), so the entry address is asked
+  /// every [_entryFollowInterval] while the player reconnects or the server
+  /// doesn't answer, for at most [_entryFollowBudget]. Asking it is cheap: the
+  /// redirect answers at once, unlike pings to the dead address. Past that
+  /// budget it is more likely a real outage, and the reachability check's
+  /// slower retries (up to [_retryCap]) keep following it from there, so a
+  /// stream restarted later still finds the new address.
   Future<void> onStreamConnectionLost() async {
     final getIt = GetIt.instance;
     if (!_isOnline || !getIt.isRegistered<MediaServerClient>()) return;
-    await _followEntryAddress(getIt<MediaServerClient>());
-    await _checkServerReachability();
+    if (_followingLostStream) return;
+    _followingLostStream = true;
+    try {
+      final deadline = DateTime.now().add(_entryFollowBudget);
+      // Tells a stream that dropped on a server still at its address (it
+      // answers) from one that moved, without holding up the first ask.
+      unawaited(_checkServerReachability());
+      while (true) {
+        if (await _followEntryAddress(getIt<MediaServerClient>())) {
+          await _checkServerReachability();
+          return;
+        }
+        await Future<void>.delayed(_entryFollowInterval);
+        if (!_isOnline || DateTime.now().isAfter(deadline)) break;
+        if (!_playerReconnecting() && _serverReachable) return;
+      }
+      await _checkServerReachability();
+    } finally {
+      _followingLostStream = false;
+    }
+  }
+
+  bool _followingLostStream = false;
+  final Duration _entryFollowInterval;
+  final Duration _entryFollowBudget;
+
+  /// Whether the player is still trying to get its stream back.
+  bool _playerReconnecting() {
+    final getIt = GetIt.instance;
+    return getIt.isRegistered<PlaybackManager>() &&
+        getIt<PlaybackManager>().isReconnecting;
   }
 
   void _scheduleRetry() {
