@@ -111,10 +111,7 @@ class ConnectivityService extends ChangeNotifier {
       _subscription =
           _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
     }
-    final getIt = GetIt.instance;
-    if (getIt.isRegistered<ServerRepository>()) {
-      _movedSub = getIt<ServerRepository>().serverMoved.listen(_onServerMoved);
-    }
+    _listenForMoves();
     _streamWatch = Timer.periodic(_streamWatchInterval, (_) => _watchStream());
     _checkInitialState();
   }
@@ -197,6 +194,7 @@ class ConnectivityService extends ChangeNotifier {
   /// client exists and a sign-in brings no reachability edge, so this is the
   /// moment that reconciles progress recorded offline.
   Future<void> onServerClientReady(String serverId) async {
+    _listenForMoves();
     _serverId = serverId;
     // The launch check runs before a client exists, so a server on this
     // device is only known now.
@@ -335,6 +333,7 @@ class ConnectivityService extends ChangeNotifier {
   /// `host:port` (VPN port forwarding behind a stable name) stops answering
   /// when the target moves, and only the entry address knows where it went.
   Future<bool> _followEntryAddress(MediaServerClient client) async {
+    _listenForMoves();
     final serverId = _serverId;
     final getIt = GetIt.instance;
     if (serverId == null || !getIt.isRegistered<ServerRepository>()) {
@@ -394,11 +393,21 @@ class ConnectivityService extends ChangeNotifier {
   Timer? _streamWatch;
   static const _streamWatchInterval = Duration(seconds: 10);
 
+  /// Starts listening for moves of the active server once the repository
+  /// that reports them exists. [initialize] runs before the auth module
+  /// registers it, so this is asked again wherever a move can be found.
+  void _listenForMoves() {
+    if (_movedSub != null) return;
+    final getIt = GetIt.instance;
+    if (!getIt.isRegistered<ServerRepository>()) return;
+    _movedSub = getIt<ServerRepository>().serverMoved.listen(_onServerMoved);
+  }
+
   /// The active server answers on a new address now, found by any ask of its
   /// entry address. Whatever was waiting on the old one hears of it at once:
   /// the reachability state clears and an open stream reopens there.
   void _onServerMoved(Server moved) {
-    if (moved.id != _serverId) return;
+    if (_disposed || moved.id != _serverId) return;
     unawaited(_checkServerReachability());
     final getIt = GetIt.instance;
     if (getIt.isRegistered<PlaybackManager>()) {
@@ -412,6 +421,7 @@ class ConnectivityService extends ChangeNotifier {
   /// takes far longer than the redirect needs to show the new address. Only
   /// servers added through a redirect are asked; for others this does nothing.
   Future<void> _watchStream() async {
+    _listenForMoves();
     final getIt = GetIt.instance;
     if (!_isOnline ||
         _followingLostStream ||
@@ -482,8 +492,18 @@ class ConnectivityService extends ChangeNotifier {
     }
   }
 
+  bool _disposed = false;
+
+  /// A check that was already under way (one a server move started, say) can
+  /// finish after [dispose], and has nobody left to tell.
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
   @override
   void dispose() {
+    _disposed = true;
     _subscription?.cancel();
     _recheckDebounce?.cancel();
     _retryTimer?.cancel();

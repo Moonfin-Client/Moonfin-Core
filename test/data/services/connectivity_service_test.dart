@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/repositories/server_repository.dart';
+import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -24,6 +25,10 @@ class _FakeServerRepository extends Fake implements ServerRepository {
 
   final Future<String?> Function(String serverId) onFollow;
   final asked = <String>[];
+  final moves = StreamController<Server>.broadcast();
+
+  @override
+  Stream<Server> get serverMoved => moves.stream;
 
   @override
   Future<String?> followEntryAddressOf(String serverId) {
@@ -321,6 +326,34 @@ void main() {
 
       expect(repo.asked, ['server-1', 'server-1', 'server-1']);
       expect(service.canReachServer, isTrue);
+    });
+
+    test('a move found after start reopens the open stream', () async {
+      // Started before the repository exists, as the app does.
+      final service = serviceOnline(online: true);
+      addTearDown(service.dispose);
+      service.initialize();
+      final repo = _FakeServerRepository((_) async => null);
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final player = _MockPlaybackManager();
+      when(() => player.hasReconnectableStream).thenReturn(true);
+      GetIt.instance.registerSingleton<PlaybackManager>(player);
+
+      // Signing in to the server starts listening.
+      await service.onServerClientReady('server-1');
+      repo.moves.add(
+        Server(
+          id: 'server-1',
+          name: 'Media',
+          address: 'http://127.0.0.1:2',
+          version: '10.11.0',
+          serverType: ServerType.jellyfin,
+          dateAdded: DateTime(2026),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      verify(player.onServerMoved).called(1);
     });
 
     test('stops following when the stream dropped but nothing moved',
