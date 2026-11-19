@@ -64,13 +64,14 @@ const _teletubbies = {
           ],
         },
       },
-      '/lineups/plex/channels' => {
+      '/lineups/plex/channels' || '/lineups/plex/channels/featured' => {
         'MediaContainer': {
           'Channel': [
             {
               'id': 'abc-66635fc0',
               'vcn': '000',
               'title': 'CW Forever',
+              'genreRatingKeys': ['movie-key', 'news-key', 'unknown'],
               'thumb': 'https://provider-static.plex.tv/cw.png',
             },
             {'id': 'locked-1', 'title': 'Locked', 'drm': true},
@@ -90,6 +91,22 @@ const _teletubbies = {
                   'endsAt': 1792704540,
                   'channelIdentifier': '4',
                 },
+              ],
+            },
+          ],
+        },
+      },
+      '/' => {
+        'MediaProvider': {
+          'Feature': [
+            {
+              'type': 'grid',
+              'GridChannelFilter': [
+                {'genreRatingKey': 'news-key', 'title': 'News'},
+                {'genreRatingKey': 'movie-key', 'title': 'Movies'},
+              ],
+              'PromotedGridChannelFilter': [
+                {'key': '/lineups/plex/channels/featured', 'title': 'Featured'},
               ],
             },
           ],
@@ -225,6 +242,26 @@ void main() {
       expect(result['TotalRecordCount'], 2);
     },
   );
+
+  test('Plex joins genres and loads Featured on demand', () async {
+    final (dio, server) = _server();
+    final api = PlexLiveTvApi(dio);
+    final lineup = await api.getChannelGroups();
+    expect(lineup.groupsByChannelId, {
+      'channel-2-4': {'source:dvr'},
+      'channel-plex-abc-66635fc0': {'source:plexFreeTv', 'Movies', 'News'},
+    });
+    final promoted = lineup.promoted!;
+    expect((await api.getChannelGroups()).promoted, same(promoted));
+    final cloud = server.requests.where(
+      (r) => r.uri.host == 'epg.provider.plex.tv',
+    );
+    expect(cloud.map((r) => r.uri.path), ['/lineups/plex/channels', '/']);
+    await promoted.refresh(DateTime.now);
+    expect(promoted.channelIds, {'channel-plex-abc-66635fc0'});
+    expect(server.requests.last.uri.path, '/lineups/plex/channels/featured');
+    expect(server.requests.last.headers['X-Plex-Provider-Version'], '7.2');
+  });
 
   test('every showing of a program is a program of its own', () async {
     final (dio, server) = _server();

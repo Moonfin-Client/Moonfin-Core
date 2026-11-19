@@ -49,13 +49,18 @@ String _iso(int seconds) => DateTime.fromMillisecondsSinceEpoch(
 int _seconds(DateTime time) => time.millisecondsSinceEpoch ~/ 1000;
 
 typedef _Dvr = ({String key, String epg});
+typedef _Channels = List<Map<String, dynamic>>;
+typedef _CloudGroups = ({
+  Map<String, String> genres,
+  PromotedChannelGroup? promoted,
+});
 
 /// A scheduled recording and the showing it records.
 typedef _Grab = ({Map op, Map<String, dynamic> program});
 
 /// Live TV from the server's own DVRs, each a tuner with its guide, and from
 /// Plex's free channels, which plex.tv serves itself.
-class PlexLiveTvApi implements LiveTvApi {
+class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
   final Dio _dio;
 
   PlexLiveTvApi(this._dio);
@@ -74,6 +79,7 @@ class PlexLiveTvApi implements LiveTvApi {
 
   Future<List<_Dvr>>? _dvrs;
   Future<List<Map<String, dynamic>>>? _cloudChannels;
+  Future<_CloudGroups>? _cloudGroups;
   final _cloudGrids = <String, ({DateTime at, Future<List?> items})>{};
 
   Future<List?> _freeGrid(String channel, String day) {
@@ -178,6 +184,8 @@ class PlexLiveTvApi implements LiveTvApi {
     'Id': _channelId(source, channel['id']),
     'Name': channel['title'] ?? channel['callSign'],
     'Type': 'TvChannel',
+    if (source == plexCloudSource && channel['genreRatingKeys'] is List)
+      'genreRatingKeys': channel['genreRatingKeys'],
     if (number != null && number.isNotEmpty) 'ChannelNumber': number,
     'ImageTags': {
       if (channel['thumb'] case final String thumb) 'Primary': thumb,
@@ -187,12 +195,91 @@ class PlexLiveTvApi implements LiveTvApi {
 
   /// One source failing, like plex.tv being unreachable, still leaves the
   /// other's channels.
-  Future<List<Map<String, dynamic>>> _allChannels() async {
-    final results = await Future.wait([
-      _dvrChannels().catchError((_) => <Map<String, dynamic>>[]),
-      _freeChannels().catchError((_) => <Map<String, dynamic>>[]),
-    ]);
-    return [...results[0], ...results[1]];
+  Future<(_Channels, _Channels)> _channelSources() => (
+    _dvrChannels().catchError((_) => <Map<String, dynamic>>[]),
+    _freeChannels().catchError((_) => <Map<String, dynamic>>[]),
+  ).wait;
+
+  static const _featuredPath = '/lineups/plex/channels/featured';
+
+  Future<Set<String>> _featuredIds() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '$plexCloudEpg$_featuredPath',
+      options: _cloudOptions,
+    );
+    final container = response.data?['MediaContainer'];
+    if (container case {'Channel': final List channels}) {
+      return {
+        for (final channel in channels.whereType<Map>())
+          if (channel['drm'] != true && channel['id'] != null)
+            _channelId(plexCloudSource, channel['id']),
+      };
+    }
+    if (container case {'size': 0}) return {};
+    throw const FormatException('Invalid Plex Featured lineup');
+  }
+
+  Future<_CloudGroups> _providerGroups() =>
+      _cached(() => _cloudGroups, (f) => _cloudGroups = f, () async {
+        final response = await _dio.get<Map<String, dynamic>>(
+          '$plexCloudEpg/',
+          options: _cloudOptions,
+        );
+        final provider = response.data?['MediaProvider'];
+        if (provider is! Map || provider['Feature'] is! List) {
+          throw const FormatException('Invalid Plex provider');
+        }
+        final genres = <String, String>{};
+        PromotedChannelGroup? promoted;
+        for (final feature in (provider['Feature'] as List).whereType<Map>()) {
+          if (feature['type'] != 'grid') continue;
+          for (final filter
+              in feature['GridChannelFilter'] as List? ?? const []) {
+            if (filter case {
+              'genreRatingKey': String key,
+              'title': String name,
+            } when key.isNotEmpty && name.isNotEmpty) {
+              genres[key] = name;
+            }
+          }
+          for (final filter
+              in feature['PromotedGridChannelFilter'] as List? ?? const []) {
+            if (filter case {
+              'key': _featuredPath,
+              'title': String name,
+            } when name.isNotEmpty) {
+              promoted = PromotedChannelGroup(name, _featuredIds);
+            }
+          }
+        }
+        return (genres: genres, promoted: promoted);
+      });
+
+  @override
+  Future<ChannelGroupLineup> getChannelGroups({String? userId}) async {
+    final (dvr, free) = await _channelSources();
+    if (free.isEmpty) return ChannelGroupLineup({}, channels: dvr);
+    // Don't hold up the channel list if Plex's group metadata is slow.
+    final catalog = await _providerGroups()
+        .timeout(const Duration(seconds: 5))
+        .onError<Object>(
+          (_, _) => (genres: const <String, String>{}, promoted: null),
+        );
+    return ChannelGroupLineup(
+      {
+        for (final channel in dvr)
+          channel['Id'] as String: {ChannelGroupSource.dvr.groupId},
+        for (final channel in free)
+          channel['Id'] as String: {
+            if (dvr.isNotEmpty) ChannelGroupSource.plexFreeTv.groupId,
+            for (final key in channel['genreRatingKeys'] as List? ?? const [])
+              if (catalog.genres[key] case final name?) name,
+          },
+      },
+      channels: [...dvr, ...free],
+      sources: dvr.isEmpty ? const [] : ChannelGroupSource.values,
+      promoted: catalog.promoted,
+    );
   }
 
   /// Every showing on the server's DVRs between [start] and [end], with the
@@ -418,7 +505,8 @@ class PlexLiveTvApi implements LiveTvApi {
     bool? enableTotalRecordCount,
     String? userId,
   }) async {
-    final channels = await _allChannels();
+    final (dvr, free) = await _channelSources();
+    final channels = [...dvr, ...free];
     final start = (startIndex ?? 0).clamp(0, channels.length);
     final end = limit == null
         ? channels.length

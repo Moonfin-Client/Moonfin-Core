@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_core/server_core.dart' show ChannelGroupSource;
 
 import '../../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -16,6 +17,16 @@ export '../../../../data/viewmodels/live_tv_guide_view_model.dart'
     show GuideFilterChoice;
 
 typedef _RowId = (GuideFilterChoice, bool);
+
+String guideGroupLabel(
+  LiveTvGuideViewModel vm,
+  String group,
+  AppLocalizations l10n,
+) => switch (vm.sourceForGroup(group)) {
+  ChannelGroupSource.dvr => l10n.guideDvrChannels,
+  ChannelGroupSource.plexFreeTv => l10n.guidePlexFreeTv,
+  null => group,
+};
 
 class GuideFilterPicker extends StatefulWidget {
   const GuideFilterPicker({
@@ -132,11 +143,11 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
 
     void add(GuideFilterChoice choice, {bool savedCopy = false}) {
       final (filter, group) = choice;
-      final label =
-          group ??
-          (filter == GuideFilter.all
-              ? l10n.guideAllChannels
-              : widget.filterLabel(filter));
+      final label = group != null
+          ? guideGroupLabel(widget.vm, group, l10n)
+          : (filter == GuideFilter.all
+                ? l10n.guideAllChannels
+                : widget.filterLabel(filter));
       if (!label.toLowerCase().contains(_query)) return;
       rows.add((
         id: (choice, savedCopy),

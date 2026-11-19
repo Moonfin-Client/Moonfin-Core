@@ -11196,6 +11196,14 @@
   "@liveTvChannelGroups": {
     "description": "Heading for channel groups supplied by the Live TV tuner or M3U playlist, not program categories."
   },
+  "guideDvrChannels": "DVR Channels",
+  "@guideDvrChannels": {
+    "description": "Live TV guide shortcut for all channels from the viewer's Plex DVR tuners."
+  },
+  "guidePlexFreeTv": "Plex Free TV",
+  "@guidePlexFreeTv": {
+    "description": "Live TV guide shortcut for all free streaming channels supplied by Plex."
+  },
   "guideFavoriteGroupsAndCategories": "Favorite groups and categories",
   "guideHoldOk": "Hold OK",
   "guideUnfavorite": "Unfavorite",

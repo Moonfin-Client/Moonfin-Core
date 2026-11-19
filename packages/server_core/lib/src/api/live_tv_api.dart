@@ -9,8 +9,38 @@ abstract interface class ChannelGroupApi {
 /// plugin lookup. Failures must not fetch the same channels a second time.
 abstract interface class DirectChannelGroupApi implements ChannelGroupApi {}
 
+enum ChannelGroupSource {
+  dvr,
+  plexFreeTv;
+
+  String get groupId => 'source:$name';
+}
+
+/// Provider picks loaded separately from the main channel lineup.
+class PromotedChannelGroup {
+  PromotedChannelGroup(this.name, this._fetchIds);
+
+  static const lifetime = Duration(minutes: 10);
+  final String name;
+  final Future<Set<String>> Function() _fetchIds;
+  Set<String>? _ids;
+  Set<String>? get channelIds => _ids;
+  DateTime? _expiresAt;
+  DateTime? get expiresAt => _expiresAt;
+  Future<void>? _pending;
+
+  Future<void> refresh(DateTime Function() now) => _pending ??= _fetchIds()
+      .then((ids) {
+        _ids = Set.unmodifiable(ids);
+        _expiresAt = now().add(lifetime);
+      })
+      .whenComplete(() => _pending = null);
+}
+
 class ChannelGroupLineup {
   final Map<String, Set<String>> groupsByChannelId;
+  final List<ChannelGroupSource> sources;
+  final PromotedChannelGroup? promoted;
 
   /// Channels this viewer can access, or null if Moonbase doesn't provide them.
   final List<Map<String, dynamic>>? channels;
@@ -28,6 +58,8 @@ class ChannelGroupLineup {
   const ChannelGroupLineup(
     this.groupsByChannelId, {
     this.channels,
+    this.sources = const [],
+    this.promoted,
     this.partial = false,
     this.endpointAvailable = true,
     this.unresolvedChannelIds,

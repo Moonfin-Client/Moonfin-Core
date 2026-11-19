@@ -87,6 +87,7 @@ class PlexMediaServerClient extends MediaServerClient {
 
   @override
   set baseUrl(String url) {
+    if (_baseUrl != url) _liveTvApi = null;
     _baseUrl = url;
     _dio.options.baseUrl = url;
   }
@@ -95,13 +96,19 @@ class PlexMediaServerClient extends MediaServerClient {
   String? get accessToken => _accessToken;
 
   @override
-  set accessToken(String? token) => _accessToken = token;
+  set accessToken(String? token) {
+    if (_accessToken != token) _liveTvApi = null;
+    _accessToken = token;
+  }
 
   @override
   String? get userId => _userId;
 
   @override
-  set userId(String? id) => _userId = id;
+  set userId(String? id) {
+    if (_userId != id) _liveTvApi = null;
+    _userId = id;
+  }
 
   @override
   late final AuthApi authApi = PlexAuthApi();
@@ -146,8 +153,9 @@ class PlexMediaServerClient extends MediaServerClient {
   @override
   late final UserViewsApi userViewsApi = PlexUserViewsApi(_dio);
 
+  PlexLiveTvApi? _liveTvApi;
   @override
-  late final LiveTvApi liveTvApi = PlexLiveTvApi(_dio);
+  LiveTvApi get liveTvApi => _liveTvApi ??= PlexLiveTvApi(_dio);
 
   @override
   late final InstantMixApi instantMixApi = PlexInstantMixApi(_dio);
