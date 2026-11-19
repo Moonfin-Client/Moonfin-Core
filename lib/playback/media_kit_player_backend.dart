@@ -662,9 +662,13 @@ class MediaKitPlayerBackend extends PlayerBackend
         if (!_isDisposed) unawaited(_sizeTexture());
       });
     }
+    _scheduleSecondaryRemeasure();
+  }
+
+  /// mpv's OSD dimensions may settle after Flutter reports the new viewport.
+  /// Debounce resize events so a paused player still recomputes wrapping.
+  void _scheduleSecondaryRemeasure() {
     if (!_secondarySubtitleRequested) return;
-    // mpv's OSD dimensions may settle after Flutter reports the new viewport.
-    // Debounce resize events so a paused player still recomputes wrapping.
     _secondaryMetricsTimer?.cancel();
     _secondaryMetricsTimer = Timer(const Duration(milliseconds: 100), () {
       if (!_isDisposed) unawaited(_refreshStackedSecondaryPosition(force: true));
@@ -2067,6 +2071,9 @@ class MediaKitPlayerBackend extends PlayerBackend
       // The controller can be torn down while a resize is in flight.
     }
     _refreshSubtitleFontSize();
+    // The font size can change with the window's shape, after the resize's
+    // own measurement, and nothing measures again while paused.
+    _scheduleSecondaryRemeasure();
   }
 
   /// The smallest texture that still covers [window], or null when the
