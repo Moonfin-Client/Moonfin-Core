@@ -494,6 +494,65 @@ void main() {
       expect(isUntrustedCertificate(null), isFalse);
     });
   });
+
+  group('a server that moved', () {
+    late HttpServer moved;
+
+    setUp(() async {
+      moved = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      moved.listen((request) async {
+        request.response.write('${request.method} ${request.uri.path}');
+        await request.response.close();
+      });
+    });
+
+    tearDown(() async {
+      ServerMoved.resolver = null;
+      await moved.close(force: true);
+    });
+
+    // A port nothing listens on, like the old target of a moved redirect.
+    Future<String> deadBase() async {
+      final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final port = socket.port;
+      await socket.close();
+      return 'http://127.0.0.1:$port';
+    }
+
+    test('a request that fails to connect goes to its new address', () async {
+      final dead = await deadBase();
+      final asked = <String>[];
+      ServerMoved.resolver = (baseUrl) async {
+        asked.add(baseUrl);
+        return 'http://127.0.0.1:${moved.port}';
+      };
+      final dio = Dio(BaseOptions(baseUrl: dead));
+      configureServerDio(dio);
+
+      try {
+        final response = await dio.post<String>('/Sessions/Playing');
+        expect(response.data, 'POST /Sessions/Playing');
+        expect(asked, [dead]);
+      } finally {
+        dio.close(force: true);
+      }
+    });
+
+    test('nothing moved leaves the failure as it was', () async {
+      ServerMoved.resolver = (_) async => null;
+      final dio = Dio(BaseOptions(baseUrl: await deadBase()));
+      configureServerDio(dio);
+
+      try {
+        await expectLater(
+          dio.get<String>('/System/Ping'),
+          throwsA(isA<DioException>()),
+        );
+      } finally {
+        dio.close(force: true);
+      }
+    });
+  });
 }
 
 // A self-signed certificate for 127.0.0.1 and its key, used only by the tests

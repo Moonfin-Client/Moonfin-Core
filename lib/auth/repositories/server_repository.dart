@@ -301,6 +301,55 @@ class ServerRepository {
     return followed.address == server.address ? null : followed.address;
   }
 
+  /// Saved servers whose entry address led somewhere new, as they are now.
+  Stream<Server> get serverMoved => _movedController.stream;
+  final _movedController = StreamController<Server>.broadcast();
+
+  /// Asks the entry address of every saved server that has one, all at once,
+  /// so a list of servers shows where they answer now.
+  Future<void> followAllEntryAddresses() => Future.wait([
+    for (final server in List.of(_servers))
+      if (server.entryAddress != null) withFollowedEntryAddress(server),
+  ]);
+
+  /// For [ServerMoved.resolver]: the new address of the saved server that
+  /// [baseUrl] belongs to, when a request to it couldn't connect. All requests
+  /// that fail together share one ask, and an ask that found nothing holds for
+  /// a few seconds, so a dead server isn't asked once per request.
+  Future<String?> followMovedAddress(String baseUrl) {
+    final wanted = _withoutTrailingSlash(baseUrl);
+    final server = _servers
+        .where((s) => s.entryAddress != null)
+        .where((s) => _withoutTrailingSlash(s.address) == wanted)
+        .firstOrNull;
+    if (server == null) return Future.value();
+    final asked = _lastFruitlessAsk[server.id];
+    if (asked != null &&
+        DateTime.now().difference(asked) < _fruitlessAskHold) {
+      return Future.value();
+    }
+    return _movingAsks[server.id] ??= () async {
+      try {
+        final moved = await followEntryAddressOf(server.id);
+        if (moved == null) {
+          _lastFruitlessAsk[server.id] = DateTime.now();
+        } else {
+          _lastFruitlessAsk.remove(server.id);
+        }
+        return moved;
+      } finally {
+        _movingAsks.remove(server.id);
+      }
+    }();
+  }
+
+  final _movingAsks = <String, Future<String?>>{};
+  final _lastFruitlessAsk = <String, DateTime>{};
+  static const _fruitlessAskHold = Duration(seconds: 3);
+
+  static String _withoutTrailingSlash(String url) =>
+      url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+
   Future<Server> _followedEntry(Server server) async {
     final entry = server.entryAddress;
     final entryServerId = server.entryServerId;
@@ -312,6 +361,7 @@ class ServerRepository {
       final moved = server.copyWith(address: resolvedUrl);
       await updateServer(moved);
       _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
+      _movedController.add(moved);
       return moved;
     } catch (_) {
       return server;

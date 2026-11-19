@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/auth_repository.dart';
 import '../../auth/repositories/emby_connect_repository.dart';
@@ -25,9 +26,13 @@ void registerAuthModule() {
   _getIt.registerLazySingleton(() => EmbyConnectService(deviceInfo: _getIt()));
   _getIt.registerLazySingleton(() => PlexTvService(deviceInfo: _getIt()));
   _getIt.registerLazySingleton(() => UserRepository());
-  _getIt.registerLazySingleton(
-    () => ServerRepository(_getIt(), _getIt(), _getIt()),
-  );
+  _getIt.registerLazySingleton(() {
+    final repository = ServerRepository(_getIt(), _getIt(), _getIt());
+    // A request that can't reach a server added through a redirect asks the
+    // entered address where it went, so a moved target is taken at once.
+    ServerMoved.resolver = repository.followMovedAddress;
+    return repository;
+  });
   _getIt.registerLazySingleton(
     () => ServerUserRepository(_getIt()),
   );

@@ -1,9 +1,12 @@
 import 'package:server_core/server_core.dart';
 
 class JellyfinImageApi implements ImageApi {
-  final String _baseUrl;
+  /// Read on every call, so image URLs follow a client moved to a new
+  /// address without it being recreated.
+  final String Function() _baseUrlOf;
+  String get _baseUrl => _baseUrlOf();
 
-  JellyfinImageApi(this._baseUrl);
+  JellyfinImageApi(this._baseUrlOf);
 
   /// Left out, the server encodes artwork at quality 100, three times the
   /// bytes of 90 for no difference at the sizes the app paints.

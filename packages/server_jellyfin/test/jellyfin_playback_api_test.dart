@@ -57,7 +57,7 @@ void main() {
             }),
           );
 
-        final api = JellyfinPlaybackApi(dio, 'http://remux.local');
+        final api = JellyfinPlaybackApi(dio, () => 'http://remux.local');
         final result = await api.getPlaybackInfo(
           'channel-1',
           userId: 'user-1',
@@ -98,7 +98,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = JellyfinPlaybackApi(dio, () => 'http://jellyfin.local');
 
       await expectLater(
         api.getPlaybackInfo(
@@ -127,7 +127,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = JellyfinPlaybackApi(dio, () => 'http://jellyfin.local');
       final result = await api.getPlaybackInfo(
         'item-1',
         userId: 'user-1',
@@ -154,7 +154,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = JellyfinPlaybackApi(dio, () => 'http://jellyfin.local');
       await api.stopActiveEncodings(
         deviceId: 'device-1',
         playSessionId: 'session-1',
@@ -178,7 +178,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = JellyfinPlaybackApi(dio, () => 'http://jellyfin.local');
       await api.stopActiveEncodings(deviceId: 'device-1');
       await api.stopActiveEncodings(deviceId: 'device-1', playSessionId: '');
 

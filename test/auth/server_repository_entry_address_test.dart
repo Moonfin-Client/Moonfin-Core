@@ -120,6 +120,39 @@ void main() {
     expect(await repo.followEntryAddressOf('server-1'), isNull);
   });
 
+  test('a request that failed to connect gets the new address', () async {
+    await repo.saveServer(saved());
+    final moves = <Server>[];
+    final sub = repo.serverMoved.listen(moves.add);
+
+    // Requests failing together share one ask.
+    final asks = await Future.wait([
+      repo.followMovedAddress('http://127.0.0.1:1/'),
+      repo.followMovedAddress('http://127.0.0.1:1'),
+    ]);
+
+    expect(asks, [targetUrl(), targetUrl()]);
+    expect(repo.getServer('server-1')!.address, targetUrl());
+    await Future<void>.delayed(Duration.zero);
+    expect(moves.single.address, targetUrl());
+    await sub.cancel();
+  });
+
+  test('an address no saved server uses is not asked about', () async {
+    await repo.saveServer(saved());
+
+    expect(await repo.followMovedAddress('http://127.0.0.1:2'), isNull);
+    expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:1');
+  });
+
+  test('opening the server list follows every entry address', () async {
+    await repo.saveServer(saved());
+
+    await repo.followAllEntryAddresses();
+
+    expect(repo.getServer('server-1')!.address, targetUrl());
+  });
+
   test('a redirect to a different server is not followed', () async {
     targetId = 'other';
 

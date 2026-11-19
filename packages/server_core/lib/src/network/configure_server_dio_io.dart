@@ -9,6 +9,7 @@ import 'package:dio/io.dart';
 import '../diagnostics/server_log_sink.dart';
 import 'client_certificates.dart';
 import 'insecure_certificates.dart';
+import 'server_moved.dart';
 import 'server_user_agent.dart';
 
 /// How many requests may be reaching the server at once.
@@ -66,6 +67,7 @@ void configureServerDio(
       : adapter;
 
   dio.interceptors.add(_retryDeadConnection(dio));
+  dio.interceptors.add(_followMovedServer(dio));
 }
 
 const _retriedKey = 'moonfin.connectionRetry';
@@ -108,6 +110,64 @@ Interceptor _retryDeadConnection(Dio dio) => InterceptorsWrapper(
     } on DioException catch (retryFailure) {
       // The second attempt ran the whole chain, so it reported itself.
       handler.reject(retryFailure);
+    }
+  },
+);
+
+const _followedKey = 'moonfin.followedMove';
+
+/// Sends a request that couldn't reach its server once more to the address
+/// [ServerMoved.resolver] finds for it.
+///
+/// A server behind a redirect to a dynamic `host:port` stops answering on the
+/// old port the moment the target moves, and every request in flight fails
+/// to connect. Asking where it went right then lets the app switch over
+/// without a restart or waiting for its reachability check. A request that
+/// failed to connect never reached the server, so any method may go again;
+/// one whose connection broke later only when it is a read.
+Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
+  onError: (e, handler) async {
+    final options = e.requestOptions;
+    final resolver = ServerMoved.resolver;
+    final notConnected =
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout;
+    final droppedRead =
+        e.type == DioExceptionType.unknown &&
+        e.error is SocketException &&
+        options.method.toUpperCase() == 'GET';
+    final from = options.baseUrl;
+    if (resolver == null ||
+        !(notConnected || droppedRead) ||
+        options.extra[_followedKey] == true ||
+        from.isEmpty) {
+      handler.next(e);
+      return;
+    }
+
+    String? moved;
+    try {
+      moved = await resolver(from);
+    } catch (_) {}
+    if (moved == null || moved == from) {
+      handler.next(e);
+      return;
+    }
+
+    options.extra[_followedKey] = true;
+    options.baseUrl = moved;
+    if (options.path.startsWith(from)) {
+      options.path = moved + options.path.substring(from.length);
+    }
+    ServerLog.network(
+      'Server moved, asking its new address: ${options.method} ${options.uri}',
+      level: ServerLogLevel.warning,
+    );
+
+    try {
+      handler.resolve(await dio.fetch(options));
+    } on DioException catch (failure) {
+      handler.reject(failure);
     }
   },
 );
