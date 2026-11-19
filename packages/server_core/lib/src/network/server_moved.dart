@@ -11,4 +11,11 @@ abstract final class ServerMoved {
   /// Asked by every server client's Dio once a request fails to connect.
   /// Null leaves failed requests as they are.
   static ServerMovedResolver? resolver;
+
+  /// Whether [baseUrl] belongs to a server that can move this way. Its
+  /// requests give up connecting after [connectTimeout], so a target that
+  /// moved and stopped answering is asked about sooner. Null for none.
+  static bool Function(String baseUrl)? canMove;
+
+  static const connectTimeout = Duration(seconds: 3);
 }

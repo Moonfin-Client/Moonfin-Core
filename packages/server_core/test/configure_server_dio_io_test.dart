@@ -538,6 +538,37 @@ void main() {
       }
     });
 
+    test('a server that can move gives up connecting sooner', () async {
+      ServerMoved.canMove = (baseUrl) => baseUrl == 'http://127.0.0.1:1';
+      Duration? used;
+      final dio = Dio(
+        BaseOptions(
+          baseUrl: 'http://127.0.0.1:${moved.port}',
+          connectTimeout: const Duration(seconds: 8),
+        ),
+      );
+      configureServerDio(dio);
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            used = options.connectTimeout;
+            handler.next(options);
+          },
+        ),
+      );
+
+      try {
+        await dio.get<String>('/a');
+        expect(used, const Duration(seconds: 8));
+        dio.options.baseUrl = 'http://127.0.0.1:1';
+        await expectLater(dio.get<String>('/a'), throwsA(isA<DioException>()));
+        expect(used, ServerMoved.connectTimeout);
+      } finally {
+        ServerMoved.canMove = null;
+        dio.close(force: true);
+      }
+    });
+
     test('nothing moved leaves the failure as it was', () async {
       ServerMoved.resolver = (_) async => null;
       final dio = Dio(BaseOptions(baseUrl: await deadBase()));

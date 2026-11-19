@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../auth/models/server.dart';
 import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../util/platform_detection.dart';
@@ -110,6 +111,11 @@ class ConnectivityService extends ChangeNotifier {
       _subscription =
           _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
     }
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<ServerRepository>()) {
+      _movedSub = getIt<ServerRepository>().serverMoved.listen(_onServerMoved);
+    }
+    _streamWatch = Timer.periodic(_streamWatchInterval, (_) => _watchStream());
     _checkInitialState();
   }
 
@@ -384,6 +390,39 @@ class ConnectivityService extends ChangeNotifier {
     }
   }
 
+  StreamSubscription<Server>? _movedSub;
+  Timer? _streamWatch;
+  static const _streamWatchInterval = Duration(seconds: 10);
+
+  /// The active server answers on a new address now, found by any ask of its
+  /// entry address. Whatever was waiting on the old one hears of it at once:
+  /// the reachability state clears and an open stream reopens there.
+  void _onServerMoved(Server moved) {
+    if (moved.id != _serverId) return;
+    unawaited(_checkServerReachability());
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<PlaybackManager>()) {
+      getIt<PlaybackManager>().onServerMoved();
+    }
+  }
+
+  /// While a stream is open, the entry address is asked every
+  /// [_streamWatchInterval]. A target that moves stops answering without
+  /// refusing, and the player only notices once its read times out, which
+  /// takes far longer than the redirect needs to show the new address. Only
+  /// servers added through a redirect are asked; for others this does nothing.
+  Future<void> _watchStream() async {
+    final getIt = GetIt.instance;
+    if (!_isOnline ||
+        _followingLostStream ||
+        !getIt.isRegistered<PlaybackManager>() ||
+        !getIt.isRegistered<MediaServerClient>() ||
+        !getIt<PlaybackManager>().hasReconnectableStream) {
+      return;
+    }
+    await _followEntryAddress(getIt<MediaServerClient>());
+  }
+
   bool _followingLostStream = false;
   final Duration _entryFollowInterval;
   final Duration _entryFollowBudget;
@@ -448,6 +487,8 @@ class ConnectivityService extends ChangeNotifier {
     _subscription?.cancel();
     _recheckDebounce?.cancel();
     _retryTimer?.cancel();
+    _movedSub?.cancel();
+    _streamWatch?.cancel();
     super.dispose();
   }
 }

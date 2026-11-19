@@ -31,6 +31,7 @@ void registerAuthModule() {
     // A request that can't reach a server added through a redirect asks the
     // entered address where it went, so a moved target is taken at once.
     ServerMoved.resolver = repository.followMovedAddress;
+    ServerMoved.canMove = repository.canMove;
     return repository;
   });
   _getIt.registerLazySingleton(

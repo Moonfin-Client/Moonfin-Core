@@ -343,6 +343,16 @@ class ServerRepository {
     }();
   }
 
+  /// For [ServerMoved.canMove]: whether [baseUrl] is the address of a saved
+  /// server added through a redirect.
+  bool canMove(String baseUrl) {
+    final wanted = _withoutTrailingSlash(baseUrl);
+    return _servers.any(
+      (s) =>
+          s.entryAddress != null && _withoutTrailingSlash(s.address) == wanted,
+    );
+  }
+
   final _movingAsks = <String, Future<String?>>{};
   final _lastFruitlessAsk = <String, DateTime>{};
   static const _fruitlessAskHold = Duration(seconds: 3);

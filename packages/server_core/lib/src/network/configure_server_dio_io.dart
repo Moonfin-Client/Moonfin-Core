@@ -126,6 +126,16 @@ const _followedKey = 'moonfin.followedMove';
 /// failed to connect never reached the server, so any method may go again;
 /// one whose connection broke later only when it is a read.
 Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
+  onRequest: (options, handler) {
+    final canMove = ServerMoved.canMove;
+    final timeout = options.connectTimeout;
+    if (canMove != null &&
+        (timeout == null || timeout > ServerMoved.connectTimeout) &&
+        canMove(options.baseUrl)) {
+      options.connectTimeout = ServerMoved.connectTimeout;
+    }
+    handler.next(options);
+  },
   onError: (e, handler) async {
     final options = e.requestOptions;
     final resolver = ServerMoved.resolver;

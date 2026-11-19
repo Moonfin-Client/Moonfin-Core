@@ -138,6 +138,13 @@ void main() {
     await sub.cancel();
   });
 
+  test('only a server added through a redirect can move', () async {
+    await repo.saveServer(saved());
+
+    expect(repo.canMove('http://127.0.0.1:1/'), isTrue);
+    expect(repo.canMove('http://127.0.0.1:2'), isFalse);
+  });
+
   test('an address no saved server uses is not asked about', () async {
     await repo.saveServer(saved());
 

@@ -803,6 +803,22 @@ class PlaybackManager implements AudioOwnable {
   /// Whether a stream that lost its connection is being reopened, for a
   /// screen to say so rather than show a plain buffering spinner.
   bool get isReconnecting => _reconnecting;
+
+  /// Whether a server stream is open that [onServerMoved] would reopen.
+  bool get hasReconnectableStream =>
+      queueService.currentItem != null && _canReconnect(_currentResolution);
+
+  /// The server of the open stream answers on a new address now (a redirect
+  /// target that moved). Its old connection only times out after a long
+  /// while, so the stream is reopened at the current position right away,
+  /// on a fresh reconnect budget, instead of waiting for that.
+  void onServerMoved() {
+    if (!hasReconnectableStream || _reconnectInFlight) return;
+    _reconnectRetry?.cancel();
+    _reconnectRetry = null;
+    _reconnectStartedAt = null;
+    _beginReconnect('server-moved');
+  }
   Stream<bool> get reconnectingStream => _reconnectingController.stream;
 
   /// Item that gained a stream on the server after this session resolved. The
