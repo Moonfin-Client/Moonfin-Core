@@ -285,8 +285,9 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     };
   }
 
-  /// A partly available title stays partial once an earlier request of it
-  /// was fulfilled, since seasons are still missing.
+  /// A fulfilled request counts only while the title is still there: a
+  /// partly available one stays partial, and one whose files are gone
+  /// (`missing`) can be requested again.
   static int _mediaStatusOf(Object? availability, String? state) {
     if (availability == 'available') return _mediaAvailable;
     return switch (state) {
@@ -294,6 +295,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       'approved' || 'processing' => _mediaProcessing,
       'partially_available' => _mediaPartial,
       'available' when availability == 'partial' => _mediaPartial,
+      'available' when availability == 'missing' => _mediaUnknown,
       'available' => _mediaAvailable,
       _ => availability == 'partial' ? _mediaPartial : _mediaUnknown,
     };

@@ -212,6 +212,14 @@ void main() {
               'library_content_id': 'series-tvdb-73871',
               'request': {'state': 'available', 'request_id': '12'},
             },
+            {
+              'media_type': 'movie',
+              'tmdb_id': 458,
+              'title': 'Gone Film',
+              'availability': 'missing',
+              'library_content_id': 'movie-tmdb-458',
+              'request': {'state': 'available', 'request_id': '13'},
+            },
           ],
         },
       ),
@@ -222,13 +230,14 @@ void main() {
 
     expect(
       page.results.map((r) => r.id),
-      [456, 457],
+      [456, 457, 458],
       reason: 'a partly available series stays for its missing seasons',
     );
     expect(
       page.results.map((r) => r.mediaInfo!.status),
-      [4, 4],
-      reason: 'partial, also after an earlier request was fulfilled',
+      [4, 4, 1],
+      reason: 'partial after an earlier request was fulfilled, and a title '
+          'whose files are gone can be requested again',
     );
   });
 
