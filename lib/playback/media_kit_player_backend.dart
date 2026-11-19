@@ -700,6 +700,10 @@ class MediaKitPlayerBackend extends PlayerBackend
       if (!PlatformDetection.isAndroid && !PlatformDetection.isIOS) {
         _nativeSetProperty(platform, 'demuxer-max-bytes', '256MiB');
       }
+      // mpv builds with libcurl read http through it, which has no read
+      // timeout and ignores network-timeout and the reconnect options below,
+      // so a resume on a stalled connection can sit frozen.
+      _nativeSetProperty(platform, 'curl-enabled', 'no');
       _nativeSetProperty(
         platform,
         'stream-lavf-o',
