@@ -239,12 +239,13 @@ class JellyfinLiveTvApi implements LiveTvApi {
   }
 
   /// Cancels the timer again whenever the server puts it back to retry. The
-  /// retry moves its start a minute past the cancel; recording the episode
-  /// again (a series rule reuses the cancelled timer, same id) keeps its own
-  /// start, and a fresh recording gets a new id. Only a start that moved later
-  /// counts, compared with the server's own times, so when in doubt the timer
-  /// is left to record.
+  /// retry moves its start to a minute out; recording the episode again (a
+  /// series rule reuses the cancelled timer, same id) keeps its own start,
+  /// padding included, and a fresh recording gets a new id. Only a start that
+  /// changed counts, compared with the server's own times, so when in doubt
+  /// the timer is left to record.
   Future<void> _keepCancelled(String timerId, DateTime startBefore) async {
+    var kept = startBefore;
     for (final wait in cancelChecks) {
       await _wait(wait);
       final now = await _timer(timerId);
@@ -253,11 +254,14 @@ class JellyfinLiveTvApi implements LiveTvApi {
           now.status == 'Cancelled' ||
           now.status == 'Completed' ||
           start == null ||
-          !start.isAfter(startBefore)) {
+          start.isAtSameMomentAs(kept)) {
         continue;
       }
       try {
         await _dio.delete('/LiveTv/Timers/$timerId');
+        // A series rule keeps the timer with the retry's start, so a later
+        // deliberate recording of it is judged against that.
+        kept = start;
       } catch (_) {
         // Tried again at the next check.
       }

@@ -271,6 +271,16 @@ void main() {
       expect(s.calls.where((c) => c.startsWith('DELETE')), hasLength(1));
     });
 
+    test("a series rule's retry, kept as Cancelled, is cancelled again", () async {
+      // Recording; kept as Cancelled after the cancel; back to retry; gone.
+      final s = server(['InProgress', 'Cancelled', 'New', null], retryFrom: 2);
+
+      await s.api.cancelTimer('t1');
+      await pumpEventQueue();
+
+      expect(s.calls.where((c) => c.startsWith('DELETE')), hasLength(2));
+    });
+
     test('a timer that was not recording is not watched', () async {
       final s = server(['New', 'New']);
 
