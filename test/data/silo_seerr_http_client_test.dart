@@ -241,6 +241,16 @@ void main() {
     );
   });
 
+  test('one letter asks Silo for nothing, as its web app', () async {
+    final silo = _Silo(_base());
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+    final page = SeerrDiscoverPage.fromJson(await client.search(' a '));
+
+    expect(page.results, isEmpty);
+    expect(silo.calls.where((c) => c.contains('/requests/search')), isEmpty);
+  });
+
   test('an admin row on Silo is a slider that reads that row', () async {
     final silo = _Silo({
       ..._base(),

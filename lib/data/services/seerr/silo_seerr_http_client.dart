@@ -438,6 +438,8 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     int limit = 20,
     int offset = 0,
   }) async {
+    // Silo's web app asks nothing for a single character.
+    if (query.trim().length < 2) return _page(const {});
     final body = await _get('/requests/search', {
       'q': query,
       'media_type': mediaType == null ? 'all' : _siloType(mediaType),

@@ -465,10 +465,6 @@ class SearchViewModel extends ChangeNotifier {
   Future<List<SeerrDiscoverItem>> _fetchSeerrResults(String query) async {
     if (_scopedParentId != null) return const [];
     if (query.trim().toLowerCase().startsWith('studio:')) return const [];
-    // Silo's web app asks nothing for a single character.
-    if (_client.serverType == ServerType.silo && query.trim().length < 2) {
-      return const [];
-    }
     final repo = _seerrRepository;
     if (repo == null) return const [];
     try {
