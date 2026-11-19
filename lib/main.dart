@@ -435,6 +435,14 @@ Future<void> _detectAndSetDeviceMemory() async {
 /// box whose TV is still asleep would otherwise hold the launch for the whole
 /// half-minute retry window.
 Future<void> _detectAndSetDisplayCapabilities() async {
+  if (DisplayHdrProbe.readsBuiltInDisplay) {
+    try {
+      DisplayHdrProbe.applyBuiltIn(
+        await DisplayHdrProbe.query(trigger: 'launch'),
+      );
+    } catch (_) {}
+    return;
+  }
   if (!DisplayHdrProbe.isSupported) return;
   // Its own try/catch for the same reason the memory probe has one: this runs
   // inside a Future.wait, which gives up on every sibling the moment one
@@ -785,6 +793,10 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
   Future<void> _refresh() async {
     if (DisplayHdrProbe.isSupported) {
       DisplayHdrProbe.apply(await DisplayHdrProbe.query(trigger: 'resume'));
+    } else if (DisplayHdrProbe.readsBuiltInDisplay) {
+      DisplayHdrProbe.applyBuiltIn(
+        await DisplayHdrProbe.query(trigger: 'resume'),
+      );
     }
     // The launch retries all run inside the first half minute, which covers
     // a slow enumeration but not an engine that had no Activity to answer

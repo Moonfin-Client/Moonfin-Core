@@ -120,8 +120,7 @@ class DisplayHdrSnapshot {
       'displays=$displayCount sdk=$sdkInt';
 }
 
-/// Front-end for the native display HDR probe on Android (TV, phone and
-/// tablet).
+/// Front-end for the native display HDR probe on Android.
 ///
 /// Two jobs. It reads the display's HDR support without mistaking silence for
 /// an answer, and it keeps listening afterwards so a TV or AVR that wakes up
@@ -136,14 +135,23 @@ class DisplayHdrProbe {
 
   static StreamSubscription<dynamic>? _subscription;
 
-  static bool get isSupported => PlatformDetection.isAndroid;
+  /// The TV probe: saved answers, retries and a display listener, for an
+  /// HDMI chain that may wake long after launch.
+  static bool get isSupported =>
+      PlatformDetection.isAndroid && PlatformDetection.isTV;
+
+  /// A phone's or tablet's display, read once at launch and on resume
+  /// ([applyBuiltIn]). Its own panel answers at once, so none of the TV
+  /// machinery applies.
+  static bool get readsBuiltInDisplay =>
+      PlatformDetection.isAndroid && !PlatformDetection.isTV;
 
   /// Queries the native probe once. Falls back to the format-list method when
   /// running against a native side that predates the fact-collecting one,
   /// which keeps self-healing working while giving up the ability to prove a
   /// panel is SDR. That's the safe half to lose.
   static Future<DisplayHdrSnapshot?> query({String trigger = 'pull'}) async {
-    if (!isSupported) return null;
+    if (!isSupported && !readsBuiltInDisplay) return null;
     try {
       final raw = await _methodChannel.invokeMethod<Map<dynamic, dynamic>>(
         'displayCapabilities',
@@ -220,6 +228,20 @@ class DisplayHdrProbe {
       case DisplayHdrVerdict.cannotAnswer:
         break;
     }
+    _log('display probe: ${snapshot.describe()}');
+  }
+
+  /// Publishes a phone's or tablet's snapshot, without saving it; no result
+  /// leaves the last one alone. Only named
+  /// formats are believed: a built-in SDR panel rarely identifies itself
+  /// well enough to prove it is SDR, so anything else leaves the display
+  /// unknown. That also drops an external HDR screen's formats (DeX, USB-C)
+  /// once the app is back on the phone's own panel.
+  static void applyBuiltIn(DisplayHdrSnapshot? snapshot) {
+    if (snapshot == null) return;
+    PlatformDetection.setDisplayHdrTypes(
+      snapshot.verdict == DisplayHdrVerdict.reportsHdr ? snapshot.types : null,
+    );
     _log('display probe: ${snapshot.describe()}');
   }
 

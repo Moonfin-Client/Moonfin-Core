@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/playback/silo_playback_environment.dart';
 import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_silo/playback_silo.dart';
 
 void main() {
@@ -59,6 +60,16 @@ void main() {
     expect(media3.loadsFontAttachments, isFalse);
     expect(media3.managesDynamicRange, isFalse);
     expect(SiloPlayerTraits.mpvAndroid.managesDynamicRange, isFalse);
+  });
+
+  test('an Android phone whose panel named HDR10 tells Silo so', () {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setTvMode(false);
+    PlatformDetection.setDisplayHdrTypes(const ['HDR10', 'HLG']);
+    addTearDown(() => PlatformDetection.setDisplayHdrTypes(null));
+    final hdr = siloPlaybackEnvironment().displayHdr;
+    expect(hdr?['hdr10'], isTrue);
+    expect(hdr?['hlg'], isTrue);
   });
 
   test('a display that was read: its HDR formats, as Silo names them', () {

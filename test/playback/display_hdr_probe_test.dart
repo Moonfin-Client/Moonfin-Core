@@ -281,4 +281,40 @@ void main() {
     expect(PlatformDetection.supportsDolbyVision, isTrue);
     expect(PlatformDetection.supportsHdr10, isTrue);
   });
+
+  group('phone or tablet', () {
+    setUp(() => PlatformDetection.setTvMode(false));
+
+    test('reads its own display once, without the TV machinery', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_platform, (call) async {
+            return call.method == 'displayCapabilities'
+                ? {..._attachedSdr(), 'types': <String>['HDR10', 'HLG']}
+                : null;
+          });
+
+      expect(DisplayHdrProbe.isSupported, isFalse);
+      expect(DisplayHdrProbe.readsBuiltInDisplay, isTrue);
+      DisplayHdrProbe.applyBuiltIn(await DisplayHdrProbe.query());
+      expect(PlatformDetection.hasDisplayHdrCapabilities, isTrue);
+      expect(PlatformDetection.supportsHdr10, isTrue);
+
+      // Nothing is saved for the next launch.
+      await Future<void>.delayed(Duration.zero);
+      expect(await DisplayHdrProbe.seedFromCache(), isNull);
+    });
+
+    test('a panel that names no HDR format is left unknown', () {
+      PlatformDetection.setDisplayHdrTypes(const ['DOLBY_VISION', 'HDR10']);
+      DisplayHdrProbe.applyBuiltIn(DisplayHdrSnapshot.fromMap(_attachedSdr()));
+      expect(PlatformDetection.hasDisplayHdrCapabilities, isFalse);
+      expect(PlatformDetection.supportsAnyHdr, isFalse);
+    });
+
+    test('no result leaves the last answer alone', () {
+      PlatformDetection.setDisplayHdrTypes(const ['HDR10']);
+      DisplayHdrProbe.applyBuiltIn(null);
+      expect(PlatformDetection.supportsHdr10, isTrue);
+    });
+  });
 }
