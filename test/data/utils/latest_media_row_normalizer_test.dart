@@ -940,5 +940,47 @@ void main() {
         );
       },
     );
+
+    test(
+      'preserves relative order between unhydrated fallback and partial-hydration cards',
+      () async {
+        AggregatedItem ep(String id, String seriesId, {bool watched = false}) =>
+            AggregatedItem(
+              id: id,
+              serverId: 'server1',
+              rawData: {
+                'Id': id,
+                'Name': 'Ep',
+                'Type': 'Episode',
+                'SeriesId': seriesId,
+                'SeriesName': seriesId,
+                'UserData': {'Played': watched},
+              },
+            );
+
+        final result = await normalizeAndHydrateLatestMediaItems(
+          [
+            ep('a1', 'series-a', watched: true),
+            ep('a2', 'series-a', watched: true),
+            ep('a3', 'series-a', watched: true),
+            ep('b1', 'series-b'),
+            ep('c1', 'series-c'),
+          ],
+          collectionType: 'tvshows',
+          limit: 1,
+          hideWatched: true,
+          fetchSeriesByIds: (_) async => [
+            {
+              'Id': 'series-c',
+              'Type': 'Series',
+              'UserData': {'Played': false, 'UnplayedItemCount': 3},
+              'ChildCount': 1,
+            },
+          ],
+        );
+
+        expect(result.map((i) => i.id).toList(), equals(['series-b']));
+      },
+    );
   });
 }

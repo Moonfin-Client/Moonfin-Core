@@ -1272,6 +1272,8 @@ class MultiServerRepository {
     final fields = foldsCopies ? '$_fields,ProviderIds' : _fields;
     final groupedItems = <String, List<AggregatedItem>>{};
 
+    final seriesCachesByServer = <String, Map<String, Map<String, dynamic>>>{};
+
     for (final session in sessions) {
       try {
         final views = await _withTimeout(
@@ -1318,6 +1320,10 @@ class MultiServerRepository {
             var parsed = _parseItems(latestResponse, session.server.id);
             if (parsed.isEmpty) continue;
 
+            final serverSeriesCache = seriesCachesByServer.putIfAbsent(
+              session.server.id,
+              () => {},
+            );
             List<AggregatedItem>? prehydratedItems;
             if (hideWatched &&
                 parsed.length >= fetchLimit &&
@@ -1329,6 +1335,7 @@ class MultiServerRepository {
                 hideWatched: true,
                 itemsApi: session.client.itemsApi,
                 timeout: _serverTimeout,
+                seriesCache: serverSeriesCache,
               );
               if (unwatchedItems.length < _defaultLimit) {
                 fetchLimit = _maxItems;
@@ -1366,6 +1373,7 @@ class MultiServerRepository {
                   hideWatched: hideWatched,
                   itemsApi: session.client.itemsApi,
                   timeout: _serverTimeout,
+                  seriesCache: serverSeriesCache,
                 );
             if (items.isEmpty) continue;
 
@@ -1445,6 +1453,7 @@ class MultiServerRepository {
             hideWatched: hideWatched,
             itemsApi: session?.client.itemsApi,
             timeout: _serverTimeout,
+            seriesCache: seriesCachesByServer[serverEntry.key],
           );
         }),
       );
