@@ -863,6 +863,34 @@ jobs:
             libfuse2 \
             zsync
 
+      # The packages bundle a newer libmpv than the distro's 0.37 (see
+      # scripts/ci/build-libmpv-linux.sh). ARM64 still builds on 22.04, whose
+      # FFmpeg 4.4 is too old for it, so it keeps the distro's mpv for now.
+      - uses: actions/cache@v5
+        if: matrix.arch == 'x64'
+        id: libmpv-cache
+        with:
+          path: ${{ runner.temp }}/libmpv
+          # The script pins the versions and build options, so its hash is the key.
+          key: libmpv-${{ matrix.runner }}-${{ hashFiles('scripts/ci/build-libmpv-linux.sh') }}
+
+      - name: Build libmpv
+        if: matrix.arch == 'x64'
+        env:
+          CACHE_HIT: ${{ steps.libmpv-cache.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+          # Needed at runtime, so build-linux.sh can bundle it, even when the
+          # build itself comes from the cache.
+          sudo apt-get install -y libdisplay-info1
+          if [ "$CACHE_HIT" != 'true' ]; then
+            sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+            sudo apt-get update
+            sudo apt-get build-dep -y mpv libplacebo
+            sudo apt-get install -y libdisplay-info-dev
+            scripts/ci/build-libmpv-linux.sh "$RUNNER_TEMP/libmpv"
+          fi
+
       - name: Verify webkit2gtk availability
         run: |
           set -euo pipefail
@@ -887,6 +915,8 @@ jobs:
         run: sudo snap install snapcraft --classic
 
       - name: Build all Linux packages
+        env:
+          MOONFIN_LIBMPV_DIR: ${{ matrix.arch == 'x64' && format('{0}/libmpv/lib', runner.temp) || '' }}
         run: |
           chmod +x build-linux.sh
           ./build-linux.sh all
