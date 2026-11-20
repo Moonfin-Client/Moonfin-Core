@@ -1190,6 +1190,55 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  group('OSD lock', () {
+    final unlockPill = find.text('Long press to unlock');
+
+    setUp(
+      () => GetIt.instance<UserPreferences>().set(
+        UserPreferences.osdLockEnabled,
+        true,
+      ),
+    );
+
+    // Issue #2378: the controls hiding on their own locked the player.
+    testWidgets('the controls hide without locking', (tester) async {
+      await playWithHideDelay(tester, 1000);
+
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.byType(Slider), findsNothing);
+      expect(unlockPill, findsNothing);
+
+      await tester.tapAt(const Offset(400, 300));
+      await tester.pump(kDoubleTapTimeout + const Duration(milliseconds: 50));
+      expect(find.byType(Slider), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('the lock button locks and one long press unlocks', (
+      tester,
+    ) async {
+      await playWithHideDelay(tester, 1000);
+
+      await tester.tap(find.byIcon(Icons.lock_outline));
+      await tester.pump();
+      expect(find.byType(Slider), findsNothing);
+      expect(unlockPill, findsOneWidget);
+
+      await tester.tapAt(const Offset(400, 300));
+      await tester.pump(const Duration(seconds: 3));
+      expect(find.byType(Slider), findsNothing, reason: 'a tap stays blocked');
+      expect(unlockPill, findsOneWidget);
+
+      await tester.longPress(unlockPill);
+      await tester.pump();
+      expect(find.byType(Slider), findsOneWidget);
+      expect(unlockPill, findsNothing);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   group('dimming the controls in HDR', () {
     Future<ColorFilter?> controlsFilter(
       WidgetTester tester, {
