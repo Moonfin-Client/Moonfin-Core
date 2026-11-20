@@ -610,7 +610,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   void _scrollToRow(int index, {bool animate = true}) {
     final offset = index * _layoutProfile.rowHeight;
     final targetRow = index;
-    if (_lastFocusedRowIndex == targetRow) {
+    // The remembered row alone isn't enough: a reload can bring the rows back
+    // at the top while the row number stays, and skipping the scroll then
+    // leaves the target row unbuilt, so its focus request lands nowhere.
+    if (_lastFocusedRowIndex == targetRow && _isScrolledTo(offset)) {
       return;
     }
     _lastFocusedRowIndex = targetRow;
@@ -640,6 +643,21 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         _programScrollController.jumpTo(clamped);
       }
     }
+  }
+
+  /// Whether both row lists already sit at [offset], clamped to what each
+  /// can scroll to.
+  bool _isScrolledTo(double offset) {
+    for (final controller in [
+      _channelScrollController,
+      _programScrollController,
+    ]) {
+      if (!controller.hasClients) continue;
+      final position = controller.position;
+      final target = offset.clamp(0.0, position.maxScrollExtent);
+      if ((position.pixels - target).abs() > 0.5) return false;
+    }
+    return true;
   }
 
   FocusNode _channelFocusNodeFor(int index) {
