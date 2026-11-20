@@ -1644,12 +1644,19 @@ class PlaybackManager implements AudioOwnable {
   /// ([ServerRebaseBackend]) before [serverStalledStream] fires, so the
   /// entry address is asked whether the server moved. A server that moved
   /// goes quiet without refusing, and such a player would only fail the
-  /// stream once its own stall or read timeout gives up.
+  /// stream once its own stall or read timeout gives up. Only while
+  /// [canServerMove] says the server can move: any other buffering, a slow
+  /// transcode start or a congested link, has nothing to find there.
   static const _bufferStallInterval = Duration(seconds: 5);
   Timer? _bufferStallCheck;
 
+  /// Host supplied: whether the active server can move to a new address
+  /// (it was added through a redirect, so its entry address knows where it
+  /// went). Null counts as no.
+  bool Function()? canServerMove;
+
   void _watchBufferStall(PlayerBackend backend, bool buffering) {
-    if (backend is ServerRebaseBackend) return;
+    if (backend is ServerRebaseBackend || canServerMove == null) return;
     if (!buffering) {
       _bufferStallCheck?.cancel();
       _bufferStallCheck = null;
@@ -1664,6 +1671,7 @@ class PlaybackManager implements AudioOwnable {
       }
       // A reconnect asks the entry address itself.
       if (!hasReconnectableStream || _reconnecting) return;
+      if (!(canServerMove?.call() ?? false)) return;
       _serverStallController.add(null);
     });
   }

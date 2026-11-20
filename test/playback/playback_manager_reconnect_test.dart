@@ -1080,6 +1080,7 @@ void main() {
     test('a player that can\'t watch its requests asks while it buffers', () {
       final resolver = _Resolver();
       _withPlayback(resolver, (async, manager, backend, service) {
+        manager.canServerMove = () => true;
         var stalls = 0;
         manager.serverStalledStream.listen((_) => stalls++);
         backend.emitBuffering(true);
@@ -1096,11 +1097,30 @@ void main() {
       });
     });
 
+    test('buffering on a server that can\'t move asks nothing', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        var stalls = 0;
+        manager.serverStalledStream.listen((_) => stalls++);
+        backend.emitBuffering(true);
+        async.elapse(const Duration(seconds: 30));
+        expect(stalls, 0);
+
+        // Nor once the host says, unless the server can move.
+        manager.canServerMove = () => false;
+        backend.emitBuffering(false);
+        backend.emitBuffering(true);
+        async.elapse(const Duration(seconds: 30));
+        expect(stalls, 0);
+      });
+    });
+
     test('a player that watches its own requests isn\'t asked for by '
         'buffering', () {
       final resolver = _Resolver();
       final backend = _RebaseBackend();
       _withPlayback(resolver, player: backend, (async, manager, _, service) {
+        manager.canServerMove = () => true;
         var stalls = 0;
         manager.serverStalledStream.listen((_) => stalls++);
         backend.emitBuffering(true);

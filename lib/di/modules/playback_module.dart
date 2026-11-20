@@ -719,7 +719,15 @@ void registerPlaybackModule() {
     }
   });
   // A stalled request finds a moved server while the buffer still plays. On
-  // a backend that can't watch its requests, a long buffering stands in.
+  // a backend that can't watch its requests, a long buffering stands in,
+  // but only for a server added through a redirect: for any other, each
+  // ask would only ping a link that is slow already.
+  manager.canServerMove = () {
+    final canMove = ServerMoved.canMove;
+    return canMove != null &&
+        _getIt.isRegistered<MediaServerClient>() &&
+        canMove(_getIt<MediaServerClient>().baseUrl);
+  };
   manager.serverStalledStream.listen((_) {
     if (_getIt.isRegistered<ConnectivityService>()) {
       unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
