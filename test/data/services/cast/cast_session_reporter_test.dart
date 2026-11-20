@@ -171,6 +171,34 @@ void main() {
     expect(service.calls.last, 'stop ${_film.id} 1800');
   });
 
+  test('a stop right after a seek saves where the seek went', () async {
+    var current = _resolution;
+    await reporter.begin(
+      service: service,
+      item: _film,
+      resolution: _resolution,
+      currentResolution: () => current,
+      positionsOnMediaTimeline: true,
+    );
+    receiver = (
+      active: true,
+      itemId: _film.id,
+      state: 'playing',
+      positionTicks: 600 * 10000000,
+    );
+    await reporter.tick();
+    current = const StreamResolutionResult(
+      streamUrl: 'https://silo.example/api/v2/stream/s?seek=1800',
+      mediaSourceId: '4598',
+      playSessionId: 's',
+      playMethod: StreamPlayMethod.directStream,
+      timelineOffset: Duration(minutes: 30),
+      seeksThroughServer: true,
+    );
+    await reporter.end();
+    expect(service.calls.last, 'stop ${_film.id} 1800');
+  });
+
   test('stops when the cast ends, at the last position', () async {
     await begin();
     receiver = (

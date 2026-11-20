@@ -161,10 +161,13 @@ class _Reporting {
   bool played = false;
   bool busy = false;
 
-  /// Takes the stream the receiver plays now.
+  /// Takes the stream the receiver plays now. One the server starts at the
+  /// seek point puts the position there until the receiver reports on it.
   void follow() {
     final current = currentResolution?.call();
-    if (current != null) resolution = current;
+    if (current == null || identical(current, resolution)) return;
+    resolution = current;
+    if (current.seeksThroughServer) position = current.timelineOffset;
   }
 }
 

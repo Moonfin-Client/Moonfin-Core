@@ -464,6 +464,9 @@ class DlnaProvider
             // A stream that doesn't start there is seeked on the renderer.
             startPositionTicks: next.seeksThroughServer ? null : target,
           );
+          // The new stream starts out playing, which covers any Play pressed
+          // before now.
+          cast.playWanted = false;
           // A stop that crossed the send: the renderer may have started it.
           // Unless another cast has the renderer now.
           if (cast.stopped) {
@@ -473,9 +476,8 @@ class DlnaProvider
               } catch (_) {}
             }
           } else if (cast.pauseWanted && identical(_cast, cast)) {
-            // Paused before or while the server answered: the new stream
-            // starts playing.
-            cast.pauseWanted = false;
+            // Paused before or during the seek, so the new stream is paused
+            // too.
             try {
               await _native.pauseDlna();
             } catch (_) {}
@@ -491,6 +493,14 @@ class DlnaProvider
           // A newer seek is queued: serve it rather than drop it with this
           // one's error.
           if (identical(_cast, cast) && cast.seekTarget != target) continue;
+          // The old stream is still on the renderer, so a Play pressed
+          // meanwhile goes to it.
+          if (cast.playWanted && identical(_cast, cast)) {
+            cast.playWanted = false;
+            try {
+              await _native.playDlna();
+            } catch (_) {}
+          }
           rethrow;
         }
       }
@@ -519,8 +529,6 @@ class DlnaProvider
     if (kind != CastTargetKind.dlna) {
       throw UnsupportedError('Unsupported cast kind for DlnaProvider.');
     }
-    // The server has dropped a stream paused this long (by the phone or the
-    // TV's remote): start a new one at the position instead.
     // A seek being served starts its stream playing.
     if (_cast?.seekRunning ?? false) {
       _cast!
@@ -528,6 +536,8 @@ class DlnaProvider
         ..playWanted = true;
       return;
     }
+    // The server has dropped a stream paused this long (by the phone or the
+    // TV's remote): start a new one at the position instead.
     final idle = _cast?.resolution.reopenAfterPause;
     final pausedSince = _native.pausedSince;
     if (idle != null &&
@@ -612,12 +622,13 @@ class _DlnaCast {
   int? seekTarget;
   bool seekRunning = false;
 
-  /// Whether the viewer paused while a seek was being served, which the
-  /// new stream then takes.
+  /// Whether the streams a seek serves end up paused, because the cast was
+  /// paused when the seek began or the viewer paused since. Only Play
+  /// clears it, so a queued seek stays paused too.
   bool pauseWanted = false;
 
-  /// Whether the viewer pressed Play while the new stream's Pause was on
-  /// its way.
+  /// Whether the viewer pressed Play during a seek, and no new stream has
+  /// started playing since.
   bool playWanted = false;
 
   /// Whether the viewer stopped this cast.
