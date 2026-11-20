@@ -190,6 +190,7 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
 
   final hydratedIds = <String>{};
   if (idsToHydrate.isNotEmpty &&
+      timeout > Duration.zero &&
       (fetchSeriesByIds != null || itemsApi != null)) {
     final fetched = <Map<String, dynamic>>[];
     for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
@@ -238,7 +239,6 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
       (item) =>
           collapsedIds.contains(item.id) && !hydratedIds.contains(item.id),
     );
-    Map<String, AggregatedItem>? fallbackById;
     if (hasUnhydrated) {
       final fallback = normalizeLatestMediaItems(
         items,
@@ -246,15 +246,37 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
         limit: items.length,
         hideWatched: true,
       );
-      fallbackById = {for (final item in fallback) item.id: item};
+      final fallbackById = {for (final item in fallback) item.id: item};
+      final unwatchedIndexBySeriesId = <String, int>{};
+      for (var i = 0; i < items.length; i++) {
+        final raw = items[i];
+        if (_isItemWatchedForRecentRow(raw)) continue;
+        final key = (raw.type == 'Episode' || raw.type == 'Season')
+            ? (raw.seriesId ?? raw.id)
+            : raw.id;
+        unwatchedIndexBySeriesId.putIfAbsent(key, () => i);
+      }
+
+      final ordered = <(int, AggregatedItem)>[];
+      for (var i = 0; i < collapsed.length; i++) {
+        final item = collapsed[i];
+        if (collapsedIds.contains(item.id) && !hydratedIds.contains(item.id)) {
+          final fb = fallbackById[item.id];
+          if (fb != null) {
+            ordered.add((unwatchedIndexBySeriesId[fb.id] ?? i, fb));
+          }
+        } else if (!_isItemWatchedForRecentRow(item)) {
+          ordered.add((i, item));
+        }
+      }
+      ordered.sort((a, b) => a.$1.compareTo(b.$1));
+      filtered = [for (final entry in ordered) entry.$2];
+    } else {
+      filtered = [
+        for (final item in collapsed)
+          if (!_isItemWatchedForRecentRow(item)) item,
+      ];
     }
-    filtered = <AggregatedItem>[
-      for (final item in collapsed)
-        if (collapsedIds.contains(item.id) && !hydratedIds.contains(item.id))
-          ?fallbackById?[item.id]
-        else if (!_isItemWatchedForRecentRow(item))
-          item,
-    ];
   } else {
     filtered = collapsed;
   }

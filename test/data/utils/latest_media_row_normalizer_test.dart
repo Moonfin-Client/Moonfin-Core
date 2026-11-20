@@ -841,5 +841,57 @@ void main() {
       expect(result.first.unplayedItemCount, equals(7));
       expect(result.last.unplayedItemCount, isNull);
     });
+
+    test(
+      'preserves filter-before-collapse order when hydration fails for mixed episodes',
+      () async {
+        const aWatchedNewest = AggregatedItem(
+          id: 'ep-a-2',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-a-2',
+            'Name': 'A Ep 2',
+            'Type': 'Episode',
+            'SeriesId': 'series-a',
+            'SeriesName': 'Show A',
+            'UserData': {'Played': true},
+          },
+        );
+        const bUnwatchedMiddle = AggregatedItem(
+          id: 'ep-b-1',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-b-1',
+            'Name': 'B Ep 1',
+            'Type': 'Episode',
+            'SeriesId': 'series-b',
+            'SeriesName': 'Show B',
+            'UserData': {'Played': false},
+          },
+        );
+        const aUnwatchedOldest = AggregatedItem(
+          id: 'ep-a-1',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-a-1',
+            'Name': 'A Ep 1',
+            'Type': 'Episode',
+            'SeriesId': 'series-a',
+            'SeriesName': 'Show A',
+            'UserData': {'Played': false},
+          },
+        );
+
+        final result = await normalizeAndHydrateLatestMediaItems(
+          [aWatchedNewest, bUnwatchedMiddle, aUnwatchedOldest],
+          collectionType: 'tvshows',
+          limit: 1,
+          hideWatched: true,
+          fetchSeriesByIds: (_) async => throw Exception('network error'),
+        );
+
+        expect(result.map((i) => i.id).toList(), equals(['series-b']));
+      },
+    );
   });
 }
