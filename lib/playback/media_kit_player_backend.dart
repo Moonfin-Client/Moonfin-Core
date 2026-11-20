@@ -1913,7 +1913,11 @@ class MediaKitPlayerBackend extends PlayerBackend
         return;
       }
     }
-    if (!_ownsPlayback(generation) || check != _linuxPassthroughCheck) return;
+    if (!_ownsPlayback(generation) ||
+        check != _linuxPassthroughCheck ||
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
+      return;
+    }
     debugPrint('[audio] $format output never played, decoding instead');
     await _nativeSetProperty(native, 'audio-spdif', '');
     // Before mpv 0.41, audio-spdif only takes effect once the audio decoder
