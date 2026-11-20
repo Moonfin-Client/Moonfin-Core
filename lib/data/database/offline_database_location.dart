@@ -8,15 +8,16 @@ const _databasePath = 'Moonfin/DB/offline.db';
 
 /// The offline database file, with its folder created.
 ///
-/// Native builds keep it under Documents. A Flatpak without home access can't
-/// reach that folder, because xdg-user-dir answers $HOME there and that's a
-/// tmpfs wiped on exit. The database would quietly start empty on every
-/// launch, so a Flatpak keeps it in its own data folder instead.
+/// Other native builds keep it under Documents. Linux keeps it in its own data
+/// folder under $XDG_DATA_HOME, like the rest of its files. Documents there is
+/// whatever xdg-user-dir answers, which is $HOME itself when no Documents
+/// folder is set up, and in a Flatpak without home access that $HOME is a
+/// tmpfs wiped on exit.
 Future<File> offlineDatabaseFile() async {
   if (PlatformDetection.isAppleTV) {
     return _fileUnder(await getApplicationCacheDirectory());
   }
-  if (!PlatformDetection.isFlatpak) {
+  if (!PlatformDetection.isLinux) {
     return _fileUnder(await getApplicationDocumentsDirectory());
   }
 
@@ -31,10 +32,9 @@ Future<File> _fileUnder(Directory base) async {
   return file;
 }
 
-// Earlier Flatpak builds had home access and kept the database under
-// Documents. When the manifest still lets the app read that copy, take it over
-// once so existing downloads survive. It's copied rather than moved because a
-// native install may share it.
+// Earlier Linux builds kept the database under Documents. When the app can
+// still read that copy, take it over once so existing downloads survive. It's
+// copied rather than moved because an older build may still use it.
 Future<void> _copyFromDocuments(File target) async {
   try {
     final docs = await getApplicationDocumentsDirectory();
