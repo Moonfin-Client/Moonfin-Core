@@ -58,6 +58,9 @@ class SeerrNotificationService {
   @visibleForTesting
   VoidCallback? serverMessagesOpener;
 
+  @visibleForTesting
+  bool Function()? isNavigatorMounted;
+
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
     LocalNotificationBootstrap.instance.attachMainIsolateActionHandler();
@@ -268,17 +271,45 @@ class SeerrNotificationService {
     if (route == null || route.trim().isEmpty) return;
     final trimmed = route.trim();
     if (trimmed == serverMessagesPushRoute) {
-      if (serverMessagesOpener != null) {
-        serverMessagesOpener!();
-      } else {
-        openServerMessagesFromNotification();
-      }
+      await _openMessagesWhenMounted();
       return;
     }
     if (routeNavigator != null) {
       routeNavigator!(trimmed);
     } else {
       appRouter.go(trimmed);
+    }
+  }
+
+  Future<void> _openMessagesWhenMounted() async {
+    final isMounted = isNavigatorMounted ??
+        (serverMessagesOpener != null
+            ? () => true
+            : () {
+                final ctx = appRouter.routerDelegate.navigatorKey.currentContext;
+                return ctx != null && ctx.mounted;
+              });
+
+    if (isMounted()) {
+      _dispatchServerMessages();
+      return;
+    }
+
+    // Keep the route pending until the navigator has mounted.
+    for (var i = 0; i < 50; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      if (isMounted()) {
+        _dispatchServerMessages();
+        return;
+      }
+    }
+  }
+
+  void _dispatchServerMessages() {
+    if (serverMessagesOpener != null) {
+      serverMessagesOpener!();
+    } else {
+      openServerMessagesFromNotification();
     }
   }
 }

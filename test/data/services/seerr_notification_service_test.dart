@@ -217,6 +217,23 @@ void main() {
       expect(routedPath, isNull);
     });
 
+    test('waits for navigator to mount before opening server messages dialog', () async {
+      var checkCount = 0;
+      var messagesOpened = false;
+
+      service.launchRouteResolver = () async => 'messages';
+      service.serverMessagesOpener = () => messagesOpened = true;
+      service.isNavigatorMounted = () {
+        checkCount++;
+        return checkCount >= 3;
+      };
+
+      await service.handleColdStart();
+
+      expect(checkCount, equals(3));
+      expect(messagesOpened, isTrue);
+    });
+
     test('routes standard launch routes to routeNavigator', () async {
       var messagesOpened = false;
       String? routedPath;
