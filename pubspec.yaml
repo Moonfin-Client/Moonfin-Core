@@ -266,10 +266,10 @@ dependency_overrides:
   # idle under Wayland stops presenting, so a long gap between mpv frames
   # rebuilds the texture, and frame notifications move onto the main thread.
   # It also keeps a size set with setSize when a video with new dimensions
-  # loads, which the desktop texture cap relies on. The pinned commit sits
-  # ahead of the published release, so it also carries unreleased upstream
-  # work on the Apple and Dart sides. Re-check those builds when moving the
-  # ref, and drop this once both fixes reach a published version.
+  # loads, which the desktop texture cap relies on.
+  # The pinned commit sits ahead of the published release, so it also carries
+  # unreleased upstream work on the Apple and Dart sides. Re-check those builds
+  # when moving the ref, and drop this once the fixes reach a published version.
   media_kit_video:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
