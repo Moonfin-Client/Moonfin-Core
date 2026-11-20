@@ -142,6 +142,7 @@ void main() {
     expect(initial.payload, equals('/requests/99'));
     expect(initial.details.android?.actions, isEmpty);
     expect(initial.details.android?.playSound, isTrue);
+    expect(initial.details.android?.onlyAlertOnce, isFalse);
 
     // 2. Stream event arrives with requestId populated
     service.show(

@@ -176,7 +176,7 @@ class SeerrNotificationService {
         channelDescription: seerrNotificationChannelDesc,
         importance: silent ? Importance.low : Importance.defaultImportance,
         priority: silent ? Priority.low : Priority.defaultPriority,
-        onlyAlertOnce: true,
+        onlyAlertOnce: silent,
         playSound: !silent,
         enableVibration: !silent,
         autoCancel: true,
