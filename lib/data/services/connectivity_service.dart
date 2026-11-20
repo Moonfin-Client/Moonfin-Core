@@ -282,12 +282,27 @@ class ConnectivityService extends ChangeNotifier {
         getIt<PlaybackManager>().state.isPlaying;
   }
 
-  Future<void> _checkServerReachability() => _inFlightProbe ??= _probeServer()
-      .whenComplete(() => _inFlightProbe = null);
+  Future<void> _checkServerReachability() => _inFlightProbe ??=
+      _probeCurrentServer().whenComplete(() => _inFlightProbe = null);
 
-  Future<void> _probeServer() async {
-    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+  /// A caller that joins a running probe asks about the server and address
+  /// of now, so a probe overtaken by a server switch or a move found
+  /// elsewhere (a failed request, the player) runs again for what is current.
+  Future<void> _probeCurrentServer() async {
+    while (!await _probeServer()) {}
+  }
+
+  /// Whether the probe's verdict was taken. False when the active server,
+  /// its client or its address changed while the pings were out: that
+  /// verdict is about something no longer asked for.
+  Future<bool> _probeServer() async {
+    if (_disposed || !GetIt.instance.isRegistered<MediaServerClient>()) {
+      return true;
+    }
+    // Paired here, as a switch can replace both while the pings wait.
     final client = GetIt.instance<MediaServerClient>();
+    final serverId = _serverId;
+    var probedUrl = client.baseUrl;
     final wasReachable = _serverReachable;
     var reachable = false;
     // A pooled connection the server already dropped fails exactly like a
@@ -303,10 +318,19 @@ class ConnectivityService extends ChangeNotifier {
         // Ping shouldn't throw, but a client that does still means no answer.
       }
     }
-    if (!reachable && _isOnline && await _followEntryAddress(client)) {
+    if (!reachable &&
+        _isOnline &&
+        _isCurrent(client, serverId) &&
+        await _followEntryAddress(client, serverId)) {
+      // The move this probe found itself is the address it now asks.
+      probedUrl = client.baseUrl;
       try {
         reachable = await client.systemApi.ping();
       } catch (_) {}
+    }
+    if (_disposed) return true;
+    if (!_isCurrent(client, serverId) || client.baseUrl != probedUrl) {
+      return false;
     }
     _serverReachable = reachable;
     if (!_serverReachable && wasReachable) {
@@ -324,15 +348,27 @@ class ConnectivityService extends ChangeNotifier {
       _scheduleRetry();
     }
     notifyListeners();
+    return true;
   }
 
-  /// Whether the server's entry address now redirects to a new address, which
-  /// [client] then uses. A server added through a redirect to a dynamic
-  /// `host:port` (VPN port forwarding behind a stable name) stops answering
-  /// when the target moves, and only the entry address knows where it went.
-  Future<bool> _followEntryAddress(MediaServerClient client) async {
+  /// Whether [client] and [serverId] are still the active pair.
+  bool _isCurrent(MediaServerClient client, String? serverId) {
+    final getIt = GetIt.instance;
+    return serverId == _serverId &&
+        getIt.isRegistered<MediaServerClient>() &&
+        identical(getIt<MediaServerClient>(), client);
+  }
+
+  /// Whether the entry address of [serverId] now redirects to a new address,
+  /// which [client], that server's client, then uses. A server added through
+  /// a redirect to a dynamic `host:port` (VPN port forwarding behind a stable
+  /// name) stops answering when the target moves, and only the entry address
+  /// knows where it went.
+  Future<bool> _followEntryAddress(
+    MediaServerClient client,
+    String? serverId,
+  ) async {
     _listenForMoves();
-    final serverId = _serverId;
     final getIt = GetIt.instance;
     if (serverId == null || !getIt.isRegistered<ServerRepository>()) {
       return false;
@@ -365,7 +401,9 @@ class ConnectivityService extends ChangeNotifier {
   /// stream restarted later still finds the new address.
   Future<void> onStreamConnectionLost() async {
     final getIt = GetIt.instance;
-    if (!_isOnline || !getIt.isRegistered<MediaServerClient>()) return;
+    if (_disposed || !_isOnline || !getIt.isRegistered<MediaServerClient>()) {
+      return;
+    }
     if (_followingLostStream) return;
     _followingLostStream = true;
     try {
@@ -374,13 +412,16 @@ class ConnectivityService extends ChangeNotifier {
       // answers) from one that moved, without holding up the first ask.
       unawaited(_checkServerReachability());
       while (true) {
-        if (await _followEntryAddress(getIt<MediaServerClient>())) {
-          await _checkServerReachability();
+        if (await _followEntryAddress(getIt<MediaServerClient>(), _serverId)) {
+          if (!_disposed) await _checkServerReachability();
           return;
         }
+        if (_disposed) return;
         await Future<void>.delayed(_entryFollowInterval);
+        if (_disposed) return;
         if (!_isOnline || DateTime.now().isAfter(deadline)) break;
         if (!_playerReconnecting() && _serverReachable) return;
+        if (!getIt.isRegistered<MediaServerClient>()) return;
       }
       await _checkServerReachability();
     } finally {
@@ -430,6 +471,9 @@ class ConnectivityService extends ChangeNotifier {
 
   void _scheduleRetry() {
     _retryTimer?.cancel();
+    // dispose already cancelled the last one, and a late probe must not
+    // start another.
+    if (_disposed) return;
     final delay = _retryBase * (1 << _retryAttempt);
     _retryTimer = Timer(delay < _retryCap ? delay : _retryCap, () {
       _retryTimer = null;
