@@ -9,8 +9,6 @@ import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/store/authentication_preferences.dart';
 import '../../auth/store/authentication_store.dart';
-import '../../data/models/aggregated_library.dart';
-import '../../data/repositories/multi_server_repository.dart';
 import '../../data/repositories/user_views_repository.dart';
 import '../../data/services/pin_guard.dart';
 import '../../data/services/server_pin_service.dart';
@@ -198,6 +196,8 @@ Future<void> openLinkedRoute(GoRouter router, String route) async {
     );
     router.go(Destinations.home);
     await WidgetsBinding.instance.endOfFrame;
+    // Two settings links in one frame would otherwise both open a panel.
+    if (link != _latestLink) return;
     final context = router.routerDelegate.navigatorKey.currentContext;
     if (context != null && context.mounted) {
       unawaited(SettingsPanel.open(context, const SettingsSidePanel()));
@@ -226,23 +226,13 @@ String? _libraryLinkId(String route) {
 }
 
 /// A library link carries only the id, so this finds the library among the
-/// ones the nav shows to open the screen its entry would. One that isn't
-/// there opens Home.
+/// signed-in server's own libraries to open the screen its nav entry would.
+/// One that isn't there, including one on another server, opens Home.
 Future<String> _libraryRoute(String id) async {
-  AggregatedLibrary? find(List<AggregatedLibrary> libraries) =>
-      libraries.where((l) => l.id == id).firstOrNull;
   try {
     final getIt = GetIt.instance;
-    final multiServer = getIt<UserPreferences>().get(
-      UserPreferences.enableMultiServerLibraries,
-    );
-    var library = multiServer
-        ? find(await getIt<MultiServerRepository>().getAggregatedLibraries())
-        : null;
-    // Merging swaps each server's movie and show libraries for one merged
-    // entry, so a server's own library id is also looked for among the signed
-    // in server's libraries.
-    library ??= find(await getIt<UserViewsRepository>().getUserViews());
+    final libraries = await getIt<UserViewsRepository>().getUserViews();
+    final library = libraries.where((l) => l.id == id).firstOrNull;
     if (library != null) {
       await getIt<GameLibraryRegistry>().refresh();
       return libraryRoute(
