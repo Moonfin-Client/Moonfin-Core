@@ -7,7 +7,6 @@ import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../util/platform_detection.dart';
-import '../../../playback/device_profile_builder.dart';
 import '../../../playback/silo_playback_environment.dart';
 import '../../../playback/silo_plugin_for.dart';
 import '../../models/aggregated_item.dart';
@@ -17,6 +16,93 @@ import 'cast_session_reporter.dart';
 import 'cast_target.dart';
 import 'cast_transport_controls.dart';
 import 'native_dlna_channel.dart';
+import 'receiver_device_profiles.dart';
+
+/// The MIME type a DLNA renderer is told the stream has. Some renderers (LG)
+/// refuse a URI whose metadata names none, and the server's extension-less
+/// stream paths leave nothing else to go by.
+String dlnaMimeType(StreamResolutionResult resolution) {
+  final audio = resolution.mediaType.toLowerCase() == 'audio';
+  final path = Uri.tryParse(resolution.streamUrl)?.path.toLowerCase() ?? '';
+  // ffprobe names an MP4 'mov,mp4,m4a,3gp,3g2,mj2', so MP4 wins a list.
+  final containers = (resolution.container ?? '').toLowerCase().split(',');
+  final container = containers.contains('mp4') ? 'mp4' : containers.first;
+  if (path.endsWith('.m3u8') || container == 'hls' || container == 'm3u8') {
+    return 'application/vnd.apple.mpegurl';
+  }
+  // Jellyfin and Emby report the source's container for a conversion too.
+  // The DLNA profile converts audio to MP3, and video to one MPEG-TS stream
+  // whose path ends in .ts.
+  if (audio && resolution.playMethod == StreamPlayMethod.transcode) {
+    return 'audio/mpeg';
+  }
+  if (!audio && path.endsWith('.ts')) return 'video/mp2t';
+  return switch (container) {
+    'mkv' || 'matroska' => audio ? 'audio/x-matroska' : 'video/x-matroska',
+    'mp4' || 'm4v' => audio ? 'audio/mp4' : 'video/mp4',
+    'mov' => 'video/quicktime',
+    'ts' || 'mpegts' || 'm2ts' => 'video/mp2t',
+    'webm' => audio ? 'audio/webm' : 'video/webm',
+    'avi' => 'video/x-msvideo',
+    'mp3' => 'audio/mpeg',
+    'aac' => 'audio/aac',
+    'm4a' || 'm4b' => 'audio/mp4',
+    'flac' => 'audio/flac',
+    'wav' => 'audio/wav',
+    'ogg' || 'oga' => 'audio/ogg',
+    _ => audio ? 'audio/*' : 'video/*',
+  };
+}
+
+/// The DLNA fourth field of the res protocolInfo. A file the server sends as
+/// it is takes byte-range seeks, and without that flag some renderers (LG)
+/// accept a Seek and stay where they are. A remux, transcode or HLS playlist
+/// is produced as it plays and has no bytes to seek in, so it claims nothing.
+String dlnaFeatures(StreamResolutionResult resolution) {
+  if (resolution.playMethod != StreamPlayMethod.directPlay ||
+      dlnaMimeType(resolution) == 'application/vnd.apple.mpegurl') {
+    return '*';
+  }
+  return 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000';
+}
+
+/// Whether the cast needs the server to apply the track pick. A DLNA TV
+/// playing the file plays the audio track the file flags as default (or its
+/// first) and no subtitle, so only another audio track or a subtitle has to
+/// be converted in. The server's DefaultAudioStreamIndex follows the user's
+/// language preference, not the file, so it doesn't count. When the version
+/// or its tracks are unknown, the server applies the pick. The cast sheet
+/// passes the default audio track too, and treating that as a pick converted
+/// every cast, which Emby and Jellyfin then send as HLS that some TVs (LG)
+/// never start.
+bool dlnaNeedsServerTrackPick(
+  AggregatedItem item, {
+  String? mediaSourceId,
+  int? audioStreamIndex,
+  int? subtitleStreamIndex,
+}) {
+  if (subtitleStreamIndex != null && subtitleStreamIndex >= 0) return true;
+  if (audioStreamIndex == null) return false;
+  final sources = item.mediaSources;
+  final source = mediaSourceId == null
+      ? (sources.length == 1 ? sources.single : null)
+      : sources.where((s) => s['Id'] == mediaSourceId).firstOrNull;
+  if (source == null) return true;
+  final fileDefault = _defaultAudioIndex(_toStreams(source['MediaStreams']));
+  return fileDefault == null || audioStreamIndex != fileDefault;
+}
+
+List<Map<String, dynamic>> _toStreams(Object? value) => value is List
+    ? value.whereType<Map>().map((m) => m.cast<String, dynamic>()).toList()
+    : const [];
+
+int? _defaultAudioIndex(List<Map<String, dynamic>> streams) {
+  final audio = streams.where((s) => s['Type'] == 'Audio');
+  final chosen =
+      audio.where((s) => s['IsDefault'] == true).firstOrNull ??
+      audio.firstOrNull;
+  return (chosen?['Index'] as num?)?.toInt();
+}
 
 class DlnaProvider
     implements CastProvider, CastTransportControls, CastServerPlaybackSource {
@@ -81,11 +167,17 @@ class DlnaProvider
     int? subtitleStreamIndex,
   }) async {
     final client =
-        _clientFactory.getClientIfExists(item.serverId) ?? GetIt.instance<MediaServerClient>();
-    final hasExplicitIndices = audioStreamIndex != null || subtitleStreamIndex != null;
+        _clientFactory.getClientIfExists(item.serverId) ??
+        GetIt.instance<MediaServerClient>();
+    final hasExplicitIndices = dlnaNeedsServerTrackPick(
+      item,
+      mediaSourceId: mediaSourceId,
+      audioStreamIndex: audioStreamIndex,
+      subtitleStreamIndex: subtitleStreamIndex,
+    );
     final resolution = await _resolverForClient(client).resolve(
       item,
-      deviceProfile: DeviceProfileBuilder.build(),
+      deviceProfile: dlnaDeviceProfile(),
       audioStreamIndex: audioStreamIndex,
       subtitleStreamIndex: subtitleStreamIndex,
       mediaSourceId: mediaSourceId,
@@ -98,6 +190,8 @@ class DlnaProvider
       targetId: target.id,
       streamUrl: streamUrl,
       title: item.name,
+      mimeType: dlnaMimeType(resolution),
+      dlnaFeatures: dlnaFeatures(resolution),
       startPositionTicks: startPositionTicks,
     );
     _serverPlayback = castNeedsSessionReports(client)

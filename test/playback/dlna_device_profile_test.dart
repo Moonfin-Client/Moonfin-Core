@@ -1,0 +1,107 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/services/cast/receiver_device_profiles.dart';
+import 'package:playback_silo/playback_silo.dart';
+
+void main() {
+  group('dlnaDeviceProfile', () {
+    // The phone's own default profile once went to the renderer, which marks
+    // H264 and HEVC as never playable, so Silo refused every video with no
+    // codec to play or to convert to.
+    test('gives Silo H264 and HEVC to play and to keep over HLS', () {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        dlnaDeviceProfile(),
+        traits: SiloPlayerTraits.castReceiver,
+      );
+
+      final codecs = capabilities.clientCapabilities['codecs_video'] as List;
+      expect(codecs, containsAll(['h264', 'hevc']));
+
+      final hls = capabilities.deliveries['hls']!;
+      expect(hls['supported_on_device'], isTrue);
+      expect(hls['video_codecs'], containsAll(['h264', 'hevc']));
+    });
+
+    // Jellyfin and Emby take the first transcoding profile, and an LG can't
+    // open HLS: a converted title stuck the TV until it was stopped.
+    test(
+      'converts video for Jellyfin and Emby to one MPEG-TS stream first',
+      () {
+        final video = (dlnaDeviceProfile()['TranscodingProfiles'] as List)
+            .cast<Map<String, dynamic>>()
+            .where((p) => p['Type'] == 'Video')
+            .toList();
+        expect(video.first['Protocol'], 'http');
+        expect(video.first['Container'], 'ts');
+        expect(video.last['Protocol'], 'hls');
+      },
+    );
+
+    test('plays a Matroska original as it is', () {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        dlnaDeviceProfile(),
+        traits: SiloPlayerTraits.castReceiver,
+      );
+
+      final original = capabilities.deliveries['original_http']!;
+      expect(original['containers'], contains('mkv'));
+      expect(original['audio_decode_codecs'], containsAll(['aac', 'ac3']));
+    });
+
+    test('offers Silo only Dolby Vision profile 8', () {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        dlnaDeviceProfile(),
+        traits: SiloPlayerTraits.castReceiver,
+      );
+
+      final hdr = capabilities.clientCapabilities['hdr_details'] as Map;
+      expect(hdr['dolby_vision_profiles'], [8]);
+      expect(hdr['hdr10'], isTrue);
+    });
+
+    test('direct plays MPEG-TS under both names', () {
+      final video = (dlnaDeviceProfile()['DirectPlayProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Type'] == 'Video');
+      expect(
+        (video['Container'] as String).split(','),
+        containsAll(['ts', 'mpegts']),
+      );
+    });
+
+    test('converts H264 profiles a TV cannot decode, such as High 10', () {
+      final h264 = (dlnaDeviceProfile()['CodecProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Codec'] == 'h264');
+      final profiles = (h264['Conditions'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((c) => c['Property'] == 'VideoProfile');
+      expect(profiles['Condition'], 'EqualsAny');
+      final allowed = (profiles['Value'] as String).split('|');
+      expect(allowed, contains('high'));
+      expect(allowed, isNot(contains('high 10')));
+    });
+
+    // The names must match Jellyfin's VideoRangeType exactly to apply.
+    test('keeps every Dolby Vision type without an HDR10 base off HEVC', () {
+      final hevc = (dlnaDeviceProfile()['CodecProfiles'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((p) => p['Codec'] == 'hevc');
+      final ruledOut = [
+        for (final c
+            in (hevc['Conditions'] as List).cast<Map<String, dynamic>>())
+          if (c['Property'] == 'VideoRangeType' &&
+              c['Condition'] == 'NotEquals')
+            c['Value'],
+      ];
+      expect(
+        ruledOut,
+        unorderedEquals([
+          'DOVI',
+          'DOVIWithEL',
+          'DOVIWithELHDR10Plus',
+          'DOVIInvalid',
+        ]),
+      );
+    });
+  });
+}
