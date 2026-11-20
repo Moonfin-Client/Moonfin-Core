@@ -40,13 +40,14 @@ class ServerRepository {
   final Set<String> _typedHosts = {};
 
   /// Whether [host] belongs to a saved server at any address it's reached on,
-  /// or to one the user typed. Self-signed certificates are only accepted for
-  /// these.
+  /// the entry address it was added through included, or to one the user
+  /// typed. Self-signed certificates are only accepted for these.
   bool _isOwnServerHost(String host) =>
       _typedHosts.contains(host) ||
       _servers.any(
         (s) => [
           s.address,
+          ?s.entryAddress,
           ...s.candidateAddresses,
         ].any((a) => Uri.tryParse(a)?.host == host),
       );
@@ -186,6 +187,9 @@ class ServerRepository {
             serverType: serverType,
             entryAddress: redirected ? candidate : null,
             entryServerId: entryServerId,
+            // Added at its target directly: the old entry address must not
+            // move it away from the address the user picked.
+            clearEntryAddress: !redirected,
             dateLastAccessed: DateTime.now(),
           );
           await _authStore.putServer(updated);
@@ -274,12 +278,17 @@ class ServerRepository {
   Future<Server> _checkedType(Server server) async {
     const switchable = {ServerType.jellyfin, ServerType.emby};
     if (!switchable.contains(server.serverType)) return server;
+    final wasSaved = getServer(server.id) != null;
     try {
       final (_, detected, _) = await _probeServer(server.address);
       if (!switchable.contains(detected) || detected == server.serverType) {
         return server;
       }
-      final corrected = server.copyWith(serverType: detected);
+      // The record as saved now: an entry address followed during the probe
+      // may have moved it, and a removed server must stay removed.
+      final current = getServer(server.id);
+      if (wasSaved && current == null) return server;
+      final corrected = (current ?? server).copyWith(serverType: detected);
       await saveServer(corrected);
       return corrected;
     } catch (_) {
@@ -325,13 +334,24 @@ class ServerRepository {
   /// [baseUrl] belongs to, when a request to it couldn't connect. All requests
   /// that fail together share one ask, and an ask that found nothing holds for
   /// a few seconds, so a dead server isn't asked once per request.
+  ///
+  /// A request to an address its server already moved away from gets the
+  /// address it moved to, since a request that started before the move can
+  /// fail after it, when no saved server uses its address any more.
   Future<String?> followMovedAddress(String baseUrl) {
     final wanted = _withoutTrailingSlash(baseUrl);
     final server = _servers
         .where((s) => s.entryAddress != null)
         .where((s) => _withoutTrailingSlash(s.address) == wanted)
         .firstOrNull;
-    if (server == null) return Future.value();
+    if (server == null) {
+      final movedId = _movedAway[wanted];
+      final current = movedId == null ? null : getServer(movedId);
+      if (current == null || _withoutTrailingSlash(current.address) == wanted) {
+        return Future.value();
+      }
+      return Future.value(current.address);
+    }
     final asked = _lastFruitlessAsk[server.id];
     if (asked != null &&
         DateTime.now().difference(asked) < _fruitlessAskHold) {
@@ -366,6 +386,22 @@ class ServerRepository {
   final _lastFruitlessAsk = <String, DateTime>{};
   static const _fruitlessAskHold = Duration(seconds: 3);
 
+  /// Addresses saved servers moved away from, without a trailing slash, to
+  /// the id of the server that moved, oldest first. Only the latest
+  /// [_movedAwayLimit] are kept: they're for requests still on the way.
+  final _movedAway = <String, String>{};
+  static const _movedAwayLimit = 16;
+
+  void _rememberMovedAway(String from, String serverId) {
+    final key = _withoutTrailingSlash(from);
+    _movedAway
+      ..remove(key)
+      ..[key] = serverId;
+    while (_movedAway.length > _movedAwayLimit) {
+      _movedAway.remove(_movedAway.keys.first);
+    }
+  }
+
   static String _withoutTrailingSlash(String url) =>
       url.endsWith('/') ? url.substring(0, url.length - 1) : url;
 
@@ -373,13 +409,27 @@ class ServerRepository {
     final entry = server.entryAddress;
     final entryServerId = server.entryServerId;
     if (entry == null || entryServerId == null) return server;
+    final wasSaved = getServer(server.id) != null;
     try {
       final (info, _, resolvedUrl) = await _probeServer(entry);
       if (resolvedUrl.isEmpty || resolvedUrl == server.address) return server;
       if (info['Id']?.toString() != entryServerId) return server;
-      final moved = server.copyWith(address: resolvedUrl);
+      // The answer only holds for the record the probe started from: one
+      // removed meanwhile stays removed, and one that moved or was added
+      // again meanwhile keeps what it has now.
+      final current = getServer(server.id);
+      if (wasSaved) {
+        if (current == null) return server;
+        if (current.address != server.address ||
+            current.entryAddress != entry ||
+            current.entryServerId != entryServerId) {
+          return current;
+        }
+      }
+      final moved = (current ?? server).copyWith(address: resolvedUrl);
       await updateServer(moved);
       _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
+      _rememberMovedAway(server.address, server.id);
       _movedController.add(ServerMove(from: server.address, server: moved));
       return moved;
     } catch (_) {
@@ -417,12 +467,14 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
+  /// Saves [server] and then replaces the one with its id in the list, so a
+  /// save that fails leaves the list as it was.
   Future<void> updateServer(Server server) async {
+    await _authStore.putServer(server);
     final index = _servers.indexWhere((s) => s.id == server.id);
     if (index >= 0) {
       _servers[index] = server;
     }
-    await _authStore.putServer(server);
   }
 
   Future<void> deleteServer(String serverId) async {

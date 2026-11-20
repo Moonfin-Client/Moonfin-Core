@@ -10,14 +10,25 @@ import 'package:server_core/server_core.dart';
 
 class _AuthStore extends Fake implements AuthenticationStore {
   final saved = <Server>[];
+  final removed = <String>[];
+  var failPuts = false;
 
   @override
-  Future<void> putServer(Server server) async => saved.add(server);
+  Future<void> putServer(Server server) async {
+    if (failPuts) throw StateError('disk full');
+    saved.add(server);
+  }
+
+  @override
+  Future<void> removeServer(String serverId) async => removed.add(serverId);
 }
 
 class _ClientFactory extends Fake implements MediaServerClientFactory {
   @override
   MediaServerClient? getClientIfExists(String serverId) => null;
+
+  @override
+  void removeClient(String serverId) {}
 }
 
 void main() {
@@ -137,6 +148,78 @@ void main() {
     expect(moves.single.server.address, targetUrl());
     expect(moves.single.from, 'http://127.0.0.1:1');
     await sub.cancel();
+  });
+
+  test('a request that fails after the move still gets the new address',
+      () async {
+    await repo.saveServer(saved());
+    expect(await repo.followMovedAddress('http://127.0.0.1:1'), targetUrl());
+
+    // A request that started on the old address before the move and failed
+    // after it: no saved server uses that address any more.
+    expect(await repo.followMovedAddress('http://127.0.0.1:1/'), targetUrl());
+    expect(await repo.followMovedAddress('http://127.0.0.1:2'), isNull);
+  });
+
+  test('a server removed while its entry address is asked stays removed',
+      () async {
+    await repo.saveServer(saved());
+    store.saved.clear();
+
+    final asking = repo.withFollowedEntryAddress(repo.getServer('server-1')!);
+    await repo.deleteServer('server-1');
+    await asking;
+
+    expect(repo.getServer('server-1'), isNull);
+    expect(store.saved, isEmpty);
+    expect(store.removed, ['server-1']);
+  });
+
+  test('an answer for an address the server already left is dropped',
+      () async {
+    await repo.saveServer(saved());
+    store.saved.clear();
+
+    final asking = repo.withFollowedEntryAddress(repo.getServer('server-1')!);
+    // Meanwhile something else moved it.
+    await repo.updateServer(
+      repo.getServer('server-1')!.copyWith(address: 'http://127.0.0.1:3'),
+    );
+    final followed = await asking;
+
+    expect(followed.address, 'http://127.0.0.1:3');
+    expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:3');
+    expect(store.saved.single.address, 'http://127.0.0.1:3');
+  });
+
+  test('a move that could not be saved leaves the list as it was', () async {
+    await repo.saveServer(saved());
+    store.failPuts = true;
+
+    expect(await repo.followEntryAddressOf('server-1'), isNull);
+    expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:1');
+  });
+
+  test('adding a server at its target directly drops its entry address',
+      () async {
+    await repo.saveServer(saved().copyWith(address: targetUrl()));
+
+    final server = await repo.addServer(targetUrl());
+
+    expect(server!.id, 'server-1');
+    expect(server.entryAddress, isNull);
+    expect(server.entryServerId, isNull);
+    expect(repo.getServer('server-1')!.entryAddress, isNull);
+  });
+
+  test('adding it through the redirect again keeps its entry address',
+      () async {
+    await repo.saveServer(saved().copyWith(address: targetUrl()));
+
+    final server = await repo.addServer(entryUrl());
+
+    expect(server!.entryAddress, entryUrl());
+    expect(server.entryServerId, 'abc');
   });
 
   test('only a server added through a redirect can move', () async {
