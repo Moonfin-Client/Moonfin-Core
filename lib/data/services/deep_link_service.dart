@@ -100,7 +100,9 @@ class DeepLinkService {
     final id = uri.queryParameters['id'];
     if (!isHome && (id == null || id.isEmpty)) return null;
     // The navigator looks the library up to pick its screen.
-    if (uri.host == 'library') return Destinations.library(id!);
+    if (uri.host == 'library') {
+      return Destinations.library(Uri.encodeComponent(id!));
+    }
     final serverId = uri.queryParameters['serverId'];
     final userId = uri.queryParameters['userId'];
     final params = <String, String>{

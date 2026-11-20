@@ -80,6 +80,12 @@ void main() {
         '/library/lib1',
       );
       expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse('moonfin://library?id=lib1%3Fbogus%3D1'),
+        ),
+        '/library/lib1%3Fbogus%3D1',
+      );
+      expect(
         DeepLinkService.routeForDeepLink(Uri.parse('moonfin://library')),
         isNull,
       );

@@ -2,18 +2,58 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/aggregated_library.dart';
+import 'package:moonfin/data/repositories/user_views_repository.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/deep_link_navigator.dart';
-import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
+import 'package:moonfin/util/game_library.dart';
+import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _Client extends Mock implements MediaServerClient {}
+
+/// The signed-in server's libraries, held back until [views] completes.
+class _Views extends UserViewsRepository {
+  _Views() : super(_Client());
+
+  Completer<List<AggregatedLibrary>> views = Completer();
+
+  @override
+  Future<List<AggregatedLibrary>> getUserViews() => views.future;
+}
+
+const _movies = AggregatedLibrary(
+  id: 'movies1',
+  name: 'Movies',
+  collectionType: 'movies',
+  serverId: 's1',
+);
+const _games = AggregatedLibrary(
+  id: 'games1',
+  name: 'Games',
+  collectionType: 'mixed',
+  serverId: 's1',
+);
 
 void main() {
   GoRouter buildRouter() => GoRouter(
     initialLocation: '/search',
     routes: [
-      for (final path in ['/home', '/search', '/item/1', '/watch-party'])
+      for (final path in [
+        '/home',
+        '/search',
+        '/item/1',
+        '/watch-party',
+        '/library/:id',
+        '/games/:id',
+      ])
         GoRoute(
           path: path,
-          builder: (_, _) => Scaffold(body: Text(path)),
+          builder: (_, state) => Scaffold(body: Text(state.uri.path)),
         ),
       GoRoute(
         path: '/live-tv',
@@ -61,24 +101,63 @@ void main() {
     expect(router.canPop(), isFalse);
   });
 
-  testWidgets('a library link it can\'t look up opens Home', (tester) async {
-    final router = buildRouter();
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    unawaited(openLinkedRoute(router, '/library/unknown'));
-    await tester.pumpAndSettle();
-    expect(find.text('/home'), findsOneWidget);
-  });
+  group('library links', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      GetIt.instance
+        ..registerSingleton<UserPreferences>(UserPreferences(store))
+        ..registerSingleton<GameLibraryRegistry>(
+          GameLibraryRegistry()..seed([_games.id]),
+        );
+    });
 
-  testWidgets('a settings link over an open panel doesn\'t stack another', (
-    tester,
-  ) async {
-    final router = buildRouter();
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    SettingsPanel.isOpenNotifier.value = true;
-    addTearDown(() => SettingsPanel.isOpenNotifier.value = false);
-    unawaited(openLinkedRoute(router, '/settings'));
-    await tester.pumpAndSettle();
-    expect(find.text('/home'), findsOneWidget);
-    expect(find.byType(SettingsPanel), findsNothing);
+    tearDown(GetIt.instance.reset);
+
+    // Made inside each test, so the lookup's future settles in its fake time.
+    _Views registerViews() =>
+        GetIt.instance.registerSingleton<UserViewsRepository>(_Views())
+            as _Views;
+
+    testWidgets('open the screen the library\'s nav entry opens', (
+      tester,
+    ) async {
+      registerViews().views.complete([_movies, _games]);
+      final router = buildRouter();
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+
+      unawaited(openLinkedRoute(router, '/library/movies1'));
+      await tester.pumpAndSettle();
+      expect(find.text('/library/movies1'), findsOneWidget);
+
+      unawaited(openLinkedRoute(router, '/library/games1'));
+      await tester.pumpAndSettle();
+      expect(find.text('/games/games1'), findsOneWidget);
+    });
+
+    testWidgets('an id that isn\'t a library opens Home', (tester) async {
+      registerViews().views.complete([_movies]);
+      final router = buildRouter();
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      unawaited(openLinkedRoute(router, '/library/unknown'));
+      await tester.pumpAndSettle();
+      expect(find.text('/home'), findsOneWidget);
+    });
+
+    testWidgets('a lookup that ends after a newer link leaves it open', (
+      tester,
+    ) async {
+      final views = registerViews();
+      final router = buildRouter();
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      unawaited(openLinkedRoute(router, '/library/movies1'));
+      unawaited(openLinkedRoute(router, '/item/1'));
+      await tester.pumpAndSettle();
+
+      views.views.complete([_movies]);
+      await tester.pumpAndSettle();
+      expect(find.text('/item/1'), findsOneWidget);
+    });
   });
 }

@@ -9,6 +9,7 @@ import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/store/authentication_preferences.dart';
 import '../../auth/store/authentication_store.dart';
+import '../../data/models/aggregated_library.dart';
 import '../../data/repositories/multi_server_repository.dart';
 import '../../data/repositories/user_views_repository.dart';
 import '../../data/services/pin_guard.dart';
@@ -182,16 +183,23 @@ Future<void> _navigate(String route, String? pinnedUserId) async {
 /// so those open over Home instead, as the in-app entry points do. A watch
 /// party link does the same, so its screen has a way back.
 Future<void> openLinkedRoute(GoRouter router, String route) async {
-  if (_libraryLinkId(route) case final id?) route = await _libraryRoute(id);
+  final link = ++_latestLink;
+  if (_libraryLinkId(route) case final id?) {
+    route = await _libraryRoute(id);
+    // A newer link already opened while this one looked its library up.
+    if (link != _latestLink) return;
+  }
   if (route == Destinations.settings) {
     // Settings is a panel the app opens over the current screen, never a page.
+    // Going to Home keeps any panel or dialog already open over it, so those
+    // close first rather than settings stacking on them.
+    router.routerDelegate.navigatorKey.currentState?.popUntil(
+      (r) => r is! PopupRoute,
+    );
     router.go(Destinations.home);
     await WidgetsBinding.instance.endOfFrame;
     final context = router.routerDelegate.navigatorKey.currentContext;
-    // Home under an open panel stays put, so a second link mustn't stack one.
-    if (context != null &&
-        context.mounted &&
-        !SettingsPanel.isOpenNotifier.value) {
+    if (context != null && context.mounted) {
       unawaited(SettingsPanel.open(context, const SettingsSidePanel()));
     }
     return;
@@ -206,6 +214,10 @@ Future<void> openLinkedRoute(GoRouter router, String route) async {
   unawaited(router.push(route));
 }
 
+/// Counts linked routes, so a library lookup that finishes after a newer link
+/// has opened doesn't replace it.
+int _latestLink = 0;
+
 /// The id in a bare `/library/<id>` route, which a library link opens.
 String? _libraryLinkId(String route) {
   final segments = Uri.tryParse(route)?.pathSegments;
@@ -217,13 +229,20 @@ String? _libraryLinkId(String route) {
 /// ones the nav shows to open the screen its entry would. One that isn't
 /// there opens Home.
 Future<String> _libraryRoute(String id) async {
+  AggregatedLibrary? find(List<AggregatedLibrary> libraries) =>
+      libraries.where((l) => l.id == id).firstOrNull;
   try {
     final getIt = GetIt.instance;
-    final libraries =
-        getIt<UserPreferences>().get(UserPreferences.enableMultiServerLibraries)
-        ? await getIt<MultiServerRepository>().getAggregatedLibraries()
-        : await getIt<UserViewsRepository>().getUserViews();
-    final library = libraries.where((l) => l.id == id).firstOrNull;
+    final multiServer = getIt<UserPreferences>().get(
+      UserPreferences.enableMultiServerLibraries,
+    );
+    var library = multiServer
+        ? find(await getIt<MultiServerRepository>().getAggregatedLibraries())
+        : null;
+    // Merging swaps each server's movie and show libraries for one merged
+    // entry, so a server's own library id is also looked for among the signed
+    // in server's libraries.
+    library ??= find(await getIt<UserViewsRepository>().getUserViews());
     if (library != null) {
       await getIt<GameLibraryRegistry>().refresh();
       return libraryRoute(
