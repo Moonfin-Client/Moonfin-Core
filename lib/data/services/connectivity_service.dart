@@ -318,7 +318,9 @@ class ConnectivityService extends ChangeNotifier {
         // Ping shouldn't throw, but a client that does still means no answer.
       }
     }
-    if (!reachable &&
+    // A probe that outlived dispose leaves the client and its address alone.
+    if (!_disposed &&
+        !reachable &&
         _isOnline &&
         _isCurrent(client, serverId) &&
         await _followEntryAddress(client, serverId)) {

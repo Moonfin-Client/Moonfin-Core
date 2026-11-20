@@ -585,5 +585,25 @@ void main() {
 
       expect(c.pings, pingsAtEnd);
     });
+
+    test('a check that ends after dispose asks no entry address', () async {
+      final c = _HeldClient('http://127.0.0.1:1')..register();
+      final repo = _FakeServerRepository((_) async => 'http://127.0.0.1:2');
+      GetIt.instance.registerSingleton<ServerRepository>(repo);
+      final service = serviceOnline(online: true);
+      final online = service.recheckNow();
+      await Future<void>.delayed(Duration.zero);
+      await c.answerAll(true);
+      await online;
+
+      final check = service.onServerClientReady('server-1');
+      await Future<void>.delayed(Duration.zero);
+      service.dispose();
+      await c.answerAll(false);
+      await check;
+
+      expect(repo.asked, isEmpty);
+      verifyNever(() => c.client.baseUrl = any());
+    });
   });
 }
