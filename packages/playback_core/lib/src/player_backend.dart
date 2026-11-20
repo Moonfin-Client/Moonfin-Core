@@ -62,10 +62,6 @@ class EmbeddedCaptionTrack {
   }
 }
 
-/// Whether the chosen external subtitle is still being prepared, retries
-/// included. False also covers a canceled or failed load, so it doesn't mean
-/// the subtitle arrived, and it never waits for a cue to show. Backends opt in
-/// by implementing this interface.
 /// A backend that can follow a server to a new address mid-stream, for a
 /// server added through a redirect to a dynamic `host:port`.
 abstract interface class ServerRebaseBackend {
@@ -76,10 +72,16 @@ abstract interface class ServerRebaseBackend {
 
   /// Sends the open stream's requests for the server at [from] to [to] from
   /// now on, cutting its loads still on [from], and keeps playing from what
-  /// it buffered. False when it couldn't; the stream is then reopened.
+  /// it buffered. Only the stream open now follows the move, and only while
+  /// it stays open. False when it couldn't: nothing was redirected (a changed
+  /// base path among them), and the stream is then reopened.
   Future<bool> rebaseServer(String from, String to);
 }
 
+/// Whether the chosen external subtitle is still being prepared, retries
+/// included. False also covers a canceled or failed load, so it doesn't mean
+/// the subtitle arrived, and it never waits for a cue to show. Backends opt in
+/// by implementing this interface.
 abstract interface class SubtitleLoadingBackend {
   bool get isSubtitleLoading;
   Stream<bool> get subtitleLoadingStream;
