@@ -155,6 +155,7 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
   bool hideWatched = false,
   ItemsApi? itemsApi,
   Duration timeout = _defaultHydrationTimeout,
+  Map<String, Map<String, dynamic>>? seriesCache,
   @visibleForTesting
   Future<List<Map<String, dynamic>>> Function(List<String> seriesIds)?
   fetchSeriesByIds,
@@ -185,15 +186,17 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
 
   final idsToHydrate = <String>[
     for (final item in collapsed)
-      if (collapsedIds.contains(item.id)) item.id,
+      if (collapsedIds.contains(item.id) &&
+          !(seriesCache?.containsKey(item.id) ?? false))
+        item.id,
   ];
 
   final hydratedIds = <String>{};
+  final fetched = <Map<String, dynamic>>[];
   if (idsToHydrate.isNotEmpty &&
       timeout > Duration.zero &&
       (fetchSeriesByIds != null || itemsApi != null)) {
     final deadline = DateTime.now().add(timeout);
-    final fetched = <Map<String, dynamic>>[];
     for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
       final remaining = deadline.difference(DateTime.now());
       if (remaining <= Duration.zero) break;
@@ -218,22 +221,31 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
         // Keep successful batches and fall back to unhydrated cards for failed batches.
       }
     }
-    if (fetched.isNotEmpty) {
-      final seriesById = <String, Map<String, dynamic>>{
-        for (final series in fetched)
-          if (series['Id'] != null) series['Id'].toString(): series,
-      };
-      collapsed = [
-        for (final item in collapsed)
-          if (seriesById[item.id] case final series?)
-            () {
-              hydratedIds.add(item.id);
-              return _mergeSeriesUserData(item, series);
-            }()
-          else
-            item,
-      ];
+  }
+
+  final seriesById = <String, Map<String, dynamic>>{
+    ...?seriesCache,
+    for (final series in fetched)
+      if (series['Id'] != null) series['Id'].toString(): series,
+  };
+  if (seriesCache != null && fetched.isNotEmpty) {
+    for (final series in fetched) {
+      if (series['Id'] != null) {
+        seriesCache[series['Id'].toString()] = series;
+      }
     }
+  }
+  if (seriesById.isNotEmpty) {
+    collapsed = [
+      for (final item in collapsed)
+        if (seriesById[item.id] case final series?)
+          () {
+            hydratedIds.add(item.id);
+            return _mergeSeriesUserData(item, series);
+          }()
+        else
+          item,
+    ];
   }
 
   List<AggregatedItem> filtered;
