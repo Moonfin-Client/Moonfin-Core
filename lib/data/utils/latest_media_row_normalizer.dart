@@ -250,14 +250,17 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
         hideWatched: true,
       );
       final fallbackById = {for (final item in fallback) item.id: item};
+      final firstIndexBySeriesId = <String, int>{};
       final unwatchedIndexBySeriesId = <String, int>{};
       for (var i = 0; i < items.length; i++) {
         final raw = items[i];
-        if (_isItemWatchedForRecentRow(raw)) continue;
         final key = (raw.type == 'Episode' || raw.type == 'Season')
             ? (raw.seriesId ?? raw.id)
             : raw.id;
-        unwatchedIndexBySeriesId.putIfAbsent(key, () => i);
+        firstIndexBySeriesId.putIfAbsent(key, () => i);
+        if (!_isItemWatchedForRecentRow(raw)) {
+          unwatchedIndexBySeriesId.putIfAbsent(key, () => i);
+        }
       }
 
       final ordered = <(int, AggregatedItem)>[];
@@ -266,10 +269,15 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
         if (collapsedIds.contains(item.id) && !hydratedIds.contains(item.id)) {
           final fb = fallbackById[item.id];
           if (fb != null) {
-            ordered.add((unwatchedIndexBySeriesId[fb.id] ?? i, fb));
+            ordered.add((
+              unwatchedIndexBySeriesId[fb.id] ??
+                  firstIndexBySeriesId[item.id] ??
+                  i,
+              fb,
+            ));
           }
         } else if (!_isItemWatchedForRecentRow(item)) {
-          ordered.add((i, item));
+          ordered.add((firstIndexBySeriesId[item.id] ?? i, item));
         }
       }
       ordered.sort((a, b) => a.$1.compareTo(b.$1));

@@ -893,5 +893,52 @@ void main() {
         expect(result.map((i) => i.id).toList(), equals(['series-b']));
       },
     );
+
+    test(
+      'preserves relative order between unhydrated fallback cards and native Series after duplicate collapse',
+      () async {
+        AggregatedItem ep(String id, String seriesId) => AggregatedItem(
+          id: id,
+          serverId: 'server1',
+          rawData: {
+            'Id': id,
+            'Name': 'Ep',
+            'Type': 'Episode',
+            'SeriesId': seriesId,
+            'SeriesName': seriesId,
+            'UserData': const {'Played': false},
+          },
+        );
+        const nativeC = AggregatedItem(
+          id: 'series-c',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'series-c',
+            'Name': 'Show C',
+            'Type': 'Series',
+            'UserData': {'Played': false, 'UnplayedItemCount': 2},
+          },
+        );
+
+        final result = await normalizeAndHydrateLatestMediaItems(
+          [
+            ep('a1', 'series-a'),
+            ep('a2', 'series-a'),
+            ep('a3', 'series-a'),
+            ep('b1', 'series-b'),
+            nativeC,
+          ],
+          collectionType: 'tvshows',
+          limit: 2,
+          hideWatched: true,
+          fetchSeriesByIds: (_) async => throw Exception('network error'),
+        );
+
+        expect(
+          result.map((i) => i.id).toList(),
+          equals(['series-a', 'series-b']),
+        );
+      },
+    );
   });
 }
