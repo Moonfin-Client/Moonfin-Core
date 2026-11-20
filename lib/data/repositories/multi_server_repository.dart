@@ -1010,22 +1010,38 @@ class MultiServerRepository {
                       items.length < targetLimit &&
                       rawItems.length >= fetchLimit &&
                       fetchLimit < _maxItems) {
-                    fetchLimit = _maxItems;
-                    response = await session.client.itemsApi.getLatestItems(
-                      parentId: parentId,
-                      limit: fetchLimit,
-                      fields: _fields,
-                      enableImageTypes: _imageTypes,
-                      imageTypeLimit: _imageTypeLimit,
-                    );
-                    rawItems = _parseItems(response, serverId);
-                    items = await normalizeAndHydrateLatestMediaItems(
-                      rawItems,
-                      limit: targetLimit,
-                      hideWatched: true,
-                      itemsApi: session.client.itemsApi,
-                      timeout: remainingHydrationTimeout(),
-                    );
+                    final expandedBudget = remainingHydrationTimeout();
+                    if (expandedBudget > Duration.zero) {
+                      try {
+                        fetchLimit = _maxItems;
+                        final expandedResponse = await session.client.itemsApi
+                            .getLatestItems(
+                              parentId: parentId,
+                              limit: fetchLimit,
+                              fields: _fields,
+                              enableImageTypes: _imageTypes,
+                              imageTypeLimit: _imageTypeLimit,
+                            )
+                            .timeout(expandedBudget);
+                        final expandedRaw = _parseItems(
+                          expandedResponse,
+                          serverId,
+                        );
+                        final expandedItems =
+                            await normalizeAndHydrateLatestMediaItems(
+                          expandedRaw,
+                          limit: targetLimit,
+                          hideWatched: true,
+                          itemsApi: session.client.itemsApi,
+                          timeout: remainingHydrationTimeout(),
+                        );
+                        response = expandedResponse;
+                        rawItems = expandedRaw;
+                        items = expandedItems;
+                      } catch (_) {
+                        // Keep the already-fetched initial page if expansion fails or times out.
+                      }
+                    }
                   }
                   if (items.length <= existingCount) {
                     _rowTotals[cacheKey] = items.length;
