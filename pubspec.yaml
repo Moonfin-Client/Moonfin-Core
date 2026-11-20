@@ -232,7 +232,7 @@ dependency_overrides:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
       path: libs/windows/media_kit_libs_windows_video
-      ref: 402fb2a3e19c77eaefb2737d0428d0cdc1a88ece
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
   # Vendored 0.6.0 with a Windows texture_bridge.cc fix for scroll/resize and
   # tab-switch crashes (null-visual guard + WGC Recreate moved off the
   # capture-thread mutex). Both changed sites carry their reasoning inline in
@@ -265,14 +265,16 @@ dependency_overrides:
   # Fork of 2.0.1 carrying a Linux renderer fix: an EGLImage that NVIDIA leaves
   # idle under Wayland stops presenting, so a long gap between mpv frames
   # rebuilds the texture, and frame notifications move onto the main thread.
-  # The pinned commit sits ahead of the published release, so it also carries
-  # unreleased upstream work on the Apple and Dart sides. Re-check those builds
-  # when moving the ref, and drop this once the fix reaches a published version.
+  # It also keeps a size set with setSize when a video with new dimensions
+  # loads, which the desktop texture cap relies on. The pinned commit sits
+  # ahead of the published release, so it also carries unreleased upstream
+  # work on the Apple and Dart sides. Re-check those builds when moving the
+  # ref, and drop this once both fixes reach a published version.
   media_kit_video:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
       path: media_kit_video
-      ref: 402fb2a3e19c77eaefb2737d0428d0cdc1a88ece
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
   synchronized: 3.3.1
   wakelock_plus: 1.5.2
   screen_brightness_android: 2.1.3
