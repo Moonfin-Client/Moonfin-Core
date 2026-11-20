@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -232,6 +234,34 @@ void main() {
 
       expect(checkCount, equals(3));
       expect(messagesOpened, isTrue);
+    });
+
+    test('retains route and opens server messages dialog when navigator mounts after five seconds', () {
+      fakeAsync((async) {
+        var mounted = false;
+        var messagesOpened = false;
+
+        service.launchRouteResolver = () async => 'messages';
+        service.serverMessagesOpener = () => messagesOpened = true;
+        service.isNavigatorMounted = () => mounted;
+
+        unawaited(service.handleColdStart());
+        async.elapse(const Duration(milliseconds: 10));
+        expect(messagesOpened, isFalse);
+
+        // Still unmounted after 5 seconds
+        async.elapse(const Duration(seconds: 5));
+        expect(messagesOpened, isFalse);
+
+        // Mounts at 7 seconds (> 5 seconds)
+        async.elapse(const Duration(seconds: 2));
+        expect(messagesOpened, isFalse);
+
+        mounted = true;
+        async.elapse(const Duration(milliseconds: 100));
+
+        expect(messagesOpened, isTrue);
+      });
     });
 
     test('routes standard launch routes to routeNavigator', () async {

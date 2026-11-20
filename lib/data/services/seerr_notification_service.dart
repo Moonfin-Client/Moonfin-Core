@@ -281,7 +281,10 @@ class SeerrNotificationService {
     }
   }
 
-  Future<void> _openMessagesWhenMounted() async {
+  Future<void> _openMessagesWhenMounted({
+    Duration pollInterval = const Duration(milliseconds: 100),
+    Duration timeout = const Duration(minutes: 5),
+  }) async {
     final isMounted = isNavigatorMounted ??
         (serverMessagesOpener != null
             ? () => true
@@ -295,13 +298,38 @@ class SeerrNotificationService {
       return;
     }
 
-    // Keep the route pending until the navigator has mounted.
-    for (var i = 0; i < 50; i++) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      if (isMounted()) {
-        _dispatchServerMessages();
-        return;
+    final completer = Completer<bool>();
+    void check() {
+      if (!completer.isCompleted && isMounted()) {
+        completer.complete(true);
       }
+    }
+
+    void routerListener() => check();
+    try {
+      appRouter.routerDelegate.addListener(routerListener);
+    } catch (_) {}
+
+    final timer = Timer.periodic(pollInterval, (_) => check());
+
+    // Retain the route up to 5 minutes (matching deep_link_navigator) so
+    // it survives slow startup, profile PINs, and server selection without
+    // leaking if the app is disposed or the router never mounts.
+    final timeoutTimer = Timer(timeout, () {
+      if (!completer.isCompleted) {
+        completer.complete(false);
+      }
+    });
+
+    final didMount = await completer.future;
+    timer.cancel();
+    timeoutTimer.cancel();
+    try {
+      appRouter.routerDelegate.removeListener(routerListener);
+    } catch (_) {}
+
+    if (didMount) {
+      _dispatchServerMessages();
     }
   }
 
