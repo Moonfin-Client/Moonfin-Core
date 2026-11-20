@@ -1876,7 +1876,10 @@ class MediaKitPlayerBackend extends PlayerBackend
   /// audio-spdif then stays empty until the passthrough settings change, so
   /// the next file doesn't go silent the same way.
   Future<void> _applyLinuxPassthroughFallbackIfNeeded(int generation) async {
-    if (!PlatformDetection.isLinux) return;
+    if (!PlatformDetection.isLinux ||
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
+      return;
+    }
     final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
     if (spdif.isEmpty) return;
     final native = _player.platform;
