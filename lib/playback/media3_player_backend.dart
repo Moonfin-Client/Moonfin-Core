@@ -15,6 +15,7 @@ import 'device_profile_builder.dart';
 import 'known_defects.dart';
 import 'media3_letterbox_crop.dart';
 import 'media3_playback_status.dart';
+import 'playback_network_stats.dart';
 import 'server_transcode_capabilities.dart';
 import 'subtitle_fonts.dart';
 
@@ -213,6 +214,10 @@ class Media3PlayerBackend extends PlayerBackend
   /// What the native player decided and is putting out for this source.
   final Media3PlaybackStatus playbackStatus = Media3PlaybackStatus();
 
+  /// The latest network and buffer reading, for the playback stats overlay.
+  PlaybackNetworkStats? get networkStats => _networkStats;
+  PlaybackNetworkStats? _networkStats;
+
   /// The frame rate the display is switching to while the start or a live
   /// correction waits for it, otherwise null. Never disposed: a screen can
   /// still be listening for a frame after the backend is replaced.
@@ -273,6 +278,22 @@ class Media3PlayerBackend extends PlayerBackend
     return false;
   }
 
+  PlaybackNetworkStats _networkStatsFrom(Map<String, dynamic> map) {
+    int? optional(String key) => map[key] == null ? null : _toInt(map[key]);
+    final maxBufferMs = optional('maxBufferMs');
+    final ahead = _toInt(map['bufferedMs']) - _toInt(map['positionMs']);
+    return PlaybackNetworkStats(
+      bufferAhead: Duration(milliseconds: ahead < 0 ? 0 : ahead),
+      activityBitsPerSecond: optional('networkActivityBps'),
+      bufferCeiling: maxBufferMs == null
+          ? null
+          : Duration(milliseconds: maxBufferMs),
+      bufferedBytes: optional('bufferedBytes'),
+      targetBufferBytes: optional('targetBufferBytes'),
+      rebuffers: optional('rebuffers'),
+    );
+  }
+
   void _handleEvent(dynamic event) {
     if (_disposed || event is! Map) return;
     final map = event.map((k, v) => MapEntry(k.toString(), v));
@@ -289,6 +310,7 @@ class Media3PlayerBackend extends PlayerBackend
         _position = reported;
         _duration = Duration(milliseconds: _toInt(map['durationMs']));
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
+        _networkStats = _networkStatsFrom(map);
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
         _setSubtitleLoading(_toBool(map['isSubtitleLoading']));
@@ -1378,6 +1400,7 @@ class Media3PlayerBackend extends PlayerBackend
     });
     _lastFrameRateLine = null;
     playbackStatus.reset();
+    _networkStats = null;
     displayMatchFps.value = null;
     _liveEdge = null;
     _sourceIsLive = payload['isLive'] == true;

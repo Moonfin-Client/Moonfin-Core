@@ -69,4 +69,26 @@ void main() {
     expect(actionPresses, 1);
     expect(find.byType(Dialog), findsOneWidget);
   });
+
+  testWidgets('Down past the last row reaches the buttons, Up goes back', (
+    tester,
+  ) async {
+    await open(tester);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pumpAndSettle();
+
+    expect(actionPresses, 1);
+    expect(find.byType(Dialog), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pumpAndSettle();
+
+    expect(actionPresses, 1);
+    expect(find.byType(Dialog), findsNothing);
+  });
 }

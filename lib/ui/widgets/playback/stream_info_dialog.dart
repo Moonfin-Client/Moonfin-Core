@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
 import '../track_selector_dialog.dart';
 
@@ -87,13 +88,26 @@ Future<void> showStreamInfoDialog({
     return Focus(
       autofocus: true,
       onKeyEvent: (node, event) {
-        // OK closes like Back, unless a desktop button below has focus.
+        // OK closes like Back, unless a button below has focus.
         if (node.hasPrimaryFocus) {
           final result = handleOneShotSelect(
             event,
             () => Navigator.of(dialogContext).pop(),
           );
           if (result != KeyEventResult.ignored) return result;
+          // Down past the last row moves onto the buttons, so the D-pad
+          // can reach them.
+          if (event.isActionable &&
+              event.logicalKey.isDownKey &&
+              actions.isNotEmpty &&
+              (!controller.hasClients || controller.position.extentAfter < 1)) {
+            node.nextFocus();
+            return KeyEventResult.handled;
+          }
+        } else if (event.isActionable && event.logicalKey.isUpKey) {
+          // Up from a button goes back to scrolling the list.
+          node.requestFocus();
+          return KeyEventResult.handled;
         }
         return scroll(node, event);
       },

@@ -34,6 +34,7 @@ import '../../../util/scroll_sensitivity_binding.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/marquee_text.dart';
 import '../../widgets/player_volume_control.dart';
+import '../../widgets/playback/playback_stats_overlay.dart';
 import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/player_logo.dart';
 import '../../widgets/playback/seek_icons.dart';
@@ -256,6 +257,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ? backend
         : null;
   }
+
+  bool _playbackStatsVisible = false;
 
   Media3PlayerBackend? get _activeMedia3Backend {
     final backend = _activeBackend;
@@ -4450,6 +4453,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             ),
                           ),
                         ),
+                      // Above the controls so the dim doesn't cover it.
+                      ?_buildPlaybackStatsOverlay(
+                        context,
+                        controlsUp:
+                            _controlsVisible &&
+                            !_isOsdLocked &&
+                            !hideOsdForPreroll,
+                      ),
                       // The controls carry the indicator while they're up.
                       // Once they hide it stays in the corner, since the wait
                       // can outlast the controls by minutes.
@@ -5150,6 +5161,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         });
       }
     });
+  }
+
+  Widget? _buildPlaybackStatsOverlay(
+    BuildContext context, {
+    required bool controlsUp,
+  }) {
+    final media3 = _activeMedia3Backend;
+    if (!_playbackStatsVisible || media3 == null) return null;
+    // TVs can overscan, so it keeps to the margins the TV top bar uses.
+    final tv = PlatformDetection.useLeanbackUi;
+    final top = MediaQuery.of(context).padding.top;
+    final resolution = _manager.currentResolution;
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 200),
+      left: tv ? 48 : AppSpacing.spaceLg,
+      // Below the top bar while it's up, so the title isn't covered.
+      top: controlsUp
+          ? (_topOverlayHeight ?? top) + AppSpacing.spaceSm
+          : top + (tv ? 27 : AppSpacing.spaceLg),
+      child: ExcludeFocus(
+        child: IgnorePointer(
+          child: PlaybackStatsOverlay(
+            read: () => media3.networkStats,
+            serverBitrate:
+                resolution?.deliveredBitrate ?? resolution?.sourceBitrate,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildTopOverlay(BuildContext context) {
@@ -8604,6 +8644,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // mpv's own statistics overlay, the Shift+I one, offered as a button so
     // it can be found without knowing the key.
     final mediaKit = _mpvStatsBackend;
+    final hasPlaybackStats = _activeMedia3Backend != null;
     unawaited(
       showStreamInfoDialog(
         context: context,
@@ -8621,6 +8662,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 // above the player stands the video down.
                 Navigator.of(context, rootNavigator: true).pop();
                 unawaited(mediaKit.toggleMpvStats());
+              },
+            ),
+          if (hasPlaybackStats)
+            (
+              label: _playbackStatsVisible
+                  ? l10n.hidePlaybackStats
+                  : l10n.showPlaybackStats,
+              icon: Icons.network_check_rounded,
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                if (!mounted) return;
+                setState(() => _playbackStatsVisible = !_playbackStatsVisible);
               },
             ),
           // The same list ? and F1 open, for whoever does not know those keys.
