@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../util/platform_detection.dart';
 import '../../../playback/silo_playback_environment.dart';
+import '../../../ui/navigation/destinations.dart';
 import '../../../playback/silo_plugin_for.dart';
 import '../../models/aggregated_item.dart';
 import '../media_server_client_factory.dart';
@@ -111,18 +112,20 @@ int? _defaultAudioIndex(List<Map<String, dynamic>> streams) {
 /// it was asked ([startTicks]), and a seek asks the server for a new one, as
 /// Silo's remuxes say of themselves. Emby leaves the start out of the
 /// conversion URL it answers, so it is added there. Anything else is returned
-/// as it is.
+/// as it is, and so is a Live TV feed ([liveTv]).
 StreamResolutionResult dlnaServerTimeline(
   ServerType serverType,
   StreamResolutionResult resolution,
-  int? startTicks,
-) {
+  int? startTicks, {
+  bool liveTv = false,
+}) {
   if (serverType != ServerType.jellyfin && serverType != ServerType.emby) {
     return resolution;
   }
   if (resolution.playMethod == StreamPlayMethod.directPlay) return resolution;
   // A live TV feed has no timeline to start a conversion in.
-  if (resolution.liveStreamId != null ||
+  if (liveTv ||
+      resolution.liveStreamId != null ||
       resolution.streamUrl.toLowerCase().contains('/livetv/')) {
     return resolution;
   }
@@ -274,13 +277,16 @@ class DlnaProvider
           enableDirectStream: !hasExplicitIndices,
         ),
         startPositionTicks,
+        liveTv:
+            MediaStreamResolver.isLiveTvItem(item) ||
+            Destinations.isLiveTvProgramType(item.type),
       );
     } catch (_) {
       restorePrevious();
       rethrow;
     }
     if (generation != _castGeneration) {
-      _discard(client, item, resolution, startPositionTicks);
+      _discard(client, item, resolution);
       throw const DlnaCastSuperseded(
         'DLNA cast was stopped or replaced before it started',
       );
@@ -313,7 +319,7 @@ class DlnaProvider
         _cast = null;
         restorePrevious();
       }
-      _discard(client, item, cast.resolution, startPositionTicks);
+      _discard(client, item, cast.resolution);
       rethrow;
     }
     if (cast.stopped) {
@@ -323,12 +329,12 @@ class DlnaProvider
           await _native.stopDlna();
         } catch (_) {}
       }
-      _discard(client, item, cast.resolution, startPositionTicks);
+      _discard(client, item, cast.resolution);
       throw const DlnaCastSuperseded('DLNA cast was stopped before it started');
     }
     // A newer cast took over while this one was sent; its reports stand.
     if (!identical(_cast, cast)) {
-      _discard(client, item, cast.resolution, startPositionTicks);
+      _discard(client, item, cast.resolution);
       throw const DlnaCastSuperseded(
         'DLNA cast was replaced before it started',
       );
@@ -346,23 +352,18 @@ class DlnaProvider
   }
 
   /// Closes the server session of a cast that never got to play, so it
-  /// isn't left open until it times out. It ends at the position it would
-  /// have started from, which keeps the saved resume point.
+  /// isn't left open until it times out. It ends at zero, which Silo takes
+  /// as no progress, so the saved resume point stays as it was.
   void _discard(
     MediaServerClient client,
     AggregatedItem item,
     StreamResolutionResult resolution,
-    int? startPositionTicks,
   ) {
     if (!castNeedsSessionReports(client)) return;
     unawaited(
       siloPluginFor(client)
           .createPlaySessionService()
-          .onPlaybackStop(
-            item,
-            resolution,
-            Duration(microseconds: (startPositionTicks ?? 0) ~/ 10),
-          )
+          .onPlaybackStop(item, resolution, Duration.zero)
           .catchError((Object _) {}),
     );
   }

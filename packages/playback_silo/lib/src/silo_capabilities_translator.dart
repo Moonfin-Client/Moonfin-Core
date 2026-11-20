@@ -98,7 +98,7 @@ class SiloPlayerTraits {
   /// device profile comes from the browser's `isTypeSupported` answers.
   static const web = SiloPlayerTraits(sendsRequestHeaders: false);
 
-  /// A cast receiver (Chromecast, AirPlay, DLNA): it loads
+  /// A cast receiver (Chromecast, AirPlay): it loads
   /// the URL itself, so it sends none of the phone's headers, and its own
   /// player seeks by byte ranges, which a chunked remux has none of, so it
   /// takes the original file or HLS only. It picks no audio track and draws
@@ -106,7 +106,6 @@ class SiloPlayerTraits {
   static const castReceiver = SiloPlayerTraits(
     sendsRequestHeaders: false,
     playsProgressive: false,
-    authorizesByStreamReference: true,
   );
 
   /// A DLNA renderer: a cast receiver that takes a progressive remux. It
@@ -156,8 +155,8 @@ class SiloPlayerTraits {
   final bool sendsRequestHeaders;
 
   /// Plays by the plan URL's signed stream reference (`st`) alone, without
-  /// the account's token: a cast receiver, which shouldn't hold the token
-  /// and may cut a long URL (an LG TV over DLNA, at about 1024 characters).
+  /// the account's token: a DLNA renderer, which may cut a long URL (an LG
+  /// TV at about 1024 characters) and drop a token at the end of it.
   final bool authorizesByStreamReference;
 }
 

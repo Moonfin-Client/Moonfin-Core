@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/foundation.dart';
@@ -158,8 +157,7 @@ class _CastTargetSheetState extends State<_CastTargetSheet> {
 
     return SafeArea(
       child: Material(
-        color:
-            theme.bottomSheetTheme.backgroundColor ?? theme.colorScheme.surface,
+        color: theme.bottomSheetTheme.backgroundColor ?? theme.colorScheme.surface,
         child: Column(
           children: [
             Padding(

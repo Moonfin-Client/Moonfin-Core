@@ -142,16 +142,19 @@ void main() {
     },
   );
 
-  test('a cast receiver goes by the stream reference alone', () async {
-    Future<String> urlFor(String streamUrl) async {
+  test('only a DLNA renderer goes by the stream reference alone', () async {
+    Future<String> urlFor(
+      String streamUrl, [
+      SiloPlayerTraits traits = SiloPlayerTraits.dlnaRenderer,
+    ]) async {
       final server = _server(_decisionWithStream(streamUrl));
       final result =
           await SiloPlugin(
             siloTestClient(server),
-            environment: () => const SiloPlaybackEnvironment(
+            environment: () => SiloPlaybackEnvironment(
               formFactor: 'tv',
               platform: 'dlna',
-              traits: SiloPlayerTraits.castReceiver,
+              traits: traits,
             ),
           ).createStreamResolver().resolve(
             siloTestItem('silo/watch_movie.json'),
@@ -160,12 +163,16 @@ void main() {
       return result.streamUrl;
     }
 
+    const hls = '/api/v2/playback/transcode/$_session/master.m3u8?st=c2lnbmVk';
     expect(
-      await urlFor(
-        '/api/v2/playback/transcode/$_session/master.m3u8?st=c2lnbmVk',
-      ),
+      await urlFor(hls),
       'https://silo.example/api/v2/playback/transcode/$_session/master.m3u8'
       '?st=c2lnbmVk',
+    );
+    // Chromecast and AirPlay keep the token, which older Silo servers need.
+    expect(
+      await urlFor(hls, SiloPlayerTraits.castReceiver),
+      endsWith('&token=access-1'),
     );
     // Without a reference it still needs the token.
     expect(

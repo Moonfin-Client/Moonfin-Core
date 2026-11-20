@@ -30,8 +30,9 @@ final class DlnaController: NSObject {
     // Bumped by every new cast and by Stop: a cast still starting (waiting out
     // a stuck renderer) gives up rather than replace a newer one.
     private var castGeneration = 0
-    // Bumped by every transport command, so a paused seek doesn't pause again
-    // over a Play sent while it worked.
+    private var castControlUrl: String?
+    // Bumped by every transport command except a seek, so a paused seek pauses
+    // again when it's done unless a Play came in, even after another seek.
     private var transportGeneration = 0
     private var isDiscovering = false
 
@@ -180,6 +181,7 @@ final class DlnaController: NSObject {
         emitEvent(state: "connecting")
         let resumeToken = cancelPendingResume()
         let castToken = bumpCastGeneration()
+        resumeLock.withLock { castControlUrl = targetId }
         bumpTransportGeneration()
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -227,8 +229,20 @@ final class DlnaController: NSObject {
                     <Speed>1</Speed>
                     """
                 )
-                // A newer cast keeps the controls even when this one finishes last.
-                guard self.isCurrentCast(castToken) else { throw DlnaError.castSuperseded }
+                guard self.isCurrentCast(castToken) else {
+                    // A newer cast or a Stop took over, so this one leaves the
+                    // controls alone. Its renderer may be playing with nothing
+                    // to control it, so it's stopped unless the newer cast went
+                    // to it too.
+                    if self.resumeLock.withLock({ self.castControlUrl }) != controlUrl {
+                        _ = try? self.sendSoap(
+                            controlUrl: controlUrl,
+                            action: "Stop",
+                            innerBody: "<InstanceID>0</InstanceID>"
+                        )
+                    }
+                    throw DlnaError.castSuperseded
+                }
 
                 self.activeDeviceControlUrl = controlUrl
                 let (renderingControlUrl, eventSubUrl) = self.discoveredUrlsLock.withLock {
@@ -290,7 +304,7 @@ final class DlnaController: NSObject {
 
     func seek(positionTicks: Int64, completion: @escaping (Error?) -> Void) {
         cancelPendingResume()
-        let transportToken = bumpTransportGeneration()
+        let transportToken = resumeLock.withLock { transportGeneration }
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
             do {
@@ -353,6 +367,7 @@ final class DlnaController: NSObject {
     func stop(completion: @escaping (Error?) -> Void) {
         cancelPendingResume()
         bumpCastGeneration()
+        resumeLock.withLock { castControlUrl = nil }
         bumpTransportGeneration()
         withActiveDevice(completion: completion) { [weak self] controlUrl in
             try self?.sendSoap(
@@ -744,12 +759,8 @@ final class DlnaController: NSObject {
         resumeLock.withLock { castGeneration == token }
     }
 
-    @discardableResult
-    private func bumpTransportGeneration() -> Int {
-        resumeLock.withLock {
-            transportGeneration += 1
-            return transportGeneration
-        }
+    private func bumpTransportGeneration() {
+        resumeLock.withLock { transportGeneration += 1 }
     }
 
     @discardableResult

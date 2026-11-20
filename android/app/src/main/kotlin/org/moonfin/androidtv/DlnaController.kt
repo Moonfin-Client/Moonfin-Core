@@ -65,8 +65,9 @@ class DlnaController(private val context: Context) {
     // Bumped by every new cast and by Stop: a cast still starting (waiting out
     // a stuck renderer) gives up rather than replace a newer one.
     private val castGeneration = AtomicInteger(0)
-    // Bumped by every transport command, so a paused seek doesn't pause again
-    // over a Play sent while it worked.
+    @Volatile private var castControlUrl: String? = null
+    // Bumped by every transport command except a seek, so a paused seek pauses
+    // again when it's done unless a Play came in, even after another seek.
     private val transportGeneration = AtomicInteger(0)
     @Volatile private var isDiscovering = false
 
@@ -216,6 +217,7 @@ class DlnaController(private val context: Context) {
         emitEvent("connecting")
         val resumeToken = resumeGeneration.incrementAndGet()
         val castToken = castGeneration.incrementAndGet()
+        castControlUrl = targetId
         transportGeneration.incrementAndGet()
         val current = { castGeneration.get() == castToken }
 
@@ -254,8 +256,16 @@ class DlnaController(private val context: Context) {
 
                 if (!current()) throw CancellationException("DLNA cast superseded")
                 sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
-                // A newer cast keeps the controls even when this one finishes last.
-                if (!current()) throw CancellationException("DLNA cast superseded")
+                if (!current()) {
+                    // A newer cast or a Stop took over, so this one leaves the
+                    // controls alone. Its renderer may be playing with nothing
+                    // to control it, so it's stopped unless the newer cast went
+                    // to it too.
+                    if (castControlUrl != controlUrl) {
+                        runCatching { sendSoap(controlUrl, "Stop", "<InstanceID>0</InstanceID>", timeoutMs = 3000) }
+                    }
+                    throw CancellationException("DLNA cast superseded")
+                }
 
                 activeDeviceControlUrl = controlUrl
                 activeDeviceRenderingControlUrl = discoveredRenderingControlUrls[controlUrl]
@@ -304,7 +314,7 @@ class DlnaController(private val context: Context) {
 
     fun seek(args: Map<*, *>, result: MethodChannel.Result) {
         resumeGeneration.incrementAndGet()
-        val transportToken = transportGeneration.incrementAndGet()
+        val transportToken = transportGeneration.get()
         val positionTicks = (args["positionTicks"] as? Number)?.toLong()
         if (positionTicks == null || positionTicks < 0L) {
             result.error("BAD_ARGS", "Missing or invalid positionTicks", null)
@@ -357,6 +367,7 @@ class DlnaController(private val context: Context) {
     fun stop(result: MethodChannel.Result) {
         resumeGeneration.incrementAndGet()
         castGeneration.incrementAndGet()
+        castControlUrl = null
         transportGeneration.incrementAndGet()
         withActiveDevice(result) { controlUrl ->
             sendSoap(controlUrl, "Stop", "<InstanceID>0</InstanceID>")

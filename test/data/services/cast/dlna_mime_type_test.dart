@@ -400,5 +400,18 @@ void main() {
       );
       expect(dlnaServerTimeline(ServerType.silo, silo, 600000000), same(silo));
     });
+
+    test('a Live TV conversion keeps its own timeline', () {
+      // A channel's conversion can come without a live stream id or a
+      // /LiveTv/ path, so the item decides.
+      final live = _resolution(
+        'http://jf/videos/7/stream.ts',
+        playMethod: StreamPlayMethod.transcode,
+      );
+      expect(
+        dlnaServerTimeline(ServerType.jellyfin, live, 600000000, liveTv: true),
+        same(live),
+      );
+    });
   });
 }
