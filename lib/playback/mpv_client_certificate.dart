@@ -1,7 +1,20 @@
+import 'dart:io';
+
 import 'package:media_kit/media_kit.dart';
 import 'package:server_core/server_core.dart';
 
 import '../data/services/client_certificate_service.dart';
+import '../util/platform_detection.dart';
+
+/// The Linux packages bundle Ubuntu's FFmpeg, whose gnutls only looks for
+/// Debian's CA bundle, so on distros like openSUSE mpv gets the system's own.
+final String? _linuxCaBundle = PlatformDetection.isLinux
+    ? const [
+        '/etc/ssl/certs/ca-certificates.crt',
+        '/etc/pki/tls/certs/ca-bundle.crt',
+        '/etc/ssl/ca-bundle.pem',
+      ].where((path) => File(path).existsSync()).firstOrNull
+    : null;
 
 /// Points mpv at the client certificate for [url]'s host, or clears the one a
 /// previous open set. mpv only takes file paths and has no key password, so
@@ -25,6 +38,9 @@ Future<void> applyMpvClientCertificate(Player player, String url) async {
           ? 'no'
           : await native.getProperty('option-info/tls-verify/default-value'),
     );
+    if (_linuxCaBundle case final caBundle?) {
+      await native.setProperty('tls-ca-file', caBundle);
+    }
     final certificate = clientCertificateFor(host);
     var certPath = '';
     var keyPath = '';
