@@ -191,13 +191,13 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
   final hydratedIds = <String>{};
   if (idsToHydrate.isNotEmpty &&
       (fetchSeriesByIds != null || itemsApi != null)) {
-    try {
-      final fetched = <Map<String, dynamic>>[];
-      for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
-        final end = (i + _seriesHydrationBatchSize < idsToHydrate.length)
-            ? i + _seriesHydrationBatchSize
-            : idsToHydrate.length;
-        final batch = idsToHydrate.sublist(i, end);
+    final fetched = <Map<String, dynamic>>[];
+    for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
+      final end = (i + _seriesHydrationBatchSize < idsToHydrate.length)
+          ? i + _seriesHydrationBatchSize
+          : idsToHydrate.length;
+      final batch = idsToHydrate.sublist(i, end);
+      try {
         final batchItems = await (fetchSeriesByIds != null
                 ? fetchSeriesByIds(batch)
                 : itemsApi!
@@ -210,25 +210,25 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
                       .then(_extractItemsList))
             .timeout(timeout);
         fetched.addAll(batchItems);
+      } catch (_) {
+        // Keep successful batches and fall back to unhydrated cards for failed batches.
       }
-      if (fetched.isNotEmpty) {
-        final seriesById = <String, Map<String, dynamic>>{
-          for (final series in fetched)
-            if (series['Id'] != null) series['Id'].toString(): series,
-        };
-        collapsed = [
-          for (final item in collapsed)
-            if (seriesById[item.id] case final series?)
-              () {
-                hydratedIds.add(item.id);
-                return _mergeSeriesUserData(item, series);
-              }()
-            else
-              item,
-        ];
-      }
-    } catch (_) {
-      // Fall back to unhydrated cards below if series lookup fails or times out.
+    }
+    if (fetched.isNotEmpty) {
+      final seriesById = <String, Map<String, dynamic>>{
+        for (final series in fetched)
+          if (series['Id'] != null) series['Id'].toString(): series,
+      };
+      collapsed = [
+        for (final item in collapsed)
+          if (seriesById[item.id] case final series?)
+            () {
+              hydratedIds.add(item.id);
+              return _mergeSeriesUserData(item, series);
+            }()
+          else
+            item,
+      ];
     }
   }
 
