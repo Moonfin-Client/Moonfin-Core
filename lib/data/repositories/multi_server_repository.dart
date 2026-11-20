@@ -991,10 +991,11 @@ class MultiServerRepository {
                     imageTypeLimit: _imageTypeLimit,
                   );
                   var rawItems = _parseItems(response, serverId);
-                  var items = normalizeLatestMediaItems(
+                  var items = await normalizeAndHydrateLatestMediaItems(
                     rawItems,
                     limit: targetLimit,
                     hideWatched: hideWatched,
+                    itemsApi: session.client.itemsApi,
                   );
                   if (hideWatched &&
                       items.length < targetLimit &&
@@ -1009,10 +1010,11 @@ class MultiServerRepository {
                       imageTypeLimit: _imageTypeLimit,
                     );
                     rawItems = _parseItems(response, serverId);
-                    items = normalizeLatestMediaItems(
+                    items = await normalizeAndHydrateLatestMediaItems(
                       rawItems,
                       limit: targetLimit,
                       hideWatched: true,
+                      itemsApi: session.client.itemsApi,
                     );
                   }
                   if (items.length <= existingCount) {
@@ -1309,11 +1311,12 @@ class MultiServerRepository {
             if (hideWatched &&
                 parsed.length >= fetchLimit &&
                 fetchLimit < _maxItems) {
-              final unwatchedItems = normalizeLatestMediaItems(
+              final unwatchedItems = await normalizeAndHydrateLatestMediaItems(
                 parsed,
                 collectionType: collectionType,
                 limit: _defaultLimit,
                 hideWatched: true,
+                itemsApi: session.client.itemsApi,
               );
               if (unwatchedItems.length < _defaultLimit) {
                 fetchLimit = _maxItems;
@@ -1333,17 +1336,29 @@ class MultiServerRepository {
             }
 
             // Merged rows are built once every server has answered, so the
-            // items are only collected here.
+            // items are only collected here. Hydrate collapsed series per
+            // server before merging so merged rows carry full series counts.
             if (mergeByType) {
-              groupedItems.putIfAbsent(collectionType, () => []).addAll(parsed);
+              final hydratedForMerge =
+                  await normalizeAndHydrateLatestMediaItems(
+                parsed,
+                collectionType: collectionType,
+                limit: _maxItems,
+                hideWatched: false,
+                itemsApi: session.client.itemsApi,
+              );
+              groupedItems
+                  .putIfAbsent(collectionType, () => [])
+                  .addAll(hydratedForMerge);
               continue;
             }
 
-            var items = normalizeLatestMediaItems(
+            var items = await normalizeAndHydrateLatestMediaItems(
               parsed,
               collectionType: collectionType,
               limit: _defaultLimit,
               hideWatched: hideWatched,
+              itemsApi: session.client.itemsApi,
             );
             if (items.isEmpty) continue;
 
