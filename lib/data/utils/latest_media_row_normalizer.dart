@@ -132,6 +132,12 @@ List<AggregatedItem> normalizeLatestMediaItems(
   return normalized.take(limit).toList();
 }
 
+/// Maximum number of series IDs sent in a single `getItems` hydration request.
+const _seriesHydrationBatchSize = 100;
+
+/// Default timeout for optional series hydration lookups.
+const _defaultHydrationTimeout = Duration(seconds: 8);
+
 /// Normalizes recent-row items and hydrates any [Series] cards that were
 /// collapsed from [Episode] or [Season] items with the parent series's own
 /// `UserData` (such as `UnplayedItemCount` and `Played`) and child counts.
@@ -148,6 +154,7 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
   required int limit,
   bool hideWatched = false,
   ItemsApi? itemsApi,
+  Duration timeout = _defaultHydrationTimeout,
   @visibleForTesting
   Future<List<Map<String, dynamic>>> Function(List<String> seriesIds)?
   fetchSeriesByIds,
@@ -181,18 +188,29 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
       if (collapsedIds.contains(item.id)) item.id,
   ];
 
-  if (idsToHydrate.isNotEmpty && (fetchSeriesByIds != null || itemsApi != null)) {
+  final hydratedIds = <String>{};
+  if (idsToHydrate.isNotEmpty &&
+      (fetchSeriesByIds != null || itemsApi != null)) {
     try {
-      final fetched = fetchSeriesByIds != null
-          ? await fetchSeriesByIds(idsToHydrate)
-          : _extractItemsList(
-              await itemsApi!.getItems(
-                ids: idsToHydrate,
-                includeItemTypes: const ['Series'],
-                fields: 'UserData,ChildCount,RecursiveItemCount',
-                enableUserData: true,
-              ),
-            );
+      final fetched = <Map<String, dynamic>>[];
+      for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
+        final end = (i + _seriesHydrationBatchSize < idsToHydrate.length)
+            ? i + _seriesHydrationBatchSize
+            : idsToHydrate.length;
+        final batch = idsToHydrate.sublist(i, end);
+        final batchItems = await (fetchSeriesByIds != null
+                ? fetchSeriesByIds(batch)
+                : itemsApi!
+                      .getItems(
+                        ids: batch,
+                        includeItemTypes: const ['Series'],
+                        fields: 'UserData,ChildCount,RecursiveItemCount',
+                        enableUserData: true,
+                      )
+                      .then(_extractItemsList))
+            .timeout(timeout);
+        fetched.addAll(batchItems);
+      }
       if (fetched.isNotEmpty) {
         final seriesById = <String, Map<String, dynamic>>{
           for (final series in fetched)
@@ -200,17 +218,46 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
         };
         collapsed = [
           for (final item in collapsed)
-            _mergeSeriesUserData(item, seriesById[item.id]),
+            if (seriesById[item.id] case final series?)
+              () {
+                hydratedIds.add(item.id);
+                return _mergeSeriesUserData(item, series);
+              }()
+            else
+              item,
         ];
       }
     } catch (_) {
-      // Fall back to unhydrated collapsed cards if series lookup fails.
+      // Fall back to unhydrated cards below if series lookup fails or times out.
     }
   }
 
-  final filtered = hideWatched
-      ? collapsed.where((item) => !_isItemWatchedForRecentRow(item)).toList()
-      : collapsed;
+  List<AggregatedItem> filtered;
+  if (hideWatched) {
+    final hasUnhydrated = collapsed.any(
+      (item) =>
+          collapsedIds.contains(item.id) && !hydratedIds.contains(item.id),
+    );
+    Map<String, AggregatedItem>? fallbackById;
+    if (hasUnhydrated) {
+      final fallback = normalizeLatestMediaItems(
+        items,
+        collectionType: collectionType,
+        limit: items.length,
+        hideWatched: true,
+      );
+      fallbackById = {for (final item in fallback) item.id: item};
+    }
+    filtered = <AggregatedItem>[
+      for (final item in collapsed)
+        if (collapsedIds.contains(item.id) && !hydratedIds.contains(item.id))
+          ?fallbackById?[item.id]
+        else if (!_isItemWatchedForRecentRow(item))
+          item,
+    ];
+  } else {
+    filtered = collapsed;
+  }
 
   if (filtered.length <= limit) {
     return filtered;

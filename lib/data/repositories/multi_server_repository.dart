@@ -1308,6 +1308,7 @@ class MultiServerRepository {
             var parsed = _parseItems(latestResponse, session.server.id);
             if (parsed.isEmpty) continue;
 
+            List<AggregatedItem>? prehydratedItems;
             if (hideWatched &&
                 parsed.length >= fetchLimit &&
                 fetchLimit < _maxItems) {
@@ -1317,6 +1318,7 @@ class MultiServerRepository {
                 limit: _defaultLimit,
                 hideWatched: true,
                 itemsApi: session.client.itemsApi,
+                timeout: _serverTimeout,
               );
               if (unwatchedItems.length < _defaultLimit) {
                 fetchLimit = _maxItems;
@@ -1332,34 +1334,29 @@ class MultiServerRepository {
                 );
                 parsed = _parseItems(latestResponse, session.server.id);
                 if (parsed.isEmpty) continue;
+              } else {
+                prehydratedItems = unwatchedItems;
               }
             }
 
             // Merged rows are built once every server has answered, so the
-            // items are only collected here. Hydrate collapsed series per
-            // server before merging so merged rows carry full series counts.
+            // raw items are collected here and hydrated per server after
+            // sorting by recency.
             if (mergeByType) {
-              final hydratedForMerge =
-                  await normalizeAndHydrateLatestMediaItems(
-                parsed,
-                collectionType: collectionType,
-                limit: _maxItems,
-                hideWatched: false,
-                itemsApi: session.client.itemsApi,
-              );
-              groupedItems
-                  .putIfAbsent(collectionType, () => [])
-                  .addAll(hydratedForMerge);
+              groupedItems.putIfAbsent(collectionType, () => []).addAll(parsed);
               continue;
             }
 
-            var items = await normalizeAndHydrateLatestMediaItems(
-              parsed,
-              collectionType: collectionType,
-              limit: _defaultLimit,
-              hideWatched: hideWatched,
-              itemsApi: session.client.itemsApi,
-            );
+            var items =
+                prehydratedItems ??
+                await normalizeAndHydrateLatestMediaItems(
+                  parsed,
+                  collectionType: collectionType,
+                  limit: _defaultLimit,
+                  hideWatched: hideWatched,
+                  itemsApi: session.client.itemsApi,
+                  timeout: _serverTimeout,
+                );
             if (items.isEmpty) continue;
 
             final displayName = hasMultiple
@@ -1393,32 +1390,70 @@ class MultiServerRepository {
 
     if (!mergeByType) return rows;
 
+    final sessionsById = {
+      for (final session in sessions) session.server.id: session,
+    };
+
     for (final entry in groupedItems.entries) {
       final collectionType = entry.key;
 
-      // A title in two libraries, or on two servers, is kept once.
-      final seenIds = <String>{};
+      // Sort by recency first, then dedupe per server so two servers sharing
+      // an item ID (e.g. Plex ratingKeys) both survive until copy folding,
+      // and the newest contribution is kept.
+      final sorted = List<AggregatedItem>.from(entry.value)
+        ..sort((a, b) {
+          final da = _parseDateCreated(a.rawData['DateCreated']);
+          final db = _parseDateCreated(b.rawData['DateCreated']);
+          if (da != null && db != null) return db.compareTo(da);
+          if (da != null) return -1;
+          if (db != null) return 1;
+          return 0;
+        });
+
+      final seenKeys = <String>{};
       final allItems = [
-        for (final item in entry.value)
-          if (seenIds.add(item.id)) item,
+        for (final item in sorted)
+          if (seenKeys.add('${item.serverId}:${item.id}')) item,
       ];
       if (allItems.isEmpty) continue;
 
-      allItems.sort((a, b) {
-        final da = _parseDateCreated(a.rawData['DateCreated']);
-        final db = _parseDateCreated(b.rawData['DateCreated']);
-        if (da != null && db != null) return db.compareTo(da);
-        if (da != null) return -1;
-        if (db != null) return 1;
-        return 0;
-      });
+      final targetLimit = foldsCopies ? _maxItems : _defaultLimit;
+      final byServer = <String, List<AggregatedItem>>{};
+      for (final item in allItems) {
+        byServer.putIfAbsent(item.serverId, () => []).add(item);
+      }
 
-      final normalized = normalizeLatestMediaItems(
-        allItems,
-        collectionType: collectionType,
-        limit: foldsCopies ? _maxItems : _defaultLimit,
-        hideWatched: hideWatched,
+      final hydratedByServer = <String, List<AggregatedItem>>{};
+      await Future.wait(
+        byServer.entries.map((serverEntry) async {
+          final session = sessionsById[serverEntry.key];
+          hydratedByServer[serverEntry.key] =
+              await normalizeAndHydrateLatestMediaItems(
+            serverEntry.value,
+            collectionType: collectionType,
+            limit: targetLimit,
+            hideWatched: hideWatched,
+            itemsApi: session?.client.itemsApi,
+            timeout: _serverTimeout,
+          );
+        }),
       );
+
+      // Re-interleave in recency order after per-server collapse/hydration.
+      final merged = <AggregatedItem>[
+        for (final list in hydratedByServer.values) ...list,
+      ]..sort((a, b) {
+          final da = _parseDateCreated(a.rawData['DateCreated']);
+          final db = _parseDateCreated(b.rawData['DateCreated']);
+          if (da != null && db != null) return db.compareTo(da);
+          if (da != null) return -1;
+          if (db != null) return 1;
+          return 0;
+        });
+
+      final normalized = merged.length <= targetLimit
+          ? merged
+          : merged.take(targetLimit).toList();
       // A title several servers hold shows once, carrying the rest as copies.
       final items = foldsCopies
           ? foldCopies(normalized).take(_defaultLimit).toList()
