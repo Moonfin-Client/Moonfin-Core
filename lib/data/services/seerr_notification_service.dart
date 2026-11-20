@@ -11,8 +11,18 @@ import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'local_notification_bootstrap.dart';
 
+class _NotificationCacheEntry {
+  final DateTime timestamp;
+  final bool hasRequest;
+
+  const _NotificationCacheEntry({
+    required this.timestamp,
+    required this.hasRequest,
+  });
+}
+
 class SeerrNotificationService {
-  final Map<String, DateTime> _recentEvents = {};
+  final Map<String, _NotificationCacheEntry> _recentEvents = {};
 
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
@@ -33,11 +43,37 @@ class SeerrNotificationService {
     // match stream copies (which include it).
     final dedupeKey = '$title\x1f$body\x1f$target';
     final now = DateTime.now();
-    _recentEvents.removeWhere((_, time) => now.difference(time).inSeconds > 4);
-    if (_recentEvents.containsKey(dedupeKey)) {
+    _recentEvents.removeWhere(
+      (_, entry) => now.difference(entry.timestamp).inSeconds > 15,
+    );
+
+    final previous = _recentEvents[dedupeKey];
+    if (previous != null) {
+      // If a matching copy arrives with richer request metadata (e.g. stream
+      // copy carrying requestId while earlier Android FCM push omitted it),
+      // upgrade the local OS notification to show Approve/Deny actions without
+      // displaying a second banner.
+      if (asRequest && !previous.hasRequest) {
+        _recentEvents[dedupeKey] = _NotificationCacheEntry(
+          timestamp: now,
+          hasRequest: true,
+        );
+        if (PlatformDetection.isMobile) {
+          unawaited(
+            LocalNotificationBootstrap.instance.plugin
+                .cancel(id: target.hashCode)
+                .catchError((_) {}),
+          );
+          _showLocal(title, body, target, requestId: requestId);
+        }
+      }
       return;
     }
-    _recentEvents[dedupeKey] = now;
+
+    _recentEvents[dedupeKey] = _NotificationCacheEntry(
+      timestamp: now,
+      hasRequest: asRequest,
+    );
 
     // Mobile shows the OS notification alongside the in-app banner; other
     // platforms only get the banner.
@@ -51,6 +87,12 @@ class SeerrNotificationService {
 
   @visibleForTesting
   int get recentEventsCount => _recentEvents.length;
+
+  @visibleForTesting
+  bool? hasRequestMetadata(String title, String body, String route) {
+    final dedupeKey = '$title\x1f$body\x1f${route.trim()}';
+    return _recentEvents[dedupeKey]?.hasRequest;
+  }
 
   Future<void> _showLocal(
     String title,

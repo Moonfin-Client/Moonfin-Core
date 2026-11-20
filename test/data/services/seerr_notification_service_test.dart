@@ -32,26 +32,44 @@ void main() {
     expect(service.recentEventsCount, equals(1));
   });
 
-  test('show deduplicates Android push without requestId against stream copy with requestId', () {
+  test('show upgrades local notification with request metadata when stream copy arrives after push', () {
     // Android FCM push arrives first without requestId
     service.show(
       'Movie Requested',
-      'User requested The Matrix',
-      '/requests/42',
+      'User requested Inception',
+      '/requests/99',
       requestId: null,
       isRequest: false,
     );
     expect(service.recentEventsCount, equals(1));
+    expect(
+      service.hasRequestMetadata('Movie Requested', 'User requested Inception', '/requests/99'),
+      isFalse,
+    );
 
     // Stream event arrives with requestId populated
     service.show(
       'Movie Requested',
-      'User requested The Matrix',
-      '/requests/42',
-      requestId: '42',
+      'User requested Inception',
+      '/requests/99',
+      requestId: '99',
       isRequest: true,
     );
-    // Keys match, so duplicate is dropped
+    // Keys match, so event count stays 1, but request metadata is upgraded
+    expect(service.recentEventsCount, equals(1));
+    expect(
+      service.hasRequestMetadata('Movie Requested', 'User requested Inception', '/requests/99'),
+      isTrue,
+    );
+
+    // Identical duplicate repeats remain suppressed
+    service.show(
+      'Movie Requested',
+      'User requested Inception',
+      '/requests/99',
+      requestId: '99',
+      isRequest: true,
+    );
     expect(service.recentEventsCount, equals(1));
   });
 }
