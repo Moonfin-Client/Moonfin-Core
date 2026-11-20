@@ -337,14 +337,16 @@ class ServerRepository {
   ///
   /// A request to an address its server already moved away from gets the
   /// address it moved to, since a request that started before the move can
-  /// fail after it, when no saved server uses its address any more.
+  /// fail after it, when no saved server uses its address any more. Once
+  /// another saved server answers there, the address is that server's again.
   Future<String?> followMovedAddress(String baseUrl) {
     final wanted = _withoutTrailingSlash(baseUrl);
-    final server = _servers
-        .where((s) => s.entryAddress != null)
+    final atWanted = _servers
         .where((s) => _withoutTrailingSlash(s.address) == wanted)
-        .firstOrNull;
+        .toList();
+    final server = atWanted.where((s) => s.entryAddress != null).firstOrNull;
     if (server == null) {
+      if (atWanted.isNotEmpty) return Future.value();
       final movedId = _movedAway[wanted];
       final current = movedId == null ? null : getServer(movedId);
       if (current == null || _withoutTrailingSlash(current.address) == wanted) {

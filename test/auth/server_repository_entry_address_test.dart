@@ -161,6 +161,25 @@ void main() {
     expect(await repo.followMovedAddress('http://127.0.0.1:2'), isNull);
   });
 
+  test('an old address another saved server uses now is not redirected',
+      () async {
+    await repo.saveServer(saved());
+    expect(await repo.followMovedAddress('http://127.0.0.1:1'), targetUrl());
+    await repo.saveServer(
+      Server(
+        id: 'server-2',
+        name: 'Other',
+        address: 'http://127.0.0.1:1',
+        version: '10.11.0',
+        serverType: ServerType.jellyfin,
+        dateAdded: DateTime(2026),
+      ),
+    );
+
+    // Its failed request, token and all, stays with it.
+    expect(await repo.followMovedAddress('http://127.0.0.1:1/'), isNull);
+  });
+
   test('a server removed while its entry address is asked stays removed',
       () async {
     await repo.saveServer(saved());
