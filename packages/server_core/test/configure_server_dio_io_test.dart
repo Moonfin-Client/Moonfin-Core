@@ -497,10 +497,13 @@ void main() {
 
   group('a server that moved', () {
     late HttpServer moved;
+    var movedHandled = 0;
 
     setUp(() async {
+      movedHandled = 0;
       moved = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       moved.listen((request) async {
+        movedHandled++;
         request.response.write('${request.method} ${request.uri.path}');
         await request.response.close();
       });
@@ -518,6 +521,74 @@ void main() {
       await socket.close();
       return 'http://127.0.0.1:$port';
     }
+
+    // Takes the whole request and closes before any header goes back, which
+    // Dio reports as a connection error although the server got the body.
+    var droppedHandled = 0;
+    Future<String> droppingBase() async {
+      droppedHandled = 0;
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      server.listen((request) async {
+        droppedHandled++;
+        await request.drain<void>();
+        final socket = await request.response.detachSocket(writeHeaders: false);
+        socket.destroy();
+      });
+      return 'http://127.0.0.1:${server.port}';
+    }
+
+    test('a GET that fails to connect goes to its new address', () async {
+      ServerMoved.resolver = (_) async => 'http://127.0.0.1:${moved.port}';
+      final dio = Dio(BaseOptions(baseUrl: await deadBase()));
+      configureServerDio(dio);
+
+      try {
+        final response = await dio.get<String>('/System/Ping');
+        expect(response.data, 'GET /System/Ping');
+      } finally {
+        dio.close(force: true);
+      }
+    });
+
+    test('a POST that was already sent is not sent again', () async {
+      final dropping = await droppingBase();
+      ServerMoved.resolver = (_) async => 'http://127.0.0.1:${moved.port}';
+      final dio = Dio(BaseOptions(baseUrl: dropping));
+      configureServerDio(dio);
+
+      try {
+        await expectLater(
+          dio.post<String>('/Sessions/Playing', data: {'a': 1}),
+          throwsA(
+            isA<DioException>().having(
+              (e) => e.type,
+              'type',
+              DioExceptionType.connectionError,
+            ),
+          ),
+        );
+        expect(droppedHandled, 1);
+        expect(movedHandled, 0);
+      } finally {
+        dio.close(force: true);
+      }
+    });
+
+    test('a GET that was already sent still goes to its new address', () async {
+      final dropping = await droppingBase();
+      ServerMoved.resolver = (_) async => 'http://127.0.0.1:${moved.port}';
+      final dio = Dio(BaseOptions(baseUrl: dropping));
+      configureServerDio(dio);
+
+      try {
+        final response = await dio.get<String>('/Users/Me');
+        expect(response.data, 'GET /Users/Me');
+        expect(droppedHandled, 1);
+      } finally {
+        dio.close(force: true);
+      }
+    });
 
     test('a request that fails to connect goes to its new address', () async {
       final dead = await deadBase();

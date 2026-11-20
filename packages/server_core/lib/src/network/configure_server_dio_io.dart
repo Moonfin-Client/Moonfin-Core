@@ -125,6 +125,11 @@ const _followedKey = 'moonfin.followedMove';
 /// without a restart or waiting for its reachability check. A request that
 /// failed to connect never reached the server, so any method may go again;
 /// one whose connection broke later only when it is a read.
+///
+/// Dio also files a connection that closed before the response headers under
+/// [DioExceptionType.connectionError], but that one already sent its body, so
+/// only the [SocketException] the adapter raises while opening the connection
+/// (or a connect timeout) proves a write never arrived.
 Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
   onRequest: (options, handler) {
     final canMove = ServerMoved.canMove;
@@ -139,16 +144,20 @@ Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
   onError: (e, handler) async {
     final options = e.requestOptions;
     final resolver = ServerMoved.resolver;
-    final notConnected =
-        e.type == DioExceptionType.connectionError ||
-        e.type == DioExceptionType.connectionTimeout;
+    final method = options.method.toUpperCase();
+    final isRead = method == 'GET' || method == 'HEAD';
+    final neverConnected =
+        e.type == DioExceptionType.connectionTimeout ||
+        (e.type == DioExceptionType.connectionError &&
+            e.error is SocketException);
     final droppedRead =
-        e.type == DioExceptionType.unknown &&
-        e.error is SocketException &&
-        options.method.toUpperCase() == 'GET';
+        isRead &&
+        (e.type == DioExceptionType.connectionError ||
+            (e.type == DioExceptionType.unknown &&
+                e.error is SocketException));
     final from = options.baseUrl;
     if (resolver == null ||
-        !(notConnected || droppedRead) ||
+        !(neverConnected || droppedRead) ||
         options.extra[_followedKey] == true ||
         from.isEmpty) {
       handler.next(e);
