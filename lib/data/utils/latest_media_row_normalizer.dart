@@ -238,7 +238,8 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
   if (seriesById.isNotEmpty) {
     collapsed = [
       for (final item in collapsed)
-        if (seriesById[item.id] case final series?)
+        if (seriesById[item.id] case final series?
+            when collapsedIds.contains(item.id))
           () {
             hydratedIds.add(item.id);
             return _mergeSeriesUserData(item, series);
