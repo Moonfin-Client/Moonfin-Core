@@ -282,6 +282,13 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
   /// re-reads rather than keep the old list.
   Future<void> _onRecordingsChanged() async {
     if (!mounted) return;
+    // An owners read that failed (a slow or unreachable plugin) left the page
+    // in Everyone with no switch; a change is the moment to read again, and
+    // the full load also decides the scope and reloads every tab.
+    if (supportedRecordingOwners() != null && _mine == null) {
+      await _load();
+      return;
+    }
     final scheduleRefresh = _scheduleVm.refresh();
     final seriesRefresh = _seriesVm.refresh();
     final owners = supportedRecordingOwners();
