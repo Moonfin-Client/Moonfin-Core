@@ -57,7 +57,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   final _addServerFocus = FocusNode(debugLabel: 'serverSelectAddServer');
   StreamSubscription<ServerAdditionState>? _additionSub;
   StreamSubscription<DiscoveredServer>? _discoverySub;
-  StreamSubscription<Server>? _movedSub;
+  StreamSubscription<ServerMove>? _movedSub;
 
   bool _isConnecting = false;
   String? _errorMessage;

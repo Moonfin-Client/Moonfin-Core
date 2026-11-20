@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
-import '../../auth/models/server.dart';
 import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../util/platform_detection.dart';
@@ -98,9 +97,9 @@ class ConnectivityService extends ChangeNotifier {
     @visibleForTesting Connectivity? connectivity,
     @visibleForTesting Duration retryBase = const Duration(seconds: 5),
     @visibleForTesting
-    Duration entryFollowInterval = const Duration(seconds: 2),
+    Duration entryFollowInterval = const Duration(seconds: 5),
     @visibleForTesting
-    Duration entryFollowBudget = const Duration(minutes: 5),
+    Duration entryFollowBudget = const Duration(minutes: 3),
   }) : _connectivity = connectivity ?? Connectivity(),
        _retryBase = retryBase,
        _entryFollowInterval = entryFollowInterval,
@@ -112,7 +111,6 @@ class ConnectivityService extends ChangeNotifier {
           _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
     }
     _listenForMoves();
-    _streamWatch = Timer.periodic(_streamWatchInterval, (_) => _watchStream());
     _checkInitialState();
   }
 
@@ -352,7 +350,8 @@ class ConnectivityService extends ChangeNotifier {
     }
   }
 
-  /// The player lost its stream and starts reconnecting. A server that moved
+  /// The player lost its stream and starts reconnecting, or one of its
+  /// server requests stalled on the network. A server that moved
   /// behind its entry address (a VPN reconnect changing the forwarded port)
   /// doesn't flip the device's network, so nothing else would check now.
   ///
@@ -389,9 +388,7 @@ class ConnectivityService extends ChangeNotifier {
     }
   }
 
-  StreamSubscription<Server>? _movedSub;
-  Timer? _streamWatch;
-  static const _streamWatchInterval = Duration(seconds: 10);
+  StreamSubscription<ServerMove>? _movedSub;
 
   /// Starts listening for moves of the active server once the repository
   /// that reports them exists. [initialize] runs before the auth module
@@ -405,32 +402,19 @@ class ConnectivityService extends ChangeNotifier {
 
   /// The active server answers on a new address now, found by any ask of its
   /// entry address. Whatever was waiting on the old one hears of it at once:
-  /// the reachability state clears and an open stream reopens there.
-  void _onServerMoved(Server moved) {
-    if (_disposed || moved.id != _serverId) return;
+  /// the reachability state clears and an open stream moves over to it.
+  void _onServerMoved(ServerMove move) {
+    if (_disposed || move.server.id != _serverId) return;
     unawaited(_checkServerReachability());
     final getIt = GetIt.instance;
     if (getIt.isRegistered<PlaybackManager>()) {
-      getIt<PlaybackManager>().onServerMoved();
+      unawaited(
+        getIt<PlaybackManager>().onServerMoved(
+          from: move.from,
+          to: move.server.address,
+        ),
+      );
     }
-  }
-
-  /// While a stream is open, the entry address is asked every
-  /// [_streamWatchInterval]. A target that moves stops answering without
-  /// refusing, and the player only notices once its read times out, which
-  /// takes far longer than the redirect needs to show the new address. Only
-  /// servers added through a redirect are asked; for others this does nothing.
-  Future<void> _watchStream() async {
-    _listenForMoves();
-    final getIt = GetIt.instance;
-    if (!_isOnline ||
-        _followingLostStream ||
-        !getIt.isRegistered<PlaybackManager>() ||
-        !getIt.isRegistered<MediaServerClient>() ||
-        !getIt<PlaybackManager>().hasReconnectableStream) {
-      return;
-    }
-    await _followEntryAddress(getIt<MediaServerClient>());
   }
 
   bool _followingLostStream = false;
@@ -508,7 +492,6 @@ class ConnectivityService extends ChangeNotifier {
     _recheckDebounce?.cancel();
     _retryTimer?.cancel();
     _movedSub?.cancel();
-    _streamWatch?.cancel();
     super.dispose();
   }
 }

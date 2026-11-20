@@ -280,6 +280,13 @@ object Media3Bridge {
     }
 
     fun handleMethodCall(call: MethodCall, result: MethodChannel.Result, caller: Any) {
+        if (call.method == "rebaseServer") {
+            val args = call.arguments as? Map<*, *>
+            val from = args?.get("from") as? String
+            val to = args?.get("to") as? String
+            result.success(if (from != null && to != null) ServerRebase.rebase(from, to) else -1)
+            return
+        }
         if (call.method == "activateView") {
             val id = ((call.arguments as? Map<*, *>)?.get("viewId") as? Number)?.toInt()
             val view = id?.let { viewRegistry[it] }

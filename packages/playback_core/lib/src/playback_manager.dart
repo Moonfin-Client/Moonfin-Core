@@ -809,17 +809,52 @@ class PlaybackManager implements AudioOwnable {
       queueService.currentItem != null && _canReconnect(_currentResolution);
 
   /// The server of the open stream answers on a new address now (a redirect
-  /// target that moved). Its old connection only times out after a long
-  /// while, so the stream is reopened at the current position right away,
-  /// on a fresh reconnect budget, instead of waiting for that.
-  void onServerMoved() {
+  /// target that moved from [from] to [to]). Its old connection only times
+  /// out after a long while. A backend that can move its loads over keeps
+  /// playing from its buffer; the stream is reopened at the current position
+  /// only when it can't, or when playback hasn't moved on [_rebaseGrace]
+  /// later.
+  Future<void> onServerMoved({String? from, String? to}) async {
     if (!hasReconnectableStream || _reconnectInFlight) return;
+    final backend = _backend;
+    if (from != null &&
+        to != null &&
+        backend != null &&
+        backend is ServerRebaseBackend &&
+        !_reconnecting) {
+      final intent = _viewerIntentGeneration;
+      final before = backend.position;
+      if (await (backend as ServerRebaseBackend).rebaseServer(from, to)) {
+        _diagnosticLogger?.call('Server moved, loading on from its new address');
+        _rebaseCheck?.cancel();
+        _rebaseCheck = Timer(_rebaseGrace, () {
+          _rebaseCheck = null;
+          if (intent != _viewerIntentGeneration || _viewerPaused) return;
+          if (!hasReconnectableStream || _reconnecting) return;
+          if (_isActuallyPlaying && backend.position > before) return;
+          _reconnectNow();
+        });
+        return;
+      }
+    }
+    _reconnectNow();
+  }
+
+  static const _rebaseGrace = Duration(seconds: 8);
+  Timer? _rebaseCheck;
+
+  void _reconnectNow() {
     _reconnectRetry?.cancel();
     _reconnectRetry = null;
     _reconnectStartedAt = null;
     _beginReconnect('server-moved');
   }
   Stream<bool> get reconnectingStream => _reconnectingController.stream;
+
+  /// The backend's server requests stalled on the network (see
+  /// [PlayerBackend.serverStallStream]).
+  Stream<void> get serverStalledStream => _serverStallController.stream;
+  final _serverStallController = StreamController<void>.broadcast();
 
   /// Item that gained a stream on the server after this session resolved. The
   /// resolution still lists what the item had at play time, so a selector
@@ -1567,6 +1602,13 @@ class PlaybackManager implements AudioOwnable {
     if (errorStream != null) {
       _streamSubs.add(
         errorStream.listen(_onBackendErrorEvent, onError: (_) {}),
+      );
+    }
+    if (backend is ServerRebaseBackend) {
+      _streamSubs.add(
+        (backend as ServerRebaseBackend).serverStallStream.listen(
+          (_) => _serverStallController.add(null),
+        ),
       );
     }
   }
@@ -5954,6 +5996,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void dispose() {
+    _rebaseCheck?.cancel();
     _liveRecoveryRetry?.cancel();
     _cancelLiveRecoveryProven();
     _endLiveStallWatch();
@@ -5969,6 +6012,7 @@ class PlaybackManager implements AudioOwnable {
     _reconnectProvenTimer?.cancel();
     _credentialsReopenTimer?.cancel();
     _reconnectingController.close();
+    _serverStallController.close();
     _volumeController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();

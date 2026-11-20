@@ -122,7 +122,7 @@ void main() {
 
   test('a request that failed to connect gets the new address', () async {
     await repo.saveServer(saved());
-    final moves = <Server>[];
+    final moves = <ServerMove>[];
     final sub = repo.serverMoved.listen(moves.add);
 
     // Requests failing together share one ask.
@@ -134,7 +134,8 @@ void main() {
     expect(asks, [targetUrl(), targetUrl()]);
     expect(repo.getServer('server-1')!.address, targetUrl());
     await Future<void>.delayed(Duration.zero);
-    expect(moves.single.address, targetUrl());
+    expect(moves.single.server.address, targetUrl());
+    expect(moves.single.from, 'http://127.0.0.1:1');
     await sub.cancel();
   });
 

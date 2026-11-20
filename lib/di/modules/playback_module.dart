@@ -718,6 +718,12 @@ void registerPlaybackModule() {
       unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
     }
   });
+  // A stalled request finds a moved server while the buffer still plays.
+  manager.serverStalledStream.listen((_) {
+    if (_getIt.isRegistered<ConnectivityService>()) {
+      unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
+    }
+  });
 
   _getIt.registerLazySingleton<OfflineStreamResolver>(
     () => OfflineStreamResolver(_getIt<OfflineRepository>()),

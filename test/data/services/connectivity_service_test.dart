@@ -25,10 +25,10 @@ class _FakeServerRepository extends Fake implements ServerRepository {
 
   final Future<String?> Function(String serverId) onFollow;
   final asked = <String>[];
-  final moves = StreamController<Server>.broadcast();
+  final moves = StreamController<ServerMove>.broadcast();
 
   @override
-  Stream<Server> get serverMoved => moves.stream;
+  Stream<ServerMove> get serverMoved => moves.stream;
 
   @override
   Future<String?> followEntryAddressOf(String serverId) {
@@ -337,23 +337,37 @@ void main() {
       GetIt.instance.registerSingleton<ServerRepository>(repo);
       final player = _MockPlaybackManager();
       when(() => player.hasReconnectableStream).thenReturn(true);
+      when(
+        () => player.onServerMoved(
+          from: any(named: 'from'),
+          to: any(named: 'to'),
+        ),
+      ).thenAnswer((_) async {});
       GetIt.instance.registerSingleton<PlaybackManager>(player);
 
       // Signing in to the server starts listening.
       await service.onServerClientReady('server-1');
       repo.moves.add(
-        Server(
+        ServerMove(
+          from: 'http://127.0.0.1:1',
+          server: Server(
           id: 'server-1',
           name: 'Media',
           address: 'http://127.0.0.1:2',
           version: '10.11.0',
           serverType: ServerType.jellyfin,
           dateAdded: DateTime(2026),
+          ),
         ),
       );
       await Future<void>.delayed(Duration.zero);
 
-      verify(player.onServerMoved).called(1);
+      verify(
+        () => player.onServerMoved(
+          from: 'http://127.0.0.1:1',
+          to: 'http://127.0.0.1:2',
+        ),
+      ).called(1);
     });
 
     test('stops following when the stream dropped but nothing moved',

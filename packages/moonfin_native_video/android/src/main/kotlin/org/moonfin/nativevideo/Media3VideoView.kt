@@ -2873,7 +2873,11 @@ class Media3VideoView(
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(120_000)
             .setReadTimeoutMs(120_000)
-        bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
+        bootDataSourceFactory = DefaultDataSource.Factory(
+            context,
+            // A server that moves behind its entry address keeps playing.
+            RebasingDataSourceFactory(httpDataSourceFactory),
+        )
             .setTransferListener(Media3TransferLog)
         val assHandler = AssHandler(
             AssRenderType.OVERLAY_CANVAS,

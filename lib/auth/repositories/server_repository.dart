@@ -14,6 +14,15 @@ import '../models/silo_native_offer.dart';
 import '../store/authentication_store.dart';
 import '../store/client_certificate_store.dart';
 
+/// A saved server that answers on a new address now: [from] is where it
+/// was, [server] is it as saved at its new address.
+class ServerMove {
+  const ServerMove({required this.from, required this.server});
+
+  final String from;
+  final Server server;
+}
+
 class ServerRepository {
   final AuthenticationStore _authStore;
   final MediaServerClientFactory _clientFactory;
@@ -301,9 +310,9 @@ class ServerRepository {
     return followed.address == server.address ? null : followed.address;
   }
 
-  /// Saved servers whose entry address led somewhere new, as they are now.
-  Stream<Server> get serverMoved => _movedController.stream;
-  final _movedController = StreamController<Server>.broadcast();
+  /// Saved servers whose entry address led somewhere new.
+  Stream<ServerMove> get serverMoved => _movedController.stream;
+  final _movedController = StreamController<ServerMove>.broadcast();
 
   /// Asks the entry address of every saved server that has one, all at once,
   /// so a list of servers shows where they answer now.
@@ -371,7 +380,7 @@ class ServerRepository {
       final moved = server.copyWith(address: resolvedUrl);
       await updateServer(moved);
       _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
-      _movedController.add(moved);
+      _movedController.add(ServerMove(from: server.address, server: moved));
       return moved;
     } catch (_) {
       return server;

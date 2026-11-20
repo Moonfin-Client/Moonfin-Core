@@ -20,7 +20,10 @@ import 'subtitle_fonts.dart';
 
 class Media3PlayerBackend extends PlayerBackend
     with SubtitleDelayState
-    implements SubtitleLoadingBackend, SecondarySubtitleBackend {
+    implements
+        SubtitleLoadingBackend,
+        SecondarySubtitleBackend,
+        ServerRebaseBackend {
   @override
   bool get supportsSecondarySubtitleDelay => true;
   @override
@@ -231,8 +234,19 @@ class Media3PlayerBackend extends PlayerBackend
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
 
+  final _serverStall = StreamController<void>.broadcast();
+
+  @override
+  Stream<void> get serverStallStream => _serverStall.stream;
+
   @override
   bool? get playWhenReady => _playWhenReady;
+
+  @override
+  Future<bool> rebaseServer(String from, String to) async {
+    final cut = await _invoke<int>('rebaseServer', {'from': from, 'to': to});
+    return cut != null && cut >= 0;
+  }
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -405,6 +419,9 @@ class Media3PlayerBackend extends PlayerBackend
         _bufferingStream.add(false);
       case 'activityAction':
         _activityActionController.add(map.cast<String, dynamic>());
+      case 'serverStalled':
+        _diag('Media3: server request stalled', level: LogLevel.warning);
+        _serverStall.add(null);
       case 'playerError':
         _setSubtitleLoading(false);
         final cause = map['cause']?.toString();
