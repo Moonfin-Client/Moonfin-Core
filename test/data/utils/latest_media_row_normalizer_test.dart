@@ -716,5 +716,88 @@ void main() {
       expect(result.single.id, equals('series-1'));
       expect(result.single.unplayedItemCount, equals(8));
     });
+
+    test(
+      'hideWatched preserves show with older unwatched episode when newest episode is watched and hydration fails',
+      () async {
+        const watchedNewestEpisode = AggregatedItem(
+          id: 'ep-yaga-2',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-yaga-2',
+            'Name': 'Episode 2',
+            'Type': 'Episode',
+            'SeriesId': 'series-yaga',
+            'SeriesName': 'YAGA',
+            'UserData': {'Played': true},
+          },
+        );
+        const unwatchedOlderEpisode = AggregatedItem(
+          id: 'ep-yaga-1',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-yaga-1',
+            'Name': 'Episode 1',
+            'Type': 'Episode',
+            'SeriesId': 'series-yaga',
+            'SeriesName': 'YAGA',
+            'UserData': {'Played': false},
+          },
+        );
+
+        final result = await normalizeAndHydrateLatestMediaItems(
+          [watchedNewestEpisode, unwatchedOlderEpisode],
+          collectionType: 'tvshows',
+          limit: 10,
+          hideWatched: true,
+          fetchSeriesByIds: (_) async => throw Exception('network error'),
+        );
+
+        expect(result.map((i) => i.id).toList(), equals(['series-yaga']));
+        expect(result.single.isPlayed, isFalse);
+      },
+    );
+
+    test('chunks series hydration requests into batches of 100', () async {
+      final episodes = [
+        for (var i = 0; i < 150; i++)
+          AggregatedItem(
+            id: 'ep-$i',
+            serverId: 'server1',
+            rawData: {
+              'Id': 'ep-$i',
+              'Name': 'Episode 1',
+              'Type': 'Episode',
+              'SeriesId': 'series-$i',
+              'SeriesName': 'Show $i',
+              'UserData': const {'Played': false},
+            },
+          ),
+      ];
+
+      final batchSizes = <int>[];
+      final result = await normalizeAndHydrateLatestMediaItems(
+        episodes,
+        collectionType: 'tvshows',
+        limit: 150,
+        hideWatched: true,
+        fetchSeriesByIds: (ids) async {
+          batchSizes.add(ids.length);
+          return [
+            for (final id in ids)
+              {
+                'Id': id,
+                'Type': 'Series',
+                'UserData': {'Played': false, 'UnplayedItemCount': 4},
+                'ChildCount': 1,
+              },
+          ];
+        },
+      );
+
+      expect(batchSizes, equals([100, 50]));
+      expect(result.length, equals(150));
+      expect(result.last.unplayedItemCount, equals(4));
+    });
   });
 }
