@@ -62,7 +62,7 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 | **Apple TV (tvOS)** | 18.0 | Full support |
 | **macOS** | 15.0 (Sequoia) | Full support |
 | **Windows** | 10 (x64 and ARM64) | Full support |
-| **Linux** | GTK 3+, CMake 3.13+ | Full support (Wayland and X11) |
+| **Linux** | Ubuntu 24.04, Debian 13, Fedora 39, or any distro with glibc 2.38. Older ones like Raspberry Pi OS Bookworm can use Flathub | Full support (Wayland and X11) |
 | **Web** | Modern browsers (installable PWA) | Full support |
 
 > Android TV, Fire TV, and Apple TV ship from this same codebase with a TV-tuned interface and D-pad navigation. Fire TV runs the same native backend as Android TV. Web runs as an installable PWA through the Moonbase server plugin.
@@ -155,7 +155,7 @@ The store links above are the easy route. To install a file yourself, download i
 | Linux ARM64 | `Moonfin_LinuxARM64_v<version>.<ext>` (same formats) |
 | Web | Served as a PWA by the [Moonbase](https://github.com/Moonfin-Client/Plugin) server plugin, no download needed |
 
-On Linux, the easiest route is [Flathub](https://flathub.org/en/apps/io.moonfin.moonfin) with `flatpak install flathub io.moonfin.moonfin`. On Arch Linux, install from the AUR with `yay -S moonfin-bin` (or `paru -S moonfin-bin`, `pamac build moonfin-bin`).
+On Linux, the easiest route is [Flathub](https://flathub.org/en/apps/io.moonfin.moonfin) with `flatpak install flathub io.moonfin.moonfin`. It's also the way to go on Raspberry Pi OS Bookworm and other Debian 12 systems, which the release files don't run on. On Arch Linux, install from the AUR with `yay -S moonfin-bin` (or `paru -S moonfin-bin`, `pamac build moonfin-bin`).
 
 Click-by-click steps for every platform are on [Installation](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Installation), and [Getting Started](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Getting-Started) covers connecting to your server for the first time.
 
