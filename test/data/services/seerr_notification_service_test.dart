@@ -201,4 +201,52 @@ void main() {
     expect(presentedNotifications.length, equals(2));
     expect(presentedBanners.length, equals(1));
   });
+
+  group('handleColdStart', () {
+    test('routes serverMessagesPushRoute to serverMessagesOpener', () async {
+      var messagesOpened = false;
+      String? routedPath;
+
+      service.launchRouteResolver = () async => 'messages';
+      service.serverMessagesOpener = () => messagesOpened = true;
+      service.routeNavigator = (route) => routedPath = route;
+
+      await service.handleColdStart();
+
+      expect(messagesOpened, isTrue);
+      expect(routedPath, isNull);
+    });
+
+    test('routes standard launch routes to routeNavigator', () async {
+      var messagesOpened = false;
+      String? routedPath;
+
+      service.launchRouteResolver = () async => ' /movie/42 ';
+      service.serverMessagesOpener = () => messagesOpened = true;
+      service.routeNavigator = (route) => routedPath = route;
+
+      await service.handleColdStart();
+
+      expect(messagesOpened, isFalse);
+      expect(routedPath, equals('/movie/42'));
+    });
+
+    test('handles null and empty launch routes gracefully', () async {
+      var messagesOpened = false;
+      String? routedPath;
+
+      service.serverMessagesOpener = () => messagesOpened = true;
+      service.routeNavigator = (route) => routedPath = route;
+
+      service.launchRouteResolver = () async => null;
+      await service.handleColdStart();
+      expect(messagesOpened, isFalse);
+      expect(routedPath, isNull);
+
+      service.launchRouteResolver = () async => '   ';
+      await service.handleColdStart();
+      expect(messagesOpened, isFalse);
+      expect(routedPath, isNull);
+    });
+  });
 }

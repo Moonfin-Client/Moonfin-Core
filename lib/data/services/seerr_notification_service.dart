@@ -49,6 +49,15 @@ class SeerrNotificationService {
   @visibleForTesting
   BannerPresenter? bannerPresenter;
 
+  @visibleForTesting
+  Future<String?> Function()? launchRouteResolver;
+
+  @visibleForTesting
+  void Function(String route)? routeNavigator;
+
+  @visibleForTesting
+  VoidCallback? serverMessagesOpener;
+
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
     LocalNotificationBootstrap.instance.attachMainIsolateActionHandler();
@@ -253,8 +262,23 @@ class SeerrNotificationService {
   }
 
   Future<void> handleColdStart() async {
-    final route = await LocalNotificationBootstrap.instance.getLaunchRoute();
-    if (route == null) return;
-    appRouter.go(route);
+    final route = launchRouteResolver != null
+        ? await launchRouteResolver!()
+        : await LocalNotificationBootstrap.instance.getLaunchRoute();
+    if (route == null || route.trim().isEmpty) return;
+    final trimmed = route.trim();
+    if (trimmed == serverMessagesPushRoute) {
+      if (serverMessagesOpener != null) {
+        serverMessagesOpener!();
+      } else {
+        openServerMessagesFromNotification();
+      }
+      return;
+    }
+    if (routeNavigator != null) {
+      routeNavigator!(trimmed);
+    } else {
+      appRouter.go(trimmed);
+    }
   }
 }
