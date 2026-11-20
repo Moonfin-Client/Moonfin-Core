@@ -18638,5 +18638,47 @@
     "clickpadSeekingPausedOnly": "仅在暂停时",
     "@clickpadSeekingPausedOnly": {
         "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+    },
+    "seerrTestNotification": "发送测试通知",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "验证应用内与后台推送送达",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "已下发至 {count} 台设备。",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "已发送应用内通知，服务器推送未开启。",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "发送测试通知失败",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "服务器推送",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "设备推送",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "已注册",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "未注册",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
     }
 }
