@@ -822,10 +822,10 @@ jobs:
             artifact_prefix: Moonfin_Linux
           # glibc and libstdc++ are deliberately not bundled, so the build host
           # decides the oldest system the packages can run on. 24.04 puts that
-          # floor at glibc 2.38, newer than the Debian 12 base that Raspberry Pi
-          # OS and most other ARM64 boards run. 22.04 puts it at 2.35.
+          # floor at glibc 2.38 and gives it FFmpeg 6.1, the same as x64.
+          # Debian 12 (glibc 2.36) boards can use the Flatpak or Snap.
           - arch: arm64
-            runner: ubuntu-22.04-arm
+            runner: ubuntu-24.04-arm
             appimagetool_arch: aarch64
             artifact_prefix: Moonfin_LinuxARM64
     runs-on: ${{ matrix.runner }}
@@ -864,10 +864,8 @@ jobs:
             zsync
 
       # The packages bundle a newer libmpv than the distro's 0.37 (see
-      # scripts/ci/build-libmpv-linux.sh). ARM64 still builds on 22.04, whose
-      # FFmpeg 4.4 is too old for it, so it keeps the distro's mpv for now.
+      # scripts/ci/build-libmpv-linux.sh).
       - uses: actions/cache@v5
-        if: matrix.arch == 'x64'
         id: libmpv-cache
         with:
           path: ${{ runner.temp }}/libmpv
@@ -875,7 +873,6 @@ jobs:
           key: libmpv-${{ matrix.runner }}-${{ hashFiles('scripts/ci/build-libmpv-linux.sh') }}
 
       - name: Build libmpv
-        if: matrix.arch == 'x64'
         env:
           CACHE_HIT: ${{ steps.libmpv-cache.outputs.cache-hit }}
         run: |
@@ -916,7 +913,7 @@ jobs:
 
       - name: Build all Linux packages
         env:
-          MOONFIN_LIBMPV_DIR: ${{ matrix.arch == 'x64' && format('{0}/libmpv/lib', runner.temp) || '' }}
+          MOONFIN_LIBMPV_DIR: ${{ runner.temp }}/libmpv/lib
         run: |
           chmod +x build-linux.sh
           ./build-linux.sh all
