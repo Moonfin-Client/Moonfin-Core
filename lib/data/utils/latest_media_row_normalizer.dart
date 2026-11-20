@@ -192,8 +192,11 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
   if (idsToHydrate.isNotEmpty &&
       timeout > Duration.zero &&
       (fetchSeriesByIds != null || itemsApi != null)) {
+    final deadline = DateTime.now().add(timeout);
     final fetched = <Map<String, dynamic>>[];
     for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
+      final remaining = deadline.difference(DateTime.now());
+      if (remaining <= Duration.zero) break;
       final end = (i + _seriesHydrationBatchSize < idsToHydrate.length)
           ? i + _seriesHydrationBatchSize
           : idsToHydrate.length;
@@ -209,7 +212,7 @@ Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
                         enableUserData: true,
                       )
                       .then(_extractItemsList))
-            .timeout(timeout);
+            .timeout(remaining);
         fetched.addAll(batchItems);
       } catch (_) {
         // Keep successful batches and fall back to unhydrated cards for failed batches.
