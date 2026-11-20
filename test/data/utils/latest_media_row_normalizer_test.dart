@@ -799,5 +799,47 @@ void main() {
       expect(result.length, equals(150));
       expect(result.last.unplayedItemCount, equals(4));
     });
+
+    test('preserves earlier hydrated batches when a later batch fails', () async {
+      final episodes = [
+        for (var i = 0; i < 120; i++)
+          AggregatedItem(
+            id: 'ep-$i',
+            serverId: 'server1',
+            rawData: {
+              'Id': 'ep-$i',
+              'Name': 'Episode 1',
+              'Type': 'Episode',
+              'SeriesId': 'series-$i',
+              'SeriesName': 'Show $i',
+              'UserData': const {'Played': false},
+            },
+          ),
+      ];
+
+      var callCount = 0;
+      final result = await normalizeAndHydrateLatestMediaItems(
+        episodes,
+        collectionType: 'tvshows',
+        limit: 120,
+        fetchSeriesByIds: (ids) async {
+          callCount++;
+          if (callCount == 2) throw Exception('second batch failed');
+          return [
+            for (final id in ids)
+              {
+                'Id': id,
+                'Type': 'Series',
+                'UserData': {'Played': false, 'UnplayedItemCount': 7},
+                'ChildCount': 1,
+              },
+          ];
+        },
+      );
+
+      expect(result.length, equals(120));
+      expect(result.first.unplayedItemCount, equals(7));
+      expect(result.last.unplayedItemCount, isNull);
+    });
   });
 }
