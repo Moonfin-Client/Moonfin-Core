@@ -1928,8 +1928,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     if (!_ownsPlayback(generation) ||
         check != _linuxPassthroughCheck ||
-        !_prefs.get(UserPreferences.passthroughSilentFallback) ||
-        _appliedAudioPassthroughProperties?['audio-spdif'] != spdif) {
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
       return;
     }
     debugPrint('[audio] $format output never played, decoding instead');
@@ -2019,6 +2018,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       if (mapEquals(_appliedAudioPassthroughProperties, properties)) {
         return;
       }
+      // A check still sampling would judge, and clear, the old setting.
+      ++_linuxPassthroughCheck;
 
       var allApplied = true;
 
@@ -2048,6 +2049,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       } else {
         _appliedAudioPassthroughProperties = null;
       }
+      // The new setting can be just as silent, so check it again.
+      unawaited(_applyLinuxPassthroughFallbackIfNeeded(_playbackGeneration));
     } catch (_) {}
   }
 
