@@ -718,7 +718,8 @@ void registerPlaybackModule() {
       unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
     }
   });
-  // A stalled request finds a moved server while the buffer still plays.
+  // A stalled request finds a moved server while the buffer still plays. On
+  // a backend that can't watch its requests, a long buffering stands in.
   manager.serverStalledStream.listen((_) {
     if (_getIt.isRegistered<ConnectivityService>()) {
       unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());

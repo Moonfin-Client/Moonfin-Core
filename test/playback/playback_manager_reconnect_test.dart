@@ -10,6 +10,7 @@ class _TestBackend extends Fake implements PlayerBackend {
   final positions = StreamController<Duration>.broadcast(sync: true);
   final errors = StreamController<Map<String, dynamic>>.broadcast(sync: true);
   final playingChanges = StreamController<bool>.broadcast(sync: true);
+  final bufferingChanges = StreamController<bool>.broadcast(sync: true);
   final List<Duration> playStarts = <Duration>[];
   final List<Duration> seeks = <Duration>[];
   final List<StreamCredentials> credentialUpdates = <StreamCredentials>[];
@@ -27,6 +28,8 @@ class _TestBackend extends Fake implements PlayerBackend {
     playing = value;
     playingChanges.add(value);
   }
+
+  void emitBuffering(bool value) => bufferingChanges.add(value);
 
   void emitPosition(Duration position) {
     currentPosition = position;
@@ -73,7 +76,7 @@ class _TestBackend extends Fake implements PlayerBackend {
   Stream<bool> get playingStream => playingChanges.stream;
 
   @override
-  Stream<bool> get bufferingStream => const Stream<bool>.empty();
+  Stream<bool> get bufferingStream => bufferingChanges.stream;
 
   @override
   Stream<bool> get completedStream => const Stream<bool>.empty();
@@ -137,6 +140,23 @@ class _TestBackend extends Fake implements PlayerBackend {
 
   @override
   void dispose() {}
+}
+
+/// A [_TestBackend] that can follow a moved server, answering each
+/// [rebaseServer] once [rebaseGate] completes.
+class _RebaseBackend extends _TestBackend implements ServerRebaseBackend {
+  final stalls = StreamController<void>.broadcast(sync: true);
+  final List<String> rebases = <String>[];
+  Completer<bool> rebaseGate = Completer<bool>();
+
+  @override
+  Stream<void> get serverStallStream => stalls.stream;
+
+  @override
+  Future<bool> rebaseServer(String from, String to) {
+    rebases.add('$from -> $to');
+    return rebaseGate.future;
+  }
 }
 
 /// Resolves and replans streams that authenticate with [token], in their
@@ -301,9 +321,10 @@ void _withPlayback(
   )
   body, {
   Map<String, dynamic> item = _movie,
+  _TestBackend? player,
 }) {
   fakeAsync((async) {
-    final backend = _TestBackend();
+    final backend = player ?? _TestBackend();
     final service = _TestService();
     final clock = async.getClock(DateTime(2026, 10, 30, 20));
     final manager = PlaybackManager()
@@ -997,6 +1018,97 @@ void main() {
         expect(manager.isReconnecting, isFalse);
         expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
         expect(resolver.requests, isEmpty);
+      });
+    });
+  });
+
+  group('a moved server', () {
+    const from = 'http://h:1000';
+    const to = 'http://h:2000';
+    const movie2 = <String, dynamic>{'Id': 'movie-2', 'Type': 'Movie'};
+
+    test('reopens the stream when the backend follows nothing', () {
+      final resolver = _Resolver();
+      final backend = _RebaseBackend();
+      _withPlayback(resolver, player: backend, (async, manager, _, service) {
+        // Made in fake time, so its answer arrives there.
+        backend.rebaseGate = Completer<bool>();
+        unawaited(manager.onServerMoved(from: from, to: to));
+        async.flushMicrotasks();
+        expect(backend.rebases, ['$from -> $to']);
+        backend.rebaseGate.complete(false);
+        async.flushMicrotasks();
+        expect(manager.isReconnecting, isTrue);
+
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests.single.position, const Duration(minutes: 20));
+      });
+    });
+
+    test('a refused move reopens nothing once the queue moved on', () {
+      final resolver = _Resolver();
+      fakeAsync((async) {
+        final backend = _RebaseBackend();
+        final manager = PlaybackManager()
+          ..setBackend(backend)
+          ..setResolver(resolver)
+          ..setPlayerService(_TestService())
+          ..clock = async.getClock(DateTime(2026, 11, 20, 20)).now;
+        unawaited(manager.playItems(<dynamic>[_movie, movie2]));
+        async.flushMicrotasks();
+        backend.emitPosition(const Duration(minutes: 20));
+
+        unawaited(manager.onServerMoved(from: from, to: to));
+        async.flushMicrotasks();
+        unawaited(manager.next());
+        async.flushMicrotasks();
+        expect(manager.queueService.currentItem, movie2);
+        final requests = resolver.requests.length;
+        final starts = backend.playStarts.length;
+
+        backend.rebaseGate.complete(false);
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 30));
+        expect(manager.isReconnecting, isFalse);
+        expect(resolver.requests, hasLength(requests));
+        expect(backend.playStarts, hasLength(starts));
+        manager.dispose();
+        async.flushTimers();
+      });
+    });
+
+    test('a player that can\'t watch its requests asks while it buffers', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        var stalls = 0;
+        manager.serverStalledStream.listen((_) => stalls++);
+        backend.emitBuffering(true);
+        async.elapse(const Duration(seconds: 4));
+        expect(stalls, 0);
+        async.elapse(const Duration(seconds: 1));
+        expect(stalls, 1);
+        async.elapse(const Duration(seconds: 5));
+        expect(stalls, 2);
+
+        backend.emitBuffering(false);
+        async.elapse(const Duration(seconds: 30));
+        expect(stalls, 2);
+      });
+    });
+
+    test('a player that watches its own requests isn\'t asked for by '
+        'buffering', () {
+      final resolver = _Resolver();
+      final backend = _RebaseBackend();
+      _withPlayback(resolver, player: backend, (async, manager, _, service) {
+        var stalls = 0;
+        manager.serverStalledStream.listen((_) => stalls++);
+        backend.emitBuffering(true);
+        async.elapse(const Duration(seconds: 30));
+        expect(stalls, 0);
+        backend.stalls.add(null);
+        async.flushMicrotasks();
+        expect(stalls, 1);
       });
     });
   });

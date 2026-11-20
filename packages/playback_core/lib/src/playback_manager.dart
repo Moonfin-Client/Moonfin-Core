@@ -823,17 +823,32 @@ class PlaybackManager implements AudioOwnable {
         backend is ServerRebaseBackend &&
         !_reconnecting) {
       final intent = _viewerIntentGeneration;
+      final item = queueService.currentItem;
       final before = backend.position;
-      if (await (backend as ServerRebaseBackend).rebaseServer(from, to)) {
+      // Whether the viewer is still on the stream this move was heard for.
+      bool sameStream() =>
+          intent == _viewerIntentGeneration &&
+          identical(backend, _backend) &&
+          identical(item, queueService.currentItem);
+      final rebased = await (backend as ServerRebaseBackend).rebaseServer(
+        from,
+        to,
+      );
+      if (rebased) {
         _diagnosticLogger?.call('Server moved, loading on from its new address');
         _rebaseCheck?.cancel();
         _rebaseCheck = Timer(_rebaseGrace, () {
           _rebaseCheck = null;
-          if (intent != _viewerIntentGeneration || _viewerPaused) return;
+          if (!sameStream() || _viewerPaused) return;
           if (!hasReconnectableStream || _reconnecting) return;
           if (_isActuallyPlaying && backend.position > before) return;
           _reconnectNow();
         });
+        return;
+      }
+      // Another item, or the viewer left, while the backend answered: the
+      // reopen would start whatever plays now.
+      if (!sameStream() || !hasReconnectableStream || _reconnectInFlight) {
         return;
       }
     }
@@ -851,8 +866,9 @@ class PlaybackManager implements AudioOwnable {
   }
   Stream<bool> get reconnectingStream => _reconnectingController.stream;
 
-  /// The backend's server requests stalled on the network (see
-  /// [PlayerBackend.serverStallStream]).
+  /// The stream's server requests stalled on the network: reported by a
+  /// [ServerRebaseBackend] itself, and for any other backend after it has
+  /// buffered an open server stream for a while.
   Stream<void> get serverStalledStream => _serverStallController.stream;
   final _serverStallController = StreamController<void>.broadcast();
 
@@ -1594,6 +1610,7 @@ class PlaybackManager implements AudioOwnable {
         // here as the playing listener does.
         _onProgressStreamsUpdated();
         _evaluateLiveStallWatchdog();
+        _watchBufferStall(backend, buffering);
       }),
       backend.completedStream.listen(_onTrackCompleted),
     ]);
@@ -1614,10 +1631,41 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _disposeStreamSubs() {
+    _bufferStallCheck?.cancel();
+    _bufferStallCheck = null;
     for (final sub in _streamSubs) {
       sub.cancel();
     }
     _streamSubs.clear();
+  }
+
+  /// How long, and then how often, an open server stream may buffer on a
+  /// backend that doesn't watch its own server requests
+  /// ([ServerRebaseBackend]) before [serverStalledStream] fires, so the
+  /// entry address is asked whether the server moved. A server that moved
+  /// goes quiet without refusing, and such a player would only fail the
+  /// stream once its own stall or read timeout gives up.
+  static const _bufferStallInterval = Duration(seconds: 5);
+  Timer? _bufferStallCheck;
+
+  void _watchBufferStall(PlayerBackend backend, bool buffering) {
+    if (backend is ServerRebaseBackend) return;
+    if (!buffering) {
+      _bufferStallCheck?.cancel();
+      _bufferStallCheck = null;
+      return;
+    }
+    if (_bufferStallCheck?.isActive ?? false) return;
+    _bufferStallCheck = Timer.periodic(_bufferStallInterval, (timer) {
+      if (!identical(backend, _backend) || !state.isBuffering) {
+        timer.cancel();
+        if (identical(_bufferStallCheck, timer)) _bufferStallCheck = null;
+        return;
+      }
+      // A reconnect asks the entry address itself.
+      if (!hasReconnectableStream || _reconnecting) return;
+      _serverStallController.add(null);
+    });
   }
 
   /// The ceiling Auto sends. The server holds direct play to it too, so a
@@ -5997,6 +6045,7 @@ class PlaybackManager implements AudioOwnable {
 
   void dispose() {
     _rebaseCheck?.cancel();
+    _bufferStallCheck?.cancel();
     _liveRecoveryRetry?.cancel();
     _cancelLiveRecoveryProven();
     _endLiveStallWatch();
