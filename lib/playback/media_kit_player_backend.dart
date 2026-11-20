@@ -1928,7 +1928,8 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     if (!_ownsPlayback(generation) ||
         check != _linuxPassthroughCheck ||
-        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
+        !_prefs.get(UserPreferences.passthroughSilentFallback) ||
+        _appliedAudioPassthroughProperties?['audio-spdif'] != spdif) {
       return;
     }
     debugPrint('[audio] $format output never played, decoding instead');
