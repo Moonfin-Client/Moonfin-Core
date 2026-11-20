@@ -69,7 +69,7 @@ class SeerrNotificationService {
     final dedupeKey = '$title\x1f$body\x1f$target';
     final now = DateTime.now();
     _recentEvents.removeWhere(
-      (_, entry) => now.difference(entry.timestamp).inSeconds > 15,
+      (_, entry) => now.difference(entry.timestamp) > const Duration(seconds: 15),
     );
 
     final nonRequestId = '$title\x1f$body\x1f$target'.hashCode;
@@ -179,12 +179,14 @@ class SeerrNotificationService {
         onlyAlertOnce: silent,
         playSound: !silent,
         enableVibration: !silent,
+        silent: silent,
         autoCancel: true,
         actions: androidActions,
       ),
       iOS: DarwinNotificationDetails(
         // Without these, iOS shows nothing while the app is foreground.
         presentAlert: !silent,
+        presentBanner: !silent,
         presentBadge: !silent,
         presentSound: !silent,
         categoryIdentifier:
@@ -192,6 +194,7 @@ class SeerrNotificationService {
       ),
       macOS: DarwinNotificationDetails(
         presentAlert: !silent,
+        presentBanner: !silent,
         presentBadge: !silent,
         presentSound: !silent,
         categoryIdentifier:

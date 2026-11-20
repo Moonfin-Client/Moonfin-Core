@@ -143,6 +143,8 @@ void main() {
     expect(initial.details.android?.actions, isEmpty);
     expect(initial.details.android?.playSound, isTrue);
     expect(initial.details.android?.onlyAlertOnce, isFalse);
+    expect(initial.details.android?.silent, isFalse);
+    expect(initial.details.iOS?.presentBanner, isTrue);
 
     // 2. Stream event arrives with requestId populated
     service.show(
@@ -183,8 +185,10 @@ void main() {
     expect(upgraded.details.android?.onlyAlertOnce, isTrue);
     expect(upgraded.details.android?.playSound, isFalse);
     expect(upgraded.details.android?.enableVibration, isFalse);
+    expect(upgraded.details.android?.silent, isTrue);
     expect(upgraded.details.android?.importance, equals(Importance.low));
     expect(upgraded.details.iOS?.presentSound, isFalse);
+    expect(upgraded.details.iOS?.presentBanner, isFalse);
 
     // 3. Identical duplicate repeats remain completely suppressed
     service.show(
