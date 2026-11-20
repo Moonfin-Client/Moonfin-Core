@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin/ui/navigation/deep_link_navigator.dart';
+import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 
 void main() {
   GoRouter buildRouter() => GoRouter(
@@ -58,5 +59,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('/item/1'), findsOneWidget);
     expect(router.canPop(), isFalse);
+  });
+
+  testWidgets('a library link it can\'t look up opens Home', (tester) async {
+    final router = buildRouter();
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    unawaited(openLinkedRoute(router, '/library/unknown'));
+    await tester.pumpAndSettle();
+    expect(find.text('/home'), findsOneWidget);
+  });
+
+  testWidgets('a settings link over an open panel doesn\'t stack another', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    SettingsPanel.isOpenNotifier.value = true;
+    addTearDown(() => SettingsPanel.isOpenNotifier.value = false);
+    unawaited(openLinkedRoute(router, '/settings'));
+    await tester.pumpAndSettle();
+    expect(find.text('/home'), findsOneWidget);
+    expect(find.byType(SettingsPanel), findsNothing);
   });
 }

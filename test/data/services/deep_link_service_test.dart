@@ -65,6 +65,34 @@ void main() {
       );
     });
 
+    test('routes a plain Live TV link to the guide', () {
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://live-tv')),
+        '/live-tv/guide',
+      );
+    });
+
+    test('routes library, favorites and settings', () {
+      expect(
+        DeepLinkService.routeForDeepLink(
+          Uri.parse('moonfin://library?id=lib1'),
+        ),
+        '/library/lib1',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://library')),
+        isNull,
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://favorites')),
+        '/favorites',
+      );
+      expect(
+        DeepLinkService.routeForDeepLink(Uri.parse('moonfin://settings')),
+        '/settings',
+      );
+    });
+
     test('routes play host with autoPlay', () {
       expect(
         DeepLinkService.routeForDeepLink(Uri.parse('moonfin://play?id=abc123')),
@@ -140,14 +168,14 @@ void main() {
       );
     });
 
-    test('returns null for search without a query', () {
+    test('opens plain search without a query', () {
       expect(
         DeepLinkService.routeForDeepLink(Uri.parse('moonfin://search')),
-        isNull,
+        '/search',
       );
       expect(
         DeepLinkService.routeForDeepLink(Uri.parse('moonfin://search?query=')),
-        isNull,
+        '/search',
       );
     });
   });

@@ -9,13 +9,18 @@ import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/store/authentication_preferences.dart';
 import '../../auth/store/authentication_store.dart';
+import '../../data/repositories/multi_server_repository.dart';
+import '../../data/repositories/user_views_repository.dart';
 import '../../data/services/pin_guard.dart';
 import '../../data/services/server_pin_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/game_library.dart';
 import '../../util/pin_code_util.dart';
 import '../screens/auth/silo_profile_unlock.dart';
+import '../screens/settings/settings_side_panel.dart';
 import '../widgets/pin_entry_dialog.dart';
+import '../widgets/settings/settings_panel.dart';
 import 'app_router.dart';
 import 'destinations.dart';
 
@@ -177,6 +182,20 @@ Future<void> _navigate(String route, String? pinnedUserId) async {
 /// so those open over Home instead, as the in-app entry points do. A watch
 /// party link does the same, so its screen has a way back.
 Future<void> openLinkedRoute(GoRouter router, String route) async {
+  if (_libraryLinkId(route) case final id?) route = await _libraryRoute(id);
+  if (route == Destinations.settings) {
+    // Settings is a panel the app opens over the current screen, never a page.
+    router.go(Destinations.home);
+    await WidgetsBinding.instance.endOfFrame;
+    final context = router.routerDelegate.navigatorKey.currentContext;
+    // Home under an open panel stays put, so a second link mustn't stack one.
+    if (context != null &&
+        context.mounted &&
+        !SettingsPanel.isOpenNotifier.value) {
+      unawaited(SettingsPanel.open(context, const SettingsSidePanel()));
+    }
+    return;
+  }
   if (!route.startsWith('${Destinations.liveTv}/') &&
       !route.startsWith(Destinations.watchParty)) {
     router.go(route);
@@ -185,6 +204,37 @@ Future<void> openLinkedRoute(GoRouter router, String route) async {
   router.go(Destinations.home);
   await WidgetsBinding.instance.endOfFrame;
   unawaited(router.push(route));
+}
+
+/// The id in a bare `/library/<id>` route, which a library link opens.
+String? _libraryLinkId(String route) {
+  final segments = Uri.tryParse(route)?.pathSegments;
+  if (segments == null || segments.length != 2) return null;
+  return segments.first == 'library' ? segments.last : null;
+}
+
+/// A library link carries only the id, so this finds the library among the
+/// ones the nav shows to open the screen its entry would. One that isn't
+/// there opens Home.
+Future<String> _libraryRoute(String id) async {
+  try {
+    final getIt = GetIt.instance;
+    final libraries =
+        getIt<UserPreferences>().get(UserPreferences.enableMultiServerLibraries)
+        ? await getIt<MultiServerRepository>().getAggregatedLibraries()
+        : await getIt<UserViewsRepository>().getUserViews();
+    final library = libraries.where((l) => l.id == id).firstOrNull;
+    if (library != null) {
+      await getIt<GameLibraryRegistry>().refresh();
+      return libraryRoute(
+        library.id,
+        library.collectionType,
+        library.name,
+        serverId: library.serverId,
+      );
+    }
+  } catch (_) {}
+  return Destinations.home;
 }
 
 /// Switches to [userId] before navigating, since otherwise the route resolves
