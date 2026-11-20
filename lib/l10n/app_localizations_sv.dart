@@ -2716,7 +2716,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get unableToCreateRecording => 'Kunde inte skapa inspelning';
 
   @override
-  String get recordSeries => 'Record Series';
+  String get recordSeries => 'Rekordserie';
 
   @override
   String get seriesSetToRecord => 'Serien är redo att slå rekord';
@@ -3193,17 +3193,17 @@ class AppLocalizationsSv extends AppLocalizations {
   String get watchedIndicators => 'Bevakade indikatorer';
 
   @override
-  String get showPosterLabels => 'Poster Labels';
+  String get showPosterLabels => 'Etiketter för affischer';
 
   @override
   String get showPosterLabelsSubtitle =>
-      'Show the labels on posters, such as 4K or HDR.';
+      'Visa märkningarna på affischerna, till exempel 4K eller HDR.';
 
   @override
   String get always => 'Alltid';
 
   @override
-  String get mixedRowsOnly => 'Mixed rows only';
+  String get mixedRowsOnly => 'Endast blandade rader';
 
   @override
   String get hideUnwatched => 'Dölj obevakad';
@@ -3255,38 +3255,39 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visuella effekter och säsongsbetonade dekorationer';
 
   @override
-  String get loadingAnimation => 'Loading Animation';
+  String get loadingAnimation => 'Laddningsanimation';
 
   @override
   String get loadingAnimationDescription =>
-      'Customize the loading animations used throughout Moonfin';
+      'Anpassa de laddningsanimationer som används i hela Moonfin';
 
   @override
-  String get loadingAnimationConfiguration => 'Loading Animation Configuration';
+  String get loadingAnimationConfiguration =>
+      'Konfiguration av laddningsanimation';
 
   @override
-  String get loadingAnimationImage => 'Image';
+  String get loadingAnimationImage => 'Bild';
 
   @override
-  String get loadingAnimationImageMoonfinLogo => 'Moonfin Logo';
+  String get loadingAnimationImageMoonfinLogo => 'Moonfin logotypen';
 
   @override
   String get loadingAnimationImageSpinner => 'Spinner';
 
   @override
-  String get loadingAnimationImageRunner => 'Runner';
+  String get loadingAnimationImageRunner => 'Löpare';
 
   @override
-  String get loadingAnimationImageMoonPhases => 'Moon Phases';
+  String get loadingAnimationImageMoonPhases => 'Månfaser';
 
   @override
-  String get loadingAnimationImageMoonfinPhases => 'Moonfin Phases';
+  String get loadingAnimationImageMoonfinPhases => 'Moonfin-faser';
 
   @override
-  String get loadingAnimationImageNeonfinPhases => 'Neonfin Phases';
+  String get loadingAnimationImageNeonfinPhases => 'Neonfins faser';
 
   @override
-  String get loadingAnimationSize => 'Animation Size';
+  String get loadingAnimationSize => 'Animationens storlek';
 
   @override
   String get loadingAnimationSizeThumbnail => 'Miniatyrbild';
@@ -3301,58 +3302,58 @@ class AppLocalizationsSv extends AppLocalizations {
   String get loadingAnimationSizeLarge => 'Stor';
 
   @override
-  String get loadingAnimationPosition => 'Animation Position';
+  String get loadingAnimationPosition => 'Animationsposition';
 
   @override
-  String get loadingAnimationPositionTopLeft => 'Top-Left';
+  String get loadingAnimationPositionTopLeft => 'Övre vänstra hörnet';
 
   @override
-  String get loadingAnimationPositionTopCenter => 'Top-Center';
+  String get loadingAnimationPositionTopCenter => 'Övre mitten';
 
   @override
-  String get loadingAnimationPositionTopRight => 'Top-Right';
+  String get loadingAnimationPositionTopRight => 'Övre högra hörnet';
 
   @override
-  String get loadingAnimationPositionMiddleLeft => 'Middle-Left';
+  String get loadingAnimationPositionMiddleLeft => 'Mitten-vänster';
 
   @override
-  String get loadingAnimationPositionMiddle => 'Middle';
+  String get loadingAnimationPositionMiddle => 'Mitten';
 
   @override
-  String get loadingAnimationPositionMiddleRight => 'Middle-Right';
+  String get loadingAnimationPositionMiddleRight => 'Mitten-höger';
 
   @override
-  String get loadingAnimationPositionBottomLeft => 'Bottom-Left';
+  String get loadingAnimationPositionBottomLeft => 'Nederst till vänster';
 
   @override
-  String get loadingAnimationPositionBottomCenter => 'Bottom-Center';
+  String get loadingAnimationPositionBottomCenter => 'Längst ner i mitten';
 
   @override
-  String get loadingAnimationPositionBottomRight => 'Bottom-Right';
+  String get loadingAnimationPositionBottomRight => 'Nederst till höger';
 
   @override
   String get loadingAnimationPositionBouncing => 'Studsande';
 
   @override
-  String get loadingAnimationSpeed => 'Animation Speed';
+  String get loadingAnimationSpeed => 'Animationshastighet';
 
   @override
-  String get loadingAnimationSpeedSlow => 'Slow';
+  String get loadingAnimationSpeedSlow => 'Långsamt';
 
   @override
-  String get loadingAnimationSpeedModerate => 'Moderate';
+  String get loadingAnimationSpeedModerate => 'Måttlig';
 
   @override
-  String get loadingAnimationSpeedFast => 'Fast';
+  String get loadingAnimationSpeedFast => 'Snabbt';
 
   @override
   String get loadingAnimationSpeedUltra => 'Ultra';
 
   @override
-  String get showLoadingAnimationText => 'Show Text';
+  String get showLoadingAnimationText => 'Visa text';
 
   @override
-  String get loadingAnimationPreview => 'Preview';
+  String get loadingAnimationPreview => 'Förhandsgranskning';
 
   @override
   String get snow => 'Snö';
@@ -3367,49 +3368,49 @@ class AppLocalizationsSv extends AppLocalizations {
   String get fallingLeaves => 'Fallande löv';
 
   @override
-  String get seasonalChristmas => 'Christmas';
+  String get seasonalChristmas => 'Jul';
 
   @override
-  String get seasonalPetals => 'Spring Petals';
+  String get seasonalPetals => 'Vårens blomblad';
 
   @override
-  String get seasonalFireflies => 'Fireflies';
+  String get seasonalFireflies => 'Tulikärpäset';
 
   @override
   String get seasonalHalloween => 'Halloween';
 
   @override
-  String get seasonalDensity => 'Density';
+  String get seasonalDensity => 'Densitet';
 
   @override
-  String get seasonalDensityLight => 'Light';
+  String get seasonalDensityLight => 'Ljus';
 
   @override
   String get seasonalDensityNormal => 'Normal';
 
   @override
-  String get seasonalDensityHeavy => 'Heavy';
+  String get seasonalDensityHeavy => 'Tung';
 
   @override
   String get seasonalFollower => 'Focus Follower';
 
   @override
   String get seasonalFollowerDescription =>
-      'A holiday piece, like Halloween\'s planchette, follows what you select on Home';
+      'Ett högtidsinslag, som planchettan till Halloween, följer det du väljer på startsidan';
 
   @override
   String get seasonalFollowerPointerDescription =>
-      'A holiday piece, like Halloween\'s planchette, replaces the mouse pointer on Home';
+      'Ett högtidssymbol, till exempel en planchette till Halloween, ersätter muspekaren på startsidan';
 
   @override
-  String get seasonalRow => 'Seasonal Row';
+  String get seasonalRow => 'Säsongsrad';
 
   @override
   String get seasonalRowDescription =>
-      'Show a row of holiday movies from your library, with Seerr suggestions when available.';
+      'Visa en rad julfilmer från ditt bibliotek, med förslag från Seerr om sådana finns.';
 
   @override
-  String get seasonalRowSubtitle => 'Seasonal';
+  String get seasonalRowSubtitle => 'Säsongsbetonat';
 
   @override
   String get seasonalRowCountry => 'Land';
@@ -3418,53 +3419,54 @@ class AppLocalizationsSv extends AppLocalizations {
   String get seasonalRowCountryAuto => 'Automatiskt';
 
   @override
-  String get countryUnitedStates => 'United States';
+  String get countryUnitedStates => 'Förenta staterna';
 
   @override
-  String get countryCanada => 'Canada';
+  String get countryCanada => 'Kanada';
 
   @override
   String get seasonalRowCountryOther => 'Andra';
 
   @override
-  String get seasonalRowHolidays => 'Holidays';
+  String get seasonalRowHolidays => 'Helgdagar';
 
   @override
-  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+  String get seasonalRowHolidaysHint =>
+      'Avmarkera en helgdag för att dölja raden med den.';
 
   @override
-  String get seasonalRowAllYear => 'Show All Year';
+  String get seasonalRowAllYear => 'Visa hela året';
 
   @override
   String get seasonalRowAllYearDescription =>
-      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+      'Visa en rad med helgdagar även utanför helgdagarna, med en annan markerad helgdag för varje dag.';
 
   @override
-  String get holidayNewYear => 'New Year\'s';
+  String get holidayNewYear => 'Nyår';
 
   @override
-  String get holidayValentines => 'Valentine\'s Day';
+  String get holidayValentines => 'Alla hjärtans dag';
 
   @override
-  String get holidayEaster => 'Easter';
+  String get holidayEaster => 'Påsk';
 
   @override
-  String get holidayPride => 'Pride';
+  String get holidayPride => 'Stolthet';
 
   @override
   String get holidayHalloween => 'Halloween';
 
   @override
-  String get holidayThanksgiving => 'Thanksgiving';
+  String get holidayThanksgiving => 'Tacksägelsedagen';
 
   @override
-  String get holidayChristmas => 'Christmas Movies';
+  String get holidayChristmas => 'Julfilmer';
 
   @override
-  String get holidayLunarNewYear => 'Lunar New Year';
+  String get holidayLunarNewYear => 'Det kinesiska nyåret';
 
   @override
-  String get holidayDiwali => 'Diwali';
+  String get holidayDiwali => 'Ljusfestivalen';
 
   @override
   String get themeMusic => 'Tema musik';
@@ -3498,7 +3500,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailsBackgroundBlur => 'Detaljer Bakgrundsskärpa';
 
   @override
-  String get detailsBackgroundOpacity => 'Background Opacity';
+  String get detailsBackgroundOpacity => 'Bakgrundens opacitet';
 
   @override
   String pixelValue(int value) {
@@ -3543,37 +3545,37 @@ class AppLocalizationsSv extends AppLocalizations {
   String get autoCrop => 'Autobeskärning';
 
   @override
-  String get cropBlackBars => 'Crop Black Bars';
+  String get cropBlackBars => 'Beskär svarta fält';
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.';
+      'Identifiera kodade letterbox-ränder efter att uppspelningen har startat, beskär dem och fyll sedan skärmen. Beskär på nytt med hjälp av spelarens zoomknapp.';
 
   @override
-  String get cropBlackBarsRecropInterval => 'Recrop Interval';
+  String get cropBlackBarsRecropInterval => 'Intervall mellan skördar';
 
   @override
-  String get cropBlackBarsOnce => 'Once at start';
+  String get cropBlackBarsOnce => 'När man väl är vid start';
 
   @override
-  String get cropBlackBarsEverySecond => 'Every second';
+  String get cropBlackBarsEverySecond => 'Varje sekund';
 
   @override
   String get settingsCropBlackBarsIntervalDescription =>
-      'Follow aspect ratio changes during playback.';
+      'Följ förändringar i bildförhållandet under uppspelningen.';
 
   @override
-  String get playerRecroppingBlackBars => 'Recropping black bars';
+  String get playerRecroppingBlackBars => 'Ombeskärning av svarta fält';
 
   @override
-  String get playerBlackBarsCropped => 'Black bars cropped';
+  String get playerBlackBarsCropped => 'Svarta fält har beskärts';
 
   @override
-  String get playerNoBlackBarsFound => 'No black bars found';
+  String get playerNoBlackBarsFound => 'Inga svarta fält hittades';
 
   @override
   String get playerBlackBarsNotDetected =>
-      'Couldn\'t detect black bars. Try again in a brighter scene';
+      'Det gick inte att upptäcka svarta fält. Försök igen i en ljusare scen';
 
   @override
   String get stretch => 'Sträcka';
@@ -3585,10 +3587,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get disabled => 'Inaktiverad';
 
   @override
-  String get manual => 'Manual';
+  String get manual => 'Handbok';
 
   @override
-  String get autoDetect => 'Auto Detect';
+  String get autoDetect => 'Automatisk detektering';
 
   @override
   String get scaleOnTv => 'Skala på TV';
@@ -3604,37 +3606,37 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa förhandsgranskningsminiatyrer när du söker';
 
   @override
-  String get trickplayDisplayStyleSingle => 'Single Thumbnail';
+  String get trickplayDisplayStyleSingle => 'Enstaka miniatyrbild';
 
   @override
-  String get trickplayDisplayStyleStrip => 'Filmstrip';
+  String get trickplayDisplayStyleStrip => 'Filmremsa';
 
   @override
-  String get trickplayModeFull => 'Full Screen';
+  String get trickplayModeFull => 'Helskärm';
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Drag the slider to preview scrubbing';
+      'Dra i skjutreglaget för att förhandsgranska skrubbningen';
 
   @override
-  String get trickplayPreviewScale => 'Preview Size';
+  String get trickplayPreviewScale => 'Förhandsgranskningsstorlek';
 
   @override
-  String get trickplayVerticalOffset => 'Distance From Seekbar';
+  String get trickplayVerticalOffset => 'Avstånd från sökfältet';
 
   @override
-  String get trickplayFollowScrubPosition => 'Follow Scrub Position';
+  String get trickplayFollowScrubPosition => 'Följ skrubbpositionen';
 
   @override
   String get trickplayFollowScrubPositionSubtitle =>
-      'Preview slides along the seekbar as you scrub, instead of staying centered';
+      'Förhandsgranska bilderna längs sökreglaget när du drar med fingret, istället för att de förblir centrerade';
 
   @override
-  String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
+  String get trickplayPauseWhileScrubbing => 'Paus under skrubbning';
 
   @override
   String get trickplayPauseWhileScrubbingSubtitle =>
-      'Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot';
+      'Uppspelningen pausas medan du söker och återupptas när du trycker på uppspelningsknappen. Stäng av den här funktionen för att fortsätta uppspelningen och hoppa direkt till den nya platsen';
 
   @override
   String get showDescriptionOnPause => 'Visa beskrivning på paus';
@@ -3644,11 +3646,11 @@ class AppLocalizationsSv extends AppLocalizations {
       'Dimma videon och visa översiktstext medan den är pausad';
 
   @override
-  String get showChapterMarkers => 'Chapter Marks';
+  String get showChapterMarkers => 'Kapitelmarkeringar';
 
   @override
   String get showChapterMarkersDescription =>
-      'Mark where each chapter starts on the seek bar';
+      'Markera var varje kapitel börjar på sökreglaget';
 
   @override
   String get osdLockButton => 'OSD-låsknapp';
@@ -3658,45 +3660,47 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa en låsknapp som blockerar beröringsinmatning tills den trycks ner länge';
 
   @override
-  String get playerSwipeGestures => 'Volume and Brightness Swipes';
+  String get playerSwipeGestures =>
+      'Markera var varje kapitel börjar på sökreglaget';
 
   @override
   String get playerSwipeGesturesDescription =>
-      'Slide up or down on the player to change brightness on the left and volume on the right';
+      'Dra uppåt eller nedåt på spelaren för att justera ljusstyrkan till vänster och volymen till höger';
 
   @override
-  String get invertGestureIndicators => 'Invert Gesture Indicators';
+  String get invertGestureIndicators => 'Vänd gestindikatorer';
 
   @override
   String get invertGestureIndicatorsDescription =>
-      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+      'Placera de visuella indikatorerna för ljusstyrka och volym på samma sida eller på motsatt sida av skärmen i förhållande till svepningen';
 
   @override
-  String get gestureIndicatorSame => 'Same';
+  String get gestureIndicatorSame => 'Samma';
 
   @override
-  String get gestureIndicatorInverted => 'Inverted';
+  String get gestureIndicatorInverted => 'Upp och ned';
 
   @override
-  String get osdButtons => 'Player Buttons';
+  String get osdButtons => 'Spelarknappar';
 
   @override
-  String get osdButtonsDescription => 'Choose which buttons the player shows';
+  String get osdButtonsDescription =>
+      'Välj vilka knappar som ska visas i spelaren';
 
   @override
   String get osdButtonsSectionDescription =>
-      'Playback controls are always shown. Everything below is up to you, and each kind of device keeps its own list.';
+      'Uppspelningskontrollerna visas alltid. Allt nedan är upp till dig, och varje typ av enhet har sin egen lista.';
 
   @override
-  String get detailButtons => 'Action Buttons';
+  String get detailButtons => 'Åtgärdsknappar';
 
   @override
   String get detailButtonsDescription =>
-      'Choose which buttons the details screen shows';
+      'Välj vilka knappar som ska visas på informationsskärmen';
 
   @override
   String get detailButtonsSectionDescription =>
-      'Play is always first and the locked buttons are always shown. Everything else is up to you, and each kind of device keeps its own list.';
+      'Spel är alltid prioriterat och de låsta knapparna visas alltid. Allt annat bestämmer du själv, och varje typ av enhet har sin egen lista.';
 
   @override
   String get actionButtonsOnScreen => 'Action Buttons on Screen';
@@ -5805,6 +5809,48 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get seerrNotifyNewMediaSubtitle =>
       'Anything new added to the server library';
+
+  @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
 
   @override
   String loggedInAs(String username) {

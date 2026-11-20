@@ -18909,5 +18909,47 @@
     "remoteActivityListening": "Kuuntele Moonfinissä",
     "@remoteActivityListening": {
         "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+    },
+    "seerrTestNotification": "Lähetä testiviesti",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "Tarkista sovelluksen sisäisten ja taustalla tapahtuvien push-ilmoitusten toimitus",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "Toimitettu {count, plural, =1{1 laite} other{{count} devices}}.",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "Sovelluksen sisäinen ilmoitus lähetetty. Palvelimen push-ilmoitukset eivät ole käytössä.",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "Testiviestin lähettäminen epäonnistui",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "Palvelimen lähetys",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "Laitteen push-ilmoitus",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "Rekisteröity",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "Ei rekisteröity",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
     }
 }

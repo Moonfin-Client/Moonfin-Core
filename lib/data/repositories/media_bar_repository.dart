@@ -31,7 +31,7 @@ class MediaBarRepository {
   static const _fields =
       'Type,Genres,OfficialRating,CommunityRating,CriticRating,'
       'RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
-      'Overview,ProviderIds,PremiereDate,Taglines';
+      'Overview,ProviderIds,PremiereDate,Taglines,ChildCount';
 
   MediaBarRepository(this._client, this._prefs);
 
@@ -1100,6 +1100,8 @@ class MediaBarRepository {
       remoteTrailers:
           (data['RemoteTrailers'] as List?)?.cast<Map<String, dynamic>>() ??
           const [],
+      childCount: (data['ChildCount'] as num?)?.toInt(),
+      isFavorite: (data['UserData'] as Map?)?['IsFavorite'] == true,
     );
   }
 }

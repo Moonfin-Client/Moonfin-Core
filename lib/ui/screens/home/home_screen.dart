@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
@@ -76,6 +77,7 @@ import '../../widgets/left_sidebar.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
+import '../../widgets/mediabar/makd_classic.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/merged_copy_picker.dart';
@@ -633,12 +635,6 @@ class _HomeShellState extends State<_HomeShell>
       _userPrefs.get(UserPreferences.seasonalSurprise),
     );
     final seasonalFollower = _userPrefs.get(UserPreferences.seasonalFollower);
-    final mediaBarMode = UserPreferences.normalizeMediaBarMode(
-      _userPrefs.get(UserPreferences.mediaBarMode),
-    );
-    final useMakdBackdropFx =
-        PlatformDetection.useMobileUi &&
-        mediaBarMode == UserPreferences.mediaBarModeMakd;
 
     return PopScope(
       canPop: false,
@@ -669,7 +665,6 @@ class _HomeShellState extends State<_HomeShell>
                         return HomeBackdrop(
                           url: url,
                           blurAmount: blurAmount,
-                          useMakdBackdropFx: useMakdBackdropFx,
                           style: PlatformDetection.useMobileUi
                               ? UserPreferences.homeBackdropFullScreen
                               : backdropStyle,
@@ -954,6 +949,12 @@ class _ContentRowsState extends State<_ContentRows>
   VoidCallback? _previousFocusContentFromNavbarCallback;
   FocusNode? _lastGlobalPrimaryFocus;
   final _v2Expansion = ModernCardExpansion();
+
+  /// The phone row holding the card a tap or the D-pad grew. Only that row
+  /// keeps room for a grown card's details, so the rest sit as close as Row
+  /// Padding asks.
+  String? _grownV2RowId;
+
   final Set<String> _v2FocusPrefetchedUrls = <String>{};
 
   // Warming the next rows' posters. Debounced like the backdrop, because a
@@ -2623,7 +2624,7 @@ class _ContentRowsState extends State<_ContentRows>
       widget.prefs.get(UserPreferences.mediaBarMode),
     );
     if (mediaBarMode == UserPreferences.mediaBarModeMakd) {
-      return screenHeight * 0.46;
+      return screenHeight;
     }
 
     return screenHeight * 0.55;
@@ -2636,7 +2637,8 @@ class _ContentRowsState extends State<_ContentRows>
       : _mediaBarHeight();
 
   /// Places the middle of the first row's artwork on the bottom edge of the
-  /// screen when Peek Home Rows is on, on TV and desktop only.
+  /// screen when Peek Home Rows is on. MakD off TV starts the rows at 65%
+  /// instead, and phones only peek under MakD.
   void _computeRowPeek(
     List<HomeRow> rows,
     List<double> rowExtents,
@@ -2645,14 +2647,29 @@ class _ContentRowsState extends State<_ContentRows>
     _rowPeek = 0;
     _rowPeekCover = 0;
     final prefs = widget.prefs;
-    if (PlatformDetection.useMobileUi ||
-        !prefs.get(UserPreferences.mediaBarRowPeek) ||
-        !UserPreferences.mediaBarModeAllowsRowPeek(
-          prefs.get(UserPreferences.mediaBarMode),
-        ) ||
+    final mode = prefs.get(UserPreferences.mediaBarMode);
+    final makd =
+        UserPreferences.normalizeMediaBarMode(mode) ==
+        UserPreferences.mediaBarModeMakd;
+    // Phones have no Peek Home Rows setting, and MakD's first row always peeks
+    // there.
+    final peeks = PlatformDetection.useMobileUi
+        ? makd
+        : prefs.get(UserPreferences.mediaBarRowPeek) &&
+              UserPreferences.mediaBarModeAllowsRowPeek(mode);
+    if (!peeks ||
         expandedHomeRows(prefs) ||
         !_isMediaBarIncluded() ||
         rows.isEmpty) {
+      return;
+    }
+    if (!PlatformDetection.isTV && makd) {
+      // A bottom navbar floats over the foot of the screen, so the row's
+      // title starts above it.
+      _rowPeek = _rowPeekCover = math.max(
+        MakdMetrics(MediaQuery.sizeOf(context)).classicPeek,
+        _bottomNavbarInset() + _rowHeaderHeight(rows.first),
+      );
       return;
     }
     final row = rows.first;
@@ -4365,6 +4382,15 @@ class _ContentRowsState extends State<_ContentRows>
       row.rowType == HomeRowType.libraryTilesSmall ||
       row.rowType == HomeRowType.libraryTiles;
 
+  void _setGrownV2Row(String? rowId) {
+    if (rowId == _grownV2RowId) return;
+    _grownV2RowId = rowId;
+    _layoutPrefsVersion++;
+    _invalidateStaticRowHeightCache();
+    _updateOffsets();
+    setState(() {});
+  }
+
   double _v2MetadataBudgetFor(HomeRow row, UserPreferences prefs) {
     if (row.rowType == HomeRowType.libraryTiles) {
       return _libraryTilesMetadataBudget;
@@ -4374,6 +4400,9 @@ class _ContentRowsState extends State<_ContentRows>
       // already includes.
       final scale = _desktopUiScaleFactor();
       return _carouselPanelExtent(scale) / scale;
+    }
+    if (PlatformDetection.useMobileUi && row.id != _grownV2RowId) {
+      return modernLabelBudget;
     }
     return modernMetadataBudget(prefs, UserPreferences.homeRowsRatings);
   }
@@ -5161,6 +5190,17 @@ class _ContentRowsState extends State<_ContentRows>
                         },
                       ),
                     );
+                    if (lockRowHeight && PlatformDetection.useMobileUi) {
+                      // The rows below slide with a card a tap grows.
+                      return AnimatedContainer(
+                        duration: prefs
+                            .get(UserPreferences.modernCardTransitionSpeed)
+                            .duration,
+                        curve: Curves.easeInOutCubic,
+                        height: rowExtents[rowIndex],
+                        child: itemWidget,
+                      );
+                    }
                     if (lockRowHeight) {
                       return SizedBox(
                         height: rowExtents[rowIndex],
@@ -5678,6 +5718,9 @@ class _ContentRowsState extends State<_ContentRows>
     final isRowsV2 = isHomeRowModern(row, prefs);
     final isCarousel = isHomeRowCarousel(row, prefs);
     final isModernMyMediaStatic = isHomeRowModernMyMediaStatic(row, prefs);
+    final phoneKeyboard = PlatformDetection.useMobileUi &&
+        isRowsV2 &&
+        InputModeTracker.of(context) == InputMode.keyboard;
     final rowImageType = isSeerrRowOverride
         ? ImageType.thumb
         : (isRowsV2
@@ -5858,6 +5901,7 @@ class _ContentRowsState extends State<_ContentRows>
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
           if (isCarousel) _carouselIndex(row.id).value = index;
+          if (phoneKeyboard) _setGrownV2Row(row.id);
           if (isRowsV2) {
             final previewKey = _previewKeyFor(item, rowIndex);
             final delayExpansion =
@@ -6260,7 +6304,9 @@ class _ContentRowsState extends State<_ContentRows>
                     ),
                     onTap: () {
                       if (isV2MobileTouch) {
-                        if (_v2Expansion.tapToOpen(previewKey)) {
+                        final opens = _v2Expansion.tapToOpen(previewKey);
+                        _setGrownV2Row(opens ? null : row.id);
+                        if (opens) {
                           _finishSharedPreview(releaseResources: true);
                           navigateToItem();
                         } else {

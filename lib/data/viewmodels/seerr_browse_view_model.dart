@@ -208,6 +208,11 @@ class SeerrBrowseViewModel extends ChangeNotifier {
   /// cannot walk the whole library.
   static const _maxPagesPerScan = 6;
 
+  /// TMDB serves no page past this, whatever total it reports.
+  static const _maxPage = 500;
+
+  int _loadGen = 0;
+
   final SeerrRepository _repo;
   final String? filterId;
   String _mediaType;
@@ -233,6 +238,7 @@ class SeerrBrowseViewModel extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    final gen = ++_loadGen;
     _state = SeerrBrowseState(
       isLoading: true,
       sortBy: _state.sortBy,
@@ -251,30 +257,16 @@ class SeerrBrowseViewModel extends ChangeNotifier {
     try {
       await _repo.ensureInitialized();
       await _ensureRequestLookup();
-      var pageNum = 1;
-      final matches = <SeerrDiscoverItem>[];
-      late SeerrDiscoverPage lastPage;
-
-      // A letter or availability filter can reject a whole page, so keep
-      // reading ahead until there is enough to fill the grid.
-      while (matches.length < _minMatchesPerLoad &&
-          pageNum <= _maxPagesPerScan) {
-        final page = await _fetchPage(pageNum);
-        lastPage = page;
-        matches.addAll(_applyFilter(_attachRequesters(page.results)));
-        if (page.page >= page.totalPages || page.results.isEmpty) {
-          break;
-        }
-        pageNum++;
-      }
-
+      final scan = await _scan(1, gen);
+      if (scan == null) return;
       _state = _state.copyWith(
         isLoading: false,
-        items: matches,
-        currentPage: lastPage.page,
-        totalPages: lastPage.totalPages,
+        items: scan.items,
+        currentPage: scan.page,
+        totalPages: scan.totalPages,
       );
     } catch (e) {
+      if (gen != _loadGen) return;
       _state = _state.copyWith(isLoading: false, error: e);
     }
     notifyListeners();
@@ -282,38 +274,55 @@ class SeerrBrowseViewModel extends ChangeNotifier {
 
   Future<void> loadMore() async {
     if (!_state.canLoadMore) return;
+    final gen = _loadGen;
 
     _state = _state.copyWith(isLoadingMore: true);
     notifyListeners();
 
     try {
       await _ensureRequestLookup();
-      final startPage = _state.currentPage + 1;
-      var pageNum = startPage;
-      final matches = <SeerrDiscoverItem>[];
-      late SeerrDiscoverPage lastPage;
-
-      while (matches.length < _minMatchesPerLoad &&
-          pageNum < startPage + _maxPagesPerScan) {
-        final page = await _fetchPage(pageNum);
-        lastPage = page;
-        matches.addAll(_applyFilter(_attachRequesters(page.results)));
-        if (page.page >= page.totalPages || page.results.isEmpty) {
-          break;
-        }
-        pageNum++;
-      }
-
+      final scan = await _scan(_state.currentPage + 1, gen);
+      if (scan == null) return;
       _state = _state.copyWith(
         isLoadingMore: false,
-        items: [..._state.items, ...matches],
-        currentPage: lastPage.page,
-        totalPages: lastPage.totalPages,
+        items: [..._state.items, ...scan.items],
+        currentPage: scan.page,
+        // A short grid asks for more as soon as a round ends, so a round
+        // that found nothing ends paging instead of walking every page left.
+        totalPages: scan.items.isEmpty ? scan.page : scan.totalPages,
       );
     } catch (e) {
-      _state = _state.copyWith(isLoadingMore: false);
+      if (gen != _loadGen) return;
+      // Ends paging too, or a short grid would ask for the failed page again
+      // on the next frame.
+      _state = _state.copyWith(
+        isLoadingMore: false,
+        totalPages: _state.currentPage,
+      );
     }
     notifyListeners();
+  }
+
+  /// A letter or availability filter can reject a whole page, so this reads
+  /// ahead until enough titles pass. Comes back null once a newer load has
+  /// replaced the one it belongs to.
+  Future<({List<SeerrDiscoverItem> items, int page, int totalPages})?> _scan(
+    int startPage,
+    int gen,
+  ) async {
+    final items = <SeerrDiscoverItem>[];
+    for (var pageNum = startPage; ; pageNum++) {
+      final page = await _fetchPage(pageNum);
+      if (gen != _loadGen) return null;
+      items.addAll(_applyFilter(_attachRequesters(page.results)));
+      final totalPages = page.totalPages.clamp(0, _maxPage);
+      if (items.length >= _minMatchesPerLoad ||
+          pageNum - startPage + 1 >= _maxPagesPerScan ||
+          page.page >= totalPages ||
+          page.results.isEmpty) {
+        return (items: items, page: page.page, totalPages: totalPages);
+      }
+    }
   }
 
   void setSortBy(SeerrSortOption option) {

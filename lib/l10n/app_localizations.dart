@@ -10252,6 +10252,60 @@ abstract class AppLocalizations {
   /// **'Anything new added to the server library'**
   String get seerrNotifyNewMediaSubtitle;
 
+  /// Title for the button that sends a test notification from the server
+  ///
+  /// In en, this message translates to:
+  /// **'Send Test Notification'**
+  String get seerrTestNotification;
+
+  /// Subtitle for the send test notification button
+  ///
+  /// In en, this message translates to:
+  /// **'Verify in-app and background push delivery'**
+  String get seerrTestNotificationDesc;
+
+  /// Body message shown when a test notification is sent to registered devices
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched to {count, plural, =1{1 device} other{{count} devices}}.'**
+  String seerrTestNotificationSentBody(num count);
+
+  /// Message shown when a test notification was sent in-app but server push is off
+  ///
+  /// In en, this message translates to:
+  /// **'In-app notification sent. Server push is not enabled.'**
+  String get seerrTestNotificationPushDisabled;
+
+  /// Message shown when sending a test notification fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send test notification'**
+  String get seerrTestNotificationFailed;
+
+  /// Label for the server push delivery status
+  ///
+  /// In en, this message translates to:
+  /// **'Server Push'**
+  String get seerrPushServerStatus;
+
+  /// Label for the device push registration status
+  ///
+  /// In en, this message translates to:
+  /// **'Device Push'**
+  String get seerrPushDeviceStatus;
+
+  /// Status indicating this device has a registered push token
+  ///
+  /// In en, this message translates to:
+  /// **'Registered'**
+  String get seerrPushDeviceRegistered;
+
+  /// Status indicating this device is not registered for push
+  ///
+  /// In en, this message translates to:
+  /// **'Not registered'**
+  String get seerrPushDeviceNotRegistered;
+
   /// Label showing logged in username
   ///
   /// In en, this message translates to:

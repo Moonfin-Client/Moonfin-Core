@@ -885,7 +885,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 本有声书} other{{count} 本有声书}}",
+    "audiobookCountLabel": "{count, plural, =1{1 本有声读物} other{{count} 本有声读物}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1250,7 +1250,7 @@
     "@none": {
         "description": "Option label for no subtitle selected"
     },
-    "downloadSubtitlesLabel": "下载字幕...",
+    "downloadSubtitlesLabel": "下载字幕…",
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
@@ -1321,7 +1321,7 @@
     "@noEpisodesLoaded": {
         "description": "Message when no episodes are available for download"
     },
-    "downloadingItem": "正在下载 {name}（{quality}）...",
+    "downloadingItem": "正在下载 {name}（{quality}）…",
     "@downloadingItem": {
         "description": "Snackbar message when downloading an item",
         "placeholders": {
@@ -1366,7 +1366,7 @@
     "@writers": {
         "description": "Metadata label for writers"
     },
-    "studio": "制片公司",
+    "studio": "制作公司",
     "@studio": {
         "description": "Metadata label for studio"
     },
@@ -1573,7 +1573,7 @@
     "@stillWatching": {
         "description": "Title for the still watching screen"
     },
-    "unableToLoadTrailerStream": "无法加载预告片流。",
+    "unableToLoadTrailerStream": "无法加载预告片串流。",
     "@unableToLoadTrailerStream": {
         "description": "Error when trailer stream cannot be loaded"
     },
@@ -1962,7 +1962,7 @@
             }
         }
     },
-    "updating": "更新中...",
+    "updating": "更新中…",
     "@updating": {
         "description": "Button label while updating"
     },
@@ -1986,7 +1986,7 @@
     "@failedToDecodePageImage": {
         "description": "Error when comic page image cannot be decoded"
     },
-    "resetZoom": "重置缩放 ({zoom}x)",
+    "resetZoom": "重置缩放（{zoom}x）",
     "@resetZoom": {
         "description": "Tooltip for reset zoom button",
         "placeholders": {
@@ -2007,7 +2007,7 @@
     "@addBookmark": {
         "description": "Tooltip for add bookmark button"
     },
-    "bookmarksEllipsis": "书签...",
+    "bookmarksEllipsis": "书签…",
     "@bookmarksEllipsis": {
         "description": "Menu item to view bookmarks"
     },
@@ -2048,11 +2048,11 @@
     "@invertColorsFixedLayout": {
         "description": "Menu item to invert colors for fixed layout"
     },
-    "invertColorsPdf": "反转颜色 (PDF)",
+    "invertColorsPdf": "反转颜色（PDF）",
     "@invertColorsPdf": {
         "description": "Menu item to invert colors for PDF"
     },
-    "preparingInAppReader": "正在准备应用内阅读器...",
+    "preparingInAppReader": "正在准备应用内阅读器…",
     "@preparingInAppReader": {
         "description": "Loading text while reader is being prepared"
     },
@@ -2253,11 +2253,11 @@
     "@failedToCancelSeriesRecording": {
         "description": "Error when cancelling a series recording fails"
     },
-    "searchThisLibrary": "搜索此媒体库...",
+    "searchThisLibrary": "搜索此媒体库…",
     "@searchThisLibrary": {
         "description": "Search hint when scoped to a specific library"
     },
-    "searchEllipsis": "搜索...",
+    "searchEllipsis": "搜索…",
     "@searchEllipsis": {
         "description": "Search hint placeholder"
     },
@@ -3243,7 +3243,7 @@
     "@loadProfile": {
         "description": "Button to load a profile"
     },
-    "syncing": "正在同步...",
+    "syncing": "正在同步…",
     "@syncing": {
         "description": "Label while syncing"
     },
@@ -3291,7 +3291,7 @@
     "@manage": {
         "description": "Button to manage storage"
     },
-    "calculating": "正在计算...",
+    "calculating": "正在计算…",
     "@calculating": {
         "description": "Label while calculating"
     },
@@ -3343,7 +3343,7 @@
     "@saveToDownloadsFolderQuestion": {
         "description": "Dialog title for saving to downloads folder"
     },
-    "saveToDownloadsFolderDescription": "下载的媒体将保存到你设备上的 Downloads/Moonfin 中。这些文件将对其他应用可见，例如你的图库或音乐播放器。\n\n现有下载将保留在当前位置。",
+    "saveToDownloadsFolderDescription": "下载的媒体将保存到你的设备上的 Downloads/Moonfin 中。这些文件将对其他应用可见，例如你的图库或音乐播放器。\n\n现有下载将保留在当前位置。",
     "@saveToDownloadsFolderDescription": {
         "description": "Description for saving to downloads folder"
     },
@@ -3407,7 +3407,7 @@
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "青色",
+    "teal": "蓝绿色",
     "@teal": {
         "description": "Color: teal"
     },
@@ -3520,7 +3520,7 @@
     "@mediaBarMode": {
         "description": "Setting for choosing media bar style"
     },
-    "mediaBarModeDescription": "选择不同的媒体栏样式，或关闭媒体栏",
+    "mediaBarModeDescription": "选择不同的媒体栏风格，或关闭媒体栏",
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
@@ -3838,7 +3838,7 @@
     "@imdb": {
         "description": "Rating source: IMDb"
     },
-    "tmdb": "TMDB",
+    "tmdb": "TMDb",
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
@@ -3878,23 +3878,23 @@
     "@additionalRatings": {
         "description": "Setting for additional ratings"
     },
-    "showMdbListAndTmdbRatings": "显示 MDBList 和 TMDB 评级",
+    "showMdbListAndTmdbRatings": "显示 MDBList 和 TMDb 评分",
     "@showMdbListAndTmdbRatings": {
         "description": "Description for additional ratings"
     },
-    "ratingLabels": "评级标签",
+    "ratingLabels": "评分标签",
     "@ratingLabels": {
         "description": "Setting for rating labels"
     },
-    "showLabelsNextToIcons": "在评级图标旁边显示标签",
+    "showLabelsNextToIcons": "在评分图标旁边显示标签",
     "@showLabelsNextToIcons": {
         "description": "Description for rating labels"
     },
-    "ratingBadges": "评级徽章",
+    "ratingBadges": "评分徽章",
     "@ratingBadges": {
         "description": "Setting for rating badges"
     },
-    "showDecorativeBadges": "显示评级背后的装饰徽章",
+    "showDecorativeBadges": "显示评分背后的装饰徽章",
     "@showDecorativeBadges": {
         "description": "Description for rating badges"
     },
@@ -3910,7 +3910,7 @@
     "@ratingSources": {
         "description": "Section title for rating sources"
     },
-    "ratingSourcesDescription": "启用并重新排序整个应用中显示的评级来源",
+    "ratingSourcesDescription": "启用并重新排序整个应用中显示的评分来源",
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
@@ -3990,7 +3990,7 @@
     "@upcomingMovies": {
         "description": "Seerr row: upcoming movies"
     },
-    "studios": "制片公司",
+    "studios": "制作公司",
     "@studios": {
         "description": "Seerr row: studios"
     },
@@ -4022,7 +4022,7 @@
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
-    "seerrUnavailable": "不可用，因为服务器插件 Seerr 支持被禁用。",
+    "seerrUnavailable": "因服务器的 Seerr 插件支持被禁用，此功能不可用。",
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
@@ -4158,7 +4158,7 @@
     "@readReleaseNotes": {
         "description": "Option to read the release notes in a browser"
     },
-    "downloadingUpdate": "正在下载更新...",
+    "downloadingUpdate": "正在下载更新…",
     "@downloadingUpdate": {
         "description": "Label shown while an update is being downloaded"
     },
@@ -4365,7 +4365,7 @@
     "@advancedOptions": {
         "description": "Expansion tile for advanced request options"
     },
-    "noServiceServersConfigured": "未配置服务服务器",
+    "noServiceServersConfigured": "未配置服务（Radarr/Sonarr）",
     "@noServiceServersConfigured": {
         "description": "Shown when no Radarr/Sonarr servers are set up"
     },
@@ -4373,7 +4373,7 @@
     "@server": {
         "description": "Dropdown label for server selection"
     },
-    "qualityProfile": "质量配置",
+    "qualityProfile": "画质配置",
     "@qualityProfile": {
         "description": "Dropdown label for quality profile selection"
     },
@@ -4438,7 +4438,7 @@
     "@deletedStatus": {
         "description": "Request status label for deleted media"
     },
-    "tmdbScore": "TMDB 评分",
+    "tmdbScore": "TMDb 评分",
     "@tmdbScore": {
         "description": "Stat label for TMDB user score"
     },
@@ -4500,7 +4500,7 @@
     "paused": "已暂停",
     "permissions": "权限",
     "processing": "处理中",
-    "profile": "资料",
+    "profile": "个人资料",
     "provider": "提供方",
     "refresh": "刷新",
     "remote": "遥控",
@@ -4982,7 +4982,7 @@
             }
         }
     },
-    "adminCreatingBackup": "正在创建备份...",
+    "adminCreatingBackup": "正在创建备份…",
     "adminBackupCreated": "备份创建成功",
     "adminBackupCreateFailed": "创建备份失败：{error}",
     "@adminBackupCreateFailed": {
@@ -5010,7 +5010,7 @@
         }
     },
     "adminConfirmRestore": "确认恢复",
-    "adminRestoringBackup": "正在恢复备份...",
+    "adminRestoringBackup": "正在恢复备份…",
     "adminRestoreFailed": "恢复备份失败：{error}",
     "@adminRestoreFailed": {
         "placeholders": {
@@ -5121,7 +5121,7 @@
         }
     },
     "adminDayOfWeek": "星期几",
-    "adminSearchPlugins": "搜索插件...",
+    "adminSearchPlugins": "搜索插件…",
     "adminPluginToggleFailed": "无法切换插件：{error}",
     "@adminPluginToggleFailed": {
         "placeholders": {
@@ -5210,7 +5210,7 @@
             }
         }
     },
-    "adminPluginUpdating": "正在将“{name}”更新为 v{version}...",
+    "adminPluginUpdating": "正在将“{name}”更新为 v{version}…",
     "@adminPluginUpdating": {
         "placeholders": {
             "name": {
@@ -5338,19 +5338,19 @@
     "adminWidthResolutions": "宽度分辨率",
     "adminTileWidth": "拼图宽度",
     "adminTileHeight": "拼图高度",
-    "adminQualitySubtitle": "数值越低，质量越高、文件越大",
+    "adminQualitySubtitle": "数值越低，画质越高、文件越大",
     "adminProcessThreads": "处理线程",
     "adminResumeSaved": "播放进度设置已保存",
     "adminResumeLoadFailed": "无法加载播放进度设置",
-    "adminResumeDescription": "设置内容在什么时候保存播放进度，以及什么时候标记为已看完。",
+    "adminResumeDescription": "设置内容在什么时候保存播放进度，以及什么时候标记为已观看。",
     "adminMinResumePercentage": "保存进度的最低百分比",
     "adminMinResumeSubtitle": "播放超过这个百分比后才会保存进度",
-    "adminMaxResumePercentage": "标记已看完的百分比",
-    "adminMaxResumeSubtitle": "播放超过这个百分比后会被视为已看完",
+    "adminMaxResumePercentage": "标记已观看的百分比",
+    "adminMaxResumeSubtitle": "播放超过这个百分比后会被视为已观看",
     "adminMinResumeDuration": "可保存进度的最短时长（秒）",
     "adminMinResumeDurationSubtitle": "短于此时长的内容不会保存播放进度",
-    "adminMinAudiobookResume": "有声书保存进度的最低百分比",
-    "adminMaxAudiobookResume": "有声书标记已听完的百分比",
+    "adminMinAudiobookResume": "有声读物保存进度的最低百分比",
+    "adminMaxAudiobookResume": "有声读物标记已听完的百分比",
     "adminNetworkingSaved": "已保存网络设置。可能需要重启服务器。",
     "adminNetworkingLoadFailed": "无法加载网络设置",
     "adminNetworkingWarning": "更改网络设置可能需要重启服务器。",
@@ -5612,7 +5612,7 @@
     "adminSettingsSaved": "设置已保存",
     "adminBackupsNotAvailable": "备份在此服务器版本上不可用。",
     "adminRestoreWarning1": "恢复将用备份数据替换所有当前服务器数据。",
-    "adminRestoreWarning2": "当前的服务器设置、用户和库数据将被覆盖。",
+    "adminRestoreWarning2": "当前的服务器设置、用户和媒体库数据将被覆盖。",
     "adminRestoreWarning3": "恢复后服务器将重启。",
     "adminRestoreConfirmMessage": "立即恢复备份 {name}？",
     "@adminRestoreConfirmMessage": {
@@ -5694,13 +5694,13 @@
     "adminMetadataFieldOverview": "简介",
     "adminMetadataGenres": "类型",
     "adminMetadataTags": "标签",
-    "adminMetadataStudios": "制片公司",
+    "adminMetadataStudios": "制作公司",
     "adminMetadataPeople": "演职人员",
     "adminMetadataAddGenre": "添加类型",
     "adminMetadataAddTag": "添加标签",
-    "adminMetadataAddStudio": "添加制片公司",
+    "adminMetadataAddStudio": "添加制作公司",
     "adminMetadataAddPerson": "添加人员",
-    "adminMetadataEditPerson": "编辑人物",
+    "adminMetadataEditPerson": "编辑人员",
     "adminMetadataRole": "角色",
     "adminMetadataImagePrimary": "主图",
     "adminMetadataImageBackdrop": "背景图",
@@ -5808,7 +5808,7 @@
     },
     "adminPluginsCatalogNoSearchResults": "未找到符合搜索条件的软件包",
     "adminPluginsCatalogEmpty": "没有可用的软件包",
-    "adminPluginsInstalling": "正在安装“{name}”...",
+    "adminPluginsInstalling": "正在安装“{name}”…",
     "@adminPluginsInstalling": {
         "placeholders": {
             "name": {
@@ -5927,21 +5927,21 @@
     "adminTrickplayPriorityHigh": "高",
     "adminTrickplayPriorityAboveNormal": "高于正常",
     "adminTrickplayPriorityNormal": "正常",
-    "adminTrickplayPriorityBelowNormal": "低于普通",
+    "adminTrickplayPriorityBelowNormal": "低于正常",
     "adminTrickplayPriorityIdle": "空闲",
     "adminTrickplayImageSettings": "图片设置",
     "adminTrickplayInterval": "间隔（毫秒）",
     "adminTrickplayIntervalSubtitle": "捕获帧的频率",
     "adminTrickplayWidthResolutionsHint": "以逗号分隔的像素宽度（例如 320）",
-    "adminTrickplayQuality": "质量",
-    "adminTrickplayQScale": "质量系数",
-    "adminTrickplayQScaleSubtitle": "数值越低，质量越高、文件越大",
-    "adminTrickplayJpegQuality": "JPEG 质量",
+    "adminTrickplayQuality": "画质",
+    "adminTrickplayQScale": "画质系数",
+    "adminTrickplayQScaleSubtitle": "数值越低，画质越高、文件越大",
+    "adminTrickplayJpegQuality": "JPEG 画质",
     "adminTrickplayProcessing": "处理中",
     "adminTasksEmpty": "未找到计划任务",
     "adminTasksNoFilterMatch": "没有任务符合当前筛选条件",
-    "adminTaskCancelling": "正在取消...",
-    "adminTaskRunning": "正在运行...",
+    "adminTaskCancelling": "正在取消…",
+    "adminTaskRunning": "正在运行…",
     "adminTaskNeverRun": "从未运行",
     "adminTaskStop": "停止",
     "adminTaskRun": "运行",
@@ -6142,7 +6142,7 @@
     "syncPlayIgnoreWaitSubtitle": "此设备缓冲时，不阻塞整个播放组",
     "syncPlayContinueLocallyNoWait": "本地继续播放，不等待较慢成员",
     "syncPlayRepeat": "重复",
-    "syncPlayRepeatOne": "单个循环",
+    "syncPlayRepeatOne": "单项循环",
     "syncPlayShuffleModeShuffled": "随机",
     "syncPlayShuffleModeSorted": "顺序播放",
     "syncPlaySyncCurrentQueue": "同步当前播放队列",
@@ -6223,7 +6223,7 @@
     "noItems": "无媒体项",
     "switchUser": "切换用户",
     "remoteControl": "远程控制",
-    "mediaBarLoading": "正在加载媒体栏...",
+    "mediaBarLoading": "正在加载媒体栏…",
     "mediaBarError": "媒体栏加载失败",
     "offlineServerUnavailable": "已连接到互联网，但当前服务器不可用。",
     "offlineNoInternet": "你已离线。只有已下载内容可用。",
@@ -6341,7 +6341,7 @@
     "trackActionAddToFavorites": "添加到收藏",
     "trackActionGoToAlbum": "前往专辑",
     "trackActionGoToArtist": "前往艺人",
-    "trackActionDownloading": "正在下载 {name}...",
+    "trackActionDownloading": "正在下载 {name}…",
     "@trackActionDownloading": {
         "placeholders": {
             "name": {
@@ -6612,7 +6612,7 @@
     "settingsSyncplaySpeedDuration": "速度持续时间",
     "settingsSyncplayMinimumSkipDelay": "最小跳转延迟",
     "settingsSyncplayExtraOffset": "SyncPlay 额外偏移",
-    "onNow": "现在播出",
+    "onNow": "正在播出",
     "collections": "合集",
     "lastPlayed": "上次播放",
     "libraryNameWithServer": "{libraryName} ({serverName})",
@@ -6730,7 +6730,7 @@
     "@cancelRecordingAction": {
         "description": "Button label to cancel a scheduled live TV recording"
     },
-    "programSetToRecord": "节目已设为录制",
+    "programSetToRecord": "节目已设置为录制",
     "@programSetToRecord": {
         "description": "Snackbar confirmation after scheduling a live TV program recording"
     },
@@ -7029,12 +7029,12 @@
     "genresRowSorting": "类型行排序",
     "genresRowSortingDescription": "按添加日期、发布日期、字母顺序等对类型行进行排序。",
     "genresRowItems": "类型行媒体项",
-    "genresRowItemsDescription": "在类型行中显示电影、剧集或两者。",
+    "genresRowItemsDescription": "在类型行中显示电影、剧集或两者都显示。",
     "appearance": "外观",
     "cardSize": "首页行卡片尺寸",
     "externalPlayerApp": "外部播放器应用",
     "externalPlayerAskEachTimeSubtitle": "播放开始时显示应用选择器。",
-    "loadingInstalledPlayers": "正在加载已安装的播放器...",
+    "loadingInstalledPlayers": "正在加载已安装的播放器…",
     "connection": "连接",
     "audioTranscodeTarget": "音频转码目标",
     "passthrough": "直通",
@@ -7050,7 +7050,7 @@
     "replaceSkipOutroWithNextUpDisplaySubtitle": "显示“接下来播放”浮层，而不是“跳过片尾”按钮。",
     "playerRouting": "播放器路由",
     "preferSoftwareDecoders": "优先使用软件解码器",
-    "preferSoftwareDecodersSubtitle": "优先使用 FFmpeg（音频）和 libgav1 (AV1)，再尝试硬件解码器。如果 HDMI 音频直通异常，请关闭此项。",
+    "preferSoftwareDecodersSubtitle": "优先使用 FFmpeg（音频）和 libgav1（AV1），再尝试硬件解码器。如果 HDMI 音频直通异常，请关闭此项。",
     "useExternalPlayer": "始终使用外部播放器",
     "useExternalPlayerSubtitle": "在 Android TV 上用你选择的外部应用打开视频播放。",
     "automaticQueuing": "自动入队",
@@ -7103,7 +7103,7 @@
     "note": "备注",
     "webDiagnosticsNonWebNote": "此诊断页面面向 Web 构建。如果你在其他平台看到这些内容，检查结果可能不适用。",
     "backToServerSelect": "返回服务器选择",
-    "signOutAllUsers": "退出所有用户登录",
+    "signOutAllUsers": "注销所有用户",
     "voiceSearchPermissionPermanentlyDenied": "麦克风权限被永久拒绝。请在系统设置中启用此权限。",
     "voiceSearchPermissionRequired": "语音搜索需要麦克风权限。",
     "voiceSearchNoMatch": "没听清，请重试。",
@@ -7125,7 +7125,7 @@
     "people": "人物",
     "recentlyReleasedEpisodes": "最近发布的剧集",
     "watchAgain": "再看一次",
-    "guestAppearances": "嘉宾亮相",
+    "guestAppearances": "客串出演",
     "appearancesSeerr": "出场作品（Seerr）",
     "watchWithGroup": "与播放组一起观看",
     "errors": "错误",
@@ -7259,7 +7259,7 @@
     "failedToExtractCbrArchive": "无法提取 .cbr 存档。",
     "cb7ExtractionUnavailable": "CB7 提取在此平台上不可用。",
     "cb7ExtractionPluginUnavailable": "CB7 提取插件在此平台上不可用。",
-    "loadingShuffle": "正在加载随机内容...",
+    "loadingShuffle": "正在加载随机内容…",
     "libraryShuffleLabel": "媒体库随机播放",
     "randomShuffleLabel": "随机播放",
     "genresShuffleLabel": "按类型随机播放",
@@ -7403,7 +7403,7 @@
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "优先音画描述音轨",
+    "preferAudioDescription": "优先音频描述音轨",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
@@ -7419,7 +7419,7 @@
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "自动加载媒体元数据内标记为「默认」或「强制」的字幕轨道。",
+    "subtitleModeFlaggedDescription": "自动加载媒体元数据内标记为“默认”或“强制”的字幕轨道。",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
@@ -7459,7 +7459,7 @@
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "如需启用该功能，请前往 Jellyfin / Emby 服务器媒体库的显示设置，开启「电影合集分组」和/或「剧集系列分组」选项。",
+    "groupItemsIntoCollectionsDialogMessage": "如需启用该功能，请前往 Jellyfin / Emby 服务器媒体库的显示设置，开启“电影合集分组”和/或“剧集系列分组”选项。",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
@@ -7545,7 +7545,7 @@
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. 在服务器上为媒体库文件夹授予 Jellyfin 服务账号写入权限（Docker 环境需配置正确 PUID/PGID）。\n\n2. 或前往 Jellyfin 控制台-媒体库，编辑当前媒体库，关闭「将艺术图保存至媒体文件夹」，艺术图将统一存储在 Jellyfin 内置数据库中。",
+    "libraryWriteAccessFixSteps": "1. 在服务器上为媒体库文件夹授予 Jellyfin 服务账号写入权限（Docker 环境需配置正确 PUID/PGID）。\n\n2. 或前往 Jellyfin 控制台-媒体库，编辑当前媒体库，关闭“将艺术图保存至媒体文件夹”，艺术图将统一存储在 Jellyfin 内置数据库中。",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
@@ -7553,7 +7553,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "您的“{libraryName}”媒体库已开启「将艺术图保存至媒体文件夹」，但 Jellyfin 检测发现无权限写入以下目录：\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "您的“{libraryName}”媒体库已开启“将艺术图保存至媒体文件夹”，但 Jellyfin 检测发现无权限写入以下目录：\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -7640,7 +7640,7 @@
         "description": "Detail screen style option: the responsive cinematic layout"
     },
     "adminLibDateAddedSection": "日期添加行为",
-    "adminLibDateAddedLabel": "使用日期添加自",
+    "adminLibDateAddedLabel": "添加日期来源",
     "adminLibDateAddedImport": "扫描进媒体库的日期",
     "adminParentalControl": "家长控制",
     "adminPlaybackIntelLowPowerHevc": "启用 Intel 低功耗 HEVC 编码器",
@@ -7734,7 +7734,7 @@
             }
         }
     },
-    "bookTimeLeft": "{time} 剩余",
+    "bookTimeLeft": "剩余 {time}",
     "@bookTimeLeft": {
         "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
         "placeholders": {
@@ -7751,7 +7751,7 @@
     "@bookHeroListen": {
         "description": "Hero CTA label to start listening to an audiobook"
     },
-    "extras": "额外",
+    "extras": "花絮",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
@@ -7795,7 +7795,7 @@
     },
     "adminDrawerDisplay": "显示",
     "adminDrawerMetadata": "元数据",
-    "adminRemoveDeviceConfirm": "移除设备 \"{name}\"？该用户需要在此设备上重新登录。",
+    "adminRemoveDeviceConfirm": "移除设备“{name}”？该用户需要在此设备上重新登录。",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -7838,12 +7838,12 @@
     "adminLibrarySectionMovies": "电影",
     "adminLibRealtimeMonitor": "启用实时监控",
     "adminLibRealtimeMonitorHint": "检测文件更改并自动处理。",
-    "adminLibSaveLocalMetadata": "将封面保存到媒体文件夹",
+    "adminLibSaveLocalMetadata": "保存本地元数据",
     "adminLibRefreshInterval": "自动元数据刷新",
     "adminLibDisplayTitle": "显示",
     "adminLibDisplaySection": "媒体库显示",
     "adminLibFolderView": "显示文件夹视图以展示纯媒体文件夹",
-    "adminLibSpecialsInSeasons": "在播出季中显示特别篇",
+    "adminLibSpecialsInSeasons": "在每季中显示特别篇",
     "adminLibGroupMovies": "将电影分组到合集中",
     "adminLibGroupShows": "将剧集分组到合集中",
     "adminLibExternalSuggestions": "在建议中显示外部内容",
@@ -8023,7 +8023,7 @@
             "format": {}
         }
     },
-    "showAllAudioTracks": "显示全部 ({count}) 音轨",
+    "showAllAudioTracks": "显示全部（{count}）音轨",
     "@showAllAudioTracks": {
         "placeholders": {
             "count": {
@@ -8031,7 +8031,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "显示全部 ({count}) 字幕轨道",
+    "showAllSubtitleTracks": "显示全部（{count}）字幕轨道",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8039,9 +8039,9 @@
             }
         }
     },
-    "checkingDirectPlay": "正在检查直接播放能力...",
+    "checkingDirectPlay": "正在检查直接播放能力…",
     "directPlayCapabilityLabel": "直接播放能力： ",
-    "transcodeContainerNotSupported": "容器格式不受播放器支持。",
+    "transcodeContainerNotSupported": "封装格式不受播放器支持。",
     "transcodeVideoCodecNotSupported": "视频编解码器不受支持。",
     "transcodeAudioCodecNotSupported": "音频编解码器不受支持。",
     "transcodeContainerBitrateExceedsLimit": "文件码率超过播放器串流限制。",
@@ -8060,7 +8060,7 @@
             }
         }
     },
-    "impellerRenderingSubtitle": "Impeller 是 Flutter 的现代 GPU 渲染器，可实现更流畅的动画和更少的卡顿。在某些电视盒子和旧款 GPU 上可能会导致故障或黑屏；如果遇到这些问题，请将其关闭。自动会为你的设备选择最佳默认值。重启 Moonfin 以应用。",
+    "impellerRenderingSubtitle": "自动模式会为你的设备选择最佳默认值。",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
@@ -8103,7 +8103,7 @@
         }
     },
     "adminLibEmbeddedAllowText": "仅文本",
-    "guideNextProgram": "下一集 ：{time} {title}",
+    "guideNextProgram": "下一集：{time} {title}",
     "@guideNextProgram": {
         "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
         "placeholders": {
@@ -8122,7 +8122,7 @@
         "description": "Label for the glass rendering quality setting"
     },
     "adminLibPathSubstitution": "启用 NFO 图片路径的路径替换",
-    "adminAnalyticsLoadingProgress": "正在加载服务器分析... {percentage}%",
+    "adminAnalyticsLoadingProgress": "正在加载服务器分析… {percentage}%",
     "@adminAnalyticsLoadingProgress": {
         "description": "Progress label shown while server analytics load",
         "placeholders": {
@@ -8188,7 +8188,7 @@
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
-    "deletedScenes": "删除场景",
+    "deletedScenes": "删减场景",
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
@@ -8285,7 +8285,7 @@
         }
     },
     "adminLibraryTabPaths": "路径",
-    "adminLibMetadataSavers": "元数据保存器",
+    "adminLibMetadataSavers": "元数据保存程序",
     "adminLibSubtitleDownloaders": "字幕下载器",
     "adminLibLyricDownloaders": "歌词下载器",
     "adminLibrarySectionGeneral": "常规",
@@ -8320,7 +8320,7 @@
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
     "adminActivityDateRange": "日期范围",
-    "adminPlaybackMaxMuxingQueue": "最大混合队列大小",
+    "adminPlaybackMaxMuxingQueue": "最大复用队列大小",
     "adminNetworkingIpSettings": "IP 设置",
     "adminNetworkingEnableIpv4": "启用 IPv4",
     "adminNetworkingEnableIpv6": "启用 IPv6",
@@ -8489,7 +8489,7 @@
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "你无权限提交媒体请求",
+    "requestErrorPermission": "你没有权限提交媒体请求",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
@@ -8575,7 +8575,7 @@
             }
         }
     },
-    "requestingProgress": "正在提交 {current}/{total}……",
+    "requestingProgress": "正在提交 {current}/{total}…",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8731,7 +8731,7 @@
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "从待播剧集列表隐藏",
+    "contextMenuHideFromNextUp": "从接下来播放列表隐藏",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
@@ -8750,7 +8750,7 @@
     "keyboard": "键盘快捷键",
     "navButtons": "导航按钮",
     "rendering": "渲染设置",
-    "mpvConfiguration": "MPV 播放器参数",
+    "mpvConfiguration": "mpv 播放器参数",
     "imdbTop250Movies": "IMDb Top250 电影",
     "imdbTop250TvShows": "IMDb Top250 电视剧",
     "imdbMostPopularMovies": "IMDb 热门电影榜单",
@@ -8970,11 +8970,11 @@
     "@adminBackToSearch": {
         "description": "Tooltip on the button that returns from the Identify results list to the search form"
     },
-    "nextUpMaxDays": "下个播放最大保留天数",
+    "nextUpMaxDays": "接下来播放最大保留天数",
     "@nextUpMaxDays": {
         "description": "Setting for how far back the Next Up row reaches"
     },
-    "nextUpMaxDaysDescription": "上次观看后，该电视剧在下个播放保留时长",
+    "nextUpMaxDaysDescription": "上次观看后，该电视剧在接下来播放保留时长",
     "@nextUpMaxDaysDescription": {
         "description": "Description for the Next Up window setting"
     },
@@ -9015,7 +9015,7 @@
     "@playlistTypeAudio": {
         "description": "Filter checkbox label for audio/music playlists"
     },
-    "playlistTypeAudiobook": "有声书",
+    "playlistTypeAudiobook": "有声读物",
     "@playlistTypeAudiobook": {
         "description": "Filter checkbox label for audiobook playlists"
     },
@@ -9039,7 +9039,7 @@
     "@audioPlaylistsSection": {
         "description": "Section header above audio playlists when Group by Type is enabled"
     },
-    "audiobookPlaylistsSection": "有声书播放列表",
+    "audiobookPlaylistsSection": "有声读物播放列表",
     "@audiobookPlaylistsSection": {
         "description": "Section header above audiobook playlists when Group by Type is enabled"
     },
@@ -9177,7 +9177,7 @@
     "settingsAudioPassthroughModeAuto": "自动（匹配检测到的设备支持）",
     "settingsAudioPassthroughModeManual": "手动（请在下方选择格式）",
     "settingsDownmixToStereoDescription": "将所有解码后的音频混合成两个声道。",
-    "settingsAudioEac3IncludesAtmos": "比特流 E-AC-3，包括杜比全景声 (JOC)。",
+    "settingsAudioEac3IncludesAtmos": "比特流 E-AC-3，包括杜比全景声（JOC）。",
     "settingsAudioDtsHdIncludesDtsX": "比特流 DTS-HD，包括 DTS:X。",
     "settingsAudioTrueHdIncludesAtmos": "比特流 TrueHD，包括杜比全景声。",
     "sdCard": "SD 卡",
@@ -9188,7 +9188,7 @@
     "@downloadLocationLimitedByAndroid": {
         "description": "Note shown when the only download location Android allows is the default one"
     },
-    "mergeRecentRowsByType": "按类型合并最近行",
+    "mergeRecentRowsByType": "按类型合并最近添加/发布行",
     "@mergeRecentRowsByType": {
         "description": "Setting for merging recently added and recently released libraries by media type"
     },
@@ -9212,11 +9212,11 @@
     "@manageRequests": {
         "description": "Details screen button opening the pending requests to approve or decline"
     },
-    "watchlist": "关注列表",
+    "watchlist": "观看清单",
     "@watchlist": {
         "description": "Details screen button adding the title to the Seerr watchlist"
     },
-    "onWatchlist": "关注列表",
+    "onWatchlist": "观看清单",
     "@onWatchlist": {
         "description": "Details screen button label when the title is already on the Seerr watchlist"
     },
@@ -9224,14 +9224,14 @@
     "@settingsCinemaModeEpisodes": {
         "description": "Settings toggle label. Extends Cinema Mode, which plays pre-roll videos before playback, to TV episodes as well as films. 'Cinema Mode' is the app's feature name."
     },
-    "settingsCinemaModeEpisodesSubtitle": "在电视节目播出前也播放片头广告",
+    "settingsCinemaModeEpisodesSubtitle": "在剧集播出前也播放片头广告",
     "@settingsCinemaModeEpisodesSubtitle": {
         "description": "Subtitle for the Cinema Mode for episodes toggle. A 'preroll' is a short video (trailer, bumper) played before the main video starts."
     },
     "collectionsRowShowEpisodes": "显示单集",
-    "collectionsRowShowEpisodesSubtitle": "展开电视节目，将每一集单独显示。",
+    "collectionsRowShowEpisodesSubtitle": "展开电视剧，将每一集单独显示。",
     "playlistsRowShowEpisodes": "显示单集",
-    "playlistsRowShowEpisodesSubtitle": "展开电视节目，将每一集单独显示。",
+    "playlistsRowShowEpisodesSubtitle": "展开电视剧，将每一集单独显示。",
     "playbackTimeDisplay": "进度条时间",
     "@playbackTimeDisplay": {
         "description": "Setting title for what is shown next to the playback progress bar"
@@ -9296,11 +9296,11 @@
     "@settingsMusicPlaybackTimeDescription": {
         "description": "Setting description for the music progress bar time option"
     },
-    "groupByTitle": "按分组",
+    "groupByTitle": "分组方式",
     "@groupByTitle": {
         "description": "Dialog title and button label for library group by options"
     },
-    "groupByDecade": "十年（年）",
+    "groupByDecade": "年代",
     "@groupByDecade": {
         "description": "Option to group library items by release decade"
     },
@@ -9308,7 +9308,7 @@
     "@groupByParentalRating": {
         "description": "Option to group library items by parental rating"
     },
-    "groupByStudio": "制片公司",
+    "groupByStudio": "制作公司",
     "@groupByStudio": {
         "description": "Option to group library items by production studio"
     },
@@ -9389,7 +9389,7 @@
     "@personalRatingRated": {
         "description": "Tooltip for a media item that has a numeric personal rating."
     },
-    "seerrSeriesContinuing": "剧集连载中・可申请后续季数",
+    "seerrSeriesContinuing": "剧集连载中，可申请后续季数",
     "@seerrSeriesContinuing": {
         "description": "Banner in the Seerr request dialog for a continuing series whose aired seasons are all in the library"
     },
@@ -9580,12 +9580,12 @@
     "adminMetadataLockFieldName": "名称",
     "adminMetadataLockFieldOverview": "概览",
     "adminMetadataLockFieldGenres": "类型",
-    "adminMetadataLockFieldOfficialRating": "家长分级",
+    "adminMetadataLockFieldOfficialRating": "家长评级",
     "adminMetadataLockFieldCast": "人物",
     "adminMetadataLockFieldProductionLocations": "制作地点",
     "adminMetadataLockFieldBirthLocation": "出生地",
     "adminMetadataLockFieldRuntime": "时长",
-    "adminMetadataLockFieldStudios": "工作室",
+    "adminMetadataLockFieldStudios": "制作公司",
     "adminMetadataLockFieldTags": "标签",
     "adminPluginsRestartRequired": "需要重启",
     "@adminPluginsRestartRequired": {
@@ -9741,7 +9741,7 @@
     "@detailUseSeriesThumbnailsSubtitle": {
         "description": "Description for setting to use series thumbnails on Classic details page"
     },
-    "hideHomeMediaDescription": "在详情页隐藏媒体描述",
+    "hideHomeMediaDescription": "在首页隐藏媒体描述",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -9749,7 +9749,7 @@
     "@hideHomeMediaDescriptionSubtitle": {
         "description": "Description for setting to hide media description on home screen"
     },
-    "continueWatchingAndNextUpHeader": "继续观看与下个播放",
+    "continueWatchingAndNextUpHeader": "继续观看与接下来播放",
     "@continueWatchingAndNextUpHeader": {
         "description": "Header for settings section containing Continue Watching and Next Up options"
     },
@@ -10333,12 +10333,12 @@
     "@bookFormatComic": {
         "description": "Semantic label for the comic format badge on library cards"
     },
-    "noBooksFoundDescription": "此媒体库中暂无书籍、有声书或漫画。",
+    "noBooksFoundDescription": "此媒体库中暂无书籍、有声读物或漫画。",
     "@noBooksFoundDescription": {
         "description": "Description shown when a books library has no items"
     },
     "settingsRedetectDisplay": "重新检测显示设备",
-    "settingsRedetectDisplayDescription": "重新查询电视支持的 HDR 格式。若电视 / 功放开机较晚，导致杜比视界或 HDR10 影片被转码，可使用此选项。",
+    "settingsRedetectDisplayDescription": "重新查询电视支持的 HDR 格式。若电视或功放开机较晚，导致杜比视界或 HDR10 影片被转码，可使用此选项。",
     "settingsDisplayIsSdr": "我的电视不支持 HDR",
     "settingsDisplayIsSdrDescription": "不再声明此显示设备支持 HDR。仅当检测持续误报 HDR，但电视实际无法播放 HDR 时启用。",
     "settingsDisplayRedetected": "已重新检测显示设备：{formats}",
@@ -10403,7 +10403,7 @@
     "@autoDownloadQualityTitle": {
         "description": "Title of the quality sheet when it is opened to create an auto-download subscription"
     },
-    "autoDownloadEnabledFor": "已为「{title}」开启自动下载",
+    "autoDownloadEnabledFor": "已为“{title}”开启自动下载",
     "@autoDownloadEnabledFor": {
         "description": "Snackbar after subscribing a series",
         "placeholders": {
@@ -10412,7 +10412,7 @@
             }
         }
     },
-    "autoDownloadStoppedFor": "已关闭「{title}」的自动下载",
+    "autoDownloadStoppedFor": "已关闭“{title}”的自动下载",
     "@autoDownloadStoppedFor": {
         "description": "Snackbar after unsubscribing a series",
         "placeholders": {
@@ -10433,7 +10433,7 @@
     "@autoDownloadEnableSubtitle": {
         "description": "Explains the master switch"
     },
-    "autoDownloadKeepUnwatched": "保留未观看剧集",
+    "autoDownloadKeepUnwatched": "保留未观看集数",
     "@autoDownloadKeepUnwatched": {
         "description": "Setting that caps how many unwatched episodes per series stay downloaded"
     },
@@ -10481,7 +10481,7 @@
     "@autoDownloadCheckNow": {
         "description": "Button that runs a subscription check immediately"
     },
-    "autoDownloadChecking": "正在检查...",
+    "autoDownloadChecking": "正在检查…",
     "@autoDownloadChecking": {
         "description": "Subtitle while a subscription check is running"
     },
@@ -10517,7 +10517,7 @@
     "@autoDownloadFollowedSeries": {
         "description": "Settings section header listing the series with auto-download on"
     },
-    "autoDownloadNoSubscriptions": "打开剧集页面，在下载菜单中选择「自动下载新剧集」",
+    "autoDownloadNoSubscriptions": "打开剧集页面，在下载菜单中选择“自动下载新剧集”",
     "@autoDownloadNoSubscriptions": {
         "description": "Shown in settings when no series is followed"
     },
@@ -10735,7 +10735,7 @@
     "@sortBySize": {
         "description": "Sort option: largest download first"
     },
-    "sortByName": "名字",
+    "sortByName": "名称",
     "@sortByName": {
         "description": "Sort option: alphabetical by title"
     },
@@ -10791,11 +10791,11 @@
     "@detailSectionLyrics": {
         "description": "Details screen section: the lyrics panel for songs"
     },
-    "detailSectionCast": "投屏",
+    "detailSectionCast": "演员",
     "@detailSectionCast": {
         "description": "Details screen section: the cast row, tab or card"
     },
-    "detailSectionStudios": "工作室",
+    "detailSectionStudios": "制作公司",
     "@detailSectionStudios": {
         "description": "Details screen section: studios and networks"
     },
@@ -10950,7 +10950,7 @@
     "@detailsBackdropFit": {
         "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
     },
-    "externalRowSortName": "名字",
+    "externalRowSortName": "名称",
     "externalRowSortReleaseDate": "上映日期",
     "externalRowSortShuffle": "随机播放",
     "musicSortYear": "年份",
@@ -10981,11 +10981,11 @@
     "@calendarUnitMinutes": {
         "description": "Unit under the minutes number of the calendar countdown"
     },
-    "calendarSettingsView": "观看次数",
+    "calendarSettingsView": "视图",
     "@calendarSettingsView": {
         "description": "Calendar settings section header for how the calendar opens and lays out weeks"
     },
-    "calendarSettingsScope": "显示",
+    "calendarSettingsScope": "范围",
     "@calendarSettingsScope": {
         "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
     },
@@ -10997,15 +10997,15 @@
     "@subtitleBold": {
         "description": "Toggle that draws subtitles in a bold weight."
     },
-    "afterHoursPlay": "播放",
+    "afterHoursPlay": "游玩",
     "@afterHoursPlay": {
         "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
     },
-    "afterHoursCastStatic": "静止",
+    "afterHoursCastStatic": "雪花",
     "@afterHoursCastStatic": {
         "description": "Name of an obstacle in the Cable Crawl arcade game, shown on its How to play card. A cell of TV static. Keep it short, it shows as a heading in a small column"
     },
-    "watchPartyType": "类型",
+    "watchPartyType": "输入",
     "@watchPartyType": {
         "description": "TV quick bar button that opens the keyboard to type a chat message"
     },
@@ -11025,7 +11025,7 @@
     "@achievementsWeeklyQuests": {
         "description": "Weekly quests section"
     },
-    "achievementsTitles": "作品",
+    "achievementsTitles": "称号",
     "@achievementsTitles": {
         "description": "Tab of the titles that can replace a rank name"
     },
@@ -11041,7 +11041,7 @@
     "@bottomNavbarTabsAutomatic": {
         "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
     },
-    "friendsMessages": "服务器消息",
+    "friendsMessages": "消息",
     "@friendsMessages": {
         "description": "Entry that opens the list of chats"
     },
@@ -11268,7 +11268,7 @@
     "@spotlightMoreActions": {
         "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
     },
-    "spotlightCastCrewStudios": "演员、工作人员和工作室",
+    "spotlightCastCrewStudios": "演员、工作人员和制作公司",
     "@spotlightCastCrewStudios": {
         "description": "Title of the spotlight summary card that opens the people and studios modal"
     },
@@ -11339,7 +11339,7 @@
             }
         }
     },
-    "spotlightStudiosCount": "{count, plural, =1{1 个工作室} other{{count} 个工作室}}",
+    "spotlightStudiosCount": "{count, plural, =1{1 个制作公司} other{{count} 个制作公司}}",
     "@spotlightStudiosCount": {
         "description": "Count fragment on spotlight summary cards: studios",
         "placeholders": {
@@ -11886,7 +11886,7 @@
     "@bookReadingUnavailableTitle": {
         "description": "Title of the dialog shown on Apple TV when the user tries to open a book or comic, which tvOS has no reader for"
     },
-    "bookReadingUnavailableMessage": "请在手机、平板电脑或电脑上的 Moonfin 中打开阅读。有声书仍可在此播放。",
+    "bookReadingUnavailableMessage": "请在手机、平板电脑或电脑上的 Moonfin 中打开阅读。有声读物仍可在此播放。",
     "@bookReadingUnavailableMessage": {
         "description": "Body of the dialog shown on Apple TV when the user tries to open a book or comic"
     },
@@ -12336,7 +12336,7 @@
     "@detailMetadataUpcomingEpisodeDate": {
         "description": "Item label for upcoming episode air date badge in metadata row"
     },
-    "detailMetadataUpcomingEpisodeDateSubtitle": "使用 Sonarr 和 TMDB 显示即将播出的日期",
+    "detailMetadataUpcomingEpisodeDateSubtitle": "使用 Sonarr 和 TMDb 显示即将播出的日期",
     "@detailMetadataUpcomingEpisodeDateSubtitle": {
         "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
     },
@@ -12344,7 +12344,7 @@
     "@detailSections": {
         "description": "Settings tile title for switching Details screen sections on and off"
     },
-    "detailSectionsDescription": "选择详情页要显示的部分",
+    "detailSectionsDescription": "选择详情页要显示的分区",
     "@detailSectionsDescription": {
         "description": "Settings tile subtitle for the Details screen sections list"
     },
@@ -12384,11 +12384,11 @@
     "@detailSectionCrew": {
         "description": "Details screen section: directors and writers"
     },
-    "detailSectionMoreLikeThisSubtitle": "也包括相似专辑和艺人",
+    "detailSectionMoreLikeThisSubtitle": "也包括相似专辑和艺术家",
     "@detailSectionMoreLikeThisSubtitle": {
         "description": "Subtitle for the More Like This section switch"
     },
-    "detailSectionMoreEpisodes": "更多剧集",
+    "detailSectionMoreEpisodes": "更多集数",
     "@detailSectionMoreEpisodes": {
         "description": "Details screen section: the other episodes of a show on an episode's page"
     },
@@ -12416,7 +12416,7 @@
     "@detailSectionSeerrStreaming": {
         "description": "Details screen Seerr section: logos of the services streaming the title in the user's region"
     },
-    "seerrStreamingOn": "流媒体平台",
+    "seerrStreamingOn": "流媒体服务",
     "@seerrStreamingOn": {
         "description": "Heading over the logos of the services streaming a Seerr title"
     },
@@ -12444,7 +12444,7 @@
     "@detailSectionPersonLinks": {
         "description": "Details screen section: buttons that open a person's IMDb, TMDB and social media pages"
     },
-    "detailSectionPersonLinksSubtitle": "IMDb、TMDB 和社交媒体",
+    "detailSectionPersonLinksSubtitle": "IMDb、TMDb 和社交媒体",
     "@detailSectionPersonLinksSubtitle": {
         "description": "Subtitle under the person links section switch"
     },
@@ -12567,7 +12567,7 @@
     "@sonarrCalendarHideDownloaded": {
         "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
     },
-    "mergeRadarrSonarrCalendars": "合并 Sonarr 和 Radarr 日历",
+    "mergeRadarrSonarrCalendars": "合并 Radarr 和 Sonarr 日历",
     "@mergeRadarrSonarrCalendars": {
         "description": "Shows the Radarr and Sonarr calendars as a single home row"
     },
@@ -12871,7 +12871,7 @@
     "@mediaBarSourceNewReleasesAll": {
         "description": "Media bar source showing what came out recently: new series, seasons, episodes and movies"
     },
-    "mediaBarNewReleaseBannerAllDescription": "标记新剧集、新季、新单集和新电影。",
+    "mediaBarNewReleaseBannerAllDescription": "标记新剧集、新一季、新单集和新电影。",
     "@mediaBarNewReleaseBannerAllDescription": {
         "description": "Description of the media bar new release label setting"
     },
@@ -12931,7 +12931,7 @@
     "@playImmediately": {
         "description": "Option to play an item immediately"
     },
-    "homeRowsGenresAndStudios": "类型和工作室",
+    "homeRowsGenresAndStudios": "类型和制作公司",
     "@homeRowsGenresAndStudios": {
         "description": "Home Rows editor: heading of the group of disabled genre and studio rows"
     },
@@ -12947,7 +12947,7 @@
     "@pinResetFailed": {
         "description": "Shown on sign in when Forgot PIN could not clear a PIN kept on the server"
     },
-    "screensaverDuringAudio": "音乐和有声书播放时显示",
+    "screensaverDuringAudio": "音乐和有声读物播放时显示",
     "@screensaverDuringAudio": {
         "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
     },
@@ -13370,7 +13370,7 @@
     "adminCinemaIntrosParentalHelp": "仅选择与正在观看内容分级相同或更低的预告片。",
     "adminCinemaIntrosUnwatchedOnly": "仅在未观看内容前播放片头",
     "adminCinemaIntrosSimilarOnly": "仅播放与正在观看内容相似的预告片",
-    "adminCinemaIntrosSimilarOnlyHelp": "依据共同的类型、标签、工作室等判断。",
+    "adminCinemaIntrosSimilarOnlyHelp": "依据共同的类型、标签、制作公司等判断。",
     "adminCinemaIntrosCustom": "自定义片头",
     "adminCinemaIntrosCustomPath": "自定义片头文件夹",
     "adminCinemaIntrosCustomPathHelp": "存放视频的文件夹。会随机选择一个，在预告片之后播放。",
@@ -13483,7 +13483,7 @@
     "adminLibSaveLyricsWithMedia": "将歌词保存到媒体文件夹",
     "adminLibUseCustomTagDelimiters": "使用自定义标签分隔符",
     "adminLibCustomTagDelimiters": "自定义标签分隔符",
-    "adminLibCustomTagDelimitersHelp": "用作分隔标签的分隔符的字符。",
+    "adminLibCustomTagDelimitersHelp": "用于分隔标签的字符。",
     "adminLibDelimiterWhitelist": "分隔符白名单",
     "adminLibDelimiterWhitelistHelp": "不参与标签拆分的项目，每行一项。",
     "adminLibDownloadLanguages": "下载语言",
@@ -13531,7 +13531,7 @@
     "adminLiveTvRefreshGuide": "刷新节目指南数据",
     "adminLiveTvMapChannels": "映射频道",
     "adminLiveTvNoTunerChannels": "未发现调谐器频道",
-    "adminLiveTvXmltvPathHelp": "XMLTV 文件的路径或 URL。服务器会读取并检查其更新。您需要自行创建和更新该文件。",
+    "adminLiveTvXmltvPathHelp": "XMLTV 文件的路径或 URL。服务器会读取并检查其更新。你需要自行创建和更新该文件。",
     "adminLiveTvSdCreateAccount": "在 {url} 创建账户",
     "@adminLiveTvSdCreateAccount": {
         "placeholders": {
@@ -13645,10 +13645,10 @@
     "adminTranscodingAudioSeekHelp": "在 HLS 串流中跳转时，服务器处理音频的方式。",
     "adminTranscodingTrimCopiedAudio": "裁剪复制的音频",
     "adminTranscodingTranscodeAudio": "转码音频",
-    "adminResumeMinAudiobookMinutes": "有声书最短续播时间（分钟）",
-    "adminResumeMinAudiobookHelp": "在此时间之前停止的有声书视为未播放。",
-    "adminResumeAudiobookRemaining": "有声书续播的剩余分钟数",
-    "adminResumeAudiobookRemainingHelp": "剩余时长少于此分钟数时停止的有声书视为已播放。",
+    "adminResumeMinAudiobookMinutes": "有声读物最短续播时间（分钟）",
+    "adminResumeMinAudiobookHelp": "在此时间之前停止的有声读物视为未播放。",
+    "adminResumeAudiobookRemaining": "有声读物续播的剩余分钟数",
+    "adminResumeAudiobookRemainingHelp": "剩余时长少于此分钟数时停止的有声读物视为已播放。",
     "adminBrandingSplashSection": "启动画面",
     "adminBrandingSectionWebClient": "Web 客户端",
     "adminBrandingSplashSizeHint": "自定义图片应采用 16x9 宽高比，最小尺寸为 1920x1080。",
@@ -14015,7 +14015,7 @@
         "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
     },
     "settingsDateFormat": "日期格式",
-    "settingsDateFormatDescription": "在“月-日”“日-月”或区域设置默认格式之间选择，用于日历日期和发行日期",
+    "settingsDateFormatDescription": "在“月-日”、“日-月”或区域设置默认格式之间选择，用于日历日期和发行日期",
     "dateFormatSystem": "区域设置默认",
     "dateFormatMonthDay": "月 / 日（11 / 10）",
     "dateFormatDayMonth": "日 / 月（10 / 11）",
@@ -14102,9 +14102,9 @@
     "imdbRowsSorting": "IMDb 行排序",
     "imdbRowsSortingDescription": "按名称、发布日期、评分等方式排序 IMDb 行。",
     "imdbRowsSortOrderDescription": "对 IMDb 行执行升序或降序排序。",
-    "tmdbRowsSorting": "TMDB 行排序",
-    "tmdbRowsSortingDescription": "按名称、发布日期、评分等方式排序 TMDB 行。",
-    "tmdbRowsSortOrderDescription": "对 TMDB 行执行升序或降序排序。",
+    "tmdbRowsSorting": "TMDb 行排序",
+    "tmdbRowsSortingDescription": "按名称、发布日期、评分等方式排序 TMDb 行。",
+    "tmdbRowsSortOrderDescription": "对 TMDb 行执行升序或降序排序。",
     "seerrRowsSorting": "Seerr 行排序",
     "seerrRowsSortingDescription": "按名称、发布日期、评分等方式排序 Seerr 行。",
     "seerrRowsSortOrderDescription": "对 Seerr 行执行升序或降序排序。",
@@ -14239,7 +14239,7 @@
     "@watchPartyOffline": {
         "description": "After a Watch Party member's name when they are not connected"
     },
-    "watchPartyStartForEveryone": "为所有人开始",
+    "watchPartyStartForEveryone": "为所有人播放",
     "@watchPartyStartForEveryone": {
         "description": "Host button that starts the staged item for the whole Watch Party"
     },
@@ -14290,7 +14290,7 @@
     "@watchPartyGuestsCanPause": {
         "description": "Host switch for guest transport control in a Watch Party"
     },
-    "watchPartyEnd": "为所有人结束",
+    "watchPartyEnd": "为所有人结束派对",
     "@watchPartyEnd": {
         "description": "Host button that closes the Watch Party room for everyone"
     },
@@ -15196,7 +15196,7 @@
     "@achievementsScoreBank": {
         "description": "Label for the score a user still has to spend"
     },
-    "achievementsBoost": "经验加成",
+    "achievementsBoost": "积分加成",
     "@achievementsBoost": {
         "description": "Power-up that doubles score for an hour"
     },
@@ -15858,7 +15858,7 @@
     "@hideHomeUnwatchedCount": {
         "description": "Setting title to hide the unwatched episode count badge on home screen and library posters"
     },
-    "hideHomeUnwatchedCountSubtitle": "隐藏显示剩余待看集数的角标。",
+    "hideHomeUnwatchedCountSubtitle": "隐藏显示剩余未观看集数的角标。",
     "@hideHomeUnwatchedCountSubtitle": {
         "description": "Description for setting to hide the unwatched episode count badge on home screen and library posters"
     },
@@ -15994,7 +15994,7 @@
     "@moonbaseFeatureSync": {
         "description": "Moonbase dialog feature"
     },
-    "moonbaseFeatureRatings": "更多评分和 TMDB 评论",
+    "moonbaseFeatureRatings": "更多评分和 TMDb 评论",
     "@moonbaseFeatureRatings": {
         "description": "Moonbase dialog feature"
     },
@@ -16071,11 +16071,11 @@
     "@setupMediaBarOffHint": {
         "description": "What turning the media bar off does to the Home screen"
     },
-    "showBookDiscoverTab": "显示图书媒体库发现",
+    "showBookDiscoverTab": "显示图书和有声读物媒体库的“发现”标签",
     "@showBookDiscoverTab": {
         "description": "Setting that shows or hides the discovery tab in book and audiobook libraries"
     },
-    "showBookDiscoverTabDescription": "在图书和有声书媒体库中浏览来自 Open Library 和 LibriVox 的作品",
+    "showBookDiscoverTabDescription": "在图书和有声读物媒体库中浏览来自 Open Library 和 LibriVox 的作品",
     "@showBookDiscoverTabDescription": {
         "description": "Explains the setting that shows or hides the discovery tab in book libraries"
     },
@@ -16116,7 +16116,7 @@
     "@smartDownloadsKeepReadyLowered": {
         "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
     },
-    "autoDownloadDeleteFollowedSubtitle": "观看后何时删除为已关注剧集下载的剧集",
+    "autoDownloadDeleteFollowedSubtitle": "观看后何时删除已关注剧集的下载内容",
     "@autoDownloadDeleteFollowedSubtitle": {
         "description": "Explains the delete-after-watching setting"
     },
@@ -16802,19 +16802,19 @@
             }
         }
     },
-    "playbackInfoNoteTranscodeVideo": "服务器正在转换视频，以便此设备播放。",
+    "playbackInfoNoteTranscodeVideo": "服务器正在转码视频，以便此设备播放。",
     "@playbackInfoNoteTranscodeVideo": {
         "description": "Playback information note under the play method when only the video is transcoded"
     },
-    "playbackInfoNoteTranscodeAudio": "服务器正在转换音频，以便此设备播放。",
+    "playbackInfoNoteTranscodeAudio": "服务器正在转码音频，以便此设备播放。",
     "@playbackInfoNoteTranscodeAudio": {
         "description": "Playback information note under the play method when only the audio is transcoded"
     },
-    "playbackInfoNoteTranscodeBoth": "服务器正在转换视频和音频，以便此设备播放。",
+    "playbackInfoNoteTranscodeBoth": "服务器正在转码视频和音频，以便此设备播放。",
     "@playbackInfoNoteTranscodeBoth": {
         "description": "Playback information note under the play method when the video and the audio are transcoded"
     },
-    "playbackInfoNoteTranscodeUnknown": "服务器正在转换此文件，以便此设备播放。",
+    "playbackInfoNoteTranscodeUnknown": "服务器正在转码此文件，以便此设备播放。",
     "@playbackInfoNoteTranscodeUnknown": {
         "description": "Playback information note under the play method for a transcode when it isn't known what is converted"
     },
@@ -16846,7 +16846,7 @@
     "@playbackInfoWhyAudio": {
         "description": "Playback information reason: the audio format isn't supported, used when the server gives no detail or the detail isn't known"
     },
-    "playbackInfoWhySubtitles": "字幕正被压制到视频中",
+    "playbackInfoWhySubtitles": "服务器正在将字幕压制到视频中",
     "@playbackInfoWhySubtitles": {
         "description": "Playback information reason: the player can't show the subtitles, so the server draws them into the video, used when the subtitle format isn't known"
     },
@@ -17014,7 +17014,7 @@
     "@playbackInfoWhySecondaryAudio": {
         "description": "Playback information reason: the device can't switch to an audio track other than the first"
     },
-    "playbackInfoWhySubtitleFormat": "{format} 字幕正被压制到视频中",
+    "playbackInfoWhySubtitleFormat": "服务器正在将 {format} 字幕压制到视频中",
     "@playbackInfoWhySubtitleFormat": {
         "description": "Playback information reason: the player can't show this subtitle format, like PGS or ASS, so the server draws the subtitles into the video",
         "placeholders": {
@@ -17051,7 +17051,7 @@
     "@playerTransportPosition": {
         "description": "Settings label for where the play, skip and seek buttons sit in the video player"
     },
-    "playerTransportPositionDescription": "将播放、跳过和跳转按钮显示在视频中央，或停靠在底部栏中",
+    "playerTransportPositionDescription": "将播放、跳过和定位进度按钮显示在视频中央，或停靠在底部栏中",
     "@playerTransportPositionDescription": {
         "description": "Settings description for where the video player's play buttons sit"
     },
@@ -17527,7 +17527,7 @@
             }
         }
     },
-    "readOnTmdb": "在 TMDB 上阅读",
+    "readOnTmdb": "在 TMDb 上阅读",
     "@readOnTmdb": {
         "description": "Button in an opened review that opens the review on the TMDB website"
     },
@@ -18135,7 +18135,7 @@
     "@calendarSettingsReminders": {
         "description": "Calendar setting that offers the Remind me button"
     },
-    "calendarSettingsRemindersSubtitle": "显示“提醒我”，当某部作品加入媒体库时发送通知",
+    "calendarSettingsRemindersSubtitle": "当某部作品加入媒体库时发送通知，并显示“提醒我”按钮",
     "@calendarSettingsRemindersSubtitle": {
         "description": "Subtitle of the Reminders calendar setting"
     },
@@ -18623,11 +18623,11 @@
     "@remoteActivityListening": {
         "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
     },
-    "clickpadSeeking": "允许点击板定位进度",
+    "clickpadSeeking": "允许触控板定位进度",
     "@clickpadSeeking": {
         "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
     },
-    "clickpadSeekingDescription": "允许按“左”“右”和在触摸板上滑动来定位进度。否则第一次操作会调出控件。",
+    "clickpadSeekingDescription": "允许按“左”“右”和在触控板上滑动来定位进度。否则第一次操作会调出控件。",
     "@clickpadSeekingDescription": {
         "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
     },
