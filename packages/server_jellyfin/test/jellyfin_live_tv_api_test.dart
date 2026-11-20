@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:server_jellyfin/src/api/jellyfin_live_tv_api.dart';
 import 'package:test/test.dart';
@@ -189,6 +191,7 @@ void main() {
     ({JellyfinLiveTvApi api, List<String> calls}) server(
       List<String?> statuses, {
       int? retryFrom,
+      Future<void> Function(Duration)? wait,
     }) {
       const episodeStart = '2026-11-19T22:30:00.0000000Z';
       const retryStart = '2026-11-19T22:49:20.0000000Z';
@@ -232,7 +235,10 @@ void main() {
             },
           ),
         );
-      return (api: JellyfinLiveTvApi(dio, wait: (_) async {}), calls: calls);
+      return (
+        api: JellyfinLiveTvApi(dio, wait: wait ?? (_) async {}),
+        calls: calls,
+      );
     }
 
     test('a recording the server puts back to retry is cancelled again', () async {
@@ -241,6 +247,26 @@ void main() {
 
       await s.api.cancelTimer('t1');
       await pumpEventQueue();
+
+      expect(
+        s.calls.where((c) => c == 'DELETE /LiveTv/Timers/t1'),
+        hasLength(2),
+      );
+    });
+
+    test('a retry back as the cancel returns is cancelled before it returns', () async {
+      // Jellyfin puts the retry back just after answering the cancel. The
+      // caller re-reads the guide as soon as cancelTimer returns, so the
+      // retry has to be gone by then. The later checks never finish here.
+      final s = server(
+        ['InProgress', 'New', null],
+        retryFrom: 1,
+        wait: (d) => d == JellyfinLiveTvApi.cancelChecks.first
+            ? Future<void>.value()
+            : Completer<void>().future,
+      );
+
+      await s.api.cancelTimer('t1');
 
       expect(
         s.calls.where((c) => c == 'DELETE /LiveTv/Timers/t1'),

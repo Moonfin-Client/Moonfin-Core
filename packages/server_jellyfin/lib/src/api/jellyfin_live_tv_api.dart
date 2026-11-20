@@ -19,7 +19,13 @@ class JellyfinLiveTvApi implements LiveTvApi {
   /// again about a minute after that; a cancel that lands in between has
   /// nothing to kill, so it sticks. The Moonfin plugin does the same on the
   /// server; this covers servers without it.
+  ///
+  /// The timer actually comes back moments after the server answers the
+  /// cancel, so the first check runs before [cancelTimer] returns. Callers
+  /// re-read the guide straight after, and would otherwise show the retry as
+  /// a recording.
   static const cancelChecks = [
+    Duration(seconds: 2),
     Duration(seconds: 20),
     Duration(seconds: 20),
     Duration(seconds: 20),
@@ -219,7 +225,8 @@ class JellyfinLiveTvApi implements LiveTvApi {
     await _dio.delete('/LiveTv/Timers/$timerId');
     final start = before?.start;
     if (before?.status == 'InProgress' && start != null) {
-      unawaited(_keepCancelled(timerId, start));
+      final kept = await _cancelIfRetried(timerId, start, cancelChecks.first);
+      unawaited(_keepCancelled(timerId, kept));
     }
   }
 
@@ -246,25 +253,36 @@ class JellyfinLiveTvApi implements LiveTvApi {
   /// the timer is left to record.
   Future<void> _keepCancelled(String timerId, DateTime startBefore) async {
     var kept = startBefore;
-    for (final wait in cancelChecks) {
-      await _wait(wait);
-      final now = await _timer(timerId);
-      final start = now?.start;
-      if (now == null ||
-          now.status == 'Cancelled' ||
-          now.status == 'Completed' ||
-          start == null ||
-          start.isAtSameMomentAs(kept)) {
-        continue;
-      }
-      try {
-        await _dio.delete('/LiveTv/Timers/$timerId');
-        // A series rule keeps the timer with the retry's start, so a later
-        // deliberate recording of it is judged against that.
-        kept = start;
-      } catch (_) {
-        // Tried again at the next check.
-      }
+    for (final wait in cancelChecks.skip(1)) {
+      kept = await _cancelIfRetried(timerId, kept, wait);
+    }
+  }
+
+  /// After [wait], cancels the timer again if the server put it back to
+  /// retry. Returns the start later checks compare with.
+  Future<DateTime> _cancelIfRetried(
+    String timerId,
+    DateTime kept,
+    Duration wait,
+  ) async {
+    await _wait(wait);
+    final now = await _timer(timerId);
+    final start = now?.start;
+    if (now == null ||
+        now.status == 'Cancelled' ||
+        now.status == 'Completed' ||
+        start == null ||
+        start.isAtSameMomentAs(kept)) {
+      return kept;
+    }
+    try {
+      await _dio.delete('/LiveTv/Timers/$timerId');
+      // A series rule keeps the timer with the retry's start, so a later
+      // deliberate recording of it is judged against that.
+      return start;
+    } catch (_) {
+      // Tried again at the next check.
+      return kept;
     }
   }
 
