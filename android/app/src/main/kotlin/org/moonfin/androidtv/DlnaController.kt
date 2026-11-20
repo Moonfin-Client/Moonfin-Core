@@ -65,8 +65,9 @@ class DlnaController(private val context: Context) {
     // Bumped by every new cast and by Stop: a cast still starting (waiting out
     // a stuck renderer) gives up rather than replace a newer one.
     private val castGeneration = AtomicInteger(0)
-    // Bumped by every transport command, so a paused seek doesn't pause again
-    // over a Play sent while it worked.
+    @Volatile private var castControlUrl: String? = null
+    // Bumped by every transport command except a seek, so a paused seek pauses
+    // again when it's done unless a Play came in, even after another seek.
     private val transportGeneration = AtomicInteger(0)
     @Volatile private var isDiscovering = false
 
@@ -206,6 +207,7 @@ class DlnaController(private val context: Context) {
         val mimeType = args["mimeType"] as? String ?: "video/*"
         val dlnaFeatures = args["dlnaFeatures"] as? String ?: "*"
         val startTicks = (args["startPositionTicks"] as? Number)?.toLong()
+        val durationTicks = (args["durationTicks"] as? Number)?.toLong()
 
         if (targetId.isNullOrEmpty() || streamUrl.isNullOrEmpty()) {
             result.error("BAD_ARGS", "Missing targetId or streamUrl", null)
@@ -215,6 +217,7 @@ class DlnaController(private val context: Context) {
         emitEvent("connecting")
         val resumeToken = resumeGeneration.incrementAndGet()
         val castToken = castGeneration.incrementAndGet()
+        castControlUrl = targetId
         transportGeneration.incrementAndGet()
         val current = { castGeneration.get() == castToken }
 
@@ -235,7 +238,9 @@ class DlnaController(private val context: Context) {
                     "<item id=\"0\" parentID=\"-1\" restricted=\"1\">" +
                     "<dc:title>${escapeXml(title)}</dc:title>" +
                     "<upnp:class>$upnpClass</upnp:class>" +
-                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:${escapeXml(dlnaFeatures)}\">${escapeXml(streamUrl)}</res>" +
+                    "<res protocolInfo=\"http-get:*:${escapeXml(mimeType)}:${escapeXml(dlnaFeatures)}\"" +
+                    (durationTicks?.let { " duration=\"${formatDlnaTime(it)}.000\"" } ?: "") +
+                    ">${escapeXml(streamUrl)}</res>" +
                     "</item></DIDL-Lite>"
 
                 sendSoap(
@@ -251,6 +256,16 @@ class DlnaController(private val context: Context) {
 
                 if (!current()) throw CancellationException("DLNA cast superseded")
                 sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
+                if (!current()) {
+                    // A newer cast or a Stop took over, so this one leaves the
+                    // controls alone. Its renderer may be playing with nothing
+                    // to control it, so it's stopped unless the newer cast went
+                    // to it too.
+                    if (castControlUrl != controlUrl) {
+                        runCatching { sendSoap(controlUrl, "Stop", "<InstanceID>0</InstanceID>", timeoutMs = 3000) }
+                    }
+                    throw CancellationException("DLNA cast superseded")
+                }
 
                 activeDeviceControlUrl = controlUrl
                 activeDeviceRenderingControlUrl = discoveredRenderingControlUrls[controlUrl]
@@ -299,7 +314,7 @@ class DlnaController(private val context: Context) {
 
     fun seek(args: Map<*, *>, result: MethodChannel.Result) {
         resumeGeneration.incrementAndGet()
-        val transportToken = transportGeneration.incrementAndGet()
+        val transportToken = transportGeneration.get()
         val positionTicks = (args["positionTicks"] as? Number)?.toLong()
         if (positionTicks == null || positionTicks < 0L) {
             result.error("BAD_ARGS", "Missing or invalid positionTicks", null)
@@ -314,17 +329,21 @@ class DlnaController(private val context: Context) {
                 // Some renderers (LG) refuse a Seek while paused with 501, so
                 // play, seek once playing, and pause again.
                 if (runCatching { queryTransportState(controlUrl) }.getOrNull() != "PAUSED_PLAYBACK") throw e
-                try {
+                val seeked = runCatching {
                     sendSoap(controlUrl, "Play", "<InstanceID>0</InstanceID>\n<Speed>1</Speed>")
                     awaitTransportState(controlUrl, "PLAYING")
                     sendSeek(controlUrl, target)
-                } finally {
-                    // Paused it stays, even when the seek still fails, unless a
-                    // newer command (a Play) came in meanwhile.
-                    if (transportGeneration.get() == transportToken) {
-                        runCatching { sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>") }
-                    }
                 }
+                // Paused it stays, even when the seek still fails, unless a
+                // newer command (a Play) came in meanwhile. A seek that left
+                // the renderer playing isn't reported as done.
+                val paused = if (transportGeneration.get() == transportToken) {
+                    runCatching { sendSoap(controlUrl, "Pause", "<InstanceID>0</InstanceID>") }
+                } else {
+                    Result.success("")
+                }
+                seeked.getOrThrow()
+                paused.getOrThrow()
             }
             handler.post { result.success(null) }
         }
@@ -348,6 +367,7 @@ class DlnaController(private val context: Context) {
     fun stop(result: MethodChannel.Result) {
         resumeGeneration.incrementAndGet()
         castGeneration.incrementAndGet()
+        castControlUrl = null
         transportGeneration.incrementAndGet()
         withActiveDevice(result) { controlUrl ->
             sendSoap(controlUrl, "Stop", "<InstanceID>0</InstanceID>")
@@ -558,8 +578,10 @@ class DlnaController(private val context: Context) {
                 runCatching {
                     sendSoapOnce(controlUrl, "Stop", "<InstanceID>0</InstanceID>", timeoutMs = 3000)
                 }
-                val state = runCatching { queryTransportState(controlUrl) }.getOrDefault("")
-                if (!state.contains("TRANSITIONING") || System.nanoTime() >= deadline) break
+                // An unanswered query isn't a renderer that has moved on.
+                val state = runCatching { queryTransportState(controlUrl) }.getOrNull()
+                val settled = state != null && !state.contains("TRANSITIONING")
+                if (settled || System.nanoTime() >= deadline) break
                 Thread.sleep(1000)
             }
             if (!current()) throw CancellationException("DLNA cast superseded")
@@ -644,7 +666,7 @@ class DlnaController(private val context: Context) {
             "state" to state,
         )
         if (!message.isNullOrBlank()) payload["message"] = message
-        if (positionTicks != null && positionTicks > 0L) payload["positionTicks"] = positionTicks
+        if (positionTicks != null && positionTicks >= 0L) payload["positionTicks"] = positionTicks
         handler.post { eventSink?.success(payload) }
     }
 
@@ -662,6 +684,7 @@ class DlnaController(private val context: Context) {
         val controlUrl = activeDeviceControlUrl ?: return
         try {
             val state = queryTransportState(controlUrl)
+            // An unknown position is left out, not sent as 0.
             val positionTicks = queryPositionTicks(controlUrl)
             val mappedState = when (state) {
                 "PLAYING" -> "playing"
@@ -693,7 +716,7 @@ class DlnaController(private val context: Context) {
         var started = false
         while (System.nanoTime() < deadline) {
             if (resumeGeneration.get() != token) return
-            val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrDefault(0L)
+            val ticks = runCatching { queryPositionTicks(controlUrl) }.getOrNull() ?: 0L
             if (ticks > 0L) {
                 started = true
                 break
@@ -714,9 +737,10 @@ class DlnaController(private val context: Context) {
         return parseXmlElement(response, "CurrentTransportState") ?: "STOPPED"
     }
 
-    private fun queryPositionTicks(controlUrl: String): Long {
+    /** The renderer's position, or null when it gives none it knows. */
+    private fun queryPositionTicks(controlUrl: String): Long? {
         val response = sendSoap(controlUrl, "GetPositionInfo", "<InstanceID>0</InstanceID>", timeoutMs = 3000)
-        val relTime = parseXmlElement(response, "RelTime") ?: return 0L
+        val relTime = parseXmlElement(response, "RelTime") ?: return null
         return parseDlnaTime(relTime)
     }
 
@@ -731,12 +755,13 @@ class DlnaController(private val context: Context) {
         return xmlFactory.newDocumentBuilder().parse(InputSource(StringReader(xml)))
     }
 
-    private fun parseDlnaTime(time: String): Long {
-        val parts = time.split(":")
-        if (parts.size != 3) return 0L
-        val hours = parts[0].toLongOrNull() ?: return 0L
-        val minutes = parts[1].toLongOrNull() ?: return 0L
-        val seconds = parts[2].split(".")[0].toLongOrNull() ?: return 0L
+    // Null for a time the renderer doesn't know (UPnP's NOT_IMPLEMENTED).
+    private fun parseDlnaTime(time: String): Long? {
+        val parts = time.trim().split(":")
+        if (parts.size != 3) return null
+        val hours = parts[0].toLongOrNull() ?: return null
+        val minutes = parts[1].toLongOrNull() ?: return null
+        val seconds = parts[2].split(".")[0].toLongOrNull() ?: return null
         return (hours * 3600 + minutes * 60 + seconds) * 10_000_000L
     }
 

@@ -221,6 +221,17 @@ Map<String, dynamic> dlnaDeviceProfile() {
             'Value': 'DOVIInvalid',
             'IsRequired': false,
           },
+          // Jellyfin writes each range condition to the same hevc-rangetype
+          // option of a conversion, so only the last one counts there: this
+          // allowlist keeps Dolby Vision 5 and 7 out of a copied stream too.
+          // Silo reads only the NotEquals conditions above.
+          <String, dynamic>{
+            'Condition': 'EqualsAny',
+            'Property': 'VideoRangeType',
+            'Value':
+                'SDR|HDR10|HDR10Plus|HLG|DOVIWithHDR10|DOVIWithHDR10Plus|DOVIWithHLG|DOVIWithSDR|Unknown',
+            'IsRequired': false,
+          },
         ],
       },
     ],

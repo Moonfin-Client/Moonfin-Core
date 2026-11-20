@@ -456,7 +456,8 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
           title: title,
           mimeType: args["mimeType"] as? String ?? "video/*",
           dlnaFeatures: args["dlnaFeatures"] as? String ?? "*",
-          startPositionTicks: startPositionTicks
+          startPositionTicks: startPositionTicks,
+          durationTicks: (args["durationTicks"] as? NSNumber)?.int64Value
         ) { error in
           if let error {
             // A newer cast or a Stop took over while this one was starting.

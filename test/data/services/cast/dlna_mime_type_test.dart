@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/services/cast/dlna_provider.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart';
 
 StreamResolutionResult _resolution(
   String url, {
@@ -337,6 +338,80 @@ void main() {
     test('an unknown default keeps the server converting the pick', () {
       const bare = AggregatedItem(id: 'b', serverId: 's', rawData: {});
       expect(dlnaNeedsServerTrackPick(bare, audioStreamIndex: 1), isTrue);
+    });
+  });
+
+  group('dlnaServerTimeline', () {
+    // An LG can't seek in Emby's live MPEG-TS conversion (710/711), so it
+    // starts at the resume point and a seek asks Emby for a new one.
+    test('a Jellyfin or Emby conversion starts where it was asked', () {
+      for (final type in [ServerType.emby, ServerType.jellyfin]) {
+        for (final method in [
+          StreamPlayMethod.transcode,
+          StreamPlayMethod.directStream,
+        ]) {
+          final r = dlnaServerTimeline(
+            type,
+            _resolution('http://emby/videos/54/stream.ts', playMethod: method),
+            600000000,
+          );
+          expect(r.seeksThroughServer, isTrue);
+          expect(r.timelineOffset, const Duration(minutes: 1));
+          // Emby answers the conversion URL without the start.
+          expect(
+            r.streamUrl,
+            'http://emby/videos/54/stream.ts?StartTimeTicks=600000000',
+          );
+        }
+      }
+    });
+
+    test('keeps a start the URL already has', () {
+      final r = dlnaServerTimeline(
+        ServerType.jellyfin,
+        _resolution(
+          'http://jf/videos/1/stream.ts?a=b&StartTimeTicks=600000000',
+          playMethod: StreamPlayMethod.transcode,
+        ),
+        600000000,
+      );
+      expect(
+        r.streamUrl,
+        'http://jf/videos/1/stream.ts?a=b&StartTimeTicks=600000000',
+      );
+    });
+
+    test('a conversion from the start has no offset', () {
+      final r = dlnaServerTimeline(
+        ServerType.emby,
+        _resolution('http://emby/a.ts', playMethod: StreamPlayMethod.transcode),
+        null,
+      );
+      expect(r.seeksThroughServer, isTrue);
+      expect(r.timelineOffset, Duration.zero);
+    });
+
+    test('a file sent as it is, or another server, is left alone', () {
+      final file = _resolution('http://emby/videos/52/stream?static=true');
+      expect(dlnaServerTimeline(ServerType.emby, file, 600000000), same(file));
+      final silo = _resolution(
+        'http://silo/a',
+        playMethod: StreamPlayMethod.directStream,
+      );
+      expect(dlnaServerTimeline(ServerType.silo, silo, 600000000), same(silo));
+    });
+
+    test('a Live TV conversion keeps its own timeline', () {
+      // A channel's conversion can come without a live stream id or a
+      // /LiveTv/ path, so the item decides.
+      final live = _resolution(
+        'http://jf/videos/7/stream.ts',
+        playMethod: StreamPlayMethod.transcode,
+      );
+      expect(
+        dlnaServerTimeline(ServerType.jellyfin, live, 600000000, liveTv: true),
+        same(live),
+      );
     });
   });
 }

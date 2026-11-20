@@ -55,6 +55,7 @@ class SiloPlayerTraits {
     this.drawsAssStyling = true,
     this.loadsFontAttachments = true,
     this.sendsRequestHeaders = true,
+    this.authorizesByStreamReference = false,
   });
 
   /// The libmpv backend's traits (Windows, Linux): it decodes in software,
@@ -97,7 +98,7 @@ class SiloPlayerTraits {
   /// device profile comes from the browser's `isTypeSupported` answers.
   static const web = SiloPlayerTraits(sendsRequestHeaders: false);
 
-  /// A cast receiver (Chromecast, AirPlay, DLNA): it loads
+  /// A cast receiver (Chromecast, AirPlay): it loads
   /// the URL itself, so it sends none of the phone's headers, and its own
   /// player seeks by byte ranges, which a chunked remux has none of, so it
   /// takes the original file or HLS only. It picks no audio track and draws
@@ -105,6 +106,16 @@ class SiloPlayerTraits {
   static const castReceiver = SiloPlayerTraits(
     sendsRequestHeaders: false,
     playsProgressive: false,
+  );
+
+  /// A DLNA renderer: a cast receiver that takes a progressive remux. It
+  /// can't seek in one, so Moonfin seeks by asking Silo for a stream that
+  /// starts there. HLS is its last resort: Silo's copied-video playlist grows
+  /// as Silo copies, and an LG plays that as live, with no runtime and no
+  /// pause.
+  static const dlnaRenderer = SiloPlayerTraits(
+    sendsRequestHeaders: false,
+    authorizesByStreamReference: true,
   );
 
   /// libmpv on Android (media_kit, the other engine there): as on the
@@ -142,6 +153,11 @@ class SiloPlayerTraits {
   /// that can't (a browser's media element, a cast receiver) gets the
   /// account's token in every media URL instead.
   final bool sendsRequestHeaders;
+
+  /// Plays by the plan URL's signed stream reference (`st`) alone, without
+  /// the account's token: a DLNA renderer, which may cut a long URL (an LG
+  /// TV at about 1024 characters) and drop a token at the end of it.
+  final bool authorizesByStreamReference;
 }
 
 /// The capability half of a Silo playback start: `client_capabilities`, the
