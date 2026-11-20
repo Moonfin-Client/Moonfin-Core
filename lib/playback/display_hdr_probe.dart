@@ -120,7 +120,7 @@ class DisplayHdrSnapshot {
       'displays=$displayCount sdk=$sdkInt';
 }
 
-/// Front-end for the native display HDR probe on Android TV.
+/// Front-end for the native display HDR probe on Android.
 ///
 /// Two jobs. It reads the display's HDR support without mistaking silence for
 /// an answer, and it keeps listening afterwards so a TV or AVR that wakes up
@@ -135,15 +135,24 @@ class DisplayHdrProbe {
 
   static StreamSubscription<dynamic>? _subscription;
 
+  /// The TV probe: saved answers, retries and a display listener, for an
+  /// HDMI chain that may wake long after launch. Goes by the hardware, not
+  /// the interface layout the user picked.
   static bool get isSupported =>
-      PlatformDetection.isAndroid && PlatformDetection.isTV;
+      PlatformDetection.isAndroid && !PlatformDetection.isMobile;
+
+  /// A phone's or tablet's display, read once at launch and on resume
+  /// ([readBuiltInDisplay]). Its own panel answers at once, so none of the
+  /// TV machinery applies.
+  static bool get readsBuiltInDisplay =>
+      PlatformDetection.isAndroid && PlatformDetection.isMobile;
 
   /// Queries the native probe once. Falls back to the format-list method when
   /// running against a native side that predates the fact-collecting one,
   /// which keeps self-healing working while giving up the ability to prove a
   /// panel is SDR. That's the safe half to lose.
   static Future<DisplayHdrSnapshot?> query({String trigger = 'pull'}) async {
-    if (!isSupported) return null;
+    if (!PlatformDetection.isAndroid) return null;
     try {
       final raw = await _methodChannel.invokeMethod<Map<dynamic, dynamic>>(
         'displayCapabilities',
@@ -222,6 +231,28 @@ class DisplayHdrProbe {
     }
     _log('display probe: ${snapshot.describe()}');
   }
+
+  /// Reads a phone's or tablet's display and publishes it, without saving.
+  /// Does nothing on any other device.
+  static Future<void> readBuiltInDisplay(String trigger) async {
+    if (!readsBuiltInDisplay) return;
+    applyBuiltIn(await query(trigger: trigger));
+  }
+
+  /// Publishes a phone's or tablet's snapshot, without saving it. Only the
+  /// HDR formats Moonfin knows are believed: a built-in SDR panel rarely
+  /// identifies itself well enough to prove it is SDR, so a display that
+  /// answered with none is left unknown. That also drops an external HDR
+  /// screen's formats (DeX, USB-C) once the app is back on the phone's own
+  /// panel. A probe that got no answer leaves the last one alone.
+  static void applyBuiltIn(DisplayHdrSnapshot? snapshot) {
+    if (snapshot == null || !snapshot.present || !snapshot.answered) return;
+    final known = snapshot.types.where(_knownHdrTypes.contains).toList();
+    PlatformDetection.setDisplayHdrTypes(known.isEmpty ? null : known);
+    _log('display probe: ${snapshot.describe()}');
+  }
+
+  static const _knownHdrTypes = {'HDR10', 'HDR10_PLUS', 'HLG', 'DOLBY_VISION'};
 
   /// Records the user's own answer, which outranks any heuristic. Used by the
   /// settings override for the case the probe can't reach: a TV that really

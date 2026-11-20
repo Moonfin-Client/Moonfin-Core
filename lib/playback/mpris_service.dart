@@ -12,7 +12,9 @@ import '../util/audio_artwork_url.dart';
 import '../util/platform_detection.dart';
 import 'car_artwork.dart';
 
-const _busName = 'org.mpris.MediaPlayer2.moonfin';
+// Flatpak grants the MPRIS name built from the app ID without a permission.
+final _busName =
+    'org.mpris.MediaPlayer2.${PlatformDetection.flatpakAppId ?? 'moonfin'}';
 const _objectPath = '/org/mpris/MediaPlayer2';
 const _rootInterface = 'org.mpris.MediaPlayer2';
 const _playerInterface = 'org.mpris.MediaPlayer2.Player';
