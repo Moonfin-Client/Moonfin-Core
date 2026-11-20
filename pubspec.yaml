@@ -103,7 +103,7 @@ dependencies:
   dbus: ^0.7.14
 
   # Utilities
-  device_info_plus: ^11.5.0
+  device_info_plus: ^12.4.0
   json_annotation: ^4.9.0
   logger: ^2.7.0
   intl: ^0.20.2
@@ -111,7 +111,7 @@ dependencies:
   collection: ^1.19.1
   package_info_plus: ^9.0.0
   uuid: ^4.5.3
-  cupertino_icons: ^1.0.9
+  cupertino_icons: ^2.0.0
   # Flutter bundles the older Material Icons font, which has no crown or owl
   # for the achievement avatars to wear. Tree shaking keeps only the glyphs
   # actually named.
@@ -159,7 +159,7 @@ dependencies:
   webview_flutter_wkwebview: ^3.25.1
   youtube_player_iframe: ^6.0.0
   pdfrx: ^2.6.1
-  flutter_widget_from_html_core: ^0.16.1
+  flutter_widget_from_html_core: ^0.17.4
   # Vendored fork of kindle_unpack 0.1.1 (MOBI/AZW/AZW3 -> EPUB), patched to
   # build against archive 4.x. See packages/kindle_unpack/pubspec.yaml.
   kindle_unpack:
