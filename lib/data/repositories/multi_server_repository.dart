@@ -983,6 +983,14 @@ class MultiServerRepository {
                     hideWatched: hideWatched,
                   );
 
+                  final deadline = DateTime.now().add(_serverTimeout);
+                  Duration remainingHydrationTimeout() {
+                    final remaining =
+                        deadline.difference(DateTime.now()) -
+                        const Duration(milliseconds: 500);
+                    return remaining.isNegative ? Duration.zero : remaining;
+                  }
+
                   var response = await session.client.itemsApi.getLatestItems(
                     parentId: parentId,
                     limit: fetchLimit,
@@ -996,6 +1004,7 @@ class MultiServerRepository {
                     limit: targetLimit,
                     hideWatched: hideWatched,
                     itemsApi: session.client.itemsApi,
+                    timeout: remainingHydrationTimeout(),
                   );
                   if (hideWatched &&
                       items.length < targetLimit &&
@@ -1015,6 +1024,7 @@ class MultiServerRepository {
                       limit: targetLimit,
                       hideWatched: true,
                       itemsApi: session.client.itemsApi,
+                      timeout: remainingHydrationTimeout(),
                     );
                   }
                   if (items.length <= existingCount) {
