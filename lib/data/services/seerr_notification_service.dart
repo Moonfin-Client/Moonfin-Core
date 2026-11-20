@@ -11,6 +11,22 @@ import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'local_notification_bootstrap.dart';
 
+typedef LocalNotificationPresenter = Future<void> Function({
+  required int id,
+  required String title,
+  required String body,
+  required NotificationDetails notificationDetails,
+  String? payload,
+});
+
+typedef NotificationCanceler = Future<void> Function(int id);
+
+typedef BannerPresenter = void Function(
+  String title,
+  String body,
+  VoidCallback? onTap,
+);
+
 class _NotificationCacheEntry {
   final DateTime timestamp;
   final bool hasRequest;
@@ -23,6 +39,15 @@ class _NotificationCacheEntry {
 
 class SeerrNotificationService {
   final Map<String, _NotificationCacheEntry> _recentEvents = {};
+
+  @visibleForTesting
+  LocalNotificationPresenter? localNotificationPresenter;
+
+  @visibleForTesting
+  NotificationCanceler? notificationCanceler;
+
+  @visibleForTesting
+  BannerPresenter? bannerPresenter;
 
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
@@ -47,12 +72,13 @@ class SeerrNotificationService {
       (_, entry) => now.difference(entry.timestamp).inSeconds > 15,
     );
 
+    final nonRequestId = '$title\x1f$body\x1f$target'.hashCode;
     final previous = _recentEvents[dedupeKey];
     if (previous != null) {
       // If a matching copy arrives with richer request metadata (e.g. stream
       // copy carrying requestId while earlier Android FCM push omitted it),
-      // upgrade the local OS notification to show Approve/Deny actions without
-      // displaying a second banner.
+      // upgrade the local OS notification silently so Approve/Deny actions
+      // appear without re-alerting or displaying a second banner.
       if (asRequest && !previous.hasRequest) {
         _recentEvents[dedupeKey] = _NotificationCacheEntry(
           timestamp: now,
@@ -60,12 +86,17 @@ class SeerrNotificationService {
         );
         if (PlatformDetection.isMobile) {
           unawaited(
-            LocalNotificationBootstrap.instance.plugin
-                .cancel(id: target.hashCode)
-                .catchError((_) {}),
+            _cancelLocal(nonRequestId).catchError((_) {}),
           );
-          _showLocal(title, body, target, requestId: requestId);
+          _showLocal(title, body, target, requestId: requestId, silent: true);
         }
+      } else {
+        // Refresh the sliding window timestamp on every matching copy while
+        // preserving existing request metadata.
+        _recentEvents[dedupeKey] = _NotificationCacheEntry(
+          timestamp: now,
+          hasRequest: previous.hasRequest,
+        );
       }
       return;
     }
@@ -94,16 +125,29 @@ class SeerrNotificationService {
     return _recentEvents[dedupeKey]?.hasRequest;
   }
 
+  Future<void> _cancelLocal(int id) async {
+    try {
+      final canceler = notificationCanceler;
+      if (canceler != null) {
+        await canceler(id);
+      } else {
+        await LocalNotificationBootstrap.instance.plugin.cancel(id: id);
+      }
+    } catch (_) {}
+  }
+
   Future<void> _showLocal(
     String title,
     String body,
     String route, {
     String? requestId,
+    bool silent = false,
   }) async {
     final isRequest = requestId != null && requestId.isNotEmpty;
-    // Request notifications get a stable id from the request so an approve/deny
-    // action can later cancel the exact notification.
-    final id = isRequest ? requestId.hashCode : route.hashCode;
+    // Non-request notifications use an event-specific ID so distinct events
+    // sharing a route do not collide or cancel each other.
+    final nonRequestId = '$title\x1f$body\x1f$route'.hashCode;
+    final id = isRequest ? requestId.hashCode : nonRequestId;
     final payload = isRequest
         ? jsonEncode({'route': route, 'requestId': requestId, 'kind': 'request'})
         : route;
@@ -125,59 +169,83 @@ class SeerrNotificationService {
           ]
         : const <AndroidNotificationAction>[];
 
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        seerrNotificationChannelId,
+        seerrNotificationChannelName,
+        channelDescription: seerrNotificationChannelDesc,
+        importance: silent ? Importance.low : Importance.defaultImportance,
+        priority: silent ? Priority.low : Priority.defaultPriority,
+        onlyAlertOnce: true,
+        playSound: !silent,
+        enableVibration: !silent,
+        autoCancel: true,
+        actions: androidActions,
+      ),
+      iOS: DarwinNotificationDetails(
+        // Without these, iOS shows nothing while the app is foreground.
+        presentAlert: !silent,
+        presentBadge: !silent,
+        presentSound: !silent,
+        categoryIdentifier:
+            isRequest ? seerrRequestCategoryId : null,
+      ),
+      macOS: DarwinNotificationDetails(
+        presentAlert: !silent,
+        presentBadge: !silent,
+        presentSound: !silent,
+        categoryIdentifier:
+            isRequest ? seerrRequestCategoryId : null,
+      ),
+      linux: const LinuxNotificationDetails(),
+    );
+
     try {
-      await LocalNotificationBootstrap.instance.plugin.show(
-        id: id,
-        title: title.isNotEmpty ? title : seerrNotificationChannelName,
-        body: body,
-        notificationDetails: NotificationDetails(
-          android: AndroidNotificationDetails(
-            seerrNotificationChannelId,
-            seerrNotificationChannelName,
-            channelDescription: seerrNotificationChannelDesc,
-            importance: Importance.defaultImportance,
-            priority: Priority.defaultPriority,
-            autoCancel: true,
-            actions: androidActions,
-          ),
-          iOS: DarwinNotificationDetails(
-            // Without these, iOS shows nothing while the app is foreground.
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-            categoryIdentifier:
-                isRequest ? seerrRequestCategoryId : null,
-          ),
-          macOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-            categoryIdentifier:
-                isRequest ? seerrRequestCategoryId : null,
-          ),
-          linux: const LinuxNotificationDetails(),
-        ),
-        payload: payload,
-      );
+      final presenter = localNotificationPresenter;
+      if (presenter != null) {
+        await presenter(
+          id: id,
+          title: title.isNotEmpty ? title : seerrNotificationChannelName,
+          body: body,
+          notificationDetails: details,
+          payload: payload,
+        );
+      } else {
+        await LocalNotificationBootstrap.instance.plugin.show(
+          id: id,
+          title: title.isNotEmpty ? title : seerrNotificationChannelName,
+          body: body,
+          notificationDetails: details,
+          payload: payload,
+        );
+      }
     } catch (_) {}
   }
 
   void _showBanner(String title, String body, String route) {
+    final VoidCallback? onTap = route.isEmpty
+        ? null
+        : () {
+            if (route == serverMessagesPushRoute) {
+              openServerMessagesFromNotification();
+            } else {
+              unawaited(openLinkedRoute(appRouter, route));
+            }
+          };
+
+    final presenter = bannerPresenter;
+    if (presenter != null) {
+      presenter(title, body, onTap);
+      return;
+    }
+
     final context = appRouter.routerDelegate.navigatorKey.currentContext;
     if (context == null || !context.mounted) return;
     FloatingNotification.show(
       context,
       title,
       body,
-      route.isEmpty
-          ? null
-          : () {
-              if (route == serverMessagesPushRoute) {
-                openServerMessagesFromNotification();
-              } else {
-                unawaited(openLinkedRoute(appRouter, route));
-              }
-            },
+      onTap,
     );
   }
 
