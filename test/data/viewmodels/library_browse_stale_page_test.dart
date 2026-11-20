@@ -61,6 +61,7 @@ class _HeldItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
   }) async {
     // The folders that lead a library page: none here, answered at once.
     if (enableTotalRecordCount == false) {

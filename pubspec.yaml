@@ -1,7 +1,7 @@
 name: moonfin
 description: "Moonfin - Jellyfin & Emby media client for mobile, tablet, and desktop"
 publish_to: 'none'
-version: 3.1.0+30000163
+version: 3.1.1+30000165
 
 moonfin:
   beta: false
@@ -82,6 +82,7 @@ dependencies:
 
   # Connectivity
   connectivity_plus: ^7.1.1
+  connectivity_plus_platform_interface: ^2.1.0
 
   # Gamepad UI navigation on desktop and iOS. Android is left out on purpose,
   # because this plugin's setup wants to override the same Activity methods
@@ -108,7 +109,7 @@ dependencies:
   intl: ^0.20.2
   punycoder: ^0.3.0
   collection: ^1.19.1
-  package_info_plus: ^8.3.1
+  package_info_plus: ^9.0.0
   uuid: ^4.5.3
   cupertino_icons: ^1.0.9
   # Flutter bundles the older Material Icons font, which has no crown or owl
@@ -171,7 +172,7 @@ dependencies:
   screen_brightness_platform_interface: ^2.1.0
   screen_brightness_android: ^2.1.3
   screen_brightness_ios: ^2.1.2
-  wakelock_plus: ^1.3.3
+  wakelock_plus: ^1.5.2
   volume_controller: ^3.6.1
   web: ^1.1.1
   custom_tv_text_field:
@@ -231,7 +232,7 @@ dependency_overrides:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
       path: libs/windows/media_kit_libs_windows_video
-      ref: af26f7fb515ace2b5abafdb3aef40d31e6ce4bb2
+      ref: 402fb2a3e19c77eaefb2737d0428d0cdc1a88ece
   # Vendored 0.6.0 with a Windows texture_bridge.cc fix for scroll/resize and
   # tab-switch crashes (null-visual guard + WGC Recreate moved off the
   # capture-thread mutex). Both changed sites carry their reasoning inline in
@@ -271,9 +272,9 @@ dependency_overrides:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
       path: media_kit_video
-      ref: af26f7fb515ace2b5abafdb3aef40d31e6ce4bb2
+      ref: 402fb2a3e19c77eaefb2737d0428d0cdc1a88ece
   synchronized: 3.3.1
-  wakelock_plus: 1.3.3
+  wakelock_plus: 1.5.2
   screen_brightness_android: 2.1.3
   screen_brightness_ios: 2.1.2
   screen_brightness_platform_interface: 2.1.0
@@ -334,6 +335,14 @@ flutter:
         - asset: assets/fonts/Literata-Regular.ttf
         - asset: assets/fonts/Literata-SemiBold.ttf
           weight: 600
+    # The MakD media bar's face, as in makd's Jellyfin Media Bar.
+    # Latin subsets, unhinted, in the two weights the bar draws.
+    - family: ArchivoNarrow
+      fonts:
+        - asset: assets/fonts/ArchivoNarrow-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/ArchivoNarrow-Bold.ttf
+          weight: 700
     # The After Hours arcade's display face.
     - family: Jersey10
       fonts:

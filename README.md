@@ -75,11 +75,11 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 - **Offline downloads** in original or smaller server-transcoded quality, with automatic folder organization, offline subtitles, automatic downloads of new episodes for the series you follow, and Smart downloads on phones and tablets that keep the next episodes of a show downloaded and clear them once watched. See [Downloads](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Downloads).
 - **Ebooks and audiobooks.** Read EPUB, MOBI, AZW/AZW3, PDF, and comic archives, with your reading progress synced to the server. Play M4B audiobooks with chapter navigation.
 - **Retro games** browsed and played in-app from a server game library, with gamepad support, save states and battery saves that sync between devices, hardware rendering on Android, and RomM-backed libraries you browse with your own RomM account. See [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games).
-- **Multi-server unified library** that merges several Jellyfin and Emby servers into one browsable, searchable UI.
+- **Multi-server unified library** that merges several servers into one browsable, searchable UI, and can fold every server's movies and shows, Plex and Silo included, into one Movies and one TV Shows library.
 - **Library styles** for video, music, and book libraries, from the classic grid to a docked side panel, an immersive music hero, or a bookstore shelf.
 - **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork, and a Settings screen that previews each change live.
 - **Nine detail screen styles** to pick from: Classic, Modern, Spotlight, Nouveau, Minimalist, Stage, Premiere, Quick Look, and Frost.
-- **Featured media bar** with six layouts, plus optional in-bar trailer previews.
+- **Featured media bar** with six layouts, a New Releases source that labels new movies and episodes, and optional in-bar trailer previews.
 - **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks, plus custom loading animations and a screensaver on TV.
 - **An integrated admin panel** for Jellyfin and Emby, covering settings, users, libraries, Live TV, logs, devices, and analytics, plus a messages window for notes from your server admin.
 - **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
@@ -94,7 +94,9 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 - **Kids Mode** that strips the app back to what a child needs and locks the way out with a PIN, plus blocked ratings that apply everywhere in the app.
 - **Achievement Badges** drawn natively when your Jellyfin server runs the Achievement Badges plugin, including its friends list and chat.
 - **Anime markers** for filler, recap, canon, and subbed or dubbed episodes, served by the Moonbase plugin.
-- **Ratings from MDBList and TMDB**, home row customization with a seasonal holiday row, and in-app update checks.
+- **Home rows your way**, in Classic, Modern or Carousel style, with IMDb, TMDB, MDBList and streaming service charts, Seerr rows, and a seasonal holiday row. See [Home Rows](https://github.com/Moonfin-Client/Plugin/wiki/Home-Rows).
+- **Privacy built in.** Crash reports only go to your own server, push notifications only start when your server can send them, and logs scrub addresses and tokens. See [Where Your Data Is Stored](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Where-Your-Data-Is-Stored).
+- **Ratings from MDBList and TMDB**, and in-app update checks.
 
 The full list is on the [Features](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Features) wiki page.
 

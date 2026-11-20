@@ -1213,6 +1213,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             ? null
             : preview.isPremiere
             ? l10n.premiere
+            : preview.isNew
+            ? l10n.calendarBadgeNew
             : preview.isRepeat
             ? l10n.guideRepeatBadge
             : null;

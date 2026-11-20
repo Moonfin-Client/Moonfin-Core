@@ -67,6 +67,9 @@ void main() {
       () => manager.sessionEndedStream,
     ).thenAnswer((_) => const Stream<void>.empty());
     when(
+      () => manager.endedByServerStream,
+    ).thenAnswer((_) => const Stream<String>.empty());
+    when(
       () => manager.finishedItemStopStream,
     ).thenAnswer((_) => const Stream<dynamic>.empty());
     when(

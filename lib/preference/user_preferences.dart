@@ -2208,7 +2208,9 @@ class UserPreferences extends ChangeNotifier {
 
   static final navbarPosition = EnumPreference(
     key: 'pref_navbar_position',
-    defaultValue: NavbarPosition.top,
+    defaultValue: PlatformDetection.useMobileUi && !PlatformDetection.isWeb
+        ? NavbarPosition.bottom
+        : NavbarPosition.top,
     values: NavbarPosition.values,
   );
 

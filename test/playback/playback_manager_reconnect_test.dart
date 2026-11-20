@@ -150,6 +150,9 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
   /// Whether the server is unreachable: every replan and resolve throws.
   bool unreachable = false;
 
+  /// Thrown by every replan when set (the server refused it).
+  Object? replanError;
+
   /// Holds the next replan until completed, to keep an attempt in flight.
   Completer<void>? replanGate;
   int resolves = 0;
@@ -197,6 +200,8 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
     replanGate = null;
     if (gate != null) await gate.future;
     if (unreachable) throw StateError('server unreachable');
+    final error = replanError;
+    if (error != null) throw error;
     return _stream(current.playSessionId!, requests.length + 1);
   }
 }
@@ -232,6 +237,11 @@ class _ExpiringResolver extends _Resolver implements StreamCredentialRefresher {
 class _TestService extends Fake implements PlayerService {
   final List<String?> stops = <String?>[];
 
+  /// Holds the next progress report until completed, then fails it with
+  /// [progressError].
+  Completer<void>? progressGate;
+  Object? progressError;
+
   @override
   Future<void> onPlaybackStart(
     dynamic mediaItem,
@@ -251,7 +261,13 @@ class _TestService extends Fake implements PlayerService {
     int? subtitleStreamIndex,
     int? volumeLevel,
     bool? isMuted,
-  }) async {}
+  }) async {
+    final gate = progressGate;
+    if (gate == null) return;
+    progressGate = null;
+    await gate.future;
+    throw progressError!;
+  }
 
   @override
   Future<void> onPlaybackStop(
@@ -510,6 +526,118 @@ void main() {
         final attempts = resolver.requests.length;
         async.elapse(const Duration(minutes: 1));
         expect(resolver.requests, hasLength(attempts));
+      });
+    });
+
+    test('a session the server ended closes the player instead of starting '
+        'a new one', () {
+      final resolver = _Resolver()
+        ..replanError = const PlaybackRefusedException(
+          'Ended on the server.',
+          reason: 'playback_session_ended',
+        );
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'source_refused',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+        expect(events, ['ended: Ended on the server.', 'closed']);
+        expect(manager.isReconnecting, isFalse);
+
+        async.elapse(const Duration(minutes: 1));
+        expect(resolver.requests, hasLength(1));
+        expect(resolver.resolves, 1, reason: 'no new session');
+      });
+    });
+
+    test('a track change on a session the server ended closes the player '
+        'without failing the change', () {
+      final resolver = _Resolver()
+        ..replanError = const PlaybackRefusedException(
+          'Ended on the server.',
+          reason: PlaybackRefusedException.sessionEndedReason,
+        );
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        Object? failure;
+        manager.changeAudioTrack(2).catchError((Object e) => failure = e);
+        async.elapse(const Duration(seconds: 1));
+
+        expect(failure, isNull, reason: 'a refusal here is not a crash');
+        expect(resolver.requests, hasLength(1));
+        expect(events, ['ended: Ended on the server.', 'closed']);
+        expect(
+          manager.bringupState.phase,
+          isNot(PlaybackBringupPhase.failed),
+          reason: 'one message, from the close',
+        );
+        async.elapse(const Duration(minutes: 1));
+        expect(resolver.resolves, 1, reason: 'no new session');
+      });
+    });
+
+    test('a refusal from a session a fresh start replaced closes nothing', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        final held = Completer<void>();
+        service
+          ..progressGate = held
+          ..progressError = const PlaybackRefusedException(
+            'Ended on the server.',
+            reason: PlaybackRefusedException.sessionEndedReason,
+          );
+        async.elapse(const Duration(seconds: 15));
+        expect(service.progressGate, isNull, reason: 'a report is held');
+
+        // The session can't move to the new track, so a new one starts.
+        resolver.replanError = StateError('session expired');
+        manager.changeAudioTrack(2).catchError((Object _) {});
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.resolves, 2, reason: 'a fresh session');
+
+        held.complete();
+        async.elapse(const Duration(seconds: 1));
+        expect(events, isEmpty);
+      });
+    });
+
+    test('a refusal heard after a background stop keeps the queue', () {
+      final resolver = _Resolver()
+        ..replanError = const PlaybackRefusedException(
+          'Ended on the server.',
+          reason: PlaybackRefusedException.sessionEndedReason,
+        );
+      _withPlayback(resolver, (async, manager, backend, service) {
+        final events = <String>[];
+        manager.endedByServerStream.listen((m) => events.add('ended: $m'));
+        manager.sessionEndedStream.listen((_) => events.add('closed'));
+        final gate = Completer<void>();
+        resolver.replanGate = gate;
+        manager.changeAudioTrack(2).catchError((Object _) {});
+        async.flushMicrotasks();
+        expect(resolver.requests, hasLength(1), reason: 'a replan is out');
+
+        final item = manager.queueService.currentItem;
+        unawaited(manager.stopForBackground(item));
+        async.flushMicrotasks();
+        gate.complete();
+        async.elapse(const Duration(seconds: 1));
+
+        expect(events, isEmpty);
+        expect(manager.queueService.currentItem, same(item));
       });
     });
 

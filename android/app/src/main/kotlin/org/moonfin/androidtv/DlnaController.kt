@@ -18,6 +18,7 @@ import java.io.StringReader
 import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -47,8 +48,8 @@ class DlnaController(private val context: Context) {
     private var genaServerPort: Int = 0
     private var genaRenewFuture: ScheduledFuture<*>? = null
     private val consecutivePollFailures = AtomicInteger(0)
-    private val discoveredEventSubUrls = mutableMapOf<String, String>()
-    private val discoveredRenderingControlUrls = mutableMapOf<String, String>()
+    private val discoveredEventSubUrls = ConcurrentHashMap<String, String>()
+    private val discoveredRenderingControlUrls = ConcurrentHashMap<String, String>()
     @Volatile private var isDiscovering = false
 
     companion object {

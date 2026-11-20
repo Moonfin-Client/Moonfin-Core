@@ -19,6 +19,8 @@ final class DlnaController: NSObject {
     private var genaServerPort: UInt16 = 0
     private var genaRenewalTimer: DispatchSourceTimer?
     private var consecutivePollFailures: Int = 0
+    // The one-shot and continuous scans run on separate threads and both write these.
+    private let discoveredUrlsLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
     private var isDiscovering = false
@@ -210,9 +212,11 @@ final class DlnaController: NSObject {
                 )
 
                 self.activeDeviceControlUrl = controlUrl
-                self.activeDeviceRenderingControlUrl = self.discoveredRenderingControlUrls[controlUrl]
+                let (renderingControlUrl, eventSubUrl) = self.discoveredUrlsLock.withLock {
+                    (self.discoveredRenderingControlUrls[controlUrl], self.discoveredEventSubUrls[controlUrl])
+                }
+                self.activeDeviceRenderingControlUrl = renderingControlUrl
                 self.consecutivePollFailures = 0
-                let eventSubUrl = self.discoveredEventSubUrls[controlUrl]
                 self.activeDeviceEventSubUrl = eventSubUrl
                 self.startGenaServer()
                 if let url = eventSubUrl { self.subscribeGena(eventSubUrl: url) }
@@ -408,11 +412,11 @@ final class DlnaController: NSObject {
               let controlPath = parser.avTransportControlURL else { return nil }
 
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
-        if let renderingControlPath = parser.renderingControlURL {
-            discoveredRenderingControlUrls[controlUrl] = resolveUrl(base: locationUrl, relative: renderingControlPath)
-        }
-        if let eventSubPath = parser.avTransportEventSubURL {
-            discoveredEventSubUrls[controlUrl] = resolveUrl(base: locationUrl, relative: eventSubPath)
+        let renderingControlUrl = parser.renderingControlURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        let eventSubUrl = parser.avTransportEventSubURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        discoveredUrlsLock.withLock {
+            if let renderingControlUrl { discoveredRenderingControlUrls[controlUrl] = renderingControlUrl }
+            if let eventSubUrl { discoveredEventSubUrls[controlUrl] = eventSubUrl }
         }
         let friendlyName = parser.friendlyName ?? "DLNA Device"
         let modelName = parser.modelName ?? ""

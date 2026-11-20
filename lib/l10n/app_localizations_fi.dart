@@ -509,7 +509,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Käytä Moonfin Recommends sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.';
+      'Käytä Moonfin Recommends algoritmia paikalliskirjastosta, Server Recommends toimintoa mediakoneeltasi tai TMDb:n verkkopalvelun Similarity Metrics toimintoa. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Suositukset';
@@ -3568,6 +3568,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Mustien palkkien uudelleenrajaus';
 
   @override
+  String get playerBlackBarsCropped => 'Mustat palkit on rajattu pois';
+
+  @override
+  String get playerNoBlackBarsFound => 'Mustia palkkeja ei löytynyt';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Mustia palkkeja ei havaittu. Yritä uudelleen kirkkaammassa kohtauksessa';
+
+  @override
   String get stretch => 'Venytä';
 
   @override
@@ -4846,6 +4856,28 @@ class AppLocalizationsFi extends AppLocalizations {
       'Näytä kaikkien yhdistettyjen palvelimien kirjastot';
 
   @override
+  String get mergeLibrariesByType => 'Yhdistä elokuva ja TV -sarjakirjastot';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'Kun monipalvelinkirjastot ovat käytössä, näytetään yksi elokuvakirjasto ja yksi TV-sarjakirjasto kaikille palvelimille. Teos, jota on useilla palvelimilla, näkyy luettelossa vain kerran.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Ei muutettu $servers';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Äskettäin lisättyjä ja julkaistuja';
 
   @override
@@ -5097,17 +5129,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get mediaBarSourceRandom => 'Satunnainen';
 
   @override
-  String get mediaBarSourceNewReleases => 'Uudet kaudet ja jaksot';
-
-  @override
   String get mediaBarNewReleaseBanner => 'Uuden julkaisun banneri';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Merkitse sarjat, joiden uusi kausi tai uudet jaksot on äskettäin alkanut.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'Uuden julkaisun aikataulu';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5121,6 +5143,39 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'Uudet jaksot';
+
+  @override
+  String get mediaBarNewMovie => 'Uusi elokuva';
+
+  @override
+  String get mediaBarNewReleasesSection => 'Uudet julkaisut';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'Uudet julkaisut';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Merkitse uudet sarjat, kaudet, jaksot ja elokuvat.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Etiketit';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'Uuden jakson ikkuna';
+
+  @override
+  String get mediaBarNewMovieDays => 'Uuden elokuvan ikkuna';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'Kuinka kauan elokuva pysyy uutena sen julkaisun jälkeen. Elokuvat päätyvät palvelimille usein vasta jonkin aikaa julkaisunsa jälkeen, joten varaa niille enemmän aikaa kuin sarjojen jaksoille.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Näytä Slogan';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Uuden elokuvan alla näytetään elokuvan slogan. Jos sloganeita ei ole, otsikko näkyy yksinään.';
 
   @override
   String get moviesAndTvShows => 'Elokuvat ja TV ohjelmat';
@@ -5772,6 +5827,48 @@ class AppLocalizationsFi extends AppLocalizations {
       'Onko palvelimen kirjastoon lisätty mitään uutta';
 
   @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
+
+  @override
   String loggedInAs(String username) {
     return 'Kirjautunut sisään nimellä: $username';
   }
@@ -5966,6 +6063,27 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get seerrNotFoundYet => 'Ei vielä löytynyt';
+
+  @override
+  String get seerrSearchingIndexers => 'Hakuhakemistot';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Ei vielä löytynyt · haettu $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Ei vielä saatavilla';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Saatavilla $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Seuraava jakso $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Hanki eri julkaisu';
@@ -11688,6 +11806,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playerTooltipExitFloatOnTop => 'Poista float päällä';
 
   @override
+  String get playerTooltipPictureInPicture => 'Kuva kuvassa';
+
+  @override
+  String get playerTooltipExitPictureInPicture =>
+      'Poistu kuva kuvassa -tilasta';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Toisto kuva kuvassa -tilassa';
+
+  @override
   String get playerTooltipLockLandscape => 'Lukko maisema';
 
   @override
@@ -12710,7 +12838,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).';
+      'Valitse suosituslähde (Moonfinin suositukset mukautettu paikallinen algoritmi, palvelimen suositukset mediakoneeltasi tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin suosittelee';
@@ -18324,17 +18452,30 @@ class AppLocalizationsFi extends AppLocalizations {
       'Vasemmalle ja oikealle liu’uta scrubberia.';
 
   @override
-  String get clickpadSeeking => 'Allow Clickpad Seeking';
+  String get remoteMediaNotificationTitle => 'Etätoiston ilmoitus';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Näytä järjestelmän mediaohjauspainikkeet, kun katsot sisältöä toisella laitteella';
+
+  @override
+  String get remoteActivityWatching => 'Katsomassa Moonfinissä';
+
+  @override
+  String get remoteActivityListening => 'Kuuntele Moonfinissä';
+
+  @override
+  String get clickpadSeeking => 'Salli Clickpad Etsintä';
 
   @override
   String get clickpadSeekingDescription =>
-      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+      'Sivuttaisliikkeet vasemmalle, oikealle kosketuslevyllä mahdollistavat kelauksen. Muussa tapauksessa ensimmäinen liike avaa ohjausvalikon.';
 
   @override
-  String get clickpadSeekingControlsVisible => 'When controls are showing';
+  String get clickpadSeekingControlsVisible => 'Kun ohjaimet ovat näkyvissä';
 
   @override
-  String get clickpadSeekingPausedOnly => 'Only while paused';
+  String get clickpadSeekingPausedOnly => 'Vain tauolla';
 
   @override
   String get recordingsScopeMine => 'Mine';

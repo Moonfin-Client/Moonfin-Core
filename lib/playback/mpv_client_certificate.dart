@@ -5,12 +5,27 @@ import '../data/services/client_certificate_service.dart';
 
 /// Points mpv at the client certificate for [url]'s host, or clears the one a
 /// previous open set. mpv only takes file paths and has no key password, so
-/// the key is written unencrypted to app-private storage.
+/// the key is written unencrypted to app-private storage. Also turns off mpv's
+/// certificate check for the user's own servers while self-signed ones are
+/// allowed.
 Future<void> applyMpvClientCertificate(Player player, String url) async {
   final platform = player.platform;
   if (platform is! NativePlayer) return;
   try {
-    final certificate = clientCertificateFor(Uri.tryParse(url)?.host ?? '');
+    // NativePlayer's web stub has no setProperty or getProperty, so the web
+    // build needs dynamic here.
+    final dynamic native = platform;
+    final host = Uri.tryParse(url)?.host ?? '';
+    // Everything else gets mpv's own default back rather than a forced yes,
+    // because the OpenSSL and mbedtls backends in older FFmpeg like 6.1 load
+    // no system certificates and would refuse every https server.
+    await native.setProperty(
+      'tls-verify',
+      acceptsUntrustedCertificate(host)
+          ? 'no'
+          : await native.getProperty('option-info/tls-verify/default-value'),
+    );
+    final certificate = clientCertificateFor(host);
     var certPath = '';
     var keyPath = '';
     if (certificate != null) {
@@ -21,8 +36,6 @@ Future<void> applyMpvClientCertificate(Player player, String url) async {
       certPath = certFile.path;
       keyPath = keyFile.path;
     }
-    // NativePlayer's web stub has no setProperty, so the web build needs dynamic here.
-    final dynamic native = platform;
     await native.setProperty('tls-cert-file', certPath);
     await native.setProperty('tls-key-file', keyPath);
   } catch (_) {
