@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../ui/navigation/app_router.dart';
+import '../../ui/navigation/deep_link_navigator.dart';
 import '../../ui/widgets/floating_notification.dart';
+import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'local_notification_bootstrap.dart';
 
@@ -26,9 +29,11 @@ class SeerrNotificationService {
     final target = route.trim();
     final asRequest = isRequest && requestId != null && requestId.isNotEmpty;
 
-    final dedupeKey = '$title\x1f$body\x1f$target\x1f${requestId ?? ''}';
+    // Key excludes requestId so Android request pushes (which omit requestId)
+    // match stream copies (which include it).
+    final dedupeKey = '$title\x1f$body\x1f$target';
     final now = DateTime.now();
-    _recentEvents.removeWhere((_, time) => now.difference(time).inSeconds > 10);
+    _recentEvents.removeWhere((_, time) => now.difference(time).inSeconds > 4);
     if (_recentEvents.containsKey(dedupeKey)) {
       return;
     }
@@ -42,8 +47,10 @@ class SeerrNotificationService {
     _showBanner(title, body, target);
   }
 
-  @visibleForTesting
   void clearRecentEvents() => _recentEvents.clear();
+
+  @visibleForTesting
+  int get recentEventsCount => _recentEvents.length;
 
   Future<void> _showLocal(
     String title,
@@ -120,7 +127,15 @@ class SeerrNotificationService {
       context,
       title,
       body,
-      route.isEmpty ? null : () => appRouter.go(route),
+      route.isEmpty
+          ? null
+          : () {
+              if (route == serverMessagesPushRoute) {
+                openServerMessagesFromNotification();
+              } else {
+                unawaited(openLinkedRoute(appRouter, route));
+              }
+            },
     );
   }
 
