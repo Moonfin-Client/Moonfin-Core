@@ -432,10 +432,13 @@ Future<void> _detectAndSetDeviceMemory() async {
 }
 
 /// Runs before the first frame, so only the single attempt is awaited here.
-/// The retries and the listener are deliberately left to run on their own: a
-/// box whose TV is still asleep would otherwise hold the launch for the whole
-/// half-minute retry window.
+/// On a TV the retries and the listener are deliberately left to run on their
+/// own: a box whose TV is still asleep would otherwise hold the launch for the
+/// whole half-minute retry window. A phone or tablet reads its own panel once.
 Future<void> _detectAndSetDisplayCapabilities() async {
+  if (DisplayHdrProbe.readsBuiltInDisplay) {
+    return DisplayHdrProbe.readBuiltInDisplay('launch');
+  }
   if (!DisplayHdrProbe.isSupported) return;
   // Its own try/catch for the same reason the memory probe has one: this runs
   // inside a Future.wait, which gives up on every sibling the moment one
@@ -776,6 +779,9 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
+    // A phone's own panel is cheap to read and may have changed since the
+    // last resume (an external screen unplugged), so it skips the throttle.
+    unawaited(DisplayHdrProbe.readBuiltInDisplay('resume'));
     final now = DateTime.now();
     final last = _lastRefresh;
     if (last != null && now.difference(last) < _throttle) return;
