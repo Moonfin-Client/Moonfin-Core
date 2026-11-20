@@ -13,7 +13,14 @@ const _databasePath = 'Moonfin/DB/offline.db';
 /// whatever xdg-user-dir answers, which is $HOME itself when no Documents
 /// folder is set up, and in a Flatpak without home access that $HOME is a
 /// tmpfs wiped on exit.
-Future<File> offlineDatabaseFile() async {
+///
+/// It's picked once per launch, so a later call can't take the old database
+/// over while the open connection still writes to it.
+Future<File> offlineDatabaseFile() => _databaseFile ??= _pickDatabaseFile();
+
+Future<File>? _databaseFile;
+
+Future<File> _pickDatabaseFile() async {
   if (PlatformDetection.isAppleTV) {
     return _fileUnder(await getApplicationCacheDirectory());
   }
