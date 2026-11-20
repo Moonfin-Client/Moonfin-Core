@@ -531,4 +531,190 @@ void main() {
       expect(result.map((i) => i.id).toList(), equals(['m2', 's2']));
     });
   });
+
+  group('normalizeAndHydrateLatestMediaItems', () {
+    test(
+      'hydrates collapsed Episode and Season cards with series UnplayedItemCount and skips native Series',
+      () async {
+        const episodeItem = AggregatedItem(
+          id: 'ep-yaga-1',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-yaga-1',
+            'Name': 'Episode 1',
+            'Type': 'Episode',
+            'SeriesId': 'series-yaga',
+            'SeriesName': 'YAGA',
+            'UserData': {'Played': false},
+          },
+        );
+        const seasonItem = AggregatedItem(
+          id: 'season-foundation-2',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'season-foundation-2',
+            'Name': 'Season 2',
+            'Type': 'Season',
+            'SeriesId': 'series-foundation',
+            'SeriesName': 'Foundation',
+            'UserData': {'Played': false, 'UnplayedItemCount': 10},
+            'ChildCount': 10,
+          },
+        );
+        const nativeSeries = AggregatedItem(
+          id: 'series-cyberpunk',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'series-cyberpunk',
+            'Name': 'Cyberpunk: Edgerunners',
+            'Type': 'Series',
+            'UserData': {'Played': false, 'UnplayedItemCount': 20},
+            'ChildCount': 1,
+          },
+        );
+
+        List<String>? requestedIds;
+        final result = await normalizeAndHydrateLatestMediaItems(
+          [episodeItem, seasonItem, nativeSeries],
+          collectionType: 'tvshows',
+          limit: 10,
+          fetchSeriesByIds: (ids) async {
+            requestedIds = ids;
+            return [
+              {
+                'Id': 'series-yaga',
+                'Type': 'Series',
+                'UserData': {'Played': false, 'UnplayedItemCount': 6},
+                'ChildCount': 1,
+                'RecursiveItemCount': 6,
+              },
+              {
+                'Id': 'series-foundation',
+                'Type': 'Series',
+                'UserData': {'Played': false, 'UnplayedItemCount': 24},
+                'ChildCount': 3,
+                'RecursiveItemCount': 30,
+              },
+            ];
+          },
+        );
+
+        expect(requestedIds, equals(['series-yaga', 'series-foundation']));
+        expect(result.length, equals(3));
+        expect(result[0].id, equals('series-yaga'));
+        expect(result[0].unplayedItemCount, equals(6));
+        expect(result[1].id, equals('series-foundation'));
+        expect(result[1].unplayedItemCount, equals(24));
+        expect(result[1].childCount, equals(3));
+        expect(result[2].id, equals('series-cyberpunk'));
+        expect(result[2].unplayedItemCount, equals(20));
+      },
+    );
+
+    test('skips fetchSeriesByIds when all items are already Series or Movies', () async {
+      const nativeSeries = AggregatedItem(
+        id: 'series-1',
+        serverId: 'server1',
+        rawData: {
+          'Id': 'series-1',
+          'Name': 'Show 1',
+          'Type': 'Series',
+          'UserData': {'Played': false, 'UnplayedItemCount': 5},
+        },
+      );
+
+      var called = false;
+      final result = await normalizeAndHydrateLatestMediaItems(
+        [nativeSeries],
+        collectionType: 'tvshows',
+        limit: 10,
+        fetchSeriesByIds: (_) async {
+          called = true;
+          return const [];
+        },
+      );
+
+      expect(called, isFalse);
+      expect(result.single.unplayedItemCount, equals(5));
+    });
+
+    test(
+      'hideWatched evaluates hydrated series UserData rather than episode Played state',
+      () async {
+        const watchedEpisodeOfUnfinishedSeries = AggregatedItem(
+          id: 'ep-yaga-1',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-yaga-1',
+            'Name': 'Episode 1',
+            'Type': 'Episode',
+            'SeriesId': 'series-yaga',
+            'SeriesName': 'YAGA',
+            'UserData': {'Played': true},
+          },
+        );
+        const unwatchedEpisodeOfFinishedSeries = AggregatedItem(
+          id: 'ep-done-1',
+          serverId: 'server1',
+          rawData: {
+            'Id': 'ep-done-1',
+            'Name': 'Episode 1',
+            'Type': 'Episode',
+            'SeriesId': 'series-done',
+            'SeriesName': 'Done Show',
+            'UserData': {'Played': false},
+          },
+        );
+
+        final result = await normalizeAndHydrateLatestMediaItems(
+          [watchedEpisodeOfUnfinishedSeries, unwatchedEpisodeOfFinishedSeries],
+          collectionType: 'tvshows',
+          limit: 10,
+          hideWatched: true,
+          fetchSeriesByIds: (_) async => [
+            {
+              'Id': 'series-yaga',
+              'Type': 'Series',
+              'UserData': {'Played': false, 'UnplayedItemCount': 5},
+              'ChildCount': 1,
+            },
+            {
+              'Id': 'series-done',
+              'Type': 'Series',
+              'UserData': {'Played': true, 'UnplayedItemCount': 0},
+              'ChildCount': 1,
+            },
+          ],
+        );
+
+        expect(result.map((i) => i.id).toList(), equals(['series-yaga']));
+        expect(result.single.unplayedItemCount, equals(5));
+      },
+    );
+
+    test('falls back to collapsed cards if fetchSeriesByIds throws', () async {
+      const seasonItem = AggregatedItem(
+        id: 'season-1',
+        serverId: 'server1',
+        rawData: {
+          'Id': 'season-1',
+          'Name': 'Season 1',
+          'Type': 'Season',
+          'SeriesId': 'series-1',
+          'SeriesName': 'Show 1',
+          'UserData': {'Played': false, 'UnplayedItemCount': 8},
+        },
+      );
+
+      final result = await normalizeAndHydrateLatestMediaItems(
+        [seasonItem],
+        collectionType: 'tvshows',
+        limit: 10,
+        fetchSeriesByIds: (_) async => throw Exception('network error'),
+      );
+
+      expect(result.single.id, equals('series-1'));
+      expect(result.single.unplayedItemCount, equals(8));
+    });
+  });
 }
