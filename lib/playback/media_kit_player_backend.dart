@@ -1900,6 +1900,19 @@ class MediaKitPlayerBackend extends PlayerBackend
       }
       format = await _tryNativeGetProperty(native, 'audio-params/format');
       if (format == null || !format.startsWith('spdif')) return;
+      if (_player.state.buffering) {
+        // mpv leaves a cache pause by itself, with no resume or track switch
+        // to start another check, so check again once it has.
+        try {
+          await _player.stream.buffering.firstWhere((b) => !b);
+        } catch (_) {
+          return;
+        }
+        if (check == _linuxPassthroughCheck) {
+          unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
+        }
+        return;
+      }
       if (await _tryNativeGetProperty(native, 'pause') != 'no' ||
           await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
           await _tryNativeGetProperty(native, 'audio-pts') != null) {
