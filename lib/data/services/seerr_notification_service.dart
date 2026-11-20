@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../ui/navigation/app_router.dart';
@@ -8,6 +9,8 @@ import '../../util/platform_detection.dart';
 import 'local_notification_bootstrap.dart';
 
 class SeerrNotificationService {
+  final Map<String, DateTime> _recentEvents = {};
+
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
     LocalNotificationBootstrap.instance.attachMainIsolateActionHandler();
@@ -23,6 +26,14 @@ class SeerrNotificationService {
     final target = route.trim();
     final asRequest = isRequest && requestId != null && requestId.isNotEmpty;
 
+    final dedupeKey = '$title\x1f$body\x1f$target\x1f${requestId ?? ''}';
+    final now = DateTime.now();
+    _recentEvents.removeWhere((_, time) => now.difference(time).inSeconds > 10);
+    if (_recentEvents.containsKey(dedupeKey)) {
+      return;
+    }
+    _recentEvents[dedupeKey] = now;
+
     // Mobile shows the OS notification alongside the in-app banner; other
     // platforms only get the banner.
     if (PlatformDetection.isMobile) {
@@ -30,6 +41,9 @@ class SeerrNotificationService {
     }
     _showBanner(title, body, target);
   }
+
+  @visibleForTesting
+  void clearRecentEvents() => _recentEvents.clear();
 
   Future<void> _showLocal(
     String title,

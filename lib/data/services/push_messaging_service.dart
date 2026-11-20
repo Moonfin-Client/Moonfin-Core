@@ -13,6 +13,7 @@ import '../../ui/navigation/deep_link_navigator.dart';
 import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'plugin_sync_service.dart';
+import 'seerr_notification_service.dart';
 
 /// Every push carries a notification block, so the OS draws background and
 /// terminated notifications. Nothing to do here.
@@ -22,8 +23,9 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {}
 /// Client side of the push notification path. The plugin sends FCM messages
 /// carrying both a notification block (title/body) and a data route, so the OS
 /// renders background/terminated notifications and this service only handles
-/// token registration and taps. Foreground messages are ignored because the
-/// SSE settings stream already shows the in-app notification.
+/// token registration and taps. Foreground messages are forwarded to
+/// SeerrNotificationService so the user sees an in-app banner and local
+/// notification even if the settings stream is not connected.
 ///
 /// Firebase stays untouched until a signed-in server's plugin can deliver
 /// push, so a phone that never meets one never contacts Google.
@@ -92,9 +94,10 @@ class PushMessagingService extends ChangeNotifier {
       _registerToken(token);
     });
 
-    // Foreground is handled by the SSE stream, so FCM onMessage is a no-op here
-    // to avoid drawing the notification twice.
-    FirebaseMessaging.onMessage.listen((_) {});
+    // Foreground messages are forwarded to SeerrNotificationService so the user
+    // sees an in-app banner and local notification even if the settings stream
+    // is closed or reconnecting.
+    FirebaseMessaging.onMessage.listen(handleForegroundMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _navigateFromMessage(message);
@@ -253,5 +256,29 @@ class PushMessagingService extends ChangeNotifier {
     }
 
     unawaited(openLinkedRoute(appRouter, trimmed));
+  }
+
+  @visibleForTesting
+  static void handleForegroundMessage(RemoteMessage message) {
+    final notification = message.notification;
+    final title =
+        notification?.title ?? message.data['title']?.toString() ?? '';
+    final body =
+        notification?.body ?? message.data['body']?.toString() ?? '';
+    final route = message.data['route']?.toString() ?? '';
+    final requestId = message.data['requestId']?.toString();
+    final kind = message.data['kind']?.toString();
+
+    if (title.isNotEmpty || body.isNotEmpty) {
+      if (GetIt.instance.isRegistered<SeerrNotificationService>()) {
+        GetIt.instance<SeerrNotificationService>().show(
+          title,
+          body,
+          route,
+          requestId: requestId,
+          isRequest: kind == 'request',
+        );
+      }
+    }
   }
 }
