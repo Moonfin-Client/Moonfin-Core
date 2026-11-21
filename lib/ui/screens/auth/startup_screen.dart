@@ -133,7 +133,9 @@ class _StartupScreenState extends State<StartupScreen>
     if (!mounted) return;
     // Don't override a redirect to Plex sign-in after a stored token expires.
     if (GoRouter.of(context).routeInformationProvider.value.uri.path !=
-        Destinations.startup) return;
+        Destinations.startup) {
+      return;
+    }
 
     // Read the flag either way so a one-off failure doesn't carry over to the
     // next launch, but only warn when it cost the user something. A session

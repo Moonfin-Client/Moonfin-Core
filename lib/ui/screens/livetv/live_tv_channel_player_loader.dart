@@ -4,7 +4,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
-import '../../../data/services/plex_free_tv_favorites.dart';
+import '../../../data/services/plex_live_tv_favorites.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/external_player_policy.dart';
@@ -69,7 +69,7 @@ class _LiveTvChannelPlayerLoaderState extends State<LiveTvChannelPlayerLoader> {
           .cast<Map<String, dynamic>>()
           .map(
             (item) => GuideChannel.fromRawItem(
-              PlexFreeTvFavorites.applyToItem(client, item),
+              PlexLiveTvFavorites.applyToItem(client, item),
             ),
           )
           .toList()
@@ -84,7 +84,7 @@ class _LiveTvChannelPlayerLoaderState extends State<LiveTvChannelPlayerLoader> {
         final raw = await client.userLibraryApi.getItem(widget.channelId);
         channels = [
           GuideChannel.fromRawItem(
-            PlexFreeTvFavorites.applyToItem(client, raw),
+            PlexLiveTvFavorites.applyToItem(client, raw),
           ),
         ];
         index = 0;

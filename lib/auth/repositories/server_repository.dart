@@ -36,7 +36,7 @@ class ServerRepository {
   bool _isOwnServerHost(String host) =>
       _typedHosts.contains(host) ||
       _servers.any(
-        (s) => [
+        (s) => !s.cloudOnly && [
           s.address,
           ...s.candidateAddresses,
         ].any((a) => Uri.tryParse(a)?.host == host),

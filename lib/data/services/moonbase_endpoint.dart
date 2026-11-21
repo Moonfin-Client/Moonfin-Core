@@ -40,7 +40,9 @@ Future<MoonbaseEndpoint?> moonbaseEndpoint(
   Dio dio,
 ) async {
   if (isCloudOnlyPlexClient(client) ||
-      !client.features.supportsMoonfinPlugin) return null;
+      !client.features.supportsMoonfinPlugin) {
+    return null;
+  }
   if (client.serverType == ServerType.plex) {
     return _plexEndpoint(
       server: client.baseUrl,

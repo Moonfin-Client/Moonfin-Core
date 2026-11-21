@@ -447,6 +447,7 @@ class _AppleTvLiveTvPlayerHostScreenState
 
     if (!mounted || _exiting) return;
     await backend.resumePlayer();
+    if (!mounted || _exiting) return;
     if (selectedId != null) await _switchChannel(selectedId, lineup: lineup);
   }
 
