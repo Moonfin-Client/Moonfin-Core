@@ -1860,6 +1860,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
             'silence',
           ],
         ),
+      if (PlatformDetection.isLinux)
+        audio.leaf(
+          'pref_passthrough_silent_fallback',
+          l10n.settingsAudioPassthroughFallback,
+          subtitle: l10n.settingsAudioPassthroughFallbackDescription,
+          keywords: ['bitstream', 'decode', 'no sound', 'silent', 'silence'],
+        ),
       audio.leaf(
         'pref_downmix_to_stereo',
         l10n.downmixToStereo,
