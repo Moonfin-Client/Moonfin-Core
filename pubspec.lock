@@ -1137,8 +1137,8 @@ packages:
     dependency: "direct main"
     description:
       path: "libs/windows/media_kit_libs_windows_video"
-      ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
-      resolved-ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
+      resolved-ref: d739f693073a816f7d13afef1e3261aee7c46d9f
       url: "https://github.com/RadicalMuffinMan/media-kit.git"
     source: git
     version: "1.0.12"
@@ -1146,8 +1146,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit_video
-      ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
-      resolved-ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
+      resolved-ref: d739f693073a816f7d13afef1e3261aee7c46d9f
       url: "https://github.com/RadicalMuffinMan/media-kit.git"
     source: git
     version: "2.0.1"

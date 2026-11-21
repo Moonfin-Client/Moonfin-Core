@@ -318,6 +318,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   Completer<void>? _secondaryPositionUpdate;
   StreamSubscription<Duration>? _secondaryPositionSub;
   Timer? _secondaryMetricsTimer;
+  Timer? _textureSizeTimer;
   static final _mpvSrtAlignment = RegExp(r'\\an([1-9])');
 
   @override
@@ -630,7 +631,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     // Sizing the texture to the crop lets the picture fit any window.
     if (!PlatformDetection.useNativeVideoSurface) {
       _letterboxGeometrySub = _letterboxCropper.geometryStream.listen(
-        (geometry) => unawaited(_sizeTextureToCrop(geometry)),
+        (_) => unawaited(_sizeTexture()),
       );
     }
     _prefs.addListener(_onPreferencesChanged);
@@ -651,9 +652,23 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   @override
   void didChangeMetrics() {
-    if (_isDisposed || !_secondarySubtitleRequested) return;
-    // mpv's OSD dimensions may settle after Flutter reports the new viewport.
-    // Debounce resize events so a paused player still recomputes wrapping.
+    if (_isDisposed) return;
+    // A window drag reports every step, and each new size rebuilds the
+    // texture, so only the size it settles on is applied.
+    if (_videoController != null &&
+        (PlatformDetection.isWindows || PlatformDetection.isLinux)) {
+      _textureSizeTimer?.cancel();
+      _textureSizeTimer = Timer(const Duration(milliseconds: 250), () {
+        if (!_isDisposed) unawaited(_sizeTexture());
+      });
+    }
+    _scheduleSecondaryRemeasure();
+  }
+
+  /// mpv's OSD dimensions may settle after Flutter reports the new viewport.
+  /// Debounce resize events so a paused player still recomputes wrapping.
+  void _scheduleSecondaryRemeasure() {
+    if (!_secondarySubtitleRequested) return;
     _secondaryMetricsTimer?.cancel();
     _secondaryMetricsTimer = Timer(const Duration(milliseconds: 100), () {
       if (!_isDisposed) unawaited(_refreshStackedSecondaryPosition(force: true));
@@ -956,7 +971,21 @@ class MediaKitPlayerBackend extends PlayerBackend
         (PlatformDetection.isWindows || PlatformDetection.isLinux) &&
         _player.platform is NativePlayer) {
       _desktopRenderQualityApplied = true;
-      await _applyDesktopRenderQuality(_player.platform as NativePlayer);
+      final native = _player.platform as NativePlayer;
+      await _applyDesktopRenderQuality(native);
+      // libmpv starts without a config folder, so mpv has nowhere to keep
+      // compiled shaders and builds them all again for each new renderer. On
+      // Windows that holds the native window's first frame back by ~175 ms.
+      if (PlatformDetection.isWindows) {
+        try {
+          final support = await getApplicationSupportDirectory();
+          await _nativeSetProperty(
+            native,
+            'gpu-shader-cache-dir',
+            '${support.path}\\mpv-shader-cache',
+          );
+        } catch (_) {}
+      }
     }
     await _applyCustomMpvConfIfEnabled();
     await _applyAssOverrideMode();
@@ -1225,7 +1254,10 @@ class MediaKitPlayerBackend extends PlayerBackend
   void _onVideoParams(VideoParams params) {
     final loaded = params.gamma != null || params.primaries != null;
     _decodedVideoParams = loaded ? params : null;
-    if (loaded) _refreshSubtitleFontSize();
+    if (loaded) {
+      _refreshSubtitleFontSize();
+      unawaited(_sizeTexture());
+    }
     if (!loaded || !PlatformDetection.supportsNativeHdrWindow) return;
     final status = hdrOutput.status.value;
     final engagedCheckDue =
@@ -2009,18 +2041,56 @@ class MediaKitPlayerBackend extends PlayerBackend
     } catch (_) {}
   }
 
-  Future<void> _sizeTextureToCrop(MpvCropGeometry? geometry) async {
+  /// Sizes the video texture to the crop, and on desktop to no more than the
+  /// window shows. mpv otherwise draws at the source size, so a 4K title in
+  /// a 1080p window renders four times the pixels Flutter then scales away.
+  Future<void> _sizeTexture() async {
     final controller = _videoController;
     if (controller == null || _isDisposed) return;
+    final crop = _letterboxCropper.geometry?.rect;
+    (int?, int?) size = (crop?.w, crop?.h);
+    final params = _decodedVideoParams;
+    // mpv reports the stored size; a quarter turn shows it the other way up.
+    final turned = params?.rotate == 90 || params?.rotate == 270;
+    final width = crop?.w ?? (turned ? params?.dh : params?.dw);
+    final height = crop?.h ?? (turned ? params?.dw : params?.dh);
+    final window = PlatformDispatcher.instance.implicitView?.physicalSize;
+    if ((PlatformDetection.isWindows || PlatformDetection.isLinux) &&
+        width != null &&
+        height != null &&
+        window != null) {
+      // A minimised window has no size; keep the texture until it's back.
+      if (window.isEmpty) return;
+      size =
+          cappedTextureSize(width: width, height: height, window: window) ??
+          size;
+    }
     try {
-      await controller.setSize(
-        width: geometry?.rect.w,
-        height: geometry?.rect.h,
-      );
+      await controller.setSize(width: size.$1, height: size.$2);
     } catch (_) {
       // The controller can be torn down while a resize is in flight.
     }
     _refreshSubtitleFontSize();
+    // The font size can change with the window's shape, after the resize's
+    // own measurement, and nothing measures again while paused.
+    _scheduleSecondaryRemeasure();
+  }
+
+  /// The smallest texture that still covers [window], or null when the
+  /// source is no bigger than that. Covering rather than fitting means Zoom
+  /// to Fill and Stretch never have to enlarge it.
+  @visibleForTesting
+  static (int, int)? cappedTextureSize({
+    required int width,
+    required int height,
+    required Size window,
+  }) {
+    if (width <= 0 || height <= 0 || window.isEmpty) return null;
+    final scaleX = window.width / width;
+    final scaleY = window.height / height;
+    final scale = scaleX > scaleY ? scaleX : scaleY;
+    if (scale >= 1) return null;
+    return ((width * scale).round(), (height * scale).round());
   }
 
   Future<void> _configureLetterboxCropper() async {
@@ -3954,6 +4024,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _videoParamsSub?.cancel();
     _secondaryPositionSub?.cancel();
     _secondaryMetricsTimer?.cancel();
+    _textureSizeTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _tracksChangedController.close();
     _playingGateChangedController.close();
