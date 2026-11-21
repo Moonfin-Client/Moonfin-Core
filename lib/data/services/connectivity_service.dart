@@ -376,9 +376,11 @@ class ConnectivityService extends ChangeNotifier {
       return false;
     }
     try {
-      final moved = await getIt<ServerRepository>().followEntryAddressOf(
-        serverId,
-      );
+      // Bounded like at sign-in: a server switch may be waiting on this
+      // probe. A later answer is still saved, so the next probe uses it.
+      final moved = await getIt<ServerRepository>()
+          .followEntryAddressOf(serverId)
+          .timeout(_entryAskLimit, onTimeout: () => null);
       if (moved == null) return false;
       if (client.baseUrl != moved) client.baseUrl = moved;
       ServerLog.network('Server moved, following its entry address');
@@ -461,6 +463,7 @@ class ConnectivityService extends ChangeNotifier {
   }
 
   bool _followingLostStream = false;
+  static const _entryAskLimit = Duration(seconds: 2);
   final Duration _entryFollowInterval;
   final Duration _entryFollowBudget;
 
