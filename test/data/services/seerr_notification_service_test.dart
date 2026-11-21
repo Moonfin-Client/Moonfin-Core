@@ -89,7 +89,7 @@ void main() {
       final service = _RecordingService();
       service.show('Now available', 'Dune', '/seerr/movie/1');
       async.elapse(
-        SeerrNotificationService.streamCopyWindow + const Duration(seconds: 1),
+        SeerrNotificationService.copyWindow + const Duration(seconds: 1),
       );
       service.showPush('Now available', 'Dune', '/seerr/movie/1');
       async.elapse(wait);
@@ -107,10 +107,31 @@ void main() {
     });
   });
 
-  test('server message, watch party and empty pushes never show', () {
+  test('a stream copy that comes after its push stays quiet', () {
     fakeAsync((async) {
       final service = _RecordingService();
-      service.showPush('Message from your server', 'Hi', 'messages');
+      service.showPush('Now available', 'Dune', '/seerr/movie/1');
+      async.elapse(wait + const Duration(seconds: 1));
+      service.show('Now available', 'Dune', '/seerr/movie/1');
+      expect(service.shown, hasLength(1));
+    });
+  });
+
+  test('a push after a quieted stream copy still shows', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.showPush('Moonfin Push Test', 'Working', '');
+      async.elapse(wait + const Duration(seconds: 1));
+      service.show('Moonfin Push Test', 'Working', '');
+      service.showPush('Moonfin Push Test', 'Working', '');
+      async.elapse(wait);
+      expect(service.shown, hasLength(2));
+    });
+  });
+
+  test('watch party and empty pushes never show', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
       service.showPush(
         'Ana started a watch party',
         'Dune',

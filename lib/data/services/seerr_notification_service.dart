@@ -7,7 +7,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/destinations.dart';
 import '../../ui/widgets/floating_notification.dart';
-import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'local_notification_bootstrap.dart';
 
@@ -16,11 +15,12 @@ class SeerrNotificationService {
   /// copy of the same alert. The server sends the stream copy first.
   static const pushWait = Duration(seconds: 3);
 
-  /// FCM can hand a push over well after the stream copy, so a stream alert
-  /// keeps its push quiet for this long.
-  static const streamCopyWindow = Duration(minutes: 1);
+  /// Either copy of an alert can arrive well after the other, so the one that
+  /// showed keeps the other quiet for this long.
+  static const copyWindow = Duration(minutes: 1);
 
   final Map<String, DateTime> _streamShown = {};
+  final Map<String, DateTime> _pushShown = {};
 
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
@@ -35,11 +35,11 @@ class SeerrNotificationService {
     String? requestId,
     bool isRequest = false,
   }) {
-    final now = clock.now();
-    _streamShown.removeWhere(
-      (_, shownAt) => now.difference(shownAt) > streamCopyWindow,
-    );
-    _streamShown[_alertKey(title, route)] = now;
+    final key = _alertKey(title, route);
+    _forgetOld();
+    // A push that showed while the stream lagged already covered this one.
+    if (_pushShown.remove(key) != null) return;
+    _streamShown[key] = clock.now();
     present(title, body, route, requestId: requestId, isRequest: isRequest);
   }
 
@@ -54,19 +54,15 @@ class SeerrNotificationService {
     bool isRequest = false,
   }) async {
     final target = route.trim();
-    // Server messages and watch parties raise their own alerts in the app.
-    if (target == serverMessagesPushRoute ||
-        target.startsWith(Destinations.watchParty)) {
-      return;
-    }
+    // Watch parties raise their own alert in the app.
+    if (target.startsWith(Destinations.watchParty)) return;
     if (title.isEmpty && body.isEmpty) return;
 
     await Future<void>.delayed(pushWait);
-    final shownAt = _streamShown[_alertKey(title, target)];
-    if (shownAt != null &&
-        clock.now().difference(shownAt) <= streamCopyWindow) {
-      return;
-    }
+    final key = _alertKey(title, target);
+    _forgetOld();
+    if (_streamShown.containsKey(key)) return;
+    _pushShown[key] = clock.now();
     present(title, body, target, requestId: requestId, isRequest: isRequest);
   }
 
@@ -74,6 +70,14 @@ class SeerrNotificationService {
   // only the title and route match them.
   static String _alertKey(String title, String route) =>
       '$title\n${route.trim()}';
+
+  void _forgetOld() {
+    final now = clock.now();
+    bool old(String _, DateTime shownAt) =>
+        now.difference(shownAt) > copyWindow;
+    _streamShown.removeWhere(old);
+    _pushShown.removeWhere(old);
+  }
 
   @visibleForTesting
   void present(

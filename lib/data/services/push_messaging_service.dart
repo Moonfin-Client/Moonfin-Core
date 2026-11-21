@@ -14,6 +14,7 @@ import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'plugin_sync_service.dart';
 import 'seerr_notification_service.dart';
+import 'server_messages_service.dart';
 
 /// Every push carries a notification block, so the OS draws background and
 /// terminated notifications. Nothing to do here.
@@ -255,14 +256,28 @@ class PushMessagingService extends ChangeNotifier {
   }
 
   static void _showForegroundMessage(RemoteMessage message) {
-    if (!GetIt.instance.isRegistered<SeerrNotificationService>()) return;
-    final route = message.data['route'];
+    final getIt = GetIt.instance;
+    final rawRoute = message.data['route'];
+    final route = rawRoute is String ? rawRoute.trim() : '';
+    if (route == serverMessagesPushRoute) {
+      // The refresh only opens the window for messages the stream hasn't
+      // already opened it for.
+      if (getIt.isRegistered<ServerMessagesService>() &&
+          getIt.isRegistered<MediaServerClient>()) {
+        unawaited(
+          getIt<ServerMessagesService>().refresh(getIt<MediaServerClient>()),
+        );
+      }
+      return;
+    }
+
+    if (!getIt.isRegistered<SeerrNotificationService>()) return;
     final requestId = message.data['requestId'];
     unawaited(
-      GetIt.instance<SeerrNotificationService>().showPush(
+      getIt<SeerrNotificationService>().showPush(
         message.notification?.title ?? '',
         message.notification?.body ?? '',
-        route is String ? route : '',
+        route,
         requestId: requestId is String ? requestId : null,
         isRequest: message.data['kind'] == 'request',
       ),
