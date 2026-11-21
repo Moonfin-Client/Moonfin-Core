@@ -903,6 +903,18 @@
   "@plexNoServers": {
     "description": "Shown when the Plex account has no servers"
   },
+  "plexConnectingToFreeTv": "Connecting to Plex Free TV...",
+  "@plexConnectingToFreeTv": {
+    "description": "Progress label while connecting a Plex account to Free TV"
+  },
+  "plexFreeTvCloudTitle": "Plex Free TV (Cloud)",
+  "@plexFreeTvCloudTitle": {
+    "description": "Cloud-only Plex Free TV choice in the Plex sign-in screen"
+  },
+  "plexNoMediaServerRequired": "No Plex Media Server required",
+  "@plexNoMediaServerRequired": {
+    "description": "Subtitle explaining that Plex Free TV works without a Plex Media Server"
+  },
   "loadingLinkedServers": "Loading linked servers...",
   "@loadingLinkedServers": {
     "description": "Status text while fetching Emby Connect server list"
@@ -3498,6 +3510,10 @@
   "noProgramData": "No program data",
   "@noProgramData": {
     "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+  },
+  "guideLoadingListings": "Loading listings…",
+  "@guideLoadingListings": {
+    "description": "Loading indicator for the channel's current and next program listings"
   },
   "liveBadge": "LIVE",
   "@liveBadge": {
@@ -11363,14 +11379,29 @@
     "description": "Live TV guide shortcut for all free streaming channels supplied by Plex."
   },
   "guideFavoriteGroupsAndCategories": "Favorite groups and categories",
+  "@guideFavoriteGroupsAndCategories": {
+    "description": "Heading for the viewer's saved groups and program categories in the Live TV filter picker."
+  },
   "guideHoldOk": "Hold OK",
+  "@guideHoldOk": {
+    "description": "TV remote hint to hold OK to save or remove a guide group or category shortcut."
+  },
   "guideUnfavorite": "Unfavorite",
+  "@guideUnfavorite": {
+    "description": "Action hint for removing a channel group or program category from saved guide filters."
+  },
+  "guideSavedFilterSaveFailed": "Couldn't save filter. Try again.",
+  "@guideSavedFilterSaveFailed": {
+    "description": "Error message shown inside the Live TV filter picker when saving a group or category shortcut fails."
+  },
   "guideGroupShortcut": "{name} (group)",
   "@guideGroupShortcut": {
+    "description": "Pinned channel-group shortcut; distinguishes a group from a program category with the same name.",
     "placeholders": {"name": {"type": "String"}}
   },
   "guideCategoryShortcut": "{name} (category)",
   "@guideCategoryShortcut": {
+    "description": "Pinned program-category shortcut; distinguishes a category from a channel group with the same name.",
     "placeholders": {"name": {"type": "String"}}
   },
   "guideAllChannels": "All channels",

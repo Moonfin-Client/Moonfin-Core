@@ -60,6 +60,8 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
   ScrollController? _scroll;
   String _query = '';
   List<_Row> _visibleRows = const [];
+  bool _saveErrorVisible = false;
+  Timer? _saveErrorTimer;
 
   GuideFilterChoice get _selected =>
       (widget.vm.filter, widget.vm.selectedGroup);
@@ -122,8 +124,13 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
     }
     try {
       await widget.vm.toggleSavedFilter(choice);
+      if (mounted && _saveErrorVisible) {
+        _saveErrorTimer?.cancel();
+        setState(() => _saveErrorVisible = false);
+      }
     } catch (error) {
       debugPrint('Could not save guide favorites (${error.runtimeType})');
+      _showSaveError();
       return;
     }
     if (!mounted || !restore || _query.isNotEmpty) return;
@@ -134,6 +141,15 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
       _focusRow(target);
     });
     WidgetsBinding.instance.scheduleFrame();
+  }
+
+  void _showSaveError() {
+    if (!mounted || ModalRoute.isCurrentOf(context) != true) return;
+    _saveErrorTimer?.cancel();
+    setState(() => _saveErrorVisible = true);
+    _saveErrorTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _saveErrorVisible = false);
+    });
   }
 
   List<_Row> _rows(AppLocalizations l10n, Set<GuideFilterChoice> saved) {
@@ -218,6 +234,7 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
 
   @override
   void dispose() {
+    _saveErrorTimer?.cancel();
     _scroll?.dispose();
     _search.dispose();
     _searchFocus.dispose();
@@ -439,6 +456,26 @@ class _GuideFilterPickerState extends State<GuideFilterPicker> {
                     },
                   ),
                 ),
+                if (_saveErrorVisible)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Semantics(
+                      liveRegion: true,
+                      child: ListTile(
+                        dense: true,
+                        tileColor: AppColors.red500.withValues(alpha: 0.18),
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(color: AppColors.red500),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        leading: const Icon(
+                          Icons.error_outline,
+                          color: AppColors.red500,
+                        ),
+                        title: Text(l10n.guideSavedFilterSaveFailed),
+                      ),
+                    ),
+                  ),
                 if (PlatformDetection.isTV)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
