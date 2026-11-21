@@ -23,9 +23,8 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {}
 /// Client side of the push notification path. The plugin sends FCM messages
 /// carrying both a notification block (title/body) and a data route, so the OS
 /// renders background/terminated notifications and this service only handles
-/// token registration and taps. Foreground messages are forwarded to
-/// SeerrNotificationService so the user sees an in-app banner and local
-/// notification even if the settings stream is not connected.
+/// token registration and taps. Foreground messages go to the in-app alerts,
+/// which drop them when the SSE settings stream already showed the same one.
 ///
 /// Firebase stays untouched until a signed-in server's plugin can deliver
 /// push, so a phone that never meets one never contacts Google.
@@ -94,10 +93,7 @@ class PushMessagingService extends ChangeNotifier {
       _registerToken(token);
     });
 
-    // Foreground messages are forwarded to SeerrNotificationService so the user
-    // sees an in-app banner and local notification even if the settings stream
-    // is closed or reconnecting.
-    FirebaseMessaging.onMessage.listen(handleForegroundMessage);
+    FirebaseMessaging.onMessage.listen(_showForegroundMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _navigateFromMessage(message);
@@ -258,27 +254,18 @@ class PushMessagingService extends ChangeNotifier {
     unawaited(openLinkedRoute(appRouter, trimmed));
   }
 
-  @visibleForTesting
-  static void handleForegroundMessage(RemoteMessage message) {
-    final notification = message.notification;
-    final title =
-        notification?.title ?? message.data['title']?.toString() ?? '';
-    final body =
-        notification?.body ?? message.data['body']?.toString() ?? '';
-    final route = message.data['route']?.toString() ?? '';
-    final requestId = message.data['requestId']?.toString();
-    final kind = message.data['kind']?.toString();
-
-    if (title.isNotEmpty || body.isNotEmpty) {
-      if (GetIt.instance.isRegistered<SeerrNotificationService>()) {
-        GetIt.instance<SeerrNotificationService>().show(
-          title,
-          body,
-          route,
-          requestId: requestId,
-          isRequest: kind == 'request',
-        );
-      }
-    }
+  static void _showForegroundMessage(RemoteMessage message) {
+    if (!GetIt.instance.isRegistered<SeerrNotificationService>()) return;
+    final route = message.data['route'];
+    final requestId = message.data['requestId'];
+    unawaited(
+      GetIt.instance<SeerrNotificationService>().showPush(
+        message.notification?.title ?? '',
+        message.notification?.body ?? '',
+        route is String ? route : '',
+        requestId: requestId is String ? requestId : null,
+        isRequest: message.data['kind'] == 'request',
+      ),
+    );
   }
 }

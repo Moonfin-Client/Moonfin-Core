@@ -1,299 +1,124 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:fake_async/fake_async.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/services/seerr_notification_service.dart';
 
-class _RecordedNotification {
-  final int id;
-  final String title;
-  final String body;
-  final NotificationDetails details;
-  final String? payload;
+class _RecordingService extends SeerrNotificationService {
+  final shown = <String>[];
+  final requestIds = <String?>[];
 
-  _RecordedNotification({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.details,
-    required this.payload,
-  });
+  @override
+  void present(
+    String title,
+    String body,
+    String route, {
+    String? requestId,
+    bool isRequest = false,
+  }) {
+    shown.add('$title|$body|$route');
+    requestIds.add(requestId);
+  }
 }
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  const wait = SeerrNotificationService.pushWait;
 
-  late SeerrNotificationService service;
-
-  setUp(() {
-    service = SeerrNotificationService();
+  test('a push with no stream copy shows after the wait', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.showPush('Moonfin Push Test', 'Working', '');
+      async.elapse(wait - const Duration(milliseconds: 1));
+      expect(service.shown, isEmpty);
+      async.elapse(const Duration(milliseconds: 1));
+      expect(service.shown, ['Moonfin Push Test|Working|']);
+    });
   });
 
-  tearDown(() {
-    debugDefaultTargetPlatformOverride = null;
+  test('repeated pushes with no stream copy all show', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.showPush('Moonfin Push Test', 'Working', '');
+      async.elapse(wait);
+      service.showPush('Moonfin Push Test', 'Working', '');
+      async.elapse(wait);
+      expect(service.shown, hasLength(2));
+    });
   });
 
-  test('show deduplicates identical notifications within window and clears properly', () {
-    expect(service.recentEventsCount, equals(0));
-
-    service.show('Title 1', 'Body 1', '/route/1');
-    expect(service.recentEventsCount, equals(1));
-
-    // Second identical call within window is ignored
-    service.show('Title 1', 'Body 1', '/route/1');
-    expect(service.recentEventsCount, equals(1));
-
-    // A different notification is accepted
-    service.show('Title 2', 'Body 2', '/route/2');
-    expect(service.recentEventsCount, equals(2));
-
-    service.clearRecentEvents();
-    expect(service.recentEventsCount, equals(0));
-
-    // After clearing, Title 1 is accepted again
-    service.show('Title 1', 'Body 1', '/route/1');
-    expect(service.recentEventsCount, equals(1));
+  test('a push after its stream copy stays quiet', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.show('Request approved', 'Dune', '/seerr/movie/1');
+      async.elapse(const Duration(seconds: 20));
+      service.showPush('Request approved', 'Dune', '/seerr/movie/1');
+      async.elapse(wait);
+      expect(service.shown, ['Request approved|Dune|/seerr/movie/1']);
+    });
   });
 
-  test('distinct notifications sharing a route get distinct IDs and do not collide', () {
-    final recorded = <_RecordedNotification>[];
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
-    service.localNotificationPresenter = ({
-      required id,
-      required title,
-      required body,
-      required notificationDetails,
-      payload,
-    }) async {
-      recorded.add(
-        _RecordedNotification(
-          id: id,
-          title: title,
-          body: body,
-          details: notificationDetails,
-          payload: payload,
-        ),
+  test('a push that beats its stream copy stays quiet and keeps the actions',
+      () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.showPush('New request', 'Dune', '/seerr/movie/1');
+      async.elapse(const Duration(seconds: 1));
+      service.show(
+        'New request',
+        'Dune',
+        '/seerr/movie/1',
+        requestId: '7',
+        isRequest: true,
       );
-    };
-
-    service.show('Movie A', 'Added Movie A', '/library');
-    service.show('Movie B', 'Added Movie B', '/library');
-
-    expect(recorded.length, equals(2));
-    expect(recorded[0].id, isNot(equals(recorded[1].id)));
+      async.elapse(wait);
+      expect(service.shown, hasLength(1));
+      expect(service.requestIds, ['7']);
+    });
   });
 
-  test('show upgrades local notification with request metadata, actions, cancellation, and silent alert', () {
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+  test('a push whose body differs from its stream copy still matches', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.show('Stuck downloads', 'Dune on /mnt/a', '/seerr/downloads');
+      service.showPush('Stuck downloads', 'Dune', '/seerr/downloads');
+      async.elapse(wait);
+      expect(service.shown, hasLength(1));
+    });
+  });
 
-    final presentedNotifications = <_RecordedNotification>[];
-    final cancelledIds = <int>[];
-    final presentedBanners = <String>[];
-
-    service.localNotificationPresenter = ({
-      required id,
-      required title,
-      required body,
-      required notificationDetails,
-      payload,
-    }) async {
-      presentedNotifications.add(
-        _RecordedNotification(
-          id: id,
-          title: title,
-          body: body,
-          details: notificationDetails,
-          payload: payload,
-        ),
+  test('a stream copy older than the window no longer quiets a push', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.show('Now available', 'Dune', '/seerr/movie/1');
+      async.elapse(
+        SeerrNotificationService.streamCopyWindow + const Duration(seconds: 1),
       );
-    };
-
-    service.notificationCanceler = (id) async {
-      cancelledIds.add(id);
-    };
-
-    service.bannerPresenter = (title, body, onTap) {
-      presentedBanners.add('$title: $body');
-    };
-
-    // 1. Android FCM push arrives first without requestId
-    service.show(
-      'Movie Requested',
-      'User requested Inception',
-      '/requests/99',
-      requestId: null,
-      isRequest: false,
-    );
-
-    expect(service.recentEventsCount, equals(1));
-    expect(
-      service.hasRequestMetadata('Movie Requested', 'User requested Inception', '/requests/99'),
-      isFalse,
-    );
-    expect(presentedBanners.length, equals(1));
-    expect(presentedNotifications.length, equals(1));
-    expect(cancelledIds, isEmpty);
-
-    // Initial non-request notification has no actions
-    final initial = presentedNotifications.first;
-    final expectedNonRequestId = 'Movie Requested\x1fUser requested Inception\x1f/requests/99'.hashCode;
-    expect(initial.id, equals(expectedNonRequestId));
-    expect(initial.payload, equals('/requests/99'));
-    expect(initial.details.android?.actions, isEmpty);
-    expect(initial.details.android?.playSound, isTrue);
-    expect(initial.details.android?.onlyAlertOnce, isFalse);
-    expect(initial.details.android?.silent, isFalse);
-    expect(initial.details.iOS?.presentBanner, isTrue);
-
-    // 2. Stream event arrives with requestId populated
-    service.show(
-      'Movie Requested',
-      'User requested Inception',
-      '/requests/99',
-      requestId: '99',
-      isRequest: true,
-    );
-
-    // Deduplication key matches, so metadata upgraded
-    expect(service.recentEventsCount, equals(1));
-    expect(
-      service.hasRequestMetadata('Movie Requested', 'User requested Inception', '/requests/99'),
-      isTrue,
-    );
-
-    // Banner is suppressed on upgrade
-    expect(presentedBanners.length, equals(1));
-
-    // Old non-request notification was cancelled
-    expect(cancelledIds, contains(expectedNonRequestId));
-
-    // Upgraded notification was posted with request actions and silent alert
-    expect(presentedNotifications.length, equals(2));
-    final upgraded = presentedNotifications[1];
-    expect(upgraded.id, equals('99'.hashCode));
-    expect(
-      upgraded.payload,
-      equals(jsonEncode({'route': '/requests/99', 'requestId': '99', 'kind': 'request'})),
-    );
-
-    final actions = upgraded.details.android?.actions ?? [];
-    expect(actions.length, equals(2));
-    expect(actions.map((a) => a.id).toList(), equals(['approve', 'decline']));
-
-    // Silent upgrade options are applied to avoid alerting twice
-    expect(upgraded.details.android?.onlyAlertOnce, isTrue);
-    expect(upgraded.details.android?.playSound, isFalse);
-    expect(upgraded.details.android?.enableVibration, isFalse);
-    expect(upgraded.details.android?.silent, isTrue);
-    expect(upgraded.details.android?.importance, equals(Importance.low));
-    expect(upgraded.details.iOS?.presentSound, isFalse);
-    expect(upgraded.details.iOS?.presentBanner, isFalse);
-
-    // 3. Identical duplicate repeats remain completely suppressed
-    service.show(
-      'Movie Requested',
-      'User requested Inception',
-      '/requests/99',
-      requestId: '99',
-      isRequest: true,
-    );
-    expect(presentedNotifications.length, equals(2));
-    expect(presentedBanners.length, equals(1));
+      service.showPush('Now available', 'Dune', '/seerr/movie/1');
+      async.elapse(wait);
+      expect(service.shown, hasLength(2));
+    });
   });
 
-  group('handleColdStart', () {
-    test('routes serverMessagesPushRoute to serverMessagesOpener', () async {
-      var messagesOpened = false;
-      String? routedPath;
-
-      service.launchRouteResolver = () async => 'messages';
-      service.serverMessagesOpener = () => messagesOpened = true;
-      service.routeNavigator = (route) => routedPath = route;
-
-      await service.handleColdStart();
-
-      expect(messagesOpened, isTrue);
-      expect(routedPath, isNull);
+  test("a stream copy for another route doesn't quiet a push", () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.show('Now available', 'Dune', '/seerr/movie/1');
+      service.showPush('Now available', 'Arrival', '/seerr/movie/2');
+      async.elapse(wait);
+      expect(service.shown, hasLength(2));
     });
+  });
 
-    test('waits for navigator to mount before opening server messages dialog', () async {
-      var checkCount = 0;
-      var messagesOpened = false;
-
-      service.launchRouteResolver = () async => 'messages';
-      service.serverMessagesOpener = () => messagesOpened = true;
-      service.isNavigatorMounted = () {
-        checkCount++;
-        return checkCount >= 3;
-      };
-
-      await service.handleColdStart();
-
-      expect(checkCount, equals(3));
-      expect(messagesOpened, isTrue);
-    });
-
-    test('retains route and opens server messages dialog when navigator mounts after five seconds', () {
-      fakeAsync((async) {
-        var mounted = false;
-        var messagesOpened = false;
-
-        service.launchRouteResolver = () async => 'messages';
-        service.serverMessagesOpener = () => messagesOpened = true;
-        service.isNavigatorMounted = () => mounted;
-
-        unawaited(service.handleColdStart());
-        async.elapse(const Duration(milliseconds: 10));
-        expect(messagesOpened, isFalse);
-
-        // Still unmounted after 5 seconds
-        async.elapse(const Duration(seconds: 5));
-        expect(messagesOpened, isFalse);
-
-        // Mounts at 7 seconds (> 5 seconds)
-        async.elapse(const Duration(seconds: 2));
-        expect(messagesOpened, isFalse);
-
-        mounted = true;
-        async.elapse(const Duration(milliseconds: 100));
-
-        expect(messagesOpened, isTrue);
-      });
-    });
-
-    test('routes standard launch routes to routeNavigator', () async {
-      var messagesOpened = false;
-      String? routedPath;
-
-      service.launchRouteResolver = () async => ' /movie/42 ';
-      service.serverMessagesOpener = () => messagesOpened = true;
-      service.routeNavigator = (route) => routedPath = route;
-
-      await service.handleColdStart();
-
-      expect(messagesOpened, isFalse);
-      expect(routedPath, equals('/movie/42'));
-    });
-
-    test('handles null and empty launch routes gracefully', () async {
-      var messagesOpened = false;
-      String? routedPath;
-
-      service.serverMessagesOpener = () => messagesOpened = true;
-      service.routeNavigator = (route) => routedPath = route;
-
-      service.launchRouteResolver = () async => null;
-      await service.handleColdStart();
-      expect(messagesOpened, isFalse);
-      expect(routedPath, isNull);
-
-      service.launchRouteResolver = () async => '   ';
-      await service.handleColdStart();
-      expect(messagesOpened, isFalse);
-      expect(routedPath, isNull);
+  test('server message, watch party and empty pushes never show', () {
+    fakeAsync((async) {
+      final service = _RecordingService();
+      service.showPush('Message from your server', 'Hi', 'messages');
+      service.showPush(
+        'Ana started a watch party',
+        'Dune',
+        '/watch-party?code=AB12',
+      );
+      service.showPush('', '', '/seerr/movie/1');
+      async.elapse(wait);
+      expect(service.shown, isEmpty);
     });
   });
 }

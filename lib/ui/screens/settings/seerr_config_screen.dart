@@ -12,7 +12,6 @@ import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/local_notification_bootstrap.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/push_messaging_service.dart';
-import '../../../data/services/seerr_notification_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_models.dart';
 import '../../../l10n/app_localizations.dart';
@@ -334,10 +333,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     if (_sendingTestNotification) return;
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
-
-    if (GetIt.instance.isRegistered<SeerrNotificationService>()) {
-      GetIt.instance<SeerrNotificationService>().clearRecentEvents();
-    }
 
     setState(() => _sendingTestNotification = true);
     try {

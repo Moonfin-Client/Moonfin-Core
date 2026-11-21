@@ -1025,6 +1025,12 @@ void main() async {
     await _restoreWindowGeometry();
   }
 
+  // Audio and notification services are only needed once playback or a
+  // download can happen, so they initialize after the first frame.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_initDeferredStartupServices(prefs));
+  });
+
   // tvOS: keep the system Now Playing card fed for music (the native
   // NowPlayingController handles video; audio has no view controller to feed it).
   if (PlatformDetection.isAppleTV &&
@@ -1052,12 +1058,6 @@ void main() async {
   DeviceHinge.init();
 
   runApp(const MoonfinApp());
-
-  // Audio and notification services are only needed once playback or a
-  // download can happen, so they initialize after the first frame.
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    unawaited(_initDeferredStartupServices(prefs));
-  });
 }
 
 /// Startup work that runs after the first frame. The internal order matters:

@@ -10,7 +10,6 @@ import '../../di/injection.dart';
 import '../../playback/headless_session_bootstrap.dart';
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/deep_link_navigator.dart';
-import '../../ui/widgets/server_messages_dialog.dart';
 import '../repositories/seerr_repository.dart';
 import 'seerr/seerr_http_client.dart';
 import 'seerr/seerr_models.dart';
@@ -87,12 +86,7 @@ String? _requestIdFromPayload(String? payload) {
 
 void _navigate(String? route) {
   if (route == null || route.trim().isEmpty) return;
-  final trimmed = route.trim();
-  if (trimmed == serverMessagesPushRoute) {
-    openServerMessagesFromNotification();
-    return;
-  }
-  unawaited(openLinkedRoute(appRouter, trimmed));
+  unawaited(openLinkedRoute(appRouter, route.trim()));
 }
 
 /// Approves or declines a request without any UI. Prefers the running app's
