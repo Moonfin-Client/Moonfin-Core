@@ -567,16 +567,39 @@ class MultiServerRepository {
     final browseItemTypes = normalizeBrowsableGenreItemTypes(includeItemTypes);
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
+    // Ranking by count needs every genre, and is a full row with no next page.
+    final byCount = sortBy == 'ItemCount';
+    final descending = sortOrder.toLowerCase() == 'descending';
 
     final results = await _gatherPerServer(sessions, (session) async {
-      final response = await session.client.itemsApi.getGenres(
-        sortBy: sortBy,
-        sortOrder: sortOrder,
+      var response = await session.client.itemsApi.getGenres(
+        sortBy: byCount ? _defaultSortBy : sortBy,
+        sortOrder: byCount ? _defaultSortOrder : sortOrder,
         recursive: true,
-        limit: perServer,
+        limit: byCount ? null : perServer,
         fields: 'ItemCounts,PrimaryImageAspectRatio',
         includeItemTypes: browseItemTypes,
       );
+      // Emby sends genres without counts, so each one is counted before ranking.
+      if (byCount && genresLackCounts(response)) {
+        response = await countGenres(
+          session.client.itemsApi,
+          response,
+          includeItemTypes: browseItemTypes,
+          concurrency: _genreArtworkConcurrency,
+        );
+      }
+      if (byCount) {
+        response = {
+          ...response,
+          'Items': topGenresByCount(
+            response,
+            normalizedItemTypes: browseItemTypes,
+            descending: descending,
+            limit: limit,
+          ),
+        };
+      }
       // No server can put more than [limit] genres into the row, and each one
       // costs a request for its artwork, so a big library would otherwise run
       // past the per-server timeout.
@@ -591,16 +614,25 @@ class MultiServerRepository {
       return items;
     }, label: cacheKeyPrefix);
 
-    final all = sortAggregatedItems(
-      results.expand((e) => e).toList(growable: false),
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-    );
+    final combined = results.expand((e) => e).toList();
+    final all = byCount
+        ? (combined..sort(
+            (a, b) => compareGenreCounts(
+              a.rawData,
+              b.rawData,
+              normalizedItemTypes: browseItemTypes,
+              descending: descending,
+            ),
+          ))
+        : sortAggregatedItems(combined, sortBy: sortBy, sortOrder: sortOrder);
 
     final takenItems = all.take(limit).toList();
-    final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
-    });
+    final totalCount = byCount
+        ? takenItems.length
+        : sessions.fold<int>(0, (sum, session) {
+            return sum +
+                (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
+          });
 
     return HomeRow(
       id: cacheKeyPrefix,
@@ -659,7 +691,18 @@ class MultiServerRepository {
             );
             return _parseItems(response, session.server.id);
           }
-          return _collectStudios(selectedSet, session.server.id, fetchPage);
+          final studios = await _collectStudios(
+            selectedSet,
+            session.server.id,
+            fetchPage,
+          );
+          if (sortBy == 'ItemCount') {
+            await countStudios(
+              session.client.itemsApi,
+              studios.map((s) => s.rawData),
+            );
+          }
+          return studios;
         }, label: '$cacheKeyPrefix from ${session.server.name}'),
       ),
     );

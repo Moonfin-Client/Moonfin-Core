@@ -1549,8 +1549,11 @@ class HomeViewModel extends ChangeNotifier {
     bool forceRefresh = false,
     (LibrarySortBy, SortDirection)? sort,
   }) async {
-    String sortBy(Preference<LibrarySortBy> saved) =>
-        (sort?.$1 ?? _prefs.get<LibrarySortBy>(saved)).apiValue;
+    // Studios and Genres rank in the app; the rest pass it to the server.
+    String sortBy(Preference<LibrarySortBy> saved, {bool inApp = false}) {
+      final value = sort?.$1 ?? _prefs.get<LibrarySortBy>(saved);
+      return inApp ? value.rowSortValue : value.apiValue;
+    }
     String sortOrder(Preference<SortDirection> saved) =>
         (sort?.$2 ?? _prefs.get<SortDirection>(saved)).apiValue;
     final l10n = currentAppLocalizations();
@@ -1560,7 +1563,7 @@ class HomeViewModel extends ChangeNotifier {
     final collectionsSortOrder = sortOrder(
       UserPreferences.collectionsRowSortOrder,
     );
-    final genresSortBy = sortBy(UserPreferences.genresRowSortBy);
+    final genresSortBy = sortBy(UserPreferences.genresRowSortBy, inApp: true);
     final genresSortOrder = sortOrder(UserPreferences.genresRowSortOrder);
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)
@@ -1735,7 +1738,10 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.studios:
-        final studiosSortBy = sortBy(UserPreferences.studiosRowSortBy);
+        final studiosSortBy = sortBy(
+          UserPreferences.studiosRowSortBy,
+          inApp: true,
+        );
         final studiosSortOrder = sortOrder(UserPreferences.studiosRowSortOrder);
         final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
         final logoUrls = GetIt.instance<TmdbRepository>().getStudioLogoUrls();

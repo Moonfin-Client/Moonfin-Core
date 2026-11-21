@@ -3,12 +3,23 @@ import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/aggregated_item_sort.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 
-AggregatedItem _studio(String name, {String? sortName, String? added}) =>
-    AggregatedItem(
-      id: name,
-      serverId: 'server',
-      rawData: {'Name': name, 'SortName': ?sortName, 'DateCreated': ?added},
-    );
+AggregatedItem _studio(
+  String name, {
+  String? sortName,
+  String? added,
+  int? movies,
+  int? series,
+}) => AggregatedItem(
+  id: name,
+  serverId: 'server',
+  rawData: {
+    'Name': name,
+    'SortName': ?sortName,
+    'DateCreated': ?added,
+    'MovieCount': ?movies,
+    'SeriesCount': ?series,
+  },
+);
 
 void main() {
   test('date added puts the newest picked studio first', () {
@@ -49,5 +60,35 @@ void main() {
       sortOrder: 'Ascending',
     );
     expect(sorted.map((s) => s.name), ['The Asylum', 'Pixar']);
+  });
+
+  test('item count ranks studios by their movies and shows together', () {
+    final sorted = sortAggregatedItems(
+      [
+        _studio('A24', movies: 3),
+        _studio('HBO', series: 2, movies: 4),
+        _studio('Pixar', movies: 5),
+        _studio('Unknown'),
+      ],
+      sortBy: 'ItemCount',
+      sortOrder: 'Descending',
+    );
+    expect(sorted.map((s) => s.name), ['HBO', 'Pixar', 'A24', 'Unknown']);
+  });
+
+  test('a studio counted on its own ranks by that total', () {
+    final sorted = sortAggregatedItems(
+      [
+        _studio('A24', movies: 3),
+        AggregatedItem(
+          id: 'Toho',
+          serverId: 'server',
+          rawData: {'Name': 'Toho', 'ChildCount': 56},
+        ),
+      ],
+      sortBy: 'ItemCount',
+      sortOrder: 'Descending',
+    );
+    expect(sorted.map((s) => s.name), ['Toho', 'A24']);
   });
 }

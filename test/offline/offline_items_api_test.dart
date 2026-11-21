@@ -400,6 +400,41 @@ void main() {
     expect(byName['Drama']!['MovieCount'], 1);
   });
 
+  test('getStudios counts the movies and series downloaded from each', () async {
+    await insert(
+      id: 'm1',
+      type: 'Movie',
+      name: 'A',
+      metadata: {
+        'Studios': [
+          {'Name': 'Toho'},
+          {'Name': 'toho'},
+        ],
+      },
+    );
+    await insert(
+      id: 's1',
+      type: 'Series',
+      name: 'B',
+      metadata: {
+        'Studios': [
+          {'Name': 'Toho'},
+          {'Name': 'MAPPA'},
+        ],
+      },
+    );
+    await catalog.warm();
+
+    final studios = await api.getStudios(
+      includeItemTypes: const ['Movie', 'Series'],
+    );
+    final byName = {for (final s in items(studios)) s['Name'] as String: s};
+    expect(byName.keys.toList(), ['MAPPA', 'Toho']);
+    expect(byName['Toho'], containsPair('MovieCount', 1));
+    expect(byName['Toho'], containsPair('SeriesCount', 1));
+    expect(byName['MAPPA'], containsPair('SeriesCount', 1));
+  });
+
   test('getLatestItems collapses episodes into series', () async {
     await insert(id: 's1', type: 'Series', name: 'Show');
     await insert(

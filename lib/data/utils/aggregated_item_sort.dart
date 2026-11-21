@@ -64,6 +64,12 @@ List<AggregatedItem> sortAggregatedItems(
           b.runTimeTicks?.toDouble(),
           descending: descending,
         );
+      case 'ItemCount':
+        return _compareNullableNum(
+          _titleCount(a),
+          _titleCount(b),
+          descending: descending,
+        );
       case 'ProductionYear':
         return _compareNullableNum(
           a.productionYear?.toDouble(),
@@ -92,4 +98,14 @@ int _compareNullableNum(double? a, double? b, {bool descending = false}) {
   if (a == null && b == null) return 0;
   final ascending = a == null ? -1 : (b == null ? 1 : a.compareTo(b));
   return descending ? -ascending : ascending;
+}
+
+// Movies and series, or the total a studio was counted with on its own.
+double _titleCount(AggregatedItem item) {
+  final data = item.rawData;
+  if (data['MovieCount'] == null && data['SeriesCount'] == null) {
+    return (data['ChildCount'] as num? ?? 0).toDouble();
+  }
+  return ((data['MovieCount'] as num? ?? 0) + (data['SeriesCount'] as num? ?? 0))
+      .toDouble();
 }

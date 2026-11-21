@@ -193,4 +193,76 @@ void main() {
     expect(row.items, hasLength(15));
     expect(row.totalCount, 36);
   });
+
+  test('a server whose genres all fail to count fails, not an empty row', () async {
+    when(
+      () => genresCall(itemsApis['b']!),
+    ).thenAnswer((_) async => throw Exception('down'));
+    final emby = itemsApis['a']!;
+    when(() => genresCall(emby)).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'a-genre-0', 'Name': 'a genre 0', 'Type': 'Genre'},
+        ],
+        'TotalRecordCount': 1,
+      },
+    );
+    when(() => artworkCall(emby)).thenThrow(Exception('down'));
+
+    await expectLater(
+      multiServer.getAggregatedGenres(
+        sortBy: 'ItemCount',
+        sortOrder: 'Descending',
+      ),
+      throwsStateError,
+    );
+  });
+
+  // Emby lists genres without counts, so ranking by count needs each counted.
+  test("ranks a server's uncounted genres by item count within its time", () {
+    fakeAsync((async) {
+      stubGenres('b', 2);
+      final emby = itemsApis['a']!;
+      when(() => genresCall(emby)).thenAnswer(
+        (_) async => {
+          'Items': [
+            for (var i = 0; i < 40; i++)
+              {'Id': 'a-genre-$i', 'Name': 'a genre $i', 'Type': 'Genre'},
+          ],
+          'TotalRecordCount': 40,
+        },
+      );
+      var artworkCalls = 0;
+      when(() => artworkCall(emby)).thenAnswer((invocation) async {
+        final id = (invocation.namedArguments[#genreIds] as List).single;
+        final total = id == 'a-genre-37' ? 50 : 1;
+        if (invocation.namedArguments[#limit] == 1) {
+          await Future<void>.delayed(const Duration(milliseconds: 300));
+          return {'Items': const <dynamic>[], 'TotalRecordCount': total};
+        }
+        artworkCalls++;
+        return {
+          'Items': [
+            {'Id': '$id-movie', 'Type': 'Movie', 'Name': 'movie'},
+          ],
+          'TotalRecordCount': total,
+        };
+      });
+
+      HomeRow? row;
+      multiServer
+          .getAggregatedGenres(
+            limit: 15,
+            sortBy: 'ItemCount',
+            sortOrder: 'Descending',
+          )
+          .then((value) => row = value);
+      async.elapse(const Duration(seconds: 7));
+
+      expect(row, isNotNull);
+      expect(row!.items.first.id, 'a-genre-37');
+      expect(row!.items.map((item) => item.serverId).toSet(), {'a', 'b'});
+      expect(artworkCalls, 15);
+    });
+  });
 }

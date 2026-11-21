@@ -520,6 +520,11 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       title: l10n.collectionsRowSorting,
                       description: l10n.collectionsRowSortingDescription,
                       icon: Icons.sort,
+                      // Item count is for studios and genres only.
+                      values: [
+                        for (final v in LibrarySortBy.values)
+                          if (v != LibrarySortBy.itemCount) v,
+                      ],
                       labelOf: (v) => librarySortLabel(v, l10n),
                       onChanged: _onCollectionsSortChanged,
                     ),
@@ -594,7 +599,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       title: l10n.genresRowSorting,
                       description: l10n.genresRowSortingDescription,
                       icon: Icons.sort,
-                      values: LibrarySortBy.itemsApiValues,
+                      values: LibrarySortBy.genreValues,
                       labelOf: (v) => librarySortLabel(v, l10n),
                       onChanged: _onGenresSortChanged,
                     ),
@@ -637,6 +642,11 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                         title: l10n.playlistsRowSorting,
                         description: l10n.playlistsRowSortingDescription,
                         icon: Icons.sort,
+                        // Item count is for studios and genres only.
+                        values: [
+                          for (final v in LibrarySortBy.values)
+                            if (v != LibrarySortBy.itemCount) v,
+                        ],
                         labelOf: (v) => librarySortLabel(v, l10n),
                         onChanged: _onPlaylistsSortChanged,
                       ),
@@ -816,6 +826,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       values: [
                         LibrarySortBy.name,
                         if (studiosPicked) LibrarySortBy.dateAdded,
+                        if (studiosPicked) LibrarySortBy.itemCount,
                         LibrarySortBy.random,
                       ],
                       labelOf: (v) => librarySortLabel(v, l10n),

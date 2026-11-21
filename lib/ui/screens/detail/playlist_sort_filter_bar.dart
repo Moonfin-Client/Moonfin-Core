@@ -47,6 +47,7 @@ String librarySortLabel(LibrarySortBy sortBy, AppLocalizations l10n) {
     LibrarySortBy.trackNumber => l10n.librarySortTrackNumber,
     LibrarySortBy.genre => l10n.librarySortGenre,
     LibrarySortBy.foldersFirst => l10n.librarySortFoldersFirst,
+    LibrarySortBy.itemCount => l10n.itemCount,
   };
 }
 
