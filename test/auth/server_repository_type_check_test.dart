@@ -73,7 +73,7 @@ void main() {
     expect(store.saved.single.serverType, ServerType.emby);
   });
 
-  test('the correction keeps an address saved while it was checked', () async {
+  test('a type found at an address the server left is not applied', () async {
     routes = {'/System/Info/Public': embyInfo};
     final repo = ServerRepository(store, factory);
     await repo.saveServer(saved(ServerType.jellyfin));
@@ -86,9 +86,11 @@ void main() {
     );
     final checked = await checking;
 
-    expect(checked.serverType, ServerType.emby);
+    // What answered was the old address, not the server where it is now.
+    expect(checked.serverType, ServerType.jellyfin);
     expect(checked.address, 'http://127.0.0.1:2');
     expect(store.saved.last.address, 'http://127.0.0.1:2');
+    expect(repo.getServer('server-1')!.serverType, ServerType.jellyfin);
     expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:2');
   });
 

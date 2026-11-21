@@ -380,6 +380,8 @@ class ConnectivityService extends ChangeNotifier {
       // probe. A later answer is still saved, so the next probe uses it.
       final moved = await getIt<ServerRepository>()
           .followEntryAddressOf(serverId)
+          // A Future<String> underneath can't time out to null.
+          .then<String?>((address) => address)
           .timeout(_entryAskLimit, onTimeout: () => null);
       if (moved == null) return false;
       if (client.baseUrl != moved) client.baseUrl = moved;
