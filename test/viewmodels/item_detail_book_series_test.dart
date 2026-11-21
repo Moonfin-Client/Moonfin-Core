@@ -109,6 +109,7 @@ void main() {
     userLibraryApi = _UserLibraryApi();
     when(() => client.itemsApi).thenReturn(itemsApi);
     when(() => client.userLibraryApi).thenReturn(userLibraryApi);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => userLibraryApi.markFavorite(any())).thenAnswer((_) async {});
     when(() => userLibraryApi.markPlayed(any())).thenAnswer((_) async {});

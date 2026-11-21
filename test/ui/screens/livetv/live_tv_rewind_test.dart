@@ -192,6 +192,7 @@ void main() {
     when(() => userLibrary.markFavorite(any())).thenAnswer((_) async {});
     when(() => userLibrary.unmarkFavorite(any())).thenAnswer((_) async {});
     final client = _Client();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userLibraryApi).thenReturn(userLibrary);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user');

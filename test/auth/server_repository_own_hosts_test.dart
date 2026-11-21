@@ -33,6 +33,17 @@ void main() {
         dateAdded: DateTime(2026),
       ),
     );
+    await repo.saveServer(
+      Server(
+        id: 'plex-cloud',
+        name: 'Plex Free TV',
+        address: 'https://plex.tv',
+        cloudOnly: true,
+        version: '',
+        serverType: ServerType.plex,
+        dateAdded: DateTime(2026),
+      ),
+    );
     await repo.addServer('http://127.0.0.1:1');
 
     gAllowSelfSignedCertificates = true;

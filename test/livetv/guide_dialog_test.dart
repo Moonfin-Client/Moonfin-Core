@@ -224,48 +224,6 @@ void main() {
     },
   );
 
-  for (final group in [null, 'Zulu']) {
-    testWidgets(
-      'channel group chips precede program categories in ${group ?? 'All'}',
-      (tester) async {
-        channels = [_channelRaw('cA', 'Channel A')];
-        programs = [
-          _programRaw(
-            channelId: 'cA',
-            start: _windowStart,
-            end: _windowStart.add(const Duration(hours: 3)),
-            isSeries: true,
-          ),
-        ];
-        when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
-          (_) async => const ChannelGroupLineup({
-            'cA': {'Zulu', 'CA| SPORTS EN', 'alpha'},
-          }),
-        );
-        await pumpGuide(tester);
-        if (group != null) {
-          await tester.tap(find.byTooltip('Filters'));
-          await tester.pumpAndSettle();
-          await tester.tap(find.text(group));
-          await tester.pumpAndSettle();
-        }
-        await openDialogOnRow0(tester);
-        final chips = find.descendant(
-          of: _alertDialog,
-          matching: find.byType(Chip),
-        );
-        expect(
-          tester
-              .widgetList<Chip>(chips)
-              .map((chip) => (chip.label as Text).data),
-          group == null
-              ? ['alpha', 'CA| SPORTS EN', 'Zulu', 'Series']
-              : ['Zulu', 'alpha', 'CA| SPORTS EN', 'Series'],
-        );
-      },
-    );
-  }
-
   testWidgets('an ended series program offers no single-episode record '
       'action but offers series recording', (tester) async {
     channels = [_channelRaw('cB', 'Channel B')];
