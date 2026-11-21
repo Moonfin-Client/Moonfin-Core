@@ -11,6 +11,7 @@ import '../../widgets/identify_dialog.dart';
 import '../../widgets/media_badge.dart';
 import '../admin/admin_nav.dart' show adminServerSupported;
 import 'detail_admin_actions.dart';
+import 'detail_backdrop_target.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -526,10 +527,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       return;
     }
     if (item != null) {
+      final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
       bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
-      if (item.type == 'Playlist' &&
-          _viewModel.tracks.isNotEmpty &&
-          _lastFocusedBackdropItemId == null) {
+      if (useTrackBackdrop && _lastFocusedBackdropItemId == null) {
         needInitialBackdrop = true;
       }
 
@@ -537,9 +537,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _lastDetailBackdropItemId = item.id;
         _focusedPrimaryBackdropUrlCache.clear();
 
-        final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
-            ? _viewModel.tracks.first
-            : item;
+        final target = backdropTargetFor(item, _viewModel.tracks);
         if (!widget.quickLook) {
           _backgroundService.setBackground(
             target,
@@ -548,7 +546,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _backdropUrl.value = _backgroundService.currentUrl;
         }
 
-        if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {
+        if (useTrackBackdrop) {
           _onBackdropItemFocused(_viewModel.tracks.first);
         }
 
