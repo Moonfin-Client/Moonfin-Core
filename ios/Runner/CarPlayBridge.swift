@@ -172,7 +172,7 @@ final class CarPlayBridge: NSObject {
     case "tab|home": return "play.circle"
     case "tab|music": return "music.note"
     case "tab|books": return "book"
-    case "tab|playlists": return "music.note.list"
+    case "tab|downloads": return "arrow.down.circle"
     default: return "music.note"
     }
   }

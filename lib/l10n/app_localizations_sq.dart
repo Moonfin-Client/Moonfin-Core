@@ -1969,6 +1969,15 @@ class AppLocalizationsSq extends AppLocalizations {
   String get carServerUnreachable => 'Serveri juaj nuk arrihet';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count shkarkime';
   }

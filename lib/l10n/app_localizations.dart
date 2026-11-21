@@ -3418,6 +3418,24 @@ abstract class AppLocalizations {
   /// **'Can\'t reach your server'**
   String get carServerUnreachable;
 
+  /// Car tab with quick starts, recently played and in-progress items
+  ///
+  /// In en, this message translates to:
+  /// **'Listen Now'**
+  String get carListenNow;
+
+  /// Car shelf and tile listing the music played most recently
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Played'**
+  String get carRecentlyPlayed;
+
+  /// Car tile that plays a mix of similar songs, seeded from the last song played
+  ///
+  /// In en, this message translates to:
+  /// **'Instant Mix'**
+  String get carInstantMix;
+
   /// Subtitle showing number of downloads for a remote subtitle
   ///
   /// In en, this message translates to:

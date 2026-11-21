@@ -1927,6 +1927,15 @@ class AppLocalizationsYue extends AppLocalizations {
   String get carServerUnreachable => '連唔到你個伺服器';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count 次下載';
   }

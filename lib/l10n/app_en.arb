@@ -2587,6 +2587,18 @@
   "@carServerUnreachable": {
     "description": "Shown in the car when the media server can't be reached"
   },
+  "carListenNow": "Listen Now",
+  "@carListenNow": {
+    "description": "Car tab with quick starts, recently played and in-progress items"
+  },
+  "carRecentlyPlayed": "Recently Played",
+  "@carRecentlyPlayed": {
+    "description": "Car shelf and tile listing the music played most recently"
+  },
+  "carInstantMix": "Instant Mix",
+  "@carInstantMix": {
+    "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
+  },
   "downloadsCount": "{count} downloads",
   "@downloadsCount": {
     "description": "Subtitle showing number of downloads for a remote subtitle",

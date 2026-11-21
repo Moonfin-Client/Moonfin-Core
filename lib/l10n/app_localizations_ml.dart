@@ -1970,6 +1970,15 @@ class AppLocalizationsMl extends AppLocalizations {
       'നിങ്ങളുടെ സെർവറിലേക്ക് എത്താൻ കഴിയുന്നില്ല';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count ഡൗൺലോഡുകൾ';
   }

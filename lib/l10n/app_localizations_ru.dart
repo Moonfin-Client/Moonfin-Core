@@ -1975,6 +1975,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get carServerUnreachable => 'Сервер недоступен';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return 'Скачиваний: $count';
   }

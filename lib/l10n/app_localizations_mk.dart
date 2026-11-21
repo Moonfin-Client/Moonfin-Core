@@ -1967,6 +1967,15 @@ class AppLocalizationsMk extends AppLocalizations {
   String get carServerUnreachable => 'Не може да се пристапи до вашиот сервер';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count преземања';
   }

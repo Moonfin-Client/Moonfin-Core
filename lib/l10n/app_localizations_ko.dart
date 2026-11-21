@@ -1927,6 +1927,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get carServerUnreachable => '서버에 연결할 수 없습니다';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '다운로드 $count회';
   }

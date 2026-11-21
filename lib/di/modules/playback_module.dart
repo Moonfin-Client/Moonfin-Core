@@ -756,6 +756,7 @@ void registerPlaybackModule() {
       _getIt<HeadlessSessionBootstrap>(),
       _getIt<AudiobookResumeService>(),
       _getIt<LastPlaybackSessionStore>(),
+      _getIt<OfflineRepository>(),
     ),
   );
   _getIt.registerLazySingleton<SleepTimerController>(

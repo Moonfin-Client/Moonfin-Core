@@ -2033,6 +2033,15 @@ class AppLocalizationsHr extends AppLocalizations {
   String get carServerUnreachable => 'Poslužitelj nije dostupan';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

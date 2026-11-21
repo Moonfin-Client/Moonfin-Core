@@ -1964,6 +1964,15 @@ class AppLocalizationsTe extends AppLocalizations {
   String get carServerUnreachable => 'మీ సర్వర్‌ను చేరుకోలేకపోతోంది';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count డౌన్‌లోడ్‌లు';
   }

@@ -1916,6 +1916,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get carServerUnreachable => '无法连接到服务器';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count 次下载';
   }

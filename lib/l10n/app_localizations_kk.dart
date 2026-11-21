@@ -1962,6 +1962,15 @@ class AppLocalizationsKk extends AppLocalizations {
   String get carServerUnreachable => 'Серверге қосылу мүмкін емес';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count жүктеу';
   }

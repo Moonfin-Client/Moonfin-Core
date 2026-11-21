@@ -1956,6 +1956,15 @@ class AppLocalizationsSi extends AppLocalizations {
   String get carServerUnreachable => 'ඔබේ සේවාදායකයට ළඟා විය නොහැක';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return 'බාගැනීම් $count';
   }

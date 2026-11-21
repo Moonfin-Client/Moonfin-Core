@@ -1961,6 +1961,15 @@ class AppLocalizationsNb extends AppLocalizations {
   String get carServerUnreachable => 'Får ikke kontakt med serveren';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count nedlastinger';
   }

@@ -1966,6 +1966,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get carServerUnreachable => 'A szervered nem érhető el';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count letöltés';
   }

@@ -4,6 +4,11 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import org.json.JSONObject
@@ -32,6 +37,7 @@ class MoonfinArtProvider : ContentProvider() {
     override fun onCreate(): Boolean = true
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor {
+        if (uri.path == "/letter") return letterTile(uri.getQueryParameter("c"))
         val remote = uri.getQueryParameter("u")
             ?: throw FileNotFoundException("missing url")
         val url = try {
@@ -50,6 +56,38 @@ class MoonfinArtProvider : ContentProvider() {
         val file = File(dir, hashName(remote))
         if (!file.exists() || file.length() == 0L) {
             download(withToken(url), file)
+        }
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+    }
+
+    // The browse-by-letter tiles. The car tints category icons, so this is a
+    // white glyph on a clear background, drawn once and cached. Only '#' and
+    // A-Z are drawn, so nothing else from the URI reaches the canvas.
+    private fun letterTile(raw: String?): ParcelFileDescriptor {
+        val letter = raw?.takeIf { it == "#" || (it.length == 1 && it[0] in 'A'..'Z') }
+            ?: throw FileNotFoundException("bad letter")
+        val ctx = context ?: throw FileNotFoundException("no context")
+        val dir = File(ctx.cacheDir, "carart").apply { mkdirs() }
+        val file = File(dir, "letter_${letter[0].code}.png")
+        if (!file.exists() || file.length() == 0L) {
+            val size = 192
+            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.WHITE
+                textAlign = Paint.Align.CENTER
+                textSize = size * 0.6f
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            val baseline = size / 2f - (paint.descent() + paint.ascent()) / 2f
+            Canvas(bitmap).drawText(letter, size / 2f, baseline, paint)
+            val tmp = File.createTempFile("letter", ".tmp", dir)
+            try {
+                tmp.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                if (!tmp.renameTo(file)) tmp.copyTo(file, overwrite = true)
+            } finally {
+                bitmap.recycle()
+                if (tmp.exists()) tmp.delete()
+            }
         }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }

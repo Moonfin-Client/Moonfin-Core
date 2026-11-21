@@ -116,9 +116,16 @@ class MoonfinAudioHandler extends BaseAudioHandler
     final q = _manager.queueService;
 
     _subs.addAll([
-      s.playingStream.listen((_) {
+      s.playingStream.listen((playing) {
         _pushPlaybackState();
         _updateAudioSession();
+        // A pause is when play history and book positions have moved, so the
+        // car's recents shelves and Continue Listening reload then.
+        if (!playing) {
+          for (final id in _browse.dropRecents()) {
+            notifyChildrenChanged(id);
+          }
+        }
       }),
       s.bufferingStream.listen((_) => _pushPlaybackState()),
       // The MediaSession interpolates the scrubber from the last pushed

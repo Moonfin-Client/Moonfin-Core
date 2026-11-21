@@ -1974,6 +1974,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get carServerUnreachable => 'Nelze se připojit k serveru';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count stahování';
   }

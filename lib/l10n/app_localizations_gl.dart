@@ -1975,6 +1975,15 @@ class AppLocalizationsGl extends AppLocalizations {
   String get carServerUnreachable => 'Non se pode conectar co teu servidor';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count descargas';
   }

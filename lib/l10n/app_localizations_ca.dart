@@ -1973,6 +1973,15 @@ class AppLocalizationsCa extends AppLocalizations {
   String get carServerUnreachable => 'No es pot connectar amb el teu servidor';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count baixades';
   }

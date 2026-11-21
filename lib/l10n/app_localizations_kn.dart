@@ -1964,6 +1964,15 @@ class AppLocalizationsKn extends AppLocalizations {
       'ನಿಮ್ಮ ಸರ್ವರ್ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count ಡೌನ್‌ಲೋಡ್‌ಗಳು';
   }

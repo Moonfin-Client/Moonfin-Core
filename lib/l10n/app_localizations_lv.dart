@@ -1972,6 +1972,15 @@ class AppLocalizationsLv extends AppLocalizations {
   String get carServerUnreachable => 'Nevar sasniegt serveri';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count lejupielādes';
   }

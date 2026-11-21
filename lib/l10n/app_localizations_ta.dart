@@ -1970,6 +1970,15 @@ class AppLocalizationsTa extends AppLocalizations {
   String get carServerUnreachable => 'உங்கள் சர்வரை அணுக முடியவில்லை';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count பதிவிறக்கங்கள்';
   }

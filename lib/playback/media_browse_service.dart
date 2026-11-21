@@ -4,11 +4,14 @@ import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
+import '../data/database/offline_database.dart' show DownloadedItem;
 import '../data/models/aggregated_item.dart';
+import '../data/repositories/offline_repository.dart';
 import '../data/services/audiobook_resume_service.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/current_app_localizations.dart';
+import '../util/playback_time_label.dart';
 import 'car_artwork.dart';
 import 'headless_session_bootstrap.dart';
 import 'last_playback_session_store.dart';
@@ -38,17 +41,25 @@ class _CachedProbe {
   _CachedProbe(this.hasAudio) : fetchedAt = DateTime.now();
 }
 
+typedef _Chapter = ({String name, Duration start, Duration end});
+
 /// Platform-agnostic media browse tree for Android Auto and CarPlay.
 ///
 /// Owns the pipe-delimited mediaId scheme:
 /// ```
-///   tab|home, tab|music, tab|books, tab|playlists
+///   tab|home (Listen Now), tab|music (Library), tab|books, tab|downloads
 ///   sec|albums|<serverId>, sec|artists|<s>, sec|musicplaylists|<s>,
+///   sec|genres|<s>, sec|favorites|<s>, sec|recent|<s>,
 ///   sec|booklib|<s>|<viewId>
-///   album|<s>|<id>, artist|<s>|<id>, playlist|<s>|<id>
+///   album|<s>|<id>, artist|<s>|<id>, playlist|<s>|<id>, genre|<s>|<id>
 ///   track|<s>|<id>|<ctxKind>|<ctxId>   (ctx enables sibling queueing)
-///   book|<s>|<id>, shuffle|<s>|all, msg|<code>
+///   book|<s>|<id>, bookpage|<s>|<id>, bookch|<s>|<id>|<chapterIndex>
+///   shuffle|<s>|all, shuffle|<s>|fav, shuffle|<s>|artist|<id>,
+///   shuffle|<s>|genre|<id>, mix|<s>|<seedId>
+///   dl|<s>|<id>[|<albumId>], dlalbum|<s>|<albumId>, dlshuffle|-|all
+///   msg|<code>
 /// ```
+/// The dl* nodes read the offline database, so they work with no server.
 class MediaBrowseService {
   /// Message ids. A lone message item stands in for a listing that couldn't
   /// load, and each car adapter shows it its own way.
@@ -85,11 +96,24 @@ class MediaBrowseService {
       'android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT';
   static const _kSingleItemStyle =
       'android.media.browse.CONTENT_STYLE_SINGLE_ITEM_HINT';
+  static const _kCompletionStatus = 'android.media.extra.PLAYBACK_STATUS';
+  static const _kCompletionPercentage =
+      'androidx.media.MediaItem.Extras.COMPLETION_PERCENTAGE';
+  static const _partiallyPlayed = 1;
+  static const _fullyPlayed = 2;
+  // Recents shelves sit above the letter tiles, so they stay short.
+  static const _recentShelfMax = 10;
+  static const _topTrackCount = 5;
+  static const _letters = [
+    '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+  ];
 
   final MediaServerClientFactory _clientFactory;
   final HeadlessSessionBootstrap _bootstrap;
   final AudiobookResumeService _resumeService;
   final LastPlaybackSessionStore _lastSessionStore;
+  final OfflineRepository _offline;
 
   final Map<String, _CachedChildren> _cache = {};
   // Concurrent requests for the same node share one fetch: paging hosts fire
@@ -98,12 +122,16 @@ class MediaBrowseService {
   // Dedupes the whole-library fetch per book section (not per letter like
   // _inflight), so opening several letters at once shares one fetch.
   final Map<String, Future<void>> _bucketFills = {};
+  // Listen Now, the album and artist recents and the Recently Played list all
+  // read one play history fetch.
+  ({List<AggregatedItem> items, DateTime fetchedAt})? _recentTracks;
 
   MediaBrowseService(
     this._clientFactory,
     this._bootstrap,
     this._resumeService,
     this._lastSessionStore,
+    this._offline,
   );
 
   void clearCache() {
@@ -111,6 +139,27 @@ class MediaBrowseService {
     _inflight.clear();
     _bucketFills.clear();
     _audioProbes.clear();
+    _recentTracks = null;
+  }
+
+  /// Forgets every cached node that shows play history or book progress and
+  /// returns their ids, so the car can be told to reload them. Letter folders
+  /// and other plain listings stay cached.
+  List<String> dropRecents() {
+    _recentTracks = null;
+    final dropped = _cache.keys.where(_showsRecents).toList();
+    for (final id in dropped) {
+      _cache.remove(id);
+    }
+    return dropped;
+  }
+
+  static bool _showsRecents(String id) {
+    if (id == 'tab|home' || id == 'tab|books') return true;
+    final parts = id.split('|');
+    if (parts.first != 'sec' || parts.contains('az')) return false;
+    const sections = {'albums', 'artists', 'recent', 'booklib'};
+    return sections.contains(parts.elementAtOrNull(1));
   }
 
   // Resolves against the system locale (the car has no widget context); falls
@@ -160,6 +209,17 @@ class MediaBrowseService {
       return _pageOf(cached.items, options);
     }
 
+    if (_isDownloadsNode(parentMediaId)) {
+      try {
+        final items = await _downloadsChildren(parentMediaId);
+        _cache[parentMediaId] = _CachedChildren(items);
+        await CarArtwork.instance.persistHosts();
+        return _pageOf(items, options);
+      } catch (_) {
+        return const [];
+      }
+    }
+
     final List<MediaItem> items;
     try {
       final client = await _client().timeout(_browseTimeout);
@@ -175,7 +235,11 @@ class MediaBrowseService {
       return [_offlineItem];
     }
 
-    _cache[parentMediaId] = _CachedChildren(items);
+    // A book page shows the saved position, so it's fetched fresh every time
+    // the car opens it. It's one small request.
+    if (!parentMediaId.startsWith('bookpage|')) {
+      _cache[parentMediaId] = _CachedChildren(items);
+    }
     await CarArtwork.instance.persistHosts();
     return _pageOf(items, options);
   }
@@ -234,23 +298,34 @@ class MediaBrowseService {
     return marker >= 0 ? parts.elementAtOrNull(marker + 1) : null;
   }
 
-  // The '#' and A-Z folders. [childHints] styles each folder's contents (cover
-  // grid for albums and books, rows for artists). Books bucket these client-side
-  // in _fillBookBuckets, where '#' catches everything that is not A-Z. Albums
-  // and artists still filter server-side, where '#' only covers names before 'A'.
+  // The '#' and A-Z folders, as a compact tile grid under its own heading so
+  // it can follow a recents shelf. [childHints] styles each folder's contents
+  // (cover grid for albums and books, rows for artists). Books bucket these
+  // client-side in _fillBookBuckets, where '#' catches everything that isn't
+  // A-Z. Albums and artists still filter server-side, where '#' only covers
+  // names before 'A'.
   List<MediaItem> _letterNodes(
     String parentMediaId,
     Map<String, dynamic> childHints,
-  ) =>
-      [
-        _browsableNode('$parentMediaId|az|#', '#', extras: childHints),
-        for (var c = 'A'.codeUnitAt(0); c <= 'Z'.codeUnitAt(0); c++)
-          _browsableNode(
-            '$parentMediaId|az|${String.fromCharCode(c)}',
-            String.fromCharCode(c),
-            extras: childHints,
-          ),
-      ];
+  ) {
+    final extras = {
+      ...childHints,
+      ..._shelf(
+        _l10n.browseByLetter,
+        style: AndroidContentStyle.categoryGridItemHintValue,
+      ),
+    };
+    return [
+      for (final letter in _letters)
+        MediaItem(
+          id: '$parentMediaId|az|$letter',
+          title: letter,
+          playable: false,
+          artUri: CarArtwork.instance.letter(letter),
+          extras: extras,
+        ),
+    ];
+  }
 
   /// Fetches a whole book library once and files every item into its A-Z or '#'
   /// folder, caching all 27 under [sectionId]. Bucketing on the returned
@@ -284,7 +359,7 @@ class MediaBrowseService {
       };
       for (final item in items) {
         buckets[_letterBucket(item.sortName, item.name)]!
-            .add(_bookLeaf(item, serverId));
+            .add(_bookPageNode(item, serverId));
       }
       buckets.forEach((letter, list) {
         // Cap per folder to the binder parcel size; the HTTP fetch was not
@@ -365,9 +440,10 @@ class MediaBrowseService {
           case 'home':
             return _homeChildren(client, serverId);
           case 'music':
-            return _musicChildren(client, serverId);
+            return _libraryChildren(serverId);
           case 'books':
             return _booksChildren(client, serverId);
+          // The old Playlists tab, for a car still holding its id.
           case 'playlists':
             return _playlistNodes(client, serverId);
         }
@@ -377,7 +453,15 @@ class MediaBrowseService {
         switch (section) {
           case 'albums':
             if (letter == null) {
-              return _letterNodes(parentMediaId, _gridHints);
+              final recent =
+                  _recentAlbums(await _recentlyPlayed(client, serverId));
+              final shelf = _shelf(_l10n.carRecentlyPlayed,
+                  style: AndroidContentStyle.gridItemHintValue);
+              return [
+                for (final track in recent)
+                  _albumNodeFromTrack(track, hints: shelf),
+                ..._letterNodes(parentMediaId, _gridHints),
+              ];
             }
             final albums = await _letterItems(
               serverId,
@@ -399,7 +483,8 @@ class MediaBrowseService {
             return albums.map(_albumNode).toList();
           case 'artists':
             if (letter == null) {
-              return _letterNodes(parentMediaId, _listHints);
+              final recent = await _recentArtists(client, serverId);
+              return [...recent, ..._letterNodes(parentMediaId, _listHints)];
             }
             final artists = await _letterItems(
               serverId,
@@ -417,12 +502,23 @@ class MediaBrowseService {
             return artists.map(_artistNode).toList();
           case 'musicplaylists':
             return _playlistNodes(client, serverId);
+          case 'genres':
+            return _genreNodes(client, serverId);
+          case 'favorites':
+            return _favoritesChildren(client, serverId);
+          case 'recent':
+            final recent = await _recentlyPlayed(client, serverId);
+            return recent
+                .map((t) => _trackLeaf(t, serverId, 'recent', '-'))
+                .toList();
           case 'booklib':
             // 'sec|booklib|<serverId>|<viewId>' with an optional '|az|<letter>'.
-            if (letter == null) {
-              return _letterNodes(parentMediaId, _gridHints);
-            }
             final viewId = parts.elementAtOrNull(3);
+            if (letter == null) {
+              final inProgress =
+                  await _inProgressBooks(client, serverId, viewId);
+              return [...inProgress, ..._letterNodes(parentMediaId, _gridHints)];
+            }
             // One fetch fills every letter folder in _cache; this node then
             // returns its own bucket. See _fillBookBuckets.
             final sectionId = parts.sublist(0, parts.indexOf('az')).join('|');
@@ -445,8 +541,12 @@ class MediaBrowseService {
       case 'artist':
         final artistId = parts.elementAtOrNull(2);
         if (artistId == null) return const [];
+        return _artistPage(client, serverId, artistId);
+      case 'genre':
+        final genreId = parts.elementAtOrNull(2);
+        if (genreId == null) return const [];
         final response = await client.itemsApi.getItems(
-          artistIds: [artistId],
+          genreIds: [genreId],
           includeItemTypes: const ['MusicAlbum'],
           recursive: true,
           sortBy: 'SortName',
@@ -456,7 +556,18 @@ class MediaBrowseService {
           enableImageTypes: _browseImageTypes,
           imageTypeLimit: 1,
         );
-        return _toItems(response, serverId).map(_albumNode).toList();
+        final albums = _toItems(response, serverId);
+        if (albums.isEmpty) return const [];
+        final albumShelf = _shelf(_l10n.albums,
+            style: AndroidContentStyle.gridItemHintValue);
+        return [
+          _shuffleItem('shuffle|$serverId|genre|$genreId', _l10n.shuffleAll),
+          for (final album in albums) _albumNode(album, hints: albumShelf),
+        ];
+      case 'bookpage':
+        final bookId = parts.elementAtOrNull(2);
+        if (bookId == null) return const [];
+        return _bookPage(client, serverId, bookId);
       case 'playlist':
         final playlistId = parts.elementAtOrNull(2);
         if (playlistId == null) return const [];
@@ -474,16 +585,20 @@ class MediaBrowseService {
     try {
       hasBookLibrary = (await _bookViews(client)).isNotEmpty;
     } catch (_) {}
+    var hasDownloads = false;
+    try {
+      hasDownloads = (await _downloadedAudio()).isNotEmpty;
+    } catch (_) {}
     final l10n = _l10n;
     return [
-      _browsableNode('tab|home', l10n.home, extras: _listHints),
-      _browsableNode('tab|music', l10n.music, extras: _listHints),
+      _browsableNode('tab|home', l10n.carListenNow, extras: _listHints),
+      _browsableNode('tab|music', l10n.library, extras: _categoryListHints),
       if (hasBookLibrary)
-        // List, not grid: the children here are art-less letter folders, which
-        // show as broken tiles under a grid hint. Books inside a letter still
-        // get a cover grid from the _gridHints passed into _letterNodes.
+        // List, not grid: a multi-library user picks a library from plain
+        // rows. The letter tiles inside carry their own item style.
         _browsableNode('tab|books', l10n.audiobooks, extras: _listHints),
-      _browsableNode('tab|playlists', l10n.playlists, extras: _listHints),
+      if (hasDownloads)
+        _browsableNode('tab|downloads', l10n.savedMedia, extras: _listHints),
     ];
   }
 
@@ -499,6 +614,35 @@ class MediaBrowseService {
     final resumeShelf = _shelf(l10n.continueListening);
     final recentShelf =
         _shelf(l10n.recentlyAdded, style: AndroidContentStyle.gridItemHintValue);
+    final tile = {
+      ..._listHints,
+      _kSingleItemStyle: AndroidContentStyle.categoryGridItemHintValue,
+    };
+
+    final played = await _recentlyPlayed(client, serverId);
+    final seed = played.firstOrNull;
+    final quickTiles = [
+      _shuffleItem('shuffle|$serverId|all', l10n.shuffleAllMusic,
+          extras: tile),
+      if (seed != null && _supportsInstantMix(client))
+        MediaItem(
+          id: 'mix|$serverId|${seed.id}',
+          title: l10n.carInstantMix,
+          playable: true,
+          artUri: CarArtwork.instance.icon('ic_car_mix'),
+          extras: tile,
+        ),
+      _browsableNode('sec|favorites|$serverId', l10n.favorites,
+          icon: CarArtwork.instance.icon('ic_car_favorite'), extras: tile),
+      _browsableNode('sec|recent|$serverId', l10n.carRecentlyPlayed,
+          icon: CarArtwork.instance.icon('ic_car_recent'), extras: tile),
+    ];
+    final jumpBackInShelf =
+        _shelf(l10n.jumpBackIn, style: AndroidContentStyle.gridItemHintValue);
+    final jumpBackIn = [
+      for (final track in _recentAlbums(played))
+        _albumNodeFromTrack(track, hints: jumpBackInShelf),
+    ];
 
     // Audiobook progress is tracked locally, so the server resume list alone
     // leaves an audiobook-only user with an empty Home. Merge the local book
@@ -524,9 +668,13 @@ class MediaBrowseService {
     final resumeLeaves = <MediaItem>[];
     for (final item in [...localItems, ...serverResume]) {
       if (!seen.add(item.id)) continue;
+      final hints = {
+        ...resumeShelf,
+        ..._progressExtras(_resumeAt(localMs[item.id], item), item.runtime),
+      };
       resumeLeaves.add(item.isAudiobook
-          ? _bookLeaf(item, serverId, hints: resumeShelf)
-          : _trackLeaf(item, serverId, '-', '-', hints: resumeShelf));
+          ? _bookLeaf(item, serverId, hints: hints)
+          : _trackLeaf(item, serverId, '-', '-', hints: hints));
     }
 
     // Recently added audiobooks, scoped to the book libraries, so Home is not
@@ -544,7 +692,7 @@ class MediaBrowseService {
         );
         recentBooks.addAll(
           _toItems(latest, serverId)
-              .map((i) => _bookLeaf(i, serverId, hints: recentShelf)),
+              .map((i) => _bookPageNode(i, serverId, hints: recentShelf)),
         );
       }
     } catch (_) {}
@@ -561,42 +709,455 @@ class MediaBrowseService {
       );
     } catch (_) {}
 
-    return [...resumeLeaves, ...recentBooks, ...recentAlbums];
+    return [
+      ...quickTiles,
+      ...jumpBackIn,
+      ...resumeLeaves,
+      ...recentBooks,
+      ...recentAlbums,
+    ];
   }
 
-  /// Quick play, a fresh-artwork shelf, then the full catalog behind category
-  /// rows: the tab shape the major streaming apps use in the car.
-  Future<List<MediaItem>> _musicChildren(
+  List<MediaItem> _libraryChildren(String serverId) {
+    final l10n = _l10n;
+    MediaItem category(String id, String title, String icon) =>
+        _browsableNode(id, title,
+            icon: CarArtwork.instance.icon(icon), extras: _listHints);
+    return [
+      category('sec|albums|$serverId', l10n.albums, 'ic_car_album'),
+      category('sec|artists|$serverId', l10n.artists, 'ic_car_artist'),
+      category('sec|musicplaylists|$serverId', l10n.playlists,
+          'ic_car_playlist'),
+      category('sec|genres|$serverId', l10n.genres, 'ic_car_genre'),
+      category('sec|favorites|$serverId', l10n.favorites, 'ic_car_favorite'),
+    ];
+  }
+
+  /// The play history behind every recents shelf, newest first. Audiobook
+  /// tracks are left out since they have their own Continue Listening shelf.
+  Future<List<AggregatedItem>> _recentlyPlayed(
     MediaServerClient client,
     String serverId,
   ) async {
-    List<AggregatedItem> recentAlbums = const [];
+    final cached = _recentTracks;
+    if (cached != null &&
+        DateTime.now().difference(cached.fetchedAt) < _cacheTtl) {
+      return cached.items;
+    }
     try {
-      final response = await client.itemsApi.getLatestItems(
-        includeItemTypes: const ['MusicAlbum'],
-        limit: 12,
+      final response = await client.itemsApi.getItems(
+        includeItemTypes: const ['Audio'],
+        recursive: true,
+        filters: const ['IsPlayed'],
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        limit: _pageSize,
+        // Emby types an audiobook file as Audio, and only its chapters tell
+        // isAudiobook it's one.
+        fields: '$_browseFields,Chapters',
+        enableImageTypes: _browseImageTypes,
+        imageTypeLimit: 1,
+        enableTotalRecordCount: false,
       );
-      recentAlbums = _toItems(response, serverId);
-    } catch (_) {}
+      final items =
+          _toItems(response, serverId).where((i) => !i.isAudiobook).toList();
+      _recentTracks = (items: items, fetchedAt: DateTime.now());
+      return items;
+    } catch (_) {
+      return const [];
+    }
+  }
 
+  /// One track per recently played album, so the album shelves can reuse the
+  /// track's album id, name and cover.
+  static List<AggregatedItem> _recentAlbums(List<AggregatedItem> played) {
+    final seen = <String>{};
+    return [
+      for (final track in played)
+        if (track.albumId != null && seen.add(track.albumId!)) track,
+    ].take(_recentShelfMax).toList();
+  }
+
+  Future<List<MediaItem>> _recentArtists(
+    MediaServerClient client,
+    String serverId,
+  ) async {
+    final extras = {..._listHints, ..._shelf(_l10n.carRecentlyPlayed)};
+    final seen = <String>{};
+    final nodes = <MediaItem>[];
+    for (final track in await _recentlyPlayed(client, serverId)) {
+      // The album artist matches the Artists letter folders, which list
+      // album artists.
+      final artists = _nameIdPairs(track.rawData['AlbumArtists']);
+      final artist = artists.isNotEmpty
+          ? artists.first
+          : _nameIdPairs(track.rawData['ArtistItems']).firstOrNull;
+      if (artist == null || !seen.add(artist.$2)) continue;
+      String? art;
+      try {
+        art = carAuthedImageUrl(
+          client,
+          client.imageApi.getPrimaryImageUrl(artist.$2, maxHeight: 300),
+        );
+      } catch (_) {}
+      nodes.add(MediaItem(
+        id: 'artist|$serverId|${artist.$2}',
+        title: artist.$1,
+        playable: false,
+        artUri: CarArtwork.instance.wrap(art),
+        extras: extras,
+      ));
+      if (nodes.length >= _recentShelfMax) break;
+    }
+    return nodes;
+  }
+
+  static List<(String, String)> _nameIdPairs(Object? raw) => [
+        for (final entry in (raw as List? ?? const []).whereType<Map>())
+          if (entry['Id'] != null && entry['Name'] is String)
+            (entry['Name'] as String, entry['Id'].toString()),
+      ];
+
+  bool _supportsInstantMix(MediaServerClient client) {
+    try {
+      return client.features.supportsInstantMix;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Music genres, asked for per music library. Jellyfin 10.11 returns
+  /// nothing for an item type filter on /Genres.
+  Future<List<MediaItem>> _genreNodes(
+    MediaServerClient client,
+    String serverId,
+  ) async {
+    final views = (await client.userViewsApi.getUserViews())['Items'] as List?;
+    final musicViewIds = [
+      for (final view in (views ?? const []).whereType<Map<String, dynamic>>())
+        if ((view['CollectionType'] as String? ?? '').toLowerCase() == 'music')
+          view['Id']?.toString(),
+    ].whereType<String>();
+    final seen = <String>{};
+    final nodes = <MediaItem>[];
+    for (final viewId in musicViewIds) {
+      final response = await client.itemsApi.getGenres(
+        parentId: viewId,
+        recursive: true,
+        sortBy: 'SortName',
+        sortOrder: 'Ascending',
+        limit: _listCap,
+      );
+      for (final genre in _toItems(response, serverId)) {
+        if (!seen.add(genre.id)) continue;
+        nodes.add(_browsableNode('genre|$serverId|${genre.id}', genre.name,
+            artUri: _artUriFor(genre), extras: _listHints));
+      }
+    }
+    return nodes;
+  }
+
+  Future<List<MediaItem>> _favoritesChildren(
+    MediaServerClient client,
+    String serverId,
+  ) async {
     final l10n = _l10n;
-    final browse = {..._listHints, ..._shelf(l10n.browse)};
-    final recentShelf =
-        _shelf(l10n.recentlyAdded, style: AndroidContentStyle.gridItemHintValue);
+    final results = await Future.wait([
+      _itemsOrEmpty(serverId, () => client.itemsApi.getItems(
+            includeItemTypes: const ['MusicAlbum'],
+            isFavorite: true,
+            recursive: true,
+            sortBy: 'SortName',
+            sortOrder: 'Ascending',
+            limit: _listCap,
+            fields: _browseFields,
+            enableImageTypes: _browseImageTypes,
+            imageTypeLimit: 1,
+          )),
+      _itemsOrEmpty(serverId, () => client.itemsApi.getAlbumArtists(
+            isFavorite: true,
+            sortBy: 'SortName',
+            sortOrder: 'Ascending',
+            limit: _listCap,
+            fields: _browseFields,
+          )),
+      _favoriteSongs(client, serverId),
+    ]);
+    final albums = results[0];
+    final artists = results[1];
+    final songs = results[2];
+    final albumShelf =
+        _shelf(l10n.albums, style: AndroidContentStyle.gridItemHintValue);
+    final artistShelf = _shelf(l10n.artists);
+    final songShelf = _shelf(l10n.songs);
+    return [
+      if (songs.isNotEmpty)
+        _shuffleItem('shuffle|$serverId|fav', l10n.shuffleAll),
+      for (final album in albums) _albumNode(album, hints: albumShelf),
+      for (final artist in artists) _artistNode(artist, hints: artistShelf),
+      for (final song in songs)
+        _trackLeaf(song, serverId, 'fav', '-', hints: songShelf),
+    ];
+  }
+
+  Future<List<AggregatedItem>> _favoriteSongs(
+    MediaServerClient client,
+    String serverId,
+  ) =>
+      _itemsOrEmpty(
+        serverId,
+        () => client.itemsApi.getItems(
+          includeItemTypes: const ['Audio'],
+          isFavorite: true,
+          recursive: true,
+          sortBy: 'SortName',
+          sortOrder: 'Ascending',
+          limit: _listCap,
+          fields: _browseFields,
+          enableImageTypes: _browseImageTypes,
+          imageTypeLimit: 1,
+        ),
+      );
+
+  Future<List<AggregatedItem>> _itemsOrEmpty(
+    String serverId,
+    Future<Map<String, dynamic>> Function() fetch,
+  ) async {
+    try {
+      return _toItems(await fetch(), serverId);
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<List<MediaItem>> _artistPage(
+    MediaServerClient client,
+    String serverId,
+    String artistId,
+  ) async {
+    final l10n = _l10n;
+    final results = await Future.wait([
+      _artistTopTracks(client, serverId, artistId),
+      client.itemsApi
+          .getItems(
+            artistIds: [artistId],
+            includeItemTypes: const ['MusicAlbum'],
+            recursive: true,
+            sortBy: 'ProductionYear,SortName',
+            sortOrder: 'Descending',
+            limit: _listCap,
+            fields: _browseFields,
+            enableImageTypes: _browseImageTypes,
+            imageTypeLimit: 1,
+          )
+          .then((r) => _toItems(r, serverId)),
+    ]);
+    final top = results[0];
+    final albums = results[1];
+    final topShelf = _shelf(l10n.mostPlayed);
+    final albumShelf =
+        _shelf(l10n.albums, style: AndroidContentStyle.gridItemHintValue);
+    return [
+      if (top.isNotEmpty || albums.isNotEmpty)
+        _shuffleItem('shuffle|$serverId|artist|$artistId', l10n.shuffleAll),
+      // The album, not the artist again, under each track. Android only reads
+      // a display subtitle next to a display title.
+      for (final track in top)
+        _trackLeaf(track, serverId, 'top', artistId, hints: topShelf)
+            .copyWith(displayTitle: track.name, displaySubtitle: track.album),
+      for (final album in albums) _albumNode(album, hints: albumShelf),
+    ];
+  }
+
+  Future<List<AggregatedItem>> _artistTopTracks(
+    MediaServerClient client,
+    String serverId,
+    String artistId,
+  ) =>
+      _itemsOrEmpty(
+        serverId,
+        () => client.itemsApi.getItems(
+          artistIds: [artistId],
+          includeItemTypes: const ['Audio'],
+          recursive: true,
+          sortBy: 'PlayCount',
+          sortOrder: 'Descending',
+          limit: _topTrackCount,
+          fields: _browseFields,
+          enableImageTypes: _browseImageTypes,
+          imageTypeLimit: 1,
+        ),
+      );
+
+  Future<List<MediaItem>> _bookPage(
+    MediaServerClient client,
+    String serverId,
+    String bookId,
+  ) async {
+    final book = await _getItem(client, serverId, bookId);
+    if (book == null) return const [];
+    final l10n = _l10n;
+    final position = await _bookPosition(serverId, book);
+    final chapters = _chaptersOf(book);
+    final current = chapters.lastIndexWhere((c) => c.start <= position);
+    final started = position > Duration.zero;
+    final chapterShelf = _shelf(l10n.chapters);
     return [
       MediaItem(
-        id: 'shuffle|$serverId|all',
-        title: l10n.shuffleAllMusic,
+        id: 'book|$serverId|$bookId',
+        title: started
+            ? l10n.resumeFrom(formatPlaybackDuration(position))
+            : l10n.play,
+        // The chapter it resumes in, else the author: the page header
+        // already shows the book's name.
+        artist: started && current >= 0
+            ? chapters[current].name
+            : _byline(book),
         playable: true,
-        extras: _shelf(l10n.play),
+        artUri: _artUri(book),
+        extras: {
+          'serverId': serverId,
+          ..._progressExtras(started ? position : null, book.runtime),
+        },
       ),
-      for (final album in recentAlbums)
-        _albumNode(album, hints: recentShelf),
-      _browsableNode('sec|albums|$serverId', l10n.albums, extras: browse),
-      _browsableNode('sec|artists|$serverId', l10n.artists, extras: browse),
-      _browsableNode('sec|musicplaylists|$serverId', l10n.playlists,
-          extras: browse),
+      for (var i = 0; i < chapters.length; i++)
+        _chapterItem(serverId, bookId, i, chapters[i], position,
+            started: started, current: i == current, shelf: chapterShelf),
     ];
+  }
+
+  // The subtitle says finished, time left or length in words, which every car
+  // shows. Android Auto 18.1 drew no completion marker on these art-less rows.
+  MediaItem _chapterItem(
+    String serverId,
+    String bookId,
+    int index,
+    _Chapter chapter,
+    Duration position, {
+    required bool started,
+    required bool current,
+    required Map<String, dynamic> shelf,
+  }) {
+    final done = started && chapter.end <= position;
+    final inProgress = started && current && !done;
+    return MediaItem(
+      id: 'bookch|$serverId|$bookId|$index',
+      title: chapter.name,
+      artist: done
+          ? _l10n.finished
+          : inProgress
+              ? _l10n.timeRemaining(
+                  formatPlaybackDuration(chapter.end - position))
+              : formatPlaybackDuration(chapter.end - chapter.start),
+      playable: true,
+      extras: {
+        'serverId': serverId,
+        ...shelf,
+        if (done)
+          _kCompletionStatus: _fullyPlayed
+        else if (inProgress)
+          ..._progressExtras(
+            position - chapter.start,
+            chapter.end - chapter.start,
+          ),
+      },
+    );
+  }
+
+  Future<Duration> _bookPosition(String serverId, AggregatedItem book) async =>
+      _resumeAt(await _resumeService.load(serverId, book.id), book) ??
+      Duration.zero;
+
+  /// The local position wins since the app tracks audiobook progress itself.
+  static Duration? _resumeAt(int? localMs, AggregatedItem item) =>
+      localMs != null && localMs > 0
+          ? Duration(milliseconds: localMs)
+          : item.playbackPosition;
+
+  List<_Chapter> _chaptersOf(AggregatedItem book) {
+    final starts = <({String name, Duration start})>[];
+    for (final raw in book.chapters) {
+      final ticks = (raw['StartPositionTicks'] as num?)?.toInt();
+      if (ticks == null) continue;
+      final name = (raw['Name'] as String?)?.trim() ?? '';
+      starts.add((
+        name: name.isNotEmpty ? name : '${_l10n.chapter} ${starts.length + 1}',
+        start: Duration(microseconds: ticks ~/ 10),
+      ));
+    }
+    final total = book.runtime;
+    return [
+      for (var i = 0; i < starts.length; i++)
+        (
+          name: starts[i].name,
+          start: starts[i].start,
+          end: i + 1 < starts.length
+              ? starts[i + 1].start
+              : (total != null && total > starts[i].start
+                  ? total
+                  : starts[i].start),
+        ),
+    ];
+  }
+
+  Future<List<MediaItem>> _inProgressBooks(
+    MediaServerClient client,
+    String serverId,
+    String? viewId,
+  ) async {
+    if (viewId == null) return const [];
+    final shelf = _shelf(_l10n.continueListening);
+    final localMs = await _resumeService.loadAll(serverId);
+    final found = <AggregatedItem>[];
+    try {
+      if (localMs.isNotEmpty) {
+        // Narrowing the local ids by parentId keeps the shelf to this library.
+        final response = await client.itemsApi.getItems(
+          parentId: viewId,
+          ids: localMs.keys.take(_pageSize).toList(),
+          recursive: true,
+          fields: _browseFields,
+          enableImageTypes: _browseImageTypes,
+          imageTypeLimit: 1,
+          enableTotalRecordCount: false,
+        );
+        found.addAll(_toItems(response, serverId));
+      }
+    } catch (_) {}
+    try {
+      final response = await client.itemsApi.getResumeItems(
+        parentId: viewId,
+        mediaTypes: 'Audio',
+        limit: _recentShelfMax,
+        fields: _browseFields,
+        enableImageTypes: _browseImageTypes,
+        imageTypeLimit: 1,
+      );
+      found.addAll(_toItems(response, serverId));
+    } catch (_) {}
+    final seen = <String>{};
+    return [
+      for (final book in found)
+        if (seen.add(book.id))
+          _bookLeaf(book, serverId, hints: {
+            ...shelf,
+            ..._progressExtras(_resumeAt(localMs[book.id], book), book.runtime),
+          }),
+    ].take(_recentShelfMax).toList();
+  }
+
+  /// Android Auto's progress bar on a row: partly played plus how far in.
+  Map<String, dynamic> _progressExtras(Duration? position, Duration? total) {
+    if (position == null || position <= Duration.zero) return const {};
+    if (total == null || total <= Duration.zero) {
+      return const {_kCompletionStatus: _partiallyPlayed};
+    }
+    final fraction = position.inMilliseconds / total.inMilliseconds;
+    if (fraction >= 1) return const {_kCompletionStatus: _fullyPlayed};
+    return {
+      _kCompletionStatus: _partiallyPlayed,
+      _kCompletionPercentage: fraction,
+    };
   }
 
   Future<List<Map<String, dynamic>>> _bookViews(
@@ -712,11 +1273,150 @@ class MediaBrowseService {
     ];
   }
 
+  static bool _isDownloadsNode(String mediaId) =>
+      mediaId == 'tab|downloads' || mediaId.startsWith('dlalbum|');
+
+  Future<List<AggregatedItem>> _downloadedAudio() async {
+    final rows = await _offline.getItems(onlyCompleted: true);
+    return [
+      for (final row in rows)
+        if (_fromOffline(row) case final item? when item.isAudioLike) item,
+    ];
+  }
+
+  static AggregatedItem? _fromOffline(DownloadedItem row) {
+    try {
+      return AggregatedItem.fromOffline(row);
+    } catch (_) {
+      // A row with unreadable metadata is skipped, not the whole tab.
+      return null;
+    }
+  }
+
+  static int _trackOrder(AggregatedItem a, AggregatedItem b) {
+    int n(AggregatedItem i, String key) =>
+        (i.rawData[key] as num?)?.toInt() ?? 0;
+    final disc = n(a, 'ParentIndexNumber').compareTo(n(b, 'ParentIndexNumber'));
+    return disc != 0 ? disc : n(a, 'IndexNumber').compareTo(n(b, 'IndexNumber'));
+  }
+
+  Future<List<MediaItem>> _downloadsChildren(String parentMediaId) async {
+    final audio = await _downloadedAudio();
+    final l10n = _l10n;
+    if (parentMediaId.startsWith('dlalbum|')) {
+      final albumId = parentMediaId.split('|').elementAtOrNull(2);
+      final tracks = audio
+          .where((i) => !i.isAudiobook && i.albumId == albumId)
+          .toList()
+        ..sort(_trackOrder);
+      return [for (final t in tracks) _downloadLeaf(t, albumId: albumId)];
+    }
+    final books = audio.where((i) => i.isAudiobook).toList();
+    final tracks = audio.where((i) => !i.isAudiobook).toList();
+    final albums = <String, AggregatedItem>{};
+    final loose = <AggregatedItem>[];
+    for (final t in tracks) {
+      final albumId = t.albumId;
+      if (albumId == null) {
+        loose.add(t);
+      } else {
+        albums.putIfAbsent(albumId, () => t);
+      }
+    }
+    final bookShelf = _shelf(l10n.audiobooks);
+    final albumShelf =
+        _shelf(l10n.albums, style: AndroidContentStyle.gridItemHintValue);
+    final songShelf = _shelf(l10n.songs);
+    return [
+      if (tracks.isNotEmpty) _shuffleItem('dlshuffle|-|all', l10n.shuffleAll),
+      for (final b in books) _downloadLeaf(b, hints: bookShelf),
+      for (final MapEntry(key: albumId, value: track) in albums.entries)
+        _albumNodeFromTrack(track, hints: albumShelf)
+            .copyWith(id: 'dlalbum|${track.serverId}|$albumId'),
+      for (final t in loose) _downloadLeaf(t, hints: songShelf),
+    ];
+  }
+
+  MediaItem _downloadLeaf(
+    AggregatedItem item, {
+    String? albumId,
+    Map<String, dynamic>? hints,
+  }) =>
+      _trackLeaf(item, item.serverId, '-', '-', hints: hints).copyWith(
+        id: albumId == null
+            ? 'dl|${item.serverId}|${item.id}'
+            : 'dl|${item.serverId}|${item.id}|$albumId',
+      );
+
+  Future<PlayRequest?> _resolveDownload(List<String> parts) async {
+    final audio = await _downloadedAudio();
+    if (parts.first == 'dlshuffle') {
+      final tracks = audio.where((i) => !i.isAudiobook).toList()..shuffle();
+      return tracks.isEmpty ? null : PlayRequest(items: tracks);
+    }
+    final serverId = parts.elementAtOrNull(1);
+    final itemId = parts.elementAtOrNull(2);
+    final albumId = parts.elementAtOrNull(3);
+    final item = audio
+        .where((i) => i.id == itemId && i.serverId == serverId)
+        .firstOrNull;
+    if (item == null) return null;
+    if (item.isAudiobook) {
+      // Streaming saves the position under the app's server id and offline
+      // playback under the download's, so take the furthest of the two.
+      final factoryId = _factoryIdFor(item.serverId);
+      final offline = await _bookPosition(item.serverId, item);
+      final online = factoryId == null || factoryId == item.serverId
+          ? Duration.zero
+          : await _bookPosition(factoryId, item);
+      return PlayRequest(
+        items: [item],
+        startPosition: online > offline ? online : offline,
+      );
+    }
+    if (albumId == null) return PlayRequest(items: [item]);
+    final tracks = audio
+        .where((i) => !i.isAudiobook && i.albumId == albumId)
+        .toList()
+      ..sort(_trackOrder);
+    return _queueAround(tracks, item.id);
+  }
+
+  /// The client factory's id for [serverId]. Downloads are stored under the
+  /// server's base URL when the download service's client wasn't registered,
+  /// so a base URL maps back to the id of the client with that URL.
+  String? _factoryIdFor(String serverId) {
+    final clients = _clientFactory.clients;
+    if (clients.containsKey(serverId)) return serverId;
+    for (final entry in clients.entries) {
+      if (entry.value.baseUrl == serverId) return entry.key;
+    }
+    return null;
+  }
+
+  MediaServerClient? _clientForId(String serverId) {
+    final id = _factoryIdFor(serverId);
+    return id == null ? null : _clientFactory.getClientIfExists(id);
+  }
+
+  static PlayRequest? _queueAround(List<AggregatedItem> items, String itemId) {
+    if (items.isEmpty) return null;
+    final index = items.indexWhere((i) => i.id == itemId);
+    return PlayRequest(items: items, startIndex: index < 0 ? 0 : index);
+  }
+
   Future<PlayRequest?> resolvePlayRequest(String mediaId) async {
+    final parts = mediaId.split('|');
+    if (parts.first == 'dl' || parts.first == 'dlshuffle') {
+      try {
+        return await _resolveDownload(parts);
+      } catch (_) {
+        return null;
+      }
+    }
     final client = await _client();
     if (client == null) return null;
     final serverId = _serverIdOf(client);
-    final parts = mediaId.split('|');
 
     switch (parts.first) {
       case 'track':
@@ -745,6 +1445,16 @@ class MediaBrowseService {
             () => client.itemsApi.getPlaylistItems(ctxId),
           );
         }
+        // Rows from a list the service builds itself queue that same list.
+        final siblings = switch (ctxKind) {
+          'recent' => await _recentlyPlayed(client, serverId),
+          'fav' => await _favoriteSongs(client, serverId),
+          'top' when ctxId != null && ctxId != '-' =>
+            await _artistTopTracks(client, serverId, ctxId),
+          _ => const <AggregatedItem>[],
+        };
+        final queued = _queueAround(siblings, itemId);
+        if (queued != null) return queued;
         final item = await _getItem(client, serverId, itemId);
         if (item == null) return null;
         return PlayRequest(
@@ -756,11 +1466,10 @@ class MediaBrowseService {
         if (itemId == null) return null;
         final item = await _getItem(client, serverId, itemId);
         if (item == null) return null;
-        final localMs = await _resumeService.load(serverId, itemId);
-        final startPosition = localMs != null && localMs > 0
-            ? Duration(milliseconds: localMs)
-            : (item.playbackPosition ?? Duration.zero);
-        return PlayRequest(items: [item], startPosition: startPosition);
+        return PlayRequest(
+          items: [item],
+          startPosition: await _bookPosition(serverId, item),
+        );
       case 'album':
       case 'playlist':
         final containerId = parts.elementAtOrNull(2);
@@ -794,15 +1503,38 @@ class MediaBrowseService {
         if (items.isEmpty) return null;
         return PlayRequest(items: items);
       case 'shuffle':
+        final scope = parts.elementAtOrNull(2);
+        final scopeId = parts.elementAtOrNull(3);
         final response = await client.itemsApi.getItems(
           includeItemTypes: const ['Audio'],
           recursive: true,
           sortBy: 'Random',
           limit: 300,
+          isFavorite: scope == 'fav' ? true : null,
+          artistIds: scope == 'artist' && scopeId != null ? [scopeId] : null,
+          genreIds: scope == 'genre' && scopeId != null ? [scopeId] : null,
         );
         final items = _toItems(response, serverId);
         if (items.isEmpty) return null;
         return PlayRequest(items: items);
+      case 'mix':
+        final seedId = parts.elementAtOrNull(2);
+        if (seedId == null) return null;
+        final response =
+            await client.instantMixApi.getInstantMix(seedId, limit: 100);
+        final items =
+            _toItems(response, serverId).where((i) => i.isAudioLike).toList();
+        if (items.isEmpty) return null;
+        return PlayRequest(items: items);
+      case 'bookch':
+        final bookId = parts.elementAtOrNull(2);
+        final index = int.tryParse(parts.elementAtOrNull(3) ?? '');
+        if (bookId == null || index == null) return null;
+        final book = await _getItem(client, serverId, bookId);
+        if (book == null) return null;
+        final chapters = _chaptersOf(book);
+        if (index < 0 || index >= chapters.length) return null;
+        return PlayRequest(items: [book], startPosition: chapters[index].start);
     }
     return null;
   }
@@ -814,11 +1546,10 @@ class MediaBrowseService {
     Future<Map<String, dynamic>> Function() fetch,
   ) async {
     final response = await fetch();
-    final items =
-        _toItems(response, serverId).where((i) => i.isAudioLike).toList();
-    if (items.isEmpty) return null;
-    final index = items.indexWhere((i) => i.id == itemId);
-    return PlayRequest(items: items, startIndex: index < 0 ? 0 : index);
+    return _queueAround(
+      _toItems(response, serverId).where((i) => i.isAudioLike).toList(),
+      itemId,
+    );
   }
 
   Future<AggregatedItem?> _getItem(
@@ -989,17 +1720,33 @@ class MediaBrowseService {
         _kSingleItemStyle: ?style,
       };
 
+  /// [icon] is an app drawable from [CarArtwork.icon] and skips the artwork
+  /// provider, which only fetches server images.
   MediaItem _browsableNode(
     String id,
     String title, {
     String? artUri,
+    Uri? icon,
     Map<String, dynamic>? extras,
   }) =>
       MediaItem(
         id: id,
         title: title,
         playable: false,
-        artUri: CarArtwork.instance.wrap(artUri),
+        artUri: icon ?? CarArtwork.instance.wrap(artUri),
+        extras: extras,
+      );
+
+  MediaItem _shuffleItem(
+    String id,
+    String title, {
+    Map<String, dynamic>? extras,
+  }) =>
+      MediaItem(
+        id: id,
+        title: title,
+        playable: true,
+        artUri: CarArtwork.instance.icon('ic_shuffle'),
         extras: extras,
       );
 
@@ -1014,12 +1761,47 @@ class MediaBrowseService {
         extras: {..._listHints, ...?hints},
       );
 
-  MediaItem _artistNode(AggregatedItem artist) => MediaItem(
+  /// An album node built from one of its tracks, for shelves fed by play
+  /// history. The track's cover lookup already falls back to its album.
+  MediaItem _albumNodeFromTrack(
+    AggregatedItem track, {
+    Map<String, dynamic>? hints,
+  }) =>
+      MediaItem(
+        id: 'album|${track.serverId}|${track.albumId}',
+        title: track.album ?? track.name,
+        artist: track.albumArtist ??
+            (track.artists.isNotEmpty ? track.artists.join(', ') : null),
+        playable: false,
+        artUri: _artUri(track),
+        extras: {..._listHints, ...?hints},
+      );
+
+  // List hints: the artist page mixes a shuffle row, track rows and an album
+  // grid, and each of those carries its own item style.
+  MediaItem _artistNode(AggregatedItem artist, {Map<String, dynamic>? hints}) =>
+      MediaItem(
         id: 'artist|${artist.serverId}|${artist.id}',
         title: artist.name,
         playable: false,
         artUri: _artUri(artist),
-        extras: _gridHints,
+        extras: {..._listHints, ...?hints},
+      );
+
+  /// A book that opens on Resume plus its chapter list. Continue Listening
+  /// rows use [_bookLeaf] instead, so resuming stays one tap.
+  MediaItem _bookPageNode(
+    AggregatedItem item,
+    String serverId, {
+    Map<String, dynamic>? hints,
+  }) =>
+      MediaItem(
+        id: 'bookpage|$serverId|${item.id}',
+        title: item.name,
+        artist: _byline(item),
+        playable: false,
+        artUri: _artUri(item),
+        extras: {..._listHints, ...?hints},
       );
 
   MediaItem _trackLeaf(
@@ -1032,9 +1814,7 @@ class MediaBrowseService {
       MediaItem(
         id: 'track|$serverId|${item.id}|$ctxKind|$ctxId',
         title: item.name,
-        artist: item.artists.isNotEmpty
-            ? item.artists.join(', ')
-            : item.albumArtist,
+        artist: _byline(item),
         album: item.album,
         duration: item.runtime,
         playable: true,
@@ -1050,19 +1830,20 @@ class MediaBrowseService {
       MediaItem(
         id: 'book|$serverId|${item.id}',
         title: item.name,
-        artist: item.artists.isNotEmpty
-            ? item.artists.join(', ')
-            : item.albumArtist,
+        artist: _byline(item),
         duration: item.runtime,
         playable: true,
         artUri: _artUri(item),
         extras: {'serverId': serverId, ...?hints},
       );
 
+  static String? _byline(AggregatedItem item) =>
+      item.artists.isNotEmpty ? item.artists.join(', ') : item.albumArtist;
+
   Uri? _artUri(AggregatedItem item) => CarArtwork.instance.wrap(_artUriFor(item));
 
   String? _artUriFor(AggregatedItem item) {
-    final client = _clientFactory.getClientIfExists(item.serverId);
+    final client = _clientForId(item.serverId);
     if (client == null) return null;
     try {
       // Tracks rarely carry their own image, so fall back to the parent album's
@@ -1120,5 +1901,12 @@ class MediaBrowseService {
     AndroidContentStyle.supportedKey: true,
     AndroidContentStyle.playableHintKey: AndroidContentStyle.gridItemHintValue,
     AndroidContentStyle.browsableHintKey: AndroidContentStyle.gridItemHintValue,
+  };
+
+  static const Map<String, dynamic> _categoryListHints = {
+    AndroidContentStyle.supportedKey: true,
+    AndroidContentStyle.playableHintKey: AndroidContentStyle.listItemHintValue,
+    AndroidContentStyle.browsableHintKey:
+        AndroidContentStyle.categoryListItemHintValue,
   };
 }

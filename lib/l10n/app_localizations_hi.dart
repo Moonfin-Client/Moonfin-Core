@@ -1960,6 +1960,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get carServerUnreachable => 'आपका सर्वर नहीं मिल रहा';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count डाउनलोड';
   }

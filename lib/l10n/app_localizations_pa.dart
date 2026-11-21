@@ -1963,6 +1963,15 @@ class AppLocalizationsPa extends AppLocalizations {
   String get carServerUnreachable => 'ਤੁਹਾਡੇ ਸਰਵਰ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੋ ਸਕਦੀ';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count ਡਾਊਨਲੋਡ';
   }

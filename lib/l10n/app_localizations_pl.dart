@@ -2082,6 +2082,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get carServerUnreachable => 'Nie można połączyć się z serwerem';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

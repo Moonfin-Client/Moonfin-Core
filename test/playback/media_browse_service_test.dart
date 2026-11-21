@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/database/offline_database.dart'
+    show DownloadedItem;
+import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/audiobook_resume_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/playback/headless_session_bootstrap.dart';
@@ -10,6 +15,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _kPage = 'android.media.browse.extra.PAGE';
 const _kPageSize = 'android.media.browse.extra.PAGE_SIZE';
+const _kGroupTitle = 'android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT';
+const _kSingleItemStyle = 'android.media.browse.CONTENT_STYLE_SINGLE_ITEM_HINT';
+const _kCompletionStatus = 'android.media.extra.PLAYBACK_STATUS';
+const _kCompletionPercentage =
+    'androidx.media.MediaItem.Extras.COMPLETION_PERCENTAGE';
 
 /// Serves [totalItems] fake albums with names spread across '#' and A-Z,
 /// honoring the nameStartsWith/nameLessThan/startIndex/limit windows the same
@@ -23,7 +33,23 @@ class _FakeItemsApi implements ItemsApi {
     this.resume,
     this.itemsById,
     this.emptyViews = const {},
+    this.recentTracks = const [],
+    this.favAlbums = const [],
+    this.favSongs = const [],
+    this.favArtists = const [],
+    this.artistTracks = const [],
+    this.artistAlbums = const [],
   });
+
+  /// Play history, served to the IsPlayed query.
+  final List<Map<String, dynamic>> recentTracks;
+  final List<Map<String, dynamic>> favAlbums;
+  final List<Map<String, dynamic>> favSongs;
+  final List<Map<String, dynamic>> favArtists;
+
+  /// Served to artistIds queries, by included item type.
+  final List<Map<String, dynamic>> artistTracks;
+  final List<Map<String, dynamic>> artistAlbums;
 
   /// View ids that contain no audio; getItems with one of these as parentId
   /// returns nothing, so the content probe filters the view out.
@@ -62,6 +88,31 @@ class _FakeItemsApi implements ItemsApi {
     final lessThan = invocation.namedArguments[#nameLessThan] as String?;
     final start = invocation.namedArguments[#startIndex] as int? ?? 0;
     final limit = invocation.namedArguments[#limit] as int?;
+    final filters = invocation.namedArguments[#filters] as List<String>?;
+    final types = invocation.namedArguments[#includeItemTypes] as List<String>?;
+    final favorite = invocation.namedArguments[#isFavorite] as bool?;
+    final artistIds = invocation.namedArguments[#artistIds] as List<String>?;
+    final ids = invocation.namedArguments[#ids] as List<String>?;
+    List<Map<String, dynamic>>? fixed;
+    if (filters?.contains('IsPlayed') == true) {
+      fixed = recentTracks;
+    } else if (favorite == true) {
+      fixed = invocation.memberName == #getAlbumArtists
+          ? favArtists
+          : types?.contains('Audio') == true
+              ? favSongs
+              : favAlbums;
+    } else if (artistIds != null) {
+      fixed = types?.contains('Audio') == true ? artistTracks : artistAlbums;
+    } else if (ids != null) {
+      fixed = [
+        for (final id in ids) ?itemsById?[id],
+      ];
+    }
+    if (fixed != null) {
+      final end = limit == null ? fixed.length : limit.clamp(0, fixed.length);
+      return {'Items': fixed.sublist(0, end)};
+    }
 
     // Book libraries fetch by parentId with no name filters; the service
     // buckets the whole list client-side off each item's SortName.
@@ -89,6 +140,16 @@ class _FakeItemsApi implements ItemsApi {
       case #getItems:
       case #getAlbumArtists:
         return _page(invocation);
+      case #getGenres:
+        final parentId = invocation.namedArguments[#parentId] as String?;
+        return Future<Map<String, dynamic>>.value({
+          'Items': [
+            if (parentId == 'm1' || parentId == 'm2')
+              {'Id': 'g1', 'Name': 'Jazz', 'Type': 'MusicGenre'},
+            if (parentId == 'mv')
+              {'Id': 'g9', 'Name': 'Thriller', 'Type': 'Genre'},
+          ],
+        });
       case #getResumeItems:
         return Future<Map<String, dynamic>>.value({'Items': resume ?? const []});
       case #getLatestItems:
@@ -194,17 +255,61 @@ class _FakeBootstrap implements HeadlessSessionBootstrap {
 }
 
 class _FakeResumeService implements AudiobookResumeService {
-  _FakeResumeService([this.entries = const {}]);
+  _FakeResumeService([this.entries = const {}, this.byServer = const {}]);
 
   final Map<String, int> entries;
+
+  /// Positions keyed 'serverId|itemId', checked before [entries].
+  final Map<String, int> byServer;
 
   @override
   Future<Map<String, int>> loadAll(String serverId) async => entries;
 
   @override
+  Future<int?> load(String serverId, String itemId) async =>
+      byServer['$serverId|$itemId'] ?? entries[itemId];
+
+  @override
   dynamic noSuchMethod(Invocation invocation) =>
       super.noSuchMethod(invocation);
 }
+
+class _FakeOfflineRepository implements OfflineRepository {
+  _FakeOfflineRepository([this.rows = const []]);
+
+  final List<DownloadedItem> rows;
+
+  @override
+  Future<List<DownloadedItem>> getItems({
+    String? type,
+    bool onlyCompleted = false,
+  }) async =>
+      rows.where((r) => !onlyCompleted || r.downloadStatus == 2).toList();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      super.noSuchMethod(invocation);
+}
+
+DownloadedItem _download(
+  Map<String, dynamic> raw, {
+  int status = 2,
+  String serverId = 'srv',
+}) =>
+    DownloadedItem(
+      itemId: raw['Id'] as String,
+      serverId: serverId,
+      type: raw['Type'] as String,
+      name: raw['Name'] as String,
+      metadataJson: jsonEncode(raw),
+      downloadStatus: status,
+      downloadProgress: status == 2 ? 1 : 0.5,
+      fileSizeBytes: 1,
+      playbackPositionTicks: 0,
+      progressSynced: true,
+      qualityPreset: 'original',
+      downloadSource: 'manual',
+    );
 
 class _FakeSessionStore implements LastPlaybackSessionStore {
   @override
@@ -216,12 +321,15 @@ MediaBrowseService _service(
   _FakeItemsApi api, {
   List<Map<String, dynamic>> views = const [],
   Map<String, int> localResume = const {},
+  List<DownloadedItem> downloads = const [],
+  Map<String, int> resumeByServer = const {},
 }) =>
     MediaBrowseService(
       _FakeClientFactory(_FakeClient(api, views: views)),
       _FakeBootstrap(),
-      _FakeResumeService(localResume),
+      _FakeResumeService(localResume, resumeByServer),
       _FakeSessionStore(),
+      _FakeOfflineRepository(downloads),
     );
 
 void main() {
@@ -232,19 +340,31 @@ void main() {
   });
 
   group('MediaBrowseService car browse', () {
-    test('section node renders letter folders without any server call',
-        () async {
+    test('section node ends on 27 letter tiles under one heading', () async {
       final api = _FakeItemsApi(totalItems: 300);
       final service = _service(api);
 
       final nodes = await service.getChildren('sec|albums|srv');
 
+      // No play history, so the letter tiles are all there is.
       expect(nodes.length, 27);
       expect(nodes.first.id, 'sec|albums|srv|az|#');
       expect(nodes.first.title, '#');
       expect(nodes.last.id, 'sec|albums|srv|az|Z');
       expect(nodes.every((n) => n.playable == false), isTrue);
-      expect(api.listCalls, 0);
+      expect(
+        nodes.map((n) => n.extras?[_kSingleItemStyle]).toSet(),
+        {AndroidContentStyle.categoryGridItemHintValue},
+      );
+      expect(
+        nodes.map((n) => n.extras?[_kGroupTitle]).toSet(),
+        {'Browse by Letter'},
+      );
+      // The tiles still style each letter's albums as a cover grid.
+      expect(
+        nodes.first.extras?[AndroidContentStyle.browsableHintKey],
+        AndroidContentStyle.gridItemHintValue,
+      );
     });
 
     test('letter folder lists only matching names in a single call',
@@ -456,8 +576,8 @@ void main() {
       expect(home, isNotEmpty);
       // Local in-progress book surfaces as a book leaf (with its resume path).
       expect(ids, contains('book|srv|bk1'));
-      // Recently-added audiobooks are shelved (not just MusicAlbum latest).
-      expect(ids, containsAll(['book|srv|nb1', 'book|srv|nb2']));
+      // Recently added audiobooks are shelved too, and open the book page.
+      expect(ids, containsAll(['bookpage|srv|nb1', 'bookpage|srv|nb2']));
     });
 
     test('ebook-only library is filtered out and the picker is skipped',
@@ -513,6 +633,387 @@ void main() {
       final recent = await service.getChildren(AudioService.recentRootId);
 
       expect(recent, isEmpty);
+    });
+  });
+
+  group('MediaBrowseService Listen Now, Library and pages', () {
+    Map<String, dynamic> track(String id, String album, String artistId,
+            {String? name}) =>
+        {
+          'Id': id,
+          'Name': name ?? 'Track $id',
+          'Type': 'Audio',
+          'Album': album,
+          'AlbumId': 'al-$album',
+          'AlbumArtist': 'Artist $artistId',
+          'AlbumArtists': [
+            {'Name': 'Artist $artistId', 'Id': artistId},
+          ],
+        };
+    final history = [
+      track('t1', 'Rumours', 'ar1'),
+      track('t2', 'Rumours', 'ar1'),
+      track('t3', 'Thriller', 'ar2'),
+    ];
+
+    test('root tabs are Listen Now and Library, Downloads only with downloads',
+        () async {
+      final api = _FakeItemsApi(totalItems: 0);
+      final plain = await _service(api)
+          .getChildren(AudioService.browsableRootId);
+      expect(plain.map((t) => t.id), ['tab|home', 'tab|music']);
+      expect(plain.map((t) => t.title), ['Listen Now', 'Library']);
+      expect(
+        plain.last.extras?[AndroidContentStyle.browsableHintKey],
+        AndroidContentStyle.categoryListItemHintValue,
+      );
+
+      final withDownloads = await _service(api, downloads: [
+        _download({'Id': 'd1', 'Name': 'Song', 'Type': 'Audio'}),
+      ]).getChildren(AudioService.browsableRootId);
+      expect(withDownloads.map((t) => t.id).last, 'tab|downloads');
+
+      // An unfinished download doesn't count.
+      final partial = await _service(api, downloads: [
+        _download({'Id': 'd1', 'Name': 'Song', 'Type': 'Audio'}, status: 1),
+      ]).getChildren(AudioService.browsableRootId);
+      expect(partial.map((t) => t.id), isNot(contains('tab|downloads')));
+    });
+
+    test('Library lists the five music categories without a server call',
+        () async {
+      final api = _FakeItemsApi(totalItems: 0);
+      final library = await _service(api).getChildren('tab|music');
+
+      expect(library.map((c) => c.id), [
+        'sec|albums|srv',
+        'sec|artists|srv',
+        'sec|musicplaylists|srv',
+        'sec|genres|srv',
+        'sec|favorites|srv',
+      ]);
+      expect(api.listCalls, 0);
+    });
+
+    test('Listen Now starts with quick tiles, then Jump Back In', () async {
+      final api = _FakeItemsApi(totalItems: 0, recentTracks: history);
+      final home = await _service(api).getChildren('tab|home');
+      final ids = home.map((m) => m.id).toList();
+
+      expect(ids.take(3),
+          ['shuffle|srv|all', 'sec|favorites|srv', 'sec|recent|srv']);
+      expect(home.take(3).map((m) => m.extras?[_kSingleItemStyle]).toSet(),
+          {AndroidContentStyle.categoryGridItemHintValue});
+      // One tile per album, in play order.
+      final jump =
+          home.where((m) => m.extras?[_kGroupTitle] == 'Jump Back In');
+      expect(jump.map((m) => m.id),
+          ['album|srv|al-Rumours', 'album|srv|al-Thriller']);
+    });
+
+    test('albums and artists put recently played above the letter tiles',
+        () async {
+      final api = _FakeItemsApi(totalItems: 0, recentTracks: history);
+      final service = _service(api);
+
+      final albums = await service.getChildren('sec|albums|srv');
+      expect(albums.take(2).map((m) => m.id),
+          ['album|srv|al-Rumours', 'album|srv|al-Thriller']);
+      expect(albums.first.extras?[_kGroupTitle], 'Recently Played');
+      expect(albums.length, 2 + 27);
+      expect(albums[2].id, 'sec|albums|srv|az|#');
+
+      final artists = await service.getChildren('sec|artists|srv');
+      expect(artists.take(2).map((m) => m.id),
+          ['artist|srv|ar1', 'artist|srv|ar2']);
+      expect(artists.length, 2 + 27);
+      // One history fetch feeds both shelves.
+      expect(api.listCalls, 1);
+    });
+
+    test('dropRecents forgets history shelves and keeps letter folders',
+        () async {
+      final api = _FakeItemsApi(totalItems: 30, recentTracks: history);
+      final service = _service(api);
+      await service.getChildren('tab|home');
+      await service.getChildren('tab|music');
+      await service.getChildren('sec|albums|srv');
+      await service.getChildren('sec|albums|srv|az|A');
+
+      expect(service.dropRecents(),
+          unorderedEquals(['tab|home', 'sec|albums|srv']));
+
+      // The letter folder still comes from the cache, while the albums root
+      // and its history are fetched again.
+      final calls = api.listCalls;
+      await service.getChildren('sec|albums|srv|az|A');
+      expect(api.listCalls, calls);
+      await service.getChildren('sec|albums|srv');
+      expect(api.listCalls, calls + 1);
+    });
+
+    test('an audiobook typed Audio stays out of the music history', () async {
+      // Emby types an m4b as Audio. Its chapters and length mark it a book.
+      final book = {
+        ...track('bk', 'The Lighthouse Keeper', 'ar9'),
+        'MediaType': 'Audio',
+        'RunTimeTicks': 40 * 60 * 10000000,
+        'Chapters': [
+          {'Name': 'Arrival', 'StartPositionTicks': 0},
+        ],
+      };
+      final api =
+          _FakeItemsApi(totalItems: 0, recentTracks: [book, ...history]);
+      final rows = await _service(api).getChildren('sec|recent|srv');
+
+      expect(rows.map((r) => r.id), isNot(contains('track|srv|bk|recent|-')));
+      expect(rows.length, history.length);
+    });
+
+    test('a Recently Played row queues the whole history', () async {
+      final api = _FakeItemsApi(totalItems: 0, recentTracks: history);
+      final service = _service(api);
+
+      final rows = await service.getChildren('sec|recent|srv');
+      expect(rows.map((r) => r.id).first, 'track|srv|t1|recent|-');
+
+      final request = await service.resolvePlayRequest('track|srv|t2|recent|-');
+      expect(request!.items.map((i) => i.id), ['t1', 't2', 't3']);
+      expect(request.startIndex, 1);
+    });
+
+    test('artist page is shuffle, most played, then the albums', () async {
+      final api = _FakeItemsApi(
+        totalItems: 0,
+        artistTracks: [track('t9', 'Rumours', 'ar1', name: 'Dreams')],
+        artistAlbums: const [
+          {'Id': 'al1', 'Name': 'Rumours', 'Type': 'MusicAlbum'},
+        ],
+      );
+      final page = await _service(api).getChildren('artist|srv|ar1');
+
+      expect(page.map((m) => m.id), [
+        'shuffle|srv|artist|ar1',
+        'track|srv|t9|top|ar1',
+        'album|srv|al1',
+      ]);
+      expect(page[1].extras?[_kGroupTitle], 'Most Played');
+      expect(page[1].displaySubtitle, 'Rumours');
+      expect(page[2].extras?[_kSingleItemStyle],
+          AndroidContentStyle.gridItemHintValue);
+    });
+
+    test('favorites shuffle only shows when there are favorite songs',
+        () async {
+      final none = await _service(_FakeItemsApi(
+        totalItems: 0,
+        favAlbums: const [
+          {'Id': 'al1', 'Name': 'Thriller', 'Type': 'MusicAlbum'},
+        ],
+      )).getChildren('sec|favorites|srv');
+      expect(none.map((m) => m.id), ['album|srv|al1']);
+
+      final some = await _service(_FakeItemsApi(
+        totalItems: 0,
+        favSongs: [track('t1', 'Rumours', 'ar1')],
+        favArtists: const [
+          {'Id': 'ar1', 'Name': 'Fleetwood Mac', 'Type': 'MusicArtist'},
+        ],
+      )).getChildren('sec|favorites|srv');
+      expect(some.map((m) => m.id),
+          ['shuffle|srv|fav', 'artist|srv|ar1', 'track|srv|t1|fav|-']);
+    });
+
+    test('genres list per music library, and a genre opens on shuffle',
+        () async {
+      // Two music libraries that share a genre list it once, and other
+      // libraries aren't asked.
+      final service = _service(_FakeItemsApi(totalItems: 2), views: const [
+        {'Id': 'm1', 'CollectionType': 'music', 'Name': 'Music'},
+        {'Id': 'm2', 'CollectionType': 'music', 'Name': 'More Music'},
+        {'Id': 'mv', 'CollectionType': 'movies', 'Name': 'Movies'},
+      ]);
+      final genres = await service.getChildren('sec|genres|srv');
+      expect(genres.map((g) => g.id), ['genre|srv|g1']);
+      expect(genres.single.title, 'Jazz');
+
+      final jazz = await service.getChildren('genre|srv|g1');
+      expect(jazz.first.id, 'shuffle|srv|genre|g1');
+      expect(jazz.skip(1).every((m) => m.id.startsWith('album|srv|')), isTrue);
+    });
+
+    group('book page', () {
+      const minute = 60 * 10000000;
+      final book = {
+        'Id': 'bk1',
+        'Name': 'The Lighthouse',
+        'Type': 'AudioBook',
+        'AlbumArtist': 'Ada Vale',
+        'RunTimeTicks': 30 * minute,
+        'Chapters': [
+          {'Name': 'Arrival', 'StartPositionTicks': 0},
+          {'Name': 'The Storm', 'StartPositionTicks': 10 * minute},
+          {'Name': '', 'StartPositionTicks': 20 * minute},
+        ],
+      };
+
+      test('resume row plus chapters marked by the saved position', () async {
+        final api = _FakeItemsApi(totalItems: 0, itemsById: {'bk1': book});
+        // 15 minutes in: chapter 1 done, chapter 2 halfway.
+        final page = await _service(api, localResume: {'bk1': 15 * 60 * 1000})
+            .getChildren('bookpage|srv|bk1');
+
+        expect(page.map((m) => m.id), [
+          'book|srv|bk1',
+          'bookch|srv|bk1|0',
+          'bookch|srv|bk1|1',
+          'bookch|srv|bk1|2',
+        ]);
+        expect(page.first.title, 'Resume from 15:00');
+        expect(page.first.artist, 'The Storm');
+        expect(page[1].extras?[_kCompletionStatus], 2);
+        expect(page[2].extras?[_kCompletionStatus], 1);
+        expect(page[2].extras?[_kCompletionPercentage], closeTo(0.5, 0.001));
+        expect(page[3].extras?[_kCompletionStatus], isNull);
+        // A chapter with no name is numbered.
+        expect(page[3].title, 'Chapter 3');
+        // The subtitle says it in words too.
+        expect(page[1].artist, 'Finished');
+        expect(page[2].artist, '5:00 remaining');
+        expect(page[3].artist, '10:00');
+        expect(page[1].extras?[_kGroupTitle], 'Chapters');
+      });
+
+      test("the page isn't cached, so a new position shows at once",
+          () async {
+        final api = _FakeItemsApi(totalItems: 0, itemsById: {'bk1': book});
+        final resume = <String, int>{};
+        final service = _service(api, localResume: resume);
+
+        expect((await service.getChildren('bookpage|srv|bk1')).first.title,
+            'Play');
+        resume['bk1'] = 15 * 60 * 1000;
+        expect((await service.getChildren('bookpage|srv|bk1')).first.title,
+            'Resume from 15:00');
+      });
+
+      test('an unstarted book offers Play and no progress', () async {
+        final api = _FakeItemsApi(totalItems: 0, itemsById: {'bk1': book});
+        final page = await _service(api).getChildren('bookpage|srv|bk1');
+
+        expect(page.first.title, 'Play');
+        expect(page.first.artist, 'Ada Vale');
+        expect(page.skip(1).every((m) => m.extras?[_kCompletionStatus] == null),
+            isTrue);
+      });
+
+      test('a chapter plays the book from the chapter start', () async {
+        final api = _FakeItemsApi(totalItems: 0, itemsById: {'bk1': book});
+        final request =
+            await _service(api).resolvePlayRequest('bookch|srv|bk1|1');
+
+        expect(request!.items.single.id, 'bk1');
+        expect(request.startPosition, const Duration(minutes: 10));
+        expect(await _service(api).resolvePlayRequest('bookch|srv|bk1|9'),
+            isNull);
+      });
+
+      test('a book library opens on its in-progress books, then letters',
+          () async {
+        final api = _FakeItemsApi(
+          totalItems: 0,
+          books: const [
+            {'Id': 'p1', 'Name': 'Probe Book', 'Type': 'AudioBook'},
+          ],
+          itemsById: {'bk1': book},
+        );
+        final children = await _service(api,
+            views: const [
+              {'Id': 'view1', 'CollectionType': 'audiobooks', 'Name': 'Books'},
+            ],
+            localResume: {'bk1': 15 * 60 * 1000}).getChildren('tab|books');
+
+        expect(children.first.id, 'book|srv|bk1');
+        expect(children.first.extras?[_kGroupTitle], 'Continue Listening');
+        expect(children.first.extras?[_kCompletionPercentage],
+            closeTo(0.5, 0.001));
+        expect(children[1].id, 'sec|booklib|srv|view1|az|#');
+      });
+    });
+
+    group('downloads', () {
+      final rows = [
+        _download({'Id': 'b1', 'Name': 'A Book', 'Type': 'AudioBook'}),
+        _download({
+          'Id': 's2',
+          'Name': 'Second',
+          'Type': 'Audio',
+          'AlbumId': 'al1',
+          'Album': 'Rumours',
+          'IndexNumber': 2,
+        }),
+        _download({
+          'Id': 's1',
+          'Name': 'First',
+          'Type': 'Audio',
+          'AlbumId': 'al1',
+          'Album': 'Rumours',
+          'IndexNumber': 1,
+        }),
+        _download({'Id': 's9', 'Name': 'Loose', 'Type': 'Audio'}),
+        _download({'Id': 'm1', 'Name': 'A Movie', 'Type': 'Movie'}),
+      ];
+
+      test('the tab groups books, albums and loose songs with no server',
+          () async {
+        final api = _FakeItemsApi(totalItems: 0);
+        final service = _service(api, downloads: rows);
+        final tab = await service.getChildren('tab|downloads');
+
+        expect(tab.map((m) => m.id), [
+          'dlshuffle|-|all',
+          'dl|srv|b1',
+          'dlalbum|srv|al1',
+          'dl|srv|s9',
+        ]);
+
+        final album = await service.getChildren('dlalbum|srv|al1');
+        expect(album.map((m) => m.id),
+            ['dl|srv|s1|al1', 'dl|srv|s2|al1']);
+        // Read from the offline database only, so it works with no server.
+        expect(api.listCalls, 0);
+      });
+
+      test('a download stored under the base URL resumes at the furthest '
+          'saved position', () async {
+        final book = _download({
+          'Id': 'b1',
+          'Name': 'A Book',
+          'Type': 'AudioBook',
+        }, serverId: 'http://fake');
+        Future<Duration> start(Map<String, int> positions) async =>
+            (await _service(_FakeItemsApi(totalItems: 0),
+                    downloads: [book], resumeByServer: positions)
+                .resolvePlayRequest('dl|http://fake|b1'))!
+                .startPosition;
+
+        // 'srv' is the factory id of the client whose base URL is http://fake.
+        expect(await start({'srv|b1': 90000, 'http://fake|b1': 5000}),
+            const Duration(seconds: 90));
+        expect(await start({'srv|b1': 5000, 'http://fake|b1': 90000}),
+            const Duration(seconds: 90));
+      });
+
+      test('a downloaded album track queues the album in track order',
+          () async {
+        final service =
+            _service(_FakeItemsApi(totalItems: 0), downloads: rows);
+        final request = await service.resolvePlayRequest('dl|srv|s2|al1');
+
+        expect(request!.items.map((i) => i.id), ['s1', 's2']);
+        expect(request.startIndex, 1);
+        expect(await service.resolvePlayRequest('dl|srv|missing'), isNull);
+      });
     });
   });
 }
