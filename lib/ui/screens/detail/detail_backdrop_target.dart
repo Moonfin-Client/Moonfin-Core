@@ -4,10 +4,7 @@ import '../../../data/models/aggregated_item.dart';
 ///
 /// Only a playlist with no backdrop of its own does. One set through Change
 /// Artwork wins over the tracks, like an album's does.
-bool usesFirstTrackBackdrop(
-  AggregatedItem item,
-  List<AggregatedItem> tracks,
-) =>
+bool usesFirstTrackBackdrop(AggregatedItem item, List<AggregatedItem> tracks) =>
     item.type == 'Playlist' &&
     tracks.isNotEmpty &&
     item.backdropImageTags.isEmpty;

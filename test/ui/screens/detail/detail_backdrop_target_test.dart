@@ -86,7 +86,10 @@ class _ItemsApi extends Fake implements ItemsApi {
     String? fields,
   }) async {
     await _tracksGate.future;
-    final items = [_track('red-1', 'album-red'), _track('green-1', 'album-green')];
+    final items = [
+      _track('red-1', 'album-red'),
+      _track('green-1', 'album-green'),
+    ];
     return {'Items': items, 'TotalRecordCount': items.length};
   }
 
@@ -206,30 +209,33 @@ void main() {
       return (vm, shown);
     }
 
-    test('a custom backdrop stays through tracks loading and a favourite', () async {
-      const custom = 'backdrop/playlist-1/0?tag=custom';
-      final itemsApi = _ItemsApi(playlistBackdropTags: ['custom']);
-      final (vm, shown) = openPlaylist(itemsApi);
+    test(
+      'a custom backdrop stays through tracks loading and a favourite',
+      () async {
+        const custom = 'backdrop/playlist-1/0?tag=custom';
+        final itemsApi = _ItemsApi(playlistBackdropTags: ['custom']);
+        final (vm, shown) = openPlaylist(itemsApi);
 
-      await vm.load();
-      await pumpEventQueue();
-      expect(vm.state, ItemDetailState.ready);
-      expect(vm.tracks, isEmpty, reason: 'the tracks are still on their way');
-      expect(backgrounds.currentUrl, custom);
+        await vm.load();
+        await pumpEventQueue();
+        expect(vm.state, ItemDetailState.ready);
+        expect(vm.tracks, isEmpty, reason: 'the tracks are still on their way');
+        expect(backgrounds.currentUrl, custom);
 
-      itemsApi.releaseTracks();
-      await pumpEventQueue();
-      expect(vm.tracks.map((t) => t.id), ['red-1', 'green-1']);
-      expect(backgrounds.currentUrl, custom);
+        itemsApi.releaseTracks();
+        await pumpEventQueue();
+        expect(vm.tracks.map((t) => t.id), ['red-1', 'green-1']);
+        expect(backgrounds.currentUrl, custom);
 
-      userDataSync.publish('playlist-1', {'IsFavorite': true});
-      await pumpEventQueue();
-      expect(vm.item?.isFavorite, isTrue);
-      expect(backgrounds.currentUrl, custom);
+        userDataSync.publish('playlist-1', {'IsFavorite': true});
+        await pumpEventQueue();
+        expect(vm.item?.isFavorite, isTrue);
+        expect(backgrounds.currentUrl, custom);
 
-      expect(shown, isNotEmpty);
-      expect(shown, everyElement(custom));
-    });
+        expect(shown, isNotEmpty);
+        expect(shown, everyElement(custom));
+      },
+    );
 
     test('a playlist without a backdrop moves to its first track once the '
         'tracks arrive', () async {
