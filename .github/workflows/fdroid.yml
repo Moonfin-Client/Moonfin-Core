@@ -73,6 +73,8 @@ jobs:
         run: |
           printf '%s' "$FDROID_KEYSTORE_BASE64" | base64 --decode > keystore.p12
           fdroid update
+          # fdroidserver's page makes #intro a 600px table, and Safari ignores max-width on tables, so it overflows on iPhones.
+          echo '#intro { display: block; width: min(600px, 90%); padding: 1em; box-sizing: border-box; }' >> repo/index.css
 
       - name: Upload to R2
         if: steps.check.outputs.tag != ''

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
@@ -36,6 +37,7 @@ import '../../widgets/playback/lyrics_view.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import 'audiobook_player_view.dart';
+import 'playback_ended_by_server.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({super.key});
@@ -130,6 +132,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         _rebuild();
         _loadLyricsIfNeeded();
         unawaited(_maybeExtendWithRadio());
+      }),
+      _manager.endedByServerStream.listen((message) {
+        if (mounted) showPlaybackEndedByServer(context, message);
       }),
       _manager.sessionEndedStream.listen((_) {
         if (!mounted || _isExitingPlayback) return;
@@ -933,8 +938,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     );
   }
 
-  /// Phone portrait: full-bleed art that fades into the ambient background,
-  /// with the title row on top of the fade. Lyrics and Up Next replace the art.
+  /// Phone portrait: square art over a blurred, faded copy of itself,
+  /// with the title row under it. Lyrics and Up Next replace the art.
   Widget _buildMobileBody(
     AggregatedItem? item,
     String? artUrl, {
@@ -968,31 +973,58 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               : Stack(
                   fit: StackFit.expand,
                   children: [
-                    ShaderMask(
-                      shaderCallback: (rect) => const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white,
-                          Colors.white,
-                          Colors.transparent,
-                        ],
-                        stops: [0.0, 0.62, 1.0],
-                      ).createShader(rect),
-                      blendMode: BlendMode.dstIn,
-                      child: _artImage(artUrl, localPoster),
+                    // The ambient background animates every frame, so the blur
+                    // gets its own layer. The fade goes inside the blur so the
+                    // backdrop ends fully clear at the bottom.
+                    RepaintBoundary(
+                      child: Opacity(
+                        opacity: 0.45,
+                        child: ImageFiltered(
+                          imageFilter: ui.ImageFilter.blur(
+                            sigmaX: 40,
+                            sigmaY: 40,
+                            tileMode: TileMode.decal,
+                          ),
+                          child: ShaderMask(
+                            shaderCallback: (rect) => const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.white,
+                                Colors.white,
+                                Colors.transparent,
+                              ],
+                              stops: [0.0, 0.62, 1.0],
+                            ).createShader(rect),
+                            blendMode: BlendMode.dstIn,
+                            child: _artImage(artUrl, localPoster),
+                          ),
+                        ),
+                      ),
                     ),
-                    Positioned(
-                      top: topInset,
-                      left: 0,
-                      right: 0,
-                      child: _buildMobileTopBar(item),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: _buildMobileMeta(item),
+                    Column(
+                      children: [
+                        SizedBox(height: topInset),
+                        _buildMobileTopBar(item),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final artSize = math
+                                  .min(
+                                    constraints.maxWidth -
+                                        AppSpacing.space2xl * 2,
+                                    constraints.maxHeight -
+                                        AppSpacing.spaceLg * 2,
+                                  )
+                                  .clamp(0.0, double.infinity);
+                              return Center(
+                                child: _artCard(artSize, artUrl, localPoster),
+                              );
+                            },
+                          ),
+                        ),
+                        _buildMobileMeta(item),
+                      ],
                     ),
                   ],
                 ),
@@ -1269,22 +1301,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: artSize,
-                            height: artSize,
-                            decoration: BoxDecoration(
-                              borderRadius: AppRadius.circular(16),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: AppColors.black,
-                                  blurRadius: 30,
-                                  offset: Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: _artImage(artUrl, localPoster),
-                          ),
+                          _artCard(artSize, artUrl, localPoster),
                           const SizedBox(height: 14),
                           _buildTitleBlock(item),
                         ],
@@ -1375,6 +1392,25 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _artCard(double size, String? artUrl, String? localPoster) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.black,
+            blurRadius: 30,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: _artImage(artUrl, localPoster),
     );
   }
 

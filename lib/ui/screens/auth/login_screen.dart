@@ -329,11 +329,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _initServer() async {
     await _serverRepo.loadStoredServers();
-    final server = _serverRepo.getServer(widget.serverId);
-    if (server == null) {
+    final stored = _serverRepo.getServer(widget.serverId);
+    if (stored == null) {
       if (mounted) context.go(Destinations.serverSelect);
       return;
     }
+    final server = await _serverRepo.withCheckedType(stored);
 
     final client = _clientFactory.getClient(
       serverId: server.id,

@@ -27,10 +27,19 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {}
 ///
 /// Firebase stays untouched until a signed-in server's plugin can deliver
 /// push, so a phone that never meets one never contacts Google.
-class PushMessagingService {
+class PushMessagingService extends ChangeNotifier {
   Future<void>? _startFuture;
   String? _lastRegisteredToken;
   bool _listenerAttached = false;
+
+  /// True when this device holds a registered push token with the active server.
+  bool get isRegistered => _lastRegisteredToken != null;
+
+  void _setRegisteredToken(String? token) {
+    if (token == _lastRegisteredToken) return;
+    _lastRegisteredToken = token;
+    notifyListeners();
+  }
 
   /// Set when a registration attempt was skipped or failed because the plugin
   /// wasn't reachable or couldn't push yet, so the availability listener can
@@ -104,6 +113,9 @@ class PushMessagingService {
   /// listener, which retries once a server can.
   Future<void> registerWithCurrentToken() async {
     if (!PlatformDetection.isMobile) return;
+    // A server switch reuses the same FCM token, so drop the last server's
+    // registration first and let this one get its own.
+    _setRegisteredToken(null);
     _attachAvailabilityListener();
     final sync = GetIt.instance.isRegistered<PluginSyncService>()
         ? GetIt.instance<PluginSyncService>()
@@ -118,9 +130,6 @@ class PushMessagingService {
       final settings =
           await FirebaseMessaging.instance.getNotificationSettings();
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
-      // A server switch reuses the same FCM token, so drop the dedupe and let
-      // the new server get its own registration.
-      _lastRegisteredToken = null;
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
@@ -185,7 +194,7 @@ class PushMessagingService {
       return;
     }
     _pendingRegistration = false;
-    _lastRegisteredToken = token;
+    _setRegisteredToken(token);
   }
 
   /// Unregister this device with the plugin, e.g. on logout. With
@@ -203,7 +212,7 @@ class PushMessagingService {
         deviceId: _deviceId(_lastRegisteredToken),
       );
     }
-    _lastRegisteredToken = null;
+    _setRegisteredToken(null);
 
     final started = _startFuture;
     if (deleteToken && started != null) {

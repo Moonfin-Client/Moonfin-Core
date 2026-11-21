@@ -1087,8 +1087,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         // managed to read is not, so writes stay disabled for this session.
         _coreOptionsReadable = false;
       }
+      final overrides = softwareRenderingOverrides(
+        coreId,
+        hardwareRenderingEnabled: widget.hardwareRenderingEnabled,
+      );
+      _savedBeforeOverrides = {
+        for (final key in overrides.keys) key: settingsJson?[key],
+      };
       // Preserve stored values while filling missing options with app defaults.
       settingsJson = withCoreOptionDefaults(coreId, settingsJson);
+      if (overrides.isNotEmpty) settingsJson = {...?settingsJson, ...overrides};
       // Last check before starting the one-per-process native session: if the
       // screen was unmounted while settings were loading, starting it now
       // would leave a session running with nothing left to tear it down.
@@ -1708,6 +1716,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   /// would make a write a blind overwrite of settings we never saw.
   bool _coreOptionsReadable = true;
 
+  /// Saved values of the options [softwareRenderingOverrides] replaced this
+  /// session, null where nothing was saved.
+  Map<String, String?> _savedBeforeOverrides = const {};
+
   /// The one place emulator settings are written, so the retry policy and the
   /// save id cannot drift between the menu path and the exit path.
   ///
@@ -1726,10 +1738,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     if (!_coreOptionsReadable) {
       throw StateError('emulator settings were not readable this session');
     }
+    final values = optionsToSave(options, _savedBeforeOverrides);
     return retryOnTransientFailure(
       () => games.putSave(
         _gameOptionsSaveId(coreId),
-        options.map((e) => '${e.key}=${e.value}').join('\n').codeUnits,
+        values.entries.map((e) => '${e.key}=${e.value}').join('\n').codeUnits,
         kind: 'settings',
       ),
       backoff: backoff,

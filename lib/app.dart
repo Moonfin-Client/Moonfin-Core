@@ -511,6 +511,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
       _onRouterStateChanged();
     }
     WidgetsBinding.instance.addObserver(this);
+    if (_restoresWindowFocus) FocusManager.instance.addListener(_rememberFocus);
     if (PlatformDetection.isDesktop) {
       final prefs = GetIt.instance<UserPreferences>();
       _isMaximized =
@@ -935,6 +936,36 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     final paused = state != AppLifecycleState.resumed;
     _screensaverController.activityPaused = paused;
     _maybePausePlaybackForBackground(state);
+    if (_restoresWindowFocus) _carryFocusAcrossWindowSwitch(state);
+  }
+
+  // The view can park focus on the root as the window loses it, before the app
+  // turns inactive, and then Flutter has nothing to hand back. A half-typed
+  // field stops taking keys and Backspace acts as Back.
+  static final bool _restoresWindowFocus =
+      PlatformDetection.isWeb || PlatformDetection.isDesktop;
+  FocusNode? _lastFocus;
+  FocusNode? _focusBeforeSwitch;
+
+  void _rememberFocus() {
+    final primary = FocusManager.instance.primaryFocus;
+    if (primary != null && primary is! FocusScopeNode) _lastFocus = primary;
+  }
+
+  void _carryFocusAcrossWindowSwitch(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _focusBeforeSwitch ??= _lastFocus;
+      return;
+    }
+    final node = _focusBeforeSwitch;
+    _focusBeforeSwitch = null;
+    if (node == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (FocusManager.instance.primaryFocus is! FocusScopeNode) return;
+      if (node.context?.mounted == true && node.canRequestFocus) {
+        node.requestFocus();
+      }
+    });
   }
 
   void _maybePausePlaybackForBackground(AppLifecycleState state) {
@@ -985,6 +1016,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
       appRouter.routerDelegate.removeListener(_onRouterStateChanged);
     }
     WidgetsBinding.instance.removeObserver(this);
+    FocusManager.instance.removeListener(_rememberFocus);
     HardwareKeyboard.instance.removeHandler(_hardwareKeyHandler);
     _screensaverController.visible.removeListener(_onScreensaverVisibleChanged);
     _focusNode.dispose();

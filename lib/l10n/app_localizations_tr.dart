@@ -505,13 +505,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Moonfin Önerileri yerel kütüphane algoritmasını, Jellyfin Önerileri sunucu motorunu veya çevrimiçi TMDb Benzerlik Metriklerini kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.';
+      'Yerel kütüphane algoritması olan Moonfin Önerileri\'ni, medya sunucunuzdan gelen Sunucu Önerileri\'ni veya çevrimiçi TMDb Benzerlik Ölçütleri\'ni kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Önerileri';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Önerileri';
+  String get recommendationSystemJellyfin => 'Sunucu Önerileri';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Benzerliği';
@@ -3545,6 +3545,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Siyah çubuklar yeniden kırpılıyor';
 
   @override
+  String get playerBlackBarsCropped => 'Siyah bantlar kırpıldı';
+
+  @override
+  String get playerNoBlackBarsFound => 'Siyah bantlar bulunamadı';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Siyah bantlar tespit edilemedi. Daha aydınlık bir sahnede yeniden deneyin';
+
+  @override
   String get stretch => 'Uzat';
 
   @override
@@ -4828,6 +4838,29 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bağlı tüm sunuculardaki kitaplıkları göster';
 
   @override
+  String get mergeLibrariesByType =>
+      'Filmler ve Diziler Kütüphanelerini Birleştir';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'Çoklu sunucu kütüphaneleri açıkken tüm sunucular için tek bir Filmler ve Diziler kütüphanesi gösterilir. Birden fazla sunucudaki ortak içerikler tek sefer listelenir.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sunucuda',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return '$servers üzerinde değiştirilmedi';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Son Eklenenler ve Son Yayınlananlar';
 
   @override
@@ -5077,17 +5110,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mediaBarSourceRandom => 'Rastgele';
 
   @override
-  String get mediaBarSourceNewReleases => 'Yeni Sezonlar ve Bölümler';
-
-  @override
   String get mediaBarNewReleaseBanner => 'Yeni Yayın Bandı';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Yakın zamanda yeni sezonu veya yeni bölümleri yayınlanan dizileri işaretle.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'Yeni Yayın Süresi';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5101,6 +5124,39 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'Yeni Bölümler';
+
+  @override
+  String get mediaBarNewMovie => 'Yeni Film';
+
+  @override
+  String get mediaBarNewReleasesSection => 'Yeni Çıkanlar';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'Yeni Çıkanlar';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Yeni dizileri, sezonları, bölümleri ve filmleri işaretle.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Etiketler';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'Yeni Bölüm Penceresi';
+
+  @override
+  String get mediaBarNewMovieDays => 'Yeni Film Penceresi';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'Bir filmin çıktıktan sonra ne kadar süre yeni kalacağı. Sinema filmleri sunuculara genellikle vizyona girdikten bir süre sonra ulaşır; bu nedenle bölümlerden daha uzun bir süre belirleyin.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Sloganı Göster';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Yeni Film etiketinin altında filmin sloganını göster. Slogan yoksa etiket tek başına kalır.';
 
   @override
   String get moviesAndTvShows => 'Filmler ve TV Programları';
@@ -5288,7 +5344,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsExternalLists => 'Harici Listeler';
 
   @override
-  String get homeRowsStreamingServices => 'Streaming Services';
+  String get homeRowsStreamingServices => 'Yayın Platformları';
 
   @override
   String get perRowSettings => 'Satır Başına Ayarlar';
@@ -5752,6 +5808,48 @@ class AppLocalizationsTr extends AppLocalizations {
       'Sunucu kütüphanesine eklenen yeni içerikler';
 
   @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
+
+  @override
   String loggedInAs(String username) {
     return '$username olarak oturum açıldı';
   }
@@ -5947,6 +6045,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get seerrNotFoundYet => 'Henüz bulunamadı';
+
+  @override
+  String get seerrSearchingIndexers => 'Dizinleyicilerde aranıyor';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Henüz bulunamadı · $when arandı';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Henüz mevcut değil';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return '$date tarihinde mevcut';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Sonraki bölüm: $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Farklı bir sürüm al';
@@ -11634,6 +11753,17 @@ class AppLocalizationsTr extends AppLocalizations {
       'Her zaman üstte tutmayı devre dışı bırak';
 
   @override
+  String get playerTooltipPictureInPicture => 'Pencere içinde pencere';
+
+  @override
+  String get playerTooltipExitPictureInPicture =>
+      'Pencere içinde pencereden çık';
+
+  @override
+  String get playerPlayingInPictureInPicture =>
+      'Pencere içinde pencere modunda oynatılıyor';
+
+  @override
   String get playerTooltipLockLandscape => 'Yatay moda kilitle';
 
   @override
@@ -12521,7 +12651,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsStyleCarousel => 'Carousel';
+  String get homeRowsStyleCarousel => 'Atlıkarınca';
 
   @override
   String get homeRowsSection => 'Ana Sayfa Satırları';
@@ -12531,7 +12661,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get rowsTypeDescription =>
-      'Klasik mod, satır başına görsel türünü ve bilgi katmanını korur. Modern mod ise dikey görsellerden yatay arka planlara uzanan satırlar kullanır.';
+      'Klasik, satır bazlı görsel türünü ve bilgi katmanını korur. Modern, portreden arka plana dönüşen satırları kullanır. Atlıkarınca, her satırın altına bir ayrıntı paneli ekler.';
 
   @override
   String get modernCardsOnMyMediaRow => 'Medyam satırında modern kartlar';
@@ -12653,13 +12783,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Öneri kaynağını seçin (Moonfin Önerileri: özel yerel algoritma, Jellyfin Önerileri: sunucu motoru veya TMDb\'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).';
+      'Öneri kaynağını seçin (Moonfin Önerileri özel yerel algoritması, medya sunucunuzdan gelen Sunucu Önerileri veya TMDb\'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin Önerileri';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Önerileri';
+  String get sinceYouWatchedSourceServer => 'Sunucu Önerileri';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb Benzerliği';
@@ -15686,7 +15816,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get setupRowsCarouselHint =>
-      'Posters with a large details panel underneath.';
+      'Altında geniş bir ayrıntı paneli yer alan afişler.';
 
   @override
   String get setupDetailClassicHint =>
@@ -18243,15 +18373,28 @@ class AppLocalizationsTr extends AppLocalizations {
       'Sol ve Sağ kaydırıcıyı hareket ettirir.';
 
   @override
-  String get clickpadSeeking => 'Allow Clickpad Seeking';
+  String get remoteMediaNotificationTitle => 'Uzaktan oynatma bildirimi';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Başka bir cihazda izlerken sistem medya kontrollerini göster';
+
+  @override
+  String get remoteActivityWatching => 'Moonfin üzerinden izleniyor';
+
+  @override
+  String get remoteActivityListening => 'Moonfin üzerinden dinleniyor';
+
+  @override
+  String get clickpadSeeking => 'Clickpad ile İleri/Geri Sarmaya İzin Ver';
 
   @override
   String get clickpadSeekingDescription =>
-      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+      'Sol, Sağ ve dokunmatik yüzey kaydırmalarının ne zaman ileri/geri sarabileceğini belirler. Aksi durumda ilk hareket kontrolleri ekrana getirir.';
 
   @override
-  String get clickpadSeekingControlsVisible => 'When controls are showing';
+  String get clickpadSeekingControlsVisible => 'Kontroller ekrandayken';
 
   @override
-  String get clickpadSeekingPausedOnly => 'Only while paused';
+  String get clickpadSeekingPausedOnly => 'Yalnızca duraklatılmışken';
 }

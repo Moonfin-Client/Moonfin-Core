@@ -159,6 +159,49 @@ void main() {
     slow.completeError(Exception('offline'));
   });
 
+  test('a request card takes its name and poster from the detail', () async {
+    when(() => seerr.getMovieDetails(any())).thenAnswer(
+      (call) async => SeerrMovieDetails(
+        id: call.positionalArguments.first as int,
+        title: 'Detail movie',
+        posterPath: '/movie.jpg',
+      ),
+    );
+    when(() => seerr.getTvDetails(2)).thenAnswer(
+      (_) async => const SeerrTvDetails(
+        id: 2,
+        name: 'Detail series',
+        posterPath: '/series.jpg',
+      ),
+    );
+    // Seerr's watchlist rows have an empty title and no artwork.
+    when(() => seerr.getWatchlist(page: any(named: 'page'))).thenAnswer(
+      (_) async => _page([
+        const SeerrDiscoverItem(id: 1, mediaType: 'movie', title: ''),
+        const SeerrDiscoverItem(id: 2, mediaType: 'tv', title: ''),
+        const SeerrDiscoverItem(
+          id: 3,
+          mediaType: 'movie',
+          title: 'Own title',
+          posterPath: '/own.jpg',
+        ),
+      ]),
+    );
+
+    await vm.load();
+    await pumpEventQueue();
+
+    final cards = {
+      for (final item in vm.rowItems[FavoriteTypeFilter.watchlist]!)
+        item.id: (item.rawData['Name'], item.rawData['PosterPath']),
+    };
+    expect(cards, {
+      '1': ('Detail movie', '/movie.jpg'),
+      '2': ('Detail series', '/series.jpg'),
+      '3': ('Own title', '/own.jpg'),
+    });
+  });
+
   test('a reload stops the old batch from starting more detail lookups', () async {
     final held = <Completer<SeerrMovieDetails>>[];
     when(() => seerr.getMovieDetails(any())).thenAnswer((_) {

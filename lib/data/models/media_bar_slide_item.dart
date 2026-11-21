@@ -1,20 +1,24 @@
-/// Why a series slide gets a banner: what aired lately.
-enum MediaBarNewRelease { newSeries, newSeason, newEpisodes }
+/// Why a slide gets a banner: what aired lately, or a movie that's new.
+enum MediaBarNewRelease { newSeries, newSeason, newEpisodes, newMovie }
 
-/// What a series slide's banner says, and the detail line under it.
+/// What a slide's banner says, and the detail line under it.
 class MediaBarNewReleaseInfo {
   final MediaBarNewRelease kind;
 
-  /// The season the new episodes belong to.
+  /// The season the new episodes belong to. 0 for a movie.
   final int season;
 
   /// The latest new episode, when the season comes out episode by episode.
   final int? episode;
 
+  /// A new movie's tagline, in the server's metadata language only.
+  final String? tagline;
+
   const MediaBarNewReleaseInfo({
     required this.kind,
-    required this.season,
+    this.season = 0,
     this.episode,
+    this.tagline,
   });
 }
 
@@ -43,6 +47,10 @@ class MediaBarSlideItem {
   /// Set on a series whose episodes aired within the chosen window.
   final MediaBarNewReleaseInfo? newRelease;
 
+  /// How many seasons a series has, from the server's ChildCount.
+  final int? childCount;
+  final bool isFavorite;
+
   /// The id outside titles carry in place of a server, as on Home.
   static const externalServerId = 'seerr';
 
@@ -66,6 +74,8 @@ class MediaBarSlideItem {
     this.itemType = 'Movie',
     this.remoteTrailers = const [],
     this.newRelease,
+    this.childCount,
+    this.isFavorite = false,
   });
 
   /// Whether this title came from an outside list rather than the server, so it
@@ -74,34 +84,20 @@ class MediaBarSlideItem {
 
   /// The same title with [release] as its banner.
   MediaBarSlideItem withNewRelease(MediaBarNewReleaseInfo? release) =>
-      MediaBarSlideItem(
-        itemId: itemId,
-        serverId: serverId,
-        title: title,
-        backdropUrl: backdropUrl,
-        bannerUrl: bannerUrl,
-        logoUrl: logoUrl,
-        posterUrl: posterUrl,
-        officialRating: officialRating,
-        year: year,
-        genres: genres,
-        runtime: runtime,
-        communityRating: communityRating,
-        criticRating: criticRating,
-        tmdbId: tmdbId,
-        imdbId: imdbId,
-        itemType: itemType,
-        remoteTrailers: remoteTrailers,
-        overview: overview,
-        newRelease: release,
-      );
+      _copy(newRelease: release);
 
   /// The same title with its description dropped, for previews of the
   /// settings that hide it.
-  MediaBarSlideItem withoutOverview() => MediaBarSlideItem(
+  MediaBarSlideItem withoutOverview() => _copy(dropOverview: true);
+
+  MediaBarSlideItem _copy({
+    Object? newRelease = _keep,
+    bool dropOverview = false,
+  }) => MediaBarSlideItem(
     itemId: itemId,
     serverId: serverId,
     title: title,
+    overview: dropOverview ? null : overview,
     backdropUrl: backdropUrl,
     bannerUrl: bannerUrl,
     logoUrl: logoUrl,
@@ -116,6 +112,12 @@ class MediaBarSlideItem {
     imdbId: imdbId,
     itemType: itemType,
     remoteTrailers: remoteTrailers,
-    newRelease: newRelease,
+    newRelease: identical(newRelease, _keep)
+        ? this.newRelease
+        : newRelease as MediaBarNewReleaseInfo?,
+    childCount: childCount,
+    isFavorite: isFavorite,
   );
+
+  static const _keep = Object();
 }

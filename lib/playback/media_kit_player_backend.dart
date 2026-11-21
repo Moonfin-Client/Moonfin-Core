@@ -197,6 +197,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   static const Duration _linuxHwdecFirstFrameTimeout = Duration(
     milliseconds: 1500,
   );
+  static const Duration _linuxPassthroughStartTimeout = Duration(seconds: 3);
   final Player _player;
   final VideoController? _videoController;
   final UserPreferences _prefs;
@@ -699,6 +700,10 @@ class MediaKitPlayerBackend extends PlayerBackend
       if (!PlatformDetection.isAndroid && !PlatformDetection.isIOS) {
         _nativeSetProperty(platform, 'demuxer-max-bytes', '256MiB');
       }
+      // mpv builds with libcurl read http through it, which has no read
+      // timeout and ignores network-timeout and the reconnect options below,
+      // so a resume on a stalled connection can sit frozen.
+      _nativeSetProperty(platform, 'curl-enabled', 'no');
       _nativeSetProperty(
         platform,
         'stream-lavf-o',
@@ -1005,6 +1010,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
+    unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
     if (!_useLibass) {
       _enableNativeSubtitleRendering();
     }
@@ -1774,7 +1780,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   }) async {
     final on = displayHdr ?? _passthroughHintOn;
     _passthroughHintOn = on;
-    // mpv 0.40+ defaults the mode to `target`, which adapts to the monitor's
+    // mpv 0.41+ defaults the mode to `target`, which adapts to the monitor's
     // EDID and leaves weak-HDR panels dim and double-tone-mapped. `source`
     // passes the stream's own metadata. Older builds ignore the write.
     await _nativeSetProperty(native, 'target-colorspace-hint-mode', 'source');
@@ -1861,6 +1867,50 @@ class MediaKitPlayerBackend extends PlayerBackend
         await _player.play();
       } catch (_) {}
     } catch (_) {}
+  }
+
+  /// A PipeWire output that can't take a bitstream can leave mpv stuck at the
+  /// start: the bundled mpv 0.37 has no SPDIF in its PipeWire driver and
+  /// never starts after its own PCM fallback, and 0.41 keeps reopening an
+  /// output that refuses the format. Decoding the track gets it playing.
+  /// audio-spdif then stays empty until the passthrough settings change, so
+  /// the next file doesn't stall the same way.
+  Future<void> _applyLinuxPassthroughFallbackIfNeeded(int generation) async {
+    if (!PlatformDetection.isLinux) return;
+    final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
+    if (spdif.isEmpty) return;
+    await Future<void>.delayed(_linuxPassthroughStartTimeout);
+    final native = _player.platform;
+    if (native is! NativePlayer || !_ownsPlayback(generation)) return;
+    final format = await _tryNativeGetProperty(native, 'audio-params/format');
+    if (format == null || !format.startsWith('spdif')) return;
+    // A slow restart also leaves the core idle, but its output is open.
+    if (await _tryNativeGetProperty(native, 'core-idle') != 'yes' ||
+        await _tryNativeGetProperty(native, 'pause') != 'no' ||
+        await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
+        await _tryNativeGetProperty(native, 'current-ao') != null) {
+      return;
+    }
+    if (!_ownsPlayback(generation)) return;
+    debugPrint('[audio] $format output never started, decoding instead');
+    await _nativeSetProperty(native, 'audio-spdif', '');
+    // Before mpv 0.41, audio-spdif only takes effect once the audio decoder
+    // is recreated, which selecting the track again does. Queued with
+    // setAudioTrack so a track the viewer picks meanwhile isn't undone.
+    await _queueAudioTrackChange(() async {
+      final aid = await _tryNativeGetProperty(native, 'aid');
+      if (aid == null || !_ownsPlayback(generation)) return;
+      await _nativeSetProperty(native, 'aid', 'no');
+      await _nativeSetProperty(native, 'aid', aid);
+    });
+  }
+
+  Future<void> _audioTrackChanges = Future<void>.value();
+
+  Future<void> _queueAudioTrackChange(Future<void> Function() change) {
+    final next = _audioTrackChanges.then((_) => change());
+    _audioTrackChanges = next.catchError((_) {});
+    return next;
   }
 
   /// Maps the effective passthrough codec set to mpv spdif names. Downmixing
@@ -2095,15 +2145,9 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
 
     final content = await file.readAsString();
-    final entries = <(String, String)>[];
-    for (final rawLine in content.split('\n')) {
-      final parsed = _parseMpvConfLine(rawLine);
-      if (parsed != null) {
-        entries.add(parsed);
-      }
-    }
-
-    final immutable = List<(String, String)>.unmodifiable(entries);
+    final immutable = List<(String, String)>.unmodifiable(
+      parseMpvConf(content),
+    );
     _parsedMpvConfCache[path] = _ParsedMpvConfCacheEntry(
       modified: modified,
       length: length,
@@ -2136,12 +2180,33 @@ class MediaKitPlayerBackend extends PlayerBackend
     return null;
   }
 
-  (String, String)? _parseMpvConfLine(String line) {
-    final trimmed = line.trim();
-    if (trimmed.isEmpty || trimmed.startsWith('#') || trimmed.startsWith(';')) {
-      return null;
+  @visibleForTesting
+  static List<(String, String)> parseMpvConf(String content) {
+    final entries = <(String, String)>[];
+    var inProfile = false;
+    for (final rawLine in content.split('\n')) {
+      final line = rawLine.trim();
+      // Keys under [name] belong to an mpv profile, which only applies when
+      // that profile is used. [default] or [] goes back to the top level.
+      // Like mpv, the name runs to the first ], before any # comment.
+      final close = line.startsWith('[') ? line.indexOf(']') : -1;
+      if (close > 0) {
+        final name = line.substring(1, close);
+        inProfile = name.isNotEmpty && name != 'default';
+        continue;
+      }
+      if (inProfile) continue;
+      final parsed = _parseMpvConfLine(line);
+      if (parsed != null) {
+        entries.add(parsed);
+      }
     }
-    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    return entries;
+  }
+
+  static (String, String)? _parseMpvConfLine(String line) {
+    final trimmed = line.trim();
+    if (trimmed.isEmpty || trimmed.startsWith('#')) {
       return null;
     }
 
@@ -2173,6 +2238,12 @@ class MediaKitPlayerBackend extends PlayerBackend
 
     var key = rawKey.toLowerCase();
     var value = (rawValue == null || rawValue.isEmpty) ? 'yes' : rawValue;
+    // mpv drops one pair of quotes around a value.
+    if (value.length >= 2 &&
+        (value[0] == '"' || value[0] == "'") &&
+        value.endsWith(value[0])) {
+      value = value.substring(1, value.length - 1);
+    }
 
     if (key.startsWith('no-') && (rawValue == null || rawValue.isEmpty)) {
       key = key.substring(3);
@@ -2182,7 +2253,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     return (key, value);
   }
 
-  String _stripInlineComment(String input) {
+  static String _stripInlineComment(String input) {
     var inSingleQuote = false;
     var inDoubleQuote = false;
     for (var i = 0; i < input.length; i++) {
@@ -2195,7 +2266,7 @@ class MediaKitPlayerBackend extends PlayerBackend
         inSingleQuote = !inSingleQuote;
         continue;
       }
-      if (!inSingleQuote && !inDoubleQuote && (ch == '#' || ch == ';')) {
+      if (!inSingleQuote && !inDoubleQuote && ch == '#') {
         return input.substring(0, i).trimRight();
       }
     }
@@ -2252,6 +2323,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     'video-sync',
     'tone-mapping',
     'tone-mapping-param',
+    // Removed in mpv 0.37, but Android still bundles a 0.36 build.
     'tone-mapping-mode',
     'gamut-mapping-mode',
     'target-trc',
@@ -2267,7 +2339,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     // gpu-api and gpu-context deliberately stay OUT of this list: they belong
     // to the unsafe-advanced tier, and listing them here would bypass that
     // gate on every platform - a wrong gpu-context blacks out all playback.
-    'target-inverse-tone-mapping',
+    'inverse-tone-mapping',
     // media_kit initializes every native platform with dither=no, which bands
     // dark gradients on desktop. Let a conf turn it back on.
     'dither',
@@ -2476,6 +2548,8 @@ class MediaKitPlayerBackend extends PlayerBackend
   @override
   Future<void> resume() async {
     await _player.play();
+    // A source opened paused only meets its passthrough output now.
+    unawaited(_applyLinuxPassthroughFallbackIfNeeded(_playbackGeneration));
   }
 
   @override
@@ -2673,7 +2747,16 @@ class MediaKitPlayerBackend extends PlayerBackend
   }
 
   @override
-  Future<void> setAudioTrack(int mpvTrackId) async {
+  Future<void> setAudioTrack(int mpvTrackId) {
+    final generation = _playbackGeneration;
+    // A change still queued when another source opens was meant for the old
+    // one, and its ordinal would pick a track in the new one.
+    return _queueAudioTrackChange(() async {
+      if (_ownsPlayback(generation)) await _setAudioTrack(mpvTrackId);
+    });
+  }
+
+  Future<void> _setAudioTrack(int mpvTrackId) async {
     if (mpvTrackId < 1) return;
     try {
       final native = _player.platform as NativePlayer;
@@ -3774,7 +3857,10 @@ class MediaKitPlayerBackend extends PlayerBackend
     final hasBackground = ((color >> 24) & 0xff) != 0;
     final hasShadow = !hasBackground && shadowColor != 0;
     return {
-      'sub-back-color': _argbToMpvColor(hasShadow ? shadowColor : color),
+      'sub-back-color': _argbToMpvColor(color),
+      // Before 0.39 mpv draws a box for any sub-back-color with alpha. From
+      // 0.39 this is an alias of sub-back-color, so it has to come after it.
+      if (hasShadow) 'sub-shadow-color': _argbToMpvColor(shadowColor),
       'sub-border-style': hasBackground
           ? 'background-box'
           : 'outline-and-shadow',

@@ -104,6 +104,7 @@ SiloPlanSubtitles siloPlanSubtitles({
   required Map<String, dynamic>? source,
   required String baseUrl,
   String? accessToken,
+  bool referenceOnly = false,
   int? requestedStreamIndex,
 }) {
   final subtitle = (plan['subtitle'] as Map?)?.cast<String, dynamic>() ?? {};
@@ -170,7 +171,12 @@ SiloPlanSubtitles siloPlanSubtitles({
       ExternalSubtitle(
         deliveryUrl: accessToken == null
             ? absolute
-            : siloAuthorizeUrl(absolute, baseUrl, accessToken),
+            : siloAuthorizeUrl(
+                absolute,
+                baseUrl,
+                accessToken,
+                referenceOnly: referenceOnly,
+              ),
         title: entry['label'] as String?,
         language: entry['language'] as String?,
         codec: codec,

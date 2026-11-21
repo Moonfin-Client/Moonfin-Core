@@ -47,6 +47,8 @@ class PlatformDetection {
   static String? get flatpakAppId => isLinux ? linuxFlatpakAppId() : null;
   static bool get isFlatpak => flatpakAppId != null;
 
+  static String? get cpuArch => isWindows || isLinux ? cpuArchitecture() : null;
+
   static String get linuxSessionType => '';
 
   static String get pathSeparator => isWindows ? '\\' : '/';

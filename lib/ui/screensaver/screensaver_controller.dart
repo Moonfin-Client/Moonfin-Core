@@ -284,8 +284,19 @@ class ScreensaverController {
         (isTv && screensaverEnabled && !nativePlayerPresented);
   }
 
+  // Browsers only offer a wake lock in a secure context. Without one
+  // wakelock_plus plays a hidden video with sound instead, and iOS pauses our
+  // own video or music to play it.
+  static bool get _wakeLockWouldPauseMedia {
+    if (!kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return false;
+    final page = Uri.base;
+    return page.scheme != 'https' &&
+        !const {'localhost', '127.0.0.1', '::1'}.contains(page.host);
+  }
+
   void _refreshWakeLock({bool force = false}) {
     final shouldEnable =
+        !_wakeLockWouldPauseMedia &&
         !_screenHandedBack &&
         wakeLockNeeded(
           activityPaused: _activityPaused,

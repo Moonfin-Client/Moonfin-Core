@@ -57,6 +57,125 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="3.1.1" date="2026-11-18">
+    <description>
+      <p>Features</p>
+      <p>Home</p>
+      <ul>
+        <li>A new Carousel row type puts a large details panel under each row's posters. Pick it under Row Type. It's the new default on TV.</li>
+        <li>New MDBList, JustWatch and TMDB rows show what's popular, including what's trending on Netflix, Prime Video, Disney+ and other streaming services. The Home Rows editor groups outside lists by source. <em>(Needs Moonbase 3.1.1)</em></li>
+        <li>Game library rows on Home show each game's box art in its real shape, with a clean name, a description and an in-game backdrop, and they open the game. <em>(Needs Moonbase 3.1.1)</em></li>
+        <li>The media bar's New Releases source now covers movies too. A New Movie label can show the movie's tagline, and New Episode Window and New Movie Window set how long each counts as new.</li>
+        <li>The MakD media bar is rebuilt to match MakD's v6 Classic layout, with Info, Play and Favorite buttons.</li>
+        <li>Seerr Discover rows follow Home's row padding and expanded rows.</li>
+        <li>Hide Watch Progress and Hide Unwatched Count work on library posters too.</li>
+        <li>The Banner media bar sits a little further in from the screen edges on TV and desktop.</li>
+      </ul>
+      <p>Libraries</p>
+      <ul>
+        <li>Merge Movie and TV Show Libraries shows one Movies library and one TV Shows library for all your servers, Plex and Silo included, when Multi-Server Libraries is on. A title on several servers shows once.</li>
+        <li>Collections open in Stage, Premiere, Frost, Quick Look and Minimalist with their cast and crew and a Remove from Collection menu, and big collections load 50 titles at a time.</li>
+      </ul>
+      <p>Seerr</p>
+      <ul>
+        <li>Requests say what Radarr or Sonarr is waiting on: Searching indexers, Not found yet with when it last searched, Not available yet, or the date it comes out. <em>(Needs Moonbase 3.1.1)</em></li>
+        <li>Seerr settings show whether push notifications are on for your server and registered on this device, and a Send Test Notification button checks that they arrive. <em>(Test button needs Moonbase 3.1.1)</em></li>
+      </ul>
+      <p>Player</p>
+      <ul>
+        <li>Holding Left or Right on a TV remote seeks in steps that grow from your skip length to 30, 60 and 180 seconds, instead of racing through the video.</li>
+        <li>Holding the spacebar plays at 2x speed until you let go.</li>
+        <li>On Apple TV, Allow Clickpad Seeking picks whether clicks and swipes seek always, only while the controls are showing, or only while paused.</li>
+        <li>The web player has a picture-in-picture button.</li>
+        <li>The description shown while paused appears as soon as you pause, looks the same on every platform and has up to 8 lines.</li>
+        <li>A manual recrop of black bars tells you whether it found any.</li>
+        <li>The phone music player shows square album art over a blurred backdrop instead of a zoomed crop.</li>
+      </ul>
+      <p>Android</p>
+      <ul>
+        <li>Phones, tablets and TVs now share one APK, which picks the TV or phone layout on its own.</li>
+        <li>Moonfin has its own F-Droid repo. (#1559)</li>
+        <li>Remote playback notification shows media controls on your phone when another device on your account is playing. It's off by default, under Settings &gt; General.</li>
+      </ul>
+      <p>Privacy</p>
+      <ul>
+        <li>Firebase only starts when your server can send push notifications. The notification token is skipped when notifications are off and deleted when the last account signs out.</li>
+        <li>Self-signed certificates are only trusted for your own servers.</li>
+        <li>SponsorBlock lookups are hashed, so the video you're watching isn't sent.</li>
+        <li>More secrets are scrubbed from logs, and the server token stays out of Android TV's Watch Next, preview channel and car artwork links.</li>
+        <li>Android cloud backup is off for Moonfin.</li>
+        <li>The cast SDK waits until you cast instead of starting at launch.</li>
+        <li>The web app loads hls.js, CanvasKit and its fallback fonts from its own build instead of outside servers.</li>
+        <li>iOS no longer asks for camera and location permission text it never used.</li>
+      </ul>
+      <p>Other</p>
+      <ul>
+        <li>Jellyfin Recommends is now Server Recommends, since it also runs on Emby and Plex.</li>
+        <li>When a Silo admin ends your playback, the player closes and says why.</li>
+        <li>Searching Settings for silent, silence or no sound finds Passthrough Output.</li>
+        <li>The Windows and Linux diagnostic report includes the CPU architecture.</li>
+        <li>Moonfin is now licensed under GPL-3.0-or-later.</li>
+      </ul>
+      <p>Changed Defaults</p>
+      <ul>
+        <li>Carousel is the default Row Type on TV.</li>
+        <li>Trailer Preview in the media bar is off. Turn it back on in the media bar settings.</li>
+        <li>The phone app puts the navbar at the bottom. If you already picked a position, it stays where you put it.</li>
+      </ul>
+      <p>Bug Fixes</p>
+      <p>Playback</p>
+      <ul>
+        <li>Video on Linux no longer freezes every few seconds.</li>
+        <li>The Fedora RPM bundles libmpv and FFmpeg so HEVC plays (#2266), and AC3 with passthrough on plays on Linux instead of looping on Reconnecting (#2350).</li>
+        <li>Leaving or skipping ahead from Next Up during the credits marks the title watched. (#2270)</li>
+        <li>Episodes started from Next Up or the queue keep the series' audio and subtitle choice (#2314), and foreign-audio subtitles follow the series' remembered audio (#2289).</li>
+        <li>A remote Stop no longer leaves the TV on a black, empty player. (#2287)</li>
+        <li>A quick Down to the TV player buttons no longer gets pulled back to the seek bar. (#2321)</li>
+        <li>The time keeps moving after you leave the app and come back on Android TV. (#2320)</li>
+        <li>MP4 timed text subtitles that the server converts now show on Android. (#2316)</li>
+        <li>Audio no longer goes silent after pause and resume on TVs that fade their passthrough decoder, like the TCL G10. (#2348)</li>
+        <li>Letterbox crop no longer gives up on dark scenes (#2305), and subtitles no longer sit a bar's height too high under it on desktop (#2306).</li>
+        <li>Downloaded playback no longer freezes for half a second every 5 seconds when you have many downloads. (#2301)</li>
+        <li>SyncPlay guests start playing when the host starts something. (#2345)</li>
+        <li>Watch parties on web no longer drop every 8 seconds, and backspace in party chat deletes text instead of leaving the party.</li>
+        <li>The web player on iPhone and iPad no longer pauses itself, and its exit button works. (#2347)</li>
+        <li>N64 games use the software renderer on devices without a GPU path, even with older saved settings.</li>
+      </ul>
+      <p>Home</p>
+      <ul>
+        <li>Coming back to Home refreshes On Now (#2286) and the merged Continue Watching and Next Up row (#2354).</li>
+        <li>A media bar trailer stops when the bar reloads and another title takes its slide. (#2360)</li>
+        <li>Media bars on phones no longer run under the top navbar, the menu button or the bottom navbar.</li>
+        <li>Modern rows on phones no longer leave a gap under every row, even at the lowest Row Padding. Only the row you tap makes room for its details, and the Settings preview grows the first card again.</li>
+        <li>Latest rows show the show's logo on cards made from an episode or season. (#2277)</li>
+        <li>The Studios row is sorted (#2310), and white studio logos sit on a dark card (#2317).</li>
+        <li>The Recently Released media bar follows the row's episode or season sort. (#2330)</li>
+        <li>On Silo, Seerr rows no longer show twice (#2258) and Seerr person pages open (#2259).</li>
+        <li>The Settings preview draws Home posters at their real size at every Card Size and UI Scaling, and Home's loading cards follow UI Scaling.</li>
+        <li>The Apple TV home screen reaches the screen edges again. (#2268)</li>
+      </ul>
+      <p>Details and Libraries</p>
+      <ul>
+        <li>After Watched hides Restart, the next OK presses the right button. (#2219)</li>
+        <li>A season marked unplayed drops its Resume button and progress bar right away. (#2249)</li>
+        <li>Episode versions on Emby fold together. (#2253)</li>
+        <li>The Frost details screen scales properly on desktop. (#2283)</li>
+        <li>Details rows come back to the card you left, so focus no longer gets stuck. (#2295)</li>
+        <li>A hovered Modern action button no longer wraps in a loop. (#2332)</li>
+        <li>Frost's Similar tab shows Seerr posters and opens their Seerr page. (#2344)</li>
+        <li>Swiping left and right works in the photo viewer (#2244), and videos in a photo album show up there (#2245).</li>
+        <li>The search screen updates when a deep link changes its search. (#2309)</li>
+        <li>The Seerr Discover page lays out properly on phones (#2304), and Seerr browse stops loading once a filter runs out of matches (#2362).</li>
+      </ul>
+      <p>Servers and Casting</p>
+      <ul>
+        <li>A saved Emby server that was stored as Jellyfin loads its Home screen again. (#2341)</li>
+        <li>A server running on the phone itself counts as reachable with Wi-Fi and mobile data off. (#2274)</li>
+        <li>Android casts no longer fail with route not found, and the cast picker no longer crashes when two DLNA scans find the same device.</li>
+        <li>The Live TV guide shows a New badge on programs Emby flags as new. (#2358)</li>
+      </ul>
+    </description>
+    </release>
     <release version="3.1.0" date="2026-11-11">
     <description>
       <p>Features</p>

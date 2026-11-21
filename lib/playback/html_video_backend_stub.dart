@@ -162,6 +162,14 @@ class HtmlVideoBackend extends PlayerBackend {
     return const SizedBox.shrink();
   }
 
+  bool get supportsPictureInPicture => false;
+
+  final ValueNotifier<bool> inPictureInPicture = ValueNotifier<bool>(false);
+
+  Future<void> enterPictureInPicture() async {}
+
+  Future<void> exitPictureInPicture() async {}
+
   @override
   void dispose() {}
 }

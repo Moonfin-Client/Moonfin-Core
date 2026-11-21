@@ -541,7 +541,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin poleca';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin poleca';
+  String get recommendationSystemJellyfin => 'Serwer poleca';
 
   @override
   String get recommendationSystemTmdb => 'Podobieństwo TMDb';
@@ -3721,6 +3721,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Ponowne wykrywanie czarnych pasów';
 
   @override
+  String get playerBlackBarsCropped => 'Black bars cropped';
+
+  @override
+  String get playerNoBlackBarsFound => 'No black bars found';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Couldn\'t detect black bars. Try again in a brighter scene';
+
+  @override
   String get stretch => 'Rozciągnij';
 
   @override
@@ -4995,6 +5005,28 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pokaż biblioteki ze wszystkich podłączonych serwerów';
 
   @override
+  String get mergeLibrariesByType => 'Merge Movie and TV Show Libraries';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Not changed on $servers';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Recently Added and Released';
 
   @override
@@ -5245,17 +5277,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mediaBarSourceRandom => 'Losowo';
 
   @override
-  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
-
-  @override
   String get mediaBarNewReleaseBanner => 'New Release Banner';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Flag series with a new season or new episodes that aired recently.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'New Release Window';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5269,6 +5291,39 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'New Episodes';
+
+  @override
+  String get mediaBarNewMovie => 'New Movie';
+
+  @override
+  String get mediaBarNewReleasesSection => 'New Releases';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'New Releases';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Flag new series, seasons, episodes and movies.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Labels';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'New Episode Window';
+
+  @override
+  String get mediaBarNewMovieDays => 'New Movie Window';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Show Tagline';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
   String get moviesAndTvShows => 'Filmy i seriale';
@@ -5920,6 +5975,48 @@ class AppLocalizationsPl extends AppLocalizations {
   String get seerrNotifyNewMediaSubtitle => 'Nowe pozycje w bibliotece';
 
   @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
+
+  @override
   String loggedInAs(String username) {
     return 'Zalogowano jako: $username';
   }
@@ -6116,6 +6213,27 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrSearchingIndexers => 'Searching indexers';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Not found yet · searched $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Not available yet';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Available $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Next episode $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Get a different release';
@@ -11888,6 +12006,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get playerTooltipExitFloatOnTop => 'Wyłącz tryb „Zawsze na wierzchu”';
 
   @override
+  String get playerTooltipPictureInPicture => 'Picture-in-picture';
+
+  @override
+  String get playerTooltipExitPictureInPicture => 'Exit picture-in-picture';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Playing in picture-in-picture';
+
+  @override
   String get playerTooltipLockLandscape => 'Zablokuj orientację poziomą';
 
   @override
@@ -12931,7 +13058,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Moonfin poleca';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin poleca';
+  String get sinceYouWatchedSourceServer => 'Serwer poleca';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Podobieństwo TMDb';
@@ -18565,6 +18692,19 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Left and Right slide the scrubber.';
+
+  @override
+  String get remoteMediaNotificationTitle => 'Remote playback notification';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Show system media controls when watching on another device';
+
+  @override
+  String get remoteActivityWatching => 'Watching on Moonfin';
+
+  @override
+  String get remoteActivityListening => 'Listening on Moonfin';
 
   @override
   String get clickpadSeeking => 'Allow Clickpad Seeking';

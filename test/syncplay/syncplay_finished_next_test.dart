@@ -1,14 +1,24 @@
 import 'dart:async';
 
+import 'package:drift/drift.dart' show DatabaseConnection;
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/database/offline_database.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/offline/connectivity_aware_media_server_client.dart';
+import 'package:moonfin/data/offline/offline_catalog.dart';
+import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/pending_rating_store.dart';
+import 'package:moonfin/data/services/storage_path_service.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/syncplay/syncplay_manager.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _TestBackend extends Fake implements PlayerBackend {
   final positions = StreamController<Duration>.broadcast(sync: true);
@@ -242,6 +252,8 @@ class _FakeItemsApi extends Fake implements ItemsApi {
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
 
+class _FakeImageApi extends Fake implements ImageApi {}
+
 class _FakeClientFactory extends Fake implements MediaServerClientFactory {
   _FakeClientFactory(this._clients);
 
@@ -249,6 +261,18 @@ class _FakeClientFactory extends Fake implements MediaServerClientFactory {
 
   @override
   Map<String, MediaServerClient> get clients => _clients;
+
+  // Like the real factory, a connectivity wrapper matches the client inside it.
+  @override
+  String serverIdOf(MediaServerClient client) {
+    final target = client is ConnectivityAwareMediaServerClient
+        ? client.onlineClient
+        : client;
+    for (final entry in _clients.entries) {
+      if (identical(entry.value, target)) return entry.key;
+    }
+    return client.baseUrl;
+  }
 }
 
 class _FakeUserPreferences extends Fake implements UserPreferences {
@@ -684,4 +708,73 @@ void main() {
       expect(service.stops, [end]);
     },
   );
+
+  test('a guest loads the queue the host starts', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = PreferenceStore();
+    await prefs.init();
+    final db = OfflineDatabase(DatabaseConnection(NativeDatabase.memory()));
+    final repo = OfflineRepository(db);
+    final catalog = OfflineCatalog(repo);
+    addTearDown(() async {
+      catalog.dispose();
+      await db.close();
+    });
+    final raw = GetIt.instance<MediaServerClientFactory>().clients['server1']!;
+    when(() => raw.imageApi).thenReturn(_FakeImageApi());
+
+    // The app registers its own wrapper around the factory's client and never
+    // hands the manager a client.
+    GetIt.instance.registerSingleton<MediaServerClient>(
+      ConnectivityAwareMediaServerClient(
+        raw,
+        useOffline: () => false,
+        catalog: catalog,
+        storagePath: StoragePathService(),
+        pendingRatings: PendingRatingStore(prefs),
+        offlineRepo: repo,
+      ),
+    );
+    syncPlayManager.setActiveClient(null);
+
+    syncPlayManager.handleGroupUpdate(
+      const SyncPlayGroupUpdate(
+        groupId: 'g2',
+        type: SyncPlayGroupUpdateType.groupJoined,
+        payload: SyncPlayGroupJoinedPayload(
+          SyncPlayGroupInfo(
+            groupId: 'g2',
+            groupName: 'Group',
+            state: SyncPlayGroupState.idle,
+          ),
+        ),
+      ),
+    );
+    syncPlayManager.handleGroupUpdate(
+      const SyncPlayGroupUpdate(
+        groupId: 'g2',
+        type: SyncPlayGroupUpdateType.playQueue,
+        payload: SyncPlayPlayQueuePayload(
+          SyncPlayPlayQueueUpdate(
+            reason: SyncPlayQueueUpdateReason.newPlaylist,
+            lastUpdate: '2026-01-01T00:01:00.000Z',
+            playlist: [
+              SyncPlayQueueItem(itemId: 'ep3', playlistItemId: 'pl3'),
+            ],
+            playingItemIndex: 0,
+            startPositionTicks: 0,
+            isPlaying: false,
+            shuffleMode: SyncPlayShuffleMode.sorted,
+            repeatMode: SyncPlayRepeatMode.repeatNone,
+          ),
+        ),
+      ),
+    );
+    await pumpEventQueue();
+
+    expect(
+      playbackManager.queueService.currentItem,
+      isA<AggregatedItem>().having((item) => item.id, 'id', 'ep3'),
+    );
+  });
 }

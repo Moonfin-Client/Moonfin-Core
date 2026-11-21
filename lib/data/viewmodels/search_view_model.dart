@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_plex/server_plex.dart'
     show plexItemToJellyfin, plexPersonToJellyfin;
 
 import '../../l10n/current_app_localizations.dart';
+import '../../preference/user_preferences.dart';
 import '../../util/accent_folding.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/multi_server_repository.dart';
@@ -16,6 +18,7 @@ import '../services/media_server_client_factory.dart';
 import '../services/plugin_sync_service.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../utils/blocked_ratings.dart';
+import '../utils/merged_copies.dart';
 
 class SearchResultGroup {
   final String title;
@@ -302,7 +305,7 @@ class SearchViewModel extends ChangeNotifier {
                 .timeout(_peopleGrace, onTimeout: () => null)
           : await peopleFuture;
 
-      if (query != _query) return;
+      if (run != _searchRun || query != _query) return;
 
       _results = _withPeople(groups, people ?? const []);
       _seerrResults = seerr;
@@ -331,7 +334,7 @@ class SearchViewModel extends ChangeNotifier {
         );
       }
     } catch (e) {
-      if (query != _query) return;
+      if (run != _searchRun || query != _query) return;
       _error = e;
       _state = SearchState.error;
     }
@@ -373,6 +376,10 @@ class SearchViewModel extends ChangeNotifier {
       label: 'search',
     );
     final channels = await channelsFuture;
+    final foldsCopies =
+        _serverNames.isNotEmpty &&
+        GetIt.instance.isRegistered<UserPreferences>() &&
+        GetIt.instance<UserPreferences>().effectiveMergeLibrariesByType;
 
     final grouped = <SearchResultGroup>[];
     for (final group in activeGroups) {
@@ -387,8 +394,10 @@ class SearchViewModel extends ChangeNotifier {
       final matched = _interleave([
         for (final items in perServerItems)
           items.where((item) => group.itemTypes.contains(item.type)).toList(),
-      ]).take(_resultLimit).toList();
-      grouped.add(group.copyWith(items: matched));
+      ]);
+      // With merged libraries a title several servers hold is one result.
+      final shown = foldsCopies ? foldCopies(matched) : matched;
+      grouped.add(group.copyWith(items: shown.take(_resultLimit).toList()));
     }
 
     return (grouped, peopleFuture);
@@ -547,7 +556,7 @@ class SearchViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _debounceTimer?.cancel();
-    // Keeps people that answer after the screen closed from landing on it.
+    // Keeps searches that answer after the screen closed from landing on it.
     _searchRun++;
     super.dispose();
   }

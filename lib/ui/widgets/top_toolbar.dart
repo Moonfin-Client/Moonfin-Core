@@ -683,6 +683,10 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     final totalHeight = toolbarHeight + TopToolbar.musicBarExtraHeight();
 
     return SafeArea(
+      // A TV's overscan margin below already keeps the toolbar off the edges,
+      // so the system's side insets would count twice.
+      left: !isTV,
+      right: !isTV,
       bottom: false,
       child: SizedBox(
         height: totalHeight,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -248,4 +250,78 @@ void main() {
       expect(model.isLoading, isFalse);
     },
   );
+
+  group('returning to Home', () {
+    HomeRow airing(List<String> ids) => HomeRow(
+      id: 'liveTvOnNow',
+      title: 'On Now',
+      rowType: HomeRowType.liveTvOnNow,
+      items: [
+        for (final id in ids)
+          AggregatedItem(
+            id: id,
+            serverId: 'http://server.test',
+            rawData: {'Type': 'Program'},
+          ),
+      ],
+    );
+
+    test('refreshes On Now in place', () async {
+      await loadPopulatedRow();
+      when(() => source.loadOnNow('http://server.test'))
+          .thenAnswer((_) async => airing(['next']));
+
+      await model.refreshResumeAndNextUp();
+
+      expect(model.rows.single.id, 'onNow');
+      expect(model.rows.single.items.map((item) => item.id), ['next']);
+    });
+
+    test('a second return while the first is out waits on it', () async {
+      await loadPopulatedRow();
+      final answer = Completer<HomeRow>();
+      when(() => source.loadOnNow('http://server.test'))
+          .thenAnswer((_) => answer.future);
+      clearInteractions(source);
+
+      final first = model.refreshResumeAndNextUp();
+      var secondDone = false;
+      final second = model.refreshResumeAndNextUp().then(
+        (_) => secondDone = true,
+      );
+      await pumpEventQueue();
+      expect(secondDone, isFalse);
+
+      answer.complete(airing(['next']));
+      await Future.wait([first, second]);
+
+      verify(() => source.loadOnNow('http://server.test')).called(1);
+      expect(model.rows.single.items.map((item) => item.id), ['next']);
+    });
+
+    test('brings On Now back once programs are airing', () async {
+      when(() => source.hasLiveTvChannels()).thenAnswer((_) async => true);
+      when(() => source.loadOnNow('http://server.test'))
+          .thenAnswer((_) async => airing(const []));
+      await model.load();
+      expect(model.rows, isEmpty);
+
+      when(() => source.loadOnNow('http://server.test'))
+          .thenAnswer((_) async => airing(['program']));
+      await model.refreshResumeAndNextUp();
+
+      expect(model.rows.map((row) => row.id), ['onNow']);
+    });
+
+    test('asks nothing for Live TV without channels', () async {
+      await enableSections({HomeSectionType.liveTv});
+      when(() => source.hasLiveTvChannels()).thenAnswer((_) async => false);
+      await model.load();
+      expect(model.rows, isEmpty);
+
+      await model.refreshResumeAndNextUp();
+
+      verifyNever(() => source.loadOnNow(any()));
+    });
+  });
 }

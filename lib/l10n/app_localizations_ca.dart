@@ -505,13 +505,13 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Fes servir l\'algorisme de biblioteca local Recomanacions Moonfin, el motor del servidor Recomanacions Jellyfin o les mètriques de similitud en línia de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr.';
+      'Fes servir l\'algorisme de biblioteca local Recomanacions Moonfin, les Recomanacions del servidor, del teu servidor multimèdia, o les mètriques de similitud en línia de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr.';
 
   @override
   String get recommendationSystemMoonfin => 'Recomanacions Moonfin';
 
   @override
-  String get recommendationSystemJellyfin => 'Recomanacions Jellyfin';
+  String get recommendationSystemJellyfin => 'Recomanacions del servidor';
 
   @override
   String get recommendationSystemTmdb => 'Similitud de TMDb';
@@ -3589,6 +3589,16 @@ class AppLocalizationsCa extends AppLocalizations {
       'S\'estan tornant a retallar les bandes negres';
 
   @override
+  String get playerBlackBarsCropped => 'S\'han retallat les bandes negres';
+
+  @override
+  String get playerNoBlackBarsFound => 'No s\'han trobat bandes negres';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'No s\'han pogut detectar les bandes negres. Torna-ho a provar en una escena més lluminosa';
+
+  @override
   String get stretch => 'Estirar';
 
   @override
@@ -4876,14 +4886,37 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra les biblioteques de tots els servidors connectats';
 
   @override
-  String get recentlyAddedAndReleased => 'Recently Added and Released';
+  String get mergeLibrariesByType =>
+      'Fusiona les biblioteques de pel·lícules i sèries';
 
   @override
-  String get hideWatchedInRecentRows => 'Hide Watched';
+  String get mergeLibrariesByTypeDescription =>
+      'Amb les biblioteques multiservidor activades, mostra una sola biblioteca de pel·lícules i una de sèries per a tots els servidors. Un títol que tinguin diversos servidors només apareix una vegada.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'A $count servidors',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'No s\'ha canviat a $servers';
+  }
+
+  @override
+  String get recentlyAddedAndReleased => 'Afegit i publicat recentment';
+
+  @override
+  String get hideWatchedInRecentRows => 'Amaga el contingut vist';
 
   @override
   String get hideWatchedInRecentRowsDescription =>
-      'Hide watched content from Recently Added and Recently Released home rows.';
+      'Amaga el contingut vist de les files d\'inici «Afegit recentment» i «Publicat recentment».';
 
   @override
   String get mergeRecentRowsByType => 'Fusiona les files recents per tipus';
@@ -5126,17 +5159,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get mediaBarSourceRandom => 'Aleatori';
 
   @override
-  String get mediaBarSourceNewReleases => 'Temporades i episodis nous';
-
-  @override
   String get mediaBarNewReleaseBanner => 'Bàner de novetat';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Destaca les sèries amb una temporada nova o episodis nous emesos recentment.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'Període de novetat';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5150,6 +5173,39 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'Episodis nous';
+
+  @override
+  String get mediaBarNewMovie => 'Nova pel·lícula';
+
+  @override
+  String get mediaBarNewReleasesSection => 'Novetats';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'Novetats';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Marca com a novetat les sèries, temporades, episodis i pel·lícules recents.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Etiquetes';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'Període de novetat dels episodis';
+
+  @override
+  String get mediaBarNewMovieDays => 'Període de novetat de les pel·lícules';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'Quant de temps es considera nova una pel·lícula després de l\'estrena. Les pel·lícules de cinema sovint arriben als servidors un temps després de l\'estrena, així que dona-li més temps que als episodis.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Mostra l\'eslogan';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Mostra l\'eslogan de la pel·lícula sota «Nova pel·lícula». Si no en té, l\'etiqueta es mostra sola.';
 
   @override
   String get moviesAndTvShows => 'Pel·lícules i Sèries';
@@ -5339,7 +5395,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeRowsExternalLists => 'Llistes externes';
 
   @override
-  String get homeRowsStreamingServices => 'Streaming Services';
+  String get homeRowsStreamingServices => 'Serveis de streaming';
 
   @override
   String get perRowSettings => 'Configuració per fila';
@@ -5811,6 +5867,48 @@ class AppLocalizationsCa extends AppLocalizations {
       'Qualsevol contingut multimèdia nou afegit a la biblioteca';
 
   @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
+
+  @override
   String loggedInAs(String username) {
     return 'Inicieu sessió com a: $username';
   }
@@ -5995,35 +6093,57 @@ class AppLocalizationsCa extends AppLocalizations {
   String get seerrImportingStatus => 'S\'està important';
 
   @override
-  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+  String get seerrWaitingForImport => 'Baixat, esperant la importació';
 
   @override
-  String get seerrDownloadStalled => 'Stalled';
+  String get seerrDownloadStalled => 'Encallat';
 
   @override
   String get seerrDownloadFailed => 'Ha fallat la baixada';
 
   @override
-  String get seerrImportBlocked => 'Import blocked';
+  String get seerrImportBlocked => 'Importació bloquejada';
 
   @override
-  String get seerrNotFoundYet => 'Not found yet';
+  String get seerrNotFoundYet => 'Encara no s\'ha trobat';
 
   @override
-  String get seerrGetDifferentRelease => 'Get a different release';
+  String get seerrSearchingIndexers => 'S\'està cercant als indexadors';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Encara no s\'ha trobat · última cerca $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Encara no disponible';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Disponible el $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Següent episodi el $date';
+  }
+
+  @override
+  String get seerrGetDifferentRelease => 'Obtén un altre llançament';
 
   @override
   String seerrGetDifferentReleaseConfirm(String service, String release) {
-    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+    return '$service eliminarà $release del client de baixades, el bloquejarà perquè no es torni a capturar i cercarà un altre llançament.';
   }
 
   @override
   String seerrGetDifferentReleaseDone(String service) {
-    return 'Removed. $service is searching for another release.';
+    return 'S\'ha eliminat. $service està cercant un altre llançament.';
   }
 
   @override
-  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
+  String get seerrGetDifferentReleaseFailed =>
+      'No s\'ha pogut eliminar la baixada';
 
   @override
   String itemsCount(int count) {
@@ -11509,7 +11629,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String kidsModePinToSwitchUser(String name) {
-    return 'Enter the Kids Mode PIN to switch to $name';
+    return 'Introdueix el PIN del mode infantil per canviar a $name';
   }
 
   @override
@@ -11805,6 +11925,17 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get playerTooltipExitFloatOnTop =>
       'Desactiva el flotador a la part superior';
+
+  @override
+  String get playerTooltipPictureInPicture => 'Imatge sobre imatge';
+
+  @override
+  String get playerTooltipExitPictureInPicture =>
+      'Surt de la imatge sobre imatge';
+
+  @override
+  String get playerPlayingInPictureInPicture =>
+      'S\'està reproduint en imatge sobre imatge';
 
   @override
   String get playerTooltipLockLandscape => 'Paisatge de bloqueig';
@@ -12709,7 +12840,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsStyleCarousel => 'Carousel';
+  String get homeRowsStyleCarousel => 'Carrusel';
 
   @override
   String get homeRowsSection => 'Files d\'inici';
@@ -12719,7 +12850,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get rowsTypeDescription =>
-      'El clàssic manté el tipus d\'imatge per fila i la superposició d\'informació. Modern utilitza files de retrat a fons.';
+      'El clàssic manté el tipus d\'imatge per fila i la superposició d\'informació. Modern utilitza files de retrat a fons. Carrusel afegeix un panell de detalls sota cada fila.';
 
   @override
   String get modernCardsOnMyMediaRow =>
@@ -12842,13 +12973,13 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Tria la font de les recomanacions (Recomanacions Moonfin, l\'algorisme local personalitzat; Recomanacions Jellyfin, el motor del servidor; o les mètriques de similitud de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr).';
+      'Tria la font de les recomanacions (Recomanacions Moonfin, l\'algorisme local personalitzat; Recomanacions del servidor, del teu servidor multimèdia; o les mètriques de similitud de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Recomanacions Moonfin';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Recomanacions Jellyfin';
+  String get sinceYouWatchedSourceServer => 'Recomanacions del servidor';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Similitud de TMDb';
@@ -15908,7 +16039,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get setupRowsCarouselHint =>
-      'Posters with a large details panel underneath.';
+      'Pòsters amb un gran panell de detalls a sota.';
 
   @override
   String get setupDetailClassicHint => 'Tot està centrat en una sola columna.';
@@ -16740,16 +16871,18 @@ class AppLocalizationsCa extends AppLocalizations {
       'Configuració del passthrough';
 
   @override
-  String get settingsSeerrHomePageRowsSection => 'Seerr Home Page Rows';
+  String get settingsSeerrHomePageRowsSection =>
+      'Files de Seerr de la pàgina d\'inici';
 
   @override
-  String get settingsSavedCustomHomeRowsSection => 'Saved Custom Home Rows';
+  String get settingsSavedCustomHomeRowsSection =>
+      'Files d\'inici personalitzades desades';
 
   @override
   String get settingsRewatchSection => 'Torna a veure';
 
   @override
-  String get favoritesSwitchViewSection => 'Switch View';
+  String get favoritesSwitchViewSection => 'Canvia de vista';
 
   @override
   String get playerSettingsSubtitle =>
@@ -17798,7 +17931,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String settingsPreviewAudioRowsOffInHomeRows(String group, String disabled) {
-    return 'Albums, Artists and Audio Playlists are all turned off. To show one, go to Rows, open $group under $disabled, and turn it on.';
+    return 'Els àlbums, els artistes i les llistes de reproducció d\'àudio estan tots desactivats. Per mostrar-ne algun, ves a «Files», obre $group a $disabled i activa\'l.';
   }
 
   @override
@@ -17807,7 +17940,7 @@ class AppLocalizationsCa extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see Albums, Artists or Audio Playlists on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn one on.';
+    return 'Per veure els àlbums, els artistes o les llistes de reproducció d\'àudio a l\'inici, primer activa $setting. Després ves a «Files», obre $group a $disabled i activa\'n algun.';
   }
 
   @override
@@ -17815,7 +17948,7 @@ class AppLocalizationsCa extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'The Collections row is turned off. To show it, go to Rows, open $group under $disabled, and turn it on.';
+    return 'La fila Col·leccions està desactivada. Per mostrar-la, ves a «Files», obre $group a $disabled i activa-la.';
   }
 
   @override
@@ -17824,42 +17957,42 @@ class AppLocalizationsCa extends AppLocalizations {
     String group,
     String disabled,
   ) {
-    return 'To see the Collections row on Home, first turn on $setting. Then go to Rows, open $group under $disabled, and turn it on.';
+    return 'Per veure la fila Col·leccions a l\'inici, primer activa $setting. Després ves a «Files», obre $group a $disabled i activa-la.';
   }
 
   @override
   String get settingsPreviewRowsOffInKidsMode =>
-      'Kids Mode keeps these rows off Home, so these settings don\'t change it.';
+      'El mode infantil manté aquestes files fora de la pantalla d\'inici, així que aquesta configuració no la canvia.';
 
   @override
   String settingsPreviewNeedsRowInRows(String disabled) {
-    return 'Turn on a row in Rows, under $disabled';
+    return 'Activa una fila a «Files», a $disabled';
   }
 
   @override
   String settingsPreviewNeedsSwitchAndRow(String setting) {
-    return 'Turn on $setting, then turn on a row in Rows';
+    return 'Activa $setting i després activa una fila a «Files»';
   }
 
   @override
   String get settingsPreviewKeptOffByKidsMode =>
-      'Kids Mode keeps this off Home';
+      'El mode infantil ho manté fora de la pantalla d\'inici';
 
   @override
   String get settingsPreviewAudioRowsEmpty =>
-      'There\'s no music to show, so Home leaves these rows out.';
+      'No hi ha música per mostrar, així que la pantalla d\'inici omet aquestes files.';
 
   @override
   String get settingsPreviewRowsEmpty =>
-      'There\'s nothing to show in these rows, so Home leaves them out.';
+      'No hi ha res per mostrar en aquestes files, així que la pantalla d\'inici les omet.';
 
   @override
   String get settingsPreviewCollectionsEmpty =>
-      'There are no collections to show, so Home leaves this row out.';
+      'No hi ha col·leccions per mostrar, així que la pantalla d\'inici omet aquesta fila.';
 
   @override
   String get settingsPreviewShowEpisodesNote =>
-      'This only changes rows for a single collection added in Rows. The Collections row looks the same.';
+      'Això només canvia les files de les col·leccions individuals afegides a «Files». La fila Col·leccions no canvia.';
 
   @override
   String get settingsPreviewSaved => 'Desat';
@@ -18494,15 +18627,29 @@ class AppLocalizationsCa extends AppLocalizations {
       'Esquerra i Dreta mouen la barra.';
 
   @override
-  String get clickpadSeeking => 'Allow Clickpad Seeking';
+  String get remoteMediaNotificationTitle =>
+      'Notificació de reproducció remota';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Mostra els controls multimèdia del sistema quan miris contingut en un altre dispositiu';
+
+  @override
+  String get remoteActivityWatching => 'S\'està mirant a Moonfin';
+
+  @override
+  String get remoteActivityListening => 'S\'està escoltant a Moonfin';
+
+  @override
+  String get clickpadSeeking => 'Permet desplaçar-se pel vídeo amb el clickpad';
 
   @override
   String get clickpadSeekingDescription =>
-      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+      'Quan l\'esquerra, la dreta i els lliscaments al panell tàctil poden desplaçar-se pel vídeo. Si no, el primer clic o lliscament mostra els controls.';
 
   @override
-  String get clickpadSeekingControlsVisible => 'When controls are showing';
+  String get clickpadSeekingControlsVisible => 'Quan es mostren els controls';
 
   @override
-  String get clickpadSeekingPausedOnly => 'Only while paused';
+  String get clickpadSeekingPausedOnly => 'Només en pausa';
 }

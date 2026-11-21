@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/models/media_bar_state.dart';
 import 'package:moonfin/data/repositories/media_bar_repository.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -19,9 +20,15 @@ class _UserViewsApi extends Mock implements UserViewsApi {}
 /// Collections served by a fake server that answers after a short delay and
 /// remembers which collections it was asked about and how many at once.
 class _Server {
-  _Server(this.collections);
+  _Server(this.collections, {this.released = const {}, this.watched = const {}});
 
   final Map<String, List<String>> collections;
+
+  /// Release dates by id. The other titles have none.
+  final Map<String, DateTime> released;
+
+  /// Ids left out when the call asks for unplayed titles only.
+  final Set<String> watched;
   final asked = <String>{};
   var inFlight = 0;
   var mostInFlight = 0;
@@ -40,13 +47,19 @@ class _Server {
     }
     final start = args[#startIndex] as int? ?? 0;
     final limit = args[#limit] as int;
+    final unplayed = (args[#filters] as List?)?.contains('IsUnplayed') ?? false;
     return {
       'Items': [
-        for (final id in ids.skip(start).take(limit))
+        for (final id in ids
+            .where((id) => !unplayed || !watched.contains(id))
+            .skip(start)
+            .take(limit))
           {
             'Id': id,
             'Type': 'Movie',
             'BackdropImageTags': ['b'],
+            if (released[id] case final date?)
+              'PremiereDate': date.toUtc().toIso8601String(),
           },
       ],
     };
@@ -56,10 +69,14 @@ class _Server {
 void main() {
   tearDown(() => GetIt.instance.reset());
 
+  late List<MediaBarSlideItem> slides;
+
   Future<List<String>> load(
     _Server server, {
     required int itemCount,
     String source = UserPreferences.mediaBarSourceRandom,
+    bool hideWatched = false,
+    String? newReleaseKinds,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
@@ -68,6 +85,10 @@ void main() {
     await prefs.set(UserPreferences.pluginSyncEnabled, false);
     await prefs.set(UserPreferences.mediaBarItemCount, '$itemCount');
     await prefs.set(UserPreferences.mediaBarSourceType, source);
+    await prefs.set(UserPreferences.hideWatchedInRecentRows, hideWatched);
+    if (newReleaseKinds != null) {
+      await prefs.set(UserPreferences.mediaBarNewReleaseKinds, newReleaseKinds);
+    }
     await prefs.set(
       UserPreferences.mediaBarCollectionIds,
       server.collections.keys.join(','),
@@ -89,6 +110,7 @@ void main() {
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
         enableImageTypes: any(named: 'enableImageTypes'),
         minPremiereDate: any(named: 'minPremiereDate'),
+        filters: any(named: 'filters'),
       ),
     ).thenAnswer(server.answer);
     final images = _ImageApi();
@@ -114,7 +136,8 @@ void main() {
     final repo = MediaBarRepository(client, prefs);
     GetIt.instance.registerSingleton<MediaBarRepository>(repo);
     final state = await repo.loadItems();
-    return (state as MediaBarReady).items.map((item) => item.itemId).toList();
+    slides = (state as MediaBarReady).items;
+    return slides.map((item) => item.itemId).toList();
   }
 
   Map<String, List<String>> collections(int count, int size) => {
@@ -149,6 +172,112 @@ void main() {
 
     expect(shown.toSet(), shared.toSet());
     expect(shown, hasLength(5));
+  });
+
+  test('new releases keep only the movies out within the window', () async {
+    final server = _Server(
+      {
+        'movies': const ['new', 'old', 'undated'],
+      },
+      released: {
+        'new': DateTime.now().subtract(const Duration(days: 10)),
+        'old': DateTime.now().subtract(const Duration(days: 400)),
+      },
+    );
+
+    final shown = await load(
+      server,
+      itemCount: 10,
+      source: UserPreferences.mediaBarSourceNewReleases,
+    );
+
+    expect(shown, ['new']);
+  });
+
+  test('new releases leave watched movies out when hide watched is on', () async {
+    final now = DateTime.now();
+    final server = _Server(
+      {
+        'movies': const ['seen', 'unseen'],
+      },
+      released: {
+        'seen': now.subtract(const Duration(days: 5)),
+        'unseen': now.subtract(const Duration(days: 10)),
+      },
+      watched: {'seen'},
+    );
+
+    final shown = await load(
+      server,
+      itemCount: 10,
+      source: UserPreferences.mediaBarSourceNewReleases,
+      hideWatched: true,
+    );
+
+    expect(shown, ['unseen']);
+  });
+
+  // The fake ignores the date floor the way Silo does.
+  test('old movies a server sends anyway leave every source asked', () async {
+    final old = DateTime.now().subtract(const Duration(days: 400));
+    final server = _Server(
+      {
+        for (var c = 0; c < 8; c++)
+          'old$c': [for (var i = 0; i < 12; i++) 'old${c}_$i'],
+        'fresh': const ['new'],
+      },
+      released: {
+        for (var c = 0; c < 8; c++)
+          for (var i = 0; i < 12; i++) 'old${c}_$i': old,
+        'new': DateTime.now().subtract(const Duration(days: 10)),
+      },
+    );
+
+    final shown = await load(
+      server,
+      itemCount: 5,
+      source: UserPreferences.mediaBarSourceNewReleases,
+    );
+
+    expect(server.asked, hasLength(9));
+    expect(shown, ['new']);
+  });
+
+  test('a movie out within the window gets the new movie label', () async {
+    final now = DateTime.now();
+    final server = _Server(
+      {
+        'movies': const ['new', 'old'],
+      },
+      released: {
+        'new': now.subtract(const Duration(days: 10)),
+        'old': now.subtract(const Duration(days: 400)),
+      },
+    );
+
+    await load(server, itemCount: 10);
+
+    expect(
+      {for (final slide in slides) slide.itemId: slide.newRelease?.kind},
+      {'new': MediaBarNewRelease.newMovie, 'old': null},
+    );
+  });
+
+  test('no movie is labeled when the movie label is left out', () async {
+    final server = _Server(
+      {
+        'movies': const ['new'],
+      },
+      released: {'new': DateTime.now().subtract(const Duration(days: 10))},
+    );
+
+    await load(
+      server,
+      itemCount: 10,
+      newReleaseKinds: UserPreferences.mediaBarNewSeason,
+    );
+
+    expect(slides.single.newRelease, isNull);
   });
 
   // The server's titles have no air date, so nothing counts as aired lately.

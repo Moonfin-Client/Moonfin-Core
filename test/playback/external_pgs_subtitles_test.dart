@@ -282,8 +282,34 @@ void main() {
 
         expect(subs.map((s) => s.streamIndex), [2, 3]);
         expect(subs.first.codec, 'PGSSUB');
+        expect(subs.last.codec, 'srt');
       },
     );
+
+    test('takes the format of a converted track from its file', () {
+      final subs = MediaStreamResolver.extractExternalSubtitles(
+        <Map<String, dynamic>>[
+          {
+            'Type': 'Subtitle',
+            'Index': 2,
+            'Codec': 'mov_text',
+            'IsExternal': false,
+            'SupportsExternalStream': true,
+            'DeliveryUrl': '/Videos/e/s/Subtitles/2/0/Stream.vtt?ApiKey=k',
+          },
+          {
+            'Type': 'Subtitle',
+            'Index': 3,
+            'Codec': 'mov_text',
+            'IsExternal': true,
+            'DeliveryUrl': '/library/streams/9001',
+          },
+        ],
+        'https://example.test',
+      );
+
+      expect(subs.map((s) => s.codec), ['vtt', 'mov_text']);
+    });
   });
 
   group('picking a PGS track', () {

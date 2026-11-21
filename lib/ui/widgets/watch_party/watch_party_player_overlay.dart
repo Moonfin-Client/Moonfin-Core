@@ -550,29 +550,35 @@ class _WatchPartyChatViewState extends State<WatchPartyChatView> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
                 // The player's own shortcuts mustn't see what's typed here.
+                // Stopping the keys also hides them from the app's text
+                // editing shortcuts, so the field gets its own.
                 child: Focus(
                   onKeyEvent: (_, _) => KeyEventResult.skipRemainingHandlers,
-                  child: TextField(
-                    controller: _controller,
-                    maxLength: 500,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: l10n.watchPartySendToParty,
-                      counterText: '',
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.white.withValues(alpha: 0.08),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(999),
-                        borderSide: BorderSide.none,
+                  child: DefaultTextEditingShortcuts(
+                    child: TextField(
+                      controller: _controller,
+                      maxLength: 500,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: l10n.watchPartySendToParty,
+                        counterText: '',
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white.withValues(alpha: 0.08),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(999),
+                          borderSide: BorderSide.none,
+                        ),
+                        suffixIcon: IconButton(
+                          tooltip: l10n.send,
+                          icon: const Icon(Icons.send_rounded),
+                          onPressed: _send,
+                        ),
                       ),
-                      suffixIcon: IconButton(
-                        tooltip: l10n.send,
-                        icon: const Icon(Icons.send_rounded),
-                        onPressed: _send,
-                      ),
+                      // Enter sends and keeps the field focused. Submitting
+                      // would drop focus and hand the next keys to the player.
+                      onEditingComplete: _send,
                     ),
-                    onSubmitted: (_) => _send(),
                   ),
                 ),
               ),

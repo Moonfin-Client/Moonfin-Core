@@ -7319,7 +7319,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Käytä Moonfin Recommends sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.",
+    "recommendationSystemSubtitle": "Käytä Moonfin Recommends algoritmia paikalliskirjastosta, Server Recommends toimintoa mediakoneeltasi tai TMDb:n verkkopalvelun Similarity Metrics toimintoa. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -16829,7 +16829,7 @@
     "displaySinceYouWatchedRows": "Näytä rivit, jotka olet katsonut",
     "displaySinceYouWatchedRowsSubtitle": "Näytä ja muokkaa katsomiasi rivejä Etusivun osioissa.",
     "sinceYouWatchedSource": "Suosituksen lähde",
-    "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
+    "sinceYouWatchedSourceDescription": "Valitse suosituslähde (Moonfinin suositukset mukautettu paikallinen algoritmi, palvelimen suositukset mediakoneeltasi tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).",
     "sinceYouWatchedSourceLocal": "Moonfin suosittelee",
     "sinceYouWatchedSourceServer": "Palvelin suosittelee",
     "sinceYouWatchedSourceOnline": "TMDb:n samankaltaisuus",
@@ -18752,5 +18752,204 @@
     "setupRowsCarouselHint": "Julisteet, joiden alla on suuri yksityiskohdapaneeli.",
     "@setupRowsCarouselHint": {
         "description": "What the carousel home row style gives you"
+    },
+    "clickpadSeeking": "Salli Clickpad Etsintä",
+    "@clickpadSeeking": {
+        "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+    },
+    "clickpadSeekingDescription": "Sivuttaisliikkeet vasemmalle, oikealle kosketuslevyllä mahdollistavat kelauksen. Muussa tapauksessa ensimmäinen liike avaa ohjausvalikon.",
+    "@clickpadSeekingDescription": {
+        "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+    },
+    "clickpadSeekingControlsVisible": "Kun ohjaimet ovat näkyvissä",
+    "@clickpadSeekingControlsVisible": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+    },
+    "clickpadSeekingPausedOnly": "Vain tauolla",
+    "@clickpadSeekingPausedOnly": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+    },
+    "playerBlackBarsCropped": "Mustat palkit on rajattu pois",
+    "@playerBlackBarsCropped": {
+        "description": "Toast after a manual recrop found letterbox bars and cropped them"
+    },
+    "playerNoBlackBarsFound": "Mustia palkkeja ei löytynyt",
+    "@playerNoBlackBarsFound": {
+        "description": "Toast after a manual recrop found that the picture fills the frame"
+    },
+    "playerBlackBarsNotDetected": "Mustia palkkeja ei havaittu. Yritä uudelleen kirkkaammassa kohtauksessa",
+    "@playerBlackBarsNotDetected": {
+        "description": "Toast after a manual recrop saw only dark or unclear frames"
+    },
+    "mergeLibrariesByType": "Yhdistä elokuva ja TV -sarjakirjastot",
+    "@mergeLibrariesByType": {
+        "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+    },
+    "mergeLibrariesByTypeDescription": "Kun monipalvelinkirjastot ovat käytössä, näytetään yksi elokuvakirjasto ja yksi TV-sarjakirjasto kaikille palvelimille. Teos, jota on useilla palvelimilla, näkyy luettelossa vain kerran.",
+    "@mergeLibrariesByTypeDescription": {
+        "description": "Description for the setting that merges movie and series libraries across servers"
+    },
+    "mergedServerCount": "{count, plural, other{On {count} servers}}",
+    "@mergedServerCount": {
+        "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mergedCopiesNotChanged": "Ei muutettu {servers}",
+    "@mergedCopiesNotChanged": {
+        "description": "Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names",
+        "placeholders": {
+            "servers": {
+                "type": "String"
+            }
+        }
+    },
+    "mediaBarNewMovie": "Uusi elokuva",
+    "@mediaBarNewMovie": {
+        "description": "Media bar label on a movie that came out recently"
+    },
+    "mediaBarNewReleasesSection": "Uudet julkaisut",
+    "@mediaBarNewReleasesSection": {
+        "description": "Media bar settings section with the new release label settings"
+    },
+    "mediaBarSourceNewReleasesAll": "Uudet julkaisut",
+    "@mediaBarSourceNewReleasesAll": {
+        "description": "Media bar source showing what came out recently: new series, seasons, episodes and movies"
+    },
+    "mediaBarNewReleaseBannerAllDescription": "Merkitse uudet sarjat, kaudet, jaksot ja elokuvat.",
+    "@mediaBarNewReleaseBannerAllDescription": {
+        "description": "Description of the media bar new release label setting"
+    },
+    "mediaBarNewReleaseKinds": "Etiketit",
+    "@mediaBarNewReleaseKinds": {
+        "description": "Setting that picks which titles get a new release label in the media bar"
+    },
+    "mediaBarNewEpisodeDays": "Uuden jakson ikkuna",
+    "@mediaBarNewEpisodeDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewMovieDays": "Uuden elokuvan ikkuna",
+    "@mediaBarNewMovieDays": {
+        "description": "Setting for how many days after its release a movie counts as new in the media bar"
+    },
+    "mediaBarNewMovieDaysDescription": "Kuinka kauan elokuva pysyy uutena sen julkaisun jälkeen. Elokuvat päätyvät palvelimille usein vasta jonkin aikaa julkaisunsa jälkeen, joten varaa niille enemmän aikaa kuin sarjojen jaksoille.",
+    "@mediaBarNewMovieDaysDescription": {
+        "description": "Description of the new movie window setting"
+    },
+    "mediaBarNewMovieDetail": "Näytä Slogan",
+    "@mediaBarNewMovieDetail": {
+        "description": "Setting for whether the New Movie label has a second line"
+    },
+    "mediaBarNewMovieDetailDescription": "Uuden elokuvan alla näytetään elokuvan slogan. Jos sloganeita ei ole, otsikko näkyy yksinään.",
+    "@mediaBarNewMovieDetailDescription": {
+        "description": "Description of the New Movie second line setting"
+    },
+    "seerrSearchingIndexers": "Hakuhakemistot",
+    "@seerrSearchingIndexers": {
+        "description": "Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now"
+    },
+    "seerrNotFoundYetSearched": "Ei vielä löytynyt · haettu {when}",
+    "@seerrNotFoundYetSearched": {
+        "description": "Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNotAvailableYet": "Ei vielä saatavilla",
+    "@seerrNotAvailableYet": {
+        "description": "Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it"
+    },
+    "seerrAvailableOn": "Saatavilla {date}",
+    "@seerrAvailableOn": {
+        "description": "Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNextEpisodeOn": "Seuraava jakso {date}",
+    "@seerrNextEpisodeOn": {
+        "description": "Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "playerTooltipPictureInPicture": "Kuva kuvassa",
+    "@playerTooltipPictureInPicture": {
+        "description": "Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings"
+    },
+    "playerTooltipExitPictureInPicture": "Poistu kuva kuvassa -tilasta",
+    "@playerTooltipExitPictureInPicture": {
+        "description": "Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window"
+    },
+    "playerPlayingInPictureInPicture": "Toisto kuva kuvassa -tilassa",
+    "@playerPlayingInPictureInPicture": {
+        "description": "Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window"
+    },
+    "remoteMediaNotificationTitle": "Etätoiston ilmoitus",
+    "@remoteMediaNotificationTitle": {
+        "description": "Toggle in General settings on Android mobile to show a system media notification when another device on the same account is playing"
+    },
+    "remoteMediaNotificationSubtitle": "Näytä järjestelmän mediaohjauspainikkeet, kun katsot sisältöä toisella laitteella",
+    "@remoteMediaNotificationSubtitle": {
+        "description": "Subtitle for the remote playback notification toggle in General settings on Android mobile"
+    },
+    "remoteActivityWatching": "Katsomassa Moonfinissä",
+    "@remoteActivityWatching": {
+        "description": "Line in the Android media notification that mirrors a video another device on the same account is playing. Moonfin is the app name"
+    },
+    "remoteActivityListening": "Kuuntele Moonfinissä",
+    "@remoteActivityListening": {
+        "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+    },
+    "seerrTestNotification": "Lähetä testiviesti",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "Tarkista sovelluksen sisäisten ja taustalla tapahtuvien push-ilmoitusten toimitus",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "Toimitettu {count, plural, =1{1 laite} other{{count} devices}}.",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "Sovelluksen sisäinen ilmoitus lähetetty. Palvelimen push-ilmoitukset eivät ole käytössä.",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "Testiviestin lähettäminen epäonnistui",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "Palvelimen lähetys",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "Laitteen push-ilmoitus",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "Rekisteröity",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "Ei rekisteröity",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
     }
 }

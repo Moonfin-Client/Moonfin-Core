@@ -144,6 +144,17 @@ resolve_build_dir() {
 resolve_shared_lib() {
   local soname="$1"
 
+  # A libmpv built by scripts/ci/build-libmpv-linux.sh replaces the distro's.
+  # Once asked for, it has to be there rather than fall back to the older one.
+  if [ -n "${MOONFIN_LIBMPV_DIR:-}" ] && [[ "$soname" == libmpv.so* ]]; then
+    if [ -f "$MOONFIN_LIBMPV_DIR/$soname" ]; then
+      printf '%s\n' "$MOONFIN_LIBMPV_DIR/$soname"
+      return 0
+    fi
+    echo "Error: MOONFIN_LIBMPV_DIR has no $soname." >&2
+    return 1
+  fi
+
   # Prefer distro packages to avoid /usr/local builds that dpkg-query cannot map.
   if command -v dpkg-query >/dev/null 2>&1; then
     local pkg_candidates=()
@@ -445,6 +456,18 @@ copy_runtime_libs() {
   printf '%s\n' "$count"
 }
 
+# libva has to match the system's VA drivers. A copy from the build host can't
+# load drivers built for a newer libva, and it looks for them in the build
+# host's driver folder, so hardware decoding never starts. The AppImage and
+# tarball launchers put this folder on the library path only when the system
+# is missing part of libva, so Moonfin still starts there. The deb and rpm drop
+# it and depend on the system's libva instead.
+separate_bundled_libva() {
+  local dest_lib="$1"
+  mkdir -p "$dest_lib/libva" || return 1
+  find "$dest_lib" -maxdepth 1 -name 'libva[.-]*' -exec mv -f -t "$dest_lib/libva/" {} +
+}
+
 inject_linux_runtime_libs() {
   local bundle_dir="$1"
 
@@ -469,6 +492,7 @@ inject_linux_runtime_libs() {
   fix_absolute_needed "$bundle_dir/lib" || return 1
   ensure_sqlite_unversioned_link "$bundle_dir/lib" || return 1
   ensure_mpv_compat_symlinks "$bundle_dir/lib" || return 1
+  separate_bundled_libva "$bundle_dir/lib" || return 1
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
 
   verify_host_dependencies "$bundle_dir"
@@ -488,6 +512,7 @@ host_dependencies() {
   done | sort -u | while IFS= read -r name; do
     [ -n "$name" ] || continue
     [ -e "$bundle_dir/lib/$name" ] && continue
+    [ -e "$bundle_dir/lib/libva/$name" ] && continue
     printf '%s\n' "$name"
   done
 }
@@ -552,6 +577,8 @@ inject_flatpak_libs() {
   fix_absolute_needed "$dest_lib"
   ensure_sqlite_unversioned_link "$dest_lib"
   ensure_mpv_compat_symlinks "$dest_lib"
+  # The runtime's libva matches the VA drivers in its GL extension.
+  rm -f "$dest_lib"/libva[.-]*
 
   echo "Bundled $count runtime libraries for Flatpak"
 }
@@ -715,6 +742,14 @@ resolve_exact_lib() {
 
 ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin" 2>/dev/null || true)"
 
+# Use the system's libva when the loader finds it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+if printf '%s\n' "$ldd_output" | grep -Eq '^[[:space:]]*libva(-[a-z0-9]+)?[.]so[.]2 => not found'; then
+  export LD_LIBRARY_PATH="$APPDIR/lib/libva:$LD_LIBRARY_PATH"
+  check_lib_path="$APPDIR/lib/libva:$check_lib_path"
+  ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin" 2>/dev/null || true)"
+fi
+
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
 # binary itself as missing.
@@ -793,12 +828,12 @@ build_tarball() {
 
   local version="$(get_app_version)"
   local tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.tar.gz"
+  local system_tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}_system-libs.tar.gz"
   local tar_dir="$TEMP_DIR/tarball/moonfin-${version}"
 
   rm -rf "$TEMP_DIR/tarball"
   mkdir -p "$tar_dir"
   cp -r "$BUILD_DIR"/* "$tar_dir/"
-  inject_linux_runtime_libs "$tar_dir"
 
   if [ -f "$tar_dir/moonfin" ]; then
     mv "$tar_dir/moonfin" "$tar_dir/moonfin-bin"
@@ -828,6 +863,14 @@ resolve_exact_lib() {
 }
 
 ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin-bin" 2>/dev/null || true)"
+
+# Use the system's libva when the loader finds it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+if printf '%s\n' "$ldd_output" | grep -Eq '^[[:space:]]*libva(-[a-z0-9]+)?[.]so[.]2 => not found'; then
+  export LD_LIBRARY_PATH="$APPDIR/lib/libva:$LD_LIBRARY_PATH"
+  check_lib_path="$APPDIR/lib/libva:$check_lib_path"
+  ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin-bin" 2>/dev/null || true)"
+fi
 
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
@@ -890,9 +933,14 @@ EOF
   install_icons "$tar_dir/share"
 
   cd "$TEMP_DIR/tarball"
+  # Without the bundled libraries, for distro packages like the AUR's that
+  # take every library from the system.
+  tar -czf "$system_tarball_name" "moonfin-${version}"
+  inject_linux_runtime_libs "$tar_dir"
   tar -czf "$tarball_name" "moonfin-${version}"
-  mv "$tarball_name" "$REPO_ROOT/"
+  mv "$tarball_name" "$system_tarball_name" "$REPO_ROOT/"
   echo "✓ Created: $REPO_ROOT/$tarball_name"
+  echo "✓ Created: $REPO_ROOT/$system_tarball_name"
 }
 
 # The newest glibc anything in the installed tree asks for, which is the oldest
@@ -932,6 +980,8 @@ build_deb() {
   cp -r "$BUILD_DIR"/* "$pkg_root/usr/lib/moonfin/"
 
   inject_linux_runtime_libs "$pkg_root/usr/lib/moonfin"
+  # The libva packages in Depends match the system's VA drivers.
+  rm -rf "$pkg_root/usr/lib/moonfin/lib/libva"
 
   cat > "$pkg_root/usr/bin/moonfin" << 'EOF'
 #!/bin/sh
@@ -951,6 +1001,7 @@ EOF
   # one the package can run on. Declaring it turns a wall of loader errors at
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0, xdg-user-dirs"
+  depends="$depends, libva2, libva-drm2, libva-x11-2, libva-wayland2"
   local glibc
   glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
   if [ -n "$glibc" ]; then
@@ -1070,6 +1121,8 @@ build_rpm() {
     return 1
   fi
   verify_bundled_video_decoders "$stage_dir/lib" || return 1
+  # rpm then requires the system's libva, which matches its VA drivers.
+  rm -rf "$stage_dir/lib/libva"
 
   # The bundled libraries are private to Moonfin. Keep rpm from advertising
   # them to the rest of the system, and from asking the system for them.
@@ -1355,16 +1408,8 @@ finish-args:
   # in CI is too old to build it.
   - --device=all
   - --socket=pulseaudio
-  # MPRIS media controls
-  - --own-name=org.mpris.MediaPlayer2.moonfin
   # Saved logins (flutter_secure_storage via libsecret)
   - --talk-name=org.freedesktop.secrets
-  # Keep the screen awake during playback (wakelock_plus)
-  - --talk-name=org.freedesktop.ScreenSaver
-  # Desktop notifications (flutter_local_notifications)
-  - --talk-name=org.freedesktop.Notifications
-  # Online/offline detection (connectivity_plus)
-  - --system-talk-name=org.freedesktop.NetworkManager
   # Earlier builds kept the offline database here. It's read once to copy it
   # into the app's own data folder.
   - --filesystem=xdg-documents/Moonfin:ro

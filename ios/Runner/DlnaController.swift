@@ -19,8 +19,21 @@ final class DlnaController: NSObject {
     private var genaServerPort: UInt16 = 0
     private var genaRenewalTimer: DispatchSourceTimer?
     private var consecutivePollFailures: Int = 0
+    // The one-shot and continuous scans run on separate threads and both write these.
+    private let discoveredUrlsLock = NSLock()
     private var discoveredEventSubUrls: [String: String] = [:]
     private var discoveredRenderingControlUrls: [String: String] = [:]
+    // Bumped by every new cast and by the user's own pause, seek and stop, so
+    // a resume seek still waiting for the renderer gives up.
+    private let resumeLock = NSLock()
+    private var resumeGeneration = 0
+    // Bumped by every new cast and by Stop: a cast still starting (waiting out
+    // a stuck renderer) gives up rather than replace a newer one.
+    private var castGeneration = 0
+    private var castControlUrl: String?
+    // Bumped by every transport command except a seek, so a paused seek pauses
+    // again when it's done unless a Play came in, even after another seek.
+    private var transportGeneration = 0
     private var isDiscovering = false
 
     private let session: URLSession = {
@@ -159,10 +172,17 @@ final class DlnaController: NSObject {
         targetId: String,
         streamUrl: String,
         title: String,
+        mimeType: String,
+        dlnaFeatures: String,
         startPositionTicks: Int64?,
+        durationTicks: Int64?,
         completion: @escaping (Error?) -> Void
     ) {
         emitEvent(state: "connecting")
+        let resumeToken = cancelPendingResume()
+        let castToken = bumpCastGeneration()
+        resumeLock.withLock { castControlUrl = targetId }
+        bumpTransportGeneration()
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else {
@@ -176,7 +196,18 @@ final class DlnaController: NSObject {
                 let controlUrl = targetId
                 let startTime = self.formatDlnaTime(ticks: startPositionTicks)
 
-                let metadataXml = "&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;&lt;item&gt;&lt;dc:title&gt;\(self.escapeXml(title))&lt;/dc:title&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;"
+                // Some renderers (LG) refuse a URI with Invalid Args unless the
+                // metadata gives the item a class and a res with its MIME type.
+                let upnpClass = mimeType.hasPrefix("audio/")
+                    ? "object.item.audioItem.musicTrack"
+                    : "object.item.videoItem"
+                // The runtime the stream covers. A stream produced as it plays
+                // has no length for the renderer to read one from.
+                let resDuration = durationTicks.map {
+                    " duration=\"\(self.formatDlnaTime(ticks: $0)).000\""
+                } ?? ""
+                let didl = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"><item id=\"0\" parentID=\"-1\" restricted=\"1\"><dc:title>\(self.escapeXml(title))</dc:title><upnp:class>\(upnpClass)</upnp:class><res protocolInfo=\"http-get:*:\(self.escapeXml(mimeType)):\(self.escapeXml(dlnaFeatures))\"\(resDuration)>\(self.escapeXml(streamUrl))</res></item></DIDL-Lite>"
+                let metadataXml = self.escapeXml(didl)
 
                 try self.sendSoap(
                     controlUrl: controlUrl,
@@ -185,21 +216,11 @@ final class DlnaController: NSObject {
                     <InstanceID>0</InstanceID>
                     <CurrentURI>\(self.escapeXml(streamUrl))</CurrentURI>
                     <CurrentURIMetaData>\(metadataXml)</CurrentURIMetaData>
-                    """
+                    """,
+                    current: { [weak self] in self?.isCurrentCast(castToken) ?? false }
                 )
 
-                if let ticks = startPositionTicks, ticks > 0 {
-                    try self.sendSoap(
-                        controlUrl: controlUrl,
-                        action: "Seek",
-                        innerBody: """
-                        <InstanceID>0</InstanceID>
-                        <Unit>REL_TIME</Unit>
-                        <Target>\(startTime)</Target>
-                        """
-                    )
-                }
-
+                guard self.isCurrentCast(castToken) else { throw DlnaError.castSuperseded }
                 try self.sendSoap(
                     controlUrl: controlUrl,
                     action: "Play",
@@ -208,11 +229,27 @@ final class DlnaController: NSObject {
                     <Speed>1</Speed>
                     """
                 )
+                guard self.isCurrentCast(castToken) else {
+                    // A newer cast or a Stop took over, so this one leaves the
+                    // controls alone. Its renderer may be playing with nothing
+                    // to control it, so it's stopped unless the newer cast went
+                    // to it too.
+                    if self.resumeLock.withLock({ self.castControlUrl }) != controlUrl {
+                        _ = try? self.sendSoap(
+                            controlUrl: controlUrl,
+                            action: "Stop",
+                            innerBody: "<InstanceID>0</InstanceID>"
+                        )
+                    }
+                    throw DlnaError.castSuperseded
+                }
 
                 self.activeDeviceControlUrl = controlUrl
-                self.activeDeviceRenderingControlUrl = self.discoveredRenderingControlUrls[controlUrl]
+                let (renderingControlUrl, eventSubUrl) = self.discoveredUrlsLock.withLock {
+                    (self.discoveredRenderingControlUrls[controlUrl], self.discoveredEventSubUrls[controlUrl])
+                }
+                self.activeDeviceRenderingControlUrl = renderingControlUrl
                 self.consecutivePollFailures = 0
-                let eventSubUrl = self.discoveredEventSubUrls[controlUrl]
                 self.activeDeviceEventSubUrl = eventSubUrl
                 self.startGenaServer()
                 if let url = eventSubUrl { self.subscribeGena(eventSubUrl: url) }
@@ -222,6 +259,14 @@ final class DlnaController: NSObject {
                     self?.emitEvent(state: "connected")
                     completion(nil)
                 }
+
+                if let ticks = startPositionTicks, ticks > 0 {
+                    self.seekOnceStarted(
+                        controlUrl: controlUrl, target: startTime, generation: resumeToken)
+                }
+            } catch DlnaError.castSuperseded {
+                // A newer cast or a Stop took over; that one reports itself.
+                DispatchQueue.main.async { completion(DlnaError.castSuperseded) }
             } catch {
                 DispatchQueue.main.async { [weak self] in
                     self?.emitEvent(state: "error", message: error.localizedDescription)
@@ -232,6 +277,8 @@ final class DlnaController: NSObject {
     }
 
     func pause(completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
+        bumpTransportGeneration()
         withActiveDevice(completion: completion) { controlUrl in
             try self.sendSoap(
                 controlUrl: controlUrl,
@@ -242,6 +289,7 @@ final class DlnaController: NSObject {
     }
 
     func play(completion: @escaping (Error?) -> Void) {
+        bumpTransportGeneration()
         withActiveDevice(completion: completion) { controlUrl in
             try self.sendSoap(
                 controlUrl: controlUrl,
@@ -255,21 +303,72 @@ final class DlnaController: NSObject {
     }
 
     func seek(positionTicks: Int64, completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
+        let transportToken = resumeLock.withLock { transportGeneration }
         withActiveDevice(completion: completion) { controlUrl in
             let target = self.formatDlnaTime(ticks: positionTicks)
-            try self.sendSoap(
-                controlUrl: controlUrl,
-                action: "Seek",
-                innerBody: """
-                <InstanceID>0</InstanceID>
-                <Unit>REL_TIME</Unit>
-                <Target>\(target)</Target>
-                """
-            )
+            do {
+                try self.sendSeek(controlUrl: controlUrl, target: target)
+            } catch {
+                // Some renderers (LG) refuse a Seek while paused with 501, so
+                // play, seek once playing, and pause again.
+                guard (try? self.queryTransportState(controlUrl: controlUrl)) == "PAUSED_PLAYBACK" else { throw error }
+                var seekError: Error?
+                do {
+                    try self.sendSoap(
+                        controlUrl: controlUrl,
+                        action: "Play",
+                        innerBody: """
+                        <InstanceID>0</InstanceID>
+                        <Speed>1</Speed>
+                        """
+                    )
+                    self.awaitTransportState(controlUrl: controlUrl, state: "PLAYING")
+                    try self.sendSeek(controlUrl: controlUrl, target: target)
+                } catch {
+                    seekError = error
+                }
+                // Paused it stays, even when Play or the seek fails, unless a
+                // newer command (a Play) came in meanwhile. A seek that left
+                // the renderer playing isn't reported as done.
+                var pauseError: Error?
+                if self.resumeLock.withLock({ self.transportGeneration == transportToken }) {
+                    do {
+                        try self.sendSoap(controlUrl: controlUrl, action: "Pause", innerBody: "<InstanceID>0</InstanceID>")
+                    } catch {
+                        pauseError = error
+                    }
+                }
+                if let error = seekError ?? pauseError { throw error }
+            }
+        }
+    }
+
+    private func sendSeek(controlUrl: String, target: String) throws {
+        try sendSoap(
+            controlUrl: controlUrl,
+            action: "Seek",
+            innerBody: """
+            <InstanceID>0</InstanceID>
+            <Unit>REL_TIME</Unit>
+            <Target>\(target)</Target>
+            """
+        )
+    }
+
+    private func awaitTransportState(controlUrl: String, state: String) {
+        let deadline = Date().addingTimeInterval(3)
+        while Date() < deadline {
+            if (try? queryTransportState(controlUrl: controlUrl)) == state { return }
+            Thread.sleep(forTimeInterval: 0.25)
         }
     }
 
     func stop(completion: @escaping (Error?) -> Void) {
+        cancelPendingResume()
+        bumpCastGeneration()
+        resumeLock.withLock { castControlUrl = nil }
+        bumpTransportGeneration()
         withActiveDevice(completion: completion) { [weak self] controlUrl in
             try self?.sendSoap(
                 controlUrl: controlUrl,
@@ -288,6 +387,8 @@ final class DlnaController: NSObject {
     }
 
     func cleanup() {
+        cancelPendingResume()
+        bumpCastGeneration()
         stopPlaybackPolling()
         stopGena()
         consecutivePollFailures = 0
@@ -408,11 +509,11 @@ final class DlnaController: NSObject {
               let controlPath = parser.avTransportControlURL else { return nil }
 
         let controlUrl = resolveUrl(base: locationUrl, relative: controlPath)
-        if let renderingControlPath = parser.renderingControlURL {
-            discoveredRenderingControlUrls[controlUrl] = resolveUrl(base: locationUrl, relative: renderingControlPath)
-        }
-        if let eventSubPath = parser.avTransportEventSubURL {
-            discoveredEventSubUrls[controlUrl] = resolveUrl(base: locationUrl, relative: eventSubPath)
+        let renderingControlUrl = parser.renderingControlURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        let eventSubUrl = parser.avTransportEventSubURL.map { resolveUrl(base: locationUrl, relative: $0) }
+        discoveredUrlsLock.withLock {
+            if let renderingControlUrl { discoveredRenderingControlUrls[controlUrl] = renderingControlUrl }
+            if let eventSubUrl { discoveredEventSubUrls[controlUrl] = eventSubUrl }
         }
         let friendlyName = parser.friendlyName ?? "DLNA Device"
         let modelName = parser.modelName ?? ""
@@ -434,6 +535,59 @@ final class DlnaController: NSObject {
 
         @discardableResult
         private func sendSoap(
+            controlUrl: String,
+            action: String,
+            innerBody: String,
+            serviceURN: String? = nil,
+            current: () -> Bool = { true }
+        ) throws -> String {
+            do {
+                return try sendSoapOnce(
+                    controlUrl: controlUrl,
+                    action: action,
+                    innerBody: innerBody,
+                    serviceURN: serviceURN
+                )
+            } catch DlnaError.httpError(let failed, _, let upnpCode)
+                where failed == "SetAVTransportURI" && upnpCode == 701 {
+                // A renderer still holding an earlier URI (an LG left in
+                // LG_TRANSITIONING by a cast that never started) refuses a
+                // new one with 701 until it is stopped. While it is still
+                // opening that URI (TRANSITIONING, about 20 s for HLS) it
+                // doesn't answer Stop, so stopping is retried until it gives
+                // up and takes it.
+                let deadline = Date().addingTimeInterval(25)
+                while true {
+                    guard current() else { throw DlnaError.castSuperseded }
+                    _ = try? sendSoapOnce(
+                        controlUrl: controlUrl,
+                        action: "Stop",
+                        innerBody: "<InstanceID>0</InstanceID>"
+                    )
+                    // An unanswered query isn't a renderer that has moved on.
+                    let state = try? queryTransportState(controlUrl: controlUrl)
+                    let settled = state.map { !$0.contains("TRANSITIONING") } ?? false
+                    if settled || Date() >= deadline { break }
+                    Thread.sleep(forTimeInterval: 1)
+                }
+                guard current() else { throw DlnaError.castSuperseded }
+                return try sendSoapOnce(
+                    controlUrl: controlUrl,
+                    action: action,
+                    innerBody: innerBody,
+                    serviceURN: serviceURN
+                )
+            } catch let error as URLError where error.code == .timedOut && action == "Play" {
+                // An LG playing HLS stays TRANSITIONING and never answers
+                // Play, though it plays. Its LG_TRANSITIONING is a stream it
+                // couldn't open, which stays a failure.
+                let state = (try? queryTransportState(controlUrl: controlUrl)) ?? ""
+                if state == "PLAYING" || state == "TRANSITIONING" { return "" }
+                throw error
+            }
+        }
+
+        private func sendSoapOnce(
             controlUrl: String,
             action: String,
             innerBody: String,
@@ -478,10 +632,25 @@ final class DlnaController: NSObject {
 
                 if let error = responseError { throw error }
                 if statusCode < 200 || statusCode >= 300 {
-                        throw DlnaError.httpError(action: action, statusCode: statusCode)
+                        throw DlnaError.httpError(
+                            action: action,
+                            statusCode: statusCode,
+                            upnpCode: upnpErrorCode(responseData)
+                        )
                 }
                 return String(data: responseData ?? Data(), encoding: .utf8) ?? ""
         }
+
+    /// The `errorCode` of a SOAP fault's UPnPError, if the body has one.
+    private func upnpErrorCode(_ data: Data?) -> Int? {
+        guard let body = data.flatMap({ String(data: $0, encoding: .utf8) }),
+              let range = body.range(
+                of: "<errorCode>\\s*(\\d+)\\s*</errorCode>",
+                options: .regularExpression
+              )
+        else { return nil }
+        return Int(body[range].filter(\.isNumber))
+    }
 
     private func formatDlnaTime(ticks: Int64?) -> String {
         guard let ticks, ticks > 0 else { return "00:00:00" }
@@ -507,7 +676,7 @@ final class DlnaController: NSObject {
             "state": state,
         ]
         if let message, !message.isEmpty { event["message"] = message }
-        if let positionTicks, positionTicks > 0 { event["positionTicks"] = positionTicks }
+        if let positionTicks, positionTicks >= 0 { event["positionTicks"] = positionTicks }
         eventSink?(event)
     }
 
@@ -531,6 +700,7 @@ final class DlnaController: NSObject {
         guard let controlUrl = activeDeviceControlUrl else { return }
         do {
             let state = try queryTransportState(controlUrl: controlUrl)
+            // An unknown position is left out, not sent as 0.
             let positionTicks = try queryPositionTicks(controlUrl: controlUrl)
             let mappedState: String
             switch state {
@@ -554,14 +724,62 @@ final class DlnaController: NSObject {
         }
     }
 
+    /// Resumes at [target] once the renderer has started, after the cast is
+    /// already connected. Some renderers (LG) refuse a Seek before Play with
+    /// 711 and ignore one sent before the position moves, so the cast plays
+    /// from the start rather than failing when the renderer never takes it,
+    /// or never reports its position moving within the wait.
+    private func seekOnceStarted(controlUrl: String, target: String, generation: Int) {
+        func current() -> Bool { resumeLock.withLock { resumeGeneration == generation } }
+        // A slow renderer takes a while to answer each query, so the wait is
+        // timed rather than counted.
+        let deadline = Date().addingTimeInterval(15)
+        var started = false
+        while Date() < deadline {
+            guard current() else { return }
+            if let ticks = try? queryPositionTicks(controlUrl: controlUrl), ticks > 0 {
+                started = true
+                break
+            }
+            Thread.sleep(forTimeInterval: 0.5)
+        }
+        guard started, current() else { return }
+        try? sendSeek(controlUrl: controlUrl, target: target)
+    }
+
+    @discardableResult
+    private func bumpCastGeneration() -> Int {
+        resumeLock.withLock {
+            castGeneration += 1
+            return castGeneration
+        }
+    }
+
+    private func isCurrentCast(_ token: Int) -> Bool {
+        resumeLock.withLock { castGeneration == token }
+    }
+
+    private func bumpTransportGeneration() {
+        resumeLock.withLock { transportGeneration += 1 }
+    }
+
+    @discardableResult
+    private func cancelPendingResume() -> Int {
+        resumeLock.withLock {
+            resumeGeneration += 1
+            return resumeGeneration
+        }
+    }
+
     private func queryTransportState(controlUrl: String) throws -> String {
         let response = try sendSoap(controlUrl: controlUrl, action: "GetTransportInfo", innerBody: "<InstanceID>0</InstanceID>")
         return parseXmlElement(xml: response, elementName: "CurrentTransportState") ?? "STOPPED"
     }
 
-    private func queryPositionTicks(controlUrl: String) throws -> Int64 {
+    /// The renderer's position, or nil when it gives none it knows.
+    private func queryPositionTicks(controlUrl: String) throws -> Int64? {
         let response = try sendSoap(controlUrl: controlUrl, action: "GetPositionInfo", innerBody: "<InstanceID>0</InstanceID>")
-        let relTime = parseXmlElement(xml: response, elementName: "RelTime") ?? "00:00:00"
+        guard let relTime = parseXmlElement(xml: response, elementName: "RelTime") else { return nil }
         return parseDlnaTime(relTime)
     }
 
@@ -571,13 +789,15 @@ final class DlnaController: NSObject {
         return parser.parse()
     }
 
-    private func parseDlnaTime(_ time: String) -> Int64 {
-        let parts = time.split(separator: ":")
-        guard parts.count == 3 else { return 0 }
-        let hours = Int64(parts[0]) ?? 0
-        let minutes = Int64(parts[1]) ?? 0
-        let secondsPart = parts[2].split(separator: ".")
-        let seconds = Int64(secondsPart[0]) ?? 0
+    // Nil for a time the renderer doesn't know (UPnP's NOT_IMPLEMENTED).
+    private func parseDlnaTime(_ time: String) -> Int64? {
+        let parts = time.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: ":")
+        guard parts.count == 3,
+              let hours = Int64(parts[0]),
+              let minutes = Int64(parts[1]),
+              let secondsPart = parts[2].split(separator: ".").first,
+              let seconds = Int64(secondsPart)
+        else { return nil }
         return (hours * 3600 + minutes * 60 + seconds) * 10_000_000
     }
 
@@ -585,6 +805,7 @@ final class DlnaController: NSObject {
 
     private func handleDeviceOffline() {
         guard activeDeviceControlUrl != nil else { return }
+        cancelPendingResume()
         stopPlaybackPolling()
         stopGena()
         activeDeviceControlUrl = nil
@@ -804,7 +1025,7 @@ final class DlnaController: NSObject {
         case "TRANSITIONING": mappedState = "buffering"
         default: mappedState = "idle"
         }
-        let positionTicks = relTimeStr.map { parseDlnaTime($0) }
+        let positionTicks = relTimeStr.flatMap { parseDlnaTime($0) }
         DispatchQueue.main.async { [weak self] in
             self?.consecutivePollFailures = 0
             self?.emitEvent(state: mappedState, positionTicks: positionTicks)
@@ -957,14 +1178,20 @@ enum DlnaError: LocalizedError {
     case noActiveSession
     case invalidUrl
     case controllerDeallocated
-    case httpError(action: String, statusCode: Int)
+    case castSuperseded
+    case httpError(action: String, statusCode: Int, upnpCode: Int?)
 
     var errorDescription: String? {
         switch self {
         case .noActiveSession: return "No active DLNA session."
         case .invalidUrl: return "Invalid DLNA control URL."
         case .controllerDeallocated: return "DLNA controller was deallocated."
-        case .httpError(let action, let code): return "DLNA \(action) failed with HTTP \(code)."
+        case .castSuperseded: return "A newer DLNA cast or a stop took over."
+        case .httpError(let action, let code, let upnpCode):
+            if let upnpCode {
+                return "DLNA \(action) failed with HTTP \(code) (UPnP \(upnpCode))."
+            }
+            return "DLNA \(action) failed with HTTP \(code)."
         }
     }
 }
