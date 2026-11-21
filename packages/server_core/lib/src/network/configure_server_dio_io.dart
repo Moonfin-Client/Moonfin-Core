@@ -115,6 +115,7 @@ Interceptor _retryDeadConnection(Dio dio) => InterceptorsWrapper(
 );
 
 const _followedKey = 'moonfin.followedMove';
+const _serverKey = 'moonfin.requestServer';
 
 /// Sends a request that couldn't reach its server once more to the address
 /// [ServerMoved.resolver] finds for it.
@@ -132,6 +133,10 @@ const _followedKey = 'moonfin.followedMove';
 /// (or a connect timeout) proves a write never arrived.
 Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
   onRequest: (options, handler) {
+    final serverAt = ServerMoved.serverAt;
+    if (serverAt != null && !options.extra.containsKey(_serverKey)) {
+      options.extra[_serverKey] = serverAt(options.baseUrl);
+    }
     final canMove = ServerMoved.canMove;
     final timeout = options.connectTimeout;
     if (canMove != null &&
@@ -166,7 +171,10 @@ Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
 
     String? moved;
     try {
-      moved = await resolver(from);
+      moved = await resolver(
+        from,
+        serverId: options.extra[_serverKey] as String?,
+      );
     } catch (_) {}
     if (moved == null || moved == from) {
       handler.next(e);
@@ -182,6 +190,11 @@ Interceptor _followMovedServer(Dio dio) => InterceptorsWrapper(
       'Server moved, asking its new address: ${options.method} ${options.uri}',
       level: ServerLogLevel.warning,
     );
+
+    // Dio finalized a multipart body before it tried to connect, and one
+    // can only be finalized once.
+    final data = options.data;
+    if (data is FormData) options.data = data.clone();
 
     try {
       handler.resolve(await dio.fetch(options));

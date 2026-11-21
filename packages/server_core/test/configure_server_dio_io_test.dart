@@ -511,6 +511,7 @@ void main() {
 
     tearDown(() async {
       ServerMoved.resolver = null;
+      ServerMoved.serverAt = null;
       await moved.close(force: true);
     });
 
@@ -539,7 +540,8 @@ void main() {
     }
 
     test('a GET that fails to connect goes to its new address', () async {
-      ServerMoved.resolver = (_) async => 'http://127.0.0.1:${moved.port}';
+      ServerMoved.resolver = (_, {serverId}) async =>
+          'http://127.0.0.1:${moved.port}';
       final dio = Dio(BaseOptions(baseUrl: await deadBase()));
       configureServerDio(dio);
 
@@ -551,9 +553,47 @@ void main() {
       }
     });
 
+    test('a multipart upload that fails to connect goes to its new address',
+        () async {
+      ServerMoved.resolver = (_, {serverId}) async =>
+          'http://127.0.0.1:${moved.port}';
+      final dio = Dio(BaseOptions(baseUrl: await deadBase()));
+      configureServerDio(dio);
+
+      try {
+        final response = await dio.post<String>(
+          '/Upload',
+          data: FormData.fromMap({'file': MultipartFile.fromString('x')}),
+        );
+        expect(response.data, 'POST /Upload');
+      } finally {
+        dio.close(force: true);
+      }
+    });
+
+    test('the resolver hears which server the request started for', () async {
+      final dead = await deadBase();
+      final asked = <String?>[];
+      ServerMoved.serverAt = (baseUrl) => baseUrl == dead ? 'server-1' : null;
+      ServerMoved.resolver = (_, {serverId}) async {
+        asked.add(serverId);
+        return 'http://127.0.0.1:${moved.port}';
+      };
+      final dio = Dio(BaseOptions(baseUrl: dead));
+      configureServerDio(dio);
+
+      try {
+        await dio.get<String>('/System/Ping');
+        expect(asked, ['server-1']);
+      } finally {
+        dio.close(force: true);
+      }
+    });
+
     test('a POST that was already sent is not sent again', () async {
       final dropping = await droppingBase();
-      ServerMoved.resolver = (_) async => 'http://127.0.0.1:${moved.port}';
+      ServerMoved.resolver = (_, {serverId}) async =>
+          'http://127.0.0.1:${moved.port}';
       final dio = Dio(BaseOptions(baseUrl: dropping));
       configureServerDio(dio);
 
@@ -577,7 +617,8 @@ void main() {
 
     test('a GET that was already sent still goes to its new address', () async {
       final dropping = await droppingBase();
-      ServerMoved.resolver = (_) async => 'http://127.0.0.1:${moved.port}';
+      ServerMoved.resolver = (_, {serverId}) async =>
+          'http://127.0.0.1:${moved.port}';
       final dio = Dio(BaseOptions(baseUrl: dropping));
       configureServerDio(dio);
 
@@ -593,7 +634,7 @@ void main() {
     test('a request that fails to connect goes to its new address', () async {
       final dead = await deadBase();
       final asked = <String>[];
-      ServerMoved.resolver = (baseUrl) async {
+      ServerMoved.resolver = (baseUrl, {serverId}) async {
         asked.add(baseUrl);
         return 'http://127.0.0.1:${moved.port}';
       };
@@ -641,7 +682,7 @@ void main() {
     });
 
     test('nothing moved leaves the failure as it was', () async {
-      ServerMoved.resolver = (_) async => null;
+      ServerMoved.resolver = (_, {serverId}) async => null;
       final dio = Dio(BaseOptions(baseUrl: await deadBase()));
       configureServerDio(dio);
 

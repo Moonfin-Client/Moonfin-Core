@@ -138,8 +138,8 @@ void main() {
 
     // Requests failing together share one ask.
     final asks = await Future.wait([
-      repo.followMovedAddress('http://127.0.0.1:1/'),
-      repo.followMovedAddress('http://127.0.0.1:1'),
+      repo.followMovedAddress('http://127.0.0.1:1/', serverId: 'server-1'),
+      repo.followMovedAddress('http://127.0.0.1:1', serverId: 'server-1'),
     ]);
 
     expect(asks, [targetUrl(), targetUrl()]);
@@ -153,18 +153,30 @@ void main() {
   test('a request that fails after the move still gets the new address',
       () async {
     await repo.saveServer(saved());
-    expect(await repo.followMovedAddress('http://127.0.0.1:1'), targetUrl());
+    expect(
+      await repo.followMovedAddress('http://127.0.0.1:1', serverId: 'server-1'),
+      targetUrl(),
+    );
 
     // A request that started on the old address before the move and failed
     // after it: no saved server uses that address any more.
-    expect(await repo.followMovedAddress('http://127.0.0.1:1/'), targetUrl());
+    expect(
+      await repo.followMovedAddress(
+        'http://127.0.0.1:1/',
+        serverId: 'server-1',
+      ),
+      targetUrl(),
+    );
     expect(await repo.followMovedAddress('http://127.0.0.1:2'), isNull);
   });
 
   test('an old address another saved server uses now is not redirected',
       () async {
     await repo.saveServer(saved());
-    expect(await repo.followMovedAddress('http://127.0.0.1:1'), targetUrl());
+    expect(
+      await repo.followMovedAddress('http://127.0.0.1:1', serverId: 'server-1'),
+      targetUrl(),
+    );
     await repo.saveServer(
       Server(
         id: 'server-2',
@@ -176,8 +188,30 @@ void main() {
       ),
     );
 
+    expect(repo.serverIdAt('http://127.0.0.1:1/'), 'server-2');
     // Its failed request, token and all, stays with it.
-    expect(await repo.followMovedAddress('http://127.0.0.1:1/'), isNull);
+    expect(
+      await repo.followMovedAddress(
+        'http://127.0.0.1:1/',
+        serverId: 'server-2',
+      ),
+      isNull,
+    );
+    // One that started for the server that left goes after that one only.
+    expect(
+      await repo.followMovedAddress(
+        'http://127.0.0.1:1/',
+        serverId: 'server-1',
+      ),
+      targetUrl(),
+    );
+  });
+
+  test('an HTTP entry never moves a server off its HTTPS address', () async {
+    await repo.saveServer(saved().copyWith(address: 'https://127.0.0.1:1'));
+
+    expect(await repo.followEntryAddressOf('server-1'), isNull);
+    expect(repo.getServer('server-1')!.address, 'https://127.0.0.1:1');
   });
 
   test('a server removed while its entry address is asked stays removed',

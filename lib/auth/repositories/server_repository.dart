@@ -288,6 +288,10 @@ class ServerRepository {
       // may have moved it, and a removed server must stay removed.
       final current = getServer(server.id);
       if (wasSaved && current == null) return server;
+      // What was detected belongs to the address that was probed.
+      if (current != null && current.address != server.address) {
+        return current;
+      }
       final corrected = (current ?? server).copyWith(serverType: detected);
       await saveServer(corrected);
       return corrected;
@@ -330,30 +334,24 @@ class ServerRepository {
       if (server.entryAddress != null) withFollowedEntryAddress(server),
   ]);
 
-  /// For [ServerMoved.resolver]: the new address of the saved server that
-  /// [baseUrl] belongs to, when a request to it couldn't connect. All requests
+  /// For [ServerMoved.resolver]: the new address of the saved server
+  /// [serverId] that a request to [baseUrl] was for, when it couldn't connect. All requests
   /// that fail together share one ask, and an ask that found nothing holds for
   /// a few seconds, so a dead server isn't asked once per request.
   ///
-  /// A request to an address its server already moved away from gets the
-  /// address it moved to, since a request that started before the move can
-  /// fail after it, when no saved server uses its address any more. Once
-  /// another saved server answers there, the address is that server's again.
-  Future<String?> followMovedAddress(String baseUrl) {
+  /// A request that started before its server moved and failed after it gets
+  /// the address that server is at now. It never goes to another server's
+  /// address, whatever server uses or used its own address.
+  Future<String?> followMovedAddress(String baseUrl, {String? serverId}) {
     final wanted = _withoutTrailingSlash(baseUrl);
-    final atWanted = _servers
-        .where((s) => _withoutTrailingSlash(s.address) == wanted)
-        .toList();
-    final server = atWanted.where((s) => s.entryAddress != null).firstOrNull;
-    if (server == null) {
-      if (atWanted.isNotEmpty) return Future.value();
-      final movedId = _movedAway[wanted];
-      final current = movedId == null ? null : getServer(movedId);
-      if (current == null || _withoutTrailingSlash(current.address) == wanted) {
-        return Future.value();
-      }
-      return Future.value(current.address);
+    final server = serverId == null ? null : getServer(serverId);
+    if (server == null) return Future.value();
+    // Its server moved while the request was on the way: it goes where that
+    // server is now, never to where some other server went.
+    if (_withoutTrailingSlash(server.address) != wanted) {
+      return Future.value(server.address);
     }
+    if (server.entryAddress == null) return Future.value();
     final asked = _lastFruitlessAsk[server.id];
     if (asked != null &&
         DateTime.now().difference(asked) < _fruitlessAskHold) {
@@ -374,6 +372,18 @@ class ServerRepository {
     }();
   }
 
+  /// For [ServerMoved.serverAt]: the saved server a request to [baseUrl] is
+  /// for, taken when it starts, so a move can only send it to that server.
+  String? serverIdAt(String baseUrl) {
+    final wanted = _withoutTrailingSlash(baseUrl);
+    final at = _servers.where(
+      (s) => _withoutTrailingSlash(s.address) == wanted,
+    );
+    return (at.where((s) => s.entryAddress != null).firstOrNull ??
+            at.firstOrNull)
+        ?.id;
+  }
+
   /// For [ServerMoved.canMove]: whether [baseUrl] is the address of a saved
   /// server added through a redirect.
   bool canMove(String baseUrl) {
@@ -388,22 +398,6 @@ class ServerRepository {
   final _lastFruitlessAsk = <String, DateTime>{};
   static const _fruitlessAskHold = Duration(seconds: 3);
 
-  /// Addresses saved servers moved away from, without a trailing slash, to
-  /// the id of the server that moved, oldest first. Only the latest
-  /// [_movedAwayLimit] are kept: they're for requests still on the way.
-  final _movedAway = <String, String>{};
-  static const _movedAwayLimit = 16;
-
-  void _rememberMovedAway(String from, String serverId) {
-    final key = _withoutTrailingSlash(from);
-    _movedAway
-      ..remove(key)
-      ..[key] = serverId;
-    while (_movedAway.length > _movedAwayLimit) {
-      _movedAway.remove(_movedAway.keys.first);
-    }
-  }
-
   static String _withoutTrailingSlash(String url) =>
       url.endsWith('/') ? url.substring(0, url.length - 1) : url;
 
@@ -411,6 +405,13 @@ class ServerRepository {
     final entry = server.entryAddress;
     final entryServerId = server.entryServerId;
     if (entry == null || entryServerId == null) return server;
+    // A plain HTTP reply can be changed by anyone on the way, and a matching
+    // public `Id` proves nothing, so it never takes a server's token away
+    // from an HTTPS address. Only an HTTPS entry may move it there.
+    if (Uri.tryParse(entry)?.scheme != 'https' &&
+        Uri.tryParse(server.address)?.scheme == 'https') {
+      return server;
+    }
     final wasSaved = getServer(server.id) != null;
     try {
       final (info, _, resolvedUrl) = await _probeServer(entry);
@@ -431,7 +432,6 @@ class ServerRepository {
       final moved = (current ?? server).copyWith(address: resolvedUrl);
       await updateServer(moved);
       _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
-      _rememberMovedAway(server.address, server.id);
       _movedController.add(ServerMove(from: server.address, server: moved));
       return moved;
     } catch (_) {

@@ -32,6 +32,7 @@ void registerAuthModule() {
     // entered address where it went, so a moved target is taken at once.
     ServerMoved.resolver = repository.followMovedAddress;
     ServerMoved.canMove = repository.canMove;
+    ServerMoved.serverAt = repository.serverIdAt;
     return repository;
   });
   _getIt.registerLazySingleton(
