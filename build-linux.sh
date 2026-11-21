@@ -1275,8 +1275,15 @@ build_snap() {
 
   local snap_dir="$TEMP_DIR/snap"
   local version="$(get_app_version)"
-  local snap_mpv_package
-  snap_mpv_package="$(resolve_mpv_package_name)"
+  local snap_stage_packages
+  snap_stage_packages="$(resolve_mpv_package_name)"
+  local snap_libmpv=""
+  if [ -n "${MOONFIN_LIBMPV_DIR:-}" ]; then
+    snap_libmpv="$(resolve_shared_lib libmpv.so.2)" || return 1
+    # The archive's libmpv still pulls in the libraries libmpv links, and this
+    # newer one replaces it. The newer one also needs libdisplay-info.
+    snap_stage_packages="$snap_stage_packages, libdisplay-info1"
+  fi
   local snap_triplet
   snap_triplet="$(get_multiarch_triplet)"
 
@@ -1339,8 +1346,11 @@ parts:
       mkdir -p \$SNAPCRAFT_PART_INSTALL/bin
       mkdir -p \$SNAPCRAFT_PART_INSTALL/lib
       cp -r ${BUILD_DIR}/* \$SNAPCRAFT_PART_INSTALL/
-    stage-packages:
-      - ${snap_mpv_package}
+      if [ -n "${snap_libmpv}" ]; then
+        rm -f \$SNAPCRAFT_PART_INSTALL/usr/lib/${snap_triplet}/libmpv.so.2*
+        cp -L "${snap_libmpv}" \$SNAPCRAFT_PART_INSTALL/usr/lib/${snap_triplet}/libmpv.so.2
+      fi
+    stage-packages: [${snap_stage_packages}]
 
   # libmpv's packages bring older copies of libraries the GNOME runtime already
   # ships, like librsvg, and those would load ahead of the runtime's.
