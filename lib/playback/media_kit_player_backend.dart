@@ -202,7 +202,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   final VideoController? _videoController;
   final UserPreferences _prefs;
   final Future<void> Function(int handle)? _onNativeHandleReady;
-  final bool _hwDecodingEnabled;
+  bool _hwDecodingEnabled;
 
   /// Owns the decision about native HDR output and the window it needs.
   /// Public so the playback info sheet can report what actually happened.
@@ -547,6 +547,27 @@ class MediaKitPlayerBackend extends PlayerBackend
     return Uri.decodeFull(a.path) == Uri.decodeFull(b.path);
   }
 
+  /// Null lets media_kit pick, which is `auto` on desktop and `auto-safe` on
+  /// Android, or `no` in an emulator.
+  static String? _controllerHwdec(bool enabled) => enabled
+      ? (PlatformDetection.isAndroid && PlatformDetection.isTV
+            ? 'auto-copy'
+            : (PlatformDetection.isLinux ? 'auto-safe' : null))
+      : 'no';
+
+  /// The backend lives as long as the app, so a toggle change has to reach mpv
+  /// when the next title opens. Null while the toggle hasn't moved, so a
+  /// fallback that turned hwdec off for the session isn't undone.
+  @visibleForTesting
+  static String? hwdecForToggle({
+    required bool applied,
+    required bool enabled,
+  }) {
+    if (enabled == applied) return null;
+    return _controllerHwdec(enabled) ??
+        (PlatformDetection.isAndroid ? 'auto-safe' : 'auto');
+  }
+
   static Future<void> _nativeSetProperty(
     Object native,
     String key,
@@ -680,11 +701,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     Future<void> Function(int handle)? onNativeHandleReady,
   }) {
     final hwDecodingEnabled = prefs.get(UserPreferences.hardwareDecoding);
-    final String? hwdec = hwDecodingEnabled
-        ? (PlatformDetection.isAndroid && PlatformDetection.isTV
-              ? 'auto-copy'
-              : (PlatformDetection.isLinux ? 'auto-safe' : null))
-        : 'no';
+    final hwdec = _controllerHwdec(hwDecodingEnabled);
 
     final player = MpvPlayerRegistry.instance.create(
       configuration: PlayerConfiguration(
@@ -987,7 +1004,21 @@ class MediaKitPlayerBackend extends PlayerBackend
         } catch (_) {}
       }
     }
-    await _applyCustomMpvConfIfEnabled();
+    final hwDecodingEnabled = _prefs.get(UserPreferences.hardwareDecoding);
+    final hwdec = hwdecForToggle(
+      applied: _hwDecodingEnabled,
+      enabled: hwDecodingEnabled,
+    );
+    if (hwdec != null) {
+      _hwDecodingEnabled = hwDecodingEnabled;
+      // The native surface sets hwdec itself each time it attaches.
+      final native = _player.platform;
+      if (!_useNativeSurface && native is NativePlayer) {
+        await _nativeSetProperty(native, 'hwdec', hwdec);
+      }
+    }
+    // A hwdec line in the user's mpv.conf still wins over this one.
+    await _applyCustomMpvConfIfEnabled(force: hwdec != null);
     await _applyAssOverrideMode();
 
     if (_player.platform is NativePlayer) {
