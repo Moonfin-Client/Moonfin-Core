@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:server_core/server_core.dart';
+
 /// The sort a studio row with nothing picked can apply. Jellyfin's /Studios
 /// only lists by name, so name and random are the orders a page can give; any
 /// other order would need every studio, so it reads as name, as the setting
@@ -31,4 +33,56 @@ Future<Map<String, dynamic>> fetchStudioRowPage(
   return lastStart > 0
       ? fetchPage(Random().nextInt(lastStart + 1), pageSize)
       : first;
+}
+
+
+/// When each studio was last watched, by lower-case name, from the [limit]
+/// most recently played movies and episodes in [parentId], or in every library.
+/// An episode counts for its series' studio.
+Future<Map<String, String>> fetchStudioLastPlayed(
+  ItemsApi api, {
+  String? parentId,
+  int limit = 300,
+}) async {
+  final response = await api.getItems(
+    parentId: parentId,
+    recursive: true,
+    includeItemTypes: const ['Movie', 'Episode'],
+    sortBy: 'DatePlayed',
+    sortOrder: 'Descending',
+    limit: limit,
+    fields: 'Studios,SeriesStudio,UserData',
+  );
+  final lastPlayed = <String, String>{};
+  for (final item
+      in (response['Items'] as List? ?? const [])
+          .cast<Map<String, dynamic>>()) {
+    final date = (item['UserData'] as Map?)?['LastPlayedDate'] as String?;
+    if (date == null) continue;
+    final names = [
+      for (final studio in item['Studios'] as List? ?? const [])
+        (studio as Map)['Name'],
+      item['SeriesStudio'],
+    ];
+    for (final name in names.whereType<String>()) {
+      lastPlayed.putIfAbsent(name.toLowerCase(), () => date);
+    }
+  }
+  return lastPlayed;
+}
+
+/// Puts each studio's date from [lastPlayed] in its UserData, where
+/// sortAggregatedItems reads it.
+void markStudiosLastPlayed(
+  Iterable<Map<String, dynamic>> studios,
+  Map<String, String> lastPlayed,
+) {
+  for (final studio in studios) {
+    final date = lastPlayed[(studio['Name'] as String? ?? '').toLowerCase()];
+    if (date == null) continue;
+    studio['UserData'] = {
+      ...?studio['UserData'] as Map<String, dynamic>?,
+      'LastPlayedDate': date,
+    };
+  }
 }

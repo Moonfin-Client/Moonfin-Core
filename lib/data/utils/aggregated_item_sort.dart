@@ -57,6 +57,12 @@ List<AggregatedItem> sortAggregatedItems(
           b.criticRating?.toDouble(),
           descending: descending,
         );
+      case 'DatePlayed':
+        return _compareNullableDate(
+          a.lastPlayedDate,
+          b.lastPlayedDate,
+          descending: descending,
+        );
       case 'Runtime':
       case 'RunTimeTicks':
         return _compareNullableNum(

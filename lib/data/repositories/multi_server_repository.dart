@@ -659,7 +659,18 @@ class MultiServerRepository {
             );
             return _parseItems(response, session.server.id);
           }
-          return _collectStudios(selectedSet, session.server.id, fetchPage);
+          final studios = await _collectStudios(
+            selectedSet,
+            session.server.id,
+            fetchPage,
+          );
+          if (sortBy.startsWith('DatePlayed')) {
+            markStudiosLastPlayed(
+              studios.map((s) => s.rawData),
+              await fetchStudioLastPlayed(session.client.itemsApi),
+            );
+          }
+          return studios;
         }, label: '$cacheKeyPrefix from ${session.server.name}'),
       ),
     );
