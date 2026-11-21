@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 
-import 'plex_free_tv_favorites.dart';
+import 'plex_live_tv_favorites.dart';
 
 import '../../preference/home_section_config.dart';
 import '../../preference/user_preferences.dart';
@@ -188,6 +188,8 @@ class RowDataSource {
   /// Ordered the same way as the guide, so a channel sits where the user
   /// expects to find it.
   Future<HomeRow> loadFavoritesChannels(String serverId) async {
+    // Show cached hearts as soon as the channel lineup arrives. Home starts
+    // the cloud refresh separately and updates this row when it finishes.
     final response = await _client.liveTvApi.getChannels(
       fields: 'ImageTags,UserData',
     );
@@ -2810,7 +2812,7 @@ class RowDataSource {
   ) {
     final rawItems = response['Items'] as List? ?? [];
     final items = rawItems.map((item) {
-      final data = PlexFreeTvFavorites.applyToItem(
+      final data = PlexLiveTvFavorites.applyToItem(
         _client,
         item as Map<String, dynamic>,
       );

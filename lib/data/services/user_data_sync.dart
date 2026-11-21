@@ -126,8 +126,17 @@ class UserDataSync extends ChangeNotifier {
   /// Returns [item] itself when nothing newer is known, so callers can compare
   /// with `identical` and skip rebuilding a list that did not move.
   AggregatedItem apply(AggregatedItem item) {
-    final patch = _userData[item.id];
-    if (patch == null) return item;
+    final original = _userData[item.id];
+    final scopedKey = item.rawData['PlexFavoriteSyncKey'];
+    final scopedFavorite = scopedKey is String ? favoriteFor(scopedKey) : null;
+    if (original == null && scopedFavorite == null) return item;
+    final patch = <String, dynamic>{...?original};
+    if (scopedKey is String) {
+      // Keep favorites separate for channels with the same ID on different PMS servers.
+      patch.remove('IsFavorite');
+      if (scopedFavorite != null) patch['IsFavorite'] = scopedFavorite;
+    }
+    if (patch.isEmpty) return item;
     final current = item.rawData['UserData'];
     if (current is Map && _alreadyHolds(current, patch)) return item;
     final merged = <String, dynamic>{
