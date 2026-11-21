@@ -55,6 +55,50 @@ class _Harness {
   }
 }
 
+/// A service whose plugin answers the access window from [windows], which
+/// gets the call's number and returns the answer, null for a server that can't
+/// say, or throws for one that couldn't be read.
+class _WindowHarness {
+  _WindowHarness(
+    this.async,
+    DateTime start,
+    FutureOr<AccessWindow?> Function(int call) windows, {
+    List<AccessSchedule> schedules = const [],
+    bool? refuses,
+    bool schedulesFail = false,
+  }) : clock = async.getClock(start) {
+    service = AccessScheduleService(
+      now: () => clock.now(),
+      loadAccessWindow: () async => windows(++windowCalls),
+      loadSchedules: (userId) async {
+        loads++;
+        if (schedulesFail) throw Exception('offline');
+        return schedules;
+      },
+      onBlocked: () async => blocked++,
+      serverRefuses: () async {
+        asks++;
+        return refuses;
+      },
+    );
+  }
+
+  final FakeAsync async;
+  final Clock clock;
+  late final AccessScheduleService service;
+  int windowCalls = 0;
+  int loads = 0;
+  int asks = 0;
+  int blocked = 0;
+
+  void settle() => async.flushMicrotasks();
+
+  void elapse(Duration duration) {
+    async.elapse(duration);
+    async.flushMicrotasks();
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -511,6 +555,307 @@ void main() {
 
       expect(service.status.allowed, isFalse);
       service.dispose();
+    });
+  });
+
+  group('with the plugin access window', () {
+    test('blocks on its answer alone and names the opening from now', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 21),
+          (_) => const AccessWindow(
+            allowed: false,
+            untilOpen: Duration(hours: 11),
+          ),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, _at(20, 8));
+        expect(h.blocked, 1);
+        expect(h.loads, 0);
+        expect(h.asks, 0);
+        h.service.dispose();
+      });
+    });
+
+    test('names the opening to the nearest minute', () {
+      fakeAsync((async) {
+        // A clock a moment behind the server's lands just short of 08:00
+        final h = _WindowHarness(
+          async,
+          DateTime(2026, 10, 19, 21, 0, 0, 750),
+          (_) => const AccessWindow(
+            allowed: false,
+            untilOpen: Duration(hours: 10, minutes: 59, seconds: 59),
+          ),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.status.nextAccess, _at(20, 8));
+        h.service.dispose();
+      });
+    });
+
+    test('looks again when it closes, not a minute later', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 19, 59, 30),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: true,
+                  untilClose: Duration(seconds: 31),
+                )
+              : const AccessWindow(allowed: false),
+        );
+        h.service.setUser('child');
+        h.settle();
+        expect(h.service.isBlocked, isFalse);
+
+        h.elapse(const Duration(seconds: 30));
+        expect(h.service.isBlocked, isFalse);
+        expect(h.windowCalls, 1);
+        h.elapse(const Duration(seconds: 1));
+
+        expect(h.windowCalls, 2);
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, isNull);
+        expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test('lets the user back in when it opens', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 7, 59, 30),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: false,
+                  untilOpen: Duration(seconds: 30),
+                )
+              : const AccessWindow(
+                  allowed: true,
+                  untilClose: Duration(hours: 12),
+                ),
+        );
+        h.service.setUser('child');
+        h.settle();
+        expect(h.service.isBlocked, isTrue);
+
+        h.elapse(const Duration(seconds: 30));
+
+        expect(h.service.isBlocked, isFalse);
+        h.service.dispose();
+      });
+    });
+
+    test('polls every minute while a close is far off', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (_) =>
+              const AccessWindow(allowed: true, untilClose: Duration(hours: 8)),
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(minutes: 3));
+
+        expect(h.windowCalls, 4);
+        h.service.dispose();
+      });
+    });
+
+    test('polls every 15 minutes when nothing will close', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (_) => const AccessWindow(allowed: true),
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(minutes: 14));
+        expect(h.windowCalls, 1);
+        h.elapse(const Duration(minutes: 1));
+
+        expect(h.windowCalls, 2);
+        h.service.dispose();
+      });
+    });
+
+    test('judges a look by the schedule and /Users/Me when the window '
+        'can\'t be read, and asks for it again', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 21),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: false,
+                  untilOpen: Duration(hours: 11),
+                )
+              : throw Exception('500'),
+          schedules: [_entry('Weekday', 8, 20)],
+          refuses: true,
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(AccessScheduleService.pollInterval);
+
+        expect(h.windowCalls, 2);
+        expect(h.loads, 1);
+        expect(h.asks, 1);
+        expect(h.service.isBlocked, isTrue);
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.windowCalls, 3);
+        expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test('offline, ends an allowed window at the close it reported', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 12),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: true,
+                  untilClose: Duration(seconds: 90),
+                )
+              : throw Exception('offline'),
+          schedulesFail: true,
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(seconds: 89));
+        expect(h.service.isBlocked, isFalse);
+
+        h.elapse(const Duration(seconds: 1));
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, isNull);
+        expect(h.blocked, 1);
+        h.service.dispose();
+      });
+    });
+
+    test(
+      'offline, ends a block from the window at the opening it reported',
+      () {
+        fakeAsync((async) {
+          final h = _WindowHarness(
+            async,
+            _at(19, 21),
+            (call) => call == 1
+                ? const AccessWindow(
+                    allowed: false,
+                    untilOpen: Duration(seconds: 90),
+                  )
+                : throw Exception('offline'),
+            schedulesFail: true,
+          );
+          h.service.setUser('child');
+          h.settle();
+          h.elapse(const Duration(seconds: 89));
+          expect(h.service.isBlocked, isTrue);
+
+          h.elapse(const Duration(seconds: 1));
+          expect(h.service.isBlocked, isFalse);
+          h.service.dispose();
+        });
+      },
+    );
+
+    test('an overtaken look that finds no window doesn\'t stop the asking', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(async, _at(19, 12), (call) async {
+          if (call == 1) {
+            await Future<void>.delayed(const Duration(seconds: 10));
+            return null;
+          }
+          return const AccessWindow(
+            allowed: true,
+            untilClose: Duration(hours: 8),
+          );
+        });
+        h.service.setUser('child');
+        h.settle();
+        unawaited(h.service.refresh());
+        h.settle();
+        h.elapse(const Duration(seconds: 10));
+        h.elapse(AccessScheduleService.pollInterval);
+
+        expect(h.windowCalls, 3);
+        h.service.dispose();
+      });
+    });
+
+    test('offline, keeps a block from the window', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 21),
+          (call) => call == 1
+              ? const AccessWindow(
+                  allowed: false,
+                  untilOpen: Duration(hours: 11),
+                )
+              : throw Exception('offline'),
+          schedulesFail: true,
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(minutes: 5));
+
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, _at(20, 8));
+        h.service.dispose();
+      });
+    });
+
+    test('falls back to the schedule and /Users/Me when the server can\'t '
+        'say, and stops asking', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(
+          async,
+          _at(19, 21),
+          (_) => null,
+          schedules: [_entry('Weekday', 8, 20)],
+          refuses: true,
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.isBlocked, isTrue);
+        expect(h.service.status.nextAccess, _at(20, 8));
+        expect(h.loads, 1);
+        expect(h.asks, 1);
+
+        h.elapse(AccessScheduleService.pollInterval);
+        expect(h.windowCalls, 1);
+        expect(h.loads, 2);
+        h.service.dispose();
+      });
+    });
+
+    test('asks again for a new user', () {
+      fakeAsync((async) {
+        final h = _WindowHarness(async, _at(19, 12), (_) => null);
+        h.service.setUser('child');
+        h.settle();
+        h.service.setUser('other');
+        h.settle();
+
+        expect(h.windowCalls, 2);
+        h.service.dispose();
+      });
     });
   });
 }
