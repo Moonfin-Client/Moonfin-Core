@@ -183,6 +183,7 @@ SeerrUser _$SeerrUserFromJson(Map<String, dynamic> json) => SeerrUser(
   apiKey: json['apiKey'] as String?,
   permissions: (json['permissions'] as num?)?.toInt(),
   streamingRegion: _readUserSetting(json, 'streamingRegion') as String?,
+  discoverRegion: _readUserSetting(json, 'discoverRegion') as String?,
 );
 
 Map<String, dynamic> _$SeerrUserToJson(SeerrUser instance) => <String, dynamic>{
@@ -194,6 +195,7 @@ Map<String, dynamic> _$SeerrUserToJson(SeerrUser instance) => <String, dynamic>{
   'apiKey': instance.apiKey,
   'permissions': instance.permissions,
   'streamingRegion': instance.streamingRegion,
+  'discoverRegion': instance.discoverRegion,
 };
 
 SeerrDiscoverPage _$SeerrDiscoverPageFromJson(Map<String, dynamic> json) =>
@@ -290,6 +292,9 @@ SeerrMovieDetails _$SeerrMovieDetailsFromJson(
   status: json['status'] as String?,
   runtime: (json['runtime'] as num?)?.toInt(),
   contentRating: json['contentRating'] as String?,
+  releases: json['releases'] == null
+      ? null
+      : SeerrMovieReleases.fromJson(json['releases'] as Map<String, dynamic>),
   budget: (json['budget'] as num?)?.toInt(),
   revenue: (json['revenue'] as num?)?.toInt(),
   voteAverage: (json['voteAverage'] as num?)?.toDouble(),
@@ -342,6 +347,7 @@ Map<String, dynamic> _$SeerrMovieDetailsToJson(SeerrMovieDetails instance) =>
       'status': instance.status,
       'runtime': instance.runtime,
       'contentRating': instance.contentRating,
+      'releases': instance.releases,
       'budget': instance.budget,
       'revenue': instance.revenue,
       'voteAverage': instance.voteAverage,
@@ -373,6 +379,11 @@ SeerrTvDetails _$SeerrTvDetailsFromJson(Map<String, dynamic> json) =>
       numberOfSeasons: (json['numberOfSeasons'] as num?)?.toInt(),
       numberOfEpisodes: (json['numberOfEpisodes'] as num?)?.toInt(),
       contentRating: json['contentRating'] as String?,
+      contentRatings: json['contentRatings'] == null
+          ? null
+          : SeerrContentRatings.fromJson(
+              json['contentRatings'] as Map<String, dynamic>,
+            ),
       voteAverage: (json['voteAverage'] as num?)?.toDouble(),
       voteCount: (json['voteCount'] as num?)?.toInt(),
       popularity: (json['popularity'] as num?)?.toDouble(),
@@ -435,6 +446,7 @@ Map<String, dynamic> _$SeerrTvDetailsToJson(SeerrTvDetails instance) =>
       'numberOfSeasons': instance.numberOfSeasons,
       'numberOfEpisodes': instance.numberOfEpisodes,
       'contentRating': instance.contentRating,
+      'contentRatings': instance.contentRatings,
       'voteAverage': instance.voteAverage,
       'voteCount': instance.voteCount,
       'popularity': instance.popularity,
@@ -448,6 +460,72 @@ Map<String, dynamic> _$SeerrTvDetailsToJson(SeerrTvDetails instance) =>
       'seasons': instance.seasons,
       'watchProviders': instance.watchProviders,
     };
+
+SeerrMovieReleases _$SeerrMovieReleasesFromJson(Map<String, dynamic> json) =>
+    SeerrMovieReleases(
+      results:
+          (json['results'] as List<dynamic>?)
+              ?.map(
+                (e) => SeerrReleaseRegion.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$SeerrMovieReleasesToJson(SeerrMovieReleases instance) =>
+    <String, dynamic>{'results': instance.results};
+
+SeerrReleaseRegion _$SeerrReleaseRegionFromJson(Map<String, dynamic> json) =>
+    SeerrReleaseRegion(
+      region: json['iso_3166_1'] as String,
+      releaseDates:
+          (json['release_dates'] as List<dynamic>?)
+              ?.map(
+                (e) => SeerrReleaseCertification.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$SeerrReleaseRegionToJson(SeerrReleaseRegion instance) =>
+    <String, dynamic>{
+      'iso_3166_1': instance.region,
+      'release_dates': instance.releaseDates,
+    };
+
+SeerrReleaseCertification _$SeerrReleaseCertificationFromJson(
+  Map<String, dynamic> json,
+) => SeerrReleaseCertification(certification: json['certification'] as String?);
+
+Map<String, dynamic> _$SeerrReleaseCertificationToJson(
+  SeerrReleaseCertification instance,
+) => <String, dynamic>{'certification': instance.certification};
+
+SeerrContentRatings _$SeerrContentRatingsFromJson(Map<String, dynamic> json) =>
+    SeerrContentRatings(
+      results:
+          (json['results'] as List<dynamic>?)
+              ?.map(
+                (e) => SeerrContentRating.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$SeerrContentRatingsToJson(
+  SeerrContentRatings instance,
+) => <String, dynamic>{'results': instance.results};
+
+SeerrContentRating _$SeerrContentRatingFromJson(Map<String, dynamic> json) =>
+    SeerrContentRating(
+      region: json['iso_3166_1'] as String,
+      rating: json['rating'] as String?,
+    );
+
+Map<String, dynamic> _$SeerrContentRatingToJson(SeerrContentRating instance) =>
+    <String, dynamic>{'iso_3166_1': instance.region, 'rating': instance.rating};
 
 SeerrGenre _$SeerrGenreFromJson(Map<String, dynamic> json) => SeerrGenre(
   id: (json['id'] as num).toInt(),
