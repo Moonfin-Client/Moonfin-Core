@@ -47,6 +47,8 @@ class PlatformDetection {
   static String? get flatpakAppId => isLinux ? linuxFlatpakAppId() : null;
   static bool get isFlatpak => flatpakAppId != null;
   static bool get isSnap => isLinux && linuxIsSnap();
+  static Future<Map<String, String>?> hostOsRelease() =>
+      isLinux ? linuxHostOsRelease() : Future.value();
 
   static String? get cpuArch => isWindows || isLinux ? cpuArchitecture() : null;
 

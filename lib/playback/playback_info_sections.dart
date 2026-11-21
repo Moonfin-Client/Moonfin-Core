@@ -943,7 +943,8 @@ Future<String?> _readDeviceLabel() async {
       return '${windows.productName} ${windows.displayVersion}'.trim();
     }
     if (PlatformDetection.isLinux) {
-      return (await info.linuxInfo).prettyName;
+      return (await PlatformDetection.hostOsRelease())?['PRETTY_NAME'] ??
+          (await info.linuxInfo).prettyName;
     }
   } catch (_) {}
   return null;
