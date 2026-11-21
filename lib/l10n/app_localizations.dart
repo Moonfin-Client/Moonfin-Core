@@ -31654,6 +31654,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only while paused'**
   String get clickpadSeekingPausedOnly;
+
+  /// Live TV recordings scope toggle: only recordings the signed-in user asked for
+  ///
+  /// In en, this message translates to:
+  /// **'Mine'**
+  String get recordingsScopeMine;
+
+  /// Live TV recordings scope toggle: every recording on the server
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get recordingsScopeEveryone;
+
+  /// Title of the list of recordings the signed-in user scheduled
+  ///
+  /// In en, this message translates to:
+  /// **'My Recordings'**
+  String get myRecordings;
+
+  /// Empty state of My Recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings you schedule will show up here.'**
+  String get myRecordingsEmpty;
+
+  /// Action: join a recording another user already scheduled
+  ///
+  /// In en, this message translates to:
+  /// **'Add to My Recordings'**
+  String get addToMyRecordings;
+
+  /// Confirmation after the user adds a recording, or one being scheduled, to their own recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Added to My Recordings'**
+  String get addedToMyRecordings;
+
+  /// Action: join a series recording another user already scheduled
+  ///
+  /// In en, this message translates to:
+  /// **'Add Series to My Recordings'**
+  String get addSeriesToMyRecordings;
+
+  /// Names the other users who are recording this (one other user)
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is recording this'**
+  String ownerRecordingOne(String name);
+
+  /// Names the other users who are recording this (two other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second} are recording this'**
+  String ownerRecordingTwo(String first, String second);
+
+  /// Names the other users who are recording this (three or more other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} other users are recording this}}'**
+  String ownerRecordingMany(int count);
+
+  /// Names the other users also waiting for this incomplete recording (one other user)
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is also waiting for this'**
+  String ownerWaitingOne(String name);
+
+  /// Names the other users also waiting for this incomplete recording (two other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second} are also waiting for this'**
+  String ownerWaitingTwo(String first, String second);
+
+  /// Names the other users also waiting for this incomplete recording (three or more other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} other users are also waiting for this}}'**
+  String ownerWaitingMany(int count);
+
+  /// Warning before cancelling a shared recording (one other user)
+  ///
+  /// In en, this message translates to:
+  /// **'{name} also has this in My Recordings. Cancelling stops it for everyone.'**
+  String sharedCancelOne(String name);
+
+  /// Warning before cancelling a shared recording (two other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second} also have this in My Recordings. Cancelling stops it for everyone.'**
+  String sharedCancelTwo(String first, String second);
+
+  /// Warning before cancelling a shared recording (three or more other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} other users also have this in My Recordings. Cancelling stops it for everyone.}}'**
+  String sharedCancelMany(int count);
+
+  /// Warning before deleting a shared recording (one other user)
+  ///
+  /// In en, this message translates to:
+  /// **'{name} also has this in My Recordings. Deleting removes it for everyone.'**
+  String sharedDeleteOne(String name);
+
+  /// Warning before deleting a shared recording (two other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second} also have this in My Recordings. Deleting removes it for everyone.'**
+  String sharedDeleteTwo(String first, String second);
+
+  /// Warning before deleting a shared recording (three or more other users)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} other users also have this in My Recordings. Deleting removes it for everyone.}}'**
+  String sharedDeleteMany(int count);
+
+  /// Button: do not cancel or delete the shared recording
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get sharedKeep;
+
+  /// Button: cancel a shared recording for all users
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel for Everyone'**
+  String get sharedCancelForEveryone;
+
+  /// Button: delete a shared recording for all users
+  ///
+  /// In en, this message translates to:
+  /// **'Delete for Everyone'**
+  String get sharedDeleteForEveryone;
+
+  /// Warning before changing a series recording other users share
+  ///
+  /// In en, this message translates to:
+  /// **'Other users also record this series. Changes apply to everyone.'**
+  String get sharedSeriesChange;
+
+  /// Button: leave the shared series recording unchanged
+  ///
+  /// In en, this message translates to:
+  /// **'Keep As Is'**
+  String get sharedKeepAsIs;
+
+  /// Button: change a shared series recording for all users
+  ///
+  /// In en, this message translates to:
+  /// **'Change for Everyone'**
+  String get sharedChangeForEveryone;
 }
 
 class _AppLocalizationsDelegate

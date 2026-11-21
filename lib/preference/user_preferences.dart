@@ -462,6 +462,9 @@ class UserPreferences extends ChangeNotifier {
     'smart_downloads_applied_keep_ready',
     // Per account but never synced: the profile this device syncs with.
     'pref_plugin_sync_profile',
+    // Per account but never synced: Mine or Everyone on the Recordings
+    // screen, which only means something for that user on that server.
+    'pref_livetv_recordings_scope',
     // Newly synced settings. Anything that goes to the server profile has to be stored
     // per server and user, or one server's value is read back on the next.
     'all_genres_image_type',
@@ -4247,6 +4250,13 @@ class UserPreferences extends ChangeNotifier {
   /// scoped to the active server and user, so this preference is scoped too.
   static final liveTvLastChannelId = Preference(
     key: 'live_tv_last_channel_id',
+    defaultValue: '',
+  );
+
+  /// Mine or Everyone on the Live TV Recordings screen: '' until the user has
+  /// chosen, then 'mine' or 'everyone'. Scoped per server and user.
+  static const recordingsScope = Preference<String>(
+    key: 'pref_livetv_recordings_scope',
     defaultValue: '',
   );
 

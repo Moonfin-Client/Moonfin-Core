@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:server_jellyfin/src/api/jellyfin_live_tv_api.dart';
 import 'package:test/test.dart';
@@ -178,6 +180,140 @@ void main() {
       expect(cap.last!.method, 'POST');
       expect(cap.last!.path, '/LiveTv/SeriesTimers/series-1');
       expect(cap.last!.data, rule);
+    });
+  });
+
+  group('JellyfinLiveTvApi.cancelTimer', () {
+    // Answers GET /LiveTv/Timers/t1 with each status in turn (null: 404),
+    // starting at the episode's own time unless [retryFrom] is reached, from
+    // which on it starts a minute later, as the server's retry does. Records
+    // every request.
+    ({JellyfinLiveTvApi api, List<String> calls}) server(
+      List<String?> statuses, {
+      int? retryFrom,
+      Future<void> Function(Duration)? wait,
+    }) {
+      const episodeStart = '2026-11-19T22:30:00.0000000Z';
+      const retryStart = '2026-11-19T22:49:20.0000000Z';
+      final calls = <String>[];
+      var next = 0;
+      final dio = Dio()
+        ..interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (options, h) {
+              calls.add('${options.method} ${options.path}');
+              if (options.method == 'GET') {
+                final index = next;
+                final status = next < statuses.length
+                    ? statuses[next++]
+                    : statuses.last;
+                final start = retryFrom != null && index >= retryFrom
+                    ? retryStart
+                    : episodeStart;
+                if (status == null) {
+                  h.reject(
+                    DioException(
+                      requestOptions: options,
+                      response: Response(
+                        requestOptions: options,
+                        statusCode: 404,
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                h.resolve(
+                  Response(
+                    requestOptions: options,
+                    statusCode: 200,
+                    data: {'Id': 't1', 'Status': status, 'StartDate': start},
+                  ),
+                );
+                return;
+              }
+              h.resolve(Response(requestOptions: options, statusCode: 204));
+            },
+          ),
+        );
+      return (
+        api: JellyfinLiveTvApi(dio, wait: wait ?? (_) async {}),
+        calls: calls,
+      );
+    }
+
+    test('a recording the server puts back to retry is cancelled again', () async {
+      // Recording; gone after the cancel; back, waiting to retry; then gone.
+      final s = server(['InProgress', null, 'New', null], retryFrom: 2);
+
+      await s.api.cancelTimer('t1');
+      await pumpEventQueue();
+
+      expect(
+        s.calls.where((c) => c == 'DELETE /LiveTv/Timers/t1'),
+        hasLength(2),
+      );
+    });
+
+    test('a retry back as the cancel returns is cancelled before it returns', () async {
+      // Jellyfin puts the retry back just after answering the cancel. The
+      // caller re-reads the guide as soon as cancelTimer returns, so the
+      // retry has to be gone by then. The later checks never finish here.
+      final s = server(
+        ['InProgress', 'New', null],
+        retryFrom: 1,
+        wait: (d) => d == JellyfinLiveTvApi.cancelChecks.first
+            ? Future<void>.value()
+            : Completer<void>().future,
+      );
+
+      await s.api.cancelTimer('t1');
+
+      expect(
+        s.calls.where((c) => c == 'DELETE /LiveTv/Timers/t1'),
+        hasLength(2),
+      );
+    });
+
+    test('a recording that stays cancelled is cancelled once', () async {
+      final s = server(['InProgress', null]);
+
+      await s.api.cancelTimer('t1');
+      await pumpEventQueue();
+
+      expect(s.calls.where((c) => c.startsWith('DELETE')), hasLength(1));
+      expect(
+        s.calls.where((c) => c.startsWith('GET')),
+        hasLength(1 + JellyfinLiveTvApi.cancelChecks.length),
+      );
+    });
+
+    test('an episode recorded again under the same timer is left to record', () async {
+      // A series rule reuses the cancelled timer: waiting again, own start.
+      final s = server(['InProgress', 'New']);
+
+      await s.api.cancelTimer('t1');
+      await pumpEventQueue();
+
+      expect(s.calls.where((c) => c.startsWith('DELETE')), hasLength(1));
+    });
+
+    test("a series rule's retry, kept as Cancelled, is cancelled again", () async {
+      // Recording; kept as Cancelled after the cancel; back to retry; gone.
+      final s = server(['InProgress', 'Cancelled', 'New', null], retryFrom: 2);
+
+      await s.api.cancelTimer('t1');
+      await pumpEventQueue();
+
+      expect(s.calls.where((c) => c.startsWith('DELETE')), hasLength(2));
+    });
+
+    test('a timer that was not recording is not watched', () async {
+      final s = server(['New', 'New']);
+
+      await s.api.cancelTimer('t1');
+      await pumpEventQueue();
+
+      expect(s.calls, ['GET /LiveTv/Timers/t1', 'DELETE /LiveTv/Timers/t1']);
     });
   });
 }

@@ -17876,5 +17876,177 @@
   "clickpadSeekingPausedOnly": "Only while paused",
   "@clickpadSeekingPausedOnly": {
     "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+  },
+  "recordingsScopeMine": "Mine",
+  "@recordingsScopeMine": {
+    "description": "Live TV recordings scope toggle: only recordings the signed-in user asked for"
+  },
+  "recordingsScopeEveryone": "Everyone",
+  "@recordingsScopeEveryone": {
+    "description": "Live TV recordings scope toggle: every recording on the server"
+  },
+  "myRecordings": "My Recordings",
+  "@myRecordings": {
+    "description": "Title of the list of recordings the signed-in user scheduled"
+  },
+  "myRecordingsEmpty": "Recordings you schedule will show up here.",
+  "@myRecordingsEmpty": {
+    "description": "Empty state of My Recordings"
+  },
+  "addToMyRecordings": "Add to My Recordings",
+  "@addToMyRecordings": {
+    "description": "Action: join a recording another user already scheduled"
+  },
+  "addedToMyRecordings": "Added to My Recordings",
+  "@addedToMyRecordings": {
+    "description": "Confirmation after the user adds a recording, or one being scheduled, to their own recordings"
+  },
+  "addSeriesToMyRecordings": "Add Series to My Recordings",
+  "@addSeriesToMyRecordings": {
+    "description": "Action: join a series recording another user already scheduled"
+  },
+  "ownerRecordingOne": "{name} is recording this",
+  "@ownerRecordingOne": {
+    "description": "Names the other users who are recording this (one other user)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ownerRecordingTwo": "{first} and {second} are recording this",
+  "@ownerRecordingTwo": {
+    "description": "Names the other users who are recording this (two other users)",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "ownerRecordingMany": "{count, plural, other{{count} other users are recording this}}",
+  "@ownerRecordingMany": {
+    "description": "Names the other users who are recording this (three or more other users)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ownerWaitingOne": "{name} is also waiting for this",
+  "@ownerWaitingOne": {
+    "description": "Names the other users also waiting for this incomplete recording (one other user)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ownerWaitingTwo": "{first} and {second} are also waiting for this",
+  "@ownerWaitingTwo": {
+    "description": "Names the other users also waiting for this incomplete recording (two other users)",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "ownerWaitingMany": "{count, plural, other{{count} other users are also waiting for this}}",
+  "@ownerWaitingMany": {
+    "description": "Names the other users also waiting for this incomplete recording (three or more other users)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharedCancelOne": "{name} also has this in My Recordings. Cancelling stops it for everyone.",
+  "@sharedCancelOne": {
+    "description": "Warning before cancelling a shared recording (one other user)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedCancelTwo": "{first} and {second} also have this in My Recordings. Cancelling stops it for everyone.",
+  "@sharedCancelTwo": {
+    "description": "Warning before cancelling a shared recording (two other users)",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedCancelMany": "{count, plural, other{{count} other users also have this in My Recordings. Cancelling stops it for everyone.}}",
+  "@sharedCancelMany": {
+    "description": "Warning before cancelling a shared recording (three or more other users)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharedDeleteOne": "{name} also has this in My Recordings. Deleting removes it for everyone.",
+  "@sharedDeleteOne": {
+    "description": "Warning before deleting a shared recording (one other user)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedDeleteTwo": "{first} and {second} also have this in My Recordings. Deleting removes it for everyone.",
+  "@sharedDeleteTwo": {
+    "description": "Warning before deleting a shared recording (two other users)",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedDeleteMany": "{count, plural, other{{count} other users also have this in My Recordings. Deleting removes it for everyone.}}",
+  "@sharedDeleteMany": {
+    "description": "Warning before deleting a shared recording (three or more other users)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharedKeep": "Keep",
+  "@sharedKeep": {
+    "description": "Button: do not cancel or delete the shared recording"
+  },
+  "sharedCancelForEveryone": "Cancel for Everyone",
+  "@sharedCancelForEveryone": {
+    "description": "Button: cancel a shared recording for all users"
+  },
+  "sharedDeleteForEveryone": "Delete for Everyone",
+  "@sharedDeleteForEveryone": {
+    "description": "Button: delete a shared recording for all users"
+  },
+  "sharedSeriesChange": "Other users also record this series. Changes apply to everyone.",
+  "@sharedSeriesChange": {
+    "description": "Warning before changing a series recording other users share"
+  },
+  "sharedKeepAsIs": "Keep As Is",
+  "@sharedKeepAsIs": {
+    "description": "Button: leave the shared series recording unchanged"
+  },
+  "sharedChangeForEveryone": "Change for Everyone",
+  "@sharedChangeForEveryone": {
+    "description": "Button: change a shared series recording for all users"
   }
 }

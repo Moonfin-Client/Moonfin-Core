@@ -9,6 +9,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/series_recording_episodes.dart';
+import '../../../data/services/recording_owners_service.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../l10n/app_localizations.dart';
@@ -24,7 +25,9 @@ import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/live_tv/incomplete_recording.dart';
 import '../../widgets/live_tv/live_tv_mini_player.dart';
 import '../../widgets/live_tv/live_tv_recording_icon.dart';
+import '../../widgets/live_tv/recording_owner_line.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
+import '../../widgets/live_tv/shared_recording_warning.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -607,7 +610,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   void _scrollToRow(int index, {bool animate = true}) {
     final offset = index * _layoutProfile.rowHeight;
     final targetRow = index;
-    if (_lastFocusedRowIndex == targetRow) {
+    // The remembered row alone isn't enough: a reload can bring the rows back
+    // at the top while the row number stays, and skipping the scroll then
+    // leaves the target row unbuilt, so its focus request lands nowhere.
+    if (_lastFocusedRowIndex == targetRow && _isScrolledTo(offset)) {
       return;
     }
     _lastFocusedRowIndex = targetRow;
@@ -637,6 +643,21 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         _programScrollController.jumpTo(clamped);
       }
     }
+  }
+
+  /// Whether both row lists already sit at [offset], clamped to what each
+  /// can scroll to.
+  bool _isScrolledTo(double offset) {
+    for (final controller in [
+      _channelScrollController,
+      _programScrollController,
+    ]) {
+      if (!controller.hasClients) continue;
+      final position = controller.position;
+      final target = offset.clamp(0.0, position.maxScrollExtent);
+      if ((position.pixels - target).abs() > 0.5) return false;
+    }
+    return true;
   }
 
   FocusNode _channelFocusNodeFor(int index) {
@@ -2550,6 +2571,40 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   void _showProgramDetails(GuideProgram program) {
     _cancelPendingVerticalMove();
+    final owners = supportedRecordingOwners();
+    final timerId = program.hasTimer
+        ? program.rawData['TimerId']?.toString() ?? ''
+        : '';
+    final seriesTimerId = program.hasSeriesTimer
+        ? program.rawData['SeriesTimerId']?.toString() ?? ''
+        : '';
+    if (owners == null || (timerId.isEmpty && seriesTimerId.isEmpty)) {
+      _openProgramDetails(program);
+      return;
+    }
+    // Who owns the recording decides the buttons, so it is read first. A
+    // slow or failed read opens the dialog with today's buttons.
+    if (_programDetailsPending) return;
+    _programDetailsPending = true;
+    owners
+        .lookup(
+          timerIds: [if (timerId.isNotEmpty) timerId],
+          seriesTimerIds: [if (seriesTimerId.isNotEmpty) seriesTimerId],
+        )
+        .timeout(const Duration(seconds: 2))
+        .catchError((_) {})
+        .whenComplete(() {
+          _programDetailsPending = false;
+          // Not over another screen the user moved to meanwhile.
+          if (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
+            _openProgramDetails(program);
+          }
+        });
+  }
+
+  bool _programDetailsPending = false;
+
+  void _openProgramDetails(GuideProgram program) {
     final pageContext = context;
     final channel = _vm.channelForId(program.channelId);
     final isFavoriteChannel = channel?.isFavorite ?? false;
@@ -2569,6 +2624,37 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     );
     var defaultActionFocusRequested = false;
     final episodeLine = program.episodeLine;
+    // Owners as read just before; all empty or unknown without the plugin's
+    // owners support, which leaves the dialog as it always was.
+    final owners = supportedRecordingOwners();
+    final timerId = hasTimer
+        ? program.rawData['TimerId']?.toString() ?? ''
+        : '';
+    final seriesTimerId = hasSeriesTimer
+        ? program.rawData['SeriesTimerId']?.toString() ?? ''
+        : '';
+    final timerOthers = owners == null || timerId.isEmpty
+        ? const <RecordingOwner>[]
+        : owners.othersOf(OwnedKind.timer, timerId);
+    final seriesOthers = owners == null || seriesTimerId.isEmpty
+        ? const <RecordingOwner>[]
+        : owners.othersOf(OwnedKind.series, seriesTimerId);
+    final ownerOthers = [
+      ...timerOthers,
+      ...seriesOthers.where(
+        (o) => !timerOthers.any((t) => t.userId == o.userId),
+      ),
+    ];
+    // A series episode is joined through its series, so only a one-off
+    // recording offers Add to My Recordings.
+    final joinProgram =
+        !isEnded &&
+        timerId.isNotEmpty &&
+        !hasSeriesTimer &&
+        owners?.isMine(OwnedKind.timer, timerId) == false;
+    final joinSeries =
+        seriesTimerId.isNotEmpty &&
+        owners?.isMine(OwnedKind.series, seriesTimerId) == false;
 
     showFocusRestoringDialog(
       context: context,
@@ -2585,6 +2671,31 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             }
           });
         }
+        // Add (Series) to My Recordings: joins the owners as things stand.
+        Future<void> join(
+          OwnedKind kind,
+          String id,
+          String done,
+          String failed,
+        ) async {
+          if (dialogActionInProgress) return;
+          dialogActionInProgress = true;
+          try {
+            await joinRecording(kind, id);
+            if (!pageContext.mounted || !dialogContext.mounted) return;
+            Navigator.of(dialogContext).pop();
+            ScaffoldMessenger.of(
+              pageContext,
+            ).showSnackBar(SnackBar(content: Text(done)));
+          } catch (_) {
+            dialogActionInProgress = false;
+            if (!pageContext.mounted) return;
+            ScaffoldMessenger.of(
+              pageContext,
+            ).showSnackBar(SnackBar(content: Text(failed)));
+          }
+        }
+
         return AlertDialog.adaptive(
           backgroundColor: AppColorScheme.surface,
           title: Text(
@@ -2596,6 +2707,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (ownerOthers.isNotEmpty) ...[
+                  RecordingOwnerLine(others: ownerOthers),
+                  const SizedBox(height: 8),
+                ],
                 Text(
                   '${_formatTime(program.startDate)} – ${_formatTime(program.endDate)}',
                   style: const TextStyle(color: Colors.white70),
@@ -2665,6 +2780,18 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             ),
           ),
           actions: [
+            // Someone else's (or nobody's) one-off recording: joining comes
+            // before Cancel, the only other thing an owner could do with it.
+            if (joinProgram)
+              adaptiveDialogAction(
+                onPressed: () => join(
+                  OwnedKind.timer,
+                  timerId,
+                  l10n.programSetToRecord,
+                  l10n.unableToCreateRecording,
+                ),
+                child: Text(l10n.addToMyRecordings),
+              ),
             // That airing is over. Single-episode recording no longer applies.
             if (!isEnded)
               adaptiveDialogAction(
@@ -2676,7 +2803,27 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                   try {
                     final String? message;
                     if (hasTimer) {
-                      await _vm.toggleProgramRecording(program);
+                      // Refused while other users own the timer: they are
+                      // named first, and only Cancel for Everyone goes on.
+                      if (!await _vm.toggleProgramRecording(program)) {
+                        if (!dialogContext.mounted) return;
+                        final confirmed = await confirmSharedCancel(
+                          dialogContext,
+                          supportedRecordingOwners()?.othersOf(
+                                OwnedKind.timer,
+                                timerId,
+                              ) ??
+                              const [],
+                        );
+                        if (!confirmed) {
+                          dialogActionInProgress = false;
+                          return;
+                        }
+                        await _vm.toggleProgramRecording(
+                          program,
+                          sharedCancelConfirmed: true,
+                        );
+                      }
                       message = l10n.recordingCancelled;
                     } else {
                       final outcome = await recordAiring(
@@ -2699,7 +2846,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                           outcome == RecordAiringOutcome.laterShowingOnly) {
                         await _vm.recordingChanged();
                       }
-                      message = recordAiringMessage(l10n, outcome);
+                      message = recordAiringMessage(
+                        l10n,
+                        outcome,
+                        programId: program.id,
+                      );
                     }
                     if (message == null) {
                       dialogActionInProgress = false;
@@ -2728,7 +2879,17 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                   hasTimer ? l10n.cancelRecordingAction : l10n.record,
                 ),
               ),
-            if (hasSeriesTimer)
+            if (hasSeriesTimer && joinSeries)
+              adaptiveDialogAction(
+                onPressed: () => join(
+                  OwnedKind.series,
+                  seriesTimerId,
+                  l10n.seriesSetToRecord,
+                  l10n.unableToCreateSeriesRecording,
+                ),
+                child: Text(l10n.addSeriesToMyRecordings),
+              )
+            else if (hasSeriesTimer)
               adaptiveDialogAction(
                 onPressed: () async {
                   if (dialogActionInProgress) return;
@@ -2781,6 +2942,13 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                         dialogActionInProgress = false;
                         return;
                       }
+                    } else if (!await confirmRecordingCancel(
+                      dialogContext,
+                      OwnedKind.series,
+                      seriesTimerId,
+                    )) {
+                      dialogActionInProgress = false;
+                      return;
                     }
                     await _vm.toggleSeriesRecording(
                       program,

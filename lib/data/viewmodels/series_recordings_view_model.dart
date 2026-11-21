@@ -53,7 +53,35 @@ class SeriesRecordingsViewModel extends ChangeNotifier {
   SeriesRecordingsState get state => _state;
 
   List<SeriesTimerItem> _seriesTimers = const [];
-  List<SeriesTimerItem> get seriesTimers => _seriesTimers;
+
+  /// The series rules, only the owned ones while [applyOwnerFilter] has a set.
+  List<SeriesTimerItem> get seriesTimers {
+    final filter = _seriesTimerFilter;
+    if (filter == null) return _seriesTimers;
+    return _filtered ??= _seriesTimers
+        .where((t) => filter.contains(_normalizeId(t.id)))
+        .toList();
+  }
+
+  Set<String>? _seriesTimerFilter;
+  List<SeriesTimerItem>? _filtered;
+
+  /// Every loaded rule's id, ignoring [applyOwnerFilter].
+  Iterable<String> get loadedSeriesTimerIds => [
+    for (final timer in _seriesTimers) timer.id,
+  ];
+
+  static String _normalizeId(String id) => id.replaceAll('-', '').toLowerCase();
+
+  /// Keeps only the rules in [seriesTimerIds], or all of them when null.
+  void applyOwnerFilter(Set<String>? seriesTimerIds) {
+    if (seriesTimerIds == null && _seriesTimerFilter == null) return;
+    _seriesTimerFilter = seriesTimerIds == null
+        ? null
+        : {for (final id in seriesTimerIds) _normalizeId(id)};
+    _filtered = null;
+    notifyListeners();
+  }
 
   SeriesTimerItem? _focusedTimer;
   SeriesTimerItem? get focusedTimer => _focusedTimer;
@@ -85,6 +113,7 @@ class SeriesRecordingsViewModel extends ChangeNotifier {
       final response = await _client.liveTvApi.getSeriesTimers();
       if (read < _applied) return;
       final items = (response['Items'] as List?) ?? [];
+      _filtered = null;
       _seriesTimers = items
           .cast<Map<String, dynamic>>()
           .map((json) => SeriesTimerItem.fromJson(json))
@@ -105,6 +134,7 @@ class SeriesRecordingsViewModel extends ChangeNotifier {
     _applied = ++_reads;
     notifyLiveTvRecordingsChanged();
     _seriesTimers = _seriesTimers.where((t) => t.id != id).toList();
+    _filtered = null;
     if (_focusedTimer?.id == id) _focusedTimer = null;
     notifyListeners();
   }

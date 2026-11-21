@@ -254,6 +254,22 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// that DisplaySpecialsWithinSeasons lists inside a regular season.
   final String? contextSeasonId;
 
+  /// When set, the episode lists keep only these items (normalized ids: no
+  /// dashes, lowercase) plus this one, for a series opened from the user's
+  /// own recordings.
+  final Set<String>? ownedEpisodeIds;
+
+  List<AggregatedItem> _ownedEpisodesOnly(List<AggregatedItem> episodes) {
+    final owned = ownedEpisodeIds;
+    if (owned == null) return episodes;
+    String normalize(String id) => id.replaceAll('-', '').toLowerCase();
+    final self = normalize(itemId);
+    return episodes.where((e) {
+      final id = normalize(e.id);
+      return id == self || owned.contains(id);
+    }).toList();
+  }
+
   String? _resolvedEpisodesSeasonId;
 
   /// The season [episodes] was actually loaded from, so callers queue playback
@@ -732,6 +748,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     required this.itemId,
     String? serverId,
     this.contextSeasonId,
+    this.ownedEpisodeIds,
     required MediaServerClient client,
     required ItemMutationRepository mutations,
     required MdbListRepository mdbListRepository,
@@ -1339,7 +1356,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
 
       _resolvedEpisodesSeasonId = seasonId;
-      _episodes = episodes;
+      _episodes = _ownedEpisodesOnly(episodes);
     } catch (_) {
     } finally {
       _episodesLoaded = true;
@@ -1363,9 +1380,8 @@ class ItemDetailViewModel extends ChangeNotifier {
         fields: _episodeOverviewFields,
       );
       final items = (data['Items'] as List?) ?? [];
-      _seriesEpisodes = _mapItems(
-        items,
-        fallbackRating: _item?.officialRating,
+      _seriesEpisodes = _ownedEpisodesOnly(
+        _mapItems(items, fallbackRating: _item?.officialRating),
       );
       _seriesEpisodesLoaded = true;
       notifyListeners();

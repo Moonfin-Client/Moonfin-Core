@@ -1,5 +1,8 @@
 // Issue #1610: Live TV tiles took focus from a remote but never opened, since
 // each wrapped a GestureDetector, which only answers pointer taps.
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
+import 'package:moonfin/data/services/recording_owners_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
@@ -22,6 +26,36 @@ class _MockMediaServerClient extends Mock implements MediaServerClient {}
 class _MockLiveTvApi extends Mock implements LiveTvApi {}
 
 class _MockImageApi extends Mock implements ImageApi {}
+
+/// The plugin's owner endpoints: Mine fails while [mineFails] is set, else
+/// answers with no owned ids; everything else answers empty.
+class _OwnersAdapter implements HttpClientAdapter {
+  bool mineFails = true;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    final mine = options.uri.path.endsWith('/Owners/Mine');
+    if (mine && mineFails) {
+      return ResponseBody.fromString('', 500);
+    }
+    return ResponseBody.fromString(
+      mine
+          ? jsonEncode({'timerIds': [], 'seriesTimerIds': [], 'itemIds': []})
+          : '{}',
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
 
 const _recordingId = 'rec-1';
 const _recordingName = 'Recorded Show';
@@ -134,6 +168,39 @@ void main() {
     await tester.sendKeyEvent(key);
     await tester.pumpAndSettle();
   }
+
+  group('recordings screen owners', () {
+    testWidgets(
+        'a failed owners read is tried again on the next recording change',
+        (tester) async {
+      when(() => client.baseUrl).thenReturn('http://server.test');
+      when(() => client.accessToken).thenReturn('token');
+      when(() => client.deviceInfo).thenReturn(
+        const DeviceInfo(
+          id: 'dev1',
+          name: 'test',
+          appName: 'moonfin',
+          appVersion: '0.0.0',
+        ),
+      );
+      final adapter = _OwnersAdapter();
+      final owners = RecordingOwnersService(
+        client: () => client,
+        dio: Dio()..httpClientAdapter = adapter,
+      )..setSupported(true);
+      addTearDown(owners.dispose);
+      GetIt.instance.registerSingleton<RecordingOwnersService>(owners);
+      final strings = await l10n();
+
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      expect(find.text(strings.recordingsScopeMine), findsNothing);
+
+      adapter.mineFails = false;
+      notifyLiveTvRecordingsChanged();
+      await tester.pumpAndSettle();
+      expect(find.text(strings.recordingsScopeMine), findsOneWidget);
+    });
+  });
 
   group('recordings screen', () {
     testWidgets('a recording tile opens on Enter from a remote',
