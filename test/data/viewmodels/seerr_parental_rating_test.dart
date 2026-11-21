@@ -81,8 +81,91 @@ class _Prefs extends Fake implements SeerrPreferences {}
 
 class _Client extends Mock implements MediaServerClient {}
 
+class _SearchRecoverySeerr extends _Seerr {
+  final String mediaType;
+  int detailFetches = 0;
+
+  _SearchRecoverySeerr(this.mediaType);
+
+  @override
+  Future<(SeerrMovieDetails, bool)> getMovieDetailsWithWatchlist(
+    int id,
+  ) async => throw StateError('Initial details request failed');
+
+  @override
+  Future<(SeerrTvDetails, bool)> getTvDetailsWithWatchlist(int id) async =>
+      throw StateError('Initial details request failed');
+
+  @override
+  Future<SeerrDiscoverPage> search(
+    String query, {
+    String? mediaType,
+    int limit = 20,
+    int offset = 0,
+  }) async => SeerrDiscoverPage(
+    results: [
+      SeerrDiscoverItem(
+        id: int.parse(query),
+        mediaType: this.mediaType,
+        title: 'Search result',
+        mediaInfo: const SeerrMediaInfo(status: 3),
+      ),
+    ],
+  );
+
+  @override
+  Future<SeerrMovieDetails> getMovieDetails(int id) async {
+    detailFetches++;
+    return SeerrMovieDetails.fromJson({
+      ..._movieJson,
+      'mediaInfo': {'status': 5},
+    });
+  }
+
+  @override
+  Future<SeerrTvDetails> getTvDetails(int id) async {
+    detailFetches++;
+    return SeerrTvDetails.fromJson({
+      ..._tvJson,
+      'mediaInfo': {'status': 5},
+    });
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  for (final mediaType in ['movie', 'tv']) {
+    test(
+      '$mediaType search recovery preserves country through a status poll',
+      () {
+        fakeAsync((async) {
+          final repo = _SearchRecoverySeerr(mediaType)
+            ..user = const SeerrUser(
+              id: 1,
+              discoverRegion: 'DE',
+              streamingRegion: 'GB',
+            )
+            ..settings = Future.value({'discoverRegion': 'US'});
+          final vm = SeerrMediaDetailViewModel(repo, _Prefs());
+          vm.load(mediaType == 'tv' ? '1396' : '121', mediaType);
+          async.flushMicrotasks();
+
+          expect(vm.state.error, isNull);
+          expect(vm.state.discoverRegion, 'DE');
+          expect(vm.state.streamingRegion, 'GB');
+          expect(vm.state.parentalRating, isNull);
+          expect(repo.detailFetches, 0);
+
+          async.elapse(const Duration(seconds: 30));
+          expect(repo.detailFetches, 1);
+          expect(vm.state.discoverRegion, 'DE');
+          expect(vm.state.parentalRating, mediaType == 'tv' ? '16' : '12');
+          vm.dispose();
+        });
+      },
+    );
+  }
 
   test('movie rating uses the selected country and first nonblank release', () {
     final movie = SeerrMovieDetails.fromJson(_movieJson);

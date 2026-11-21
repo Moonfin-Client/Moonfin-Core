@@ -787,7 +787,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
           debugPrint('[SeerrDetail] getTvDetails failed: $e. Attempting fallback to search...');
           final fallbackDetails = await _trySearchFallbackTv(tmdbId, title);
           if (fallbackDetails != null) {
-            _state = SeerrMediaDetailState(tv: fallbackDetails, currentUser: user);
+            _state = SeerrMediaDetailState(
+              tv: fallbackDetails,
+              currentUser: user,
+              streamingRegion: _streamingRegionFor(user),
+              discoverRegion: _discoverRegionFor(user),
+            );
             notifyListeners();
           } else {
             rethrow;
@@ -809,7 +814,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
           debugPrint('[SeerrDetail] getMovieDetails failed: $e. Attempting fallback to search...');
           final fallbackDetails = await _trySearchFallbackMovie(tmdbId, title);
           if (fallbackDetails != null) {
-            _state = SeerrMediaDetailState(movie: fallbackDetails, currentUser: user);
+            _state = SeerrMediaDetailState(
+              movie: fallbackDetails,
+              currentUser: user,
+              streamingRegion: _streamingRegionFor(user),
+              discoverRegion: _discoverRegionFor(user),
+            );
             notifyListeners();
           } else {
             rethrow;
