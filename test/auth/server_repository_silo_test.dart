@@ -166,6 +166,9 @@ void main() {
       expect(added.address, nativeAddress());
       expect(added.name, 'Snowy Streams');
       expect(added.version, 'bd9d59ea');
+      // The switch to the native port is no redirect to follow again.
+      expect(added.entryAddress, isNull);
+      expect(added.entryServerId, isNull);
     });
 
     test('no keeps the Jellyfin-compatible address', () async {

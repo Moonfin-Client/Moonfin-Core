@@ -74,6 +74,7 @@ export 'src/network/server_user_agent.dart';
 export 'src/network/auth_header.dart';
 export 'src/network/redirect_interceptor.dart';
 export 'src/network/server_probe.dart';
+export 'src/network/server_moved.dart';
 export 'src/network/json_body.dart';
 export 'src/network/silo_public_info.dart';
 export 'src/network/query_filters_reader.dart';

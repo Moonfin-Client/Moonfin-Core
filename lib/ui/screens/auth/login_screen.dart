@@ -334,7 +334,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) context.go(Destinations.serverSelect);
       return;
     }
-    final server = await _serverRepo.withCheckedType(stored);
+    final server = await _serverRepo.withCheckedType(
+      await _serverRepo.withFollowedEntryAddress(stored),
+    );
 
     final client = _clientFactory.getClient(
       serverId: server.id,

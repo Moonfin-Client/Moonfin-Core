@@ -14,6 +14,16 @@ class Server {
   /// starts on the best one that answers, so a relay picked at sign-in
   /// doesn't stick and [address] follows the device between home and away.
   final List<String> candidateAddresses;
+
+  /// The address the user entered when it redirected to another host or port,
+  /// else null. [address] holds where the redirect led. When the redirect
+  /// target changes (a stable name pointing at a dynamic host:port), the entry
+  /// address is followed again to find the new one.
+  final String? entryAddress;
+
+  /// The server's own `Id` as it answered when [entryAddress] was saved, so a
+  /// redirect that later leads to a different server isn't followed.
+  final String? entryServerId;
   final String version;
   final ServerType serverType;
   final String? loginDisclaimer;
@@ -28,6 +38,8 @@ class Server {
     required this.address,
     this.displayAddress,
     this.candidateAddresses = const [],
+    this.entryAddress,
+    this.entryServerId,
     required this.version,
     required this.serverType,
     this.loginDisclaimer,
@@ -42,6 +54,9 @@ class Server {
     String? address,
     String? displayAddress,
     bool clearDisplayAddress = false,
+    String? entryAddress,
+    String? entryServerId,
+    bool clearEntryAddress = false,
     String? version,
     ServerType? serverType,
     String? loginDisclaimer,
@@ -57,6 +72,12 @@ class Server {
           ? null
           : displayAddress ?? this.displayAddress,
       candidateAddresses: candidateAddresses,
+      entryAddress: clearEntryAddress
+          ? null
+          : entryAddress ?? this.entryAddress,
+      entryServerId: clearEntryAddress
+          ? null
+          : entryServerId ?? this.entryServerId,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,
@@ -72,6 +93,8 @@ class Server {
         'address': address,
         'displayAddress': displayAddress,
         'candidateAddresses': candidateAddresses,
+        'entryAddress': entryAddress,
+        'entryServerId': entryServerId,
         'version': version,
         'serverType': serverType.name,
         'loginDisclaimer': loginDisclaimer,
@@ -90,6 +113,8 @@ class Server {
       candidateAddresses:
           (json['candidateAddresses'] as List?)?.whereType<String>().toList() ??
               const [],
+      entryAddress: json['entryAddress'] as String?,
+      entryServerId: json['entryServerId'] as String?,
       version: json['version'] as String? ?? '',
       serverType: ServerType.values.firstWhere(
         (t) => t.name == json['serverType'],

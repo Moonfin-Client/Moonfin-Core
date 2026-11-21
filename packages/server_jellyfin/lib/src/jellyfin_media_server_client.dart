@@ -156,10 +156,10 @@ class JellyfinMediaServerClient extends MediaServerClient {
   late final ItemsApi itemsApi = JellyfinItemsApi(_dio, _requireUserId);
 
   @override
-  late final PlaybackApi playbackApi = JellyfinPlaybackApi(_dio, _baseUrl);
+  late final PlaybackApi playbackApi = JellyfinPlaybackApi(_dio, () => _baseUrl);
 
   @override
-  late final ImageApi imageApi = JellyfinImageApi(_baseUrl);
+  late final ImageApi imageApi = JellyfinImageApi(() => _baseUrl);
 
   @override
   late final SessionApi sessionApi = JellyfinSessionApi(_dio);
