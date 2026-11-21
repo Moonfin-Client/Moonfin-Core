@@ -4,4 +4,6 @@ String osVersionRaw() => '';
 
 String? linuxFlatpakAppId() => null;
 
+bool linuxIsSnap() => false;
+
 String? cpuArchitecture() => null;

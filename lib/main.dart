@@ -866,6 +866,7 @@ Future<void> autoDownloadBackgroundMain() =>
 
 void main() async {
   if (PlatformDetection.isFlatpak) installFlatpakPortals();
+  if (PlatformDetection.isSnap) installSnapPortals();
   configureHttpOverrides();
   ScrollSensitivityBinding.ensureInitialized();
   MacosTouchInput.install();

@@ -1287,30 +1287,49 @@ build_snap() {
 name: moonfin
 title: Moonfin
 version: '${version}'
-summary: Jellyfin & Emby media client
+summary: Jellyfin, Emby, Plex and Silo media client
 description: |
-  Moonfin is a media client for Jellyfin and Emby servers.
-  Stream movies, TV shows, music, and photos from your server.
+  Moonfin is a media client for Jellyfin, Emby, Plex and Silo servers.
+  Stream movies, TV shows, music and live TV from your server, and watch
+  together with Watch Parties.
 
 grade: stable
 confinement: strict
 base: ${snap_base}
 icon: ${APP_ID}.png
 
+# Moonfin stays a single instance by owning its app ID on the session bus,
+# which is how a moonfin:// link reaches the window that's already open.
+slots:
+  moonfin-dbus:
+    interface: dbus
+    bus: session
+    name: ${APP_ID}
+  mpris:
+    interface: mpris
+
 apps:
   moonfin:
     command: moonfin
+    # Staged GTK and WebKitGTK look for their files under /usr, so they come
+    # from the GNOME runtime instead, along with the GL drivers.
+    extensions: [gnome]
     plugs:
       - home
       - network
       - network-bind
-      - opengl
-      - pulseaudio
+      # The portal only reports network status to snaps that plug this, and
+      # both WebKit and Moonfin's connectivity checks ask the portal.
+      - network-status
+      - audio-playback
+      - password-manager-service
+    slots:
+      - moonfin-dbus
+      - mpris
     environment:
-      # libpulse looks for libpulsecommon under an absolute path that
-      # confinement points at the base snap, which carries no audio libraries,
-      # so the copy packed in here has to be named on the search path.
-      LD_LIBRARY_PATH: \$SNAP/lib:\$SNAP/lib/${snap_triplet}:\$SNAP/usr/lib/${snap_triplet}:\$SNAP/usr/lib/${snap_triplet}/pulseaudio
+      # FFmpeg's speech filter needs BLAS and LAPACK, which Ubuntu finds through
+      # alternatives links that a snap doesn't have.
+      LD_LIBRARY_PATH: \$LD_LIBRARY_PATH:\$SNAP/gnome-platform/usr/lib/${snap_triplet}/blas:\$SNAP/gnome-platform/usr/lib/${snap_triplet}/lapack
 
 parts:
   moonfin:
@@ -1321,12 +1340,16 @@ parts:
       mkdir -p \$SNAPCRAFT_PART_INSTALL/lib
       cp -r ${BUILD_DIR}/* \$SNAPCRAFT_PART_INSTALL/
     stage-packages:
-      - libgtk-3-0
-      - libglib2.0-0
-      - libx11-6
       - ${snap_mpv_package}
-      - libsecret-1-0
-      - libwebkit2gtk-4.1-0
+
+  # libmpv's packages bring older copies of libraries the GNOME runtime already
+  # ships, like librsvg, and those would load ahead of the runtime's.
+  cleanup:
+    after: [moonfin]
+    plugin: nil
+    override-prime: |
+      cd "\${SNAPCRAFT_GNOME_SDK%-sdk/current/}/current"
+      find . ! -type d -print0 | (cd "\$CRAFT_PRIME" && xargs -0 rm -f)
 EOF
 
   cp -r "$BUILD_DIR"/* "$snap_dir/"
@@ -1342,12 +1365,28 @@ Name=Moonfin
 Exec=moonfin %U
 Icon=\${SNAP}/meta/gui/icon.png
 Categories=AudioVideo;Video;
-Comment=Jellyfin & Emby media client
+Comment=Jellyfin, Emby, Plex and Silo media client
 Terminal=false
 MimeType=x-scheme-handler/moonfin;
+StartupWMClass=${APP_ID}
 EOF
 
   cd "$snap_dir"
+
+  # snapcraft can't install the GNOME extension's build snaps without root, so
+  # they're installed here like the base snap.
+  local extension_snap
+  for extension_snap in $(snapcraft expand-extensions 2>/dev/null \
+      | sed -nE 's/^ *default-provider: *([a-z0-9-]+).*/\1/p; /^ *build-snaps:/,/^ *[a-z-]+:/ s/^ *- *([a-z0-9-]+) *$/\1/p' \
+      | sort -u); do
+    if ! snap list "$extension_snap" >/dev/null 2>&1; then
+      if ! retry_with_backoff 3 sudo snap install "$extension_snap"; then
+        echo "Failed to install $extension_snap after retries."
+        return 1
+      fi
+    fi
+  done
+
   if ! retry_with_backoff 3 snapcraft pack --destructive-mode; then
     echo "Snap build failed after retries"
     return 1

@@ -21,6 +21,14 @@ String? linuxFlatpakAppId() {
   return id;
 }
 
+/// Whether this binary is the snap's own. A native build started from a snap's
+/// terminal inherits SNAP but runs from somewhere else.
+bool linuxIsSnap() {
+  final snap = Platform.environment['SNAP'];
+  if (snap == null || snap.isEmpty) return false;
+  return Platform.resolvedExecutable.startsWith('$snap/');
+}
+
 /// The CPU architecture this build targets, like x64 or arm64. On Windows it
 /// also names the PC's own when they differ, since an x64 build on an ARM PC
 /// runs emulated and nothing else in a report shows that.
