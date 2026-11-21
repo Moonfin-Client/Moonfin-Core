@@ -824,7 +824,6 @@ class PlaybackManager implements AudioOwnable {
         !_reconnecting) {
       final intent = _viewerIntentGeneration;
       final item = queueService.currentItem;
-      final before = backend.position;
       // Whether the viewer is still on the stream this move was heard for.
       bool sameStream() =>
           intent == _viewerIntentGeneration &&
@@ -837,11 +836,12 @@ class PlaybackManager implements AudioOwnable {
       if (rebased) {
         _diagnosticLogger?.call('Server moved, loading on from its new address');
         _rebaseCheck?.cancel();
+        _rebaseFrom = backend.position;
         _rebaseCheck = Timer(_rebaseGrace, () {
           _rebaseCheck = null;
           if (!sameStream() || _viewerPaused) return;
           if (!hasReconnectableStream || _reconnecting) return;
-          if (_isActuallyPlaying && backend.position > before) return;
+          if (_isActuallyPlaying && backend.position > _rebaseFrom) return;
           _reconnectNow();
         });
         return;
@@ -857,6 +857,10 @@ class PlaybackManager implements AudioOwnable {
 
   static const _rebaseGrace = Duration(seconds: 8);
   Timer? _rebaseCheck;
+
+  /// Where playback has to move on from for the rebase to count as working:
+  /// the position at the move, or the target of a seek made since.
+  Duration _rebaseFrom = Duration.zero;
 
   void _reconnectNow() {
     _reconnectRetry?.cancel();
@@ -4631,6 +4635,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> seekTo(Duration position) async {
+    if (_rebaseCheck != null) _rebaseFrom = position;
     if (await _maybeIntercept(TransportAction.seek, position: position)) return;
     _lastKnownPosition = position;
     // While one is being served the stream is being replaced, so a new seek

@@ -1045,6 +1045,26 @@ void main() {
       });
     });
 
+    test('a seek back after a move doesn\'t read as a stall', () {
+      final resolver = _Resolver();
+      final backend = _RebaseBackend();
+      _withPlayback(resolver, player: backend, (async, manager, _, service) {
+        backend.rebaseGate = Completer<bool>();
+        unawaited(manager.onServerMoved(from: from, to: to));
+        async.flushMicrotasks();
+        backend.rebaseGate.complete(true);
+        async.flushMicrotasks();
+
+        unawaited(manager.seekTo(const Duration(minutes: 10)));
+        async.flushMicrotasks();
+        backend.emitPlaying(true);
+        backend.emitPosition(const Duration(minutes: 10, seconds: 5));
+        async.elapse(const Duration(seconds: 9));
+
+        expect(manager.isReconnecting, isFalse);
+      });
+    });
+
     test('a refused move reopens nothing once the queue moved on', () {
       final resolver = _Resolver();
       fakeAsync((async) {

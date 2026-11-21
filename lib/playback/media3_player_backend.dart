@@ -243,8 +243,9 @@ class Media3PlayerBackend extends PlayerBackend
   bool? get playWhenReady => _playWhenReady;
 
   /// The native side answers how many loads it cut once it redirected the
-  /// stream (0 is a success), and -1 when it redirected nothing: no stream,
-  /// an address it can't read, no change, or a changed base path.
+  /// stream (0 is a success), -1 when it redirected nothing: no stream, an
+  /// address it can't read, no change, or a changed base path, and -2 when a
+  /// load was still connecting to the old address and only a reopen helps.
   @override
   Future<bool> rebaseServer(String from, String to) async {
     final cut = await _invoke<int>('rebaseServer', {'from': from, 'to': to});

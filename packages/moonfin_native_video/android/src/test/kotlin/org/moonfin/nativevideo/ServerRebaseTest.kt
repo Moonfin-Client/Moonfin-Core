@@ -8,10 +8,15 @@ import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 @OptIn(UnstableApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -137,6 +142,51 @@ class ServerRebaseTest {
             onOld.close()
             onOtherPath.close()
             otherPlayer.close()
+        }
+    }
+
+    /** A delegate whose open blocks until released, like a connect to an address that went quiet. */
+    private class Blocking : DataSource {
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+
+        override fun addTransferListener(transferListener: TransferListener) {}
+
+        override fun open(dataSpec: DataSpec): Long {
+            entered.countDown()
+            release.await(5, TimeUnit.SECONDS)
+            return 0
+        }
+
+        override fun read(buffer: ByteArray, offset: Int, length: Int): Int = -1
+
+        override fun getUri(): Uri? = null
+
+        override fun close() {}
+    }
+
+    @Test
+    fun `a load still connecting is not counted as cut and fails once it opens`() {
+        val scope = ServerRebase.Scope()
+        val delegate = Blocking()
+        val load = RebasingDataSource(delegate, scope)
+        var failure: Throwable? = null
+        val loader = thread {
+            try {
+                load.open(DataSpec(Uri.parse("http://h:1000/a/Videos/1")))
+            } catch (t: Throwable) {
+                failure = t
+            }
+        }
+        try {
+            assertTrue(delegate.entered.await(5, TimeUnit.SECONDS))
+            assertEquals(ServerRebase.STUCK, scope.rebase("http://h:1000/a", "http://h:2000/a", source))
+            delegate.release.countDown()
+            loader.join(5000)
+            assertTrue(failure is IOException)
+        } finally {
+            delegate.release.countDown()
+            load.close()
         }
     }
 }

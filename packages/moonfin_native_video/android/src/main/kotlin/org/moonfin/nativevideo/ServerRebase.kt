@@ -53,6 +53,9 @@ object ServerRebase {
      * (see [sourceSet]), and so do a stop and a release ([clear]). Another
      * player, or another server behind the same origin, never sees them.
      */
+    /** [Scope.rebase]: the mapping is in, but a load still connecting couldn't be cut. */
+    const val STUCK = -2
+
     class Scope {
         /** Each old address with where it leads now, longest path first. Replaced whole on change. */
         @Volatile private var moves: List<Pair<Base, Base>> = emptyList()
@@ -66,6 +69,9 @@ object ServerRebase {
          * mapping: an address that isn't http(s), no source, no change, or a
          * changed base path (the stream then has to be reopened from the new
          * address; only a move of host or port keeps the request paths).
+         * Returns [STUCK] when the mapping is in but a load on [from] was
+         * still connecting: closing it can't interrupt that, so it could sit
+         * on the old address until its timeout and the stream is reopened.
          */
         @Synchronized
         fun rebase(from: String, to: String, source: String?): Int {
@@ -83,13 +89,13 @@ object ServerRebase {
                     (old to new)
                 ).sortedByDescending { it.first.path.length }
             var cut = 0
+            var stuck = false
             for (load in open.toList()) {
                 if (load.scope === this && load.isOn(old)) {
-                    load.abort()
-                    cut++
+                    if (load.abort()) cut++ else stuck = true
                 }
             }
-            return cut
+            return if (stuck) STUCK else cut
         }
 
         /** [url] at the address its server moved to, or null when it didn't move. */
@@ -234,6 +240,7 @@ class RebasingDataSource(
 ) : DataSource {
     @Volatile private var address: ServerRebase.Address? = null
     @Volatile private var aborted = false
+    @Volatile private var connecting = false
     @Volatile private var waitingSince = 0L
     @Volatile private var stallReported = false
 
@@ -250,26 +257,43 @@ class RebasingDataSource(
     /**
      * Closes the connection from another thread so a read blocked on a server
      * that went quiet returns now. Whatever that throws on the loading thread
-     * reaches the loader as a plain IOException, which it retries.
+     * reaches the loader as a plain IOException, which it retries. False when
+     * it was still connecting: the delegate has no connection to close yet,
+     * so nothing returns early (the open fails once it comes back).
      */
-    internal fun abort() {
+    internal fun abort(): Boolean {
         aborted = true
+        val cut = !connecting
         try {
             delegate.close()
         } catch (_: Throwable) {
         }
+        return cut
     }
 
     override fun addTransferListener(transferListener: TransferListener) =
         delegate.addTransferListener(transferListener)
 
     override fun open(dataSpec: DataSpec): Long {
-        aborted = false
-        val moved = scope.rewrite(dataSpec.uri.toString())
-        val spec = if (moved == null) dataSpec else dataSpec.withUri(Uri.parse(moved))
-        address = ServerRebase.addressOf(spec.uri.toString())
-        ServerRebase.opened(this)
-        return guarded { delegate.open(spec) }
+        // Under the scope's lock, which its rebase holds: a move lands either
+        // before the rewrite or after this load is registered and can be cut.
+        val spec = synchronized(scope) {
+            aborted = false
+            connecting = true
+            val moved = scope.rewrite(dataSpec.uri.toString())
+            val spec = if (moved == null) dataSpec else dataSpec.withUri(Uri.parse(moved))
+            address = ServerRebase.addressOf(spec.uri.toString())
+            ServerRebase.opened(this)
+            spec
+        }
+        try {
+            val length = guarded { delegate.open(spec) }
+            // Moved while connecting: what it opened is the old address.
+            if (aborted) throw IOException("Server moved, asking its new address")
+            return length
+        } finally {
+            connecting = false
+        }
     }
 
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
