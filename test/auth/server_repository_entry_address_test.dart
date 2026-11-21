@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,8 +14,14 @@ class _AuthStore extends Fake implements AuthenticationStore {
   final removed = <String>[];
   var failPuts = false;
 
+  /// When set, the next save waits for it.
+  Completer<void>? hold;
+
   @override
   Future<void> putServer(Server server) async {
+    final waitFor = hold;
+    hold = null;
+    if (waitFor != null) await waitFor.future;
     if (failPuts) throw StateError('disk full');
     saved.add(server);
   }
@@ -23,9 +30,18 @@ class _AuthStore extends Fake implements AuthenticationStore {
   Future<void> removeServer(String serverId) async => removed.add(serverId);
 }
 
-class _ClientFactory extends Fake implements MediaServerClientFactory {
+class _Client extends Fake implements MediaServerClient {
+  _Client(this.baseUrl);
+
   @override
-  MediaServerClient? getClientIfExists(String serverId) => null;
+  String baseUrl;
+}
+
+class _ClientFactory extends Fake implements MediaServerClientFactory {
+  final byId = <String, _Client>{};
+
+  @override
+  MediaServerClient? getClientIfExists(String serverId) => byId[serverId];
 
   @override
   void removeClient(String serverId) {}
@@ -37,12 +53,14 @@ void main() {
   late HttpServer entry;
   late HttpServer target;
   late _AuthStore store;
+  late _ClientFactory clients;
   late ServerRepository repo;
   var targetId = 'abc';
 
   setUp(() async {
     store = _AuthStore();
-    repo = ServerRepository(store, _ClientFactory());
+    clients = _ClientFactory();
+    repo = ServerRepository(store, clients);
     targetId = 'abc';
     target = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     target.listen((request) async {
@@ -205,6 +223,52 @@ void main() {
       ),
       targetUrl(),
     );
+  });
+
+  test('two saved servers at one address get no server for a request',
+      () async {
+    await repo.saveServer(saved());
+    // Another server now sits where server-1 still has saved.
+    await repo.saveServer(
+      Server(
+        id: 'server-2',
+        name: 'Other',
+        address: 'http://127.0.0.1:1',
+        version: '10.11.0',
+        serverType: ServerType.jellyfin,
+        dateAdded: DateTime(2026),
+      ),
+    );
+
+    expect(repo.serverIdAt('http://127.0.0.1:1'), isNull);
+    // So a failed request there goes nowhere, whoever's token it carries.
+    expect(await repo.followMovedAddress('http://127.0.0.1:1'), isNull);
+  });
+
+  test('a slow save never puts an older address back', () async {
+    await repo.saveServer(saved());
+    clients.byId['server-1'] = _Client('http://127.0.0.1:1');
+    store.saved.clear();
+
+    // The move to the redirect target is held while it saves...
+    final release = store.hold = Completer<void>();
+    final following = repo.withFollowedEntryAddress(
+      repo.getServer('server-1')!,
+    );
+    while (store.hold != null) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    // ...and a later update comes in meanwhile.
+    final later = repo.updateServer(
+      repo.getServer('server-1')!.copyWith(address: 'http://127.0.0.1:3'),
+    );
+    release.complete();
+    await following;
+    await later;
+
+    expect(store.saved.last.address, 'http://127.0.0.1:3');
+    expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:3');
+    expect(clients.byId['server-1']!.baseUrl, 'http://127.0.0.1:3');
   });
 
   test('an HTTP entry never moves a server off its HTTPS address', () async {

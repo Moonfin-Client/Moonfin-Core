@@ -374,14 +374,16 @@ class ServerRepository {
 
   /// For [ServerMoved.serverAt]: the saved server a request to [baseUrl] is
   /// for, taken when it starts, so a move can only send it to that server.
+  ///
+  /// When more than one saved server is at [baseUrl], the address alone
+  /// can't tell whose request it is, so it gets none and is never sent
+  /// elsewhere: following it could hand one server's token to another.
   String? serverIdAt(String baseUrl) {
     final wanted = _withoutTrailingSlash(baseUrl);
-    final at = _servers.where(
-      (s) => _withoutTrailingSlash(s.address) == wanted,
-    );
-    return (at.where((s) => s.entryAddress != null).firstOrNull ??
-            at.firstOrNull)
-        ?.id;
+    final at = _servers
+        .where((s) => _withoutTrailingSlash(s.address) == wanted)
+        .toList();
+    return at.length == 1 ? at.single.id : null;
   }
 
   /// For [ServerMoved.canMove]: whether [baseUrl] is the address of a saved
@@ -431,7 +433,6 @@ class ServerRepository {
       }
       final moved = (current ?? server).copyWith(address: resolvedUrl);
       await updateServer(moved);
-      _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
       _movedController.add(ServerMove(from: server.address, server: moved));
       return moved;
     } catch (_) {
@@ -469,15 +470,29 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
-  /// Saves [server] and then replaces the one with its id in the list, so a
-  /// save that fails leaves the list as it was.
-  Future<void> updateServer(Server server) async {
-    await _authStore.putServer(server);
-    final index = _servers.indexWhere((s) => s.id == server.id);
-    if (index >= 0) {
+  /// Saves [server] and then replaces the one with its id in the list and
+  /// points its cached client at its address, so a save that fails leaves
+  /// both as they were.
+  ///
+  /// Updates run one after another in the order they were made: a slow save
+  /// can't finish after a later one and put an older address back on disk,
+  /// in the list or on the client.
+  Future<void> updateServer(Server server) {
+    final done = _updating.then((_) async {
+      await _authStore.putServer(server);
+      final index = _servers.indexWhere((s) => s.id == server.id);
+      if (index < 0) return;
       _servers[index] = server;
-    }
+      final client = _clientFactory.getClientIfExists(server.id);
+      if (client != null && client.baseUrl != server.address) {
+        client.baseUrl = server.address;
+      }
+    });
+    _updating = done.then((_) {}, onError: (_) {});
+    return done;
   }
+
+  Future<void> _updating = Future.value();
 
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);
