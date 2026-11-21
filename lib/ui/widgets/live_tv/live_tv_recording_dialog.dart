@@ -5,7 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/live_tv_recording_state.dart';
-import '../../../data/services/plex_free_tv_favorites.dart';
+import '../../../data/services/plex_live_tv_favorites.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/clock_format.dart';
