@@ -220,7 +220,7 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
     }
     if (oldWidget.channels.length != widget.channels.length) {
       _endHold();
-      _seedFromChannels(preferredChannelIndex: _centredChannelIndex);
+      _seedFromChannels();
       _reportEmptyIfNeeded();
     } else if ((oldWidget.initialIndex != widget.initialIndex ||
             oldWidget.selectionRevision != widget.selectionRevision) &&
@@ -239,7 +239,7 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
     super.dispose();
   }
 
-  void _seedFromChannels({int? preferredChannelIndex}) {
+  void _seedFromChannels() {
     if (_channelCount == 0) {
       _seedIndex = 0;
       _rawIndex = 0;
@@ -247,10 +247,7 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
       _scrollController = null;
       return;
     }
-    final start = (preferredChannelIndex ?? widget.initialIndex).clamp(
-      0,
-      _channelCount - 1,
-    );
+    final start = widget.initialIndex.clamp(0, _channelCount - 1);
     _seedIndex = _channelCount * _seedLineups;
     _rawIndex = _seedIndex + start;
     _rawIndexListenable.value = _rawIndex;

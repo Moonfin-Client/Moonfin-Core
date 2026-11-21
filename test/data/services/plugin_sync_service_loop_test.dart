@@ -24,6 +24,7 @@ class _RecordingAdapter implements HttpClientAdapter {
 
   /// Body returned for the Resolved endpoint, replaceable per test.
   Map<String, dynamic> resolvedProfile = {};
+  Map<String, dynamic>? lastPushedProfile;
 
   @override
   Future<ResponseBody> fetch(
@@ -104,6 +105,19 @@ void main() {
 
     adapter = _RecordingAdapter();
     final dio = Dio();
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (request, handler) {
+        if (request.method == 'POST' &&
+            request.path.contains('/Settings/Profile/') &&
+            request.data is Map) {
+          final profile = (request.data as Map)['profile'];
+          if (profile is Map) {
+            adapter.lastPushedProfile = Map<String, dynamic>.from(profile);
+          }
+        }
+        handler.next(request);
+      },
+    ));
     dio.httpClientAdapter = adapter;
     service = PluginSyncService(prefs, store, dio: dio);
 
@@ -125,6 +139,22 @@ void main() {
 
     expect(resolvedCount(), 1);
     expect(postCount(), 0, reason: 'the apply echoed back to the server');
+  });
+
+  test('saved guide shortcuts round-trip as intact string arrays', () async {
+    const saved = ['group:US | SPORTS, Canada', 'category:sports'];
+    await prefs.set(UserPreferences.liveTvSavedFilters, saved);
+    await service.pushSettingsForProfile(client, profile: 'desktop');
+    expect(adapter.lastPushedProfile?['liveTvSavedFilters'], saved);
+
+    const remote = ['group:News, English', 'category:movies'];
+    adapter.resolvedProfile = {'liveTvSavedFilters': remote};
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+    expect(prefs.get(UserPreferences.liveTvSavedFilters), remote);
+
+    adapter.resolvedProfile = {'liveTvSavedFilters': <String>[]};
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+    expect(prefs.get(UserPreferences.liveTvSavedFilters), isEmpty);
   });
 
   test('an unchanged payload is pushed once, a changed one again', () async {

@@ -10,6 +10,7 @@ import 'package:moonfin/auth/store/credential_store.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
 import 'package:moonfin/data/repositories/search_repository.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/search_view_model.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
@@ -18,6 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockItemsApi extends Mock implements ItemsApi {}
+
+class _MockLiveTvApi extends Mock implements LiveTvApi {}
 
 class _MockImageApi extends Mock implements ImageApi {}
 
@@ -33,6 +36,10 @@ void main() {
   late Map<String, _MockClient> clients;
   late Map<String, _MockItemsApi> itemsApis;
   late MultiServerRepository multiServer;
+  late _MockAuthStore authStore;
+  late _MockCredentialStore credentials;
+  late _MockClientFactory factory;
+  late List<Server> servers;
 
   Future<Map<String, dynamic>> itemsSearch(_MockItemsApi api) => api.getItems(
     searchTerm: any(named: 'searchTerm'),
@@ -52,27 +59,38 @@ void main() {
   };
 
   setUp(() async {
+    userDataSync.reset();
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
 
-    final authStore = _MockAuthStore();
-    final credentials = _MockCredentialStore();
-    final factory = _MockClientFactory();
+    authStore = _MockAuthStore();
+    credentials = _MockCredentialStore();
+    factory = _MockClientFactory();
     final session = _MockSessionRepository();
     clients = {};
     itemsApis = {};
-    final servers = <Server>[];
+    servers = <Server>[];
     for (final id in ['a', 'b']) {
       final client = _MockClient();
       final itemsApi = _MockItemsApi();
+      final liveTvApi = _MockLiveTvApi();
       clients[id] = client;
       itemsApis[id] = itemsApi;
       when(() => client.itemsApi).thenReturn(itemsApi);
       when(() => client.imageApi).thenReturn(_MockImageApi());
       when(() => client.gamesApi).thenReturn(null);
       when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      when(() => client.userId).thenReturn('user-$id');
+      when(() => client.liveTvApi).thenReturn(liveTvApi);
+      when(
+        () => liveTvApi.getChannels(
+          fields: 'ImageTags',
+          enableTotalRecordCount: false,
+          userId: 'user-$id',
+        ),
+      ).thenAnswer((_) async => {'Items': []});
       when(() => itemsApi.getPersons(
         searchTerm: any(named: 'searchTerm'),
         limit: any(named: 'limit'),
@@ -104,6 +122,7 @@ void main() {
           serverId: id,
           serverType: ServerType.jellyfin,
           baseUrl: 'http://$id',
+          cloudOnly: false,
         ),
       ).thenReturn(client);
       when(() => factory.getClientIfExists(id)).thenReturn(client);
@@ -119,7 +138,10 @@ void main() {
     );
   });
 
-  tearDown(() => GetIt.instance.reset());
+  tearDown(() async {
+    userDataSync.reset();
+    await GetIt.instance.reset();
+  });
 
   Future<SearchViewModel> search({
     MultiServerRepository? across,
@@ -203,6 +225,59 @@ void main() {
 
     expect(vm.state, SearchState.ready);
     expect(movieResults(vm), [('a1', 'a')]);
+  });
+
+  test('channel matches survive an outage of all library searches', () async {
+    for (final api in itemsApis.values) {
+      when(() => itemsSearch(api)).thenThrow(StateError('offline'));
+    }
+    final channelsApi = clients['a']!.liveTvApi;
+    when(() => channelsApi.getChannels(
+      fields: 'ImageTags',
+      enableTotalRecordCount: false,
+      userId: 'user-a',
+    )).thenAnswer((_) async => {
+      'Items': [{'Id': 'alien-channel', 'Type': 'TvChannel', 'Name': 'Alien News'}],
+    });
+
+    final vm = await search(across: multiServer);
+    expect(vm.state, SearchState.ready);
+    expect(vm.results.single.items.single.id, 'alien-channel');
+    expect(vm.results.single.items.single.name, 'Alien News');
+  });
+
+
+
+  test('channel favorites update existing and subsequent search results', () async {
+    when(() => itemsSearch(itemsApis['a']!)).thenAnswer(
+      (_) async => {'Items': <dynamic>[]},
+    );
+    final channelsApi = clients['a']!.liveTvApi;
+    when(() => channelsApi.getChannels(
+      fields: 'ImageTags',
+      enableTotalRecordCount: false,
+      userId: 'user-a',
+    )).thenAnswer((_) async => {
+      'Items': [
+        {
+          'Id': 'channel-plex-news',
+          'Type': 'TvChannel',
+          'Name': 'Alien News',
+          'UserData': {'IsFavorite': false},
+        },
+      ],
+    });
+
+    final vm = await search(query: 'Alien');
+    expect(vm.results.single.items.single.isFavorite, isFalse);
+    userDataSync.publish('channel-plex-news', {'IsFavorite': true});
+    expect(vm.results.single.items.single.isFavorite, isTrue);
+
+    vm.searchImmediate('News');
+    while (vm.state == SearchState.loading) {
+      await pumpEventQueue();
+    }
+    expect(vm.results.single.items.single.isFavorite, isTrue);
   });
 
   test('with multi-server search off only the active server is searched', () async {

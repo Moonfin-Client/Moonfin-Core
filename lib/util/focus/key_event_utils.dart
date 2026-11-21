@@ -108,6 +108,61 @@ KeyEventResult consumeIfEdge(
   return KeyEventResult.ignored;
 }
 
+const _remoteHoldDuration = Duration(milliseconds: 500);
+
+/// A guide gesture can move focus or remove its own row before key-up. Capture
+/// repeats and release for this physical key until the original press ends.
+class FocusedKeyHold {
+  PhysicalKeyboardKey? _key;
+  Timer? _timer;
+  VoidCallback? _tap;
+
+  /// [onPress] runs immediately. [onTap] runs on release unless the hold
+  /// triggers [onHold] instead. [stillFocused] guards callbacks.
+  KeyEventResult start(
+    KeyEvent event, {
+    required bool Function() stillFocused,
+    VoidCallback? onPress,
+    VoidCallback? onTap,
+    required VoidCallback onHold,
+  }) {
+    assert((onPress == null) != (onTap == null));
+    if (event.synthesized) return KeyEventResult.handled;
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    dispose();
+    _key = event.physicalKey;
+    if (onTap != null) {
+      _tap = () {
+        if (stillFocused()) onTap();
+      };
+    }
+    _timer = Timer(_remoteHoldDuration, () {
+      _tap = null;
+      if (stillFocused()) onHold();
+    });
+    FocusManager.instance.addEarlyKeyEventHandler(_finish);
+    onPress?.call();
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _finish(KeyEvent event) {
+    if (event.physicalKey != _key) return KeyEventResult.ignored;
+    if (event is KeyRepeatEvent) return KeyEventResult.handled;
+    final tap = _tap;
+    dispose();
+    if (event is! KeyUpEvent) return KeyEventResult.ignored;
+    if (!event.synthesized) tap?.call();
+    return KeyEventResult.handled;
+  }
+
+  void dispose() {
+    if (_key != null) FocusManager.instance.removeEarlyKeyEventHandler(_finish);
+    _key = null;
+    _timer?.cancel();
+    _tap = null;
+  }
+}
+
 class LongPressSelectKeyHandler {
   bool _selectDownSeen = false;
   bool _longPressFired = false;
@@ -129,7 +184,7 @@ class LongPressSelectKeyHandler {
         _selectDownSeen = true;
         _longPressFired = false;
         _longPressTimer?.cancel();
-        _longPressTimer = Timer(const Duration(milliseconds: 500), () {
+        _longPressTimer = Timer(_remoteHoldDuration, () {
           _longPressFired = true;
           onLongPress();
         });

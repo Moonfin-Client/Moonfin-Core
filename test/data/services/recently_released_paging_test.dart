@@ -34,6 +34,7 @@ void main() {
       },
     );
     client = _MockClient();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.itemsApi).thenReturn(items);
     when(() => client.userViewsApi).thenReturn(views);
   });

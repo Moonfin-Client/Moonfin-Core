@@ -11,6 +11,7 @@ import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/live_tv/live_tv_recording_dialog.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_plex/server_plex.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockLiveTvApi extends Mock implements LiveTvApi {}
@@ -25,6 +26,43 @@ void main() {
   });
 
   tearDown(() => GetIt.instance.reset());
+
+  test('Plex Free TV cannot record through cloud or PMS players', () {
+    const device = DeviceInfo(
+      id: 'test',
+      name: 'Test',
+      appName: 'Moonfin',
+      appVersion: '1',
+    );
+    final cloud = PlexMediaServerClient(
+      baseUrl: 'https://plex.tv',
+      deviceInfo: device,
+      cloudOnly: true,
+    );
+    final pms = PlexMediaServerClient(
+      baseUrl: 'https://pms.example',
+      deviceInfo: device,
+    );
+    addTearDown(cloud.dispose);
+    addTearDown(pms.dispose);
+
+    final now = DateTime.now();
+    GuideProgram program(String channelId) => GuideProgram(
+      id: 'airing',
+      channelId: channelId,
+      name: 'Now',
+      startDate: now.subtract(const Duration(minutes: 5)),
+      endDate: now.add(const Duration(minutes: 30)),
+      rawData: const {},
+    );
+
+    const free = 'channel-plex-free123';
+    const dvr = 'channel-2-4';
+    expect(canRecordChannelAiring(cloud, free, program(free)), isFalse);
+    expect(canRecordChannelAiring(pms, free, program(free)), isFalse);
+    expect(canRecordChannelAiring(pms, dvr, program(dvr)), isTrue);
+    expect(canRecordChannelAiring(pms, dvr, null), isFalse);
+  });
 
   group('current program recording state', () {
     const program = {'Id': 'program-1', 'TimerId': 'timer-1'};

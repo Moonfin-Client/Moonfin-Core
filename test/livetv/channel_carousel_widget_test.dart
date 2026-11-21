@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
+import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel_card.dart';
@@ -13,35 +16,35 @@ import 'package:moonfin/util/tv_ui_scale.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
-class _CarouselClient extends Mock implements MediaServerClient {}
+class _CarouselClient extends Mock implements MediaServerClient {
+  @override
+  ServerType get serverType => ServerType.jellyfin;
+}
 
 class _CarouselGuide extends LiveTvGuideViewModel {
-  final List<GuideChannel> lineup;
   final List<List<String>> requests = [];
   bool disposed = false;
   int schedules = 0;
   int refreshCalls = 0;
   int programLookups = 0;
   bool ready = false;
+  bool failTopUp = false;
+  final Set<String> failedChannels = {};
   bool get listening => hasListeners;
   String titleSuffix = '';
+
 
   void changeProgram() {
     titleSuffix = ' updated';
     notifyListeners();
   }
 
-  _CarouselGuide(super.client, this.lineup);
-
-  @override
-  List<GuideChannel> get filteredChannels => lineup;
+  _CarouselGuide(super.client, List<GuideChannel> lineup) {
+    usePlaybackLineup(lineup);
+  }
 
   @override
   GuideState get state => ready ? GuideState.ready : GuideState.loading;
-
-  @override
-  GuideChannel? channelForId(String channelId) =>
-      lineup.where((channel) => channel.id == channelId).firstOrNull;
 
   @override
   List<GuideProgram> unfilteredProgramsForChannel(String channelId) {
@@ -69,14 +72,22 @@ class _CarouselGuide extends LiveTvGuideViewModel {
   }) async {
     _loadedRevision = liveTvRecordingRevision.value;
     duringLoad?.call();
+    if (initialLoadGate != null) await initialLoadGate!.future;
     ready = true;
     requests.add(initialChannelIds!);
     notifyListeners();
   }
 
   @override
+  GuideChannelLoadState loadStateFor(String channelId) =>
+      failedChannels.contains(channelId)
+          ? GuideChannelLoadState.failed
+          : GuideChannelLoadState.loading;
+
+  @override
   Future<void> ensureProgramsForChannels(List<String> channelIds) async {
     requests.add(channelIds);
+    if (failTopUp) throw StateError('HTTP 403 during optional top-up');
   }
 
   @override
@@ -87,6 +98,7 @@ class _CarouselGuide extends LiveTvGuideViewModel {
 
   /// Runs inside [load] before the guide turns ready.
   void Function()? duringLoad;
+  Completer<void>? initialLoadGate;
   int recordingCatchUps = 0;
   int _loadedRevision = 0;
 
@@ -222,6 +234,7 @@ void main() {
     final vm = _CarouselGuide(client, channels);
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.buildTheme(ThemeRegistry.active),
         home: Scaffold(
           body: ChannelCarouselOverlay(
@@ -241,6 +254,7 @@ void main() {
     await tester.pump();
     return vm;
   }
+
 
   testWidgets('open carousel cards follow favorite changes', (tester) async {
     userDataSync.reset();
@@ -369,37 +383,110 @@ void main() {
     expect(vm.listening, isFalse);
   });
 
-  testWidgets('prewarm loads every carousel channel and arms its boundary', (
+  testWidgets('a failed cold-open top-up does not hide the channel strip', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final client = _CarouselClient();
+    final channels = [
+      for (var i = 0; i < 6; i++)
+        GuideChannel(
+          id: 'ch$i',
+          name: 'Channel $i',
+          rawData: const {},
+        ),
+    ];
+    final vm = _CarouselGuide(client, channels)..failTopUp = true;
+    final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
+    try {
+      prewarm.tuned(channels, 'ch3');
+      await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.buildTheme(ThemeRegistry.active),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: Scaffold(
+          body: ChannelCarouselOverlay(
+            client: client,
+            channels: channels,
+            currentChannelId: 'ch3',
+            prewarm: prewarm,
+            onChannelSelected: (_) {},
+            onDismiss: () {},
+            onShowControls: () {},
+          ),
+        ),
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(vm.ready, isTrue);
+      expect(vm.requests.length, greaterThan(1));
+      expect(find.byType(ChannelCarouselCard), findsWidgets);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      prewarm.dispose();
+    }
+  });
+
+
+  testWidgets('carousel retries the currently browsed, not tuned, channels', (
     tester,
   ) async {
     final client = _CarouselClient();
-    final channels = List.generate(
-      12,
-      (i) => GuideChannel(
-        id: 'ch$i',
-        name: 'Channel $i',
-        number: '${i + 1}',
-        rawData: const {},
-      ),
-    );
-    final vm = _CarouselGuide(client, channels);
-    final now = DateTime(2026, 9, 13, 18);
-    final prewarm = ChannelCarouselPrewarm(
-      client,
-      viewModelFactory: (_) => vm,
-      hourlyRefreshInterval: const Duration(seconds: 2),
-      now: () => now,
-    );
-    prewarm.tuned(channels, 'ch6');
-    await tester.pump(ChannelCarouselPrewarm.settleDelay);
-    await tester.pump();
-
-    expect(vm.requests, hasLength(1));
-    expect(vm.requests.single, channels.map((channel) => channel.id));
-    expect(vm.schedules, greaterThanOrEqualTo(1));
-    expect(prewarm.hourlyDueAt, now.add(const Duration(seconds: 2)));
-    prewarm.dispose();
+    final channels = [
+      for (var i = 0; i < 20; i++)
+        GuideChannel(id: 'ch$i', name: 'Channel $i', rawData: const {}),
+    ];
+    final vm = _CarouselGuide(client, channels)
+      ..failedChannels.addAll(['ch10', 'ch14']);
+    final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
+    try {
+      prewarm.tuned(channels, 'ch0');
+      await tester.pump(ChannelCarouselPrewarm.settleDelay);
+      await tester.pump();
+      await prewarm.ensureVisibleChannels(['ch10']);
+      await tester.pump(const Duration(seconds: 2));
+      // Browsing again replaces the pending retry for the previous card.
+      await prewarm.ensureVisibleChannels(['ch14']);
+      await tester.pump(ChannelCarouselPrewarm.failedListingsRetryDelay);
+      await tester.pump();
+      expect(vm.requests.last, ['ch14']);
+      expect(vm.requests.where((ids) =>
+          ids.length == 1 && ids.single == 'ch10'), isEmpty);
+    } finally {
+      prewarm.dispose();
+    }
   });
+
+  testWidgets('failed-channel retry is armed even when top-up throws', (
+    tester,
+  ) async {
+    final client = _CarouselClient();
+    final channels = [
+      for (var i = 0; i < 4; i++)
+        GuideChannel(id: 'ch$i', name: 'Channel $i', rawData: const {}),
+    ];
+    final vm = _CarouselGuide(client, channels)
+      ..failedChannels.add('ch1');
+    final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
+    try {
+      prewarm.tuned(channels, 'ch1');
+      await tester.pump(ChannelCarouselPrewarm.settleDelay);
+      await tester.pump();
+      vm.failTopUp = true;
+      await expectLater(
+        prewarm.ensureVisibleChannels(['ch1', 'ch2']),
+        throwsA(isA<StateError>()),
+      );
+      vm.failTopUp = false;
+      await tester.pump(ChannelCarouselPrewarm.failedListingsRetryDelay);
+      await tester.pump();
+      expect(vm.requests.last, ['ch1']);
+    } finally {
+      prewarm.dispose();
+    }
+  });
+
+
 
   testWidgets('prewarm catches up on a recording changed during its first load', (
     tester,
@@ -492,7 +579,10 @@ void main() {
       await tester.pump();
 
       expect(vm.requests, hasLength(2));
-      expect(vm.requests.last, channels.map((channel) => channel.id));
+      expect(
+        vm.requests.last,
+        unorderedEquals(channels.map((channel) => channel.id)),
+      );
       expect(vm.refreshCalls, 0);
       prewarm.dispose();
     },

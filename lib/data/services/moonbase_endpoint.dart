@@ -39,7 +39,10 @@ Future<MoonbaseEndpoint?> moonbaseEndpoint(
   MediaServerClient client,
   Dio dio,
 ) async {
-  if (!client.features.supportsMoonfinPlugin) return null;
+  if (isCloudOnlyPlexClient(client) ||
+      !client.features.supportsMoonfinPlugin) {
+    return null;
+  }
   if (client.serverType == ServerType.plex) {
     return _plexEndpoint(
       server: client.baseUrl,
@@ -100,7 +103,7 @@ Future<MoonbaseEndpoint?> moonbaseEndpoint(
 /// Silo a server that couldn't be reached doesn't count. On Plex it does,
 /// since most Plex servers have no companion.
 bool moonbaseKnownMissing(MediaServerClient client) =>
-    _knownMissing(client.baseUrl);
+    isCloudOnlyPlexClient(client) || _knownMissing(client.baseUrl);
 
 bool _knownMissing(String server) {
   final missingAt = _missingAt[server];
@@ -138,6 +141,9 @@ Future<MoonbaseEndpoint?> _plexEndpoint({
   required String? token,
   required Dio dio,
 }) async {
+  // plex.tv is an account service, never a Plex Media Server host. Do not
+  // send account tokens to a guessed HTTP companion on port 32500.
+  if (Uri.tryParse(server)?.host.toLowerCase() == 'plex.tv') return null;
   if (token == null || token.isEmpty) return null;
   final headers = {'X-Plex-Token': token};
   final typed = pref != null && GetIt.instance.isRegistered<UserPreferences>()
@@ -172,6 +178,7 @@ Future<MoonbaseEndpoint?> _plexEndpoint({
 /// other servers and before the app has a client factory.
 Preference<String>? plexMoonbasePreference(MediaServerClient client) {
   if (client.serverType != ServerType.plex ||
+      isCloudOnlyPlexClient(client) ||
       !GetIt.instance.isRegistered<MediaServerClientFactory>()) {
     return null;
   }
@@ -183,7 +190,7 @@ Preference<String>? plexMoonbasePreference(MediaServerClient client) {
 /// `http://<Plex host>:32500`, with a plex.direct name turned back into the
 /// address it spells, since the companion has no plex.direct certificate.
 String? plexMoonbaseDefault(MediaServerClient client) =>
-    _plexDefaultAt(client.baseUrl);
+    isCloudOnlyPlexClient(client) ? null : _plexDefaultAt(client.baseUrl);
 
 String? _plexDefaultAt(String serverUrl) {
   final host = Uri.tryParse(serverUrl)?.host ?? '';

@@ -39,6 +39,9 @@ enum SyncCodec {
 
   /// A local comma separated String, carried as a JSON array.
   csvList,
+
+  /// Keep group names intact, including commas, when syncing the list.
+  stringList,
 }
 
 /// One synced setting.
@@ -316,6 +319,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('bookLibraryStyle', UserPreferences.bookLibraryStyle, SyncCodec.enumName, enumValues: prefs.BookLibraryStyle.values),
   SyncedField('musicLibraryStyle', UserPreferences.musicLibraryStyle, SyncCodec.enumName, enumValues: prefs.MusicLibraryStyle.values),
   SyncedField('liveTvChannelSortBy', UserPreferences.liveTvChannelSortBy, SyncCodec.enumName, enumValues: prefs.ChannelSortBy.values),
+  SyncedField('liveTvCategoryDisplay', UserPreferences.liveTvCategoryDisplay, SyncCodec.enumName, enumValues: prefs.LiveTvCategoryDisplay.values),
+  SyncedField('liveTvSavedFilters', UserPreferences.liveTvSavedFilters, SyncCodec.stringList),
   SyncedField('liveTvDirectPlayEnabled', UserPreferences.liveTvDirectPlayEnabled, SyncCodec.boolean),
   SyncedField('loadingAnimationImage', UserPreferences.loadingAnimationImage, SyncCodec.enumName, enumValues: prefs.LoadingAnimationImage.values),
   SyncedField('loadingAnimationPosition', UserPreferences.loadingAnimationPosition, SyncCodec.enumName, enumValues: prefs.LoadingAnimationPosition.values),

@@ -201,6 +201,12 @@ class SessionRepository {
   bool get hasCheckedWriteAccess => _hasCheckedWriteAccess;
   set hasCheckedWriteAccess(bool value) => _hasCheckedWriteAccess = value;
 
+  /// Plex accounts must reauthenticate through plex.tv, not a server password.
+  String _reauthRoute(String serverId, String username) =>
+      _serverRepository.getServer(serverId)?.serverType == ServerType.plex
+      ? Destinations.plexSignIn
+      : '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(username)}';
+
   Future<bool> restoreSession() async {
     _setState(SessionState.restoring);
 
@@ -310,6 +316,7 @@ class SessionRepository {
       serverId: serverId,
       serverType: server.serverType,
       baseUrl: address,
+      cloudOnly: server.cloudOnly,
     );
     // A client kept from an earlier session still has the old address.
     if (address != server.address) client.baseUrl = address;
@@ -342,9 +349,7 @@ class SessionRepository {
           _activeServerId = serverId;
           _activeUserId = userId;
           await destroyCurrentSession(tokenKnownInvalid: true);
-          appRouter.go(
-            '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(user.name)}',
-          );
+          appRouter.go(_reauthRoute(serverId, user.name));
           return false;
         }
         // Anything else is the server being unreachable, and startup still
@@ -542,9 +547,7 @@ class SessionRepository {
       if (e.response?.statusCode == 401) {
         _logger.w('Access token expired or unauthorized. Logging out.');
         await destroyCurrentSession(tokenKnownInvalid: true);
-        appRouter.go(
-          '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(user.name)}',
-        );
+        appRouter.go(_reauthRoute(serverId, user.name));
         return false;
       }
     } catch (_) {}

@@ -19,6 +19,8 @@ import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/repositories/user_views_repository.dart';
 import '../../../data/utils/latest_media_row_normalizer.dart';
 import '../../../data/services/connectivity_service.dart';
+import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/plex_live_tv_favorites.dart';
 import '../../../data/services/home_row_cache_store.dart';
 import '../../../data/services/row_data_source.dart';
 import '../../../data/services/topshelf_service.dart';
@@ -81,8 +83,17 @@ class HomeViewModel extends ChangeNotifier {
     final base = _emptySectionIds.isEmpty
         ? _rows
         : _rows.where((row) => !_isEmptySectionPlaceholder(row)).toList();
+    // Hide cached Live TV rows in Kids Mode without changing the saved layout.
+    const liveTvRows = {
+      HomeRowType.liveTv,
+      HomeRowType.liveTvOnNow,
+      HomeRowType.liveTvFavorites,
+    };
+    final visible = _prefs.get(UserPreferences.kidsModeEnabled)
+        ? base.where((row) => !liveTvRows.contains(row.rowType)).toList()
+        : base;
     final party = _watchPartyRow;
-    return party == null ? base : [party, ...base];
+    return party == null ? visible : [party, ...visible];
   }
 
   /// The Watch Parties row, first while rooms exist. It isn't one of the
@@ -107,6 +118,10 @@ class HomeViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   Future<void> _loadDone = Future<void>.value();
+  bool _disposed = false;
+  bool _liveTvFavoritesReloading = false;
+  bool _liveTvFavoritesReloadPending = false;
+  int _homeLoadGeneration = 0;
   Future<void> _bgMerge = Future<void>.value();
   bool _bgMergeInFlight = false;
   bool _bgResumeRefreshInFlight = false;
@@ -146,6 +161,11 @@ class HomeViewModel extends ChangeNotifier {
 
   bool get _multiServerEnabled =>
       !_isOffline && _prefs.get(UserPreferences.enableMultiServerLibraries);
+
+  bool get _cloudOnlyPlex => isCloudOnlyPlexClient(_client);
+
+  /// Whether this connection is Plex Free TV without a media server.
+  bool get isCloudOnlyPlex => _cloudOnlyPlex;
 
   /// Whether a stored address is the server this client is on, ignoring the
   /// harmless ways the two spellings differ, such as a trailing slash or the
@@ -314,7 +334,23 @@ class HomeViewModel extends ChangeNotifier {
        _mediaBarViewModel = mediaBarViewModel,
        _multiServerRepo = multiServerRepo,
        _cacheStore = cacheStore ?? HomeRowCacheStore(),
-       _ownerUserId = client.userId ?? '';
+       _ownerUserId = client.userId ?? '' {
+    PlexLiveTvFavorites.favoriteListChanged.addListener(
+      _onPlexFavoriteListChanged,
+    );
+  }
+
+  void _onPlexFavoriteListChanged() {
+    final change = PlexLiveTvFavorites.favoriteListChanged.value;
+    if (_disposed ||
+        change == null ||
+        change.userId != _ownerUserId ||
+        _client.userId != _ownerUserId ||
+        _client.serverType != ServerType.plex) {
+      return;
+    }
+    unawaited(_reloadLiveTvFavoriteChannels());
+  }
 
   /// Whether a section whose load threw keeps what is already on screen.
   ///
@@ -378,11 +414,12 @@ class HomeViewModel extends ChangeNotifier {
     }
     newSectionsOnly = newSectionsOnly && _rows.isNotEmpty;
     if (newSectionsOnly) preserveExisting = true;
+    _homeLoadGeneration++;
     _isLoading = true;
     final done = Completer<void>();
     _loadDone = done.future;
     if (!newSectionsOnly) {
-      _mediaBarViewModel.load(force: forceRefresh);
+      if (!_cloudOnlyPlex) _mediaBarViewModel.load(force: forceRefresh);
       _rowOffsets.clear();
       _multiServerRepo.clearOffsets();
       _rowsPagedThisLoad.clear();
@@ -401,7 +438,25 @@ class HomeViewModel extends ChangeNotifier {
 
       final activeConfigs = _prefs.activeHomeSectionConfigs;
       final fallbackUsed = activeConfigs.isEmpty;
-      final configs = fallbackUsed
+      // Cloud Home can show Live TV and external charts, but not library rows.
+      final configs = _cloudOnlyPlex
+          ? <HomeSectionConfig>[
+              if (!_prefs.get(UserPreferences.kidsModeEnabled))
+                const HomeSectionConfig(
+                  type: HomeSectionType.liveTv,
+                  enabled: true,
+                  order: 0,
+                ),
+              for (final config in activeConfigs)
+                if (config.isBuiltin &&
+                    config.type != HomeSectionType.liveTv &&
+                    (_isSeerrSectionType(config.type) ||
+                        _isTmdbSectionType(config.type) ||
+                        externalCharts.containsKey(config.type) ||
+                        config.type == HomeSectionType.mdblistWatchingNow))
+                  config,
+            ]
+          : fallbackUsed
           ? const [
               HomeSectionConfig(
                 type: HomeSectionType.resume,
@@ -515,7 +570,7 @@ class HomeViewModel extends ChangeNotifier {
         _watchingNowTimer = null;
       }
 
-      if (!sections.contains(HomeSectionType.mediaBar)) {
+      if (!_cloudOnlyPlex && !sections.contains(HomeSectionType.mediaBar)) {
         _mediaBarViewModel.load(force: forceRefresh);
       }
 
@@ -611,7 +666,11 @@ class HomeViewModel extends ChangeNotifier {
           }
         }
         final currentConfigs = _prefs.activeHomeSectionConfigs;
-        final isStillActive = currentConfigs.any((c) => c.stableId == cfg.stableId);
+        final isStillActive =
+            (_cloudOnlyPlex &&
+                !_prefs.get(UserPreferences.kidsModeEnabled) &&
+                cfg.type == HomeSectionType.liveTv) ||
+            currentConfigs.any((c) => c.stableId == cfg.stableId);
         if (!isStillActive) return;
         // Cleanup runs even when the load failed, so the section's loading
         // placeholder is cleared instead of spinning forever.
@@ -765,6 +824,67 @@ class HomeViewModel extends ChangeNotifier {
     if (rows == null) return;
     _rows = rows;
     notifyListeners();
+  }
+
+  /// Refreshes channel favorites without reloading every Home section.
+  /// Adding or removing a guide favorite can change which cards belong here.
+  Future<void> _reloadLiveTvFavoriteChannels() async {
+    if (_liveTvFavoritesReloading) {
+      _liveTvFavoritesReloadPending = true;
+      return;
+    }
+    _liveTvFavoritesReloading = true;
+    try {
+      do {
+        _liveTvFavoritesReloadPending = false;
+        await _reloadLiveTvFavoriteChannelsOnce();
+      } while (!_disposed && _liveTvFavoritesReloadPending);
+    } finally {
+      _liveTvFavoritesReloading = false;
+    }
+  }
+
+  Future<void> _reloadLiveTvFavoriteChannelsOnce() async {
+    try {
+      while (_isLoading && !_disposed) {
+        await _loadDone;
+      }
+      if (_disposed ||
+          _prefs.get(UserPreferences.kidsModeEnabled) ||
+          !_rows.any((row) => row.rowType == HomeRowType.liveTv)) {
+        return;
+      }
+
+      final generation = _homeLoadGeneration;
+      final refreshed = await _dataSource.loadFavoritesChannels(_serverId);
+      if (_disposed) return;
+      if (generation != _homeLoadGeneration) {
+        // Another Home load started while this request was running.
+        // Refresh again afterward instead of overwriting its results.
+        _liveTvFavoritesReloadPending = true;
+        return;
+      }
+      if (_isLoading) return;
+      final next = List<HomeRow>.of(_rows);
+      final oldIndex = next.indexWhere(
+        (row) => row.rowType == HomeRowType.liveTvFavorites,
+      );
+      if (oldIndex >= 0) next.removeAt(oldIndex);
+      if (refreshed.items.isNotEmpty) {
+        final liveTvIndex = next.indexWhere((row) => row.id == 'liveTv');
+        if (liveTvIndex < 0) return;
+        var insertAt = liveTvIndex + 1;
+        if (insertAt < next.length && next[insertAt].id == 'liveTvOnNow') {
+          insertAt++;
+        }
+        next.insert(insertAt, refreshed);
+      }
+      _rows = next;
+      notifyListeners();
+      _saveRowCache();
+    } catch (_) {
+      // A failed refresh leaves the current Home rows visible.
+    }
   }
 
   List<HomeRow> _reconcilePreservedRows(
@@ -1043,12 +1163,10 @@ class HomeViewModel extends ChangeNotifier {
     );
   }
 
-  /// Lightweight refresh for returning to home from a pushed route. Viewing or
-  /// playing an item changes the resume and next-up rows, and time spent away
-  /// moves On Now along, so this refetches just those and updates them in
-  /// place, leaving every other row (and its pagination, scroll, and focus
-  /// state) untouched. A full [refresh] still runs on the Home button,
-  /// pull-to-refresh, cold start, and periodic refresh.
+  /// Refresh Home rows that may have changed while another screen was open:
+  /// Continue Watching, Next Up, On Now, and favorite channels.
+  /// Leave other rows and their scroll positions alone. Full refreshes still
+  /// run on demand, at startup, and on the usual schedule.
   Future<void> refreshResumeAndNextUp() async {
     // A full load can start before the server has the playback stop and fetch
     // the old rows, so wait for it to finish and fetch again.
@@ -1056,6 +1174,9 @@ class HomeViewModel extends ChangeNotifier {
       await _loadDone;
     }
     await Future.wait([_refreshResumeRows(), _refreshOnNowRows()]);
+    // Returning from the guide can add or remove favorite channels on any
+    // supported server. Rebuild only that row, keeping the rest of Home intact.
+    await _reloadLiveTvFavoriteChannels();
   }
 
   /// Refetches the programs airing now for the On Now rows: the standalone
@@ -1097,10 +1218,9 @@ class HomeViewModel extends ChangeNotifier {
   /// small request per return. Once there are some, the row is loaded back
   /// in the user's section order.
   Future<void> _restoreMissingOnNow() async {
-    final standalone = _prefs.activeHomeSections.contains(
-      HomeSectionType.onNow,
-    );
-    // Inside Live TV, On Now only shows once that section found channels.
+    final standalone = !_cloudOnlyPlex &&
+        _prefs.activeHomeSections.contains(HomeSectionType.onNow);
+    // Plex Cloud shows On Now inside Live TV, even if a separate row is enabled.
     if (!standalone && !_rows.any((row) => row.id == 'liveTv')) return;
     final HomeRow fresh;
     try {
@@ -1778,10 +1898,13 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.liveTv:
-        try {
-          if (!await _dataSource.hasLiveTvChannels()) return [];
-        } catch (_) {
-          return [];
+        // Keep Live TV visible even if the Cloud lineup is unavailable.
+        if (!_cloudOnlyPlex) {
+          try {
+            if (!await _dataSource.hasLiveTvChannels()) return [];
+          } catch (_) {
+            return [];
+          }
         }
         final rows = <HomeRow>[
           HomeRow(
@@ -1793,13 +1916,21 @@ class HomeViewModel extends ChangeNotifier {
         ];
         try {
           // The standalone On Now section shows this row in its own spot.
-          if (!_prefs.activeHomeSections.contains(HomeSectionType.onNow)) {
+          if (_cloudOnlyPlex ||
+              !_prefs.activeHomeSections.contains(HomeSectionType.onNow)) {
             final onNow = await _dataSource.loadOnNow(_serverId);
             if (onNow.items.isNotEmpty) rows.add(onNow);
           }
+        } catch (_) {
+          // Missing EPG listings must not hide the channel favorites row.
+        }
+        try {
           final favorites = await _dataSource.loadFavoritesChannels(_serverId);
           if (favorites.items.isNotEmpty) rows.add(favorites);
         } catch (_) {}
+        // Refresh the favorites row when Plex Cloud data changes without
+        // delaying the initial Home load.
+        unawaited(PlexLiveTvFavorites.refreshForBrowse(_client));
         return rows;
       case HomeSectionType.onNow:
         if (!await _dataSource.hasLiveTvChannels()) return [];
@@ -3732,6 +3863,10 @@ class HomeViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
+    PlexLiveTvFavorites.favoriteListChanged.removeListener(
+      _onPlexFavoriteListChanged,
+    );
     _watchingNowTimer?.cancel();
     super.dispose();
   }

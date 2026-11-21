@@ -99,6 +99,7 @@ void main() {
       _comic('c1', 'Zeta Comic'),
     ]);
     client = _MockClient();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user-1');
     when(() => client.itemsApi).thenReturn(itemsApi);

@@ -504,8 +504,10 @@ class UserPreferences extends ChangeNotifier {
     'imdb_top_250_movies_enabled',
     'imdb_top_250_tv_shows_enabled',
     'imdb_top_english_movies_enabled',
+    'live_tv_category_display',
     'live_tv_channel_sort_by',
     'live_tv_last_channel_id',
+    'live_tv_saved_filters',
     'music_playback_time_display',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
@@ -4234,10 +4236,20 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_always_authenticate',
     defaultValue: false,
   );
+  static final liveTvCategoryDisplay = EnumPreference(
+    key: 'live_tv_category_display',
+    defaultValue: LiveTvCategoryDisplay.both,
+    values: LiveTvCategoryDisplay.values,
+  );
   static final liveTvChannelSortBy = EnumPreference(
     key: 'live_tv_channel_sort_by',
     defaultValue: ChannelSortBy.number,
     values: ChannelSortBy.values,
+  );
+
+  static const liveTvSavedFilters = Preference<List<String>>(
+    key: 'live_tv_saved_filters',
+    defaultValue: [],
   );
 
   /// Last Live TV channel watched on this server/account. Channel IDs are

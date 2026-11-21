@@ -99,11 +99,15 @@ String? plexVersion(Object? version) =>
 
 class PlexSystemApi implements SystemApi {
   final Dio _dio;
+  final bool cloudOnly;
 
-  PlexSystemApi(this._dio);
+  PlexSystemApi(this._dio, {this.cloudOnly = false});
 
   @override
   Future<Map<String, dynamic>> getPublicSystemInfo() async {
+    if (cloudOnly) {
+      return {'Id': 'plex-cloud', 'ProductName': 'Plex Free TV'};
+    }
     final identity = await plexContainer(_dio, '/identity');
     return {
       'Id': identity['machineIdentifier'],
@@ -114,6 +118,13 @@ class PlexSystemApi implements SystemApi {
 
   @override
   Future<Map<String, dynamic>> getSystemInfo() async {
+    if (cloudOnly) {
+      return {
+        'Id': 'plex-cloud',
+        'ServerName': 'Plex Free TV',
+        'ProductName': 'Plex Free TV',
+      };
+    }
     final root = await plexContainer(_dio, '/');
     return {
       'Id': root['machineIdentifier'],
@@ -127,7 +138,9 @@ class PlexSystemApi implements SystemApi {
   @override
   Future<bool> ping() async {
     try {
-      await _dio.get<dynamic>('/identity');
+      await _dio.get<dynamic>(
+        cloudOnly ? 'https://plex.tv/api/v2/user' : '/identity',
+      );
       return true;
     } catch (_) {
       return false;
@@ -139,8 +152,9 @@ class PlexUsersApi implements UsersApi {
   final Dio _dio;
   final String Function() _userId;
   final void Function(UserPolicy policy) _onPolicy;
+  final bool cloudOnly;
 
-  PlexUsersApi(this._dio, this._userId, this._onPolicy);
+  PlexUsersApi(this._dio, this._userId, this._onPolicy, {this.cloudOnly = false});
 
   /// Plex has no route for the signed in user, so this checks the token
   /// against the server and answers with the id the session already has.
@@ -152,6 +166,13 @@ class PlexUsersApi implements UsersApi {
   /// other so a dead token reaches sign in as the plain 401 it watches for.
   @override
   Future<ServerUser> getCurrentUser() async {
+    if (cloudOnly) {
+      // Validate the Plex account token without requesting a media server.
+      await _dio.get<Map<String, dynamic>>('https://plex.tv/api/v2/user');
+      const policy = UserPolicy(enableLiveTvAccess: true);
+      _onPolicy(policy);
+      return ServerUser(id: _userId(), policy: policy);
+    }
     final root = await plexContainer(_dio, '/');
     final owner = await _owner();
     final policy = UserPolicy(
@@ -188,14 +209,17 @@ class PlexUsersApi implements UsersApi {
 
 class PlexUserViewsApi implements UserViewsApi {
   final Dio _dio;
+  final bool cloudOnly;
 
-  PlexUserViewsApi(this._dio);
+  PlexUserViewsApi(this._dio, {this.cloudOnly = false});
 
   @override
   Future<Map<String, dynamic>> getUserViews({
     bool includeHidden = false,
   }) async {
-    final sections = await plexContainer(_dio, '/library/sections');
+    final sections = cloudOnly
+        ? <String, dynamic>{}
+        : await plexContainer(_dio, '/library/sections');
     final views = [
       for (final section in sections['Directory'] as List? ?? const [])
         if (section is Map<String, dynamic> &&

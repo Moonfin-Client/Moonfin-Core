@@ -9,22 +9,43 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
+import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
+import 'package:moonfin/ui/screens/livetv/guide/guide_filter_picker.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_filter_rail.dart';
+import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_channel_cell.dart';
+import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_now_next_card.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_window.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_guide_screen.dart';
+import 'package:moonfin/ui/widgets/local_search_field.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
 
-class _MockLiveTvApi extends Mock implements LiveTvApi {}
+class _MockLiveTvApi extends Mock implements LiveTvApi, ChannelGroupApi {}
+
+class _MockUserLibrary extends Mock implements UserLibraryApi {}
 
 class _MockPlaybackManager extends Mock implements PlaybackManager {}
+
+class _PickerPreferences extends UserPreferences {
+  _PickerPreferences(super.store);
+  Completer<void>? save;
+
+  @override
+  Future<void> set<T>(Preference<T> pref, T value) async {
+    if (pref.key == UserPreferences.liveTvSavedFilters.key && save != null) {
+      await save!.future;
+    }
+    await super.set(pref, value);
+  }
+}
 
 /// Deliberately asymmetric row shapes: differing program durations give the
 /// rows differing cell counts and boundaries, which is what makes a drifting
@@ -61,7 +82,7 @@ Map<String, dynamic> _channelRaw(int index) => <String, dynamic>{
   'UserData': <String, dynamic>{'IsFavorite': false},
 };
 
-List<Map<String, dynamic>> _programsFor(String channelId) {
+List<Map<String, dynamic>> _programsFor(String channelId, {bool sports = false}) {
   final row = int.parse(channelId.substring(2));
   final duration = _durationForRow(row);
   final start = _fixtureWindowStart;
@@ -73,6 +94,7 @@ List<Map<String, dynamic>> _programsFor(String channelId) {
       'Id': '$channelId-p$minute',
       'ChannelId': channelId,
       'Name': '$channelId show $minute',
+      'IsSports': sports,
       'StartDate': start.add(Duration(minutes: minute)).toIso8601String(),
       'EndDate': start
           .add(Duration(minutes: minute + duration))
@@ -143,6 +165,7 @@ void main() {
 
   /// Overridable per test so a lineup can outgrow a single program batch.
   late int channelCount;
+  Exception? guideFailure;
 
   /// When set, any guide request covering this channel is held open until the
   /// test releases it, so its row can be observed mid-load.
@@ -157,7 +180,12 @@ void main() {
     GetIt.instance.registerSingleton<PreferenceStore>(store);
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
 
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.programmes,
+    );
     channelCount = _channelCount;
+    guideFailure = null;
     _fixtureWindowStart = guideLeftEdge(DateTime.now());
     deferredChannelId = null;
     releaseDeferredGuide = <VoidCallback>[];
@@ -172,6 +200,9 @@ void main() {
     liveTvApi = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTvApi);
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
+    when(() => client.baseUrl).thenReturn('fixture');
+    when(() => liveTvApi.getChannelGroups(userId: 'user'))
+        .thenAnswer((_) async => const ChannelGroupLineup({}));
     when(() => client.userId).thenReturn('user');
 
     when(
@@ -195,6 +226,7 @@ void main() {
         startDate: any(named: 'startDate'),
         endDate: any(named: 'endDate'),
         channelIds: any(named: 'channelIds'),
+        isSports: any(named: 'isSports'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
         enableImages: any(named: 'enableImages'),
@@ -202,11 +234,13 @@ void main() {
         userId: any(named: 'userId'),
       ),
     ).thenAnswer((invocation) async {
+      if (guideFailure case final failure?) throw failure;
       final ids =
           (invocation.namedArguments[#channelIds] as List?)?.cast<String>() ??
           const <String>[];
+      final sportsChannel = invocation.namedArguments[#startDate] == _fixtureWindowStart ? 'ch0' : 'ch1';
       final payload = <String, dynamic>{
-        'Items': [for (final id in ids) ..._programsFor(id)],
+        'Items': [for (final id in ids) ..._programsFor(id, sports: id == sportsChannel)],
       };
       final gate = deferredChannelId;
       if (gate == null || !ids.contains(gate)) return payload;
@@ -226,15 +260,19 @@ void main() {
   Future<void> pumpGuide(
     WidgetTester tester, {
     bool miniPlayerMode = false,
+    Size surface = const Size(900, 700),
+    List<NavigatorObserver> observers = const [],
+    LiveTvGuideBackController? backController,
   }) async {
     // Wide enough for a multi-hour window and tall enough for a dozen rows.
     // The guide sizes its own time density to whatever surface it is given.
-    tester.view.physicalSize = const Size(900, 700);
+    tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
       MaterialApp(
+        navigatorObservers: observers,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         // Embedded mode drops the guide's own Scaffold because the host
@@ -243,15 +281,422 @@ void main() {
           LiveTvGuideScreen(
             miniPlayerMode: miniPlayerMode,
             embedded: miniPlayerMode,
-            onChannelSelected: miniPlayerMode ? (_) {} : null,
+            onChannelSelected: miniPlayerMode ? (_, _) {} : null,
             onClose: miniPlayerMode ? () {} : null,
+            backController: backController,
           ),
           embedded: miniPlayerMode,
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    // TV labels may keep scrolling, so don't wait for every animation to stop.
+    await _pumpFrames(tester);
   }
+
+  testWidgets('TV guide error Retry is reachable from the window bar', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    guideFailure = Exception('Guide unavailable');
+    await pumpGuide(tester);
+    expect(find.text('Retry'), findsOneWidget);
+    _nodeLabelled(tester, 'GuideWindowBar:0').requestFocus();
+    await _pumpFrames(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await _pumpFrames(tester);
+    expect(_focusedLabel(), 'GuideErrorRetry');
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await _pumpFrames(tester);
+    expect(_focusedLabel(), 'GuideWindowBar:0');
+  });
+
+  for (final layout in [InterfaceLayout.tv, InterfaceLayout.phone]) {
+    testWidgets('failed empty category shows Retry on ${layout.name}', (
+      tester,
+    ) async {
+      PlatformDetection.setInterfaceLayout(layout);
+      addTearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+      channelCount = 1;
+      var failed = true;
+      when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+        (_) async => const ChannelGroupLineup(
+          {},
+          programmeCategories: {'sports'},
+        ),
+      );
+      when(
+        () => liveTvApi.getGuide(
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+          channelIds: any(named: 'channelIds'),
+          isSports: any(named: 'isSports'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          enableImages: any(named: 'enableImages'),
+          enableUserData: any(named: 'enableUserData'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer((inv) async {
+        final ids =
+            (inv.namedArguments[#channelIds] as List?)?.cast<String>() ??
+            const <String>[];
+        if (inv.namedArguments[#isSports] != true) {
+          return {'Items': [for (final id in ids) ..._programsFor(id)]};
+        }
+        return failed
+            ? {
+                'Items': <dynamic>[],
+                'FailedChannelIds': ['ch0'],
+              }
+            : {
+                'Items': [for (final id in ids) ..._programsFor(id, sports: true)],
+              };
+      });
+
+      await pumpGuide(
+        tester,
+        surface: layout == InterfaceLayout.phone
+            ? const Size(390, 844)
+            : const Size(900, 700),
+      );
+      final vm = (tester.state(find.byType(LiveTvGuideScreen)) as dynamic)
+          .debugGuideViewModel as LiveTvGuideViewModel;
+      vm.setFilter(GuideFilter.sports);
+      await _pumpFrames(tester);
+      expect(vm.hasFailedCategoryListings, isTrue);
+      expect(find.text('Failed to load'), findsOneWidget);
+      expect(find.text('No channels found'), findsNothing);
+      if (layout == InterfaceLayout.tv) {
+        _nodeLabelled(tester, 'GuideWindowBar:0').requestFocus();
+        await _pumpFrames(tester);
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await _pumpFrames(tester);
+        expect(_focusedLabel(), 'GuideEmptyCategoryRetry');
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+        await _pumpFrames(tester);
+        expect(_focusedLabel(), 'GuideWindowBar:0');
+      }
+
+      failed = false;
+      await tester.tap(find.text('Retry'));
+      await _pumpFrames(tester);
+      expect(vm.hasFailedCategoryListings, isFalse);
+      expect(vm.filteredChannels.map((c) => c.id), ['ch0']);
+      expect(find.text('Failed to load'), findsNothing);
+    });
+  }
+
+
+  testWidgets('playback uses the guide filter until a mini-guide selection', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    tester.view.physicalSize = const Size(900, 700);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.both,
+    );
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => const ChannelGroupLineup({
+        'ch1': {'Local'},
+        'ch46': {'Local'},
+        'ch47': {'Local'},
+      }),
+    );
+    late List<GuideChannel> lineup;
+    String? picked;
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const LiveTvGuideScreen()),
+        GoRoute(
+          path: Destinations.liveTvPlayer,
+          builder: (_, s) {
+            lineup = (s.extra as Map)['channels'] as List<GuideChannel>;
+            return Material(
+              child: LiveTvGuideScreen(
+                miniPlayerMode: true,
+                embedded: true,
+                currentChannel: lineup[(s.extra as Map)['startIndex'] as int],
+                onChannelSelected: (id, currentLineup) {
+                  expect(currentLineup.map((c) => c.id), contains(id));
+                  picked = id;
+                },
+                onClose: () {},
+              ),
+            );
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+    await _pumpFrames(tester);
+    await tester.tap(find.byTooltip('Filters'));
+    await _pumpFrames(tester);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(GuideFilterPicker),
+        matching: find.text('Local'),
+      ),
+    );
+    await _pumpFrames(tester);
+    // The TV field's internal TextField is read-only outside its keyboard.
+    // The TV keyboard commits text through the LocalSearchField controller.
+    tester.widget<LocalSearchField>(
+      find.byType(LocalSearchField),
+    ).controller.text = 'Channel 4';
+    await _pumpFrames(tester);
+    expect(
+      tester.widgetList<EpgChannelCell>(find.byType(EpgChannelCell))
+          .map((channel) => channel.name),
+      ['Channel 46', 'Channel 47'],
+    );
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await _pumpFrames(tester);
+    expect(lineup.map((channel) => channel.id), ['ch46', 'ch47']);
+    final visible = tester
+        .widgetList<EpgChannelCell>(find.byType(EpgChannelCell).hitTestable())
+        .map((w) => w.name)
+        .toList();
+    final other = visible.firstWhere(
+      (name) => name != 'Channel 46' && name != 'Channel 47',
+    );
+    final node = find
+        .byWidgetPredicate((w) => w is EpgChannelCell && w.name == other)
+        .hitTestable()
+        .first;
+    await tester.tap(node);
+    await _pumpFrames(tester);
+    expect(picked, isNotNull);
+    expect(lineup.map((channel) => channel.id), isNot(contains(picked)));
+  });
+  testWidgets('mobile filter picker changes the visible channel group', (
+    tester,
+  ) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    await prefs.set(
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.both,
+    );
+    await prefs.set(UserPreferences.epgMobileView, EpgMobileView.list);
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => const ChannelGroupLineup({
+        'ch1': {'Sports'},
+        'ch47': {'US | PRIME'},
+      }),
+    );
+    await pumpGuide(tester, surface: const Size(390, 844));
+    await tester.enterText(find.byType(TextField), 'Channel 4');
+    await tester.pump(const Duration(milliseconds: 220));
+    await _pumpFrames(tester);
+    expect(find.byType(EpgNowNextCard), findsWidgets);
+
+    await tester.tap(find.byTooltip('Filters'));
+    await _pumpFrames(tester);
+    final picker = find.byType(GuideFilterPicker);
+    expect(picker, findsOneWidget);
+    expect(tester.getSize(picker).width, 390);
+    await tester.tap(
+      find.descendant(of: picker, matching: find.text('US | PRIME')),
+    );
+    await _pumpFrames(tester);
+    expect(picker, findsNothing);
+    expect(find.text('Channel 47'), findsOneWidget);
+  });
+
+
+  testWidgets('TV picker OK selects and Right or Back cancels', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.groups,
+    );
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => const ChannelGroupLineup({'ch1': {'Sports'}, 'ch2': {'Sports'}}),
+    );
+    await pumpGuide(tester);
+    Future<void> key(LogicalKeyboardKey event) async {
+      await tester.sendKeyEvent(event);
+      await _pumpFrames(tester);
+    }
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    await key(LogicalKeyboardKey.arrowLeft);
+    final picker = find.byType(GuideFilterPicker);
+    expect(picker, findsOneWidget);
+    tester.widget<ListTile>(
+      find.widgetWithText(ListTile, 'Sports'),
+    ).focusNode!.requestFocus();
+    await _pumpFrames(tester);
+    await key(LogicalKeyboardKey.select);
+    expect(picker, findsNothing);
+    expect(
+      tester.widget<EpgChannelCell>(find.byType(EpgChannelCell).first).name,
+      'Channel 1',
+    );
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    await key(LogicalKeyboardKey.arrowLeft);
+    await key(LogicalKeyboardKey.arrowRight);
+    expect(picker, findsNothing);
+    await key(LogicalKeyboardKey.arrowLeft);
+    await key(LogicalKeyboardKey.escape);
+    expect(picker, findsNothing);
+  });
+
+  testWidgets('holding Select pins a group and reports storage errors', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    final prefs = _PickerPreferences(GetIt.instance<PreferenceStore>());
+    await GetIt.instance.unregister<UserPreferences>();
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    await prefs.set(
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.both,
+    );
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => const ChannelGroupLineup({
+        'ch1': {'CA| SPORTS'},
+      }, programmeCategories: {'sports'}),
+    );
+    await pumpGuide(tester);
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await _pumpFrames(tester);
+    final picker = find.byType(GuideFilterPicker);
+    Finder rows() => find.descendant(
+      of: picker,
+      matching: find.widgetWithText(ListTile, 'CA| SPORTS'),
+    );
+    Future<void> hold() async {
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.select);
+      await tester.pump(const Duration(milliseconds: 550));
+      await _pumpFrames(tester);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.select);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.select);
+      await _pumpFrames(tester);
+    }
+    tester.widget<ListTile>(rows().first).focusNode!.requestFocus();
+    await _pumpFrames(tester);
+    await hold();
+    expect(rows(), findsNWidgets(2));
+    final previous = prefs.get(UserPreferences.liveTvSavedFilters);
+    tester.widget<ListTile>(rows().first).focusNode!.requestFocus();
+    await _pumpFrames(tester);
+    prefs.save = Completer<void>();
+    await hold();
+    prefs.save!.completeError(StateError('storage unavailable'));
+    await _pumpFrames(tester);
+    expect(find.text("Couldn't save filter. Try again."), findsOneWidget);
+    expect(prefs.get(UserPreferences.liveTvSavedFilters), previous);
+    expect(picker, findsOneWidget);
+  });
+
+
+  test(
+    'saved filter order and exact group names survive reopening within an account',
+    () async {
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.lastServerId, 'one');
+      await prefs.set(UserPreferences.lastUserId, 'viewer');
+      final vm = LiveTvGuideViewModel(client);
+      addTearDown(vm.dispose);
+      const group = (GuideFilter.all, 'CA| SPORTS');
+      const category = (GuideFilter.sports, null);
+      await vm.toggleSavedFilter(group);
+      await vm.toggleSavedFilter(category);
+      await vm.toggleSavedFilter(group);
+      await vm.toggleSavedFilter(group);
+      final reopened = UserPreferences(GetIt.instance<PreferenceStore>());
+      addTearDown(reopened.dispose);
+      List<String> saved() => reopened.get(UserPreferences.liveTvSavedFilters);
+      expect(saved(), ['category:sports', 'group:CA| SPORTS']);
+      await prefs.set(UserPreferences.lastUserId, 'other');
+      expect(saved(), isEmpty);
+      await prefs.set(UserPreferences.lastUserId, 'viewer');
+      await prefs.set(UserPreferences.lastServerId, 'two');
+      expect(saved(), isEmpty);
+      await prefs.set(UserPreferences.lastServerId, 'one');
+      expect(saved(), ['category:sports', 'group:CA| SPORTS']);
+    },
+  );
+
+  testWidgets('holding Select updates Favorites and rolls back failures', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    userDataSync.reset();
+    addTearDown(userDataSync.reset);
+    final api = _MockUserLibrary();
+    when(() => client.userLibraryApi).thenReturn(api);
+    when(() => api.markFavorite('ch0')).thenAnswer((_) async {});
+    when(() => api.unmarkFavorite('ch0')).thenThrow(Exception('offline'));
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.liveTvCategoryDisplay,
+      LiveTvCategoryDisplay.groups,
+    );
+    when(() => liveTvApi.getChannelGroups(userId: 'user')).thenAnswer(
+      (_) async => const ChannelGroupLineup({'ch1': {'Local'}}),
+    );
+    await pumpGuide(tester);
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    Future<void> toggle() async {
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.select);
+      await tester.pump(const Duration(milliseconds: 550));
+      await _pumpFrames(tester);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.select);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.select);
+      await _pumpFrames(tester);
+    }
+    bool isFavorite() => tester.widget<EpgChannelCell>(
+      find.byType(EpgChannelCell).first,
+    ).isFavorite;
+    await toggle();
+    verify(() => api.markFavorite('ch0')).called(1);
+    expect(isFavorite(), isTrue);
+    await toggle();
+    expect(isFavorite(), isTrue);
+    when(() => api.unmarkFavorite('ch0')).thenAnswer((_) async {});
+    await tester.tap(find.byTooltip('Filters'));
+    await _pumpFrames(tester);
+    await tester.tap(find.descendant(
+      of: find.byType(GuideFilterPicker),
+      matching: find.text('Favorites'),
+    ));
+    await _pumpFrames(tester);
+    expect(isFavorite(), isTrue);
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await _pumpFrames(tester);
+    await toggle();
+    expect(find.byType(EpgChannelCell), findsNothing);
+  });
+
 
   /// Focuses a row-0 cell two hours into the window and then steps right once,
   /// which is the only move permitted to rewrite the anchor. Returns the
@@ -594,6 +1039,7 @@ void main() {
     },
   );
 
+
   testWidgets('the channel column handles ordinary vertical arrows', (
     tester,
   ) async {
@@ -661,21 +1107,20 @@ void main() {
   testWidgets(
     'the mini-player guide fetches no program artwork, having no hero band',
     (tester) async {
-      when(
-        () => liveTvApi.getProgram(any(), userId: any(named: 'userId')),
-      ).thenAnswer(
-        (inv) async => <String, dynamic>{
-          'Id': inv.positionalArguments[0],
-          'ChannelId': 'ch0',
-          'Name': 'anything',
-          'StartDate': DateTime.now().toUtc().toIso8601String(),
-          'EndDate': DateTime.now()
-              .toUtc()
-              .add(const Duration(minutes: 30))
-              .toIso8601String(),
-          'ImageTags': <String, dynamic>{'Primary': 'tag'},
-        },
-      );
+      when(() => liveTvApi.getProgram(any(), userId: any(named: 'userId')))
+          .thenAnswer(
+            (inv) async => <String, dynamic>{
+              'Id': inv.positionalArguments[0],
+              'ChannelId': 'ch0',
+              'Name': 'anything',
+              'StartDate': DateTime.now().toUtc().toIso8601String(),
+              'EndDate': DateTime.now()
+                  .toUtc()
+                  .add(const Duration(minutes: 30))
+                  .toIso8601String(),
+              'ImageTags': <String, dynamic>{'Primary': 'tag'},
+            },
+          );
 
       await pumpGuide(tester, miniPlayerMode: true);
       // Past both the scroll debounce and the on-focus artwork debounce.

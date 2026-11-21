@@ -926,6 +926,8 @@ enum LibraryGroupBy {
   studio,
 }
 
+enum LiveTvCategoryDisplay { programmes, groups, both }
+
 enum ChannelSortBy {
   number('Channel Number'),
   name('Name'),

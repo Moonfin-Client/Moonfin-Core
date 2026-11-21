@@ -376,6 +376,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         vc.onSetBitrate = { [weak self] mbps in
             self?.send(["event": "setBitrate", "mbps": mbps])
         }
+        vc.onVisibleChannelsChanged = { [weak self] ids in
+            self?.send(["event": "visibleChannelsChanged", "channelIds": ids])
+        }
         vc.onSelectChannel = { [weak self] channelId in
             self?.send(["event": "selectChannel", "channelId": channelId])
         }

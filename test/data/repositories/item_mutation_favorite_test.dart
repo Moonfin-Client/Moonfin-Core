@@ -28,6 +28,7 @@ void main() {
     when(() => api.markFavorite(any())).thenAnswer(held);
     when(() => api.unmarkFavorite(any())).thenAnswer(held);
     final client = _Client();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userLibraryApi).thenReturn(api);
     repository = ItemMutationRepository(client);
   });

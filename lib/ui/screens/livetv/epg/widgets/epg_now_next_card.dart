@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../../../data/viewmodels/live_tv_guide_view_model.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../widgets/adaptive/adaptive_glass.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/offline_aware_image.dart';
@@ -17,10 +19,15 @@ class EpgNowNextCard extends StatelessWidget {
   final double nowProgress; // 0..1
   final String? remainingLabel;
   final String? nextLabel;
+  final GuideChannelLoadState loadState;
   final bool isLive;
   final bool apple;
   final VoidCallback onTap;
+  final VoidCallback? onRetry;
+  final VoidCallback? onLongPress;
+  final bool isFavorite;
   final FocusNode? focusNode;
+  final FocusOnKeyEventCallback? onKeyEvent;
 
   const EpgNowNextCard({
     super.key,
@@ -31,10 +38,15 @@ class EpgNowNextCard extends StatelessWidget {
     required this.nowProgress,
     required this.remainingLabel,
     required this.nextLabel,
+    this.loadState = GuideChannelLoadState.loaded,
     required this.isLive,
     required this.apple,
     required this.onTap,
+    this.onRetry,
+    this.onLongPress,
+    this.isFavorite = false,
     this.focusNode,
+    this.onKeyEvent,
   });
 
   @override
@@ -63,6 +75,16 @@ class EpgNowNextCard extends StatelessWidget {
                       style: textTheme.titleMedium,
                     ),
                   ),
+                  if (isFavorite)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 4),
+                      child: Icon(
+                        Icons.favorite,
+                        semanticLabel: AppLocalizations.of(context).favorited,
+                        size: 12,
+                        color: AppColors.red500,
+                      ),
+                    ),
                   if (channelNumber != null) ...[
                     const SizedBox(width: 8),
                     _numberChip(channelNumber!),
@@ -70,7 +92,56 @@ class EpgNowNextCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              if (nowTitle != null)
+              if (loadState == GuideChannelLoadState.loading)
+                Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context).guideLoadingListings,
+                        style: textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                )
+              else if (loadState == GuideChannelLoadState.failed)
+                Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 18,
+                      color: AppColorScheme.statusError,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context).failedToLoad,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColorScheme.statusError,
+                        ),
+                      ),
+                    ),
+                    if (onRetry != null) ...[
+                      const SizedBox(width: 8),
+                      TextButton.icon(
+                        onPressed: onRetry,
+                        icon: const Icon(Icons.refresh, size: 16),
+                        label: Text(AppLocalizations.of(context).retry),
+                      ),
+                    ],
+                  ],
+                )
+              else if (nowTitle == null && nextLabel == null)
+                Text(
+                  AppLocalizations.of(context).noProgramData,
+                  style: textTheme.bodyMedium?.copyWith(color: muted),
+                ),
+              if (loadState == GuideChannelLoadState.loaded && nowTitle != null)
                 Row(
                   children: [
                     if (isLive) ...[
@@ -87,32 +158,37 @@ class EpgNowNextCard extends StatelessWidget {
                     ),
                   ],
                 ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: AppRadius.circular(2),
-                      child: LinearProgressIndicator(
-                        value: nowProgress.clamp(0.0, 1.0),
-                        minHeight: 4,
-                        backgroundColor:
-                            AppColorScheme.onSurface.withValues(alpha: 0.18),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColorScheme.accent),
+              if (loadState == GuideChannelLoadState.loaded &&
+                  nowTitle != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: AppRadius.circular(2),
+                        child: LinearProgressIndicator(
+                          value: nowProgress.clamp(0.0, 1.0),
+                          minHeight: 4,
+                          backgroundColor:
+                              AppColorScheme.onSurface.withValues(alpha: 0.18),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColorScheme.accent,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  if (remainingLabel != null) ...[
-                    const SizedBox(width: 12),
-                    Text(
-                      remainingLabel!,
-                      style: textTheme.labelSmall?.copyWith(color: muted),
-                    ),
+                    if (remainingLabel != null) ...[
+                      const SizedBox(width: 12),
+                      Text(
+                        remainingLabel!,
+                        style: textTheme.labelSmall?.copyWith(color: muted),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-              if (nextLabel != null) ...[
+                ),
+              ],
+              if (loadState == GuideChannelLoadState.loaded &&
+                  nextLabel != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   nextLabel!,
@@ -132,6 +208,9 @@ class EpgNowNextCard extends StatelessWidget {
     return FocusableWrapper(
       focusNode: focusNode,
       onSelect: onTap,
+      onLongPress: onLongPress,
+      onKeyEvent: onKeyEvent,
+      enableLongPress: onKeyEvent == null && onLongPress != null,
       borderRadius: radius,
       child: apple
           ? adaptiveGlass(

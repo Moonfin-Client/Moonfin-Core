@@ -45,6 +45,9 @@ const _teletubbies = {
 (Dio, _FakeServer) _server() {
   final server = _FakeServer(
     (options) => switch (options.uri.path) {
+      '/identity' => {
+        'MediaContainer': {'machineIdentifier': 'pms-machine-1'},
+      },
       '/livetv/dvrs' => {
         'MediaContainer': {
           'Dvr': [
@@ -64,15 +67,19 @@ const _teletubbies = {
           ],
         },
       },
-      '/lineups/plex/channels' => {
+      '/lineups/plex/channels' || '/lineups/plex/channels/featured' => {
         'MediaContainer': {
           'Channel': [
             {
               'id': 'abc-66635fc0',
               'vcn': '000',
               'title': 'CW Forever',
+              'genreRatingKeys': ['movie-key', 'news-key', 'unknown'],
               'thumb': 'https://provider-static.plex.tv/cw.png',
             },
+            // Present in All Channels, but deliberately absent from Featured.
+            if (options.uri.path == '/lineups/plex/channels')
+              {'id': 'news-extra', 'title': 'News Extra'},
             {'id': 'locked-1', 'title': 'Locked', 'drm': true},
           ],
         },
@@ -90,6 +97,22 @@ const _teletubbies = {
                   'endsAt': 1792704540,
                   'channelIdentifier': '4',
                 },
+              ],
+            },
+          ],
+        },
+      },
+      '/' => {
+        'MediaProvider': {
+          'Feature': [
+            {
+              'type': 'grid',
+              'GridChannelFilter': [
+                {'genreRatingKey': 'news-key', 'title': 'News'},
+                {'genreRatingKey': 'movie-key', 'title': 'Movies'},
+              ],
+              'PromotedGridChannelFilter': [
+                {'key': '/lineups/plex/channels/featured', 'title': 'Featured'},
               ],
             },
           ],
@@ -218,13 +241,87 @@ void main() {
       expect(channels.map((c) => c['Id']), [
         'channel-2-4',
         'channel-plex-abc-66635fc0',
+        'channel-plex-news-extra',
       ]);
       expect(channels.first, containsPair('ChannelNumber', '4'));
       expect(channels.first['Type'], 'TvChannel');
+      expect(channels.first['PlexFavoriteSource'],
+          'server://pms-machine-1/tv.plex.providers.epg.xmltv:2');
+      expect(channels.first['PlexFavoriteId'], '4');
+      expect(channels.last.containsKey('PlexFavoriteSource'), isFalse);
       expect(channels.last.containsKey('ChannelNumber'), isFalse);
-      expect(result['TotalRecordCount'], 2);
+      expect(result['TotalRecordCount'], 3);
     },
   );
+
+  test('Plex joins genres and loads Featured on demand', () async {
+    final (dio, server) = _server();
+    final api = PlexLiveTvApi(dio);
+    final lineup = await api.getChannelGroups();
+    expect(lineup.groupsByChannelId, {
+      'channel-2-4': {'source:dvr'},
+      'channel-plex-abc-66635fc0': {'source:plexFreeTv', 'Movies', 'News'},
+      'channel-plex-news-extra': {'source:plexFreeTv'},
+    });
+    final promoted = lineup.promoted!;
+    expect((await api.getChannelGroups()).promoted, same(promoted));
+    final cloud = server.requests.where(
+      (r) => r.uri.host == 'epg.provider.plex.tv',
+    );
+    expect(cloud.map((r) => r.uri.path), ['/lineups/plex/channels', '/']);
+    await promoted.refresh(DateTime.now);
+    expect(promoted.channelIds, {'channel-plex-abc-66635fc0'});
+    expect(promoted.channelIds, isNot(contains('channel-plex-news-extra')));
+    expect(server.requests.last.uri.path, '/lineups/plex/channels/featured');
+    expect(server.requests.last.headers['X-Plex-Provider-Version'], '7.2');
+  });
+
+
+
+
+
+  test('cloud-only lineup failures propagate while Plex DVRs remain usable', () async {
+    final (dio, server) = _server();
+    dio.interceptors.insert(
+      0,
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (options.uri.path == '/lineups/plex/channels') {
+            handler.reject(
+              DioException(
+                requestOptions: options,
+                type: DioExceptionType.connectionError,
+              ),
+            );
+          } else {
+            handler.next(options);
+          }
+        },
+      ),
+    );
+
+    final cloud = PlexLiveTvApi(dio, cloudOnly: true);
+    final cloudFailure = isA<DioException>().having(
+      (error) => error.type,
+      'Free TV connection failure',
+      DioExceptionType.connectionError,
+    );
+    await expectLater(cloud.getChannelGroups(), throwsA(cloudFailure));
+    await expectLater(cloud.getChannels(), throwsA(cloudFailure));
+    expect(server.requests, isEmpty);
+
+    final serverWithDvr = PlexLiveTvApi(dio);
+    final lineup = await serverWithDvr.getChannelGroups();
+    expect(lineup.channels?.map((channel) => channel['Id']), ['channel-2-4']);
+    expect(lineup.groupsByChannelId, {
+      'channel-2-4': {'source:dvr'},
+    });
+    expect(lineup.sources.map((source) => source.groupId), ['source:dvr']);
+  });
+
+
+
+
 
   test('every showing of a program is a program of its own', () async {
     final (dio, server) = _server();
