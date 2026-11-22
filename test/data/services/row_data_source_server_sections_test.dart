@@ -46,6 +46,59 @@ void main() {
     expect(row.totalCount, 2);
   });
 
+  group('a server row\'s title', () {
+    Future<String> titleOf(
+      String section,
+      Future<List<ServerHomeSection>> Function() sections,
+    ) async {
+      final api = _MockSectionsItemsApi();
+      when(
+        () => api.getServerHomeSectionItems(section),
+      ).thenAnswer((_) async => {'Items': <Object>[]});
+      when(api.getServerHomeSections).thenAnswer((_) => sections());
+      final client = _MockClient();
+      when(() => client.itemsApi).thenReturn(api);
+      final row = await RowDataSource(client).loadDynamicSection(
+        rowId: 'r',
+        section: section,
+        title: 'stored title',
+        serverId: 'srv',
+        pluginSource: HomeSectionPluginSource.server,
+      );
+      return row.title;
+    }
+
+    const keyed = ServerHomeSection(
+      id: 's1',
+      title: 'Recently Added in Films',
+      kind: 'recently_added',
+      titleKey: 'home.section.recentlyAddedIn',
+      titleArgs: {'library': 'Films'},
+    );
+
+    test('comes from the key the server sent', () async {
+      expect(
+        await titleOf('s1', () async => [keyed]),
+        'Recently Added in Films',
+      );
+    });
+
+    test('is found for a row named by its kind', () async {
+      expect(
+        await titleOf('type:recently_added', () async => [keyed]),
+        'Recently Added in Films',
+      );
+    });
+
+    test('stays as stored when the server\'s rows can\'t be read', () async {
+      expect(
+        await titleOf('s1', () async => throw Exception('offline')),
+        'stored title',
+      );
+      expect(await titleOf('s1', () async => []), 'stored title');
+    });
+  });
+
   test('a server without its own rows gives an empty row', () async {
     final client = _MockClient();
     when(() => client.itemsApi).thenReturn(_MockItemsApi());
