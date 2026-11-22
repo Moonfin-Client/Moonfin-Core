@@ -870,8 +870,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     );
 
     if (confirm != true || _actionInProgress.isNotEmpty) return;
-    // The opening fetch may have landed while the confirmation was up.
-    final latest = _latestOf(item);
 
     setState(() {
       _actionInProgress.addAll(categories);
@@ -880,7 +878,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       for (final category in categories) {
-        final tags = _tagsOf(latest, category);
+        // The opening fetch may land at any point before or during the loop.
+        final tags = _tagsOf(_latestOf(item), category);
         if (tags.isEmpty) continue;
 
         if (category == 'Backdrop') {

@@ -564,6 +564,39 @@ void main() {
     expect(admin.deletes, [ImageType.primary, ImageType.disc]);
   });
 
+  testWidgets('Clear All removes what the opening fetch found mid-way', (
+    tester,
+  ) async {
+    items.item = {
+      ...items.item,
+      'ImageTags': {'Primary': 'cover', 'Disc': 'disc'},
+    };
+    items.heldId = 'a1';
+    items.held = Completer<void>();
+    await open(
+      tester,
+      shown: {
+        ...items.item,
+        'ImageTags': {'Primary': 'cover'},
+      },
+    );
+
+    final clearAll = find.text(l10n.clearAllArtworkButton);
+    await tester.ensureVisible(clearAll);
+    await tester.tap(clearAll);
+    await settle(tester);
+    admin.deleting = Completer<void>();
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+    // The opening fetch lands while the first delete is still running.
+    items.held!.complete();
+    await settle(tester);
+    admin.deleting!.complete();
+    await settle(tester);
+
+    expect(admin.deletes, [ImageType.primary, ImageType.disc]);
+  });
+
   testWidgets(
     "Clear All finishing leaves another item's save holding it open",
     (tester) async {
