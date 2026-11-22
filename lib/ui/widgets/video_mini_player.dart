@@ -762,8 +762,8 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
                     if (_streamCount('Subtitle') > 0 || _canDownloadSubtitles)
                       _TransportButton(
                         icon: _streamCount('Subtitle') == 0
-                            ? Icons.download_rounded
-                            : Icons.subtitles_outlined,
+                            ? Icons.subtitles_outlined
+                            : Icons.subtitles_rounded,
                         tooltip: l10n.subtitles,
                         size: 22 * scale,
                         extent: 44 * scale,

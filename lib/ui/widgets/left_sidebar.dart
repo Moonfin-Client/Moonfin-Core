@@ -44,6 +44,7 @@ import 'server_messages_nav_slot.dart';
 import 'unread_badge.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
+import 'library_quick_visibility_dialog.dart';
 
 import 'package:playback_core/playback_core.dart';
 import '../../data/models/aggregated_item.dart';
@@ -53,10 +54,10 @@ import 'offline_aware_image.dart';
 import 'adaptive/sf_symbol.dart';
 import 'user_avatar_image.dart';
 
-const _kExpandedWidthDesktop = 240.0;
+const _kExpandedWidthDesktop = 186.0;
 const _kExpandedWidthMobile = 260.0;
 const _kExpandDuration = Duration(milliseconds: 200);
-const _kExpandedWidthTV = 280.0;
+const _kExpandedWidthTV = 186.0;
 const _kCollapsedWidthTV = 72.0;
 const _kExpandedBackdropWidthTV = _kExpandedWidthTV - 16.0;
 const _kBackdropEdgeBlendWidthTV =
@@ -67,6 +68,11 @@ class LeftSidebar extends StatefulWidget {
   /// point circle and the 8 around it.
   static const double mobileMenuExtent = 56;
 
+  /// Width constants for external layout pushing
+  static const double expandedWidth = _kExpandedWidthTV;
+  static const double collapsedWidth = _kCollapsedWidthTV;
+  static const double pushOffset = _kExpandedWidthTV - _kCollapsedWidthTV;
+
   final String? activeRoute;
   final FocusNode? contentFocusNode;
   final bool showBackButton;
@@ -75,6 +81,9 @@ class LeftSidebar extends StatefulWidget {
   /// Use this instead of walking the element tree to determine if the
   /// current focus is within the sidebar; it's resilient during teardown.
   static final ValueNotifier<bool> isFocusedNotifier = ValueNotifier<bool>(false);
+
+  /// Notifier updated when the sidebar expands or collapses.
+  static final ValueNotifier<bool> isExpandedNotifier = ValueNotifier<bool>(false);
 
   const LeftSidebar({
     super.key,
@@ -272,6 +281,9 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     if (_sidebarHadFocus) {
       LeftSidebar.isFocusedNotifier.value = false;
     }
+    if (_isExpanded) {
+      LeftSidebar.isExpandedNotifier.value = false;
+    }
     super.dispose();
   }
 
@@ -385,6 +397,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   void _expand() {
     if (_isExpanded) return;
     setState(() => _isExpanded = true);
+    LeftSidebar.isExpandedNotifier.value = true;
     _labelTimer?.cancel();
     final delay = PlatformDetection.isTV
         ? const Duration(milliseconds: 150)
@@ -402,6 +415,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
       _showLabels = false;
       _librariesExpanded = false;
     });
+    LeftSidebar.isExpandedNotifier.value = false;
   }
 
   void _toggle() {
@@ -868,7 +882,8 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
       ),
     );
 
-    if (!desktopHoverRail) return rail;
+    final autoExpand = _prefs.get(UserPreferences.autoExpandSidebarOnHover);
+    if (!desktopHoverRail || !autoExpand) return rail;
 
     return MouseRegion(
       onEnter: (_) => _expand(),
@@ -973,13 +988,16 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
         clockBehavior == ClockBehavior.inMenus;
     return Column(
       children: [
-        Visibility(
-          visible: _isExpanded,
-          maintainSize: true,
-          maintainAnimation: true,
-          maintainState: true,
-          child: _buildUserSection(),
-        ),
+        _isExpanded
+            ? _buildUserSection()
+            : Padding(
+                padding: const EdgeInsets.fromLTRB(0, 16, 0, 8),
+                child: IconButton(
+                  icon: const Icon(Icons.menu_rounded, color: Colors.white70, size: 24),
+                  tooltip: '展开导航栏',
+                  onPressed: _expand,
+                ),
+              ),
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -1169,6 +1187,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       baseColor: nextMainSidebarColor(),
                       showLabel: _showLabels,
                       onPressed: () => _openLibrary(lib),
+                      onSecondaryTap: () => showLibraryQuickVisibilityDialog(context),
                     )
                 else if (showLibraries && navLibraries.isNotEmpty) ...[
                   _SidebarItem(
@@ -1183,19 +1202,39 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                     ),
                     label: l10n.libraries,
                     showLabel: _showLabels,
+                    onSecondaryTap: () => showLibraryQuickVisibilityDialog(context),
                     trailing: _showLabels
-                        ? AnimatedRotation(
-                            turns: _librariesExpanded ? 0.5 : 0,
-                            duration: _kExpandDuration,
-                            child: Icon(
-                              Icons.expand_more,
-                              size:
-                                  ((PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) &&
-                                      !PlatformDetection.isTV)
-                                  ? 18
-                                  : 16,
-                              color: Colors.white.withValues(alpha: 0.5),
-                            ),
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.tune_rounded,
+                                  size: 16,
+                                  color: Colors.white70,
+                                ),
+                                tooltip: l10n.libraryVisibility,
+                                splashRadius: 14,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () =>
+                                    showLibraryQuickVisibilityDialog(context),
+                              ),
+                              const SizedBox(width: 8),
+                              AnimatedRotation(
+                                turns: _librariesExpanded ? 0.5 : 0,
+                                duration: _kExpandDuration,
+                                child: Icon(
+                                  Icons.expand_more,
+                                  size:
+                                      ((PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) &&
+                                          !PlatformDetection.isTV)
+                                      ? 18
+                                      : 16,
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                ),
+                              ),
+                            ],
                           )
                         : null,
                     onPressed: () => setState(
@@ -1216,6 +1255,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                                     baseColor: nextLibrarySidebarColor(),
                                     showLabel: _showLabels,
                                     onPressed: () => _openLibrary(lib),
+                                    onSecondaryTap: () => showLibraryQuickVisibilityDialog(context),
                                   ),
                                 )
                                 .toList(),
@@ -1409,6 +1449,14 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            IconButton(
+              icon: const Icon(Icons.menu_open_rounded, color: Colors.white54, size: 20),
+              tooltip: '收起导航栏',
+              splashRadius: 16,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: _collapse,
+            ),
           ],
         ],
       ),
@@ -1433,14 +1481,92 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
           return KeyEventResult.ignored;
         },
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             _onNavigate();
             showUserMenu(context);
+          },
+          onSecondaryTap: () {
+            showLibraryQuickVisibilityDialog(context);
+          },
+          onSecondaryTapUp: (details) {
+            _showServerContextMenu(context, details.globalPosition);
           },
           child: content,
         ),
       ),
     );
+  }
+
+  void _showServerContextMenu(BuildContext context, Offset globalPosition) async {
+    final l10n = AppLocalizations.of(context);
+    final result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        globalPosition.dx,
+        globalPosition.dy,
+        globalPosition.dx + 1,
+        globalPosition.dy + 1,
+      ),
+      color: const Color(0xFF222222),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Colors.white12),
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'libraries',
+          height: 40,
+          child: Row(
+            children: [
+              const Icon(Icons.video_library_outlined, size: 18, color: Colors.white),
+              const SizedBox(width: 12),
+              Text(
+                l10n.libraries,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'switch_account',
+          height: 40,
+          child: Row(
+            children: [
+              const Icon(Icons.switch_account_outlined, size: 18, color: Colors.white),
+              const SizedBox(width: 12),
+              Text(
+                l10n.switchUser,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'refresh',
+          height: 40,
+          child: Row(
+            children: [
+              const Icon(Icons.refresh_rounded, size: 18, color: Colors.white),
+              const SizedBox(width: 12),
+              Text(
+                l10n.refresh,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    if (!context.mounted) return;
+    if (result == 'libraries') {
+      showLibraryQuickVisibilityDialog(context);
+    } else if (result == 'switch_account') {
+      showUserMenu(context);
+    } else if (result == 'refresh') {
+      homeRefreshBus.request(newMediaBar: true);
+    }
   }
 }
 
@@ -1450,6 +1576,7 @@ class _SidebarItem extends StatefulWidget {
   final String label;
   final bool showLabel;
   final VoidCallback onPressed;
+  final VoidCallback? onSecondaryTap;
   final Widget? trailing;
   final FocusNode? focusNode;
   final Color? baseColor;
@@ -1464,6 +1591,7 @@ class _SidebarItem extends StatefulWidget {
     required this.label,
     required this.showLabel,
     required this.onPressed,
+    this.onSecondaryTap,
     this.trailing,
     this.focusNode,
     this.baseColor,
@@ -1549,7 +1677,9 @@ class _SidebarItemState extends State<_SidebarItem> {
             return KeyEventResult.ignored;
           },
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: widget.onPressed,
+            onSecondaryTap: widget.onSecondaryTap,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               height: desktopSidebar ? 44 : 40,
@@ -1615,6 +1745,7 @@ class _SidebarLibraryItem extends StatefulWidget {
   final String label;
   final bool showLabel;
   final VoidCallback onPressed;
+  final VoidCallback? onSecondaryTap;
   final Color? baseColor;
 
   const _SidebarLibraryItem({
@@ -1622,6 +1753,7 @@ class _SidebarLibraryItem extends StatefulWidget {
     required this.label,
     required this.showLabel,
     required this.onPressed,
+    this.onSecondaryTap,
     this.baseColor,
   });
 
@@ -1675,7 +1807,9 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
             return KeyEventResult.ignored;
           },
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: widget.onPressed,
+            onSecondaryTap: widget.onSecondaryTap,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               height: desktopSidebar ? 40 : 36,

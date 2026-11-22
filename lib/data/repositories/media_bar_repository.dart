@@ -21,6 +21,7 @@ import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/latest_media_row_normalizer.dart';
 import 'tmdb_repository.dart';
+import 'user_views_repository.dart';
 
 class MediaBarRepository {
 
@@ -100,10 +101,15 @@ class MediaBarRepository {
       final views = (viewsResponse['Items'] as List? ?? [])
           .cast<Map<String, dynamic>>();
 
+      final excludes = GetIt.instance.isRegistered<UserViewsRepository>()
+          ? await GetIt.instance<UserViewsRepository>().getMyMediaExcludes()
+          : const <String>{};
+
       final validLibraryIds = <String>{};
       for (final view in views) {
         final viewId = view['Id']?.toString();
         if (viewId == null ||
+            excludes.contains(viewId) ||
             !supportsMediaBarLibrary(view, preferredCollectionTypes)) {
           continue;
         }
@@ -316,6 +322,10 @@ class MediaBarRepository {
         _ => const ['tvshows', 'movies'],
       };
 
+      final defaultExcludes = GetIt.instance.isRegistered<UserViewsRepository>()
+          ? await GetIt.instance<UserViewsRepository>().getMyMediaExcludes()
+          : const <String>{};
+
       String? libraryId;
 
       for (final preferredType in preferredCollectionTypes) {
@@ -327,7 +337,7 @@ class MediaBarRepository {
             continue;
           }
           final id = view['Id']?.toString();
-          if (id != null && id.isNotEmpty) {
+          if (id != null && id.isNotEmpty && !defaultExcludes.contains(id)) {
             libraryId = id;
             break;
           }
@@ -343,7 +353,7 @@ class MediaBarRepository {
             continue;
           }
           final id = view['Id']?.toString();
-          if (id != null && id.isNotEmpty) {
+          if (id != null && id.isNotEmpty && !defaultExcludes.contains(id)) {
             libraryId = id;
             break;
           }

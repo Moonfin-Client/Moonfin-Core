@@ -28,6 +28,7 @@ import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/repositories/tmdb_repository.dart';
 import '../../../data/repositories/user_views_repository.dart';
+import '../../widgets/library_quick_visibility_dialog.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/background_service.dart';
 import '../../widgets/modern_row.dart';
@@ -5680,16 +5681,8 @@ class _ContentRowsState extends State<_ContentRows>
                   cardFocusExpansion: cardExpansion,
                   externalIsFocused: isFocused,
                   onTap: () => _navigateToLibrary(context, item),
-                  onLongPress: () => showContextMenu(
-                    context,
-                    item,
-                    onChanged: () => setState(() {}),
-                  ),
-                  onSecondaryTap: () => showContextMenu(
-                    context,
-                    item,
-                    onChanged: () => setState(() {}),
-                  ),
+                  onLongPress: () => showLibraryQuickVisibilityDialog(context),
+                  onSecondaryTap: () => showLibraryQuickVisibilityDialog(context),
                 ),
               ),
             );

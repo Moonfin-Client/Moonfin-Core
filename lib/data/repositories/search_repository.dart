@@ -1,7 +1,9 @@
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
 import '../utils/blocked_ratings.dart';
+import 'user_views_repository.dart';
 
 class SearchRepository {
   final MediaServerClient _client;
@@ -25,6 +27,36 @@ class SearchRepository {
     if (trimmed.isEmpty) return const [];
     if (trimmed.toLowerCase().startsWith('studio:')) return const [];
     final normalizedQuery = trimmed.toLowerCase();
+
+    if (parentId == null && GetIt.instance.isRegistered<UserViewsRepository>()) {
+      try {
+        final viewsRepo = GetIt.instance<UserViewsRepository>();
+        final excludes = await viewsRepo.getMyMediaExcludes();
+        if (excludes.isNotEmpty) {
+          final visibleViews = await viewsRepo.getUserViews();
+          if (visibleViews.isNotEmpty) {
+            final results = await Future.wait(
+              visibleViews.map(
+                (view) => suggest(
+                  query,
+                  parentId: view.id,
+                  limit: limit,
+                ),
+              ),
+            );
+            final seen = <String>{};
+            final merged = <String>[];
+            for (final list in results) {
+              for (final s in list) {
+                if (seen.add(s.toLowerCase())) merged.add(s);
+              }
+            }
+            if (merged.length > limit) return merged.sublist(0, limit);
+            return merged;
+          }
+        }
+      } catch (_) {}
+    }
 
     final filter = activeParentalFilter;
     final response = await _client.itemsApi.getItems(
@@ -179,6 +211,40 @@ class SearchRepository {
     String? parentId,
     int? limit,
   }) async {
+    if (parentId == null && GetIt.instance.isRegistered<UserViewsRepository>()) {
+      try {
+        final viewsRepo = GetIt.instance<UserViewsRepository>();
+        final excludes = await viewsRepo.getMyMediaExcludes();
+        if (excludes.isNotEmpty) {
+          final visibleViews = await viewsRepo.getUserViews();
+          if (visibleViews.isNotEmpty) {
+            final results = await Future.wait(
+              visibleViews.map(
+                (view) => _search(
+                  query,
+                  includeItemTypes: includeItemTypes,
+                  excludeItemTypes: excludeItemTypes,
+                  parentId: view.id,
+                  limit: limit,
+                ),
+              ),
+            );
+            final seen = <String>{};
+            final merged = <AggregatedItem>[];
+            for (final list in results) {
+              for (final item in list) {
+                if (seen.add(item.id)) merged.add(item);
+              }
+            }
+            if (limit != null && merged.length > limit) {
+              return merged.sublist(0, limit);
+            }
+            return merged;
+          }
+        }
+      } catch (_) {}
+    }
+
     final isStudioQuery = query.toLowerCase().startsWith('studio:');
     final searchTerm = isStudioQuery ? null : query;
     final studios = isStudioQuery ? [query.substring('studio:'.length)] : null;

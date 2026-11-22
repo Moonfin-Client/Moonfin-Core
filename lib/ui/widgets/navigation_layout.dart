@@ -518,22 +518,38 @@ class _NavigationLayoutState extends State<NavigationLayout>
       return Column(
         children: [
           Expanded(
-            child: Stack(
-              children: [
-                Positioned.fill(child: content),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  child: sidebar,
-                ),
-                if (widget.showBackButton && !PlatformDetection.isTV)
-                  Positioned(
-                    top: 16,
-                    left: 88,
-                    child: _buildFloatingBackButton(),
-                  ),
-              ],
+            child: ValueListenableBuilder<bool>(
+              valueListenable: LeftSidebar.isExpandedNotifier,
+              builder: (context, isExpanded, _) {
+                final pushOffset = isExpanded ? LeftSidebar.pushOffset : 0.0;
+                return Stack(
+                  children: [
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      top: 0,
+                      left: pushOffset,
+                      right: 0,
+                      bottom: 0,
+                      child: content,
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      bottom: 0,
+                      child: sidebar,
+                    ),
+                    if (widget.showBackButton && !PlatformDetection.isTV)
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        top: 16,
+                        left: 88 + pushOffset,
+                        child: _buildFloatingBackButton(),
+                      ),
+                  ],
+                );
+              },
             ),
           ),
           const DownloadProgressBar(),

@@ -4434,9 +4434,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   // what gets hit-tested. Only their pixels are
                                   // re-sent by HdrOverlayCapture.
                                   _buildTopOverlay(context),
-                                  if (!PlatformDetection.useLeanbackUi &&
-                                      !_transportDocked &&
-                                      !_partyHoldsStart)
+                                  if (false)
                                     Positioned.fill(
                                       top:
                                           DeviceHinge.laptopFoldY(context) ?? 0,
@@ -5483,6 +5481,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (!_transportDocked) ...[
+                  _buildAboveSeekbarTransportRow(),
+                  const SizedBox(height: AppSpacing.spaceXs),
+                ],
                 _buildSeekbar(),
                 const SizedBox(height: AppSpacing.spaceXs),
                 if (_transportDocked)
@@ -6240,8 +6242,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final hasCast = _hasCastCrew(item);
         final showSubtitleButton = _hasSubtitleChoices;
         final subtitleButtonIcon = _hasSubtitleStreams
-            ? Icons.subtitles_outlined
-            : Icons.download_rounded;
+            ? Icons.subtitles_rounded
+            : Icons.subtitles_outlined;
         // Everyone in a Watch Party hears the same track.
         final showAudioButton = _watchParty?.controlsPlayback != true;
         final hidden = osdButtonLayout.hidden(_prefs);
@@ -7360,6 +7362,86 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAboveSeekbarTransportRow() {
+    final hasTrickplay = _trickplayInfo != null && _trickplayInfo!.isValid;
+    if (_isSeeking && hasTrickplay) {
+      return const SizedBox.shrink();
+    }
+    return StreamBuilder<bool>(
+      stream: _state.playingStream,
+      initialData: _state.isPlaying,
+      builder: (context, snap) {
+        final l10n = AppLocalizations.of(context);
+        final isPlaying = _isPlayingShown;
+        final scale = _osdButtonScale;
+
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.space2xs),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _controlButton(
+                  Icons.skip_previous_rounded,
+                  onPressed: _manager.previous,
+                  size: 26 * scale,
+                  extent: 42 * scale,
+                  tooltip: l10n.playerTooltipPrevious,
+                ),
+                SizedBox(width: 8 * scale),
+                _controlButton(
+                  seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
+                  onPressed: () =>
+                      _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
+                  size: 28 * scale,
+                  extent: 46 * scale,
+                  tooltip: _tooltipMessage(
+                    l10n.playerTooltipSeekBack,
+                    shortcut: 'Left',
+                  ),
+                ),
+                SizedBox(width: 12 * scale),
+                _controlButton(
+                  isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  onPressed: () =>
+                      isPlaying ? _manager.pause() : _resumeWithConfiguredRewind(),
+                  size: 38 * scale,
+                  extent: 56 * scale,
+                  focusNode: _primaryPlayFocus,
+                  tooltip: _tooltipMessage(
+                    isPlaying ? l10n.pause : l10n.play,
+                    shortcut: 'Space',
+                  ),
+                ),
+                SizedBox(width: 12 * scale),
+                _controlButton(
+                  seekForwardIcon(_prefs.get(UserPreferences.skipForwardLength)),
+                  onPressed: () =>
+                      _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
+                  size: 28 * scale,
+                  extent: 46 * scale,
+                  tooltip: _tooltipMessage(
+                    l10n.playerTooltipSeekForward,
+                    shortcut: 'Right',
+                  ),
+                ),
+                SizedBox(width: 8 * scale),
+                _controlButton(
+                  Icons.skip_next_rounded,
+                  onPressed: _manager.next,
+                  size: 26 * scale,
+                  extent: 42 * scale,
+                  tooltip: l10n.next,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

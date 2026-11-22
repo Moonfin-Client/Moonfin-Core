@@ -2020,6 +2020,7 @@ class HomeViewModel extends ChangeNotifier {
 
     final views = await viewsFuture;
     final Set<String> latestExcludes = await configFuture;
+    final Set<String> myMediaExcludes = await viewsRepo.getMyMediaExcludes();
     if (GetIt.instance.isRegistered<GameLibraryRegistry>()) {
       await GetIt.instance<GameLibraryRegistry>().refresh();
     }
@@ -2031,7 +2032,7 @@ class HomeViewModel extends ChangeNotifier {
           collectionType == 'livetv') {
         return false;
       }
-      return !latestExcludes.contains(lib.id);
+      return !latestExcludes.contains(lib.id) && !myMediaExcludes.contains(lib.id);
     }).toList();
 
     bool isGames(AggregatedLibrary lib) =>
