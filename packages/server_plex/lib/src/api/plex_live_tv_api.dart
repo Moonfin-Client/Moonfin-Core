@@ -92,6 +92,15 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
   Future<_CloudGroups>? _cloudGroups;
   final _cloudGrids = <String, ({DateTime at, Future<List> items})>{};
 
+  // The Free TV Home hub is independent of channel grids and may be absent on
+  // some Plex accounts or regions. Cache its small result, including failures,
+  // so revisiting Home doesn't repeatedly hit an unsupported endpoint.
+  static const _cloudOnNowLimit = 15;
+  static const _cloudOnNowCacheLife = Duration(minutes: 5);
+  static const _cloudOnNowTimeout = Duration(seconds: 3);
+  DateTime? _cloudOnNowFetchedAt;
+  Future<List<Map<String, dynamic>>>? _cloudOnNow;
+
   Future<List> _freeGrid(String channel, String day) {
     final key = '$channel/$day';
     final now = DateTime.now();
@@ -194,14 +203,19 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
     final machineIdFuture = _machineIdForFavorites();
     final channels = <({String key, String epg, Map channel})>[];
     for (final dvr in dvrs) {
-      final lineup = await plexContainer(
-        _dio,
-        '/' + dvr.epg + '/lineups/dvr/channels',
-      );
-      for (final channel in lineup['Channel'] as List? ?? const []) {
-        if (channel is Map) {
-          channels.add((key: dvr.key, epg: dvr.epg, channel: channel));
+      try {
+        final lineup = await plexContainer(
+          _dio,
+          '/' + dvr.epg + '/lineups/dvr/channels',
+        );
+        for (final channel in lineup['Channel'] as List? ?? const []) {
+          if (channel is Map) {
+            channels.add((key: dvr.key, epg: dvr.epg, channel: channel));
+          }
         }
+      } catch (error) {
+        if (_accessDenied(error)) rethrow;
+        // One unavailable tuner must not hide the other DVRs.
       }
     }
     final machineId = await machineIdFuture;
@@ -251,6 +265,8 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
     'Id': _channelId(source, channel['id']),
     'Name': channel['title'] ?? channel['callSign'],
     'Type': 'TvChannel',
+    if (source == plexCloudSource && channel['gridKey'] is String)
+      'PlexGridKey': channel['gridKey'],
     if (favoriteSource != null && channel['id'] != null) ...{
       'PlexFavoriteSource': favoriteSource,
       'PlexFavoriteId': '${channel['id']}',
@@ -353,11 +369,12 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
         sources: dvr.isEmpty ? const [] : const [ChannelGroupSource.dvr],
       );
     }
-    // Don't hold up the channel list if Plex's group metadata is slow.
-    final catalog = await _providerGroups()
-        .onError<Object>(
-          (_, _) => (genres: const <String, String>{}, promoted: null),
-        );
+    // Keep existing groups if the provider metadata is temporarily unavailable.
+    var metadataUnavailable = false;
+    final catalog = await _providerGroups().onError<Object>((_, _) {
+      metadataUnavailable = true;
+      return (genres: const <String, String>{}, promoted: null);
+    });
     return ChannelGroupLineup(
       {
         for (final channel in dvr)
@@ -372,30 +389,62 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
       channels: [...dvr, ...free],
       sources: dvr.isEmpty ? const [] : ChannelGroupSource.values,
       promoted: catalog.promoted,
+      partial: metadataUnavailable,
+      unresolvedChannelIds: metadataUnavailable
+          ? {for (final channel in free) channel['Id'] as String}
+          : null,
     );
   }
 
   /// Every showing on the server's DVRs between [start] and [end], with the
   /// guide entry it belongs to.
-  Future<List<({_Dvr dvr, Map item, Map media})>> _dvrGrid(
+  Future<({
+    List<({_Dvr dvr, Map item, Map media})> showings,
+    Set<String> failedChannelIds,
+  })> _dvrGrid(
     DateTime start,
-    DateTime end,
-  ) async {
+    DateTime end, {
+    Set<String>? channelIds,
+  }) async {
     final showings = <({_Dvr dvr, Map item, Map media})>[];
+    final failedIds = <String>{};
+    Object? firstFailure;
+    StackTrace? firstFailureStack;
+    var succeeded = 0;
     for (final dvr in await _dvrList()) {
-      final grid = await plexContainer(_dio, '/${dvr.epg}/grid', {
-        'type': '1,4',
-        'beginsAt<': _seconds(end),
-        'endsAt>': _seconds(start),
-      });
-      for (final item in grid['Metadata'] as List? ?? const []) {
-        if (item is! Map) continue;
-        for (final media in item['Media'] as List? ?? const []) {
-          if (media is Map) showings.add((dvr: dvr, item: item, media: media));
+      final requested = channelIds == null
+          ? null
+          : {
+              for (final id in channelIds)
+                if (plexChannelOf(id)?.source == dvr.key) id,
+            };
+      if (requested?.isEmpty == true) continue;
+      try {
+        final grid = await plexContainer(_dio, '/${dvr.epg}/grid', {
+          'type': '1,4',
+          'beginsAt<': _seconds(end),
+          'endsAt>': _seconds(start),
+        });
+        final fromDvr = <({_Dvr dvr, Map item, Map media})>[];
+        for (final item in grid['Metadata'] as List? ?? const []) {
+          if (item is! Map) continue;
+          for (final media in item['Media'] as List? ?? const []) {
+            if (media is Map) fromDvr.add((dvr: dvr, item: item, media: media));
+          }
         }
+        showings.addAll(fromDvr);
+        succeeded++;
+      } catch (error, stack) {
+        if (_accessDenied(error)) Error.throwWithStackTrace(error, stack);
+        failedIds.addAll(requested ?? const <String>{});
+        firstFailure ??= error;
+        firstFailureStack ??= stack;
       }
     }
-    return showings;
+    if (succeeded == 0 && firstFailure != null) {
+      Error.throwWithStackTrace(firstFailure!, firstFailureStack!);
+    }
+    return (showings: showings, failedChannelIds: failedIds);
   }
 
   static Map<String, dynamic>? _dvrProgram(_Dvr dvr, Map item, Map media) {
@@ -448,19 +497,19 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
 
   /// The DVR showings between [start] and [end] as programs, with any
   /// recording set for them.
-  Future<List<Map<String, dynamic>>> _dvrAirings(
+  Future<_Airings> _dvrAirings(
     DateTime start,
     DateTime end, {
     Set<String>? channelIds,
   }) async {
     final grabs = _grabs().catchError((_) => <_Grab>[]);
-    final showings = await _dvrGrid(start, end);
+    final grid = await _dvrGrid(start, end, channelIds: channelIds);
     final scheduled = {
       for (final grab in await grabs)
         if (grab.op['status'] != 'error') grab.program['Id']: grab.op,
     };
     final programs = <Map<String, dynamic>>[];
-    for (final showing in showings) {
+    for (final showing in grid.showings) {
       final program = _dvrProgram(showing.dvr, showing.item, showing.media);
       if (program == null) continue;
       if (channelIds != null && !channelIds.contains(program['ChannelId'])) {
@@ -474,7 +523,7 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
       }
       programs.add(program);
     }
-    return programs;
+    return (items: programs, failedChannelIds: grid.failedChannelIds);
   }
 
   /// The free channels' guide answers one channel and one UTC day at a time.
@@ -553,7 +602,7 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
               return null;
             }
           }(),
-      ]);
+      ], eagerError: true);
       for (final grid in grids) {
         if (grid == null) continue;
         successfulGrids++;
@@ -656,15 +705,12 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
     final results = await Future.wait([
       if (!cloudOnly && (channelIds == null || channelIds.length > free.length))
         attempt(
-          () async => (
-            items: await _dvrAirings(start, end, channelIds: channelIds?.toSet()),
-            failedChannelIds: <String>{},
-          ),
+          () => _dvrAirings(start, end, channelIds: channelIds?.toSet()),
           dvrIds,
         ),
       if (free.isNotEmpty)
         attempt(() => _freeAirings(start, end, free), freeIds),
-    ]);
+    ], eagerError: true);
     // Preserve the healthy source while retaining failed channel IDs for Retry.
     if (results.isNotEmpty && results.every((result) => result.error != null)) {
       final failure = results.first;
@@ -734,19 +780,168 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
     };
   }
 
-  /// What's on the tuner right now. The free channels would take a guide
-  /// request each, so they're left out.
+  static int? _hubEpochSeconds(Object? value) {
+    final seconds = switch (value) {
+      int number => number,
+      num number => number.toInt(),
+      String text => int.tryParse(text),
+      _ => null,
+    };
+    if (seconds == null) return null;
+    // Some providers return milliseconds instead of Plex grid seconds.
+    return seconds > 100000000000 ? seconds ~/ 1000 : seconds;
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchCloudOnNow() async {
+    // Plex's Home hub is a bounded alternative to one EPG grid call per
+    // channel. This experimental endpoint is not guaranteed to be available.
+    final response = await _dio.get<Map<String, dynamic>>(
+      '$plexCloudEpg/hubs/sections/home/whatsOnNow',
+      queryParameters: {
+        'contentDirectoryID': 'home',
+        'includeDetails': 1,
+        'includeExternalMetadata': 1,
+        'includeLibraryPlaylists': 1,
+        'includeMeta': 1,
+        'includeRecentChannels': 1,
+        'includeStations': 1,
+        'includeTypeFirst': 1,
+        'libraryHubsOnly': 1,
+        'X-Plex-Container-Start': 0,
+        'X-Plex-Container-Size': _cloudOnNowLimit,
+      },
+      options: _cloudOptions,
+    );
+    final container = response.data?['MediaContainer'];
+    if (container is! Map) return [];
+
+    // Plex hubs can return Metadata directly or nested inside Hub entries.
+    final pending = <Object?>[container];
+    final rows = <Map>[];
+    for (var i = 0; i < pending.length; i++) {
+      final value = pending[i];
+      if (value is! Map) continue;
+      if (value['Media'] is List) rows.add(value);
+      for (final key in ['Hub', 'Metadata', 'Channel', 'Directory']) {
+        final child = value[key];
+        if (child is List) {
+          pending.addAll(child);
+        } else if (child is Map) {
+          pending.add(child);
+        }
+      }
+    }
+    if (rows.isEmpty) return [];
+
+    // Use the canonical IDs that the guide and player can tune. Grid keys
+    // can also appear as the trailing portion of a provider channel ID.
+    final aliases = <String, String>{};
+    for (final channel in await _freeChannels()) {
+      final id = plexChannelOf(channel['Id']?.toString() ?? '');
+      if (id == null || id.source != plexCloudSource) continue;
+      for (final alias in <String?>[
+        id.channel,
+        id.channel.split('-').last,
+        channel['PlexGridKey'] as String?,
+      ]) {
+        if (alias != null && alias.isNotEmpty) {
+          aliases.putIfAbsent(alias, () => id.channel);
+        }
+      }
+    }
+
+    final now = _seconds(DateTime.now());
+    final programs = <Map<String, dynamic>>[];
+    final usedChannels = <String>{};
+    for (final row in rows) {
+      final mediaList = row['Media'];
+      if (mediaList is! List) continue;
+      for (final media in mediaList.whereType<Map>()) {
+        final reference = media['channelIdentifier'] ??
+            media['channelId'] ??
+            media['channelGridKey'] ??
+            row['channelIdentifier'] ??
+            row['channelId'] ??
+            row['channelGridKey'] ??
+            row['gridKey'];
+        final value = reference is Map
+            ? reference['id'] ?? reference['gridKey']
+            : reference;
+        if (value == null) continue;
+        final raw = value.toString();
+        final parsed = plexChannelOf(raw);
+        final key = parsed?.source == plexCloudSource ? parsed!.channel : raw;
+        final channel = aliases[key] ?? aliases[key.split('-').last];
+        if (channel == null || usedChannels.contains(channel)) continue;
+
+        final beginsAt = _hubEpochSeconds(
+          media['beginsAt'] ?? row['beginsAt'],
+        );
+        final endsAt = _hubEpochSeconds(media['endsAt'] ?? row['endsAt']);
+        if (beginsAt == null ||
+            endsAt == null ||
+            beginsAt > now ||
+            endsAt <= now) {
+          continue;
+        }
+        final mapped = _program(
+          plexCloudSource,
+          channel,
+          row,
+          {...media, 'beginsAt': beginsAt, 'endsAt': endsAt},
+        );
+        if (mapped == null || mapped['Name'] is! String ||
+            (mapped['Name'] as String).trim().isEmpty) {
+          continue;
+        }
+        usedChannels.add(channel);
+        programs.add(mapped);
+        if (programs.length >= _cloudOnNowLimit) return programs;
+      }
+    }
+    return programs;
+  }
+
+  Future<List<Map<String, dynamic>>> _freeOnNow() {
+    final now = DateTime.now();
+    if (_cloudOnNow != null &&
+        _cloudOnNowFetchedAt != null &&
+        now.difference(_cloudOnNowFetchedAt!) < _cloudOnNowCacheLife) {
+      return _cloudOnNow!;
+    }
+    _cloudOnNowFetchedAt = now;
+    return _cloudOnNow = _fetchCloudOnNow()
+        .timeout(_cloudOnNowTimeout)
+        .catchError((Object _) => <Map<String, dynamic>>[]);
+  }
+
+  /// Prefer the user's own DVR channels; Free TV fills the remaining Home
+  /// slots. An unavailable Plex hub never discards working DVR programs.
   @override
   Future<Map<String, dynamic>> getRecommendedPrograms({
     int? limit,
     bool? isAiring,
   }) async {
-    if (cloudOnly) return plexItemsResult([]);
     final now = DateTime.now();
-    final programs = await _dvrAirings(now, now);
-    return plexItemsResult(
-      limit == null ? programs : programs.take(limit).toList(),
-    );
+    final dvr = <Map<String, dynamic>>[];
+    if (!cloudOnly) {
+      try {
+        dvr.addAll((await _dvrAirings(now, now)).items);
+      } on DioException catch (error) {
+        if (_accessDenied(error)) rethrow;
+        // An unavailable DVR must not prevent loading the Free TV hub.
+      }
+    }
+    final programs = <Map<String, dynamic>>[
+      ...(limit == null ? dvr : dvr.take(limit)),
+    ];
+    final remaining = limit == null
+        ? _cloudOnNowLimit
+        : (limit - programs.length).clamp(0, _cloudOnNowLimit).toInt();
+    if (remaining > 0) {
+      programs.addAll((await _freeOnNow()).take(remaining));
+    }
+    return plexItemsResult(programs);
   }
 
   @override
@@ -885,7 +1080,7 @@ class PlexLiveTvApi implements LiveTvApi, DirectChannelGroupApi {
       airing.beginsAt * 1000,
       isUtc: true,
     );
-    final showing = (await _dvrGrid(at, at)).firstWhere(
+    final showing = (await _dvrGrid(at, at)).showings.firstWhere(
       (s) =>
           s.dvr.key == airing.source &&
           s.media['beginsAt'] == airing.beginsAt &&

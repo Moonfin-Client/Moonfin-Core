@@ -8,9 +8,24 @@ class _FakeServer extends Interceptor {
 
   final Object? Function(RequestOptions options) answer;
   final requests = <RequestOptions>[];
+  bool Function(RequestOptions)? failWhen;
+  int? Function()? failureStatus;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    if (failWhen?.call(options) == true) {
+      final code = failureStatus?.call();
+      handler.reject(DioException(
+        requestOptions: options,
+        type: code == null
+            ? DioExceptionType.connectionError
+            : DioExceptionType.badResponse,
+        response: code == null
+            ? null
+            : Response(requestOptions: options, statusCode: code),
+      ));
+      return;
+    }
     requests.add(options);
     handler.resolve(Response(requestOptions: options, data: answer(options)));
   }
@@ -42,7 +57,8 @@ const _teletubbies = {
   ],
 };
 
-(Dio, _FakeServer) _server() {
+(Dio, _FakeServer) _server({bool secondDvr = false}) {
+  final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
   final server = _FakeServer(
     (options) => switch (options.uri.path) {
       '/identity' => {
@@ -52,6 +68,8 @@ const _teletubbies = {
         'MediaContainer': {
           'Dvr': [
             {'key': '2', 'epgIdentifier': 'tv.plex.providers.epg.xmltv:2'},
+            if (secondDvr)
+              {'key': '3', 'epgIdentifier': 'tv.plex.providers.epg.xmltv:3'},
           ],
         },
       },
@@ -210,6 +228,25 @@ const _teletubbies = {
           ],
         },
       },
+      '/hubs/sections/home/whatsOnNow' => {
+        'MediaContainer': {
+          'Hub': [
+            {
+              'Metadata': [
+                {
+                  'type': 'episode',
+                  'title': 'Episode 2',
+                  'grandparentTitle': 'Free TV show',
+                  'Media': [
+                    {'beginsAt': now - 60, 'endsAt': now + 3600,
+                     'channelIdentifier': 'abc-66635fc0'},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
       _ => {'MediaContainer': <String, dynamic>{}},
     },
   );
@@ -254,6 +291,43 @@ void main() {
     },
   );
 
+  test('a failed DVR preserves healthy DVR channels and programs', () async {
+    final (dio, server) = _server(secondDvr: true);
+    var badGridRequests = 0;
+    server.failWhen = (options) {
+      final failed = options.uri.path.startsWith('/tv.plex.providers.epg.xmltv:3/');
+      if (failed && options.uri.path.endsWith('/grid')) badGridRequests++;
+      return failed;
+    };
+
+    final api = PlexLiveTvApi(dio);
+    final lineup = await api.getChannelGroups();
+    expect(lineup.groupsByChannelId['channel-2-4'], {'source:dvr'});
+    expect(lineup.sources.where((s) => s.groupId == 'source:dvr'), hasLength(1));
+
+    final start = DateTime.utc(2026, 10, 22);
+    final end = DateTime.utc(2026, 10, 23);
+    final partial = await api.getGuide(
+      startDate: start,
+      endDate: end,
+      channelIds: ['channel-2-4', 'channel-3-9'],
+    );
+    expect(partial['FailedChannelIds'], ['channel-3-9']);
+    expect(
+      (partial['Items'] as List).map((p) => p['ChannelId']).toSet(),
+      {'channel-2-4'},
+    );
+
+    final previousRequests = badGridRequests;
+    final healthy = await api.getGuide(
+      startDate: start,
+      endDate: end,
+      channelIds: ['channel-2-4'],
+    );
+    expect(healthy.containsKey('FailedChannelIds'), isFalse);
+    expect(badGridRequests, previousRequests);
+  });
+
   test('Plex joins genres and loads Featured on demand', () async {
     final (dio, server) = _server();
     final api = PlexLiveTvApi(dio);
@@ -280,25 +354,37 @@ void main() {
 
 
 
+  test('Plex retains unresolved genre groups when metadata fails and recovers', () async {
+    final (dio, server) = _server();
+    var metadataUnavailable = true;
+    server.failWhen = (request) => metadataUnavailable &&
+        request.uri.host == 'epg.provider.plex.tv' &&
+        request.uri.path == '/';
+
+    final api = PlexLiveTvApi(dio);
+    final incomplete = await api.getChannelGroups();
+    expect(incomplete.partial, isTrue);
+    expect(incomplete.unresolvedChannelIds, {
+      'channel-plex-abc-66635fc0',
+      'channel-plex-news-extra',
+    });
+    expect(incomplete.groupsByChannelId['channel-2-4'], {'source:dvr'});
+    expect(incomplete.groupsByChannelId['channel-plex-abc-66635fc0'],
+        {'source:plexFreeTv'});
+    expect(incomplete.channels, hasLength(3));
+
+    metadataUnavailable = false;
+    final recovered = await api.getChannelGroups();
+    expect(recovered.partial, isFalse);
+    expect(recovered.unresolvedChannelIds, isNull);
+    expect(recovered.groupsByChannelId['channel-plex-abc-66635fc0'],
+        {'source:plexFreeTv', 'Movies', 'News'});
+    expect(server.requests.where((r) => r.uri.path == '/'), hasLength(1));
+  });
+
   test('cloud-only lineup failures propagate while Plex DVRs remain usable', () async {
     final (dio, server) = _server();
-    dio.interceptors.insert(
-      0,
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          if (options.uri.path == '/lineups/plex/channels') {
-            handler.reject(
-              DioException(
-                requestOptions: options,
-                type: DioExceptionType.connectionError,
-              ),
-            );
-          } else {
-            handler.next(options);
-          }
-        },
-      ),
-    );
+    server.failWhen = (request) => request.uri.path == '/lineups/plex/channels';
 
     final cloud = PlexLiveTvApi(dio, cloudOnly: true);
     final cloudFailure = isA<DioException>().having(
@@ -322,6 +408,60 @@ void main() {
 
 
 
+
+  test('Plex On Now uses a cached hub after the DVR lineup', () async {
+    const hubPath = '/hubs/sections/home/whatsOnNow';
+    final (dio, server) = _server();
+    final cloud = PlexLiveTvApi(dio, cloudOnly: true);
+    final free = (await cloud.getRecommendedPrograms(limit: 15))['Items'] as List;
+    expect(free, hasLength(1));
+    expect(free.single['ChannelId'], 'channel-plex-abc-66635fc0');
+    expect(free.single['Name'], 'Free TV show');
+    await cloud.getRecommendedPrograms(limit: 15);
+    expect(server.requests.where((r) => r.uri.path == hubPath), hasLength(1));
+    expect(server.requests.any((r) => r.uri.path == '/grid'), isFalse);
+
+    final dvr = PlexLiveTvApi(dio);
+    expect((await dvr.getRecommendedPrograms(limit: 2))['Items'], hasLength(2));
+    // Three DVR airings fill the first three slots; Free TV fills the fourth.
+    final combined = (await dvr.getRecommendedPrograms(limit: 4))['Items'] as List;
+    expect(combined.map((item) => item['ChannelId']), [
+      'channel-2-4', 'channel-2-9', 'channel-2-4',
+      'channel-plex-abc-66635fc0',
+    ]);
+  });
+
+  test('an unavailable Plex hub does not discard DVR On Now', () async {
+    final (dio, server) = _server();
+    server.failWhen = (request) =>
+        request.uri.path == '/hubs/sections/home/whatsOnNow';
+    server.failureStatus = () => 404;
+    // Request room for the Free TV hub so its failure is actually exercised.
+    final programs = (await PlexLiveTvApi(dio)
+        .getRecommendedPrograms(limit: 4))['Items'] as List;
+    expect(programs.map((item) => item['ChannelId']), [
+      'channel-2-4', 'channel-2-9', 'channel-2-4',
+    ]);
+  });
+
+  test('Plex On Now falls back to Free TV on DVR transport failures', () async {
+    final (dio, server) = _server();
+    var accessDenied = false;
+    server.failWhen = (request) =>
+        request.uri.path == '/tv.plex.providers.epg.xmltv:2/grid';
+    server.failureStatus = () => accessDenied ? 401 : null;
+
+    final programs = (await PlexLiveTvApi(dio)
+        .getRecommendedPrograms(limit: 3))['Items'] as List;
+    expect(programs.map((item) => item['ChannelId']), ['channel-plex-abc-66635fc0']);
+    expect(server.requests.any((r) => r.uri.path == '/hubs/sections/home/whatsOnNow'), isTrue);
+
+    accessDenied = true;
+    await expectLater(
+      PlexLiveTvApi(dio).getRecommendedPrograms(limit: 3),
+      throwsA(isA<DioException>().having((e) => e.response?.statusCode, 'status', 401)),
+    );
+  });
 
   test('every showing of a program is a program of its own', () async {
     final (dio, server) = _server();

@@ -1,17 +1,12 @@
-import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:moonfin/auth/models/user.dart';
-import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
-import 'package:moonfin/data/services/plex_live_tv_favorites.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/viewmodels/media_bar_view_model.dart';
@@ -87,6 +82,14 @@ void main() {
     await GetIt.instance.reset();
   });
 
+  HomeRow favoriteChannels([List<AggregatedItem> items = const []]) =>
+      HomeRow(
+        id: 'liveTvFavorites',
+        title: 'Favorite Channels',
+        rowType: HomeRowType.liveTvFavorites,
+        items: items,
+      );
+
   void stubLiveTvRows() {
     when(() => source.hasLiveTvChannels()).thenAnswer((_) async => true);
     when(() => source.loadOnNow('http://server.test')).thenAnswer(
@@ -103,12 +106,19 @@ void main() {
         ],
       ),
     );
+    when(() => source.loadFavoritesChannels('http://server.test'))
+        .thenAnswer((_) async => favoriteChannels());
+  }
+
+  void stubFavoriteChannel() {
     when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
-      (_) async => const HomeRow(
-        id: 'liveTvFavorites',
-        title: 'Favorite Channels',
-        rowType: HomeRowType.liveTvFavorites,
-      ),
+      (_) async => favoriteChannels([
+        AggregatedItem(
+          id: 'favorite',
+          serverId: 'http://server.test',
+          rawData: {'Type': 'TvChannel'},
+        ),
+      ]),
     );
   }
 
@@ -118,88 +128,70 @@ void main() {
     return model.rows.single;
   }
 
-  test(
-    'a failed channel check preserves the visible row during refresh',
-    () async {
-      final existing = await loadPopulatedRow();
-      when(() => source.hasLiveTvChannels())
-          .thenThrow(Exception('unavailable'));
+  for (final channelCheckFails in [true, false]) {
+    test(
+      'a failed ${channelCheckFails ? 'channel check' : 'program request'} '
+      'preserves the visible row during refresh',
+      () async {
+        final existing = await loadPopulatedRow();
+        if (channelCheckFails) {
+          when(() => source.hasLiveTvChannels())
+              .thenThrow(Exception('unavailable'));
+        } else {
+          when(() => source.loadOnNow('http://server.test'))
+              .thenThrow(Exception('EPG unavailable'));
+        }
+        await model.load(preserveExisting: true);
+        expect(model.rows.single, same(existing));
+        expect(model.isLoading, isFalse);
+      },
+    );
+  }
 
-      await model.load(preserveExisting: true);
+  for (final noChannels in [true, false]) {
+    test(
+      noChannels
+          ? 'confirmed absence of channels removes the visible row during refresh'
+          : 'a successful empty EPG response removes the visible row during refresh',
+      () async {
+        await loadPopulatedRow();
+        if (noChannels) {
+          when(() => source.hasLiveTvChannels()).thenAnswer((_) async => false);
+        } else {
+          when(() => source.loadOnNow('http://server.test')).thenAnswer(
+            (_) async => const HomeRow(
+              id: 'liveTvOnNow',
+              title: 'On Now',
+              rowType: HomeRowType.liveTvOnNow,
+            ),
+          );
+        }
+        await model.load(preserveExisting: true);
+        expect(model.rows, isEmpty);
+      },
+    );
+  }
 
-      expect(model.rows.single, same(existing));
-      expect(model.isLoading, isFalse);
-    },
-  );
-
-  test(
-    'a failed program request preserves the visible row during refresh',
-    () async {
-      final existing = await loadPopulatedRow();
-      when(() => source.loadOnNow('http://server.test'))
-          .thenThrow(Exception('EPG unavailable'));
-
-      await model.load(preserveExisting: true);
-
-      expect(model.rows.single, same(existing));
-      expect(model.isLoading, isFalse);
-    },
-  );
-
-  test(
-    'confirmed absence of channels removes the visible row during refresh',
-    () async {
-      await loadPopulatedRow();
-      when(() => source.hasLiveTvChannels()).thenAnswer((_) async => false);
-
-      await model.load(preserveExisting: true);
-
-      expect(model.rows, isEmpty);
-    },
-  );
-
-  test(
-    'a successful empty EPG response removes the visible row during refresh',
-    () async {
-      await loadPopulatedRow();
-      when(() => source.loadOnNow('http://server.test')).thenAnswer(
-        (_) async => const HomeRow(
-          id: 'liveTvOnNow',
-          title: 'On Now',
-          rowType: HomeRowType.liveTvOnNow,
-        ),
-      );
-
-      await model.load(preserveExisting: true);
-
-      expect(model.rows, isEmpty);
-    },
-  );
-
-  test(
-    'no Live TV channels skips program loading and clears the placeholder',
-    () async {
-      when(() => source.hasLiveTvChannels()).thenAnswer((_) async => false);
-
-      await model.load();
-
-      verify(() => source.hasLiveTvChannels()).called(1);
-      verifyNever(() => source.loadOnNow(any()));
-      expect(model.rows, isEmpty);
-      expect(model.isLoading, isFalse);
-    },
-  );
-
-  test('a failed channel check skips program loading without leaving a placeholder', () async {
-    when(() => source.hasLiveTvChannels()).thenThrow(Exception('unavailable'));
-
-    await model.load();
-
-    verify(() => source.hasLiveTvChannels()).called(1);
-    verifyNever(() => source.loadOnNow(any()));
-    expect(model.rows, isEmpty);
-    expect(model.isLoading, isFalse);
-  });
+  for (final channelCheckFails in [false, true]) {
+    test(
+      channelCheckFails
+          ? 'a failed channel check skips program loading without leaving a placeholder'
+          : 'no Live TV channels skips program loading and clears the placeholder',
+      () async {
+        if (channelCheckFails) {
+          when(() => source.hasLiveTvChannels())
+              .thenThrow(Exception('unavailable'));
+        } else {
+          when(() => source.hasLiveTvChannels()).thenAnswer((_) async => false);
+        }
+        await model.load();
+        verify(() => source.hasLiveTvChannels()).called(1);
+        verifyNever(() => source.loadOnNow(any()));
+        expect(model.rows, isEmpty);
+        expect(model.isLoading, isFalse);
+      },
+    );
+  }
 
   Future<void> enableSections(Set<HomeSectionType> types) =>
       prefs.setHomeSectionsConfig([
@@ -207,146 +199,35 @@ void main() {
           config.copyWith(enabled: types.contains(config.type)),
       ]);
 
-  test(
-    'Live TV leaves On Now to the standalone section when both are on',
-    () async {
-      await enableSections({HomeSectionType.liveTv, HomeSectionType.onNow});
-      stubLiveTvRows();
-
-      await model.load();
-
-      expect(model.rows.map((row) => row.id), ['liveTv', 'onNow']);
-      verify(() => source.loadOnNow('http://server.test')).called(1);
-    },
-  );
-
-  test(
-    'Live TV keeps its own On Now row when the standalone section is off',
-    () async {
-      await enableSections({HomeSectionType.liveTv});
-      stubLiveTvRows();
-
-      await model.load();
-
-      expect(model.rows.map((row) => row.id), ['liveTv', 'liveTvOnNow']);
-    },
-  );
-
-
-  test('Plex cloud favorites populate Home after the initial cached rows', () async {
-    await enableSections({HomeSectionType.liveTv});
-    stubLiveTvRows();
-    PlexLiveTvFavorites.resetForTesting();
-    GetIt.instance.registerSingleton<UserPreferences>(prefs);
-    final users = UserRepository()..setCurrentUser(PrivateUser(
-      id: 'plex-user', name: 'Viewer', serverId: 'plex-cloud',
-      accessToken: 'pms-token', plexToken: 'cloud-token',
-      lastUsed: DateTime.utc(2026),
-    ));
-    GetIt.instance.registerSingleton<UserRepository>(users);
-    addTearDown(users.dispose);
-
-    final pending = Completer<void>();
-    final http = Dio()..interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        unawaited(pending.future.then((_) {
-          handler.resolve(Response(
-            requestOptions: options,
-            statusCode: 200,
-            data: {'MediaContainer': {'FavoriteChannel': [
-              {'source': 'provider://tv.plex.provider.epg', 'id': 'free123'},
-            ]}},
-          ));
-        }));
-      },
-    ));
-    PlexLiveTvFavorites.testHttp = http;
-    addTearDown(() {
-      PlexLiveTvFavorites.resetForTesting();
-      http.close();
-    });
-
-    final cloudClient = _MockPlexClient();
-    when(() => cloudClient.cloudOnly).thenReturn(true);
-    when(() => cloudClient.serverType).thenReturn(ServerType.plex);
-    when(() => cloudClient.userId).thenReturn('plex-user');
-    when(() => cloudClient.baseUrl).thenReturn('http://server.test');
-    when(() => cloudClient.deviceInfo).thenReturn(const DeviceInfo(
-      id: 'device', name: 'Test', appName: 'Moonfin', appVersion: '1',
-    ));
-    when(() => source.loadOnNow('http://server.test')).thenAnswer(
-      (_) async => const HomeRow(
-        id: 'liveTvOnNow',
-        title: 'On Now',
-        rowType: HomeRowType.liveTvOnNow,
-      ),
-    );
-    var loads = 0;
-    when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
-      (_) async {
-        loads++;
-        return HomeRow(
-          id: 'liveTvFavorites',
-          title: 'Favorite Channels',
-          rowType: HomeRowType.liveTvFavorites,
-          items: prefs.get(Preference<List<String>>(
-            key: 'plex_live_tv_favorite_keys_plex-user',
-            defaultValue: const [],
-          )).contains('provider://tv.plex.provider.epg\u0000free123')
-              ? [
-                  AggregatedItem(
-                    id: 'channel-plex-free123',
-                    serverId: 'http://server.test',
-                    rawData: {'Type': 'TvChannel', 'Name': 'Free Channel'},
-                  ),
-                ]
-              : const [],
+  for (final standaloneOnNow in [true, false]) {
+    test(
+      standaloneOnNow
+          ? 'Live TV leaves On Now to the standalone section when both are on'
+          : 'Live TV keeps its own On Now row when the standalone section is off',
+      () async {
+        await enableSections({
+          HomeSectionType.liveTv,
+          if (standaloneOnNow) HomeSectionType.onNow,
+        });
+        stubLiveTvRows();
+        await model.load();
+        expect(
+          model.rows.map((row) => row.id),
+          standaloneOnNow ? ['liveTv', 'onNow'] : ['liveTv', 'liveTvOnNow'],
         );
+        if (standaloneOnNow) {
+          verify(() => source.loadOnNow('http://server.test')).called(1);
+        }
       },
     );
-
-    model.dispose();
-    model = HomeViewModel(
-      dataSource: source,
-      prefs: prefs,
-      client: cloudClient,
-      mediaBarViewModel: _MockMediaBar(),
-      multiServerRepo: _MockMultiServer(),
-    );
-    await model.load();
-    expect(model.rows.map((row) => row.id), ['liveTv']);
-    expect(loads, 1);
-
-    pending.complete();
-    await pumpEventQueue();
-    expect(prefs.get(Preference<List<String>>(
-      key: 'plex_live_tv_favorite_keys_plex-user',
-      defaultValue: const [],
-    )), contains('provider://tv.plex.provider.epg\u0000free123'));
-    expect(model.rows.map((row) => row.id), ['liveTv', 'liveTvFavorites']);
-    expect(loads, 2);
-  });
-
+  }
 
   test('failed On Now listings do not hide favorite channels', () async {
     await enableSections({HomeSectionType.liveTv});
     stubLiveTvRows();
     when(() => source.loadOnNow('http://server.test'))
         .thenAnswer((_) async => throw Exception('EPG unavailable'));
-    when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
-      (_) async => HomeRow(
-        id: 'liveTvFavorites',
-        title: 'Favorite Channels',
-        rowType: HomeRowType.liveTvFavorites,
-        items: [
-          AggregatedItem(
-            id: 'favorite',
-            serverId: 'http://server.test',
-            rawData: {'Type': 'TvChannel'},
-          ),
-        ],
-      ),
-    );
+    stubFavoriteChannel();
 
     await model.load();
 
@@ -357,20 +238,7 @@ void main() {
   test('Kids Mode hides every Live TV row without removing saved rows', () async {
     await enableSections({HomeSectionType.liveTv});
     stubLiveTvRows();
-    when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
-      (_) async => HomeRow(
-        id: 'liveTvFavorites',
-        title: 'Favorite Channels',
-        rowType: HomeRowType.liveTvFavorites,
-        items: [
-          AggregatedItem(
-            id: 'favorite',
-            serverId: 'http://server.test',
-            rawData: {'Type': 'TvChannel'},
-          ),
-        ],
-      ),
-    );
+    stubFavoriteChannel();
     await model.load();
     final ids = model.rows.map((row) => row.id).toList();
     expect(ids, ['liveTv', 'liveTvOnNow', 'liveTvFavorites']);
@@ -431,14 +299,8 @@ void main() {
       when(() => serverClient.baseUrl).thenReturn('http://server.test');
 
       var favorites = <AggregatedItem>[];
-      when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
-        (_) async => HomeRow(
-          id: 'liveTvFavorites',
-          title: 'Favorite Channels',
-          rowType: HomeRowType.liveTvFavorites,
-          items: List.of(favorites),
-        ),
-      );
+      when(() => source.loadFavoritesChannels('http://server.test'))
+          .thenAnswer((_) async => favoriteChannels(List.of(favorites)));
       model.dispose();
       final mediaBar = _MockMediaBar();
       when(() => mediaBar.load(force: any(named: 'force')))

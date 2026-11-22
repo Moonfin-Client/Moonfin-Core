@@ -450,7 +450,9 @@ class HomeViewModel extends ChangeNotifier {
               for (final config in activeConfigs)
                 if (config.isBuiltin &&
                     config.type != HomeSectionType.liveTv &&
-                    (_isSeerrSectionType(config.type) ||
+                    ((!_prefs.get(UserPreferences.kidsModeEnabled) &&
+                            config.type == HomeSectionType.onNow) ||
+                        _isSeerrSectionType(config.type) ||
                         _isTmdbSectionType(config.type) ||
                         externalCharts.containsKey(config.type) ||
                         config.type == HomeSectionType.mdblistWatchingNow))
@@ -1222,9 +1224,9 @@ class HomeViewModel extends ChangeNotifier {
   /// small request per return. Once there are some, the row is loaded back
   /// in the user's section order.
   Future<void> _restoreMissingOnNow() async {
-    final standalone = !_cloudOnlyPlex &&
+    final standalone =
         _prefs.activeHomeSections.contains(HomeSectionType.onNow);
-    // Plex Cloud shows On Now inside Live TV, even if a separate row is enabled.
+    // On Now has the same standalone/Live TV placement on every server.
     if (!standalone && !_rows.any((row) => row.id == 'liveTv')) return;
     final HomeRow fresh;
     try {
@@ -1920,8 +1922,7 @@ class HomeViewModel extends ChangeNotifier {
         ];
         try {
           // The standalone On Now section shows this row in its own spot.
-          if (_cloudOnlyPlex ||
-              !_prefs.activeHomeSections.contains(HomeSectionType.onNow)) {
+          if (!_prefs.activeHomeSections.contains(HomeSectionType.onNow)) {
             final onNow = await _dataSource.loadOnNow(_serverId);
             if (onNow.items.isNotEmpty) rows.add(onNow);
           }
