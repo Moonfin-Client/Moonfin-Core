@@ -31,6 +31,8 @@ import '../../widgets/allow_self_signed_dialog.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/server_type_icon.dart';
+import '../../widgets/settings/settings_panel.dart';
+import '../settings/settings_side_panel.dart';
 import 'add_server_dialog.dart';
 
 final _kAccent = AppColorScheme.accent;
@@ -637,6 +639,25 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     onPressed: _isConnecting ? null : _allowSelfSignedAndRetry,
                     icon: const Icon(Icons.gpp_maybe_outlined, size: 16),
                     label: l10n.settingsAllowSelfSignedCerts,
+                  ),
+                );
+              }
+
+              // A proxy or a gatekeeper that filters on the User-Agent has to be
+              // settable before any server answers, so the connection screen
+              // carries the same Network screen Settings does. Otherwise a user
+              // who cannot reach their server can never reach the fix for it.
+              if (!PlatformDetection.isWeb) {
+                actions.add(
+                  _buildFooterActionButton(
+                    onPressed: _isConnecting
+                        ? null
+                        : () => context.pushSettingsScreen(
+                            networkSettingsScreen(),
+                            autofocus: false,
+                          ),
+                    icon: const Icon(Icons.lan_outlined, size: 16),
+                    label: l10n.settingsNetwork,
                   ),
                 );
               }

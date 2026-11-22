@@ -7,6 +7,7 @@ class _EditableStringPreferenceTile extends StatefulWidget {
   final String hintText;
   final Future<String?> Function()? pickPath;
   final void Function(String)? onChanged;
+  final bool autofocus;
 
   const _EditableStringPreferenceTile({
     required this.preference,
@@ -15,6 +16,7 @@ class _EditableStringPreferenceTile extends StatefulWidget {
     required this.hintText,
     this.pickPath,
     this.onChanged,
+    this.autofocus = false,
   });
 
   @override
@@ -50,6 +52,7 @@ class _EditableStringPreferenceTileState
     return ValueListenableBuilder<String>(
       valueListenable: _binding,
       builder: (_, value, _) => _TvSettingsListTile(
+        autofocus: widget.autofocus,
         leading: Icon(widget.icon),
         title: Text(widget.title),
         subtitle: Text(_displaySubtitle(context, value)),

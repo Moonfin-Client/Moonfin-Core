@@ -177,6 +177,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.tune,
     open: () => push(const _GeneralScreen()),
   );
+  final network = _SearchSection(
+    slug: 'network',
+    path: [l10n.account, l10n.settingsNetwork],
+    icon: Icons.lan_outlined,
+    open: () => push(const _NetworkSettingsScreen()),
+  );
   final style = _SearchSection(
     slug: 'appearance',
     path: [l10n.appearance],
@@ -514,6 +520,44 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.settingsClientCertificates,
         subtitle: l10n.settingsClientCertificatesSubtitle,
         keywords: ['certificate', 'mtls', 'client certificate', 'p12', 'pfx'],
+      ),
+      network.screen(keywords: ['proxy', 'user agent', 'client name', 'SenPlayer']),
+      network.leaf(
+        'pref_proxy_url',
+        l10n.settingsProxyUrl,
+        subtitle: l10n.settingsProxyUrlHint,
+        keywords: ['proxy', 'http', 'network'],
+      ),
+      network.leaf(
+        'pref_server_user_agent',
+        l10n.settingsUserAgent,
+        subtitle: l10n.settingsUserAgentHint,
+        keywords: ['user agent', 'header', 'cloudflare', 'blocked'],
+      ),
+      network.leaf(
+        'pref_server_client_name',
+        l10n.settingsClientName,
+        subtitle: l10n.settingsClientNameHint,
+        keywords: ['client', 'device', 'emby', 'authorization', '403'],
+      ),
+      network.leaf(
+        'pref_emby_authorization_header',
+        l10n.settingsEmbyAuthorizationHeader,
+        keywords: ['emby', 'X-Emby-Authorization', 'header'],
+      ),
+      network.leaf(
+        'pref_emby_authorization_scheme',
+        l10n.settingsEmbyAuthorizationScheme,
+        keywords: ['emby', 'MediaBrowser', 'authorization'],
+      ),
+      network.leaf('pref_emby_device_name', l10n.settingsEmbyDeviceName),
+      network.leaf('pref_emby_device_id', l10n.settingsEmbyDeviceId),
+      network.leaf('pref_emby_client_version', l10n.settingsEmbyClientVersion),
+      network.leaf(
+        'pref_server_request_headers',
+        l10n.settingsCustomRequestHeaders,
+        subtitle: l10n.settingsCustomRequestHeadersSubtitle,
+        keywords: ['http', 'header', 'custom'],
       ),
     ],
     pin.screen(keywords: ['lock', 'passcode']),

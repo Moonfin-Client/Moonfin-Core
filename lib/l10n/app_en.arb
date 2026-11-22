@@ -11189,6 +11189,82 @@
   "@settingsClientCertificatesSubtitle": {
     "description": "Subtitle for the client certificates settings entry"
   },
+  "settingsNetwork": "Network",
+  "@settingsNetwork": {
+    "description": "Title of the settings screen holding the proxy and client identity overrides"
+  },
+  "settingsNetworkSubtitle": "Proxy and client identity",
+  "@settingsNetworkSubtitle": {
+    "description": "Subtitle for the settings entry that opens the proxy and client identity screen"
+  },
+  "settingsProxySection": "Proxy",
+  "@settingsProxySection": {
+    "description": "Section header for the proxy address setting"
+  },
+  "settingsProxyUrl": "Proxy address",
+  "@settingsProxyUrl": {
+    "description": "Settings entry for the proxy every server connection is routed through"
+  },
+  "settingsProxyUrlHint": "e.g. 127.0.0.1:7897",
+  "@settingsProxyUrlHint": {
+    "description": "Placeholder in the proxy address field showing the accepted form"
+  },
+  "settingsClientIdentitySection": "Client identity",
+  "@settingsClientIdentitySection": {
+    "description": "Section header for the user agent and client name settings"
+  },
+  "settingsUserAgent": "User-Agent",
+  "@settingsUserAgent": {
+    "description": "Settings entry for the custom User-Agent header"
+  },
+  "settingsUserAgentHint": "e.g. SenPlayer/6.0.6",
+  "@settingsUserAgentHint": {
+    "description": "Placeholder in the User-Agent field"
+  },
+  "settingsClientName": "Client name",
+  "@settingsClientName": {
+    "description": "Settings entry for the app/client name servers see in the authorization header"
+  },
+  "settingsClientNameHint": "e.g. SenPlayer",
+  "@settingsClientNameHint": {
+    "description": "Placeholder in the client name field"
+  },
+  "settingsEmbyAuthorization": "Emby authorization",
+  "@settingsEmbyAuthorization": {
+    "description": "Network settings section for Emby authorization headers"
+  },
+  "settingsEmbyAuthorizationHeader": "Authorization header",
+  "@settingsEmbyAuthorizationHeader": {
+    "description": "Setting for the HTTP header name used to authorize Emby requests"
+  },
+  "settingsEmbyAuthorizationScheme": "Authorization scheme",
+  "@settingsEmbyAuthorizationScheme": {
+    "description": "Setting for the scheme at the start of the Emby authorization header value"
+  },
+  "settingsEmbyDeviceName": "Device name (Device)",
+  "@settingsEmbyDeviceName": {
+    "description": "Setting for the Device field in the Emby authorization header"
+  },
+  "settingsEmbyDeviceId": "Device ID (DeviceId)",
+  "@settingsEmbyDeviceId": {
+    "description": "Setting for the DeviceId field in the Emby authorization header"
+  },
+  "settingsEmbyClientVersion": "Client version (Version)",
+  "@settingsEmbyClientVersion": {
+    "description": "Setting for the Version field in the Emby authorization header"
+  },
+  "settingsEmbyIdentityDefaultHint": "Leave blank to use the Moonfin default",
+  "@settingsEmbyIdentityDefaultHint": {
+    "description": "Hint for optional Emby device identity overrides"
+  },
+  "settingsCustomRequestHeaders": "Custom request headers",
+  "settingsCustomRequestHeadersSubtitle": "Apply headers to the selected server address.",
+  "settingsAddRequestHeader": "Add request header",
+  "settingsRequestHeaderServer": "Server URL",
+  "settingsRequestHeaderName": "Header name",
+  "settingsRequestHeaderValue": "Header value",
+  "settingsRequestHeaderInvalid": "Enter an HTTP or HTTPS server URL and a valid request header.",
+  "settingsRequestHeaderDuplicate": "This server already has a header with that name.",
   "clientCertSubject": "Subject",
   "@clientCertSubject": {
     "description": "Label for the name on a client certificate"

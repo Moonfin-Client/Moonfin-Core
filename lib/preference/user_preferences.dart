@@ -2096,6 +2096,78 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  // Route every server connection through a proxy. Empty means a direct
+  // connection, so this is invisible unless someone needs it. Stored per
+  // device: which proxy reaches a server depends on where this device is, not
+  // on the account.
+  static final proxyUrl = Preference(
+    key: 'pref_proxy_url',
+    defaultValue: '',
+  );
+
+  // Replace the User-Agent Moonfin sends to servers and the outside services
+  // around them. Empty keeps the built-in Moonfin agent. Per device, since it
+  // exists to get past a filter a particular network or server applies.
+  static final serverUserAgent = Preference(
+    key: 'pref_server_user_agent',
+    defaultValue: '',
+  );
+
+  // The client name servers see for this device. Empty keeps the platform
+  // default (e.g. "Moonfin for macOS"). Per device, since it identifies the
+  // app build reaching that server.
+  static final serverClientName = Preference(
+    key: 'pref_server_client_name',
+    defaultValue: '',
+  );
+
+  static const serverRequestHeaders = Preference<List<String>>(
+    key: 'pref_server_request_headers',
+    defaultValue: [],
+  );
+
+  static List<ServerRequestHeader> decodeServerRequestHeaders(
+    List<String> entries,
+  ) {
+    final headers = <ServerRequestHeader>[];
+    for (final entry in entries) {
+      try {
+        final header = ServerRequestHeader.fromJson(jsonDecode(entry));
+        if (header != null) headers.add(header);
+      } on FormatException {
+        // Ignore a malformed entry without discarding the rest.
+      }
+    }
+    return List.unmodifiable(headers);
+  }
+
+  static const embyAuthorizationHeader = EnumPreference(
+    key: 'pref_emby_authorization_header',
+    defaultValue: EmbyAuthorizationHeader.authorization,
+    values: EmbyAuthorizationHeader.values,
+  );
+
+  static const embyAuthorizationScheme = EnumPreference(
+    key: 'pref_emby_authorization_scheme',
+    defaultValue: EmbyAuthorizationScheme.emby,
+    values: EmbyAuthorizationScheme.values,
+  );
+
+  static const embyDeviceName = Preference(
+    key: 'pref_emby_device_name',
+    defaultValue: '',
+  );
+
+  static const embyDeviceId = Preference(
+    key: 'pref_emby_device_id',
+    defaultValue: '',
+  );
+
+  static const embyClientVersion = Preference(
+    key: 'pref_emby_client_version',
+    defaultValue: '',
+  );
+
   static final showShuffleButton = Preference(
     key: 'pref_show_shuffle_button',
     defaultValue: true,

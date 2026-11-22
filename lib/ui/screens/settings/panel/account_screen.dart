@@ -113,6 +113,14 @@ class _AccountScreen extends StatelessWidget {
                     const _ClientCertificatesScreen(),
                   ),
                 ),
+                _TvSettingsListTile(
+                  leading: const Icon(Icons.lan_outlined),
+                  title: Text(l10n.settingsNetwork),
+                  subtitle: Text(l10n.settingsNetworkSubtitle),
+                  onTap: () => context.pushSettingsScreen(
+                    const _NetworkSettingsScreen(),
+                  ),
+                ),
               ],
             ),
           ],

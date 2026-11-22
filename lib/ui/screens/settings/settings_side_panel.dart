@@ -155,6 +155,7 @@ part 'panel/detail_sections_screen.dart';
 part 'panel/audio_preferences_screen.dart';
 part 'panel/automation_queue_screen.dart';
 part 'panel/advanced_options_screen.dart';
+part 'panel/network_settings_screen.dart';
 part 'panel/syncplay_settings_screen.dart';
 part 'panel/settings_panel_tiles.dart';
 
@@ -169,6 +170,15 @@ Widget watchPartySettingsScreenForTesting() => const _SyncPlaySettingsScreen();
 
 @visibleForTesting
 Widget playerSettingsScreenForTesting() => const _VideoPlaybackScreen();
+
+/// The Network screen on its own. Settings opens it as a tile, but the
+/// connection screen opens it too: a proxy or a User-Agent override has to be
+/// settable before any server answers, or a user who cannot reach their server
+/// could never reach the setting that fixes it.
+Widget networkSettingsScreen() => const _NetworkSettingsScreen();
+
+@visibleForTesting
+Widget networkSettingsScreenForTesting() => networkSettingsScreen();
 
 bool get _showThemeEditorEntry =>
     PlatformDetection.isWeb && webRuntimeConfig.pluginMode;
