@@ -10232,7 +10232,7 @@
     "@sortByDateAdded": {
         "description": "Sort option: most recently downloaded first"
     },
-    "settingsSearchHint": "Configuración de búsqueda",
+    "settingsSearchHint": "Buscar",
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
     },
