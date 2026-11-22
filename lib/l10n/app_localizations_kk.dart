@@ -6201,27 +6201,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get keep => 'Сақтау';
 
   @override
-  String get removeRequest => 'Remove Request';
-
-  @override
-  String removeFailedRequestForTitle(String title) {
-    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
-  }
-
-  @override
-  String get removeFailedRequestRefused =>
-      'The request wasn\'t removed. It was retried, or part of it arrived.';
-
-  @override
-  String removeOthersFailedRequestForTitle(String title, String name) {
-    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
-  }
-
-  @override
-  String get removeFailedRequestError =>
-      'Couldn\'t remove the request. Try again.';
-
-  @override
   String get itemNotFoundInLibrary =>
       'Элемент Moonfin кітапханасынан табылмады';
 
