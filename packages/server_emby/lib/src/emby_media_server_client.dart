@@ -75,10 +75,17 @@ class EmbyMediaServerClient extends MediaServerClient {
     _dio.interceptors.add(redirectInterceptor(_dio));
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        options.headers['Authorization'] = buildServerAuthorizationHeader(
-          scheme: 'Emby',
-          deviceInfo: deviceInfo,
-          accessToken: _accessToken,
+        // Redirects and connection retries can carry the previous header.
+        options.headers.remove(EmbyAuthorizationHeader.authorization.value);
+        options.headers.remove(
+          EmbyAuthorizationHeader.xEmbyAuthorization.value,
+        );
+        options.headers.addAll(
+          buildEmbyAuthorizationHeaders(
+            deviceInfo: deviceInfo,
+            accessToken: _accessToken,
+            userId: _userId,
+          ),
         );
         if (!_isProgressPing(options.uri)) {
           ServerLog.network('→ ${options.method} ${options.uri}');

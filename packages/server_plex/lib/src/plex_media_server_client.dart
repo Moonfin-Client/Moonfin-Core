@@ -11,7 +11,7 @@ import 'api/plex_trickplay_api.dart';
 /// The X-Plex identity every Plex request carries. Plex takes it as query
 /// parameters too, which keeps non-ASCII device names out of the headers.
 Map<String, String> plexIdentity(DeviceInfo deviceInfo) => {
-  'X-Plex-Product': deviceInfo.appName,
+  'X-Plex-Product': serverClientName(deviceInfo.appName),
   'X-Plex-Version': deviceInfo.appVersion,
   'X-Plex-Client-Identifier': deviceInfo.id,
   'X-Plex-Device-Name': deviceInfo.name,

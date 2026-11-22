@@ -157,6 +157,16 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
 
     return StreamResolutionResult(
       streamUrl: url,
+      requestHeaders: _isServerUrl(url)
+          ? {
+              ...serverImageHeaders,
+              ...buildEmbyAuthorizationHeaders(
+                deviceInfo: _client.deviceInfo,
+                accessToken: _client.accessToken,
+                userId: _client.userId,
+              ),
+            }
+          : const {},
       mediaSourceId: source.id,
       liveStreamId: source.liveStreamId,
       playSessionId: playbackInfo.playSessionId,
@@ -188,12 +198,26 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
     );
   }
 
+  bool _isServerUrl(String url) {
+    final base = Uri.tryParse(_client.baseUrl);
+    final target = Uri.tryParse(url);
+    if (base == null ||
+        target == null ||
+        target.scheme != base.scheme ||
+        target.host != base.host ||
+        target.port != base.port) {
+      return false;
+    }
+    final prefix = base.path.endsWith('/') ? base.path : '${base.path}/';
+    return target.path == base.path || target.path.startsWith(prefix);
+  }
+
   String _appendAuth(String url) {
     final token = _client.accessToken;
     if (token == null || token.isEmpty) {
       return url;
     }
-    if (!url.startsWith(_client.baseUrl)) {
+    if (!_isServerUrl(url)) {
       return url;
     }
     final lower = url.toLowerCase();

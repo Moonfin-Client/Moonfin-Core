@@ -95,6 +95,8 @@ class _FakeClient extends Fake implements MediaServerClient {
 }
 
 void main() {
+  tearDown(resetServerNetworkOverrides);
+
   group('EmbyMediaStreamResolver.resolve with a channel placeholder source',
       () {
     test('leaves the placeholder id off and plays the probed source',
@@ -118,6 +120,7 @@ void main() {
       expect(result.playMethod, StreamPlayMethod.directPlay);
       expect(result.streamUrl, _remotePath);
       expect(result.mediaStreams, hasLength(2));
+      expect(result.requestHeaders, isEmpty);
     });
 
     test('asks again without the id when the item came without its sources',
@@ -146,6 +149,28 @@ void main() {
 
       expect(result.mediaSourceId, _placeholderId);
       expect(result.playMethod, StreamPlayMethod.transcode);
+    });
+
+    test('hands the configured identity to the player for Emby URLs', () async {
+      gServerUserAgentOverride = 'SenPlayer/6.0.6';
+      gServerClientNameOverride = 'SenPlayer';
+      gEmbyAuthorizationHeader = EmbyAuthorizationHeader.xEmbyAuthorization;
+      gEmbyAuthorizationScheme = EmbyAuthorizationScheme.mediaBrowser;
+      final api = _ChannelPlaybackApi(probes: false);
+      final resolver = EmbyMediaStreamResolver(_FakeClient(api));
+
+      final result = await resolver.resolve(
+        <String, dynamic>{'Id': '620157', 'Type': 'Movie'},
+        mediaSourceId: _placeholderId,
+      );
+
+      expect(Uri.parse(result.streamUrl).queryParameters['api_key'], 'token');
+      expect(result.requestHeaders, {
+        'User-Agent': 'SenPlayer/6.0.6',
+        'X-Emby-Authorization':
+            'MediaBrowser Token="token", UserId="u1", Client="SenPlayer", '
+            'Device="test", DeviceId="d", Version="1"',
+      });
     });
 
     test('keeps a picked version of an item that has other versions',
