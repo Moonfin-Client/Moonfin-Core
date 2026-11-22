@@ -65,6 +65,18 @@ void main() {
     }
   });
 
+  test('a row saved under another address of the server, or still empty, '
+      'keeps the Silo id', () {
+    final target = homeRowSeeAllTarget(
+      _row(
+        'pluginDynamic:collections:http://192.168.1.5:8090:collection:'
+        'silo-libcollection:1:42',
+        empty: true,
+      ),
+    );
+    expect(target?.id, 'silo-libcollection:1:42');
+  });
+
   test('rows from several places or no single source lead nowhere', () {
     for (final id in [
       'mergedtype_latest_movies',

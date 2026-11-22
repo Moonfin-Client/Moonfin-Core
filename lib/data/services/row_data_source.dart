@@ -40,10 +40,7 @@ import 'plugin_sync_service.dart';
   if (row.id.startsWith('latest_')) {
     return (id: row.id.substring('latest_'.length), isCollection: false);
   }
-  final parsed = RowDataSource._parseStableId(
-    row.id,
-    serverId: row.items.firstOrNull?.serverId,
-  );
+  final parsed = RowDataSource._parseStableId(row.id);
   if (parsed?.source != HomeSectionPluginSource.collections) return null;
   final collectionId = parsed!.additionalData.trim();
   return collectionId.isEmpty ? null : (id: collectionId, isCollection: true);
@@ -1598,31 +1595,37 @@ class RowDataSource {
     );
   }
 
-  /// Splits a plugin row's stable id into its parts. With the row's
-  /// [serverId] known, everything after the section is the additional data,
-  /// colons included: Silo's collection and playlist ids have their own
-  /// (`silo-libcollection:1:42`). Without it, the last part is.
-  static _ParsedStableId? _parseStableId(String id, {String? serverId}) {
+  /// The section every client and Moonbase writes for a picked collection,
+  /// playlist or genre row.
+  static const _pickedSections = {
+    HomeSectionPluginSource.collections: 'collection',
+    HomeSectionPluginSource.playlists: 'playlist',
+    HomeSectionPluginSource.genres: 'genre',
+  };
+
+  /// Splits a plugin row's stable id into its parts. For a picked
+  /// collection, playlist or genre, everything after its section is the
+  /// additional data, colons included: Silo's ids have their own
+  /// (`silo-libcollection:1:42`), and the server part is an address with
+  /// colons that can be spelled differently from the client's. Any other
+  /// row's additional data is its last part.
+  static _ParsedStableId? _parseStableId(String id) {
     if (!id.startsWith('pluginDynamic:')) return null;
-    if (serverId != null && serverId.isNotEmpty) {
-      final sub = id.substring('pluginDynamic:'.length);
-      final sourceEnd = sub.indexOf(':');
-      final head = sourceEnd > 0
-          ? '${sub.substring(0, sourceEnd)}:$serverId:'
-          : null;
-      if (head != null && sub.startsWith(head)) {
-        final rest = sub.substring(head.length);
-        final sectionEnd = rest.indexOf(':');
-        if (sectionEnd >= 0) {
-          return _ParsedStableId(
-            source: HomeSectionPluginSource.fromSerialized(
-              sub.substring(0, sourceEnd),
-            ),
-            serverId: serverId,
-            section: rest.substring(0, sectionEnd),
-            additionalData: rest.substring(sectionEnd + 1),
-          );
-        }
+    final body = id.substring('pluginDynamic:'.length);
+    final nameEnd = body.indexOf(':');
+    if (nameEnd > 0) {
+      final source = HomeSectionPluginSource.fromSerialized(
+        body.substring(0, nameEnd),
+      );
+      final section = _pickedSections[source];
+      final marker = section == null ? -1 : body.indexOf(':$section:', nameEnd);
+      if (section != null && marker >= 0) {
+        return _ParsedStableId(
+          source: source,
+          serverId: body.substring(nameEnd + 1, marker),
+          section: section,
+          additionalData: body.substring(marker + section.length + 2),
+        );
       }
     }
     final lastColon = id.lastIndexOf(':');
@@ -1668,7 +1671,7 @@ class RowDataSource {
 
     switch (row.rowType) {
       case HomeRowType.playlists:
-        final parsed = _parseStableId(row.id, serverId: serverId);
+        final parsed = _parseStableId(row.id);
         if (parsed != null &&
             parsed.source == HomeSectionPluginSource.playlists) {
           final playlistId = parsed.additionalData;
@@ -1731,7 +1734,7 @@ class RowDataSource {
       case HomeRowType.collections:
         final sortPref = prefs?.get(UserPreferences.collectionsRowSortBy) ??
             LibrarySortBy.playlistOrder;
-        final parsed = _parseStableId(row.id, serverId: serverId);
+        final parsed = _parseStableId(row.id);
         final isPinnedCollection =
             parsed != null &&
             parsed.source == HomeSectionPluginSource.collections;
@@ -1821,7 +1824,7 @@ class RowDataSource {
         final includeItemTypes = prefs
             ?.get(UserPreferences.genresRowItemFilter)
             .includeItemTypes;
-        final parsed = _parseStableId(row.id, serverId: serverId);
+        final parsed = _parseStableId(row.id);
         if (row.id == 'genres') {
           final browseItemTypes = normalizeBrowsableGenreItemTypes(
             includeItemTypes,
