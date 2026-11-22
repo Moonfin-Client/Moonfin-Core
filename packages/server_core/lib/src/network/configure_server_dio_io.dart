@@ -9,6 +9,7 @@ import 'package:dio/io.dart';
 import '../diagnostics/server_log_sink.dart';
 import 'client_certificates.dart';
 import 'insecure_certificates.dart';
+import 'network_overrides.dart';
 import 'server_user_agent.dart';
 
 /// How many requests may be reaching the server at once.
@@ -37,14 +38,17 @@ void configureServerDio(
 }) {
   dio.transformer = FusedTransformer(contentLengthIsolateThreshold: 50 * 1024);
 
-  final adapter = IOHttpClientAdapter(
+  final adapter = _ServerHeaderAdapter(
     createHttpClient: () {
       final client = HttpClient();
 
-      client.userAgent = serverUserAgent;
+      // Read per connection, so a proxy change from Settings applies to the
+      // next request without rebuilding the client. `DIRECT` is what dart:io
+      // wants back when no proxy is configured.
+      client.findProxy = (_) => serverProxyFindProxy ?? 'DIRECT';
 
-      client.badCertificateCallback =
-          (_, host, _) => acceptsUntrustedCertificate(host);
+      client.badCertificateCallback = (_, host, _) =>
+          acceptsUntrustedCertificate(host);
 
       // The app's HttpOverrides already do this, and replacing their
       // connection factory would undo any other override.
@@ -65,7 +69,53 @@ void configureServerDio(
       ? _SlotLimitedAdapter(adapter, _requestSlots)
       : adapter;
 
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) {
+        options.headers.putIfAbsent(
+          HttpHeaders.userAgentHeader,
+          () => serverUserAgent,
+        );
+        handler.next(options);
+      },
+    ),
+  );
   dio.interceptors.add(_retryDeadConnection(dio));
+}
+
+class _ServerHeaderAdapter extends IOHttpClientAdapter {
+  _ServerHeaderAdapter({required super.createHttpClient});
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    final uri = options.uri;
+    if (gServerRequestHeaders.isEmpty ||
+        (uri.scheme != 'http' && uri.scheme != 'https') ||
+        uri.host.isEmpty) {
+      return super.fetch(options, requestStream, cancelFuture);
+    }
+
+    final origin = uri.origin;
+    final headers = {
+      for (final header in gServerRequestHeaders)
+        if (header.origin == origin) header.name.toLowerCase(): header.value,
+    };
+    if (headers.isEmpty) {
+      return super.fetch(options, requestStream, cancelFuture);
+    }
+
+    // Keep overrides off the logical request. Redirect interceptors issue a
+    // new request and the adapter evaluates its origin independently.
+    final wireOptions = options.copyWith(
+      headers: {...options.headers, ...headers},
+      followRedirects: false,
+    );
+    return super.fetch(wireOptions, requestStream, cancelFuture);
+  }
 }
 
 const _retriedKey = 'moonfin.connectionRetry';

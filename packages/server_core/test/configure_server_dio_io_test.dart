@@ -494,6 +494,63 @@ void main() {
       expect(isUntrustedCertificate(null), isFalse);
     });
   });
+
+  // The proxy rule is handed to dart:io per connection, so the request has to
+  // arrive at the proxy instead of the origin server it named.
+  group('a configured proxy', () {
+    late HttpServer proxy;
+    late HttpServer origin;
+    var proxyHits = 0;
+    var originHits = 0;
+
+    setUp(() async {
+      proxyHits = 0;
+      originHits = 0;
+      origin = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      origin.listen((request) async {
+        originHits++;
+        request.response.statusCode = HttpStatus.noContent;
+        await request.response.close();
+      });
+      proxy = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      proxy.listen((request) async {
+        proxyHits++;
+        request.response.statusCode = HttpStatus.noContent;
+        await request.response.close();
+      });
+    });
+
+    tearDown(() async {
+      resetServerNetworkOverrides();
+      await proxy.close(force: true);
+      await origin.close(force: true);
+    });
+
+    test('sends the request to the proxy, not the origin', () async {
+      gServerProxyUrl = '127.0.0.1:${proxy.port}';
+      final dio = Dio();
+      configureServerDio(dio);
+      addTearDown(() => dio.close(force: true));
+
+      // 127.0.0.1 is exempt from the system proxy, but the explicit rule has
+      // to win for that host too, which is what this asserts.
+      await dio.get<void>('http://127.0.0.1:${origin.port}/');
+
+      expect(proxyHits, 1);
+      expect(originHits, 0);
+    });
+
+    test('goes direct when the proxy setting is cleared', () async {
+      final dio = Dio();
+      configureServerDio(dio);
+      addTearDown(() => dio.close(force: true));
+
+      await dio.get<void>('http://127.0.0.1:${origin.port}/');
+
+      expect(originHits, 1);
+      expect(proxyHits, 0);
+    });
+  });
 }
 
 // A self-signed certificate for 127.0.0.1 and its key, used only by the tests

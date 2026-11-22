@@ -24,8 +24,8 @@ abstract interface class ProfileAwareClient {
 /// Headers that authenticate a request to [client]'s server from outside its
 /// own HTTP stack. A [ProfileAwareClient] supplies its own (for Silo: bearer
 /// token, profile and device headers). Plex takes its token as
-/// `X-Plex-Token`, and Jellyfin and Emby get the MediaBrowser/Emby
-/// `Authorization` header they already use.
+/// `X-Plex-Token`. Jellyfin uses `Authorization: MediaBrowser` and Emby
+/// uses its configured authorization header.
 Map<String, String> serverAuthHeaders(MediaServerClient client) {
   if (client is ProfileAwareClient) {
     return (client as ProfileAwareClient).authHeaders();
@@ -33,9 +33,16 @@ Map<String, String> serverAuthHeaders(MediaServerClient client) {
   if (client.serverType == ServerType.plex) {
     return {'X-Plex-Token': ?client.accessToken};
   }
+  if (client.serverType == ServerType.emby) {
+    return buildEmbyAuthorizationHeaders(
+      deviceInfo: client.deviceInfo,
+      accessToken: client.accessToken,
+      userId: client.userId,
+    );
+  }
   return {
     'Authorization': buildServerAuthorizationHeader(
-      scheme: client.serverType == ServerType.emby ? 'Emby' : 'MediaBrowser',
+      scheme: 'MediaBrowser',
       deviceInfo: client.deviceInfo,
       accessToken: client.accessToken,
     ),

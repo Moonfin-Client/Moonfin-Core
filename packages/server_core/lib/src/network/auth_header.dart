@@ -1,28 +1,67 @@
 import '../models/device_info.dart';
+import 'network_overrides.dart';
 
 String buildServerAuthorizationHeader({
   required String scheme,
   required DeviceInfo deviceInfo,
   String? accessToken,
 }) {
-  final client = _sanitizeHeaderValue(deviceInfo.appName);
-  final device = _sanitizeHeaderValue(deviceInfo.name);
-  final deviceId = _sanitizeHeaderValue(deviceInfo.id);
-  final version = _sanitizeHeaderValue(deviceInfo.appVersion);
-
-  final authHeader = StringBuffer(
-    '$scheme Client="$client", '
-    'Device="$device", '
-    'DeviceId="$deviceId", '
-    'Version="$version"',
-  );
-
-  if (accessToken != null && accessToken.isNotEmpty) {
-    authHeader.write(', Token="${_sanitizeHeaderValue(accessToken)}"');
-  }
-
-  return authHeader.toString();
+  final fields = [
+    ..._serverIdentityFields(deviceInfo),
+    if (accessToken != null && accessToken.isNotEmpty)
+      _field('Token', accessToken),
+  ];
+  return '$scheme ${fields.join(', ')}';
 }
+
+/// Uses the configured Emby header and the credentials from the active session.
+Map<String, String> buildEmbyAuthorizationHeaders({
+  required DeviceInfo deviceInfo,
+  String? accessToken,
+  String? userId,
+}) {
+  final header = gEmbyAuthorizationHeader;
+  final identity = _serverIdentityFields(
+    deviceInfo,
+    deviceName: gEmbyDeviceNameOverride,
+    deviceId: gEmbyDeviceIdOverride,
+    version: gEmbyClientVersionOverride,
+  );
+  final hasToken = accessToken != null && accessToken.isNotEmpty;
+  final fields = switch (header) {
+    EmbyAuthorizationHeader.authorization => [
+      ...identity,
+      if (hasToken) _field('Token', accessToken),
+    ],
+    EmbyAuthorizationHeader.xEmbyAuthorization => [
+      if (hasToken) _field('Token', accessToken),
+      if (hasToken && userId != null && userId.isNotEmpty)
+        _field('UserId', userId),
+      ...identity,
+    ],
+  };
+  return {
+    header.value: '${gEmbyAuthorizationScheme.value} ${fields.join(', ')}',
+  };
+}
+
+List<String> _serverIdentityFields(
+  DeviceInfo deviceInfo, {
+  String deviceName = '',
+  String deviceId = '',
+  String version = '',
+}) => [
+  _field('Client', serverClientName(deviceInfo.appName)),
+  _field('Device', _valueOrDefault(deviceName, deviceInfo.name)),
+  _field('DeviceId', _valueOrDefault(deviceId, deviceInfo.id)),
+  _field('Version', _valueOrDefault(version, deviceInfo.appVersion)),
+];
+
+String _valueOrDefault(String value, String fallback) =>
+    value.trim().isEmpty ? fallback : value;
+
+String _field(String name, String value) =>
+    '$name="${_sanitizeHeaderValue(value)}"';
 
 String _sanitizeHeaderValue(String value) {
   final asciiOnly = value.replaceAll(RegExp(r'[^\x20-\x7E]'), ' ');
@@ -67,7 +106,7 @@ Map<String, String> buildSiloRequestHeaders({
     'X-Silo-Device-Name': _clamp(_sanitizeHeaderValue(deviceInfo.name), 120),
     if (platform != null && platform.trim().isNotEmpty)
       'X-Silo-Device-Platform': _clamp(_sanitizeHeaderValue(platform), 40),
-    'X-Silo-Client': _sanitizeHeaderValue(deviceInfo.appName),
+    'X-Silo-Client': _sanitizeHeaderValue(serverClientName(deviceInfo.appName)),
     'X-Silo-Client-Version': _sanitizeHeaderValue(deviceInfo.appVersion),
   };
 }

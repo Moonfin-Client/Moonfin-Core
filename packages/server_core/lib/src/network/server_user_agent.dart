@@ -7,13 +7,23 @@
 // naming Moonfin and its version, so admins can pick the traffic out of
 // their access logs.
 
+import 'network_overrides.dart';
+
 /// Stands in until startup records the real version.
 const _fallbackVersion = 'Flutter';
 
 String _version = _fallbackVersion;
 
 /// The `User-Agent` value for all media-server traffic.
-String get serverUserAgent => 'Mozilla/5.0 (compatible; Moonfin/$_version)';
+///
+/// A user-supplied override wins so a server that filters on the agent can be
+/// reached without a release. Otherwise it is the built-in Mozilla-prefixed
+/// agent, which clears the reverse proxies and WAFs that reject `Dart/<ver>`.
+String get serverUserAgent {
+  final override = gServerUserAgentOverride.trim();
+  if (override.isNotEmpty) return override;
+  return 'Mozilla/5.0 (compatible; Moonfin/$_version)';
+}
 
 /// For `Image.network` and `NetworkImage`, which fetch through a shared client
 /// of Flutter's own that nothing can configure, so each call site passes the
