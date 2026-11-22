@@ -80,6 +80,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   static const _pageSize = 48;
   static const _firstPageSize = 75;
+  // Grouping into collections makes the server resolve the whole library
+  // against every collection before it can cut a page out, so a page costs
+  // about the same whatever its size. Collapsed browses take bigger pages.
+  static const _collapsedPageSize = 300;
   // Name and CollectionType come back as default fields, so the library lookup
   // needs none. Asking for the full set makes the server recursively count the
   // whole library before the first item can render.
@@ -176,6 +180,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   bool _totalCountKnown = true;
   bool _hasMoreFromPageSize = false;
+
+  /// The server's TotalRecordCount from the first page, for later pages of a
+  /// collapsed browse that don't ask for it again.
+  int? _serverTotalCount;
 
   bool get hasMore =>
       _totalCountKnown ? _items.length < _totalCount : _hasMoreFromPageSize;
@@ -652,6 +660,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _playlistCategoryMap.clear();
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
+    _serverTotalCount = null;
     notifyListeners();
 
     try {
@@ -868,7 +877,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     required int generation,
     int? pageSizeOverride,
   }) async {
-    final pageSize = pageSizeOverride ?? (startIndex == 0 ? _firstPageSize : _pageSize);
+    var pageSize = pageSizeOverride ?? (startIndex == 0 ? _firstPageSize : _pageSize);
     final filters = <String>[];
     if (_playedFilter == PlayedStatusFilter.watched) {
       filters.add('IsPlayed');
@@ -1011,6 +1020,19 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'SortName';
     }
 
+    // Asking for the total makes the server run the collapsed query a second
+    // time just to count it, and the first page already said how many there
+    // are, so later pages skip it. A merged browse and the rating sort keep
+    // their own paging.
+    final collapsedBrowse = collapseBoxSets == true &&
+        !isMergedBrowse &&
+        _sortBy != LibrarySortBy.myRating;
+    if (collapsedBrowse && pageSizeOverride == null) {
+      pageSize = _collapsedPageSize;
+    }
+    final skipTotalCount =
+        collapsedBrowse && startIndex > 0 && _serverTotalCount != null;
+
     // Plain directories come in full with the first page and everything else
     // follows by name.
     final directoriesFirst =
@@ -1102,6 +1124,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         filters: filters.isEmpty ? null : filters,
         seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
         isFavorite: _favoriteFilter ? true : null,
+        enableTotalRecordCount: skipTotalCount ? false : null,
       );
       final lightRead = isMergedBrowse && startIndex == 0
           ? _lightReadFor(
@@ -1237,7 +1260,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
     _fetchedCount = startIndex + rawItems.length;
 
-    final totalFromServer = response['TotalRecordCount'] as int?;
+    // Without the count the server reports the page's own length here.
+    final totalFromServer = skipTotalCount
+        ? _serverTotalCount
+        : response['TotalRecordCount'] as int?;
+    _serverTotalCount = totalFromServer;
     _totalCountKnown = totalFromServer != null;
     if (_totalCountKnown) {
       _totalCount = totalFromServer! + _directoryCount - _filteredOutCount;
@@ -1333,6 +1360,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     List<String>? filters,
     List<String>? seriesStatus,
     bool? isFavorite,
+    bool? enableTotalRecordCount,
   }) async {
     try {
       return await _getFilteredItems(
@@ -1354,6 +1382,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         filters: filters,
         seriesStatus: seriesStatus,
         isFavorite: isFavorite,
+        enableTotalRecordCount: enableTotalRecordCount,
       );
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode ?? 0;
