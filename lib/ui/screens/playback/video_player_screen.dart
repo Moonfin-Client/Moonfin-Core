@@ -5173,19 +5173,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final tv = PlatformDetection.useLeanbackUi;
     final top = MediaQuery.of(context).padding.top;
     final resolution = _manager.currentResolution;
+    final source = resolution?.sourceBitrate;
+    // The URL only names a cap, which says nothing once it's at or above the
+    // file's own rate.
+    final cap = resolution?.deliveredBitrate;
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 200),
       left: tv ? 48 : AppSpacing.spaceLg,
+      right: tv ? 48 : AppSpacing.spaceLg,
       // Below the top bar while it's up, so the title isn't covered.
       top: controlsUp
           ? (_topOverlayHeight ?? top) + AppSpacing.spaceSm
           : top + (tv ? 27 : AppSpacing.spaceLg),
-      child: ExcludeFocus(
-        child: IgnorePointer(
-          child: PlaybackStatsOverlay(
-            read: () => media3.networkStats,
-            serverBitrate:
-                resolution?.deliveredBitrate ?? resolution?.sourceBitrate,
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: ExcludeFocus(
+          child: IgnorePointer(
+            child: PlaybackStatsOverlay(
+              // A new item starts with empty graphs.
+              key: ValueKey(_itemIdForQueueItem(_queue.currentItem)),
+              read: () => media3.networkStats,
+              serverBitrate: cap != null && (source == null || cap < source)
+                  ? cap
+                  : source,
+            ),
           ),
         ),
       ),

@@ -74,9 +74,12 @@ void main() {
     tester,
   ) async {
     await open(tester);
+    final button = Focus.of(tester.element(find.text('Keyboard Shortcuts')));
+    final list = Focus.of(tester.element(find.byType(ListView)));
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.pump();
+    expect(FocusManager.instance.primaryFocus, same(button));
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     await tester.pumpAndSettle();
 
@@ -85,6 +88,7 @@ void main() {
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.pump();
+    expect(FocusManager.instance.primaryFocus, same(list));
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     await tester.pumpAndSettle();
 
