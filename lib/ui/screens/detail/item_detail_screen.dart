@@ -338,6 +338,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropKey;
+  String? _lastDetailItemId;
   final GlobalKey<NouveauDetailContentState> _nouveauContentKey =
       GlobalKey<NouveauDetailContentState>();
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -550,7 +551,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         if (useTrackBackdrop) {
           _onBackdropItemFocused(_viewModel.tracks.first);
         }
-
+      }
+      if (_lastDetailItemId != item.id) {
+        _lastDetailItemId = item.id;
         if (item.mediaSources.isNotEmpty) {
           _selectedMediaSourceId = item.mediaSources.first['Id']?.toString();
         } else {
