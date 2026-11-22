@@ -22,7 +22,7 @@ class EmbyConnectService {
   }
 
   String get _applicationHeader =>
-      '${_deviceInfo.appName}/${_deviceInfo.appVersion}';
+      '${serverClientName(_deviceInfo.appName)}/${_deviceInfo.appVersion}';
 
   Future<EmbyConnectAuthResult> authenticate({
     required String username,

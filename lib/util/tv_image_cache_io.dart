@@ -395,6 +395,9 @@ Future<void> clearImageDiskCache() async {
 HttpClient buildImageHttpClient() => HttpClient()
   ..maxConnectionsPerHost = imageRequestSlots
   ..connectionTimeout = const Duration(seconds: 8)
+  // Artwork reaches the same server as the API calls, so it takes the same
+  // proxy. Read per connection, so a change applies to the next image.
+  ..findProxy = ((_) => serverProxyFindProxy ?? 'DIRECT')
   // dart:io reuses a pooled connection without checking it is still open, so
   // the longer one is held the better the odds the peer let go of it in the
   // meantime. Two minutes covered a whole browse, and a stale one there stalls

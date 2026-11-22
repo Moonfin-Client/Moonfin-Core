@@ -86,11 +86,7 @@ abstract final class SubtitleCueLoader {
         '${client.baseUrl}/Videos/${Uri.encodeComponent(itemId)}/'
         '${Uri.encodeComponent(resolution.mediaSourceId)}/Subtitles/$streamIndex/Stream.js',
         options: Options(headers: {
-          'Authorization': buildServerAuthorizationHeader(
-            scheme: type == ServerType.emby ? 'Emby' : 'MediaBrowser',
-            deviceInfo: client.deviceInfo,
-            accessToken: token,
-          ),
+          ...serverAuthHeaders(client),
           if (token != null && token.isNotEmpty) 'X-Emby-Token': token,
         }),
       );

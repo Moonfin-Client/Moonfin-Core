@@ -14,6 +14,8 @@ Future<void> _downloadIsolateMain(Map<String, Object?> args) async {
   final allowSelfSigned = args['allowSelfSigned'] == true;
   final clientCertificate =
       args['clientCertificate'] as ClientCertificateMaterial?;
+  final proxyUrl = args['proxyUrl'] as String? ?? '';
+  final userAgent = args['userAgent'] as String? ?? '';
 
   final cancelPort = ReceivePort();
   sendPort.send(<String, Object?>{'t': 'r', 'cp': cancelPort.sendPort});
@@ -32,6 +34,12 @@ Future<void> _downloadIsolateMain(Map<String, Object?> args) async {
     client.badCertificateCallback =
         (_, host, _) => allowSelfSigned && host == serverHost;
     client.idleTimeout = const Duration(seconds: 120);
+    gServerProxyUrl = proxyUrl;
+    client.findProxy = (_) => serverProxyFindProxy ?? 'DIRECT';
+    // The isolate also carries the User-Agent, since a server that filters on
+    // it would otherwise see Dart's default here while the app sends Moonfin's.
+    gServerUserAgentOverride = userAgent;
+    client.userAgent = serverUserAgent;
     if (clientCertificate != null) {
       // The connection factory reads these, and they start out empty in a new
       // isolate.
@@ -150,6 +158,8 @@ class LegacyDownloadEngine {
       ),
       'allowSelfSigned': gAllowSelfSignedCertificates,
       'clientCertificate': clientCertificate,
+      'proxyUrl': gServerProxyUrl,
+      'userAgent': gServerUserAgentOverride,
     });
 
     SendPort? toIsolate;

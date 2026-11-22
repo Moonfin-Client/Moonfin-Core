@@ -23,6 +23,9 @@ class _MoonfinHttpOverrides extends HttpOverrides {
     } catch (_) {}
     final client = super.createHttpClient(secContext);
     client.maxConnectionsPerHost = 12;
+    // Routes through the user's proxy when one is set. Read per connection, so
+    // changing it in Settings applies without rebuilding the client.
+    client.findProxy = (_) => serverProxyFindProxy ?? 'DIRECT';
     // Only bypass certificate validation when the user has explicitly opted in
     // (self-signed / private-CA servers), and only for their own servers. Both
     // are read on every failed handshake, so changes apply live.
