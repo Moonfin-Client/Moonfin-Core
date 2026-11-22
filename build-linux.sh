@@ -1002,6 +1002,7 @@ EOF
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0, xdg-user-dirs"
   depends="$depends, libva2, libva-drm2, libva-x11-2, libva-wayland2"
+  depends="$depends, libjack-jackd2-0 | libjack-0.125, libxss1, libxcb-shape0"
   local glibc
   glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
   if [ -n "$glibc" ]; then
