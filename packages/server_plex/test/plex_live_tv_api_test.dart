@@ -357,7 +357,7 @@ void main() {
 
   test('a free channel plays straight from plex.tv', () async {
     final (dio, server) = _server();
-    final info = await PlexPlaybackApi(dio, const {
+    final info = await PlexPlaybackApi(dio, () => const {
       'X-Plex-Product': 'Moonfin',
     }).getPlaybackInfo('channel-plex-abc-66635fc0');
 
@@ -374,7 +374,10 @@ void main() {
 
   test('a tuner channel is tuned, decided, then streamed', () async {
     final (dio, server) = _server();
-    final api = PlexPlaybackApi(dio, const {'X-Plex-Product': 'Moonfin'});
+    final api = PlexPlaybackApi(
+      dio,
+      () => const {'X-Plex-Product': 'Moonfin'},
+    );
     final info = await api.getPlaybackInfo('channel-2-4');
 
     expect(server.requests.map((r) => r.uri.path), [
@@ -405,7 +408,7 @@ void main() {
   test('only a cap a broadcast could pass reaches a tuner stream', () async {
     Future<Map<String, String>> startFor(int bitrate) async {
       final (dio, _) = _server();
-      final info = await PlexPlaybackApi(dio, const {}).getPlaybackInfo(
+      final info = await PlexPlaybackApi(dio, () => const {}).getPlaybackInfo(
         'channel-2-4',
         requestBody: {'MaxStreamingBitrate': bitrate},
       );

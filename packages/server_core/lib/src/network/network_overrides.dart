@@ -82,6 +82,10 @@ void resetServerNetworkOverrides() {
 
 /// [gServerProxyUrl] as the `findProxy` rule dart:io expects, or null when it
 /// is unset or unreadable.
+String? get serverProxyFindProxy => serverProxyRuleFor(gServerProxyUrl);
+
+/// [address] as the `findProxy` rule dart:io expects, or null when it is empty
+/// or unreadable.
 ///
 /// dart:io accepts a semicolon-separated list of rules but only knows two
 /// keywords, `PROXY host:port` and `DIRECT`, and throws on anything else, so
@@ -93,8 +97,8 @@ void resetServerNetworkOverrides() {
 /// Credentials in the address are dropped: dart:io's proxy rule has no way to
 /// carry them and would read `user:pass@host` as the host name. A proxy that
 /// needs authentication is not usable through this setting.
-String? get serverProxyFindProxy {
-  final raw = gServerProxyUrl.trim();
+String? serverProxyRuleFor(String address) {
+  final raw = address.trim();
   if (raw.isEmpty) return null;
 
   // A proxy address never contains a space, and Uri is lenient enough to turn
@@ -109,13 +113,41 @@ String? get serverProxyFindProxy {
   final host = uri.host.trim();
   if (host.isEmpty || !_proxyHost.hasMatch(host)) return null;
 
-  final port = uri.hasPort && uri.port > 0
-      ? uri.port
-      : _defaultProxyPort(uri.scheme);
+  // Uri drops a port that matches the scheme's default (`http://host:80` and
+  // `https://host:443`), so `hasPort` is false for an explicit one. Read the
+  // explicit port from the address itself before falling back.
+  final port = _explicitProxyPort(raw) ?? _defaultProxyPort(uri.scheme);
   // Uri drops the brackets around an IPv6 literal, but dart:io's rule splits
   // host and port on the last colon, so a bare `::1` would parse as host `::`.
   final hostPart = host.contains(':') ? '[$host]' : host;
   return 'PROXY $hostPart:$port';
+}
+
+/// The port written in [raw], including one the URI would treat as the
+/// scheme's default, or null when the address leaves it out.
+int? _explicitProxyPort(String raw) {
+  final schemeEnd = raw.indexOf('://');
+  var authority = schemeEnd == -1 ? raw : raw.substring(schemeEnd + 3);
+  final pathStart = authority.indexOf('/');
+  if (pathStart != -1) authority = authority.substring(0, pathStart);
+  final userInfoEnd = authority.lastIndexOf('@');
+  if (userInfoEnd != -1) authority = authority.substring(userInfoEnd + 1);
+
+  final String portText;
+  if (authority.startsWith('[')) {
+    final close = authority.indexOf(']');
+    if (close == -1) return null;
+    final rest = authority.substring(close + 1);
+    if (!rest.startsWith(':')) return null;
+    portText = rest.substring(1);
+  } else {
+    final colon = authority.lastIndexOf(':');
+    if (colon == -1) return null;
+    portText = authority.substring(colon + 1);
+  }
+
+  final port = int.tryParse(portText);
+  return port != null && port > 0 && port <= 65535 ? port : null;
 }
 
 /// The port a proxy usually listens on when the address leaves it out.
@@ -129,6 +161,24 @@ int _defaultProxyPort(String scheme) => switch (scheme.toLowerCase()) {
 /// has already rejected anything else structurally, so this is the last check
 /// that keeps whitespace and separators out of the rule.
 final _proxyHost = RegExp(r'^[A-Za-z0-9._:\-]+$');
+
+/// The configured request headers scoped to [uri]'s origin, in the order they
+/// were saved.
+///
+/// Empty when none apply, which keeps every caller on its previous behavior.
+Map<String, String> serverRequestHeadersFor(Uri uri) {
+  if (gServerRequestHeaders.isEmpty ||
+      (uri.scheme != 'http' && uri.scheme != 'https') ||
+      uri.host.isEmpty) {
+    return const {};
+  }
+  final origin = uri.origin;
+  final headers = <String, String>{};
+  for (final header in gServerRequestHeaders) {
+    if (header.origin == origin) headers[header.name] = header.value;
+  }
+  return headers;
+}
 
 /// [builtIn] unless the user set a client name, which is what servers see as
 /// the app name. Read at header-build time so a change applies to the next

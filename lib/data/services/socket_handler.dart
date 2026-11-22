@@ -311,7 +311,7 @@ class EmbyWebSocketClient extends _ReconnectingWebSocketClient {
     final token = client.accessToken;
     if (token == null) return null;
     final wsUrl = client.baseUrl.replaceFirst('http', 'ws');
-    final deviceId = Uri.encodeComponent(client.deviceInfo.id);
+    final deviceId = Uri.encodeComponent(serverEmbyDeviceId(client.deviceInfo));
     return Uri.parse('$wsUrl/embywebsocket?api_key=$token&deviceId=$deviceId');
   }
 

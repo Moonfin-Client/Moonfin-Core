@@ -58,6 +58,24 @@ void main() {
       expect(serverProxyFindProxy, 'PROXY [::1]:7897');
     });
 
+    test('keeps an explicit default port instead of assuming the scheme', () {
+      // Uri.port hides an explicit :80 or :443 behind the scheme default, so a
+      // parser that reads it loses the port the user typed.
+      gServerProxyUrl = 'http://proxy.example:80';
+      expect(serverProxyFindProxy, 'PROXY proxy.example:80');
+
+      gServerProxyUrl = 'https://proxy.example:443';
+      expect(serverProxyFindProxy, 'PROXY proxy.example:443');
+
+      gServerProxyUrl = 'proxy.example:80';
+      expect(serverProxyFindProxy, 'PROXY proxy.example:80');
+    });
+
+    test('keeps a non-default port under the other scheme too', () {
+      gServerProxyUrl = 'http://proxy.example:443';
+      expect(serverProxyFindProxy, 'PROXY proxy.example:443');
+    });
+
     test('drops credentials, which the dart:io rule cannot carry', () {
       gServerProxyUrl = 'http://user:secretpw@proxy.example:7897';
       expect(serverProxyFindProxy, 'PROXY proxy.example:7897');
@@ -130,6 +148,58 @@ void main() {
       gServerClientNameOverride = 'Emby';
       final headers = buildSiloRequestHeaders(deviceInfo: device);
       expect(headers['X-Silo-Client'], 'Emby');
+    });
+  });
+
+  group('serverRequestHeadersFor', () {
+    test('is empty when nothing is saved', () {
+      expect(
+        serverRequestHeadersFor(Uri.parse('https://a.example/emby')),
+        isEmpty,
+      );
+    });
+
+    test('matches the request origin and nothing else', () {
+      gServerRequestHeaders = [
+        ServerRequestHeader.tryCreate(
+          serverUrl: 'https://a.example',
+          name: 'X-A',
+          value: '1',
+        )!,
+        ServerRequestHeader.tryCreate(
+          serverUrl: 'https://b.example:8443',
+          name: 'X-B',
+          value: '2',
+        )!,
+      ];
+
+      expect(serverRequestHeadersFor(Uri.parse('https://a.example/x')), {
+        'X-A': '1',
+      });
+      // An explicit default port normalizes to the same origin.
+      expect(serverRequestHeadersFor(Uri.parse('https://a.example:443/x')), {
+        'X-A': '1',
+      });
+      expect(serverRequestHeadersFor(Uri.parse('https://b.example:8443/x')), {
+        'X-B': '2',
+      });
+      expect(serverRequestHeadersFor(Uri.parse('http://a.example/x')), isEmpty);
+      expect(
+        serverRequestHeadersFor(Uri.parse('https://b.example/x')),
+        isEmpty,
+      );
+    });
+
+    test('ignores requests that are not plain web URLs', () {
+      gServerRequestHeaders = [
+        ServerRequestHeader.tryCreate(
+          serverUrl: 'https://a.example',
+          name: 'X-A',
+          value: '1',
+        )!,
+      ];
+      expect(serverRequestHeadersFor(Uri.parse('file:///tmp/x')), isEmpty);
+      expect(serverRequestHeadersFor(Uri.parse('https:///x')), isEmpty);
     });
   });
 }

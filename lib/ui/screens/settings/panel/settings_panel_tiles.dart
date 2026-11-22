@@ -1,5 +1,144 @@
 part of '../settings_side_panel.dart';
 
+/// A labelled text field that takes D-pad input on TV.
+///
+/// A plain [TextField] in a TV dialog never opens a keyboard, so the field
+/// runs through the project keyboard there and stays an ordinary field
+/// everywhere else. Validation is the caller's: pass [errorText] to show it.
+class _SettingsDialogTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String label;
+  final String? hint;
+  final String? errorText;
+  final bool autofocus;
+
+  const _SettingsDialogTextField({
+    super.key,
+    required this.controller,
+    required this.label,
+    this.hint,
+    this.errorText,
+    this.autofocus = false,
+  });
+
+  @override
+  State<_SettingsDialogTextField> createState() =>
+      _SettingsDialogTextFieldState();
+}
+
+class _SettingsDialogTextFieldState extends State<_SettingsDialogTextField> {
+  final _tvFieldKey = GlobalKey<CustomTVTextFieldState>();
+  FocusNode? _internalFocusNode;
+
+  FocusNode get _focusNode =>
+      _internalFocusNode ??= FocusNode(debugLabel: 'settings-dialog-field');
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autofocus && PlatformDetection.isTV) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _focusNode.requestFocus();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _internalFocusNode?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!PlatformDetection.isTV) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: TextField(
+          controller: widget.controller,
+          autofocus: widget.autofocus,
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            hintText: widget.hint,
+            errorText: widget.errorText,
+          ),
+        ),
+      );
+    }
+
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(widget.label, style: theme.textTheme.labelMedium),
+          const SizedBox(height: 4),
+          GestureDetector(
+            onTap: () {
+              _focusNode.requestFocus();
+              _tvFieldKey.currentState?.openKeyboard();
+            },
+            child: Focus(
+              focusNode: _focusNode,
+              onKeyEvent: (node, event) {
+                if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+                  return KeyEventResult.ignored;
+                }
+                if (event.logicalKey.isBackKey) {
+                  if (_tvFieldKey.currentState?.isKeyboardVisible ?? false) {
+                    _tvFieldKey.currentState?.closeKeyboard();
+                    node.requestFocus();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                }
+                if (event.logicalKey.isSelectKey) {
+                  if (!node.hasFocus) node.requestFocus();
+                  _tvFieldKey.currentState?.openKeyboard();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: ListenableBuilder(
+                listenable: _focusNode,
+                builder: (_, _) => CustomTVTextField(
+                  key: _tvFieldKey,
+                  controller: widget.controller,
+                  isFocused: _focusNode.hasFocus,
+                  keyboardStyle: GetIt.instance<UserPreferences>().get(
+                    UserPreferences.keyboardStyle,
+                  ),
+                  hint: widget.hint ?? '',
+                  filled: true,
+                  fillColor: AppColorScheme.inputBackground,
+                  borderColor: ThemeRegistry.active.borders.chipBorder.color,
+                  focusedBorderColor: AppColorScheme.accent,
+                  hintStyle: TextStyle(
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.54),
+                  ),
+                  textStyle: TextStyle(color: AppColorScheme.onSurface),
+                  popParentOnKeyboardClose: false,
+                ),
+              ),
+            ),
+          ),
+          if (widget.errorText != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              widget.errorText!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _EditableStringPreferenceTile extends StatefulWidget {
   final Preference<String> preference;
   final String title;
@@ -7,6 +146,7 @@ class _EditableStringPreferenceTile extends StatefulWidget {
   final String hintText;
   final Future<String?> Function()? pickPath;
   final void Function(String)? onChanged;
+  final String? Function(String)? validator;
   final bool autofocus;
 
   const _EditableStringPreferenceTile({
@@ -16,6 +156,7 @@ class _EditableStringPreferenceTile extends StatefulWidget {
     required this.hintText,
     this.pickPath,
     this.onChanged,
+    this.validator,
     this.autofocus = false,
   });
 
@@ -70,31 +211,38 @@ class _EditableStringPreferenceTileState
   Future<void> _showEditor(BuildContext context, String current) async {
     final l10n = AppLocalizations.of(context);
     final controller = _controller..text = current;
+    final formKey = GlobalKey<FormState>();
     final next = await showFocusRestoringDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
         title: Text(widget.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: controller,
-              autofocus: true,
-              decoration: InputDecoration(hintText: widget.hintText),
-            ),
-            if (widget.pickPath != null)
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: () async {
-                    final picked = await widget.pickPath!();
-                    if (picked != null) controller.text = picked;
-                  },
-                  icon: const Icon(Icons.folder_open),
-                  label: Text(l10n.browse),
-                ),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: controller,
+                autofocus: true,
+                decoration: InputDecoration(hintText: widget.hintText),
+                validator: widget.validator == null
+                    ? null
+                    : (_) => widget.validator!(controller.text),
               ),
-          ],
+              if (widget.pickPath != null)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      final picked = await widget.pickPath!();
+                      if (picked != null) controller.text = picked;
+                    },
+                    icon: const Icon(Icons.folder_open),
+                    label: Text(l10n.browse),
+                  ),
+                ),
+            ],
+          ),
         ),
         actions: [
           adaptiveDialogAction(
@@ -102,7 +250,10 @@ class _EditableStringPreferenceTileState
             child: Text(l10n.cancel),
           ),
           adaptiveDialogAction(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            onPressed: () {
+              if (formKey.currentState?.validate() == false) return;
+              Navigator.pop(ctx, controller.text.trim());
+            },
             child: Text(l10n.save),
           ),
         ],

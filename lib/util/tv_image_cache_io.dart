@@ -454,7 +454,10 @@ class _ServerUserAgentHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    request.headers['User-Agent'] = serverUserAgent;
+    // Artwork reaches the same server as the API calls, so a header saved for
+    // that server applies here too. A saved User-Agent wins over the default.
+    request.headers.addAll(serverRequestHeadersFor(request.url));
+    request.headers.putIfAbsent('User-Agent', () => serverUserAgent);
     return _inner.send(request);
   }
 }

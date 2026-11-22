@@ -551,6 +551,59 @@ void main() {
       expect(proxyHits, 0);
     });
   });
+
+  // Headers saved for one server have to follow a redirect, but only while it
+  // stays on that server; sending them to wherever a 302 points would expose
+  // credentials to a third party.
+  group('custom request headers across a redirect', () {
+    late HttpServer server;
+    final seenHeaders = <String, String?>{};
+
+    setUp(() async {
+      seenHeaders.clear();
+      server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      server.listen((request) async {
+        if (request.uri.path == '/start') {
+          request.response.statusCode = HttpStatus.found;
+          request.response.headers.set(HttpHeaders.locationHeader, '/final');
+          await request.response.close();
+          return;
+        }
+        seenHeaders['custom'] = request.headers.value('X-Custom');
+        seenHeaders['authorization'] = request.headers.value(
+          HttpHeaders.authorizationHeader,
+        );
+        request.response.statusCode = HttpStatus.ok;
+        request.response.write('{"ok":true}');
+        await request.response.close();
+      });
+    });
+
+    tearDown(() async {
+      resetServerNetworkOverrides();
+      await server.close(force: true);
+    });
+
+    test('carries the header onto the redirected request', () async {
+      final origin = 'http://127.0.0.1:${server.port}';
+      gServerRequestHeaders = [
+        ServerRequestHeader.tryCreate(
+          serverUrl: origin,
+          name: 'X-Custom',
+          value: 'kept',
+        )!,
+      ];
+
+      final dio = Dio(BaseOptions(baseUrl: origin));
+      configureServerDio(dio);
+      addTearDown(() => dio.close(force: true));
+
+      final response = await dio.get<dynamic>('/start');
+
+      expect(response.statusCode, HttpStatus.ok);
+      expect(seenHeaders['custom'], 'kept');
+    });
+  });
 }
 
 // A self-signed certificate for 127.0.0.1 and its key, used only by the tests

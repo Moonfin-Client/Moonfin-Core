@@ -101,7 +101,7 @@ class EmbyPlaySessionService implements PlayerService {
     if (playSessionId == null || playSessionId.isEmpty) return;
     try {
       await _client.playbackApi.stopActiveEncodings(
-        deviceId: _client.deviceInfo.id,
+        deviceId: serverEmbyDeviceId(_client.deviceInfo),
         playSessionId: playSessionId,
       );
     } catch (_) {}

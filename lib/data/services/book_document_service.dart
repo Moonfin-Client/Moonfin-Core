@@ -68,9 +68,7 @@ class BookDocumentService {
           continue;
         }
 
-        final request = await client.getUrl(uri);
-        headers.forEach(request.headers.add);
-        final response = await request.close();
+        final response = await _get(client, uri, headers);
         if (response.statusCode >= 200 && response.statusCode < 300) {
           return await consolidateHttpClientResponseBytes(response);
         }
@@ -83,6 +81,35 @@ class BookDocumentService {
       throw lastError ?? HttpException('Failed to download book data');
     } finally {
       client.close(force: true);
+    }
+  }
+
+  /// Opens [uri] with the server headers for that origin, following only
+  /// same-origin redirects so those headers never travel to another site.
+  static Future<HttpClientResponse> _get(
+    HttpClient client,
+    Uri uri,
+    Map<String, String> headers, {
+    Map<String, String> extra = const {},
+  }) async {
+    var target = uri;
+    for (var redirects = 0; ; redirects++) {
+      final request = await client.getUrl(target);
+      request.followRedirects = false;
+      headers.forEach(request.headers.set);
+      extra.forEach(request.headers.set);
+      serverRequestHeadersFor(target).forEach(request.headers.set);
+      final response = await request.close();
+
+      final location = response.headers.value(HttpHeaders.locationHeader);
+      if (!response.isRedirect || location == null || redirects >= 5) {
+        return response;
+      }
+      final next = target.resolve(location);
+      if (!isSameOriginRedirect(target, next)) return response;
+
+      await response.drain<void>();
+      target = next;
     }
   }
 
@@ -140,10 +167,12 @@ class BookDocumentService {
           continue;
         }
 
-        final request = await client.getUrl(uri);
-        headers.forEach(request.headers.add);
-        request.headers.set(HttpHeaders.rangeHeader, 'bytes=0-0');
-        final response = await request.close();
+        final response = await _get(
+          client,
+          uri,
+          headers,
+          extra: const {HttpHeaders.rangeHeader: 'bytes=0-0'},
+        );
 
         if (response.statusCode < 200 || response.statusCode >= 400) {
           await response.drain<void>();

@@ -11,11 +11,13 @@ void main() {
     required DownloadQuality quality,
     bool pluginEngineSupported = true,
     bool serverNeedsLegacyTls = false,
+    bool hasProxy = false,
     bool destinationOnRemovableStorage = false,
   }) {
     return downloadUsesPluginEngine(
       pluginEngineSupported: pluginEngineSupported,
       serverNeedsLegacyTls: serverNeedsLegacyTls,
+      hasProxy: hasProxy,
       isAndroid: isAndroid,
       qualityTranscoded: quality.isTranscoded,
       destinationOnRemovableStorage: destinationOnRemovableStorage,
@@ -48,6 +50,19 @@ void main() {
       ),
       isFalse,
     );
+  });
+
+  test('a configured proxy keeps every download on the legacy engine', () {
+    for (final quality in DownloadQuality.values) {
+      expect(
+        choose(isAndroid: true, quality: quality, hasProxy: true),
+        isFalse,
+      );
+      expect(
+        choose(isAndroid: false, quality: quality, hasProxy: true),
+        isFalse,
+      );
+    }
   });
 
   test('an unsupported platform or missing coordinator stays on legacy', () {
@@ -90,12 +105,14 @@ void main() {
       required DownloadQuality quality,
       bool itemSupportsTranscodedDownload = true,
       bool serverNeedsLegacyTls = false,
+      bool hasProxy = false,
     }) {
       return downloadUsesTransmuxEngine(
         isAndroid: isAndroid,
         qualityTranscoded: quality.isTranscoded,
         itemSupportsTranscodedDownload: itemSupportsTranscodedDownload,
         serverNeedsLegacyTls: serverNeedsLegacyTls,
+        hasProxy: hasProxy,
       );
     }
 
@@ -137,6 +154,16 @@ void main() {
         isFalse,
       );
     });
+
+    test(
+      'a configured proxy skips it, since the native side cannot use it',
+      () {
+        expect(
+          chooseTransmux(quality: DownloadQuality.high1080p, hasProxy: true),
+          isFalse,
+        );
+      },
+    );
 
     test('a transcoded Android download never falls to the native engine', () {
       expect(

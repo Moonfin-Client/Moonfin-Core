@@ -1359,6 +1359,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
         var request = await client.openUrl('HEAD', uri);
         headers.forEach(request.headers.add);
+        serverRequestHeadersFor(uri).forEach(request.headers.set);
         var response = await request.close();
 
         if (response.statusCode == HttpStatus.methodNotAllowed ||
@@ -1366,6 +1367,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
           await response.drain<void>();
           request = await client.getUrl(uri);
           headers.forEach(request.headers.add);
+          serverRequestHeadersFor(uri).forEach(request.headers.set);
           request.headers.set(HttpHeaders.rangeHeader, 'bytes=0-0');
           response = await request.close();
         }

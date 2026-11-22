@@ -153,6 +153,23 @@ void main() {
     expect(serverProxyFindProxy, isNull);
   });
 
+  testWidgets('an unparseable proxy is rejected instead of saved', (
+    tester,
+  ) async {
+    await pump(tester);
+
+    await tester.ensureVisible(find.text('Proxy address'));
+    await tester.tap(find.text('Proxy address'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'not a proxy');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Enter a proxy host and port'), findsOneWidget);
+    expect(store.get(UserPreferences.proxyUrl), isEmpty);
+    expect(gServerProxyUrl, isEmpty);
+  });
+
   testWidgets('custom headers can be saved, edited and removed', (
     tester,
   ) async {
@@ -163,13 +180,13 @@ void main() {
     await tester.tap(addHeader);
     await tester.pumpAndSettle();
 
-    Future<void> enter(String label, String value) async {
-      await tester.enterText(find.widgetWithText(TextFormField, label), value);
+    Future<void> enter(String key, String value) async {
+      await tester.enterText(find.byKey(ValueKey(key)), value);
     }
 
-    await enter('Server URL', 'https://example.test/emby');
-    await enter('Header name', 'X-Custom-Header');
-    await enter('Header value', 'first');
+    await enter('request-header-server', 'https://example.test/emby');
+    await enter('request-header-name', 'X-Custom-Header');
+    await enter('request-header-value', 'first');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
@@ -189,7 +206,7 @@ void main() {
     }
 
     await openHeader();
-    await enter('Header value', 'updated');
+    await enter('request-header-value', 'updated');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
     expect(gServerRequestHeaders.single.value, 'updated');

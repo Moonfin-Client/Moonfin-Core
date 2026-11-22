@@ -110,7 +110,7 @@ String plexClientProfile(Map<String, dynamic>? profile) {
 
 class PlexPlaybackApi implements PlaybackApi {
   final Dio _dio;
-  final Map<String, String> _identity;
+  final Map<String, String> Function() _identity;
 
   PlexPlaybackApi(this._dio, this._identity);
 
@@ -151,7 +151,7 @@ class PlexPlaybackApi implements PlaybackApi {
         'MediaSources': [
           source(
             '$plexCloudEpg/library/parts/${channel.channel}.m3u8'
-            '?${_query({'includeAllStreams': '1', ..._identity})}',
+            '?${_query({'includeAllStreams': '1', ..._identity()})}',
           ),
         ],
       };
@@ -176,7 +176,7 @@ class PlexPlaybackApi implements PlaybackApi {
       );
     }
     final params = {
-      ..._identity,
+      ..._identity(),
       'path': path,
       'hasMDE': '1',
       'mediaIndex': '0',
@@ -306,7 +306,7 @@ class PlexPlaybackApi implements PlaybackApi {
         subtitle['codec'] != 'none';
     final directStream = request['EnableDirectStream'] == false ? '0' : '1';
     final params = {
-      ..._identity,
+      ..._identity(),
       'path': '/library/metadata/$key',
       'mediaIndex': '$mediaIndex',
       'partIndex': '$partIndex',

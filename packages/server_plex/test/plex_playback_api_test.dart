@@ -82,7 +82,7 @@ const _item = {
   );
   final dio = Dio()..interceptors.add(server);
   return (
-    PlexPlaybackApi(dio, const {'X-Plex-Client-Identifier': 'device'}),
+    PlexPlaybackApi(dio, () => const {'X-Plex-Client-Identifier': 'device'}),
     server,
   );
 }
@@ -471,7 +471,10 @@ void main() {
           _ => null,
         },
       );
-      final api = PlexPlaybackApi(Dio()..interceptors.add(server), const {});
+      final api = PlexPlaybackApi(
+        Dio()..interceptors.add(server),
+        () => const {},
+      );
 
       final info = await api.getPlaybackInfo('part-23070-0-1');
       await api.reportPlaybackStopped({

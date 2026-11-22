@@ -165,6 +165,8 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
                 accessToken: _client.accessToken,
                 userId: _client.userId,
               ),
+              // Last, so a header saved for this server wins over a default.
+              ...serverRequestHeadersFor(Uri.parse(url)),
             }
           : const {},
       mediaSourceId: source.id,

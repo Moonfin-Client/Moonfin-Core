@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 import 'package:uuid/uuid.dart';
+
+import '../util/loggable_url.dart';
 
 /// Serves Aether's Emby direct stream requests through Moonfin's HTTP proxy.
 /// The loopback URL is valid for one playback session and carries no token.
@@ -17,10 +20,20 @@ class AetherProxyStream {
   final HttpServer _server;
   final HttpClient _client;
   final Uri _source;
-  final Map<String, String> _headers;
+  Map<String, String> _headers;
   final Uri _localUrl;
 
   String get url => _localUrl.toString();
+
+  /// Replaces the headers every later upstream request carries.
+  ///
+  /// A credential refresh arrives after the engine already opened the local
+  /// URL, so the relay has to take the new token itself instead of asking the
+  /// engine to reopen the stream.
+  void updateHeaders(Map<String, String> headers) {
+    if (headers.isEmpty) return;
+    _headers = Map.unmodifiable(headers);
+  }
 
   static Future<AetherProxyStream?> open(
     String url,
@@ -78,9 +91,14 @@ class AetherProxyStream {
       } else {
         await upstream.pipe(response);
       }
-    } catch (_) {
+    } catch (error) {
       // The player may disconnect while seeking or replacing a source.
-      // Return a gateway error if no bytes have been written yet.
+      // Report the upstream failure so a broken proxy route is diagnosable
+      // rather than a silent 502, then return a gateway error if no bytes
+      // have been written yet.
+      debugPrint(
+        'Aether relay failed for ${loggableUrl(_source.toString())}: $error',
+      );
       try {
         response.statusCode = HttpStatus.badGateway;
         await response.close();

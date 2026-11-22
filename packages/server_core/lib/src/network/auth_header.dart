@@ -24,7 +24,7 @@ Map<String, String> buildEmbyAuthorizationHeaders({
   final identity = _serverIdentityFields(
     deviceInfo,
     deviceName: gEmbyDeviceNameOverride,
-    deviceId: gEmbyDeviceIdOverride,
+    deviceId: serverEmbyDeviceId(deviceInfo),
     version: gEmbyClientVersionOverride,
   );
   final hasToken = accessToken != null && accessToken.isNotEmpty;
@@ -56,6 +56,13 @@ List<String> _serverIdentityFields(
   _field('DeviceId', _valueOrDefault(deviceId, deviceInfo.id)),
   _field('Version', _valueOrDefault(version, deviceInfo.appVersion)),
 ];
+
+/// The device id Emby sees, which the configured override replaces.
+///
+/// Playback and socket requests have to name the same device as the
+/// authorization header, or the server treats them as two devices.
+String serverEmbyDeviceId(DeviceInfo deviceInfo) =>
+    _valueOrDefault(gEmbyDeviceIdOverride, deviceInfo.id);
 
 String _valueOrDefault(String value, String fallback) =>
     value.trim().isEmpty ? fallback : value;

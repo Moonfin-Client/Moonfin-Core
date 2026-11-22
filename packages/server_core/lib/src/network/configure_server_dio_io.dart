@@ -10,6 +10,7 @@ import '../diagnostics/server_log_sink.dart';
 import 'client_certificates.dart';
 import 'insecure_certificates.dart';
 import 'network_overrides.dart';
+import 'redirect_interceptor.dart';
 import 'server_user_agent.dart';
 
 /// How many requests may be reaching the server at once.
@@ -86,35 +87,61 @@ void configureServerDio(
 class _ServerHeaderAdapter extends IOHttpClientAdapter {
   _ServerHeaderAdapter({required super.createHttpClient});
 
+  static const _redirectStatuses = {301, 302, 303, 307, 308};
+  static const _maxRedirects = 5;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
-  ) {
-    final uri = options.uri;
-    if (gServerRequestHeaders.isEmpty ||
-        (uri.scheme != 'http' && uri.scheme != 'https') ||
-        uri.host.isEmpty) {
+  ) async {
+    final configured = serverRequestHeadersFor(options.uri);
+    if (configured.isEmpty) {
       return super.fetch(options, requestStream, cancelFuture);
     }
 
-    final origin = uri.origin;
-    final headers = {
-      for (final header in gServerRequestHeaders)
-        if (header.origin == origin) header.name.toLowerCase(): header.value,
-    };
-    if (headers.isEmpty) {
-      return super.fetch(options, requestStream, cancelFuture);
-    }
+    var current = options;
+    var stream = requestStream;
+    for (var redirects = 0; ; redirects++) {
+      // Keep overrides off the logical request. Redirect and retry
+      // interceptors issue a new request and the adapter evaluates its origin
+      // independently.
+      final wireOptions = current.copyWith(
+        headers: {...options.headers, ...serverRequestHeadersFor(current.uri)},
+        followRedirects: false,
+      );
+      final response = await super.fetch(wireOptions, stream, cancelFuture);
 
-    // Keep overrides off the logical request. Redirect interceptors issue a
-    // new request and the adapter evaluates its origin independently.
-    final wireOptions = options.copyWith(
-      headers: {...options.headers, ...headers},
-      followRedirects: false,
-    );
-    return super.fetch(wireOptions, requestStream, cancelFuture);
+      final location = _locationOf(response);
+      if (!options.followRedirects ||
+          !_redirectStatuses.contains(response.statusCode) ||
+          location == null ||
+          (options.method != 'GET' && options.method != 'HEAD') ||
+          redirects >= _maxRedirects) {
+        return response;
+      }
+
+      final next = current.uri.resolve(location);
+      // Only a same-origin hop is safe to make here: the logical headers
+      // (a token, say) go out again, and a client without its own redirect
+      // interceptor never agreed to send them elsewhere.
+      if (!isSameOriginRedirect(current.uri, next)) return response;
+
+      await response.stream.drain<void>();
+      current = current.copyWith(
+        path: next.toString(),
+        baseUrl: '',
+        queryParameters: const {},
+      );
+    }
+  }
+
+  static String? _locationOf(ResponseBody response) {
+    final values = response.headers[HttpHeaders.locationHeader];
+    if (values == null || values.isEmpty) return null;
+    final value = values.first;
+    return value.isEmpty ? null : value;
   }
 }
 

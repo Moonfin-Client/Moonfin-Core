@@ -118,7 +118,7 @@ class PlexMediaServerClient extends MediaServerClient {
   @override
   late final PlaybackApi playbackApi = PlexPlaybackApi(
     _dio,
-    plexIdentity(deviceInfo),
+    () => plexIdentity(deviceInfo),
   );
 
   @override

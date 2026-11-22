@@ -389,10 +389,16 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   // The engine replaces the open stream's request headers in place (a
   // route whose requests AVFoundation makes reloads at the playhead
   // instead). The server reads the headers before a token in the URL, so
-  // the URL stays as it opened.
+  // the URL stays as it opened. A relayed stream holds the headers on this
+  // side, so it takes them directly instead of asking the engine.
   @override
   Future<bool> updateStreamCredentials(StreamCredentials credentials) async {
     if (credentials.requestHeaders.isEmpty) return false;
+    final proxyStream = _proxyStream;
+    if (proxyStream != null) {
+      proxyStream.updateHeaders(credentials.requestHeaders);
+      return true;
+    }
     await _invoke<void>('updateRequestHeaders', {
       'headers': credentials.requestHeaders,
     });

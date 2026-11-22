@@ -11209,6 +11209,10 @@
   "@settingsProxyUrlHint": {
     "description": "Placeholder in the proxy address field showing the accepted form"
   },
+  "settingsProxyUrlInvalid": "Enter a proxy host and port, e.g. 127.0.0.1:7897 or http://proxy.example:8080",
+  "@settingsProxyUrlInvalid": {
+    "description": "Error shown when the proxy address cannot be parsed into a host and port"
+  },
   "settingsClientIdentitySection": "Client identity",
   "@settingsClientIdentitySection": {
     "description": "Section header for the user agent and client name settings"

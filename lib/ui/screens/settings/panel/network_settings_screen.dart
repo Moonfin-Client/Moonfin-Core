@@ -8,6 +8,115 @@ class _NetworkSettingsScreen extends StatefulWidget {
   State<_NetworkSettingsScreen> createState() => _NetworkSettingsScreenState();
 }
 
+/// What the request-header dialog returns: a header to save, or a removal.
+class _RequestHeaderEditResult {
+  const _RequestHeaderEditResult.save(this.header) : remove = false;
+  const _RequestHeaderEditResult.remove() : header = null, remove = true;
+
+  final ServerRequestHeader? header;
+  final bool remove;
+}
+
+/// Adds or edits one custom request header.
+///
+/// The fields go through [_SettingsDialogTextField] so a remote's D-pad can
+/// open a keyboard, and validation runs on save and reports under the value
+/// field, which is the only place an incomplete row shows itself.
+class _RequestHeaderDialog extends StatefulWidget {
+  final ServerRequestHeader? current;
+
+  const _RequestHeaderDialog({this.current});
+
+  @override
+  State<_RequestHeaderDialog> createState() => _RequestHeaderDialogState();
+}
+
+class _RequestHeaderDialogState extends State<_RequestHeaderDialog> {
+  late final _address = TextEditingController(
+    text: widget.current?.origin ?? '',
+  );
+  late final _name = TextEditingController(text: widget.current?.name ?? '');
+  late final _value = TextEditingController(text: widget.current?.value ?? '');
+  String? _error;
+
+  @override
+  void dispose() {
+    _address.dispose();
+    _name.dispose();
+    _value.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final l10n = AppLocalizations.of(context);
+    final candidate = ServerRequestHeader.tryCreate(
+      serverUrl: _address.text,
+      name: _name.text,
+      value: _value.text,
+    );
+    if (candidate == null) {
+      setState(() => _error = l10n.settingsRequestHeaderInvalid);
+      return;
+    }
+    if (gServerRequestHeaders.any(
+      (entry) => entry != widget.current && entry.matches(candidate),
+    )) {
+      setState(() => _error = l10n.settingsRequestHeaderDuplicate);
+      return;
+    }
+    Navigator.pop(context, _RequestHeaderEditResult.save(candidate));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog.adaptive(
+      title: Text(
+        widget.current == null ? l10n.settingsAddRequestHeader : l10n.edit,
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _SettingsDialogTextField(
+              key: const ValueKey('request-header-server'),
+              controller: _address,
+              label: l10n.settingsRequestHeaderServer,
+              hint: 'https://server.example',
+              autofocus: true,
+            ),
+            _SettingsDialogTextField(
+              key: const ValueKey('request-header-name'),
+              controller: _name,
+              label: l10n.settingsRequestHeaderName,
+              hint: 'X-Custom-Header',
+            ),
+            _SettingsDialogTextField(
+              key: const ValueKey('request-header-value'),
+              controller: _value,
+              label: l10n.settingsRequestHeaderValue,
+              errorText: _error,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        if (widget.current != null)
+          adaptiveDialogAction(
+            onPressed: () =>
+                Navigator.pop(context, const _RequestHeaderEditResult.remove()),
+            child: Text(l10n.remove),
+          ),
+        adaptiveDialogAction(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        adaptiveDialogAction(onPressed: _save, child: Text(l10n.save)),
+      ],
+    );
+  }
+}
+
 class _NetworkSettingsScreenState extends State<_NetworkSettingsScreen> {
   final _networkScope = FocusScopeNode(
     debugLabel: 'NetworkSettingsScope',
@@ -21,104 +130,26 @@ class _NetworkSettingsScreenState extends State<_NetworkSettingsScreen> {
   }
 
   Future<void> _editRequestHeader([ServerRequestHeader? current]) async {
-    final l10n = AppLocalizations.of(context);
-    final formKey = GlobalKey<FormState>();
-    var address = current?.origin ?? '';
-    var name = current?.name ?? '';
-    var value = current?.value ?? '';
-    ServerRequestHeader? header;
-
-    final result = await showFocusRestoringDialog<List<ServerRequestHeader>>(
+    final result = await showFocusRestoringDialog<_RequestHeaderEditResult>(
       context: context,
-      builder: (dialogContext) => AlertDialog.adaptive(
-        title: Text(
-          current == null ? l10n.settingsAddRequestHeader : l10n.edit,
-        ),
-        content: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  initialValue: address,
-                  autofocus: true,
-                  keyboardType: TextInputType.url,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsRequestHeaderServer,
-                    hintText: 'https://server.example',
-                  ),
-                  onChanged: (text) => address = text,
-                ),
-                TextFormField(
-                  initialValue: name,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsRequestHeaderName,
-                    hintText: 'X-Custom-Header',
-                  ),
-                  onChanged: (text) => name = text,
-                ),
-                TextFormField(
-                  initialValue: value,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsRequestHeaderValue,
-                  ),
-                  onChanged: (text) => value = text,
-                  validator: (_) {
-                    final candidate = ServerRequestHeader.tryCreate(
-                      serverUrl: address,
-                      name: name,
-                      value: value,
-                    );
-                    if (candidate == null) {
-                      return l10n.settingsRequestHeaderInvalid;
-                    }
-                    if (gServerRequestHeaders.any(
-                      (entry) => entry != current && entry.matches(candidate),
-                    )) {
-                      return l10n.settingsRequestHeaderDuplicate;
-                    }
-                    header = candidate;
-                    return null;
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          if (current != null)
-            adaptiveDialogAction(
-              onPressed: () => Navigator.pop(dialogContext, [
-                for (final entry in gServerRequestHeaders)
-                  if (entry != current) entry,
-              ]),
-              child: Text(l10n.remove),
-            ),
-          adaptiveDialogAction(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          adaptiveDialogAction(
-            onPressed: () {
-              if (!formKey.currentState!.validate()) return;
-              Navigator.pop(dialogContext, [
-                for (final entry in gServerRequestHeaders)
-                  if (entry == current) header! else entry,
-                if (current == null) header!,
-              ]);
-            },
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
+      builder: (_) => _RequestHeaderDialog(current: current),
     );
 
     if (!mounted || result == null) return;
+    final updated = result.remove
+        ? [
+            for (final entry in gServerRequestHeaders)
+              if (entry != current) entry,
+          ]
+        : [
+            for (final entry in gServerRequestHeaders)
+              if (entry == current) result.header! else entry,
+            if (current == null) result.header!,
+          ];
     final store = GetIt.instance<PreferenceStore>();
-    setState(() => gServerRequestHeaders = List.unmodifiable(result));
+    setState(() => gServerRequestHeaders = List.unmodifiable(updated));
     await store.set(UserPreferences.serverRequestHeaders, [
-      for (final entry in result) jsonEncode(entry.toJson()),
+      for (final entry in updated) jsonEncode(entry.toJson()),
     ]);
   }
 
@@ -145,6 +176,12 @@ class _NetworkSettingsScreenState extends State<_NetworkSettingsScreen> {
                   title: l10n.settingsProxyUrl,
                   icon: Icons.lan_outlined,
                   hintText: l10n.settingsProxyUrlHint,
+                  // Empty means a direct connection. Anything else has to parse
+                  // into a host and port that dart:io can route through.
+                  validator: (value) =>
+                      value.trim().isEmpty || serverProxyRuleFor(value) != null
+                      ? null
+                      : l10n.settingsProxyUrlInvalid,
                   onChanged: (value) => gServerProxyUrl = value,
                 ),
               ],

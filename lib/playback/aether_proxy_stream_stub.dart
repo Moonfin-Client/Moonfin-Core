@@ -7,4 +7,6 @@ class AetherProxyStream {
   ) async => null;
 
   Future<void> close() async {}
+
+  void updateHeaders(Map<String, String> headers) {}
 }

@@ -172,16 +172,22 @@ class _MediaDownloadContext {
 /// native engine stages its temp file on internal storage and its completing
 /// move across volumes is a full copy, a long visible wait for a
 /// multi-gigabyte file.
+///
+/// A configured proxy also keeps downloads on the legacy engine: the native
+/// engines run outside the Dart VM, so the proxy Dart routes server traffic
+/// through never reaches them.
 @visibleForTesting
 bool downloadUsesPluginEngine({
   required bool pluginEngineSupported,
   required bool serverNeedsLegacyTls,
+  required bool hasProxy,
   required bool isAndroid,
   required bool qualityTranscoded,
   required bool destinationOnRemovableStorage,
 }) {
   if (!pluginEngineSupported) return false;
   if (serverNeedsLegacyTls) return false;
+  if (hasProxy) return false;
   if (isAndroid && qualityTranscoded) return false;
   if (destinationOnRemovableStorage) return false;
   return true;
@@ -191,18 +197,22 @@ bool downloadUsesPluginEngine({
 /// rewrites the server's fragmented live transcode into a seekable MP4 as it
 /// lands. Only Android has it, and only a transcoded video needs it: an
 /// original-quality file arrives with its own seek index. A server the native
-/// stack already refused over TLS stays on the legacy engine.
+/// stack already refused over TLS stays on the legacy engine, as does every
+/// download while a proxy is configured, since the native engine cannot use
+/// it.
 @visibleForTesting
 bool downloadUsesTransmuxEngine({
   required bool isAndroid,
   required bool qualityTranscoded,
   required bool itemSupportsTranscodedDownload,
   required bool serverNeedsLegacyTls,
+  required bool hasProxy,
 }) =>
     isAndroid &&
     qualityTranscoded &&
     itemSupportsTranscodedDownload &&
-    !serverNeedsLegacyTls;
+    !serverNeedsLegacyTls &&
+    !hasProxy;
 
 /// Headroom the free-space preflight keeps beyond the estimated download
 /// size, so a download can't run the volume down to its last bytes.
@@ -512,10 +522,13 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
   }) => downloadUsesPluginEngine(
     pluginEngineSupported: _pluginEngineSupported,
     serverNeedsLegacyTls: _serverNeedsLegacyTls,
+    hasProxy: _hasServerProxy,
     isAndroid: PlatformDetection.isAndroid,
     qualityTranscoded: quality.isTranscoded,
     destinationOnRemovableStorage: destinationOnRemovableStorage,
   );
+
+  bool get _hasServerProxy => gServerProxyUrl.trim().isNotEmpty;
 
   /// On iOS and Android the plugin posts its own download notifications for
   /// the downloads it runs. The desktop plugin engine and the legacy engine
@@ -2639,6 +2652,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
           fullItem.type,
         ),
         serverNeedsLegacyTls: _serverNeedsLegacyTls,
+        hasProxy: _hasServerProxy,
       );
 
       // Before the first transfer: iOS drops notifications, the plugin's
