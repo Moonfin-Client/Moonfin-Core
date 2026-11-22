@@ -214,6 +214,17 @@ bool downloadUsesTransmuxEngine({
     !serverNeedsLegacyTls &&
     !hasProxy;
 
+/// [headers] plus the request headers saved for [url]'s server.
+///
+/// A download is a request to the same server as the API calls, so a gateway
+/// in front of it has to see the same headers. The saved ones come last so
+/// they win over a default.
+@visibleForTesting
+Map<String, String> downloadRequestHeadersFor(
+  Uri url,
+  Map<String, String> headers,
+) => {...headers, ...serverRequestHeadersFor(url)};
+
 /// Headroom the free-space preflight keeps beyond the estimated download
 /// size, so a download can't run the volume down to its last bytes.
 const int _freeSpaceHeadroomBytes = 500 * 1024 * 1024;
@@ -2785,6 +2796,13 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       );
 
       Future<Response> engineDownload(String downloadUrl) async {
+        // Saved headers are scoped to the server's origin, and a download is a
+        // request to the same server as the API calls, so a gateway in front
+        // of it sees them too.
+        final urlHeaders = downloadRequestHeadersFor(
+          Uri.parse(downloadUrl),
+          headers,
+        );
         // Fallback URLs are direct copies with their own seek index, so only
         // the primary transcode URL goes through the transmux engine.
         if (useTransmuxEngine && downloadUrl == url) {
@@ -2793,7 +2811,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
               downloadUrl,
               itemId: item.id,
               savePath: savePath!,
-              headers: headers,
+              headers: urlHeaders,
               cancelToken: cancelToken,
               onReceiveProgress: onReceiveProgress,
             );
@@ -2810,7 +2828,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
               item: fullItem,
               quality: transferQuality,
               savePath: savePath!,
-              headers: headers,
+              headers: urlHeaders,
               cancelToken: cancelToken,
               onReceiveProgress: onReceiveProgress,
             );
@@ -2831,7 +2849,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         return _legacyEngine.downloadWithHangGuard(
           downloadUrl,
           savePath!,
-          options: Options(headers: headers, method: 'GET'),
+          options: Options(headers: urlHeaders, method: 'GET'),
           cancelToken: cancelToken,
           estimatedSize: estimatedSize,
           onReceiveProgress: onReceiveProgress,

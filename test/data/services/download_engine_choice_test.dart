@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/download_quality.dart';
 import 'package:moonfin/data/services/download_service.dart';
+import 'package:server_core/server_core.dart';
 
 /// Tests for the per-download engine choice. Android must keep transcoded
 /// downloads on the in-process engines, the only ones that hold a foreground
@@ -169,6 +170,46 @@ void main() {
       expect(
         choose(isAndroid: true, quality: DownloadQuality.high1080p),
         isFalse,
+      );
+    });
+  });
+
+  group('download request headers', () {
+    tearDown(resetServerNetworkOverrides);
+
+    test('add a header saved for the download server', () {
+      gServerRequestHeaders = [
+        ServerRequestHeader.tryCreate(
+          serverUrl: 'https://server.example',
+          name: 'X-Gateway',
+          value: 'token',
+        )!,
+      ];
+
+      expect(
+        downloadRequestHeadersFor(
+          Uri.parse('https://server.example/items/1/download'),
+          const {'Accept': 'application/octet-stream'},
+        ),
+        {'Accept': 'application/octet-stream', 'X-Gateway': 'token'},
+      );
+    });
+
+    test('leave a header saved for another server alone', () {
+      gServerRequestHeaders = [
+        ServerRequestHeader.tryCreate(
+          serverUrl: 'https://other.example',
+          name: 'X-Gateway',
+          value: 'token',
+        )!,
+      ];
+
+      expect(
+        downloadRequestHeadersFor(
+          Uri.parse('https://server.example/items/1/download'),
+          const {'Accept': 'application/octet-stream'},
+        ),
+        {'Accept': 'application/octet-stream'},
       );
     });
   });
