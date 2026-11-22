@@ -26,6 +26,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/game_library.dart' show libraryIcon;
 import '../../../util/live_tv_library.dart'
     show isLiveTvLibrary, librariesForNav;
@@ -3175,13 +3176,25 @@ List<(IconData, String)> _detailButtons(
 /// without the entries they switch off. Status, the next episode and Seerr
 /// only show on series and requests, so a movie has none of them.
 List<(DetailMetadataItem, String)> _detailMeta(
+  BuildContext context,
   MediaBarSlideItem item, {
   String genreJoin = ' • ',
 }) {
   final prefs = GetIt.instance<UserPreferences>();
   final hidden = detailMetadataLayout.hidden(prefs);
+  final showFullDate = previewValue(context, UserPreferences.detailShowFullDate);
+  final locale = Localizations.maybeLocaleOf(context)?.toString();
+  String? yearText() {
+    final year = item.year;
+    if (year == null) return null;
+    if (showFullDate) {
+      return formatMediumDate(DateTime(year, 3, 15), locale: locale);
+    }
+    return year.toString();
+  }
+
   String? textOf(DetailMetadataItem entry) => switch (entry) {
-    DetailMetadataItem.year => item.year?.toString(),
+    DetailMetadataItem.year => yearText(),
     DetailMetadataItem.parentalRating => item.officialRating,
     DetailMetadataItem.runtimeAndSeasons =>
       item.runtime == null ? null : _runtimeText(item.runtime),
@@ -3201,7 +3214,7 @@ List<(DetailMetadataItem, String)> _detailMeta(
 }
 
 /// The metadata line Modern and Spotlight share, with a clock on the runtime.
-Widget _modernDetailMeta(MediaBarSlideItem item) {
+Widget _modernDetailMeta(BuildContext context, MediaBarSlideItem item) {
   final style = TextStyle(
     fontSize: 14,
     color: AppColorScheme.onSurface.withValues(alpha: 0.75),
@@ -3212,6 +3225,7 @@ Widget _modernDetailMeta(MediaBarSlideItem item) {
     crossAxisAlignment: WrapCrossAlignment.center,
     children: [
       for (final (i, (entry, text)) in _detailMeta(
+        context,
         item,
         genreJoin: ' · ',
       ).indexed) ...[
@@ -3570,7 +3584,7 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
     spacing: 2,
     runSpacing: 4,
     children: [
-      for (final (i, (entry, text)) in _detailMeta(item).indexed) ...[
+      for (final (i, (entry, text)) in _detailMeta(context, item).indexed) ...[
         if (i > 0)
           Text(
             ' • ',
@@ -3880,7 +3894,7 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      _modernDetailMeta(item),
+      _modernDetailMeta(context, item),
       ..._techChips(context),
       const SizedBox(height: 6),
       _sampleRatings(
@@ -4081,7 +4095,7 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      _modernDetailMeta(item),
+      _modernDetailMeta(context, item),
       ..._techChips(context),
       const SizedBox(height: 8),
       _sampleRatings(
@@ -4181,7 +4195,7 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
 Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
   final landscape = !_phone;
   final base = AppColorScheme.background;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' • ');
+  final meta = [for (final (_, text) in _detailMeta(context, item)) text].join(' • ');
   final buttons = _detailButtons(context, auto: 4);
   final titleStyle = TextStyle(
     fontSize: landscape ? 56 : 32,
@@ -4313,7 +4327,7 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
 Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
   final buttons = _detailButtons(context, auto: 4);
-  final meta = _modernDetailMeta(item);
+  final meta = _modernDetailMeta(context, item);
   const glass = Color(0xE6303036);
   const muted = Color(0x99EBEBF5);
 
@@ -4700,7 +4714,7 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final landscape = !_phone;
   final item = items.first;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final meta = [for (final (_, text) in _detailMeta(context, item)) text].join(' · ');
   final buttons = _detailButtons(context, auto: 4);
   final surface = Color.alphaBlend(
     AppColorScheme.onSurface.withValues(alpha: 0.03),
@@ -4885,7 +4899,7 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
 
   // Genres sit in the eyebrow above the title, so they are left out here
   // rather than repeated, and hiding them hides the eyebrow.
-  final detailMeta = _detailMeta(item);
+  final detailMeta = _detailMeta(context, item);
   final showGenres = detailMeta.any(
     (part) => part.$1 == DetailMetadataItem.genres,
   );
@@ -5097,7 +5111,7 @@ Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      _modernDetailMeta(item),
+      _modernDetailMeta(context, item),
       ..._techChips(context, gap: 8),
       const SizedBox(height: 6),
       _sampleRatings(

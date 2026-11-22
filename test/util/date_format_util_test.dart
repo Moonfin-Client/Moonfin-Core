@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/util/date_format_util.dart';
@@ -52,6 +53,77 @@ void main() {
       expect(
         formatFullCalendarDate(testDate, setting: DateFormatSetting.dayMonth),
         'Thursday, 19 November 2026',
+      );
+    });
+
+    test('formatMediumDate respects explicit settings', () {
+      expect(
+        formatMediumDate(testDate, setting: DateFormatSetting.monthDay),
+        'Nov 19, 2026',
+      );
+      expect(
+        formatMediumDate(testDate, setting: DateFormatSetting.dayMonth),
+        '19 Nov 2026',
+      );
+      expect(
+        formatMediumDate(testDate, locale: 'en_US', setting: DateFormatSetting.system),
+        'Nov 19, 2026',
+      );
+      expect(
+        formatMediumDate(testDate, locale: 'en_GB', setting: DateFormatSetting.system),
+        '19 Nov 2026',
+      );
+    });
+
+    test('formatDetailReleaseDate shows full date when enabled and falls back to year', () {
+      const movie = AggregatedItem(
+        id: 'm1',
+        serverId: 's1',
+        rawData: {
+          'Id': 'm1',
+          'Name': 'Example Movie',
+          'Type': 'Movie',
+          'ProductionYear': 2024,
+          'PremiereDate': '2024-03-15T00:00:00.0000000Z',
+        },
+      );
+      const episode = AggregatedItem(
+        id: 'e1',
+        serverId: 's1',
+        rawData: {
+          'Id': 'e1',
+          'Name': 'Pilot',
+          'Type': 'Episode',
+          'ProductionYear': 2024,
+          'PremiereDate': '2024-11-19T00:00:00.0000000Z',
+        },
+      );
+      const yearOnly = AggregatedItem(
+        id: 'm2',
+        serverId: 's1',
+        rawData: {
+          'Id': 'm2',
+          'Name': 'Year Only',
+          'Type': 'Movie',
+          'ProductionYear': 1999,
+        },
+      );
+
+      expect(
+        formatDetailReleaseDate(movie, showFullDate: false, setting: DateFormatSetting.monthDay),
+        '2024',
+      );
+      expect(
+        formatDetailReleaseDate(movie, showFullDate: true, setting: DateFormatSetting.monthDay),
+        'Mar 15, 2024',
+      );
+      expect(
+        formatDetailReleaseDate(episode, showFullDate: true, setting: DateFormatSetting.dayMonth),
+        '19 Nov 2024',
+      );
+      expect(
+        formatDetailReleaseDate(yearOnly, showFullDate: true, setting: DateFormatSetting.monthDay),
+        '1999',
       );
     });
 

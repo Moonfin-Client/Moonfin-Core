@@ -80,6 +80,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../util/focus/key_event_utils.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/overview_text.dart';
 import '../../../util/seerr_credits.dart';
 import '../../navigation/destinations.dart';
@@ -4668,13 +4669,20 @@ class DetailMetadataRow extends StatelessWidget {
       );
 
       final runtime = _runtimeForItem(item, selectedMediaSource);
+      final showFullDate = prefs.get(UserPreferences.detailShowFullDate);
+      final locale = Localizations.localeOf(context).toString();
 
       for (final entry in ordered) {
         if (hidden.contains(entry.id)) continue;
         switch (entry) {
           case DetailMetadataItem.year:
-            if (item.productionYear != null) {
-              parts.add(_text(theme, item.productionYear.toString()));
+            final dateText = formatDetailReleaseDate(
+              item,
+              showFullDate: showFullDate,
+              locale: locale,
+            );
+            if (dateText != null) {
+              parts.add(_text(theme, dateText));
             }
           case DetailMetadataItem.parentalRating:
             if (item.officialRating != null) {
