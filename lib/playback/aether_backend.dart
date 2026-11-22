@@ -12,6 +12,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'aether_proxy_stream.dart';
 import 'apple_display_cadence.dart';
 import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
@@ -71,6 +72,8 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
+  AetherProxyStream? _proxyStream;
+  int _sourceGeneration = 0;
   EngineTrust? _trust;
   Timer? _audioDelayDebounce;
 
@@ -290,6 +293,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
+    final generation = ++_sourceGeneration;
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
     final headers = payload['headers'] is Map
@@ -316,10 +320,22 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       'certificates': nativeClientCertificates(pkcs12: true),
     });
 
+    final proxyStream = PlatformDetection.isMacOS
+        ? await AetherProxyStream.open(url, headers)
+        : null;
+    if (_sourceGeneration != generation) {
+      await proxyStream?.close();
+      return;
+    }
+    final previousProxyStream = _proxyStream;
+    _proxyStream = proxyStream;
+    await previousProxyStream?.close();
+    if (_sourceGeneration != generation) return;
+
     _liveSeekWindow = null;
     await _invoke<void>('setSource', {
-      'url': url,
-      'headers': headers,
+      'url': proxyStream?.url ?? url,
+      'headers': proxyStream == null ? headers : const <String, String>{},
       'autoPlay': autoPlay,
       'startPositionMs': startPosition.inMilliseconds,
       'audioStreamIndex': (payload['audioStreamIndex'] as num?)?.toInt() ?? -1,
@@ -389,7 +405,14 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   @override
   Future<void> stop() async {
     _pendingEmbeddedSubtitle = null;
-    await _invoke<void>('stop');
+    _sourceGeneration++;
+    final proxyStream = _proxyStream;
+    _proxyStream = null;
+    try {
+      await _invoke<void>('stop');
+    } finally {
+      await proxyStream?.close();
+    }
     _stopStallWatchdog();
     if (_isPlaying) {
       _isPlaying = false;
@@ -815,6 +838,10 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   void dispose() {
     _pendingEmbeddedSubtitle = null;
     _disposed = true;
+    _sourceGeneration++;
+    final proxyStream = _proxyStream;
+    _proxyStream = null;
+    if (proxyStream != null) unawaited(proxyStream.close());
     _prefs.removeListener(_syncAllowUntrustedTls);
     _prefs.removeListener(_syncEngineLogForwarding);
     _audioDelayDebounce?.cancel();
