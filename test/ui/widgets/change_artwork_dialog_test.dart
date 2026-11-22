@@ -9,6 +9,7 @@ import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/ui/widgets/change_artwork_dialog.dart';
+import 'package:moonfin/ui/widgets/offline_aware_image.dart';
 import 'package:server_core/server_core.dart';
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
@@ -30,6 +31,9 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   String? heldId;
   Completer<void>? held;
 
+  /// While true, fetches fail, the way a dropped connection does.
+  bool failing = false;
+
   @override
   Future<Map<String, dynamic>> getItem(
     String itemId, {
@@ -37,6 +41,7 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     String? fields,
   }) async {
     if (itemId == heldId) await held?.future;
+    if (failing) throw Exception('connection lost');
     return Map<String, dynamic>.from(
       itemId == item['Id'] ? item : others[itemId]!,
     );
@@ -48,6 +53,11 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
 
   final _FakeItemsApi items;
   final uploads = <ImageType>[];
+  final deletes = <ImageType>[];
+  final downloads = <ImageType>[];
+
+  /// Backdrops the providers offer.
+  List<Map<String, dynamic>> remoteBackdrops = const [];
 
   /// While set, an upload waits on it, the way a large file keeps saving.
   Completer<void>? saving;
@@ -60,7 +70,23 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     int? limit,
     String? providerName,
     bool? includeAllLanguages,
-  }) async => {'Images': const []};
+  }) async => {
+    'Images': imageType == ImageType.backdrop ? remoteBackdrops : const [],
+  };
+
+  @override
+  Future<void> deleteItemImage(
+    String itemId, {
+    required ImageType imageType,
+    int? imageIndex,
+  }) async => deletes.add(imageType);
+
+  @override
+  Future<void> downloadRemoteImage(
+    String itemId, {
+    required ImageType imageType,
+    required String imageUrl,
+  }) async => downloads.add(imageType);
 
   @override
   Future<void> uploadItemImage(
@@ -414,6 +440,69 @@ void main() {
       expect(find.text(l10n.missing), findsNothing);
     },
   );
+
+  group('a saved change is reported even when the refetch after it fails', () {
+    testWidgets('download', (tester) async {
+      admin.remoteBackdrops = [
+        {
+          'Url': 'http://provider/backdrop.jpg',
+          'ProviderName': 'TheMovieDb',
+          'Width': 1920,
+          'Height': 1080,
+        },
+      ];
+      final result = await open(tester);
+      items.failing = true;
+
+      final remoteCard = find.byType(OfflineAwareImage).last;
+      await tester.ensureVisible(remoteCard);
+      await tester.tap(remoteCard);
+      await settle(tester);
+      await tester.tap(find.text(l10n.download));
+      await settle(tester);
+      expect(admin.downloads, [ImageType.backdrop]);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      expect(await result, isTrue);
+    });
+
+    testWidgets('delete', (tester) async {
+      final result = await open(tester);
+      items.failing = true;
+
+      // The album's cover is its only current image.
+      await tester.tap(find.byType(OfflineAwareImage));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      expect(admin.deletes, [ImageType.primary]);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      expect(await result, isTrue);
+    });
+
+    testWidgets('Clear All', (tester) async {
+      final result = await open(tester);
+      items.failing = true;
+
+      final clearAll = find.text(l10n.clearAllArtworkButton);
+      await tester.ensureVisible(clearAll);
+      await tester.tap(clearAll);
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      expect(admin.deletes, [ImageType.primary]);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      expect(await result, isTrue);
+    });
+  });
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);

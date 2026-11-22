@@ -736,12 +736,12 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         imageType: ImageType.fromServerString(category),
         imageUrl: url,
       );
+      _markChanged();
 
       final updatedRaw = await client.itemsApi.getItem(item.id);
       if (mounted) {
         setState(() {
           _applyRefreshedItem(item, updatedRaw);
-          _markChanged();
           _actionInProgress.remove(category);
         });
       }
@@ -800,12 +800,12 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         imageType: ImageType.fromServerString(category),
         imageIndex: imageIndex,
       );
+      _markChanged();
 
       final updatedRaw = await client.itemsApi.getItem(item.id);
       if (mounted) {
         setState(() {
           _applyRefreshedItem(item, updatedRaw);
-          _markChanged();
           _actionInProgress.remove(category);
         });
       }
@@ -864,6 +864,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
+            _markChanged();
           }
         } else {
           await client.adminItemsApi.deleteItemImage(
@@ -871,6 +872,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
+          _markChanged();
         }
       }
 
@@ -878,7 +880,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       if (mounted) {
         setState(() {
           _applyRefreshedItem(item, updatedRaw);
-          _markChanged();
           _actionInProgress.clear();
         });
       }
