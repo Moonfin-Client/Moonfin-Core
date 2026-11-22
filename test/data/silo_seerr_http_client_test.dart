@@ -241,14 +241,18 @@ void main() {
     );
   });
 
-  test('one letter asks Silo for nothing, as its web app', () async {
-    final silo = _Silo(_base());
+  test('the search screen sends Silo two letters or more, as its web app', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/search': (200, {'page': 1, 'results': <Object>[]}),
+    });
     final client = _client(silo);
     await client.getMoonfinStatus();
-    final page = SeerrDiscoverPage.fromJson(await client.search(' a '));
 
-    expect(page.results, isEmpty);
-    expect(silo.calls.where((c) => c.contains('/requests/search')), isEmpty);
+    expect(client.minSearchQueryLength, 2);
+    // A detail lookup by a one-letter title still asks Silo.
+    await client.search('M');
+    expect(silo.calls.where((c) => c.contains('/requests/search')), hasLength(1));
   });
 
   test('an admin row on Silo is a slider that reads that row', () async {

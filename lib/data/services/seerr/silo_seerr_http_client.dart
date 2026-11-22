@@ -428,6 +428,10 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   Future<Map<String, dynamic>> getUpcomingTv({int page = 1}) =>
       _section('on_air_series', page);
 
+  /// Silo's web app asks nothing for a single character.
+  @override
+  int get minSearchQueryLength => 2;
+
   /// Titles fully in the library are left out, as Silo's web app does:
   /// search lists them under the library's own results. A partly available
   /// series stays, so its missing seasons can be requested.
@@ -438,8 +442,6 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     int limit = 20,
     int offset = 0,
   }) async {
-    // Silo's web app asks nothing for a single character.
-    if (query.trim().length < 2) return _page(const {});
     final body = await _get('/requests/search', {
       'q': query,
       'media_type': mediaType == null ? 'all' : _siloType(mediaType),
