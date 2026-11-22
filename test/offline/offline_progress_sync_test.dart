@@ -61,11 +61,15 @@ const _runtime = 100 * _min;
 /// mark-played the way Jellyfin does, including a success for a stop report
 /// about an item it has never heard of.
 class _FakeServer {
-  _FakeServer(this.baseUrl) {
+  _FakeServer(this.baseUrl, {String? pingUrl}) : pingUrl = pingUrl ?? baseUrl {
     client = _buildClient();
   }
 
   final String baseUrl;
+
+  /// Where the connectivity probe's ping goes, when that's a local stand-in
+  /// for a server at [baseUrl] on another machine.
+  final String pingUrl;
   final Map<String, Map<String, dynamic>> userData = {};
   final List<Map<String, dynamic>> stopReports = [];
   final List<String> markedPlayed = [];
@@ -94,7 +98,7 @@ class _FakeServer {
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
     // The connectivity probe pings through the client.
     when(() => client.systemApi)
-        .thenReturn(EmbySystemApi(Dio(BaseOptions(baseUrl: baseUrl))));
+        .thenReturn(EmbySystemApi(Dio(BaseOptions(baseUrl: pingUrl))));
     when(() => client.itemsApi).thenReturn(items);
     when(() => client.playbackApi).thenReturn(playback);
     when(() => client.userLibraryApi).thenReturn(library);
@@ -636,7 +640,8 @@ void main() {
     });
 
     test('the network coming back while the app is open still syncs', () async {
-      final server = _FakeServer(pingUrl());
+      // On another machine, so losing the network cuts it off.
+      final server = _FakeServer('http://server-a.test', pingUrl: pingUrl());
       await download('m', ticksAtDownload: 10 * _min);
       server.set('m', ticks: 10 * _min);
       final flips = StreamController<List<ConnectivityResult>>();

@@ -5,6 +5,7 @@ import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/data/models/media_bar_state.dart';
 import 'package:moonfin/data/viewmodels/media_bar_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/bounded_network_image.dart';
 import 'package:moonfin/ui/widgets/mediabar/banner_media_bar.dart';
@@ -120,6 +121,7 @@ void main() {
     tester,
   ) async {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    await prefs.set(UserPreferences.navbarPosition, NavbarPosition.bottom);
     await pumpBar(tester, withBanner);
 
     expect(imageUrls(tester), ['http://server/backdrop']);

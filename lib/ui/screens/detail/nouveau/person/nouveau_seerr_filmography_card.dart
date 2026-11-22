@@ -46,7 +46,7 @@ class NouveauSeerrFilmographyCard extends StatelessWidget {
       return null;
     }
 
-    return '$seerrPosterLargeBase$posterPath';
+    return seerrImageUrl(seerrPosterLargeBase, posterPath);
   }
 
   String? get _subtitle {

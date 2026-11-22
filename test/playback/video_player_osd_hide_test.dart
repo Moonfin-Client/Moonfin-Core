@@ -27,6 +27,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 import 'package:moonfin/ui/widgets/marquee_text.dart';
+import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
@@ -146,9 +147,12 @@ class _Users extends Fake implements UserRepository {
 class _Manager extends PlaybackManager {
   final transport = <String>[];
   final seeks = <Duration>[];
+  final speeds = <double>[];
   int stopCalls = 0;
   int finishedStopCalls = 0;
   int nextInQueueCalls = 0;
+  int finishedNextInQueueCalls = 0;
+  bool blockNextAdvance = false;
   PlaybackBringupState bringup = const PlaybackBringupState.idle();
   StreamResolutionResult? resolution;
 
@@ -178,6 +182,12 @@ class _Manager extends PlaybackManager {
   }
 
   @override
+  Future<void> setPlaybackSpeed(double speed) async {
+    speeds.add(speed);
+    state.setPlaybackSpeed(speed);
+  }
+
+  @override
   Future<void> stop({bool userInitiated = true}) async {
     stopCalls++;
   }
@@ -190,6 +200,14 @@ class _Manager extends PlaybackManager {
   @override
   Future<void> nextInQueue() async {
     nextInQueueCalls++;
+    queueService.next();
+  }
+
+  @override
+  Future<void> nextInQueueAsFinished() async {
+    finishedNextInQueueCalls++;
+    if (blockNextAdvance) return;
+    notifyFinishedItemStop(queueService.currentItem);
     queueService.next();
   }
 }
@@ -489,6 +507,267 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('holding Space plays at 2x until it is let go', (tester) async {
+    await mountPlayer(tester);
+    manager.state.setPlaying(true);
+    await tester.pump();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+    await tester.pump(const Duration(milliseconds: 500));
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.space);
+    }
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(manager.speeds, [2.0, 1.0]);
+    expect(manager.transport, isEmpty, reason: 'a hold never toggles');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(manager.transport, ['pause'], reason: 'a tap still toggles');
+
+    // A dialog that opens mid-hold gets the key-up instead, so opening it ends
+    // the hold.
+    manager.state.setPlaying(true);
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+    await tester.pump(const Duration(milliseconds: 500));
+    final player = tester.element(find.byType(VideoPlayerScreen));
+    showDialog<void>(context: player, builder: (_) => const SizedBox());
+    await tester.pump();
+    expect(manager.speeds, [2.0, 1.0, 2.0, 1.0]);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  group('holding Left or Right on TV', () {
+    Future<void> playOnTv(WidgetTester tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.skipForwardLength,
+        10000,
+      );
+      await mountPlayer(tester);
+      manager.state.setDuration(const Duration(hours: 10));
+      manager.state.setPlaying(true);
+      await tester.pump();
+      // Lets the controls hide.
+      await tester.pump(const Duration(seconds: 10));
+    }
+
+    // Focus moves wait for a frame and retry, so frames keep coming the way
+    // playing video does.
+    Future<void> advance(WidgetTester tester, int milliseconds) async {
+      for (var t = 0; t < milliseconds; t += 10) {
+        tester.binding.scheduleFrame();
+        await tester.pump(const Duration(milliseconds: 10));
+      }
+    }
+
+    Future<void> pausedWithControlsUp(WidgetTester tester) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+      manager.state.setPlaying(false);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await advance(tester, 300);
+    }
+
+    // The seek bar retries its focus for a few frames after the controls come
+    // up. A quick second Down used to be pulled back to it, and Right seeked.
+    group('on the TV layout', () {
+      setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+
+      testWidgets('a quick Down to the buttons stays there', (tester) async {
+        String? focused() => FocusManager.instance.primaryFocus?.debugLabel;
+        await playOnTv(tester);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await advance(tester, 30);
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await advance(tester, 20);
+        expect(focused(), 'video_player_primary_play');
+        await advance(tester, 600);
+        expect(focused(), 'video_player_primary_play', reason: 'kept');
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 100);
+        expect(focused(), isNot('video_player_primary_play'));
+        expect(focused(), isNot('video_player_tv_seekbar'));
+        expect(manager.seeks, isEmpty, reason: 'Right moved along the buttons');
+
+        await tester.pumpWidget(const SizedBox());
+      });
+    });
+
+    test('grows from the set step to 30, 60 and 180 seconds', () {
+      expect(
+        [
+          for (var count = 1; count <= 18; count++)
+            heldSeekStepMs(10000, count) ~/ 1000,
+        ],
+        [10, 10, 10, 30, 30, 30, 30, 30, 60, 60, 60, 60, 60, 60, 60, 60, 180, 180],
+      );
+      expect(heldSeekStepMs(60000, 5), 60000, reason: 'never below the set step');
+    });
+
+    testWidgets('steps on a timer, not on key repeats', (tester) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+      manager.state.setPosition(const Duration(seconds: 10));
+      await advance(tester, 200);
+      for (var i = 0; i < 5; i++) {
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      }
+      // Steps land at 350 ms, then every 110 ms, through the eighth.
+      await advance(tester, 850);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [
+        const Duration(seconds: 10),
+        const Duration(seconds: 10 + 10 + 10 + 5 * 30),
+      ]);
+
+      await advance(tester, 1000);
+      expect(manager.seeks, hasLength(2), reason: 'release stops the hold');
+
+      // A tap on the seek bar moves one set step.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks.last, const Duration(seconds: 190));
+      await advance(tester, 1000);
+      expect(manager.seeks, hasLength(3));
+
+      // Lets the last commit stop waiting for the player to land.
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek with the controls up, a press first shows them', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.controlsVisible,
+      );
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 500);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty, reason: 'held, it stays blocked');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, playback never seeks', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.appleTvClickpadSeekMode,
+        AppleTvClickpadSeekMode.pausedOnly,
+      );
+      await playOnTv(tester);
+
+      for (var i = 0; i < 2; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await advance(tester, 300);
+      }
+      expect(manager.seeks, isEmpty);
+
+      // A stalled stream isn't a pause.
+      manager.state
+        ..setPlayWhenReady(true)
+        ..setPlaying(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      manager.state.setPlayWhenReady(false);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, [const Duration(seconds: 10)]);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('set to seek only while paused, resuming drops a hold', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 200);
+      manager.state.setPlaying(true);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(manager.seeks, isEmpty);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a hold ended before its first step stays ended', (
+      tester,
+    ) async {
+      await pausedWithControlsUp(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPlaying(true);
+      await advance(tester, 400);
+      manager.state.setPlaying(false);
+      await advance(tester, 600);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await advance(tester, 600);
+      expect(manager.seeks, isEmpty);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('stops by itself when the release never comes', (
+      tester,
+    ) async {
+      await playOnTv(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      manager.state.setPosition(const Duration(seconds: 10));
+      await advance(tester, 1000);
+      await tester.pump(const Duration(seconds: 11));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      // From 10 s, ten seconds of steps: 10, 10, five of 30, eight of 60 and
+      // 73 of 180.
+      expect(
+        manager.seeks.last,
+        const Duration(seconds: 10 + 10 + 10 + 5 * 30 + 8 * 60 + 73 * 180),
+      );
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   testWidgets('short Cinema pre-roll blocks ordinary intro/outro actions', (
     tester,
   ) async {
@@ -598,6 +877,165 @@ void main() {
     expect(find.byType(VideoPlayerScreen), findsNothing);
     await tester.pumpWidget(const SizedBox());
   }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
+
+  group('TV Next Up during outro', () {
+    setUp(() {
+      PlatformDetection.setTvMode(true);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    });
+
+    tearDown(() {
+      PlatformDetection.setTvMode(false);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    });
+
+    testWidgets(
+      'closing Next Up during outro on TV marks the episode watched and exits finished',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.tap(
+          find.descendant(
+            of: find.byType(NextUpOverlay),
+            matching: find.byIcon(Icons.close_rounded),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedStopCalls, 1);
+        expect(manager.stopCalls, 0);
+        expect(client.userLibrary.markedPlayed, ['ep1']);
+        expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        expect((ep1Raw['UserData'] as Map)['PlaybackPositionTicks'], 0);
+        expect(find.byType(VideoPlayerScreen), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'playing next from Next Up during outro marks the episode watched and advances finished',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, ['ep1']);
+        expect((ep1Raw['UserData'] as Map)['Played'], isTrue);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'intercepted Next Up play during outro does not mark the episode watched until committed',
+      (tester) async {
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.replaceSkipOutroWithNextUp, true);
+        await prefs.set(UserPreferences.nextUpTimeout, 0);
+        client.items.segments = [
+          segmentJson(id: 'outro', type: 'Outro', startMs: 3000, endMs: 10000),
+        ];
+        final ep1Raw = <String, dynamic>{
+          'Id': 'ep1',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 1',
+        };
+        final ep2Raw = <String, dynamic>{
+          'Id': 'ep2',
+          'Type': 'Episode',
+          'SeriesId': 'series1',
+          'Name': 'Episode 2',
+          'IndexNumber': 2,
+          'ParentIndexNumber': 1,
+        };
+        manager.blockNextAdvance = true;
+        manager.queueService.setQueue([
+          AggregatedItem(id: 'ep1', serverId: 'server', rawData: ep1Raw),
+          AggregatedItem(id: 'ep2', serverId: 'server', rawData: ep2Raw),
+        ]);
+        await mountRoutedPlayer(tester);
+        manager.state.setDuration(const Duration(seconds: 10));
+        manager.state.setPosition(const Duration(milliseconds: 3500));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(NextUpOverlay), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.select);
+        await tester.pumpAndSettle();
+
+        expect(manager.finishedNextInQueueCalls, 1);
+        expect(client.userLibrary.markedPlayed, isEmpty);
+        expect(ep1Raw['UserData'], isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+  });
 
   // Issue #1688: a resume that takes longer than the hide delay to start
   // playing left the controls up until a key was pressed.
@@ -750,6 +1188,55 @@ void main() {
     expect(find.byType(Slider), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
+  });
+
+  group('OSD lock', () {
+    final unlockPill = find.text('Long press to unlock');
+
+    setUp(
+      () => GetIt.instance<UserPreferences>().set(
+        UserPreferences.osdLockEnabled,
+        true,
+      ),
+    );
+
+    // Issue #2378: the controls hiding on their own locked the player.
+    testWidgets('the controls hide without locking', (tester) async {
+      await playWithHideDelay(tester, 1000);
+
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.byType(Slider), findsNothing);
+      expect(unlockPill, findsNothing);
+
+      await tester.tapAt(const Offset(400, 300));
+      await tester.pump(kDoubleTapTimeout + const Duration(milliseconds: 50));
+      expect(find.byType(Slider), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('the lock button locks and one long press unlocks', (
+      tester,
+    ) async {
+      await playWithHideDelay(tester, 1000);
+
+      await tester.tap(find.byIcon(Icons.lock_outline));
+      await tester.pump();
+      expect(find.byType(Slider), findsNothing);
+      expect(unlockPill, findsOneWidget);
+
+      await tester.tapAt(const Offset(400, 300));
+      await tester.pump(const Duration(seconds: 3));
+      expect(find.byType(Slider), findsNothing, reason: 'a tap stays blocked');
+      expect(unlockPill, findsOneWidget);
+
+      await tester.longPress(unlockPill);
+      await tester.pump();
+      expect(find.byType(Slider), findsOneWidget);
+      expect(unlockPill, findsNothing);
+
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 
   group('dimming the controls in HDR', () {
@@ -1162,17 +1649,47 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
-    testWidgets('shows a couple of seconds after a pause', (tester) async {
+    testWidgets('waits for the controls to hide on a TV too', (tester) async {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      await pumpPlayer(tester);
+      expect(cardOpacity(tester), 0);
+
+      await tester.pump(const Duration(seconds: 10));
+      expect(cardOpacity(tester), 1);
+      expect(find.text('PAUSED'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('keeps its size whatever the text scale', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpPlayer(tester);
+      await tester.pump(const Duration(seconds: 10));
+
+      final paused = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('PAUSED'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(paused.textScaler, TextScaler.noScaling);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('shows as soon as playback pauses', (tester) async {
       await pumpPlayer(tester);
       manager.state.setPlaying(true);
       await tester.pump();
       await tester.pump();
-      manager.state.setPlaying(false);
-      await tester.pump();
-      await tester.pump();
       expect(find.byType(Slider), findsOneWidget);
 
-      await tester.pump(const Duration(milliseconds: 2100));
+      // A drop the viewer didn't ask for reads as a pause after 200 ms.
+      manager.state.setPlaying(false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.byType(Slider), findsNothing);
       expect(cardOpacity(tester), 1);
 

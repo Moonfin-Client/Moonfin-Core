@@ -12,7 +12,9 @@ import '../util/audio_artwork_url.dart';
 import '../util/platform_detection.dart';
 import 'car_artwork.dart';
 
-const _busName = 'org.mpris.MediaPlayer2.moonfin';
+// Flatpak grants the MPRIS name built from the app ID without a permission.
+final _busName =
+    'org.mpris.MediaPlayer2.${PlatformDetection.flatpakAppId ?? 'moonfin'}';
 const _objectPath = '/org/mpris/MediaPlayer2';
 const _rootInterface = 'org.mpris.MediaPlayer2';
 const _playerInterface = 'org.mpris.MediaPlayer2.Player';
@@ -374,9 +376,13 @@ class _MprisPlayer extends DBusObject {
       case 'Identity':
         return const DBusString('Moonfin');
       case 'DesktopEntry':
-        // Flatpak names the desktop entry after the ID it was installed under.
+        // Flatpak names the desktop entry after the ID it was installed under,
+        // and snapd names it after the snap and app.
         return DBusString(
-          PlatformDetection.flatpakAppId ?? 'org.moonfin.linux',
+          PlatformDetection.flatpakAppId ??
+              (PlatformDetection.isSnap
+                  ? 'moonfin_moonfin'
+                  : 'org.moonfin.linux'),
         );
       case 'SupportedUriSchemes':
         return DBusArray.string(const []);

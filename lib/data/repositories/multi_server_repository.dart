@@ -17,17 +17,31 @@ import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 import '../models/home_row.dart';
 import '../services/media_server_client_factory.dart';
+import '../utils/aggregated_item_sort.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
+import '../utils/merged_copies.dart';
 import '../utils/next_up_cutoff.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
+import '../utils/studio_row_page.dart';
 import 'search_repository.dart';
 import 'user_views_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
+
+/// One server's library inside a merged library.
+typedef MergedLibrarySource = ({ServerUserSession session, String libraryId});
+
+/// A merged library's name, the server libraries it reads, and whether every
+/// server answered.
+typedef MergedLibrary = ({
+  String name,
+  List<MergedLibrarySource> sources,
+  bool complete,
+});
 
 class ServerUserSession {
   final Server server;
@@ -227,7 +241,54 @@ class MultiServerRepository {
       ),
     );
 
-    return results.expand((e) => e).toList();
+    final libraries = results.expand((e) => e).toList();
+    if (!_mergesLibraries) return libraries;
+    return mergeLibrariesByType(libraries, nameOf: _mergedLibraryName);
+  }
+
+  static bool get _mergesLibraries =>
+      GetIt.instance.isRegistered<UserPreferences>() &&
+      GetIt.instance<UserPreferences>().effectiveMergeLibrariesByType;
+
+  String _mergedLibraryName(String collectionType) =>
+      collectionType == 'movies' ? _l10n.movies : _l10n.tvShows;
+
+  /// The name of the merged library of [collectionType] and every server's
+  /// library it reads, the active server's first so a tie in the sort shows
+  /// that copy. A server that doesn't answer is left out.
+  Future<MergedLibrary> mergedLibrary(String collectionType) async {
+    final sessions = await getLoggedInServers();
+    final activeServerId = _sessionRepo.activeServerId;
+    final ordered = [
+      ...sessions.where((session) => session.server.id == activeServerId),
+      ...sessions.where((session) => session.server.id != activeServerId),
+    ];
+    var complete = true;
+    Future<List<MergedLibrarySource>> sourcesOf(
+      ServerUserSession session,
+    ) async {
+      try {
+        final response = await _withTimeout(
+          () => loadVisibleUserViews(session.client),
+          label: 'merged libraries from ${session.server.name}',
+        );
+        return [
+          for (final view in response['Items'] as List? ?? const [])
+            if (view is Map && view['CollectionType'] == collectionType)
+              (session: session, libraryId: view['Id'].toString()),
+        ];
+      } catch (_) {
+        complete = false;
+        return const [];
+      }
+    }
+
+    final perServer = await Future.wait(ordered.map(sourcesOf));
+    return (
+      name: _mergedLibraryName(collectionType),
+      sources: perServer.expand((sources) => sources).toList(),
+      complete: complete,
+    );
   }
 
   Future<HomeRow> getAggregatedResume({int limit = _defaultLimit}) async {
@@ -371,7 +432,7 @@ class MultiServerRepository {
         all.sort((a, b) => b.name.compareTo(a.name));
       }
     } else {
-      all = _sortAggregatedItems(all, sortBy: sortBy, sortOrder: sortOrder);
+      all = sortAggregatedItems(all, sortBy: sortBy, sortOrder: sortOrder);
     }
 
     final takenItems = all.take(limit).toList();
@@ -530,7 +591,7 @@ class MultiServerRepository {
       return items;
     }, label: cacheKeyPrefix);
 
-    final all = _sortAggregatedItems(
+    final all = sortAggregatedItems(
       results.expand((e) => e).toList(growable: false),
       sortBy: sortBy,
       sortOrder: sortOrder,
@@ -568,23 +629,34 @@ class MultiServerRepository {
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toSet();
+    if (selectedSet.isEmpty) {
+      (sortBy, sortOrder) = unpickedStudioSort(sortBy, sortOrder);
+    }
 
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
+          // Pages are read by name and the row is sorted below.
           Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) =>
               session.client.itemsApi.getStudios(
                 userId: session.client.userId,
-                sortBy: sortBy,
-                sortOrder: sortOrder,
+                sortBy: _defaultSortBy,
+                sortOrder: _defaultSortOrder,
                 recursive: true,
                 startIndex: startIndex,
                 limit: limit,
-                fields: 'ItemCounts,PrimaryImageAspectRatio',
+                fields:
+                    'ItemCounts,PrimaryImageAspectRatio,DateCreated,SortName',
               );
 
           if (selectedSet.isEmpty) {
-            final response = await fetchPage(0, perServer);
+            final response = await fetchStudioRowPage(
+              fetchPage,
+              sortBy: sortBy,
+              sortOrder: sortOrder,
+              limit: perServer,
+              pageSize: _studioPageSize,
+            );
             return _parseItems(response, session.server.id);
           }
           return _collectStudios(selectedSet, session.server.id, fetchPage);
@@ -592,7 +664,7 @@ class MultiServerRepository {
       ),
     );
 
-    final all = _sortAggregatedItems(
+    final all = sortAggregatedItems(
       results.expand((e) => e).toList(growable: false),
       sortBy: sortBy,
       sortOrder: sortOrder,
@@ -1003,7 +1075,7 @@ class MultiServerRepository {
                 : b.name.compareTo(a.name),
           );
         } else {
-          uniqueCombined = _sortAggregatedItems(
+          uniqueCombined = sortAggregatedItems(
             uniqueCombined,
             sortBy: sortBy,
             sortOrder: sortOrder,
@@ -1056,7 +1128,7 @@ class MultiServerRepository {
           _ => _defaultSortOrder,
         };
 
-        sortedCombined = _sortAggregatedItems(
+        sortedCombined = sortAggregatedItems(
           uniqueCombined,
           sortBy: sortBy,
           sortOrder: sortOrder,
@@ -1107,7 +1179,7 @@ class MultiServerRepository {
       ),
     );
 
-    final all = _sortAggregatedItems(
+    final all = sortAggregatedItems(
       results.expand((e) => e).toList(growable: false),
       sortBy: sortBy,
       sortOrder: sortOrder,
@@ -1143,9 +1215,20 @@ class MultiServerRepository {
               'Type': 'CollectionFolder',
               if (lib.primaryImageAspectRatio != null)
                 'PrimaryImageAspectRatio': lib.primaryImageAspectRatio,
-              if (lib.imageTags != null) 'ImageTags': lib.imageTags,
-              if (lib.backdropImageTags != null)
-                'BackdropImageTags': lib.backdropImageTags,
+              // A merged library has no artwork of its own, so the card falls
+              // back to its first library's through the parent image fields.
+              if (lib.imageItemId case final imageId?) ...{
+                'PrimaryImageItemId': imageId,
+                'PrimaryImageTag': lib.imageTags?['Primary'],
+                'ParentThumbItemId': imageId,
+                'ParentThumbImageTag': lib.imageTags?['Thumb'],
+                'ParentBackdropItemId': imageId,
+                'ParentBackdropImageTags': lib.backdropImageTags,
+              } else ...{
+                if (lib.imageTags != null) 'ImageTags': lib.imageTags,
+                if (lib.backdropImageTags != null)
+                  'BackdropImageTags': lib.backdropImageTags,
+              },
             },
           ),
         )
@@ -1173,6 +1256,8 @@ class MultiServerRepository {
         prefs?.get(UserPreferences.mergeRecentRowsByType) ?? false;
     final hideWatched =
         prefs?.get(UserPreferences.hideWatchedInRecentRows) ?? false;
+    final foldsCopies = mergeByType && _mergesLibraries;
+    final fields = foldsCopies ? '$_fields,ProviderIds' : _fields;
     final groupedItems = <String, List<AggregatedItem>>{};
 
     for (final session in sessions) {
@@ -1211,7 +1296,7 @@ class MultiServerRepository {
               () => session.client.itemsApi.getLatestItems(
                 parentId: id,
                 limit: fetchLimit,
-                fields: _fields,
+                fields: fields,
                 enableImageTypes: _imageTypes,
                 imageTypeLimit: _imageTypeLimit,
               ),
@@ -1236,7 +1321,7 @@ class MultiServerRepository {
                   () => session.client.itemsApi.getLatestItems(
                     parentId: id,
                     limit: fetchLimit,
-                    fields: _fields,
+                    fields: fields,
                     enableImageTypes: _imageTypes,
                     imageTypeLimit: _imageTypeLimit,
                   ),
@@ -1313,12 +1398,16 @@ class MultiServerRepository {
         return 0;
       });
 
-      final items = normalizeLatestMediaItems(
+      final normalized = normalizeLatestMediaItems(
         allItems,
         collectionType: collectionType,
-        limit: _defaultLimit,
+        limit: foldsCopies ? _maxItems : _defaultLimit,
         hideWatched: hideWatched,
       );
+      // A title several servers hold shows once, carrying the rest as copies.
+      final items = foldsCopies
+          ? foldCopies(normalized).take(_defaultLimit).toList()
+          : normalized;
       if (items.isEmpty) continue;
 
       final rowId = '${mergedTypeRowIdPrefix}latest_$collectionType';
@@ -1517,102 +1606,7 @@ class MultiServerRepository {
     return withoutBlockedItems(items);
   }
 
-  List<AggregatedItem> _sortAggregatedItems(
-    List<AggregatedItem> items, {
-    required String sortBy,
-    required String sortOrder,
-  }) {
-    final sorted = List<AggregatedItem>.of(items);
-    // Rows pass the full sort value, like 'DateCreated,SortName'.
-    final primarySortBy = sortBy.split(',').first;
-    if (primarySortBy == 'Random') {
-      sorted.shuffle();
-      return sorted;
-    }
-
-    // Items without a value count as the lowest, the way the server sorts
-    // them: first when the oldest or lowest come first, last when the newest
-    // or highest do. Ties fall back to the name, like the server's SortName
-    // tie-break.
-    final descending = sortOrder.toLowerCase() == 'descending';
-
-    int compareByName(AggregatedItem a, AggregatedItem b) {
-      final byName = a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      return descending ? -byName : byName;
-    }
-
-    int compareByKey(AggregatedItem a, AggregatedItem b) {
-      switch (primarySortBy) {
-        case 'DateCreated':
-          return _compareNullableDate(
-            _parseDateCreated(a.rawData['DateCreated']),
-            _parseDateCreated(b.rawData['DateCreated']),
-            descending: descending,
-          );
-        case 'PremiereDate':
-          return _compareNullableDate(
-            a.premiereDate,
-            b.premiereDate,
-            descending: descending,
-          );
-        case 'CommunityRating':
-          return _compareNullableNum(
-            a.communityRating,
-            b.communityRating,
-            descending: descending,
-          );
-        case 'CriticRating':
-          return _compareNullableNum(
-            a.criticRating?.toDouble(),
-            b.criticRating?.toDouble(),
-            descending: descending,
-          );
-        case 'Runtime':
-        case 'RunTimeTicks':
-          return _compareNullableNum(
-            a.runTimeTicks?.toDouble(),
-            b.runTimeTicks?.toDouble(),
-            descending: descending,
-          );
-        case 'ProductionYear':
-          return _compareNullableNum(
-            a.productionYear?.toDouble(),
-            b.productionYear?.toDouble(),
-            descending: descending,
-          );
-        default:
-          return 0;
-      }
-    }
-
-    sorted.sort((a, b) {
-      final byKey = compareByKey(a, b);
-      return byKey != 0 ? byKey : compareByName(a, b);
-    });
-    return sorted;
-  }
-
   static DateTime? _parseDateCreated(dynamic value) => parseServerDate(value);
-
-  static int _compareNullableDate(
-    DateTime? a,
-    DateTime? b, {
-    bool descending = false,
-  }) {
-    if (a == null && b == null) return 0;
-    final ascending = a == null ? -1 : (b == null ? 1 : a.compareTo(b));
-    return descending ? -ascending : ascending;
-  }
-
-  static int _compareNullableNum(
-    double? a,
-    double? b, {
-    bool descending = false,
-  }) {
-    if (a == null && b == null) return 0;
-    final ascending = a == null ? -1 : (b == null ? 1 : a.compareTo(b));
-    return descending ? -ascending : ascending;
-  }
 
   static int _compareByLastPlayed(AggregatedItem a, AggregatedItem b) {
     final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';

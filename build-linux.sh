@@ -144,6 +144,17 @@ resolve_build_dir() {
 resolve_shared_lib() {
   local soname="$1"
 
+  # A libmpv built by scripts/ci/build-libmpv-linux.sh replaces the distro's.
+  # Once asked for, it has to be there rather than fall back to the older one.
+  if [ -n "${MOONFIN_LIBMPV_DIR:-}" ] && [[ "$soname" == libmpv.so* ]]; then
+    if [ -f "$MOONFIN_LIBMPV_DIR/$soname" ]; then
+      printf '%s\n' "$MOONFIN_LIBMPV_DIR/$soname"
+      return 0
+    fi
+    echo "Error: MOONFIN_LIBMPV_DIR has no $soname." >&2
+    return 1
+  fi
+
   # Prefer distro packages to avoid /usr/local builds that dpkg-query cannot map.
   if command -v dpkg-query >/dev/null 2>&1; then
     local pkg_candidates=()
@@ -302,7 +313,7 @@ ensure_mpv_compat_symlinks() {
   # which under set -e kills the build with no error message.
   for alt in libmpv.so.1 libmpv.so.2 libmpv.so; do
     if [ ! -e "$dest_lib/$alt" ]; then
-      ln -sf "$base" "$dest_lib/$alt"
+      ln -sf "$base" "$dest_lib/$alt" || return 1
     fi
   done
   return 0
@@ -424,23 +435,37 @@ copy_runtime_libs() {
     local real_name
     real_name="$(basename "$real_path")"
 
+    # Callers can run this with set -e off (build_rpm || true, if !), so a
+    # failed copy or link has to be returned, not left for errexit.
     if [ ! -f "$dest_lib/$real_name" ]; then
-      cp -L "$real_path" "$dest_lib/$real_name"
+      cp -L "$real_path" "$dest_lib/$real_name" || return 1
       count=$((count + 1))
     fi
 
     if [ "$real_name" != "$lib_name" ] && [ ! -e "$dest_lib/$lib_name" ]; then
-      ln -sf "$real_name" "$dest_lib/$lib_name"
+      ln -sf "$real_name" "$dest_lib/$lib_name" || return 1
     fi
 
     local soname
     soname="$(readelf -d "$real_path" 2>/dev/null | sed -n 's/.*SONAME.*\[\(.*\)\].*/\1/p' | head -n1)"
     if [ -n "$soname" ] && [ "$soname" != "$real_name" ] && [ ! -e "$dest_lib/$soname" ]; then
-      ln -sf "$real_name" "$dest_lib/$soname"
+      ln -sf "$real_name" "$dest_lib/$soname" || return 1
     fi
   done <<< "$lib_paths"
 
   printf '%s\n' "$count"
+}
+
+# libva has to match the system's VA drivers. A copy from the build host can't
+# load drivers built for a newer libva, and it looks for them in the build
+# host's driver folder, so hardware decoding never starts. The AppImage and
+# tarball launchers put this folder on the library path only when the system
+# is missing part of libva, so Moonfin still starts there. The deb and rpm drop
+# it and depend on the system's libva instead.
+separate_bundled_libva() {
+  local dest_lib="$1"
+  mkdir -p "$dest_lib/libva" || return 1
+  find "$dest_lib" -maxdepth 1 -name 'libva[.-]*' -exec mv -f -t "$dest_lib/libva/" {} +
 }
 
 inject_linux_runtime_libs() {
@@ -460,10 +485,14 @@ inject_linux_runtime_libs() {
   skip="$(runtime_skip_pattern)"
 
   local bundled_count
-  bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"
-  fix_absolute_needed "$bundle_dir/lib"
-  ensure_sqlite_unversioned_link "$bundle_dir/lib"
-  ensure_mpv_compat_symlinks "$bundle_dir/lib"
+  if ! bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"; then
+    echo "Error: could not copy runtime libraries into $bundle_dir/lib." >&2
+    return 1
+  fi
+  fix_absolute_needed "$bundle_dir/lib" || return 1
+  ensure_sqlite_unversioned_link "$bundle_dir/lib" || return 1
+  ensure_mpv_compat_symlinks "$bundle_dir/lib" || return 1
+  separate_bundled_libva "$bundle_dir/lib" || return 1
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
 
   verify_host_dependencies "$bundle_dir"
@@ -483,6 +512,7 @@ host_dependencies() {
   done | sort -u | while IFS= read -r name; do
     [ -n "$name" ] || continue
     [ -e "$bundle_dir/lib/$name" ] && continue
+    [ -e "$bundle_dir/lib/libva/$name" ] && continue
     printf '%s\n' "$name"
   done
 }
@@ -509,6 +539,9 @@ verify_host_dependencies() {
   while IFS= read -r name; do
     [ -n "$name" ] || continue
     [[ "$name" =~ $skip ]] && continue
+    # libdartjni.so (package:jni, pulled in by path_provider_android) links
+    # libjvm. Flutter ships it on Linux, but nothing loads it there.
+    [ "$name" = libjvm.so ] && continue
     unexpected="${unexpected}  ${name}"$'\n'
   done <<< "$deps"
 
@@ -544,6 +577,8 @@ inject_flatpak_libs() {
   fix_absolute_needed "$dest_lib"
   ensure_sqlite_unversioned_link "$dest_lib"
   ensure_mpv_compat_symlinks "$dest_lib"
+  # The runtime's libva matches the VA drivers in its GL extension.
+  rm -f "$dest_lib"/libva[.-]*
 
   echo "Bundled $count runtime libraries for Flatpak"
 }
@@ -581,7 +616,7 @@ create_metainfo_file() {
 <component type="desktop-application">
   <id>${APP_ID}</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-3.0-only</project_license>
+  <project_license>GPL-3.0-or-later</project_license>
   <name>Moonfin</name>
   <developer_name>Moonfin Team</developer_name>
   <summary>Jellyfin &amp; Emby media client</summary>
@@ -707,6 +742,14 @@ resolve_exact_lib() {
 
 ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin" 2>/dev/null || true)"
 
+# Use the system's libva when the loader finds it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+if printf '%s\n' "$ldd_output" | grep -Eq '^[[:space:]]*libva(-[a-z0-9]+)?[.]so[.]2 => not found'; then
+  export LD_LIBRARY_PATH="$APPDIR/lib/libva:$LD_LIBRARY_PATH"
+  check_lib_path="$APPDIR/lib/libva:$check_lib_path"
+  ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin" 2>/dev/null || true)"
+fi
+
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
 # binary itself as missing.
@@ -785,12 +828,12 @@ build_tarball() {
 
   local version="$(get_app_version)"
   local tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.tar.gz"
+  local system_tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}_system-libs.tar.gz"
   local tar_dir="$TEMP_DIR/tarball/moonfin-${version}"
 
   rm -rf "$TEMP_DIR/tarball"
   mkdir -p "$tar_dir"
   cp -r "$BUILD_DIR"/* "$tar_dir/"
-  inject_linux_runtime_libs "$tar_dir"
 
   if [ -f "$tar_dir/moonfin" ]; then
     mv "$tar_dir/moonfin" "$tar_dir/moonfin-bin"
@@ -820,6 +863,14 @@ resolve_exact_lib() {
 }
 
 ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin-bin" 2>/dev/null || true)"
+
+# Use the system's libva when the loader finds it, since only that one matches
+# the system's VA drivers. The bundled copy just lets Moonfin start without it.
+if printf '%s\n' "$ldd_output" | grep -Eq '^[[:space:]]*libva(-[a-z0-9]+)?[.]so[.]2 => not found'; then
+  export LD_LIBRARY_PATH="$APPDIR/lib/libva:$LD_LIBRARY_PATH"
+  check_lib_path="$APPDIR/lib/libva:$check_lib_path"
+  ldd_output="$(LD_LIBRARY_PATH="$check_lib_path" ldd "$APPDIR/moonfin-bin" 2>/dev/null || true)"
+fi
 
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
@@ -882,9 +933,14 @@ EOF
   install_icons "$tar_dir/share"
 
   cd "$TEMP_DIR/tarball"
+  # Without the bundled libraries, for distro packages like the AUR's that
+  # take every library from the system.
+  tar -czf "$system_tarball_name" "moonfin-${version}"
+  inject_linux_runtime_libs "$tar_dir"
   tar -czf "$tarball_name" "moonfin-${version}"
-  mv "$tarball_name" "$REPO_ROOT/"
+  mv "$tarball_name" "$system_tarball_name" "$REPO_ROOT/"
   echo "✓ Created: $REPO_ROOT/$tarball_name"
+  echo "✓ Created: $REPO_ROOT/$system_tarball_name"
 }
 
 # The newest glibc anything in the installed tree asks for, which is the oldest
@@ -924,6 +980,8 @@ build_deb() {
   cp -r "$BUILD_DIR"/* "$pkg_root/usr/lib/moonfin/"
 
   inject_linux_runtime_libs "$pkg_root/usr/lib/moonfin"
+  # The libva packages in Depends match the system's VA drivers.
+  rm -rf "$pkg_root/usr/lib/moonfin/lib/libva"
 
   cat > "$pkg_root/usr/bin/moonfin" << 'EOF'
 #!/bin/sh
@@ -943,6 +1001,7 @@ EOF
   # one the package can run on. Declaring it turns a wall of loader errors at
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0, xdg-user-dirs"
+  depends="$depends, libva2, libva-drm2, libva-x11-2, libva-wayland2"
   local glibc
   glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
   if [ -n "$glibc" ]; then
@@ -967,7 +1026,7 @@ Description: Jellyfin & Emby media client
   - Casting support
   - DLNA playback
 Homepage: https://moonfin.app/
-License: GPL-3.0-only
+License: GPL-3.0-or-later
 EOF
 
   cat > "$pkg_root/usr/share/doc/moonfin/copyright" << EOF
@@ -978,7 +1037,7 @@ Source: https://github.com/jmshrv/Moonfin
 
 Files: *
 Copyright: 2024-2025 Moonfin Team
-License: GPL-3.0-only
+License: GPL-3.0-or-later
 EOF
 
   cd "$TEMP_DIR/deb"
@@ -988,6 +1047,43 @@ EOF
     mv "$deb_name" "$REPO_ROOT/"
     echo "✓ Created: $REPO_ROOT/$deb_name"
   fi
+}
+
+# Fails when the bundled FFmpeg can't decode HEVC or H.264. libavcodec comes
+# from whatever FFmpeg the build host's libmpv links, and a codec-limited one,
+# like Fedora's ffmpeg-free, would ship the black-screen bug the bundle exists
+# to fix. Asks libavcodec itself, since its strings can't tell an enabled
+# decoder from a codec it only describes.
+verify_bundled_video_decoders() {
+  local lib_dir="$1"
+  local avcodec
+  avcodec="$(find "$lib_dir" -maxdepth 1 -name 'libavcodec.so.*' ! -type l 2>/dev/null | sort -V | tail -n1)"
+  if [ -z "$avcodec" ]; then
+    echo "Error: no libavcodec in $lib_dir, so libmpv would fall back to the system FFmpeg." >&2
+    return 1
+  fi
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "Error: python3 is required to check $(basename "$avcodec") for HEVC and H.264 decoders." >&2
+    return 1
+  fi
+
+  local status=0
+  LD_LIBRARY_PATH="$lib_dir" python3 -I - "$avcodec" << 'EOF' || status=$?
+import ctypes, sys
+avcodec = ctypes.CDLL(sys.argv[1])
+avcodec.avcodec_find_decoder_by_name.restype = ctypes.c_void_p
+missing = [n for n in ("hevc", "h264") if not avcodec.avcodec_find_decoder_by_name(n.encode())]
+if missing:
+    print("Error: the bundled " + sys.argv[1].rsplit("/", 1)[-1] + " has no decoder for: "
+          + ", ".join(missing) + ". Build on a host whose libmpv uses a full FFmpeg.",
+          file=sys.stderr)
+    sys.exit(1)
+EOF
+  if [ "$status" -ne 0 ]; then
+    echo "Error: the bundled FFmpeg failed the HEVC and H.264 decoder check." >&2
+    return 1
+  fi
+  echo "Bundled $(basename "$avcodec") decodes HEVC and H.264"
 }
 
 build_rpm() {
@@ -1002,17 +1098,54 @@ build_rpm() {
   local rpm_dir="$TEMP_DIR/rpm"
   local spec_file="$rpm_dir/moonfin.spec"
 
-  rm -rf "$rpm_dir"
-  mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS}
-  create_desktop_file "$rpm_dir"
-  create_metainfo_file "$rpm_dir" "$version"
+  # "all" runs this as build_rpm || true, which turns set -e off in here, so
+  # every step below stops explicitly rather than package an incomplete RPM.
+  if ! rm -rf "$rpm_dir" \
+    || ! mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS} \
+    || ! create_desktop_file "$rpm_dir" \
+    || ! create_metainfo_file "$rpm_dir" "$version"; then
+    echo "Error: could not prepare the RPM build tree in $rpm_dir." >&2
+    return 1
+  fi
 
-  cat > "$spec_file" << EOF
+  # Bundle libmpv and its FFmpeg like the deb does. Fedora's own mpv-libs is
+  # built against ffmpeg-free, which has no HEVC decoder, so leaning on it
+  # leaves HEVC files with sound and a black screen.
+  local stage_dir="$rpm_dir/stage"
+  if ! mkdir -p "$stage_dir" || ! cp -r "$BUILD_DIR"/* "$stage_dir/"; then
+    echo "Error: could not stage the Flutter bundle for the RPM." >&2
+    return 1
+  fi
+  if ! inject_linux_runtime_libs "$stage_dir"; then
+    echo "Error: could not bundle runtime libraries for the RPM." >&2
+    return 1
+  fi
+  verify_bundled_video_decoders "$stage_dir/lib" || return 1
+  # rpm then requires the system's libva, which matches its VA drivers.
+  rm -rf "$stage_dir/lib/libva"
+
+  # The bundled libraries are private to Moonfin. Keep rpm from advertising
+  # them to the rest of the system, and from asking the system for them.
+  # Each bundled file becomes a pattern on its base name, so
+  # libavcodec.so.60.31.102 turns into libavcodec[.]so.
+  # libjvm is excluded too: libdartjni links it but is never loaded on Linux
+  # (see verify_host_dependencies), and a Requires on it would block install.
+  local bundled_sonames
+  bundled_sonames="$(find "$stage_dir/lib" -maxdepth 1 -name '*.so*' -printf '%f\n' 2>/dev/null \
+    | sed 's/[.]so.*$/.so/' | sort -u | sed 's/[.]/[.]/g; s/[+]/[+]/g' | paste -sd'|' -)"
+
+  if ! cat > "$spec_file" << EOF
+%global __provides_exclude_from ^/usr/lib/moonfin/.*\$
+%global __requires_exclude ^(libjvm[.]so|${bundled_sonames:-moonfin-none})
+# Flutter's plugin libraries carry the build tree's ephemeral folder as a
+# runpath. Fedora's rpmbuild rejects that; the launcher's LD_LIBRARY_PATH is
+# what actually finds the libraries, so the check adds nothing here.
+%global __brp_check_rpaths %{nil}
 Name:           moonfin
 Version:        ${version}
 Release:        1
 Summary:        Jellyfin & Emby media client
-License:        GPL-3.0-only
+License:        GPL-3.0-or-later
 Requires:       xdg-user-dirs
 
 %description
@@ -1026,7 +1159,7 @@ mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/pixmaps
 mkdir -p %{buildroot}/usr/share/metainfo
 
-cp -r ${BUILD_DIR}/* %{buildroot}/usr/lib/moonfin/
+cp -r ${stage_dir}/* %{buildroot}/usr/lib/moonfin/
 
 cat > %{buildroot}/usr/bin/moonfin << 'EOFRUNNER'
 #!/bin/sh
@@ -1058,13 +1191,34 @@ fi
 * $(date '+%a %b %d %Y') Moonfin Team <support@moonfin.dev>
 - Release ${version}
 EOF
+  then
+    echo "Error: could not write $spec_file." >&2
+    return 1
+  fi
 
-  cd "$rpm_dir"
+  cd "$rpm_dir" || return 1
   rpmbuild --define "_topdir $rpm_dir" -bb "$spec_file" || true
   local rpm_file=$(find "$rpm_dir/RPMS" -name "*.rpm" 2>/dev/null | head -1)
   if [ -n "$rpm_file" ]; then
-    cp "$rpm_file" "$REPO_ROOT/$rpm_name"
+    # If the exclude filters were ignored, the package would ask the system
+    # for libmpv and FFmpeg again, or offer its private copies to other
+    # packages. Refuse to ship it either way.
+    local leaked
+    leaked="$( { rpm -qpR "$rpm_file"; rpm -qp --provides "$rpm_file"; } 2>/dev/null \
+      | grep -E '^(libmpv|libav[a-z]*|libsw[a-z]*|libpostproc)[.]so' || true)"
+    if [ -n "$leaked" ]; then
+      echo "Error: the RPM still requires or provides bundled libraries:" >&2
+      printf '%s\n' "$leaked" | sed 's/^/  /' >&2
+      return 1
+    fi
+    if ! cp "$rpm_file" "$REPO_ROOT/$rpm_name"; then
+      echo "Error: could not copy the RPM to $REPO_ROOT/$rpm_name." >&2
+      return 1
+    fi
     echo "✓ Created: $REPO_ROOT/$rpm_name"
+  else
+    echo "Error: rpmbuild produced no package in $rpm_dir/RPMS." >&2
+    return 1
   fi
 }
 
@@ -1121,8 +1275,15 @@ build_snap() {
 
   local snap_dir="$TEMP_DIR/snap"
   local version="$(get_app_version)"
-  local snap_mpv_package
-  snap_mpv_package="$(resolve_mpv_package_name)"
+  local snap_stage_packages
+  snap_stage_packages="$(resolve_mpv_package_name)"
+  local snap_libmpv=""
+  if [ -n "${MOONFIN_LIBMPV_DIR:-}" ]; then
+    snap_libmpv="$(resolve_shared_lib libmpv.so.2)" || return 1
+    # The archive's libmpv still pulls in the libraries libmpv links, and this
+    # newer one replaces it. The newer one also needs libdisplay-info.
+    snap_stage_packages="$snap_stage_packages, libdisplay-info1"
+  fi
   local snap_triplet
   snap_triplet="$(get_multiarch_triplet)"
 
@@ -1133,30 +1294,49 @@ build_snap() {
 name: moonfin
 title: Moonfin
 version: '${version}'
-summary: Jellyfin & Emby media client
+summary: Jellyfin, Emby, Plex and Silo media client
 description: |
-  Moonfin is a media client for Jellyfin and Emby servers.
-  Stream movies, TV shows, music, and photos from your server.
+  Moonfin is a media client for Jellyfin, Emby, Plex and Silo servers.
+  Stream movies, TV shows, music and live TV from your server, and watch
+  together with Watch Parties.
 
 grade: stable
 confinement: strict
 base: ${snap_base}
 icon: ${APP_ID}.png
 
+# Moonfin stays a single instance by owning its app ID on the session bus,
+# which is how a moonfin:// link reaches the window that's already open.
+slots:
+  moonfin-dbus:
+    interface: dbus
+    bus: session
+    name: ${APP_ID}
+  mpris:
+    interface: mpris
+
 apps:
   moonfin:
     command: moonfin
+    # Staged GTK and WebKitGTK look for their files under /usr, so they come
+    # from the GNOME runtime instead, along with the GL drivers.
+    extensions: [gnome]
     plugs:
       - home
       - network
       - network-bind
-      - opengl
-      - pulseaudio
+      # The portal only reports network status to snaps that plug this, and
+      # both WebKit and Moonfin's connectivity checks ask the portal.
+      - network-status
+      - audio-playback
+      - password-manager-service
+    slots:
+      - moonfin-dbus
+      - mpris
     environment:
-      # libpulse looks for libpulsecommon under an absolute path that
-      # confinement points at the base snap, which carries no audio libraries,
-      # so the copy packed in here has to be named on the search path.
-      LD_LIBRARY_PATH: \$SNAP/lib:\$SNAP/lib/${snap_triplet}:\$SNAP/usr/lib/${snap_triplet}:\$SNAP/usr/lib/${snap_triplet}/pulseaudio
+      # FFmpeg's speech filter needs BLAS and LAPACK, which Ubuntu finds through
+      # alternatives links that a snap doesn't have.
+      LD_LIBRARY_PATH: \$LD_LIBRARY_PATH:\$SNAP/gnome-platform/usr/lib/${snap_triplet}/blas:\$SNAP/gnome-platform/usr/lib/${snap_triplet}/lapack
 
 parts:
   moonfin:
@@ -1166,13 +1346,20 @@ parts:
       mkdir -p \$SNAPCRAFT_PART_INSTALL/bin
       mkdir -p \$SNAPCRAFT_PART_INSTALL/lib
       cp -r ${BUILD_DIR}/* \$SNAPCRAFT_PART_INSTALL/
-    stage-packages:
-      - libgtk-3-0
-      - libglib2.0-0
-      - libx11-6
-      - ${snap_mpv_package}
-      - libsecret-1-0
-      - libwebkit2gtk-4.1-0
+      if [ -n "${snap_libmpv}" ]; then
+        rm -f \$SNAPCRAFT_PART_INSTALL/usr/lib/${snap_triplet}/libmpv.so.2*
+        cp -L "${snap_libmpv}" \$SNAPCRAFT_PART_INSTALL/usr/lib/${snap_triplet}/libmpv.so.2
+      fi
+    stage-packages: [${snap_stage_packages}]
+
+  # libmpv's packages bring older copies of libraries the GNOME runtime already
+  # ships, like librsvg, and those would load ahead of the runtime's.
+  cleanup:
+    after: [moonfin]
+    plugin: nil
+    override-prime: |
+      cd "\${SNAPCRAFT_GNOME_SDK%-sdk/current/}/current"
+      find . ! -type d -print0 | (cd "\$CRAFT_PRIME" && xargs -0 rm -f)
 EOF
 
   cp -r "$BUILD_DIR"/* "$snap_dir/"
@@ -1188,12 +1375,28 @@ Name=Moonfin
 Exec=moonfin %U
 Icon=\${SNAP}/meta/gui/icon.png
 Categories=AudioVideo;Video;
-Comment=Jellyfin & Emby media client
+Comment=Jellyfin, Emby, Plex and Silo media client
 Terminal=false
 MimeType=x-scheme-handler/moonfin;
+StartupWMClass=${APP_ID}
 EOF
 
   cd "$snap_dir"
+
+  # snapcraft can't install the GNOME extension's build snaps without root, so
+  # they're installed here like the base snap.
+  local extension_snap
+  for extension_snap in $(snapcraft expand-extensions 2>/dev/null \
+      | sed -nE 's/^ *default-provider: *([a-z0-9-]+).*/\1/p; /^ *build-snaps:/,/^ *[a-z-]+:/ s/^ *- *([a-z0-9-]+) *$/\1/p' \
+      | sort -u); do
+    if ! snap list "$extension_snap" >/dev/null 2>&1; then
+      if ! retry_with_backoff 3 sudo snap install "$extension_snap"; then
+        echo "Failed to install $extension_snap after retries."
+        return 1
+      fi
+    fi
+  done
+
   if ! retry_with_backoff 3 snapcraft pack --destructive-mode; then
     echo "Snap build failed after retries"
     return 1
@@ -1254,16 +1457,8 @@ finish-args:
   # in CI is too old to build it.
   - --device=all
   - --socket=pulseaudio
-  # MPRIS media controls
-  - --own-name=org.mpris.MediaPlayer2.moonfin
   # Saved logins (flutter_secure_storage via libsecret)
   - --talk-name=org.freedesktop.secrets
-  # Keep the screen awake during playback (wakelock_plus)
-  - --talk-name=org.freedesktop.ScreenSaver
-  # Desktop notifications (flutter_local_notifications)
-  - --talk-name=org.freedesktop.Notifications
-  # Online/offline detection (connectivity_plus)
-  - --system-talk-name=org.freedesktop.NetworkManager
   # Earlier builds kept the offline database here. It's read once to copy it
   # into the app's own data folder.
   - --filesystem=xdg-documents/Moonfin:ro

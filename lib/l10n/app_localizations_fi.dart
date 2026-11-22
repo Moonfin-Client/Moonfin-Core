@@ -509,13 +509,13 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Käytä Moonfin Recommends sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.';
+      'Käytä Moonfin Recommends algoritmia paikalliskirjastosta, Server Recommends toimintoa mediakoneeltasi tai TMDb:n verkkopalvelun Similarity Metrics toimintoa. Huomautus: Verkkosuositukset edellyttävät Seerr integraatiota.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Suositukset';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Suosittelee';
+  String get recommendationSystemJellyfin => 'Palvelin suosittelee';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Samankaltaisuus';
@@ -1968,6 +1968,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get carServerUnreachable => 'Palvelimeen ei saada yhteyttä';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count lataukset';
   }
@@ -2978,7 +2987,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get storageManagement => 'Tallennuksen hallinta';
 
   @override
-  String get storageBreakdown => 'Varastoinnin erittely';
+  String get storageBreakdown => 'Tallennustilan Erittely';
 
   @override
   String get downloadedItems => 'Ladatut kohteet';
@@ -3566,6 +3575,16 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get playerRecroppingBlackBars => 'Mustien palkkien uudelleenrajaus';
+
+  @override
+  String get playerBlackBarsCropped => 'Mustat palkit on rajattu pois';
+
+  @override
+  String get playerNoBlackBarsFound => 'Mustia palkkeja ei löytynyt';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Mustia palkkeja ei havaittu. Yritä uudelleen kirkkaammassa kohtauksessa';
 
   @override
   String get stretch => 'Venytä';
@@ -4664,10 +4683,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Lataa vain WiFi yhteyden ollessa kytkettynä';
 
   @override
-  String get storage => 'Varastointi';
+  String get storage => 'Tallennustila';
 
   @override
-  String get storageUsed => 'Säilytys käytetty';
+  String get storageUsed => 'Käytetty tallennustila';
 
   @override
   String get manage => 'Hallitse';
@@ -4846,14 +4865,36 @@ class AppLocalizationsFi extends AppLocalizations {
       'Näytä kaikkien yhdistettyjen palvelimien kirjastot';
 
   @override
-  String get recentlyAddedAndReleased => 'Recently Added and Released';
+  String get mergeLibrariesByType => 'Yhdistä elokuva ja TV -sarjakirjastot';
 
   @override
-  String get hideWatchedInRecentRows => 'Hide Watched';
+  String get mergeLibrariesByTypeDescription =>
+      'Kun monipalvelinkirjastot ovat käytössä, näytetään yksi elokuvakirjasto ja yksi TV-sarjakirjasto kaikille palvelimille. Teos, jota on useilla palvelimilla, näkyy luettelossa vain kerran.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Ei muutettu $servers';
+  }
+
+  @override
+  String get recentlyAddedAndReleased => 'Äskettäin lisättyjä ja julkaistuja';
+
+  @override
+  String get hideWatchedInRecentRows => 'Piilota katsotut';
 
   @override
   String get hideWatchedInRecentRowsDescription =>
-      'Hide watched content from Recently Added and Recently Released home rows.';
+      'Piilota katsotut sisällöt ”Äskettäin lisätty” ja ”Äskettäin julkaistu” -kotiriveiltä.';
 
   @override
   String get mergeRecentRowsByType =>
@@ -5097,17 +5138,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get mediaBarSourceRandom => 'Satunnainen';
 
   @override
-  String get mediaBarSourceNewReleases => 'Uudet kaudet ja jaksot';
-
-  @override
   String get mediaBarNewReleaseBanner => 'Uuden julkaisun banneri';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Merkitse sarjat, joiden uusi kausi tai uudet jaksot on äskettäin alkanut.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'Uuden julkaisun aikataulu';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5121,6 +5152,39 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'Uudet jaksot';
+
+  @override
+  String get mediaBarNewMovie => 'Uusi elokuva';
+
+  @override
+  String get mediaBarNewReleasesSection => 'Uudet julkaisut';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'Uudet julkaisut';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Merkitse uudet sarjat, kaudet, jaksot ja elokuvat.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Etiketit';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'Uuden jakson ikkuna';
+
+  @override
+  String get mediaBarNewMovieDays => 'Uuden elokuvan ikkuna';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'Kuinka kauan elokuva pysyy uutena sen julkaisun jälkeen. Elokuvat päätyvät palvelimille usein vasta jonkin aikaa julkaisunsa jälkeen, joten varaa niille enemmän aikaa kuin sarjojen jaksoille.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Näytä Slogan';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Uuden elokuvan alla näytetään elokuvan slogan. Jos sloganeita ei ole, otsikko näkyy yksinään.';
 
   @override
   String get moviesAndTvShows => 'Elokuvat ja TV ohjelmat';
@@ -5307,7 +5371,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeRowsExternalLists => 'Ulkoiset listat';
 
   @override
-  String get homeRowsStreamingServices => 'Streaming Services';
+  String get homeRowsStreamingServices => 'Suoratoistopalvelut';
 
   @override
   String get perRowSettings => 'Rivikohtaiset asetukset';
@@ -5678,7 +5742,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get upcomingSeries => 'Tuleva sarja';
 
   @override
-  String get networks => 'Suoratoistopalvelut';
+  String get networks => 'Sisältöverkostot';
 
   @override
   String get tags => 'Tunnisteet';
@@ -5770,6 +5834,48 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get seerrNotifyNewMediaSubtitle =>
       'Onko palvelimen kirjastoon lisätty mitään uutta';
+
+  @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
 
   @override
   String loggedInAs(String username) {
@@ -5953,35 +6059,56 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seerrImportingStatus => 'Tuodaan';
 
   @override
-  String get seerrWaitingForImport => 'Downloaded, waiting for import';
+  String get seerrWaitingForImport => 'Ladattu, odottaa tuontia';
 
   @override
-  String get seerrDownloadStalled => 'Stalled';
+  String get seerrDownloadStalled => 'Jumissa';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Lataaminen epäonnistui';
 
   @override
-  String get seerrImportBlocked => 'Import blocked';
+  String get seerrImportBlocked => 'Tuonti estetty';
 
   @override
-  String get seerrNotFoundYet => 'Not found yet';
+  String get seerrNotFoundYet => 'Ei vielä löytynyt';
 
   @override
-  String get seerrGetDifferentRelease => 'Get a different release';
+  String get seerrSearchingIndexers => 'Hakuhakemistot';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Ei vielä löytynyt · haettu $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Ei vielä saatavilla';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Saatavilla $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Seuraava jakso $date';
+  }
+
+  @override
+  String get seerrGetDifferentRelease => 'Hanki eri julkaisu';
 
   @override
   String seerrGetDifferentReleaseConfirm(String service, String release) {
-    return '$service will remove $release from the download client, block it so it isn\'t grabbed again, and search for another release.';
+    return '$service poistaa $release latausohjelmasta, estää sen lataamisen uudelleen ja etsii toisen julkaisun.';
   }
 
   @override
   String seerrGetDifferentReleaseDone(String service) {
-    return 'Removed. $service is searching for another release.';
+    return 'Poistettu. $service etsii toista julkaisua.';
   }
 
   @override
-  String get seerrGetDifferentReleaseFailed => 'Couldn\'t remove the download';
+  String get seerrGetDifferentReleaseFailed => 'Latausta ei voitu poistaa';
 
   @override
   String itemsCount(int count) {
@@ -10471,7 +10598,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminCloseBrowser => 'Sulje selain';
 
   @override
-  String get adminNetworkingTitle => 'Verkostoituminen';
+  String get adminNetworkingTitle => 'Verkkoasetukset';
 
   @override
   String get adminNetworkingRestartWarning =>
@@ -11400,7 +11527,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String kidsModePinToSwitchUser(String name) {
-    return 'Enter the Kids Mode PIN to switch to $name';
+    return 'Syötä lastentilan PIN-koodi siirtyäksesi $name:iin';
   }
 
   @override
@@ -11686,6 +11813,16 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get playerTooltipExitFloatOnTop => 'Poista float päällä';
+
+  @override
+  String get playerTooltipPictureInPicture => 'Kuva kuvassa';
+
+  @override
+  String get playerTooltipExitPictureInPicture =>
+      'Poistu kuva kuvassa -tilasta';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Toisto kuva kuvassa -tilassa';
 
   @override
   String get playerTooltipLockLandscape => 'Lukko maisema';
@@ -12319,7 +12456,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Aloita uusi projekti tai liity jo käynnissä olevaan projektiin';
 
   @override
-  String get settingsSyncplayEnabled => 'Watch Partyt';
+  String get settingsSyncplayEnabled => 'Watch Party';
 
   @override
   String get settingsSyncplayEnabledSubtitle =>
@@ -12330,7 +12467,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Näytä Watch Parties painike navigointipalkissa';
+      'Näytä Watch Party painike navigointipalkissa';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Edistynyt korjaus';
@@ -12580,7 +12717,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderni';
 
   @override
-  String get homeRowsStyleCarousel => 'Carousel';
+  String get homeRowsStyleCarousel => 'Karuselli';
 
   @override
   String get homeRowsSection => 'Kotirivit';
@@ -12590,7 +12727,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get rowsTypeDescription =>
-      'Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan rivejä.';
+      'Klassisessa näkymässä säilytetään kuvatyyppi ja tietopaneeli rivikohtaisesti. Modernissa näkymässä rivit sijoitetaan pystysuunnassa taustakuvaan nähden. Karusellinäkymässä jokaisen rivin alle lisätään tietopaneeli.';
 
   @override
   String get modernCardsOnMyMediaRow =>
@@ -12710,13 +12847,13 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Valitse suosituslähde (Moonfin Recommends -sovelluksen mukautettu paikallinen algoritmi, Jellyfin Recommends -palvelinmoottori tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).';
+      'Valitse suosituslähde (Moonfinin suositukset mukautettu paikallinen algoritmi, palvelimen suositukset mediakoneeltasi tai TMDb:n samankaltaisuusmittarit. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin suosittelee';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin suosittelee';
+  String get sinceYouWatchedSourceServer => 'Palvelin suosittelee';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb:n samankaltaisuus';
@@ -13392,10 +13529,10 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get watchParties => 'Watch Parties';
+  String get watchParties => 'Watch Party';
 
   @override
-  String get watchPartyStartWith => 'Aloita Watch Partyt';
+  String get watchPartyStartWith => 'Aloita Watch Party';
 
   @override
   String get watchPartyServiceMoonbaseHint =>
@@ -13473,7 +13610,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get watchPartyNeedsMoonbase =>
-      'Watch Partyt tarvitsevat Moonbasen laajennuksen tällä palvelimella';
+      'Watch Party tarvitsee Moonbasen laajennuksen palvelimella';
 
   @override
   String get watchPartyNeedsMoonbaseHint =>
@@ -13501,7 +13638,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchPartyRemoved => 'Järjestäjä poisti sinut Watch Party:stä.';
 
   @override
-  String get watchPartyYours => 'Sinun watch partyt';
+  String get watchPartyYours => 'Watch Partysi';
 
   @override
   String get watchPartyInviteHint =>
@@ -13516,7 +13653,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get watchPartyStartsTogether =>
-      'Peli odottaa kaikkien pelaajien vuoroa enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.';
+      'Odotetaan osallistujia enintään 10 sekuntia, minkä jälkeen se laskee alaspäin 3, 2, 1.';
 
   @override
   String get watchPartyStatusInSync => 'Synkronoituna';
@@ -13671,7 +13808,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get watchPartyReactionPopcorn => 'Popcorn';
 
   @override
-  String get watchPartyMakeHost => 'Nimitä isännäksi';
+  String get watchPartyMakeHost => 'Nimitä järjestäjäksi';
 
   @override
   String get watchPartyEveryoneControls => 'Jokainen voi hallita toistoa';
@@ -15757,7 +15894,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get setupRowsCarouselHint =>
-      'Posters with a large details panel underneath.';
+      'Julisteet, joiden alla on suuri yksityiskohdapaneeli.';
 
   @override
   String get setupDetailClassicHint => 'Kaikki on koottu yhteen pinoon.';
@@ -18322,4 +18459,30 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Vasemmalle ja oikealle liu’uta scrubberia.';
+
+  @override
+  String get remoteMediaNotificationTitle => 'Etätoiston ilmoitus';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Näytä järjestelmän mediaohjauspainikkeet, kun katsot sisältöä toisella laitteella';
+
+  @override
+  String get remoteActivityWatching => 'Katsomassa Moonfinissä';
+
+  @override
+  String get remoteActivityListening => 'Kuuntele Moonfinissä';
+
+  @override
+  String get clickpadSeeking => 'Salli Clickpad Etsintä';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'Sivuttaisliikkeet vasemmalle, oikealle kosketuslevyllä mahdollistavat kelauksen. Muussa tapauksessa ensimmäinen liike avaa ohjausvalikon.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'Kun ohjaimet ovat näkyvissä';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Vain tauolla';
 }

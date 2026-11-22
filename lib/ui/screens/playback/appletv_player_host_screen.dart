@@ -50,6 +50,7 @@ import '../../../util/platform_detection.dart';
 import 'appletv_playback_prompt_controller.dart';
 import 'episode_browser.dart';
 import 'osd_buttons.dart';
+import 'playback_ended_by_server.dart';
 
 class AppleTvPlayerHostScreen extends StatefulWidget {
   const AppleTvPlayerHostScreen({super.key});
@@ -63,11 +64,16 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<void>? _exitSub;
   StreamSubscription<void>? _queueSub;
   StreamSubscription<void>? _sessionEndedSub;
+  StreamSubscription<String>? _endedByServerSub;
+  StreamSubscription<dynamic>? _finishedItemStopSub;
+  String? _lastMarkedPlayedItemId;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription<bool>? _reconnectingSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
   bool _exiting = false;
-  bool _exitFinished = false;
+  // The item an exit marked finished. A remote can move the queue before
+  // dispose stops it, and only this item should count as watched.
+  Object? _finishedExitItem;
   final Map<String, List<Map<String, dynamic>>> _castCache = {};
   String? _castResolving;
   AppleTvPlaybackPromptController? _prompts;
@@ -192,9 +198,18 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _queueSub = manager.queueService.queueChangedStream.listen(
         (_) => _onQueueChanged(),
       );
+      _endedByServerSub = manager.endedByServerStream.listen((message) {
+        if (mounted) showPlaybackEndedByServer(context, message);
+      });
       _sessionEndedSub = manager.sessionEndedStream.listen(
         (_) => _handleExit(),
       );
+      _finishedItemStopSub = manager.finishedItemStopStream.listen((item) {
+        final itemId = _itemIdForQueueItem(item);
+        if (itemId != null && itemId.isNotEmpty) {
+          _markPlayed(itemId, item: item);
+        }
+      });
       _reconnectingSub = manager.reconnectingStream.listen((reconnecting) {
         if (!mounted) return;
         unawaited(
@@ -332,6 +347,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         'stillWatchingContinue': l10n.stillWatchingContinue,
         'stillWatchingStop': l10n.stillWatchingStop,
         'fetchingSubtitles': l10n.fetchingSubtitles,
+        'paused': l10n.paused,
       }),
     );
   }
@@ -495,40 +511,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }
   }
 
-  String _artworkUrlForItem(dynamic item) {
-    final raw = _rawDataForQueueItem(item);
-    final itemId = _itemIdForQueueItem(item);
-    final imageApi = _clientForQueueItem(item)?.imageApi;
-    if (raw == null || itemId == null || itemId.isEmpty || imageApi == null) {
-      return '';
-    }
-    final imageTags = raw['ImageTags'] as Map?;
-    final primaryTag = (imageTags?['Primary'] as String?)?.trim();
-    final thumbTag = (imageTags?['Thumb'] as String?)?.trim();
-    final backdropTags = raw['BackdropImageTags'] as List?;
-    final backdropTag = backdropTags?.isNotEmpty == true
-        ? backdropTags!.first.toString().trim()
-        : null;
-    if (primaryTag != null && primaryTag.isNotEmpty) {
-      return imageApi.getPrimaryImageUrl(
-        itemId,
-        maxHeight: 420,
-        tag: primaryTag,
-      );
-    }
-    if (thumbTag != null && thumbTag.isNotEmpty) {
-      return imageApi.getThumbImageUrl(itemId, maxWidth: 960, tag: thumbTag);
-    }
-    if (backdropTag != null && backdropTag.isNotEmpty) {
-      return imageApi.getBackdropImageUrl(
-        itemId,
-        maxWidth: 1280,
-        tag: backdropTag,
-      );
-    }
-    return '';
-  }
-
   List<Map<String, dynamic>> _streamInfoSections(PlaybackManager manager) {
     final res = manager.currentResolution;
     final raw = _rawDataForQueueItem(manager.queueService.currentItem);
@@ -656,6 +638,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     prefs.get(UserPreferences.trickPlayVerticalPositionPercent),
     prefs.get(UserPreferences.trickPlayFollowScrubPosition),
     prefs.get(UserPreferences.trickPlayPauseWhileScrubbing),
+    prefs.get(UserPreferences.appleTvClickpadSeekMode).name,
   ].join('|');
 
   String _timeSlotsSnapshot(UserPreferences prefs) =>
@@ -1209,14 +1192,16 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     );
   }
 
-  void _markPlayed(String itemId) {
-    final item = _manager?.queueService.currentItem;
+  void _markPlayed(String itemId, {dynamic item}) {
+    if (_lastMarkedPlayedItemId == itemId) return;
+    _lastMarkedPlayedItemId = itemId;
+    final target = item ?? _manager?.queueService.currentItem;
     try {
-      final client = _clientForQueueItem(item);
+      final client = _clientForQueueItem(target);
       if (client == null) return;
       final mutations = ItemMutationRepository(client);
       unawaited(mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}));
-      final raw = _rawDataForQueueItem(item);
+      final raw = _rawDataForQueueItem(target);
       if (raw != null) {
         final existingUserData = raw['UserData'];
         final userData = existingUserData is Map<String, dynamic>
@@ -1225,6 +1210,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
                   ? existingUserData.cast<String, dynamic>()
                   : <String, dynamic>{});
         userData['Played'] = true;
+        userData['PlaybackPositionTicks'] = 0;
+        userData['PlayedPercentage'] = null;
         raw['UserData'] = userData;
       }
     } catch (_) {}
@@ -1244,7 +1231,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         ((raw?['Taglines'] as List?)?.firstOrNull as String?)?.trim() ??
         '';
     if (overview.isEmpty) return null;
-    return {'overview': overview, 'imageUrl': _artworkUrlForItem(item)};
+    return {'overview': overview};
   }
 
   List<Map<String, dynamic>> _trackOptions(
@@ -1387,6 +1374,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       hasNext: manager.queueService.hasNext,
       skipForwardMs: skipForwardMs,
       skipBackMs: skipBackMs,
+      clickpadSeekMode:
+          _prefsListened?.get(UserPreferences.appleTvClickpadSeekMode) ??
+          AppleTvClickpadSeekMode.always,
       audioTracks: _trackOptions(
         audioStreams,
         manager.audioStreamIndex,
@@ -1785,6 +1775,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   }
 
   void _onQueueChanged() {
+    _lastMarkedPlayedItemId = null;
     _closeEpisodeBrowser(hideNative: true);
     _prompts?.onQueueChanged();
     _syncCinemaSkip();
@@ -1965,7 +1956,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _handleExit({bool finished = false}) {
     if (_exiting || !mounted) return;
     _exiting = true;
-    _exitFinished = finished;
+    _finishedExitItem = finished ? _manager?.queueService.currentItem : null;
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     if (context.canPop()) {
       context.pop();
@@ -1980,6 +1971,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _exitSub?.cancel();
     _queueSub?.cancel();
     _sessionEndedSub?.cancel();
+    _endedByServerSub?.cancel();
+    _finishedItemStopSub?.cancel();
     _bringupSub?.cancel();
     _reconnectingSub?.cancel();
     _actionSub?.cancel();
@@ -2003,7 +1996,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     try {
       final manager = GetIt.instance<PlaybackManager>();
       if (!manager.playbackDeferredToExternalPlayer) {
-        if (_exitFinished) {
+        if (_finishedExitItem != null &&
+            identical(manager.queueService.currentItem, _finishedExitItem)) {
           manager.stopAsFinished();
         } else {
           manager.stop(userInitiated: true);
@@ -2118,7 +2112,7 @@ class _HostPromptCommands implements AppleTvPromptCommands {
   // The next item, not the next chapter, even when the card came up during
   // one.
   Future<void> advanceNext() =>
-      _host._manager?.nextInQueue() ?? Future<void>.value();
+      _host._manager?.nextInQueueAsFinished() ?? Future<void>.value();
 
   @override
   Future<void> exitPlayback({bool finished = false}) async =>

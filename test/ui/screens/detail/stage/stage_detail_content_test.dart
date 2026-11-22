@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -19,6 +20,7 @@ import 'package:moonfin/ui/screens/detail/detail_layout_metrics.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/stage/stage_track_chips.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -152,6 +154,7 @@ void main() {
     WidgetTester tester,
     ItemDetailViewModel vm, {
     Size size = const Size(1920, 1080),
+    FocusNode? playNode,
   }) async {
     // The surface as well as the MediaQuery. A faked MediaQuery alone steers
     // which layout the screen picks but leaves it laying out against the
@@ -176,6 +179,7 @@ void main() {
             body: ListenableBuilder(
               listenable: Listenable.merge([vm, prefs]),
               builder: (context, _) => StageDetailContent(
+                initialFocusNode: playNode,
                 viewModel: vm,
                 prefs: prefs,
                 backdropUrl: ValueNotifier<String?>(null),
@@ -299,5 +303,108 @@ void main() {
   test('a playlist is left to Modern', () {
     expect(detailPageDraws('Playlist'), isFalse);
     expect(detailPageDraws('Movie'), isTrue);
+    expect(detailPageDraws('BoxSet'), isTrue);
+  });
+
+  testWidgets('a collection gets a row of its movies and one of its shows', (
+    tester,
+  ) async {
+    when(
+      () => itemsApi.getItems(
+        parentId: 'item-1',
+        startIndex: any(named: 'startIndex'),
+        limit: any(named: 'limit'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'film-1', 'Type': 'Movie', 'Name': 'First film'},
+          {'Id': 'show-1', 'Type': 'Series', 'Name': 'The show'},
+        ],
+        'TotalRecordCount': 2,
+      },
+    );
+    await pumpContent(tester, viewModel('BoxSet'));
+
+    expect(find.text('Movies'), findsOneWidget);
+    expect(find.text('First film'), findsOneWidget);
+    expect(find.text('Series'), findsOneWidget);
+    expect(find.text('The show'), findsOneWidget);
+  });
+
+  group('on a TV', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
+    testWidgets('a row scrolled past its first card is entered at the card it '
+        'was left from, and comes back into view with it', (tester) async {
+      final films = [
+        for (var i = 0; i < 30; i++)
+          {'Id': 'film-$i', 'Type': 'Movie', 'Name': 'Film $i'},
+      ];
+      when(
+        () => itemsApi.getItems(
+          parentId: 'item-1',
+          startIndex: any(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'Items': [
+            ...films,
+            {'Id': 'show-1', 'Type': 'Series', 'Name': 'The show'},
+            {'Id': 'clip-1', 'Type': 'Video', 'Name': 'The clip'},
+          ],
+          'TotalRecordCount': films.length + 2,
+        },
+      );
+      final play = FocusNode(debugLabel: 'play');
+      addTearDown(play.dispose);
+      await pumpContent(
+        tester,
+        viewModel('BoxSet'),
+        size: const Size(1920, 600),
+        playNode: play,
+      );
+
+      Focus.of(tester.element(find.text('Film 0'))).requestFocus();
+      await tester.pump();
+      for (var i = 0; i < films.length - 1; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pumpAndSettle();
+      }
+      final last = Focus.of(tester.element(find.text('Film 29')));
+      expect(last.hasPrimaryFocus, isTrue);
+      expect(find.text('Film 0'), findsNothing);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(
+        Focus.of(tester.element(find.text('The show'))).hasPrimaryFocus,
+        isTrue,
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(last.hasPrimaryFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(play.hasPrimaryFocus, isTrue);
+
+      // Down through the buttons under Play, then into the row.
+      for (var i = 0; i < 4 && !last.hasPrimaryFocus; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pumpAndSettle();
+      }
+      expect(last.hasPrimaryFocus, isTrue);
+      final card = tester.getRect(find.text('Film 29'));
+      expect(card.top, greaterThan(0));
+      expect(card.bottom, lessThan(600));
+    });
   });
 }

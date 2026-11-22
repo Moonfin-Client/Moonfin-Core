@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
@@ -26,10 +27,19 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {}
 ///
 /// Firebase stays untouched until a signed-in server's plugin can deliver
 /// push, so a phone that never meets one never contacts Google.
-class PushMessagingService {
+class PushMessagingService extends ChangeNotifier {
   Future<void>? _startFuture;
   String? _lastRegisteredToken;
   bool _listenerAttached = false;
+
+  /// True when this device holds a registered push token with the active server.
+  bool get isRegistered => _lastRegisteredToken != null;
+
+  void _setRegisteredToken(String? token) {
+    if (token == _lastRegisteredToken) return;
+    _lastRegisteredToken = token;
+    notifyListeners();
+  }
 
   /// Set when a registration attempt was skipped or failed because the plugin
   /// wasn't reachable or couldn't push yet, so the availability listener can
@@ -103,6 +113,9 @@ class PushMessagingService {
   /// listener, which retries once a server can.
   Future<void> registerWithCurrentToken() async {
     if (!PlatformDetection.isMobile) return;
+    // A server switch reuses the same FCM token, so drop the last server's
+    // registration first and let this one get its own.
+    _setRegisteredToken(null);
     _attachAvailabilityListener();
     final sync = GetIt.instance.isRegistered<PluginSyncService>()
         ? GetIt.instance<PluginSyncService>()
@@ -113,9 +126,10 @@ class PushMessagingService {
     }
     try {
       await _start();
-      // A server switch reuses the same FCM token, so drop the dedupe and let
-      // the new server get its own registration.
-      _lastRegisteredToken = null;
+      // Someone who turned notifications down never gets a token from Google.
+      final settings =
+          await FirebaseMessaging.instance.getNotificationSettings();
+      if (settings.authorizationStatus == AuthorizationStatus.denied) return;
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
@@ -180,25 +194,37 @@ class PushMessagingService {
       return;
     }
     _pendingRegistration = false;
-    _lastRegisteredToken = token;
+    _setRegisteredToken(token);
   }
 
-  /// Unregister this device with the plugin, e.g. on logout. No-op off mobile
-  /// or when there is no active client.
-  Future<void> unregister() async {
+  /// Unregister this device with the plugin, e.g. on logout. With
+  /// [deleteToken] the FCM token and the Firebase installation ID go too, so
+  /// it's only passed when no other signed-in server still sends to it.
+  Future<void> unregister({bool deleteToken = false}) async {
     if (!PlatformDetection.isMobile) return;
 
     final client = GetIt.instance.isRegistered<MediaServerClient>()
         ? GetIt.instance<MediaServerClient>()
         : null;
-    if (client == null) return;
-    if (!GetIt.instance.isRegistered<PluginSyncService>()) return;
+    if (client != null && GetIt.instance.isRegistered<PluginSyncService>()) {
+      await GetIt.instance<PluginSyncService>().unregisterPushDevice(
+        client,
+        deviceId: _deviceId(_lastRegisteredToken),
+      );
+    }
+    _setRegisteredToken(null);
 
-    await GetIt.instance<PluginSyncService>().unregisterPushDevice(
-      client,
-      deviceId: _deviceId(_lastRegisteredToken),
-    );
-    _lastRegisteredToken = null;
+    final started = _startFuture;
+    if (deleteToken && started != null) {
+      try {
+        await started;
+        await FirebaseMessaging.instance.deleteToken();
+        // Firebase keeps the installation ID until the app deletes it.
+        await FirebaseInstallations.instance.delete();
+      } catch (e) {
+        debugPrint('PushMessagingService: Firebase cleanup failed: $e');
+      }
+    }
   }
 
   /// Reuses the app's Jellyfin device id so the plugin can tie the push

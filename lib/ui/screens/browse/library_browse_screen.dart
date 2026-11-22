@@ -14,8 +14,10 @@ import 'package:playback_core/playback_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/alphabet_bucket.dart';
 import '../../../data/repositories/mdblist_repository.dart';
+import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/utils/merged_copies.dart';
 import '../../../data/viewmodels/library_browse_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -36,6 +38,7 @@ import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/merged_copy_picker.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/rating_display.dart';
@@ -191,6 +194,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     super.initState();
     final client = GetIt.instance<MediaServerClientFactory>()
         .clientForServerOrActive(widget.serverId);
+    final mergedType = mergedLibraryType(widget.libraryId);
     _vm = LibraryBrowseViewModel(
       libraryId: widget.libraryId,
       client: client,
@@ -201,6 +205,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       overrideName: widget.genreName ?? widget.studioName,
       includeItemTypes: widget.includeItemTypes,
       favoritesOnly: widget.favoritesOnly,
+      loadMergedLibrary: mergedType == null
+          ? null
+          : () => GetIt.instance<MultiServerRepository>().mergedLibrary(
+              mergedType,
+            ),
     );
     _vm.addListener(_onChanged);
     _vm.load();
@@ -313,6 +322,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
 
   bool get _showCardTitles => _prefs.get(UserPreferences.libraryCardTitles);
+  bool get _hideWatchProgress =>
+      _prefs.get(UserPreferences.hideLibraryWatchProgress);
+  bool get _hideUnwatchedCount =>
+      _prefs.get(UserPreferences.hideLibraryUnwatchedCount);
 
   @override
   void didChangeDependencies() {
@@ -540,20 +553,22 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       return;
     }
 
-    context
-        .push(
-          Destinations.itemOrPhoto(
-            item.id,
-            serverId: item.serverId,
-            type: item.type,
-            channelId: item.channelId,
-          ),
-        )
-        .then((result) {
-          if (result == true && mounted) {
-            _vm.load();
-          }
-        });
+    openPickedCopy(context, item, (copy) {
+      context
+          .push(
+            Destinations.itemOrPhoto(
+              copy.id,
+              serverId: copy.serverId,
+              type: copy.type,
+              channelId: copy.channelId,
+            ),
+          )
+          .then((result) {
+            if (result == true && mounted) {
+              _vm.refresh();
+            }
+          });
+    });
   }
 
   double? _displayPlayedPercentage(AggregatedItem item) {
@@ -661,7 +676,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
 
   String? _imageUrl(AggregatedItem item, {double? cellWidth}) {
-    final api = _vm.imageApi;
+    final api = _vm.imageApiFor(item);
     final width = cellWidth ?? _cardWidth();
     final posterMaxW = _requestWidthFor(width, ArtworkShape.poster);
     final landscapeMaxW = _requestWidthFor(width, ArtworkShape.landscape);
@@ -1456,14 +1471,20 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  /// A search still reading the rest of the library may find something yet,
+  /// so it shows a spinner until it has looked everywhere.
+  Widget _buildNothingFound() => Center(
+    child: _vm.searchFilling
+        ? CircularProgressIndicator(color: _jellyfinBlue)
+        : Text(
+            AppLocalizations.of(context).noItemsFound,
+            style: const TextStyle(color: Colors.white70),
+          ),
+  );
+
   Widget _buildSongsList() {
     if (_vm.items.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context).noItemsFound,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      );
+      return _buildNothingFound();
     }
     final isMobile = _isCompact(context);
     final hPad = isMobile ? 16.0 : _horizontalPadding;
@@ -1502,12 +1523,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Widget _buildGrid() {
     if (_vm.items.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context).noItemsFound,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      );
+      return _buildNothingFound();
     }
 
     if (_vm.scrollDirection == LibraryScrollDirection.horizontal) {
@@ -1830,6 +1846,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         animeMarkerItemId: item.id,
         posterBadgeItemId: item.id,
         recordingItemId: item.id,
+        imageOverlays: mergedServerCountOverlays(context, item),
         title: item.name,
         subtitle: _cardSubtitle(item),
         showLabel: _showCardTitles,
@@ -1843,8 +1860,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         suppressFocusGlow: isNeon,
         isPlayed: item.isPlayed,
         isFavorite: item.isFavorite,
-        unplayedCount: item.unplayedItemCount,
-        playedPercentage: _displayPlayedPercentage(item),
+        unplayedCount: _hideUnwatchedCount ? null : item.unplayedItemCount,
+        playedPercentage:
+            _hideWatchProgress ? null : _displayPlayedPercentage(item),
         watchedBehavior: watchedBehavior,
         itemType: item.type,
         onFocus: isMobile
@@ -1935,12 +1953,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     Map<String, List<AggregatedItem>> categories,
   ) {
     if (categories.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context).noItemsFound,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      );
+      return _buildNothingFound();
     }
 
     final cardWidth = _cardWidth() * _kGroupedRowCardScale;
@@ -2106,6 +2119,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                       return MediaCard(
                         posterBadgeItemId: item.id,
                         recordingItemId: item.id,
+                        imageOverlays: mergedServerCountOverlays(context, item),
                         title: item.name,
                         subtitle: _cardSubtitle(item),
                         showLabel: _showCardTitles,
@@ -2118,8 +2132,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         suppressFocusGlow: isNeon,
                         isPlayed: item.isPlayed,
                         isFavorite: item.isFavorite,
-                        unplayedCount: item.unplayedItemCount,
-                        playedPercentage: _displayPlayedPercentage(item),
+                        unplayedCount: _hideUnwatchedCount
+                            ? null
+                            : item.unplayedItemCount,
+                        playedPercentage: _hideWatchProgress
+                            ? null
+                            : _displayPlayedPercentage(item),
                         watchedBehavior: watchedBehavior,
                         itemType: item.type,
                         onFocus: () => _onItemFocused(item),

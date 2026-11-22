@@ -28,20 +28,23 @@ void main() {
     expect(properties['sub-back-color'], '#01000000');
   });
 
-  test('a shadow takes the back color while there is no box', () {
+  test('a shadow gets its own color while there is no box', () {
+    final properties = MediaKitPlayerBackend.subtitleBackgroundMpvProperties(
+      0x00000000,
+      shadowColor: 0xCC000000,
+      shadowOffset: 2.24,
+      shadowBlur: 1,
+    );
+    expect(properties, {
+      'sub-back-color': '#00000000',
+      'sub-shadow-color': '#cc000000',
+      'sub-border-style': 'outline-and-shadow',
+      'sub-shadow-offset': '2.2',
+      'sub-blur': '1.0',
+    });
     expect(
-      MediaKitPlayerBackend.subtitleBackgroundMpvProperties(
-        0x00000000,
-        shadowColor: 0xCC000000,
-        shadowOffset: 2.24,
-        shadowBlur: 1,
-      ),
-      {
-        'sub-back-color': '#cc000000',
-        'sub-border-style': 'outline-and-shadow',
-        'sub-shadow-offset': '2.2',
-        'sub-blur': '1.0',
-      },
+      properties.keys,
+      containsAllInOrder(['sub-back-color', 'sub-shadow-color']),
     );
   });
 
@@ -53,6 +56,7 @@ void main() {
       shadowBlur: 1,
     );
     expect(properties['sub-back-color'], '#bf102030');
+    expect(properties.containsKey('sub-shadow-color'), isFalse);
     expect(properties['sub-shadow-offset'], '4');
     expect(properties['sub-blur'], '0');
   });

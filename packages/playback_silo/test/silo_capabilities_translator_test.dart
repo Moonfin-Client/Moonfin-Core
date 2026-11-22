@@ -291,6 +291,18 @@ void main() {
     _expectFitsContract(caps);
   });
 
+  test('a DLNA renderer: a progressive remux too, no headers', () {
+    const renderer = SiloPlayerTraits.dlnaRenderer;
+    expect(renderer.sendsRequestHeaders, isFalse);
+    expect(renderer.authorizesByStreamReference, isTrue);
+    final caps = siloCapabilitiesFromDeviceProfile(
+      _mpvProfile(),
+      traits: renderer,
+    );
+    expect(caps.deliveries['progressive']!['supported_on_device'], isTrue);
+    _expectFitsContract(caps);
+  });
+
   test('the validator refuses what Silo would', () {
     expect(
       siloSchemaErrors('DeliveryCapabilityV3', {'enabled': true, 'extra': 1}),

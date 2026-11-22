@@ -7015,7 +7015,7 @@
     "homeRowsStyleModern": "Modern",
     "homeRowsSection": "Files d'inici",
     "rowsType": "Tipus de files",
-    "rowsTypeDescription": "El clàssic manté el tipus d'imatge per fila i la superposició d'informació. Modern utilitza files de retrat a fons.",
+    "rowsTypeDescription": "El clàssic manté el tipus d'imatge per fila i la superposició d'informació. Modern utilitza files de retrat a fons. Carrusel afegeix un panell de detalls sota cada fila.",
     "displayFavoritesRows": "Mostra les files de preferits",
     "displayFavoritesRowsSubtitle": "Mostra pel·lícules, sèries i altres files preferides a les seccions d'inici.",
     "favoritesRowSorting": "Classificació de files de preferits",
@@ -7530,7 +7530,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Fes servir l'algorisme de biblioteca local Recomanacions Moonfin, el motor del servidor Recomanacions Jellyfin o les mètriques de similitud en línia de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr.",
+    "recommendationSystemSubtitle": "Fes servir l'algorisme de biblioteca local Recomanacions Moonfin, les Recomanacions del servidor, del teu servidor multimèdia, o les mètriques de similitud en línia de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -11066,7 +11066,7 @@
     "@detailScreenStyleNouveau": {
         "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
     },
-    "recommendationSystemJellyfin": "Recomanacions Jellyfin",
+    "recommendationSystemJellyfin": "Recomanacions del servidor",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16640,7 +16640,7 @@
     },
     "sinceYouWatchedSource": "Font de les recomanacions",
     "sinceYouWatchedSourceLocal": "Recomanacions Moonfin",
-    "sinceYouWatchedSourceServer": "Recomanacions Jellyfin",
+    "sinceYouWatchedSourceServer": "Recomanacions del servidor",
     "sinceYouWatchedSourceOnline": "Similitud de TMDb",
     "sinceYouWatchedSourceType": "Tipus de font",
     "sinceYouWatchedSourceTypeDescription": "Tria el tipus d'elements que es recomanaran",
@@ -17594,7 +17594,7 @@
     },
     "displaySinceYouWatchedRows": "Mostra les files de «Ja que vas veure»",
     "displaySinceYouWatchedRowsSubtitle": "Mostra i personalitza les files de «Ja que vas veure» a les seccions d'inici.",
-    "sinceYouWatchedSourceDescription": "Tria la font de les recomanacions (Recomanacions Moonfin, l'algorisme local personalitzat; Recomanacions Jellyfin, el motor del servidor; o les mètriques de similitud de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr).",
+    "sinceYouWatchedSourceDescription": "Tria la font de les recomanacions (Recomanacions Moonfin, l'algorisme local personalitzat; Recomanacions del servidor, del teu servidor multimèdia; o les mètriques de similitud de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr).",
     "sinceYouWatchedNumRows": "Nombre de files a afegir",
     "sinceYouWatchedNumRowsDescription": "Tria quantes files de «Ja que vas veure» vols mostrar (1-5)",
     "cadenceSlowdown": "24 fps fluids en un televisor de 60 Hz",
@@ -18527,5 +18527,405 @@
     "seerrDownloadFailed": "Ha fallat la baixada",
     "@seerrDownloadFailed": {
         "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "settingsSeerrHomePageRowsSection": "Files de Seerr de la pàgina d'inici",
+    "@settingsSeerrHomePageRowsSection": {
+        "description": "Section header on the Seerr Lists settings screen for the Seerr rows shown on the home page"
+    },
+    "settingsSavedCustomHomeRowsSection": "Files d'inici personalitzades desades",
+    "@settingsSavedCustomHomeRowsSection": {
+        "description": "Section header on the Custom Rows settings screen over the rows the user already saved"
+    },
+    "favoritesSwitchViewSection": "Canvia de vista",
+    "@favoritesSwitchViewSection": {
+        "description": "Section header in the Favorites display options for choosing between Home and Library view"
+    },
+    "settingsPreviewAudioRowsOffInHomeRows": "Els àlbums, els artistes i les llistes de reproducció d'àudio estan tots desactivats. Per mostrar-ne algun, ves a «Files», obre {group} a {disabled} i activa'l.",
+    "@settingsPreviewAudioRowsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is on, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off audio rows are",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "General"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewAudioRowsOffInHomeRowsSwitchOff": "Per veure els àlbums, els artistes o les llistes de reproducció d'àudio a l'inici, primer activa {setting}. Després ves a «Files», obre {group} a {disabled} i activa'n algun.",
+    "@settingsPreviewAudioRowsOffInHomeRowsSwitchOff": {
+        "description": "Notice over the dimmed Settings live preview while an audio Row Options setting has focus, Display Audio Rows is off, and none of the audio sections is turned on in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the audio rows once the switch is on, so it gives the steps in that order",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Audio Rows"
+            },
+            "group": {
+                "type": "String",
+                "example": "General"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewCollectionsOffInHomeRows": "La fila Col·leccions està desactivada. Per mostrar-la, ves a «Files», obre {group} a {disabled} i activa-la.",
+    "@settingsPreviewCollectionsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is on, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off row is",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewCollectionsOffInHomeRowsSwitchOff": "Per veure la fila Col·leccions a l'inici, primer activa {setting}. Després ves a «Files», obre {group} a {disabled} i activa-la.",
+    "@settingsPreviewCollectionsOffInHomeRowsSwitchOff": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is off, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows. The Rows screen only lists the Collections row once the switch is on, so it gives the steps in that order",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Collections Rows"
+            },
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewRowsOffInKidsMode": "El mode infantil manté aquestes files fora de la pantalla d'inici, així que aquesta configuració no la canvia.",
+    "@settingsPreviewRowsOffInKidsMode": {
+        "description": "Notice over the dimmed Settings live preview while a Row Options setting has focus whose rows Kids Mode hides from Home, so Home doesn't change"
+    },
+    "settingsPreviewNeedsRowInRows": "Activa una fila a «Files», a {disabled}",
+    "@settingsPreviewNeedsRowInRows": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on",
+        "placeholders": {
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewNeedsSwitchAndRow": "Activa {setting} i després activa una fila a «Files»",
+    "@settingsPreviewNeedsSwitchAndRow": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is off. The Rows screen only lists those rows once the switch is on",
+        "placeholders": {
+            "setting": {
+                "type": "String",
+                "example": "Display Audio Rows"
+            }
+        }
+    },
+    "settingsPreviewKeptOffByKidsMode": "El mode infantil ho manté fora de la pantalla d'inici",
+    "@settingsPreviewKeptOffByKidsMode": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows Kids Mode hides from Home"
+    },
+    "settingsPreviewAudioRowsEmpty": "No hi ha música per mostrar, així que la pantalla d'inici omet aquestes files.",
+    "@settingsPreviewAudioRowsEmpty": {
+        "description": "Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows"
+    },
+    "settingsPreviewRowsEmpty": "No hi ha res per mostrar en aquestes files, així que la pantalla d'inici les omet.",
+    "@settingsPreviewRowsEmpty": {
+        "description": "Note over the Settings live preview while a Favorites, Genres, Playlists or Studios Row Options setting has focus and those rows have nothing to show, so Home leaves them out"
+    },
+    "settingsPreviewCollectionsEmpty": "No hi ha col·leccions per mostrar, així que la pantalla d'inici omet aquesta fila.",
+    "@settingsPreviewCollectionsEmpty": {
+        "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"
+    },
+    "settingsPreviewShowEpisodesNote": "Això només canvia les files de les col·leccions individuals afegides a «Files». La fila Col·leccions no canvia.",
+    "@settingsPreviewShowEpisodesNote": {
+        "description": "Note over the Settings live preview while the Show Individual Episodes setting in Row Options has focus, explaining that it doesn't change the Collections row the preview shows"
+    },
+    "recentlyAddedAndReleased": "Afegit i publicat recentment",
+    "@recentlyAddedAndReleased": {
+        "description": "Section title for Recently Added and Recently Released home row settings"
+    },
+    "hideWatchedInRecentRows": "Amaga el contingut vist",
+    "@hideWatchedInRecentRows": {
+        "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+    },
+    "hideWatchedInRecentRowsDescription": "Amaga el contingut vist de les files d'inici «Afegit recentment» i «Publicat recentment».",
+    "@hideWatchedInRecentRowsDescription": {
+        "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+    },
+    "seerrWaitingForImport": "Baixat, esperant la importació",
+    "@seerrWaitingForImport": {
+        "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+    },
+    "seerrDownloadStalled": "Encallat",
+    "@seerrDownloadStalled": {
+        "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+    },
+    "seerrImportBlocked": "Importació bloquejada",
+    "@seerrImportBlocked": {
+        "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+    },
+    "seerrNotFoundYet": "Encara no s'ha trobat",
+    "@seerrNotFoundYet": {
+        "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr or Sonarr has the released movie or aired episodes but has not found a release to download yet"
+    },
+    "seerrGetDifferentRelease": "Obtén un altre llançament",
+    "@seerrGetDifferentRelease": {
+        "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+    },
+    "seerrGetDifferentReleaseConfirm": "{service} eliminarà {release} del client de baixades, el bloquejarà perquè no es torni a capturar i cercarà un altre llançament.",
+    "@seerrGetDifferentReleaseConfirm": {
+        "description": "Body of the confirm dialog for Get a different release",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            },
+            "release": {
+                "type": "String",
+                "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseDone": "S'ha eliminat. {service} està cercant un altre llançament.",
+    "@seerrGetDifferentReleaseDone": {
+        "description": "Short confirmation after Get a different release removed the stuck download",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseFailed": "No s'ha pogut eliminar la baixada",
+    "@seerrGetDifferentReleaseFailed": {
+        "description": "Error shown when Get a different release could not remove the stuck download"
+    },
+    "kidsModePinToSwitchUser": "Introdueix el PIN del mode infantil per canviar a {name}",
+    "@kidsModePinToSwitchUser": {
+        "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowsStreamingServices": "Serveis de streaming",
+    "@homeRowsStreamingServices": {
+        "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
+    },
+    "homeRowsStyleCarousel": "Carrusel",
+    "@homeRowsStyleCarousel": {
+        "description": "Name of the home row style that shows a large details panel under each row's posters"
+    },
+    "setupRowsCarouselHint": "Pòsters amb un gran panell de detalls a sota.",
+    "@setupRowsCarouselHint": {
+        "description": "What the carousel home row style gives you"
+    },
+    "clickpadSeeking": "Permet desplaçar-se pel vídeo amb el clickpad",
+    "@clickpadSeeking": {
+        "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+    },
+    "clickpadSeekingDescription": "Quan l'esquerra, la dreta i els lliscaments al panell tàctil poden desplaçar-se pel vídeo. Si no, el primer clic o lliscament mostra els controls.",
+    "@clickpadSeekingDescription": {
+        "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+    },
+    "clickpadSeekingControlsVisible": "Quan es mostren els controls",
+    "@clickpadSeekingControlsVisible": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+    },
+    "clickpadSeekingPausedOnly": "Només en pausa",
+    "@clickpadSeekingPausedOnly": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+    },
+    "playerBlackBarsCropped": "S'han retallat les bandes negres",
+    "@playerBlackBarsCropped": {
+        "description": "Toast after a manual recrop found letterbox bars and cropped them"
+    },
+    "playerNoBlackBarsFound": "No s'han trobat bandes negres",
+    "@playerNoBlackBarsFound": {
+        "description": "Toast after a manual recrop found that the picture fills the frame"
+    },
+    "playerBlackBarsNotDetected": "No s'han pogut detectar les bandes negres. Torna-ho a provar en una escena més lluminosa",
+    "@playerBlackBarsNotDetected": {
+        "description": "Toast after a manual recrop saw only dark or unclear frames"
+    },
+    "mergeLibrariesByType": "Fusiona les biblioteques de pel·lícules i sèries",
+    "@mergeLibrariesByType": {
+        "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+    },
+    "mergeLibrariesByTypeDescription": "Amb les biblioteques multiservidor activades, mostra una sola biblioteca de pel·lícules i una de sèries per a tots els servidors. Un títol que tinguin diversos servidors només apareix una vegada.",
+    "@mergeLibrariesByTypeDescription": {
+        "description": "Description for the setting that merges movie and series libraries across servers"
+    },
+    "mergedServerCount": "{count, plural, other{A {count} servidors}}",
+    "@mergedServerCount": {
+        "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mergedCopiesNotChanged": "No s'ha canviat a {servers}",
+    "@mergedCopiesNotChanged": {
+        "description": "Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names",
+        "placeholders": {
+            "servers": {
+                "type": "String"
+            }
+        }
+    },
+    "mediaBarNewMovie": "Nova pel·lícula",
+    "@mediaBarNewMovie": {
+        "description": "Media bar label on a movie that came out recently"
+    },
+    "mediaBarNewReleasesSection": "Novetats",
+    "@mediaBarNewReleasesSection": {
+        "description": "Media bar settings section with the new release label settings"
+    },
+    "mediaBarSourceNewReleasesAll": "Novetats",
+    "@mediaBarSourceNewReleasesAll": {
+        "description": "Media bar source showing what came out recently: new series, seasons, episodes and movies"
+    },
+    "mediaBarNewReleaseBannerAllDescription": "Marca com a novetat les sèries, temporades, episodis i pel·lícules recents.",
+    "@mediaBarNewReleaseBannerAllDescription": {
+        "description": "Description of the media bar new release label setting"
+    },
+    "mediaBarNewReleaseKinds": "Etiquetes",
+    "@mediaBarNewReleaseKinds": {
+        "description": "Setting that picks which titles get a new release label in the media bar"
+    },
+    "mediaBarNewEpisodeDays": "Període de novetat dels episodis",
+    "@mediaBarNewEpisodeDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewMovieDays": "Període de novetat de les pel·lícules",
+    "@mediaBarNewMovieDays": {
+        "description": "Setting for how many days after its release a movie counts as new in the media bar"
+    },
+    "mediaBarNewMovieDaysDescription": "Quant de temps es considera nova una pel·lícula després de l'estrena. Les pel·lícules de cinema sovint arriben als servidors un temps després de l'estrena, així que dona-li més temps que als episodis.",
+    "@mediaBarNewMovieDaysDescription": {
+        "description": "Description of the new movie window setting"
+    },
+    "mediaBarNewMovieDetail": "Mostra l'eslogan",
+    "@mediaBarNewMovieDetail": {
+        "description": "Setting for whether the New Movie label has a second line"
+    },
+    "mediaBarNewMovieDetailDescription": "Mostra l'eslogan de la pel·lícula sota «Nova pel·lícula». Si no en té, l'etiqueta es mostra sola.",
+    "@mediaBarNewMovieDetailDescription": {
+        "description": "Description of the New Movie second line setting"
+    },
+    "seerrSearchingIndexers": "S'està cercant als indexadors",
+    "@seerrSearchingIndexers": {
+        "description": "Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now"
+    },
+    "seerrNotFoundYetSearched": "Encara no s'ha trobat · última cerca {when}",
+    "@seerrNotFoundYetSearched": {
+        "description": "Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNotAvailableYet": "Encara no disponible",
+    "@seerrNotAvailableYet": {
+        "description": "Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it"
+    },
+    "seerrAvailableOn": "Disponible el {date}",
+    "@seerrAvailableOn": {
+        "description": "Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNextEpisodeOn": "Següent episodi el {date}",
+    "@seerrNextEpisodeOn": {
+        "description": "Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "playerTooltipPictureInPicture": "Imatge sobre imatge",
+    "@playerTooltipPictureInPicture": {
+        "description": "Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings"
+    },
+    "playerTooltipExitPictureInPicture": "Surt de la imatge sobre imatge",
+    "@playerTooltipExitPictureInPicture": {
+        "description": "Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window"
+    },
+    "playerPlayingInPictureInPicture": "S'està reproduint en imatge sobre imatge",
+    "@playerPlayingInPictureInPicture": {
+        "description": "Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window"
+    },
+    "remoteMediaNotificationTitle": "Notificació de reproducció remota",
+    "@remoteMediaNotificationTitle": {
+        "description": "Toggle in General settings on Android mobile to show a system media notification when another device on the same account is playing"
+    },
+    "remoteMediaNotificationSubtitle": "Mostra els controls multimèdia del sistema quan miris contingut en un altre dispositiu",
+    "@remoteMediaNotificationSubtitle": {
+        "description": "Subtitle for the remote playback notification toggle in General settings on Android mobile"
+    },
+    "remoteActivityWatching": "S'està mirant a Moonfin",
+    "@remoteActivityWatching": {
+        "description": "Line in the Android media notification that mirrors a video another device on the same account is playing. Moonfin is the app name"
+    },
+    "remoteActivityListening": "S'està escoltant a Moonfin",
+    "@remoteActivityListening": {
+        "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+    },
+    "seerrTestNotification": "Envia una notificació de prova",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "Comprova el lliurament de notificacions push dins de l'aplicació i en segon pla",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "S'ha enviat a {count, plural, =1{1 dispositiu} other{{count} dispositius}}.",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "S'ha enviat la notificació dins de l'aplicació. Les notificacions push del servidor no estan activades.",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "No s'ha pogut enviar la notificació de prova",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "Push del servidor",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "Push del dispositiu",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "Registrat",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "No registrat",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
     }
 }

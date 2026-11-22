@@ -369,6 +369,10 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final sinceYouWatchedSource = _prefs.get(UserPreferences.sinceYouWatchedSource);
     final showRewatchRow = _prefs.get(UserPreferences.displayRewatchRow);
     final showStudiosRows = _prefs.get(UserPreferences.displayStudiosRows);
+    final studiosPicked = _prefs
+        .get(UserPreferences.studiosRowSelectedIds)
+        .split(',')
+        .any((id) => id.trim().isNotEmpty);
 
     return RequestInitialFocus(
       child: withCleanSettingsTypography(
@@ -807,7 +811,13 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       title: l10n.studiosRowSorting,
                       description: l10n.studiosRowSortingDescription,
                       icon: Icons.sort_by_alpha,
-                      values: LibrarySortBy.itemsApiValues,
+                      // A studio carries no runtime, ratings or play data, and
+                      // with none picked only name and random order apply.
+                      values: [
+                        LibrarySortBy.name,
+                        if (studiosPicked) LibrarySortBy.dateAdded,
+                        LibrarySortBy.random,
+                      ],
                       labelOf: (v) => librarySortLabel(v, l10n),
                       onChanged: _onStudiosSortChanged,
                     ),

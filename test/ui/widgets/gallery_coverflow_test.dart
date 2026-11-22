@@ -36,6 +36,24 @@ Widget _host({
 }
 
 void main() {
+  testWidgets('keeps the covers below a top navbar', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: GalleryCoverflow(
+            items: _items(3),
+            activeIndex: 0,
+            onSelect: (_) {},
+            onInfo: () {},
+            onPlay: () {},
+            topInset: 100,
+          ),
+        ),
+      ),
+    );
+    expect(tester.getTopLeft(find.byType(PageView)).dy, 108);
+  });
+
   testWidgets(
     'full-width mode mounts the trailer subtree while still invisible',
     (tester) async {

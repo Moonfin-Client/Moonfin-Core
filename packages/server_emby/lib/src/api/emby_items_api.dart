@@ -83,6 +83,7 @@ class EmbyItemsApi implements ItemsApi {
     bool? isHd,
     bool? is4K,
     bool? is3D,
+    bool? enableUserData,
   }) async {
     final queryParams = {
       'ParentId': ?parentId,
@@ -130,6 +131,7 @@ class EmbyItemsApi implements ItemsApi {
       'EnableTotalRecordCount': ?enableTotalRecordCount,
       'EnableImageTypes': ?enableImageTypes,
       'ImageTypeLimit': ?imageTypeLimit,
+      'EnableUserData': ?enableUserData,
       if (tags != null && tags.isNotEmpty) 'Tags': tags.join('|'),
       if (studios != null && studios.isNotEmpty) 'Studios': studios.join('|'),
       if (minPremiereDate != null)
@@ -383,7 +385,14 @@ class EmbyItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.get(
       '/Shows/$seriesId/Episodes',
-      queryParameters: {'SeasonId': ?seasonId, 'Fields': ?_knownFields(fields)},
+      queryParameters: {
+        'SeasonId': ?seasonId,
+        'Fields': ?_knownFields(fields),
+        // Emby only folds the versions of an episode into one item when the
+        // query names a user. Without it every version comes back as its own
+        // episode, so a season held in 1080p and 4K lists each one twice.
+        'UserId': _getUserId(),
+      },
     );
     return response.data as Map<String, dynamic>;
   }

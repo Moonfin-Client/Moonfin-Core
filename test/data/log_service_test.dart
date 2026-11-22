@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -159,12 +162,24 @@ void main() {
     test('redacts emails and home folder names', () {
       assertRedacted('signed in as jane.doe@example.com', 'as [REDACTED]');
       assertRedacted(
+        'switch to 1920x1080@23.976 for 23.976fps content',
+        'switch to 1920x1080@23.976 for',
+      );
+      assertRedacted(
         'open /home/jane/Videos/x.mkv failed',
         '/home/[REDACTED]/Videos/x.mkv',
       );
       assertRedacted(
         r'open C:\Users\jane\Videos\x.mkv failed',
         r'\Users\[REDACTED]\Videos',
+      );
+      assertRedacted(
+        'GET /Users/0123456789abcdef0123456789abcdef/Items',
+        '/Users/0123456789abcdef0123456789abcdef/Items',
+      );
+      assertRedacted(
+        'GET /Users/01234567-89ab-cdef-0123-456789abcdef/Views',
+        '/Users/01234567-89ab-cdef-0123-456789abcdef/Views',
       );
     });
 
@@ -324,6 +339,26 @@ void main() {
         contains('Renderer: Impeller (auto, GPU Mali-G31)'),
       );
     });
+
+    test(
+      'names the CPU architecture on Windows and Linux only',
+      () async {
+        final logs = await _service(loggingEnabled: true);
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        expect(logs.exportText(), isNot(contains('Architecture:')));
+
+        debugDefaultTargetPlatformOverride = Platform.isWindows
+            ? TargetPlatform.windows
+            : TargetPlatform.linux;
+        expect(
+          logs.exportText(),
+          matches(RegExp(r'Architecture: (x64|arm64)')),
+        );
+      },
+      skip: !Platform.isWindows && !Platform.isLinux,
+    );
 
     test('can be bounded to the newest entries', () async {
       final logs = await _service(loggingEnabled: true);

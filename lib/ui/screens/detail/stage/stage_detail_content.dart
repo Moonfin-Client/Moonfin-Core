@@ -207,8 +207,10 @@ class _StageDetailContentState extends State<StageDetailContent>
     );
   }
 
-  void _go(FocusNode? node) {
-    if (node == null || node.context?.mounted != true) return;
+  void _go(FocusNode? section) {
+    if (section == null) return;
+    final node = entryFor(section);
+    if (node.context?.mounted != true) return;
     node.requestFocus();
     // The episodes bring their whole section into view as focus arrives.
     if (node == pageNode('episodes')) return;
@@ -217,8 +219,10 @@ class _StageDetailContentState extends State<StageDetailContent>
       if (!mounted || ctx == null || !ctx.mounted || offScreen(ctx) == 0) {
         return;
       }
+      // A card back in the middle of its row brings the row into view, so
+      // the row isn't pulled sideways.
       Scrollable.ensureVisible(
-        ctx,
+        node == section ? ctx : Scrollable.of(ctx).context,
         alignment: 0.3,
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
@@ -285,10 +289,11 @@ class _StageDetailContentState extends State<StageDetailContent>
   }
 
   /// The stops beside the poster that can take focus. The overview only has
-  /// one once its text runs long enough to open up.
+  /// one once its text runs long enough to open up, and a row only while the
+  /// card it's entered by is built.
   List<FocusNode> get _besideStops => [
     for (final node in _beside)
-      if (node.context?.mounted == true) node,
+      if (entryFor(node).context?.mounted == true) node,
   ];
 
   /// The stop under [node], or null at the bottom of the page.
@@ -642,9 +647,9 @@ class _StageDetailContentState extends State<StageDetailContent>
     return out;
   }
 
-  /// The full width rows under the poster: an episode's run of episodes, the
-  /// cast, extras, the collections the title belongs to, more like it and
-  /// Seerr's rows.
+  /// The full width rows under the poster: an episode's run of episodes, a
+  /// collection's own titles, the cast, extras, the collections the title
+  /// belongs to, more like it and Seerr's rows.
   List<DetailPageSection> _belowSections(
     AggregatedItem item,
     DetailSectionVisibility sections,
@@ -659,6 +664,8 @@ class _StageDetailContentState extends State<StageDetailContent>
         sections.shows(DetailSection.moreEpisodes)) {
       out.add(_episodesSection(item, besidePoster: false));
     }
+
+    out.addAll(collectionRows(l10n));
 
     final cast = castSection(item, sections, l10n);
     if (cast != null) out.add(cast);

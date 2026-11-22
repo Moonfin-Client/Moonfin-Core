@@ -147,6 +147,7 @@ class SiloMediaStreamResolver
       directPlayRequested: enableDirectPlay,
       auth: await _streamAuth(client),
       tokenInEveryUrl: !environment.traits.sendsRequestHeaders,
+      referenceOnly: environment.traits.authorizesByStreamReference,
       requestedSubtitleStreamIndex: subtitleStreamIndex,
     );
     _sessions.add(
@@ -272,11 +273,10 @@ class SiloMediaStreamResolver
       decision = await _replan(client.playbackApi, session.sessionId, body);
     } catch (error) {
       if (SiloPlaybackApi.isEndedByServer(error)) {
+        // Silo recorded the play when it ended the session.
         session.ended = true;
-        throw const PlaybackRefusedException(
-          siloEndedOnServerMessage,
-          reason: 'playback_session_ended',
-        );
+        client.notePlaybackEnded(session.itemId);
+        throw siloEndedOnServerRefusal;
       }
       if (SiloPlaybackApi.isSessionGone(error) ||
           SiloPlaybackApi.isInstallationChanged(error)) {
@@ -303,6 +303,7 @@ class SiloMediaStreamResolver
       directPlayRequested: request.enableDirectPlay,
       auth: await _streamAuth(client),
       tokenInEveryUrl: !_environment().traits.sendsRequestHeaders,
+      referenceOnly: _environment().traits.authorizesByStreamReference,
       requestedSubtitleStreamIndex: request.subtitleStreamIndex,
     );
     session
@@ -685,6 +686,13 @@ PlaybackRefusedException siloRefusal(Map<String, dynamic> decision) {
 /// Shown when an administrator ended the session (`410`): the player
 /// leaves playback and doesn't start it again by itself.
 const siloEndedOnServerMessage = 'Playback was ended on the Silo server.';
+
+/// An administrator ended the session (`410 playback_session_ended`): the
+/// player stops and must not start it again.
+const siloEndedOnServerRefusal = PlaybackRefusedException(
+  siloEndedOnServerMessage,
+  reason: PlaybackRefusedException.sessionEndedReason,
+);
 
 /// Shown when the server has playback switched off for this account.
 const siloPlaybackUnavailableMessage =

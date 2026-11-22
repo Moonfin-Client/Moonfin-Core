@@ -9,8 +9,11 @@
   no media notification, no Android Auto controls, and background audio gets
   killed a few seconds after the app is suspended.
 
+  ic_car_* are the Android Auto browse category icons, handed to the car as
+  android.resource:// URIs by name from the Dart browse tree.
+
   audio_service_* are the plugin's own icons behind MediaControl.play, pause,
   skipToNext, skipToPrevious and fastForward, resolved the same way.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_notification,@drawable/ic_shuffle,@drawable/ic_shuffle_on,@drawable/ic_repeat,@drawable/ic_repeat_on,@drawable/ic_repeat_one,@drawable/audio_service_*" />
+    tools:keep="@drawable/ic_notification,@drawable/ic_shuffle,@drawable/ic_shuffle_on,@drawable/ic_repeat,@drawable/ic_repeat_on,@drawable/ic_repeat_one,@drawable/ic_car_*,@drawable/audio_service_*" />

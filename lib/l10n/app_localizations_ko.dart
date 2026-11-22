@@ -464,7 +464,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => '첫날';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -507,7 +507,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin 추천';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin 추천';
+  String get recommendationSystemJellyfin => '서버 추천';
 
   @override
   String get recommendationSystemTmdb => 'TMDb 유사도';
@@ -1925,6 +1925,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get carServerUnreachable => '서버에 연결할 수 없습니다';
+
+  @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
 
   @override
   String downloadsCount(int count) {
@@ -3488,6 +3497,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playerRecroppingBlackBars => '검은 여백을 다시 자르는 중';
 
   @override
+  String get playerBlackBarsCropped => 'Black bars cropped';
+
+  @override
+  String get playerNoBlackBarsFound => 'No black bars found';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Couldn\'t detect black bars. Try again in a brighter scene';
+
+  @override
   String get stretch => '늘이기';
 
   @override
@@ -3850,7 +3869,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get calendarReleaseCinema => 'Cinema';
 
   @override
-  String get calendarReleaseDigital => 'Digital';
+  String get calendarReleaseDigital => '디지털';
 
   @override
   String get calendarReleasePhysical => 'Physical';
@@ -4723,6 +4742,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showLibrariesFromAllServers => '연결된 모든 서버의 라이브러리 표시';
 
   @override
+  String get mergeLibrariesByType => 'Merge Movie and TV Show Libraries';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Not changed on $servers';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Recently Added and Released';
 
   @override
@@ -4965,17 +5006,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mediaBarSourceRandom => '무작위';
 
   @override
-  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
-
-  @override
   String get mediaBarNewReleaseBanner => 'New Release Banner';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Flag series with a new season or new episodes that aired recently.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'New Release Window';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -4989,6 +5020,39 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'New Episodes';
+
+  @override
+  String get mediaBarNewMovie => 'New Movie';
+
+  @override
+  String get mediaBarNewReleasesSection => 'New Releases';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'New Releases';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Flag new series, seasons, episodes and movies.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Labels';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'New Episode Window';
+
+  @override
+  String get mediaBarNewMovieDays => 'New Movie Window';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Show Tagline';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
   String get moviesAndTvShows => '영화 및 TV 프로그램';
@@ -5614,6 +5678,48 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seerrNotifyNewMediaSubtitle => '서버 라이브러리에 새로 추가된 모든 항목';
 
   @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
+
+  @override
   String loggedInAs(String username) {
     return '로그인 계정: $username';
   }
@@ -5792,13 +5898,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seerrDownloadStalled => 'Stalled';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => '다운로드 실패';
 
   @override
   String get seerrImportBlocked => 'Import blocked';
 
   @override
   String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrSearchingIndexers => 'Searching indexers';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Not found yet · searched $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Not available yet';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Available $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Next episode $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Get a different release';
@@ -10720,7 +10847,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncPlayShuffleModeSorted => '정렬됨';
 
   @override
-  String get syncPlayParticipantYou => 'You';
+  String get syncPlayParticipantYou => '나';
 
   @override
   String syncPlayGroupSubtitle(String participants, String detail) {
@@ -11271,6 +11398,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get playerTooltipExitFloatOnTop => '항상 위에 표시 끄기';
+
+  @override
+  String get playerTooltipPictureInPicture => 'Picture-in-picture';
+
+  @override
+  String get playerTooltipExitPictureInPicture => 'Exit picture-in-picture';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Playing in picture-in-picture';
 
   @override
   String get playerTooltipLockLandscape => '가로 모드 고정';
@@ -12242,16 +12378,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
-  String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
+  String get sinceYouWatchedSourceLocal => 'Moonfin 추천';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => '서버 추천';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb 유사도';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -13127,7 +13263,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => '유형';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -15217,7 +15353,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => '첫날';
 
   @override
   String get setupDetailPremiereHint =>
@@ -17155,7 +17291,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => '보기';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17177,14 +17313,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get calendarSettingsWhatShows => 'What shows';
 
   @override
-  String get calendarSettingsScope => 'Show';
+  String get calendarSettingsScope => '표시';
 
   @override
   String get calendarSettingsScopeDescription =>
       'My shows keeps the series you favorited or started watching';
 
   @override
-  String get calendarSettingsScopeEverything => 'Everything';
+  String get calendarSettingsScopeEverything => '전체';
 
   @override
   String get calendarSettingsScopeMyShows => 'My shows';
@@ -17197,7 +17333,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => '스페셜';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17218,7 +17354,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => '유형';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17235,7 +17371,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => '작업';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17307,7 +17443,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => '재생';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -17448,7 +17584,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => '시작';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -17558,7 +17694,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => '고정';
 
   @override
   String get afterHoursCastStaticLine =>
@@ -17663,4 +17799,30 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Left and Right slide the scrubber.';
+
+  @override
+  String get remoteMediaNotificationTitle => 'Remote playback notification';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Show system media controls when watching on another device';
+
+  @override
+  String get remoteActivityWatching => 'Watching on Moonfin';
+
+  @override
+  String get remoteActivityListening => 'Listening on Moonfin';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

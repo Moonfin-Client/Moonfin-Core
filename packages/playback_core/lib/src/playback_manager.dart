@@ -643,6 +643,38 @@ class PlaybackManager implements AudioOwnable {
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
+  final _endedByServerController = StreamController<String>.broadcast();
+  /// The queue item whose session the server ended on purpose, so nothing
+  /// reopens it; a new start of any item clears it, except one made while
+  /// that item's stop still runs.
+  dynamic _endedByServerItem;
+  /// True while the stop of an ended session runs. A start of the ended item
+  /// meanwhile (a Next or a queue pick that repeats it) is turned away.
+  bool _endingByServer = false;
+  /// The server session the player streams from. A replan keeps it; a fresh
+  /// start replaces it, so a late refusal from the old one stops nothing.
+  String? _ownedPlaySessionId;
+  /// Bumped when the viewer asks for something else to play (another item,
+  /// queue or source) and there is one, unlike a Stop, a Next at the end of
+  /// the queue or one that repeats the current item. A server-ended stop
+  /// reads it to tell whether to close. Bumped through
+  /// [_requestReplacement].
+  int _replacementRequests = 0;
+
+  /// Counts a request to play [target] instead of the current item. The
+  /// current item again (repeat one, repeat all on a one-item queue, a tap
+  /// on the playing entry) is not something else.
+  void _requestReplacement(dynamic target) {
+    if (target == null || identical(target, queueService.currentItem)) return;
+    _replacementRequests++;
+  }
+
+  dynamic get _queuedNextItem => queueService.repeatMode == RepeatMode.repeatOne
+      ? queueService.currentItem
+      : queueService.peekNext;
+  final _finishedItemStopController = StreamController<dynamic>.broadcast(
+    sync: true,
+  );
   final _liveRecoveryStatusController =
       StreamController<LiveRecoveryStatus?>.broadcast();
   final _volumeController = StreamController<double>.broadcast();
@@ -666,6 +698,18 @@ class PlaybackManager implements AudioOwnable {
   /// Each new level, so a screen showing its own volume can follow a change
   /// made from somewhere else, such as a session remote.
   Stream<double> get volumeStream => _volumeController.stream;
+
+  /// Emits the outgoing queue item when a finished stop or finished queue
+  /// advance commits (after any transport interceptor has allowed it).
+  Stream<dynamic> get finishedItemStopStream =>
+      _finishedItemStopController.stream;
+
+  /// Allows test subclasses overriding `stopAsFinished` or
+  /// `nextInQueueAsFinished` to emit committed finished-stop events.
+  void notifyFinishedItemStop(dynamic item) {
+    if (item == null || _finishedItemStopController.isClosed) return;
+    _finishedItemStopController.add(item);
+  }
 
   void reportVolumeState({
     required double volume,
@@ -746,6 +790,11 @@ class PlaybackManager implements AudioOwnable {
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
+
+  /// The server's message when it ended the session itself (Silo: an
+  /// administrator terminated it). Comes just before [sessionEndedStream],
+  /// so the player can say why it closed.
+  Stream<String> get endedByServerStream => _endedByServerController.stream;
   LiveRecoveryStatus? get liveRecoveryStatus => _liveRecoveryStatus;
   Stream<LiveRecoveryStatus?> get liveRecoveryStatusStream =>
       _liveRecoveryStatusController.stream;
@@ -2835,6 +2884,7 @@ class PlaybackManager implements AudioOwnable {
   Future<void> _autoNext() async {
     if (await _maybeIntercept(TransportAction.next)) return;
     _beginNewPlaybackSource('the queue advanced to another item');
+    _requestReplacement(_queuedNextItem);
     _mediaSourceId = null;
     if (_isOfflinePlayback) {
       await _stopAndReportCurrent(skipQueueChange: true);
@@ -2947,6 +2997,10 @@ class PlaybackManager implements AudioOwnable {
     // episode, so the audio and subtitle picks carry over the way they do onto
     // the next episode. The track arguments are ignored then.
     bool carryTrackSelections = false,
+    // True when a coordinator (SyncPlay) replaces the queue on behalf of
+    // [TransportAction.nextAsFinished], so the outgoing item closes as watched
+    // without keeping a resume point.
+    bool stopCurrentAsFinished = false,
   }) async {
     _beginNewPlaybackSource('the viewer tuned somewhere else');
     _viewerPaused = !autoPlay;
@@ -2985,6 +3039,7 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    if (pendingItem != null) _replacementRequests++;
     _setBringupState(
       PlaybackBringupState(
         phase: PlaybackBringupPhase.stoppingPrevious,
@@ -2992,7 +3047,7 @@ class PlaybackManager implements AudioOwnable {
         backend: _traceBackendName(_backend),
       ),
     );
-    await _stopAndReportCurrent();
+    await _stopAndReportCurrent(finished: stopCurrentAsFinished);
     _secondarySubtitleStreamIndex = null;
     _secondarySubtitleDelaySeconds = 0;
     _resetBackendSelectionLock();
@@ -3124,6 +3179,7 @@ class PlaybackManager implements AudioOwnable {
       _itemEpoch++;
       _resetLiveRecoveryBudget();
       _endReconnect();
+      if (!_endingByServer) _endedByServerItem = null;
     }
 
     if (_forceTranscodeForQueue) {
@@ -3136,6 +3192,10 @@ class PlaybackManager implements AudioOwnable {
     final item = queueService.currentItem;
     if (item == null || _backend == null) {
       _setBringupState(const PlaybackBringupState.idle());
+      return;
+    }
+    // Its session was ended on purpose; the stop under way closes it.
+    if ((reopening || _endingByServer) && identical(item, _endedByServerItem)) {
       return;
     }
 
@@ -3264,6 +3324,7 @@ class PlaybackManager implements AudioOwnable {
       final base = replanBase;
       final replanner = _replannerFor(base);
       if (base != null && replanner != null) {
+        final intent = _viewerIntentGeneration;
         try {
           final replanned = await replanner.replan(
             item,
@@ -3283,9 +3344,20 @@ class PlaybackManager implements AudioOwnable {
           );
           replanBase = replanned;
           return replanned;
-        } on PlaybackRefusedException {
+        } on PlaybackRefusedException catch (refusal) {
           // The server answered, and its answer is no: starting again
-          // wouldn't change it (or it ended the session on purpose).
+          // wouldn't change it. A session it ended on purpose stops here and
+          // now, before the caller can retry or start a new one.
+          final ended = _endedByServer(refusal);
+          // A recovery that started meanwhile replans this same session, so
+          // it stops too, unless the viewer has moved on (Next, Stop).
+          if (ended != null &&
+              (sessionToken == _playbackSessionToken ||
+                  (_ownsPlaySession(base) &&
+                      intent == _viewerIntentGeneration &&
+                      identical(item, queueService.currentItem)))) {
+            unawaited(_stopEndedByServer(ended.message));
+          }
           rethrow;
         } catch (error) {
           // A retired replan must not open its old source again after a tune.
@@ -3335,10 +3407,33 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    // A later ask hears an end the same way, and ends just as quietly.
+    Future<StreamResolutionResult?> resolveAgain(
+      int? cap, {
+      bool originalFile = false,
+    }) async {
+      try {
+        return await resolve(cap, originalFile: originalFile);
+      } on PlaybackRefusedException catch (refusal) {
+        if (_endedByServer(refusal) != null &&
+            identical(item, _endedByServerItem)) {
+          return null;
+        }
+        rethrow;
+      }
+    }
+
     StreamResolutionResult resolution;
     try {
       resolution = await resolve(maxBitrate);
     } on PlaybackRefusedException catch (refusal) {
+      // A session the server ended on purpose is being stopped (see
+      // resolve), and the player closes with its own message. Not a failure
+      // for the caller (a seek, a track change, a reconnect) to report.
+      if (_endedByServer(refusal) != null &&
+          identical(item, _endedByServerItem)) {
+        return;
+      }
       // The server's own words, which the player shows.
       if (sessionToken == _playbackSessionToken) {
         _setBringupState(
@@ -3383,7 +3478,9 @@ class PlaybackManager implements AudioOwnable {
         )) {
       _audioStreamIndex = requestedAudioIndex;
       _mediaSourceId = resolution.mediaSourceId;
-      resolution = await resolve(maxBitrate);
+      final again = await resolveAgain(maxBitrate);
+      if (again == null) return;
+      resolution = again;
       if (sessionToken != _playbackSessionToken) {
         _cleanupPreemptedSession(item, resolution);
         return;
@@ -3412,7 +3509,9 @@ class PlaybackManager implements AudioOwnable {
       if (cap != maxBitrate) {
         maxBitrate = cap;
         profile['MaxStreamingBitrate'] = cap;
-        resolution = await resolve(cap);
+        final again = await resolveAgain(cap);
+        if (again == null) return;
+        resolution = again;
         if (sessionToken != _playbackSessionToken) {
           _cleanupPreemptedSession(item, resolution);
           return;
@@ -3429,7 +3528,9 @@ class PlaybackManager implements AudioOwnable {
         _sourceVideoCodec(resolution) == 'hevc' &&
         !resolution.transcodingReasons.any(_reencodesVideo) &&
         _backend!.decodesHevcOnlyFromOriginalFile) {
-      resolution = await resolve(maxBitrate, originalFile: true);
+      final again = await resolveAgain(maxBitrate, originalFile: true);
+      if (again == null) return;
+      resolution = again;
       if (sessionToken != _playbackSessionToken) {
         _cleanupPreemptedSession(item, resolution);
         return;
@@ -3594,6 +3695,7 @@ class PlaybackManager implements AudioOwnable {
     }
 
     _currentResolution = resolution;
+    _ownedPlaySessionId = resolution.playSessionId;
     _streamsOutdatedItemId = null;
     _lastPlaybackItem = item;
     _lastPlaybackResolution = resolution;
@@ -4129,12 +4231,99 @@ class PlaybackManager implements AudioOwnable {
             )
             .then<void>(
               (_) => _progressSettled(generation),
-              onError: (Object _, StackTrace _) => _progressSettled(generation),
+              onError: (Object error, StackTrace _) {
+                final ended = _endedByServer(error);
+                // The session is over, so a coalesced report has nothing to
+                // report on.
+                if (ended != null) generation.reportPending = false;
+                _progressSettled(generation);
+                if (ended == null) {
+                  if (error is PlaybackRefusedException) {
+                    _diagnosticLogger?.call('Progress refused: $error');
+                  }
+                  return;
+                }
+                // Even from a generation a replan just retired: the item still
+                // playing is the one whose session ended. One the viewer
+                // retired (next, stop) is theirs to end.
+                // A fresh session that replaced it is left alone.
+                if ((!generation.ended || generation.replanned) &&
+                    identical(generation.item, queueService.currentItem) &&
+                    _ownsPlaySession(generation.resolution)) {
+                  unawaited(_stopEndedByServer(ended.message));
+                }
+              },
             ),
       );
     } catch (_) {
       _progressSettled(generation);
     }
+  }
+
+  /// Whether [resolution]'s server session is the one the player streams
+  /// from. Sessions without an id (not Silo) always count.
+  bool _ownsPlaySession(StreamResolutionResult resolution) {
+    final id = resolution.playSessionId;
+    return id == null || id == _ownedPlaySessionId;
+  }
+
+  /// [error] as a refusal saying the server ended the session on purpose
+  /// (Silo: an administrator did), else null.
+  static PlaybackRefusedException? _endedByServer(Object error) =>
+      error is PlaybackRefusedException &&
+          error.reason == PlaybackRefusedException.sessionEndedReason
+      ? error
+      : null;
+
+  /// The server ended the current item's session on purpose, so what is
+  /// buffered must not play on and nothing may reopen it: stop, say why, and
+  /// close the player. The stop takes the next session token and viewer
+  /// intent before its first await, so a re-resolve or reconnect under way
+  /// gives up instead of starting a new session. If the viewer starts
+  /// something else while the stop runs, that is left alone.
+  Future<void> _stopEndedByServer(String message) async {
+    final item = queueService.currentItem;
+    if (item == null || identical(item, _endedByServerItem)) return;
+    _endedByServerItem = item;
+    _endingByServer = true;
+    try {
+      await _finishEndedByServer(message);
+    } finally {
+      _endingByServer = false;
+    }
+  }
+
+  Future<void> _finishEndedByServer(String message) async {
+    _diagnosticLogger?.call('The server ended the session: $message');
+    _abandonLiveRecovery('the server ended the session');
+    _viewerPaused = false;
+    final replacements = _replacementRequests;
+    // The queue stays until the stop is over: a Next, a Previous or another
+    // episode picked meanwhile joins this stop and goes on from it.
+    try {
+      await _stopAndReportCurrent(skipQueueChange: true);
+    } catch (e) {
+      _diagnosticLogger?.call('Stopping a session the server ended: $e');
+    }
+    if (replacements != _replacementRequests) return;
+    // Nothing else is coming, whether the viewer did nothing, pressed Stop
+    // or pressed Next at the end of the queue or onto the same item. No
+    // await from here on, so a Next can't slip in between the check and
+    // letting go of the queue, and the new token turns away a start that
+    // doesn't join the stop and is still resolving.
+    _playbackSessionToken++;
+    try {
+      _releaseQueue();
+    } on StateError catch (e) {
+      // Disposed while the stop ran.
+      _diagnosticLogger?.call('Clearing the queue of an ended session: $e');
+      return;
+    }
+    _endedByServerItem = null;
+    if (!_endedByServerController.isClosed) {
+      _endedByServerController.add(message);
+    }
+    _notifySessionEnded();
   }
 
   void _progressSettled(_ProgressGeneration generation) {
@@ -4376,6 +4565,11 @@ class PlaybackManager implements AudioOwnable {
     try {
       Duration? served;
       while (_seekReplanTarget != null && _seekReplanTarget != served) {
+        // The server ended the session, and its stop is under way.
+        if (_endedByServerItem != null &&
+            identical(queueService.currentItem, _endedByServerItem)) {
+          break;
+        }
         final target = _seekReplanTarget!;
         await _reResolveAtCurrentPosition(
           reason: 'seek',
@@ -4423,7 +4617,16 @@ class PlaybackManager implements AudioOwnable {
     await _advanceQueue();
   }
 
-  Future<void> _advanceQueue() async {
+  /// Advances like [nextInQueue], reporting the current item stopped at its
+  /// end so leaving its credits marks it watched instead of keeping a resume
+  /// point. Dispatches [TransportAction.nextAsFinished] so coordinators that
+  /// replace the queue via [playItems] know to pass `stopCurrentAsFinished`.
+  Future<void> nextInQueueAsFinished() async {
+    if (await _maybeIntercept(TransportAction.nextAsFinished)) return;
+    await _advanceQueue(finished: true);
+  }
+
+  Future<void> _advanceQueue({bool finished = false}) async {
     // Nothing queued after this, so run it to the end and let the ordinary
     // finish handle watched state and whatever follows, rather than stopping
     // on a dead player.
@@ -4433,10 +4636,11 @@ class PlaybackManager implements AudioOwnable {
     }
     if (_isManualNexting || _isAutoNexting) return;
     _beginNewPlaybackSource('the viewer advanced the queue');
+    _requestReplacement(_queuedNextItem);
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
-      await _stopAndReportCurrent(skipQueueChange: true);
+      await _stopAndReportCurrent(skipQueueChange: true, finished: finished);
       _resetBackendSelectionLock();
       final hadNext = queueService.next();
       if (hadNext) {
@@ -4462,6 +4666,11 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     _beginNewPlaybackSource('the viewer moved to the previous item');
+    final queued = queueService.items;
+    final index = queueService.currentIndex;
+    _requestReplacement(
+      index > 0 ? queued[index - 1] : (queued.isEmpty ? null : queued.last),
+    );
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -4471,6 +4680,10 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> playFromQueue(int index) async {
     _beginNewPlaybackSource('the viewer selected another queued item');
+    final queued = queueService.items;
+    _requestReplacement(
+      index >= 0 && index < queued.length ? queued[index] : null,
+    );
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -5488,6 +5701,7 @@ class PlaybackManager implements AudioOwnable {
     Future<void> Function(String url)? onAutoNext,
   }) async {
     _beginNewPlaybackSource('the viewer started an offline source');
+    _replacementRequests++;
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     _lastItemId = null;
@@ -5561,6 +5775,16 @@ class PlaybackManager implements AudioOwnable {
     _secondarySubtitleDelaySeconds = 0;
   }
 
+  void _releaseQueue() {
+    _forceTranscodeForQueue = false;
+    _directPlayAllowedForQueue = true;
+    _streamFromServerForQueue = false;
+    _resetBackendSelectionLock();
+    queueService.clear();
+    state.reset();
+    _setBringupState(const PlaybackBringupState.idle());
+  }
+
   Future<bool> _stopAndReportCurrent({
     bool skipQueueChange = false,
     dynamic expectedItem,
@@ -5580,6 +5804,11 @@ class PlaybackManager implements AudioOwnable {
           !identical(queueService.currentItem, expectedItem)) {
         return false;
       }
+      // Whatever plays next starts a session of its own.
+      _ownedPlaySessionId = null;
+      final finishedItem = finished
+          ? (queueService.currentItem ?? _lastPlaybackItem)
+          : null;
       // The other half of the re-resolve note: between them every app
       // initiated teardown of the player's playlist is now on the record.
       _diagnosticLogger?.call(
@@ -5596,18 +5825,14 @@ class PlaybackManager implements AudioOwnable {
       _stopProgressTimer();
       final backend = _backend;
       if (_hasNoActivePlayback(backend)) {
+        if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
-          _forceTranscodeForQueue = false;
-          _directPlayAllowedForQueue = true;
-          _streamFromServerForQueue = false;
-          _resetBackendSelectionLock();
-          queueService.clear();
-          state.reset();
-          _setBringupState(const PlaybackBringupState.idle());
+          _releaseQueue();
         }
         return true;
       }
       if (_isOfflinePlayback) {
+        if (finishedItem != null) notifyFinishedItemStop(finishedItem);
         if (!skipQueueChange) {
           await _onOfflineStop?.call();
           _onOfflineStop = null;
@@ -5618,13 +5843,7 @@ class PlaybackManager implements AudioOwnable {
         _waitingForMedia = false;
         if (!skipQueueChange) {
           _isOfflinePlayback = false;
-          _forceTranscodeForQueue = false;
-          _directPlayAllowedForQueue = true;
-          _streamFromServerForQueue = false;
-          _resetBackendSelectionLock();
-          queueService.clear();
-          state.reset();
-          _setBringupState(const PlaybackBringupState.idle());
+          _releaseQueue();
         }
         return true;
       }
@@ -5683,17 +5902,12 @@ class PlaybackManager implements AudioOwnable {
       _currentResolution = null;
       _lastPlaybackItem = null;
       _lastPlaybackResolution = null;
+      if (finishedItem != null) notifyFinishedItemStop(finishedItem);
       await _backend?.stop();
       _playbackStartTime = null;
       _waitingForMedia = false;
       if (!skipQueueChange) {
-        _forceTranscodeForQueue = false;
-        _directPlayAllowedForQueue = true;
-        _streamFromServerForQueue = false;
-        _resetBackendSelectionLock();
-        queueService.clear();
-        state.reset();
-        _setBringupState(const PlaybackBringupState.idle());
+        _releaseQueue();
       }
       return true;
     })();
@@ -5732,6 +5946,8 @@ class PlaybackManager implements AudioOwnable {
     _backendChangedController.close();
     _bringupStateController.close();
     _sessionEndedController.close();
+    _endedByServerController.close();
+    _finishedItemStopController.close();
     _liveRecoveryStatusController.close();
     _reconnectRetry?.cancel();
     _reconnectProvenTimer?.cancel();
@@ -5818,7 +6034,7 @@ class PlaybackManager implements AudioOwnable {
   }
 }
 
-enum TransportAction { resume, pause, seek, stop, next, previous }
+enum TransportAction { resume, pause, seek, stop, next, nextAsFinished, previous }
 
 enum PlaybackStartupRecoveryDecision { retryWithTranscode, abortPlayback }
 

@@ -514,7 +514,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin recommande';
 
   @override
-  String get recommendationSystemJellyfin => 'Recommandé par Jellyfin';
+  String get recommendationSystemJellyfin => 'Recommandé par le serveur';
 
   @override
   String get recommendationSystemTmdb => 'Similarité TMDb';
@@ -1975,6 +1975,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get carServerUnreachable => 'Impossible de joindre votre serveur';
+
+  @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
 
   @override
   String downloadsCount(int count) {
@@ -3587,6 +3596,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerRecroppingBlackBars => 'Nouveau rognage des bandes noires';
 
   @override
+  String get playerBlackBarsCropped => 'Black bars cropped';
+
+  @override
+  String get playerNoBlackBarsFound => 'No black bars found';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Couldn\'t detect black bars. Try again in a brighter scene';
+
+  @override
   String get stretch => 'Étirer';
 
   @override
@@ -4879,6 +4898,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher les bibliothèques de tous les serveurs connectés';
 
   @override
+  String get mergeLibrariesByType => 'Merge Movie and TV Show Libraries';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Not changed on $servers';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Recently Added and Released';
 
   @override
@@ -5129,18 +5170,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mediaBarSourceRandom => 'Aléatoire';
 
   @override
-  String get mediaBarSourceNewReleases =>
-      'Nouvelles saisons et nouveaux épisodes';
-
-  @override
   String get mediaBarNewReleaseBanner => 'Bannière de nouveauté';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Signale les séries avec une nouvelle saison ou de nouveaux épisodes diffusés récemment.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'Période de nouveauté';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5154,6 +5184,39 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'Nouveaux épisodes';
+
+  @override
+  String get mediaBarNewMovie => 'New Movie';
+
+  @override
+  String get mediaBarNewReleasesSection => 'New Releases';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'New Releases';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Flag new series, seasons, episodes and movies.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Labels';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'New Episode Window';
+
+  @override
+  String get mediaBarNewMovieDays => 'New Movie Window';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Show Tagline';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
   String get moviesAndTvShows => 'Films et séries TV';
@@ -5812,6 +5875,48 @@ class AppLocalizationsFr extends AppLocalizations {
       'Tout nouvel ajout à la bibliothèque du serveur';
 
   @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
+
+  @override
   String loggedInAs(String username) {
     return 'Connecté en tant que : $username';
   }
@@ -6001,13 +6106,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get seerrDownloadStalled => 'Stalled';
 
   @override
-  String get seerrDownloadFailed => 'Download failed';
+  String get seerrDownloadFailed => 'Échec du téléchargement';
 
   @override
   String get seerrImportBlocked => 'Import blocked';
 
   @override
   String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrSearchingIndexers => 'Searching indexers';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Not found yet · searched $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Not available yet';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Available $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Next episode $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Get a different release';
@@ -11777,6 +11903,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerTooltipExitFloatOnTop => 'Désactiver le flottement en haut';
 
   @override
+  String get playerTooltipPictureInPicture => 'Picture-in-picture';
+
+  @override
+  String get playerTooltipExitPictureInPicture => 'Exit picture-in-picture';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Playing in picture-in-picture';
+
+  @override
   String get playerTooltipLockLandscape => 'Paysage de verrouillage';
 
   @override
@@ -12785,28 +12920,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher la rangée des studios dans les sections d\'accueil.';
 
   @override
-  String get sinceYouWatched => 'Depuis votre dernier visionnage';
+  String get sinceYouWatched => 'Selon vos visionnages';
 
   @override
-  String get sinceYouWatchedRowTitle => 'Depuis votre dernier visionnage';
+  String get sinceYouWatchedRowTitle => 'Selon vos visionnages';
 
   @override
   String sinceYouWatchedItemRowTitle(String title) {
-    return 'Depuis que vous avez regardé « $title »';
+    return 'Similaire à « $title »';
   }
 
   @override
   String sinceYouWatchedRowNumber(int number) {
-    return 'Depuis votre dernier visionnage - Rangée $number';
+    return 'Selon vos visionnages - Rangée $number';
   }
 
   @override
   String get displaySinceYouWatchedRows =>
-      'Afficher les rangées « Depuis votre dernier visionnage »';
+      'Afficher les rangées « Selon vos visionnages »';
 
   @override
   String get displaySinceYouWatchedRowsSubtitle =>
-      'Afficher et personnaliser les rangées « Depuis votre dernier visionnage » dans les sections d\'accueil.';
+      'Afficher et personnaliser les rangées « Selon vos visionnages » dans les sections d\'accueil.';
 
   @override
   String get sinceYouWatchedSource => 'Source des recommandations';
@@ -12819,7 +12954,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Moonfin recommande';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin recommande';
+  String get sinceYouWatchedSourceServer => 'Recommandé par le serveur';
 
   @override
   String get sinceYouWatchedSourceOnline => 'Similarité TMDb';
@@ -12846,7 +12981,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sinceYouWatchedNumRowsDescription =>
-      'Choisissez le nombre de rangées « Depuis votre dernier visionnage » à afficher (1-5)';
+      'Choisissez le nombre de rangées « Selon vos visionnages » à afficher (1-5)';
 
   @override
   String get sinceYouWatchedIncludeWatched => 'Inclure les éléments déjà vus';
@@ -18458,4 +18593,30 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Gauche et Droite déplacent le curseur.';
+
+  @override
+  String get remoteMediaNotificationTitle => 'Remote playback notification';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Show system media controls when watching on another device';
+
+  @override
+  String get remoteActivityWatching => 'Watching on Moonfin';
+
+  @override
+  String get remoteActivityListening => 'Listening on Moonfin';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

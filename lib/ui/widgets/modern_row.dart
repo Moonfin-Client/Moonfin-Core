@@ -19,6 +19,10 @@ import 'selector_builder.dart';
 double modernImageHeight(PosterSize posterSize, double platformScale) =>
     posterSize.portraitHeight * platformScale;
 
+/// Room under a Modern poster that hasn't grown, for its title and one line.
+/// A phone keeps only this under a row until a tap grows one of its cards.
+const double modernLabelBudget = 50.0;
+
 /// Room under a Modern poster for the title, the metadata line, the ratings
 /// and three lines of overview. A phone gets no room from the lowest padding
 /// step, so its budget alone has to fit a tapped card.

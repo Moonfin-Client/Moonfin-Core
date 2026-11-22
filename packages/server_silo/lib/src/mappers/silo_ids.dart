@@ -78,6 +78,18 @@ String? siloSeasonId(String seriesId, int seasonNumber) {
   return (seriesId: 'series-$key', seasonNumber: number);
 }
 
+final _keyedProviderId = RegExp(r'^(?:movie|series)-(imdb|tmdb|tvdb)-(.+)$');
+
+/// The provider id a movie or series id is keyed on, such as `Imdb` and
+/// `tt0295701` from `movie-imdb-tt0295701`, or null. List entries carry no
+/// provider ids of their own, so this is all a card has.
+({String name, String value})? siloKeyedProviderId(String id) {
+  final match = _keyedProviderId.firstMatch(id);
+  if (match == null) return null;
+  const names = {'imdb': 'Imdb', 'tmdb': 'Tmdb', 'tvdb': 'Tvdb'};
+  return (name: names[match.group(1)]!, value: match.group(2)!);
+}
+
 /// The Silo type an id names by its prefix (`movie-…`, `series-…`,
 /// `season-…`, `episode-…`), or null. Season and episode **list entries**
 /// carry no `type` field, so the mapper falls back to this.

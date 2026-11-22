@@ -34,7 +34,6 @@ class HomeGradientScrim extends StatelessWidget {
 class HomeBackdrop extends StatelessWidget {
   final String? url;
   final double blurAmount;
-  final bool useMakdBackdropFx;
 
   /// Where it goes: behind the whole screen, in the top right corner fading
   /// into the background toward the left and the bottom, or only its top half
@@ -45,7 +44,6 @@ class HomeBackdrop extends StatelessWidget {
     super.key,
     this.url,
     required this.blurAmount,
-    this.useMakdBackdropFx = false,
     this.style = UserPreferences.homeBackdropFullScreen,
   });
 
@@ -58,40 +56,7 @@ class HomeBackdrop extends StatelessWidget {
     final switcher = FullscreenBackdropSwitcher(
       imageUrl: url,
       duration: BackgroundService.transitionDuration,
-      imageBuilder: (imageUrl) {
-        final image = _blurredImage(context, imageUrl, blurAmount);
-        if (!useMakdBackdropFx) {
-          return image;
-        }
-
-        return ClipRect(
-          child: TweenAnimationBuilder<double>(
-            key: ValueKey('makd_home_backdrop_$imageUrl'),
-            tween: Tween(begin: 1.0, end: 1.08),
-            duration: const Duration(seconds: 10),
-            curve: Curves.easeOut,
-            builder: (context, scale, child) {
-              return Transform.scale(
-                scale: scale,
-                alignment: Alignment.center,
-                child: child,
-              );
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                image,
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColorScheme.scrim.withValues(alpha: 0.26),
-                  ),
-                  child: const SizedBox.expand(),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      imageBuilder: (imageUrl) => _blurredImage(context, imageUrl, blurAmount),
     );
     return RepaintBoundary(
       child: switch (style) {

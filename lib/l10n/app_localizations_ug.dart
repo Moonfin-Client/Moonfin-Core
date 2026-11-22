@@ -43,7 +43,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get animeMarkerSubbedAndDubbedShort => 'Sub/Dub';
 
   @override
-  String get animeMarkerPending => 'Pending';
+  String get animeMarkerPending => 'ساقلىنىۋاتىدۇ';
 
   @override
   String get animeMarkerRecap => 'Recap';
@@ -167,7 +167,7 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
-  String get accountActive => 'Active';
+  String get accountActive => 'ئاكتىپ';
 
   @override
   String get addUser => 'ئىشلەتكۈچى قوشۇڭ';
@@ -278,7 +278,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get spotlightFilmography => 'Filmography';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'توپلام';
 
   @override
   String get spotlightPlaylistOrder => 'Playlist Order';
@@ -467,7 +467,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get detailScreenStyleStage => 'Stage';
 
   @override
-  String get detailScreenStylePremiere => 'Premiere';
+  String get detailScreenStylePremiere => 'تۇنجى قويۇلۇش';
 
   @override
   String get detailScreenStyleQuickLook => 'Quick Look';
@@ -511,7 +511,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+  String get recommendationSystemJellyfin => 'Server Recommends';
 
   @override
   String get recommendationSystemTmdb => 'TMDb ئوخشاشلىقى';
@@ -548,13 +548,13 @@ class AppLocalizationsUg extends AppLocalizations {
       'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automatic';
+  String get interfaceLayoutAutomatic => 'ئاپتوماتىك';
 
   @override
   String get interfaceLayoutTv => 'TV';
 
   @override
-  String get interfaceLayoutDesktop => 'Desktop';
+  String get interfaceLayoutDesktop => 'ئۈستەل يۈزى';
 
   @override
   String get interfaceLayoutPhone => 'Phone';
@@ -589,14 +589,14 @@ class AppLocalizationsUg extends AppLocalizations {
   String get glassQualityReduced => 'يېنىكلىتىلگەن';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'ئۈنۈم';
 
   @override
   String get performanceModeSubtitle =>
       'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
 
   @override
-  String get performanceModeAuto => 'Auto';
+  String get performanceModeAuto => 'ئاپتوماتىك';
 
   @override
   String get performanceModeStandard => 'Standard';
@@ -612,7 +612,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Auto uses Impeller on boxes whose graphics run it smoothly and Skia everywhere else. Pick Skia if animations or video look wrong. Takes effect on the next launch.';
 
   @override
-  String get rendererModeAuto => 'Auto';
+  String get rendererModeAuto => 'ئاپتوماتىك';
 
   @override
   String get rendererModeSkia => 'Skia';
@@ -643,10 +643,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get keyboardStyleNative => 'Native';
 
   @override
-  String get keyboardStyleClassic => 'Classic';
+  String get keyboardStyleClassic => 'كلاسسىك';
 
   @override
-  String get keyboardStyleGlass => 'Glass';
+  String get keyboardStyleGlass => 'ئەينەك';
 
   @override
   String get keyboardStyleDocked => 'Docked';
@@ -1564,7 +1564,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get cast => 'ئېكرانغا چىقىرىش';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'ئېكرانغا چىقىرىش';
 
   @override
   String get trailer => 'ئالدىن كۆرۈنۈش';
@@ -1962,6 +1962,15 @@ class AppLocalizationsUg extends AppLocalizations {
   String get carServerUnreachable => 'مۇلازىمېتىرىڭىزغا ئۇلانغىلى بولمىدى';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count قېتىم چۈشۈرۈلگەن';
   }
@@ -2197,7 +2206,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
-  String get keyNameDelete => 'Delete';
+  String get keyNameDelete => 'ئۆچۈرۈش';
 
   @override
   String get keyNamePageUp => 'Page Up';
@@ -2206,7 +2215,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get keyNamePageDown => 'Page Down';
 
   @override
-  String get keyNameHome => 'Home';
+  String get keyNameHome => 'باش بەت';
 
   @override
   String get keyNameEnd => 'End';
@@ -2575,7 +2584,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get premiere => 'تۇنجى قويۇلۇش';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'تەكرارلاڭ';
 
   @override
   String get guideTimeline => 'يېتەكچى ۋاقىت';
@@ -2658,7 +2667,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Which episodes should be recorded?';
 
   @override
-  String get seriesRecordingAllEpisodes => 'All Episodes';
+  String get seriesRecordingAllEpisodes => 'بارلىق بۆلۈملەر';
 
   @override
   String get seriesRecordingAllEpisodesDescription =>
@@ -3041,7 +3050,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get savedMediaPlayNextUnwatched => 'Play next unwatched';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => 'ئوقۇ';
 
   @override
   String get savedMediaCancelDownload => 'Cancel download';
@@ -3050,7 +3059,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get sortBySize => 'Size';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => 'ئىسمى';
 
   @override
   String get sortByDateAdded => 'Date added';
@@ -3279,16 +3288,16 @@ class AppLocalizationsUg extends AppLocalizations {
   String get loadingAnimationSize => 'Animation Size';
 
   @override
-  String get loadingAnimationSizeThumbnail => 'Thumbnail';
+  String get loadingAnimationSizeThumbnail => 'كىچىك كۆرۈنۈش';
 
   @override
-  String get loadingAnimationSizeSmall => 'Small';
+  String get loadingAnimationSizeSmall => 'كىچىك';
 
   @override
-  String get loadingAnimationSizeMedium => 'Medium';
+  String get loadingAnimationSizeMedium => 'ئوتتۇراھال';
 
   @override
-  String get loadingAnimationSizeLarge => 'Large';
+  String get loadingAnimationSizeLarge => 'چوڭ';
 
   @override
   String get loadingAnimationPosition => 'Animation Position';
@@ -3321,7 +3330,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get loadingAnimationPositionBottomRight => 'Bottom-Right';
 
   @override
-  String get loadingAnimationPositionBouncing => 'Bouncing';
+  String get loadingAnimationPositionBouncing => 'سەكرەيدىغان';
 
   @override
   String get loadingAnimationSpeed => 'Animation Speed';
@@ -3375,7 +3384,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get seasonalDensityLight => 'Light';
 
   @override
-  String get seasonalDensityNormal => 'Normal';
+  String get seasonalDensityNormal => 'نورمال';
 
   @override
   String get seasonalDensityHeavy => 'Heavy';
@@ -3402,10 +3411,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get seasonalRowSubtitle => 'Seasonal';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => 'دۆلەت';
 
   @override
-  String get seasonalRowCountryAuto => 'Automatic';
+  String get seasonalRowCountryAuto => 'ئاپتوماتىك';
 
   @override
   String get countryUnitedStates => 'United States';
@@ -3414,7 +3423,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get countryCanada => 'Canada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => 'باشقىلىرى';
 
   @override
   String get seasonalRowHolidays => 'Holidays';
@@ -3554,6 +3563,16 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get playerRecroppingBlackBars => 'Recropping black bars';
+
+  @override
+  String get playerBlackBarsCropped => 'Black bars cropped';
+
+  @override
+  String get playerNoBlackBarsFound => 'No black bars found';
+
+  @override
+  String get playerBlackBarsNotDetected =>
+      'Couldn\'t detect black bars. Try again in a brighter scene';
 
   @override
   String get stretch => 'سوزۇش';
@@ -3715,14 +3734,14 @@ class AppLocalizationsUg extends AppLocalizations {
   String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
 
   @override
-  String get detailMetadataStatus => 'Series Status';
+  String get detailMetadataStatus => 'يۈرۈشلۈك ھالىتى';
 
   @override
   String get detailMetadataStatusSubtitle =>
       'Shows whether the series is continuing, ended, or returning';
 
   @override
-  String get detailMetadataGenres => 'Genres';
+  String get detailMetadataGenres => 'ژانىرلار';
 
   @override
   String get detailMetadataSeerrAvailability => 'Seerr Availability';
@@ -3762,31 +3781,31 @@ class AppLocalizationsUg extends AppLocalizations {
   String get detailSectionGroupCollection => 'Collection pages';
 
   @override
-  String get detailSectionGroupOther => 'Other';
+  String get detailSectionGroupOther => 'باشقىلىرى';
 
   @override
-  String get detailSectionLogo => 'Logo';
+  String get detailSectionLogo => 'لوگو';
 
   @override
   String get detailSectionLogoSubtitle => 'Shows the title as text when off';
 
   @override
-  String get detailSectionTagline => 'Tagline';
+  String get detailSectionTagline => 'خەتكۈچ';
 
   @override
-  String get detailSectionPoster => 'Poster';
+  String get detailSectionPoster => 'پوستېر';
 
   @override
   String get detailSectionVersionBadge => 'Version badge';
 
   @override
-  String get detailSectionUpNext => 'Next Up';
+  String get detailSectionUpNext => 'كېيىنكىسى';
 
   @override
-  String get detailSectionLyrics => 'Lyrics';
+  String get detailSectionLyrics => 'ناخشا تېكىستى';
 
   @override
-  String get detailSectionCast => 'Cast';
+  String get detailSectionCast => 'ئېكرانغا چىقىرىش';
 
   @override
   String get detailSectionCastSubtitle => 'Also on collection pages';
@@ -3795,19 +3814,19 @@ class AppLocalizationsUg extends AppLocalizations {
   String get detailSectionCrew => 'Directors & writers';
 
   @override
-  String get detailSectionStudios => 'Studios';
+  String get detailSectionStudios => 'ئىستۇدىيەلەر';
 
   @override
-  String get detailSectionChapters => 'Chapters';
+  String get detailSectionChapters => 'باب';
 
   @override
-  String get detailSectionExtras => 'Extras';
+  String get detailSectionExtras => 'قوشۇمچىلار';
 
   @override
-  String get detailSectionCollections => 'Collections';
+  String get detailSectionCollections => 'توپلام';
 
   @override
-  String get detailSectionMoreLikeThis => 'More Like This';
+  String get detailSectionMoreLikeThis => 'بۇنىڭغا ئوخشاش';
 
   @override
   String get detailSectionMoreLikeThisSubtitle =>
@@ -3839,7 +3858,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get seerrStreamingOn => 'Streaming on';
 
   @override
-  String get detailSectionSeerrRecommendations => 'Recommendations';
+  String get detailSectionSeerrRecommendations => 'تەۋسىيە';
 
   @override
   String get detailSectionSeerrSimilar => 'Similar titles';
@@ -3848,7 +3867,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get detailSectionSeerrCollection => 'Collection banner';
 
   @override
-  String get detailSectionSeerrPersonAppearances => 'Appearances';
+  String get detailSectionSeerrPersonAppearances => 'قاتناشقان ئەسەرلەر';
 
   @override
   String get detailSectionSeerrPersonCrew => 'Crew credits';
@@ -3857,7 +3876,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get detailSectionPersonPagesSubtitle => 'On person pages';
 
   @override
-  String get detailSectionBiography => 'Biography';
+  String get detailSectionBiography => 'تەرجىمىھالى';
 
   @override
   String get detailSectionBirthplace => 'Birthplace';
@@ -3889,7 +3908,7 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
-  String get upcomingEpisodeToday => 'Today';
+  String get upcomingEpisodeToday => 'بۈگۈن';
 
   @override
   String get upcomingEpisodeTomorrow => 'Tomorrow';
@@ -3967,10 +3986,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String get moveUp => 'Move Up';
+  String get moveUp => 'يۆتكەڭ';
 
   @override
-  String get moveDown => 'Move Down';
+  String get moveDown => 'تۆۋەنگە يۆتكەڭ';
 
   @override
   String get buttonOrderHint =>
@@ -4173,7 +4192,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get settingsAudioDtsHdPassthrough => 'DTS-HD MA بىۋاسىتە ئۆتكۈزۈش';
 
   @override
-  String get settingsAudioPassthroughMode => 'Passthrough';
+  String get settingsAudioPassthroughMode => 'بىۋاسىتە ئۆتكۈزۈش';
 
   @override
   String get settingsAudioPassthroughModeDescription =>
@@ -4825,6 +4844,28 @@ class AppLocalizationsUg extends AppLocalizations {
       'بارلىق ئۇلانغان مۇلازىمېتىرلاردىكى كۈتۈپخانىلارنى كۆرسەت';
 
   @override
+  String get mergeLibrariesByType => 'Merge Movie and TV Show Libraries';
+
+  @override
+  String get mergeLibrariesByTypeDescription =>
+      'With multi-server libraries on, show one Movies library and one TV Shows library for all servers. A title several servers hold is listed once.';
+
+  @override
+  String mergedServerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On $count servers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mergedCopiesNotChanged(String servers) {
+    return 'Not changed on $servers';
+  }
+
+  @override
   String get recentlyAddedAndReleased => 'Recently Added and Released';
 
   @override
@@ -4856,10 +4897,10 @@ class AppLocalizationsUg extends AppLocalizations {
       'Classic is the original header with icon buttons. Modern adds labeled sort, group and filter chips under the search. Docked keeps the controls in a bar at the bottom of the screen.';
 
   @override
-  String get libraryStyleClassic => 'Classic';
+  String get libraryStyleClassic => 'كلاسسىك';
 
   @override
-  String get libraryStyleModern => 'Modern';
+  String get libraryStyleModern => 'زامانىۋى';
 
   @override
   String get libraryStyleDocked => 'Docked';
@@ -4872,7 +4913,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Classic is the original shelves under a featured title. Reading Room leads with what you\'re reading on large cards. Bookstore browses the whole library in a grid.';
 
   @override
-  String get bookLibraryStyleClassic => 'Classic';
+  String get bookLibraryStyleClassic => 'كلاسسىك';
 
   @override
   String get bookLibraryStyleReadingRoom => 'Reading Room';
@@ -4888,7 +4929,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Classic is the original rows under a Jump Back In card. Quick Access starts with a grid of your recent albums and playlists. Immersive leads with the album you\'re listening to.';
 
   @override
-  String get musicLibraryStyleClassic => 'Classic';
+  String get musicLibraryStyleClassic => 'كلاسسىك';
 
   @override
   String get musicLibraryStyleQuickAccess => 'Quick Access';
@@ -5051,7 +5092,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get mediaBarModeGallery => 'Gallery';
 
   @override
-  String get mediaBarModeBanner => 'Banner';
+  String get mediaBarModeBanner => 'بايراق';
 
   @override
   String get mediaBarModeAya => 'Aya';
@@ -5073,17 +5114,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get mediaBarSourceRandom => 'Random';
 
   @override
-  String get mediaBarSourceNewReleases => 'New Seasons & Episodes';
-
-  @override
   String get mediaBarNewReleaseBanner => 'New Release Banner';
-
-  @override
-  String get mediaBarNewReleaseBannerDescription =>
-      'Flag series with a new season or new episodes that aired recently.';
-
-  @override
-  String get mediaBarNewReleaseDays => 'New Release Window';
 
   @override
   String get mediaBarNewReleaseDaysDescription =>
@@ -5097,6 +5128,39 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get mediaBarNewEpisodes => 'New Episodes';
+
+  @override
+  String get mediaBarNewMovie => 'New Movie';
+
+  @override
+  String get mediaBarNewReleasesSection => 'New Releases';
+
+  @override
+  String get mediaBarSourceNewReleasesAll => 'New Releases';
+
+  @override
+  String get mediaBarNewReleaseBannerAllDescription =>
+      'Flag new series, seasons, episodes and movies.';
+
+  @override
+  String get mediaBarNewReleaseKinds => 'Labels';
+
+  @override
+  String get mediaBarNewEpisodeDays => 'New Episode Window';
+
+  @override
+  String get mediaBarNewMovieDays => 'New Movie Window';
+
+  @override
+  String get mediaBarNewMovieDaysDescription =>
+      'How long a movie stays new after it comes out. Theatrical movies often reach servers a while after their release, so give it longer than for episodes.';
+
+  @override
+  String get mediaBarNewMovieDetail => 'Show Tagline';
+
+  @override
+  String get mediaBarNewMovieDetailDescription =>
+      'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
   String get moviesAndTvShows => 'كىنو ۋە تېلېۋىزىيە پروگراممىلىرى';
@@ -5280,7 +5344,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get homeRowsGenresAndStudios => 'Genres and Studios';
 
   @override
-  String get homeRowsExternalLists => 'External Lists';
+  String get homeRowsExternalLists => 'سىرتقى تىزىملىكلەر';
 
   @override
   String get homeRowsStreamingServices => 'Streaming Services';
@@ -5429,7 +5493,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get clockModeBouncing => 'سەكرەيدىغان';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => 'ئادەتتىكى تەڭشەكلەر';
 
   @override
   String get screensaverVisualComponents => 'Visual Components';
@@ -5438,10 +5502,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get screensaverLibraryContent => 'Library Content';
 
   @override
-  String get screensaverBackdrop => 'Backdrop';
+  String get screensaverBackdrop => 'ئارقا كۆرۈنۈش';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => 'قارا';
 
   @override
   String get screensaverBackdropMoonfin => 'Moonfin';
@@ -5450,7 +5514,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get screensaverBackdropCalm => 'Calm';
 
   @override
-  String get screensaverBackdropNeonPulse => 'Neon Pulse';
+  String get screensaverBackdropNeonPulse => 'نېئون پۇلس';
 
   @override
   String get screensaverBackdropAurora => 'Aurora';
@@ -5655,7 +5719,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get networks => 'تور';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'خەتكۈچ';
 
   @override
   String get genresAndTags => 'Genres and Tags';
@@ -5743,6 +5807,48 @@ class AppLocalizationsUg extends AppLocalizations {
   @override
   String get seerrNotifyNewMediaSubtitle =>
       'Anything new added to the server library';
+
+  @override
+  String get seerrTestNotification => 'Send Test Notification';
+
+  @override
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
+
+  @override
+  String seerrTestNotificationSentBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
+  }
+
+  @override
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
+
+  @override
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
+
+  @override
+  String get seerrPushServerStatus => 'Server Push';
+
+  @override
+  String get seerrPushDeviceStatus => 'Device Push';
+
+  @override
+  String get seerrPushDeviceRegistered => 'Registered';
+
+  @override
+  String get seerrPushDeviceNotRegistered => 'Not registered';
 
   @override
   String loggedInAs(String username) {
@@ -5901,7 +6007,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get seerrRequestedStatus => 'تەلەپ قىلىندى';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'چۈشۈرۈش';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -5940,6 +6046,27 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get seerrNotFoundYet => 'Not found yet';
+
+  @override
+  String get seerrSearchingIndexers => 'Searching indexers';
+
+  @override
+  String seerrNotFoundYetSearched(String when) {
+    return 'Not found yet · searched $when';
+  }
+
+  @override
+  String get seerrNotAvailableYet => 'Not available yet';
+
+  @override
+  String seerrAvailableOn(String date) {
+    return 'Available $date';
+  }
+
+  @override
+  String seerrNextEpisodeOn(String date) {
+    return 'Next episode $date';
+  }
 
   @override
   String get seerrGetDifferentRelease => 'Get a different release';
@@ -6686,7 +6813,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminTagMode => 'Tag mode';
 
   @override
-  String get adminEmbyConnect => 'Emby Connect';
+  String get adminEmbyConnect => 'Emby ئۇلىنىش';
 
   @override
   String get adminEmbyConnectUser => 'Emby Connect username or email';
@@ -6775,7 +6902,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'No channels yet. They show up here once a tuner is set up and the server has imported its channels.';
 
   @override
-  String get adminTranscodingHwaAdvanced => 'Advanced';
+  String get adminTranscodingHwaAdvanced => 'ئالىي';
 
   @override
   String get adminTranscodingHwaHelp =>
@@ -7171,7 +7298,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminExternalIdTypeReleaseGroup => 'Release Group';
 
   @override
-  String get adminExternalIdTypeBook => 'Book';
+  String get adminExternalIdTypeBook => 'كىتاب';
 
   @override
   String get adminPlaybackHwAccelWarning =>
@@ -7211,7 +7338,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminImageTypeDisc => 'Disc';
 
   @override
-  String get adminImageTypeMenu => 'Menu';
+  String get adminImageTypeMenu => 'تىزىملىك';
 
   @override
   String get adminActivityMediaDetails => 'Media details';
@@ -7227,13 +7354,13 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminMetadataFieldDateAdded => 'Date added';
 
   @override
-  String get adminMetadataFieldArtists => 'Artists';
+  String get adminMetadataFieldArtists => 'سەنئەتكارلار';
 
   @override
   String get adminMetadataFieldAlbumArtists => 'Album artists';
 
   @override
-  String get adminMetadataFieldAlbum => 'Album';
+  String get adminMetadataFieldAlbum => 'ئالبوم';
 
   @override
   String get adminMetadataFieldSeriesName => 'Series name';
@@ -7285,7 +7412,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Separate several names with a semicolon.';
 
   @override
-  String get adminMetadataSectionRatings => 'Ratings';
+  String get adminMetadataSectionRatings => 'باھالار';
 
   @override
   String get adminMetadataItemLocked =>
@@ -7377,7 +7504,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminLiveTvTabSources => 'Tuners and guide';
 
   @override
-  String get adminLiveTvTabRecordings => 'Recordings';
+  String get adminLiveTvTabRecordings => 'خاتىرىلەنگەن پروگراممىلار';
 
   @override
   String get adminLiveTvAddTuner => 'Add tuner device';
@@ -7545,7 +7672,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminLogLevelCritical => 'Critical';
 
   @override
-  String get adminLogLevelNone => 'None';
+  String get adminLogLevelNone => 'يوق';
 
   @override
   String get adminActivityAllUsers => 'All users';
@@ -7556,7 +7683,7 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
-  String get adminTaskResultFailed => 'Failed';
+  String get adminTaskResultFailed => 'مەغلۇپ بولدى';
 
   @override
   String get adminTaskResultCancelled => 'Cancelled';
@@ -7814,7 +7941,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminRestoreSucceeded => 'Restore completed';
 
   @override
-  String get adminLogWatch => 'Watch';
+  String get adminLogWatch => 'كۆرۈش';
 
   @override
   String get adminLogStopWatching => 'Stop watching';
@@ -7827,16 +7954,16 @@ class AppLocalizationsUg extends AppLocalizations {
       'Installing a third party plugin carries risks. It may contain unstable or malicious code, and it can change at any time. Only install plugins from authors you trust, and know what they can do, such as query outside services, slow down library scans or add background work.';
 
   @override
-  String get adminGroupOverview => 'Overview';
+  String get adminGroupOverview => 'ئومۇمىي چۈشەنچە';
 
   @override
-  String get adminGroupLibrary => 'Library';
+  String get adminGroupLibrary => 'مېدىيا ئامبىرى';
 
   @override
-  String get adminGroupPlayback => 'Playback';
+  String get adminGroupPlayback => 'قويۇش';
 
   @override
-  String get adminGroupPeople => 'People';
+  String get adminGroupPeople => 'كىشىلەر';
 
   @override
   String get adminGroupSystem => 'System';
@@ -10024,7 +10151,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminMetadataPersonKindAlbumArtist => 'Album artist';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => 'ئاپتور';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Illustrator';
@@ -10068,19 +10195,19 @@ class AppLocalizationsUg extends AppLocalizations {
       'Uncheck a field to lock it and prevent its data from being changed.';
 
   @override
-  String get adminMetadataLockFieldName => 'Name';
+  String get adminMetadataLockFieldName => 'ئىسمى';
 
   @override
-  String get adminMetadataLockFieldOverview => 'Overview';
+  String get adminMetadataLockFieldOverview => 'ئومۇمىي چۈشەنچە';
 
   @override
-  String get adminMetadataLockFieldGenres => 'Genres';
+  String get adminMetadataLockFieldGenres => 'ژانىرلار';
 
   @override
   String get adminMetadataLockFieldOfficialRating => 'Parental rating';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => 'كىشىلەر';
 
   @override
   String get adminMetadataLockFieldProductionLocations =>
@@ -10090,13 +10217,13 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminMetadataLockFieldBirthLocation => 'Birth location';
 
   @override
-  String get adminMetadataLockFieldRuntime => 'Runtime';
+  String get adminMetadataLockFieldRuntime => 'ئۇزۇنلۇقى';
 
   @override
-  String get adminMetadataLockFieldStudios => 'Studios';
+  String get adminMetadataLockFieldStudios => 'ئىستۇدىيەلەر';
 
   @override
-  String get adminMetadataLockFieldTags => 'Tags';
+  String get adminMetadataLockFieldTags => 'خەتكۈچ';
 
   @override
   String get adminMetadataGenres => 'ژانىرلار';
@@ -11445,7 +11572,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get trackActionPlayNext => 'كېيىنكى ئوينى';
 
   @override
-  String get trackActionViewDetails => 'View Details';
+  String get trackActionViewDetails => 'تەپسىلاتلارنى كۆرۈش';
 
   @override
   String get trackActionAddToQueue => 'ئۆچرەتكە قوشۇڭ';
@@ -11622,6 +11749,15 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get playerTooltipExitFloatOnTop => 'ئۈستىدىكى لەيلىمىنى چەكلەڭ';
+
+  @override
+  String get playerTooltipPictureInPicture => 'Picture-in-picture';
+
+  @override
+  String get playerTooltipExitPictureInPicture => 'Exit picture-in-picture';
+
+  @override
+  String get playerPlayingInPictureInPicture => 'Playing in picture-in-picture';
 
   @override
   String get playerTooltipLockLandscape => 'قۇلۇپ مەنزىرىسى';
@@ -11894,7 +12030,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'چۈشۈرۈش';
 
   @override
   String get emulatorCoreUnavailable => 'Not available for this device';
@@ -12148,14 +12284,13 @@ class AppLocalizationsUg extends AppLocalizations {
       'Dolby Vision ئارخىپى 7 كۈچەيتمە قەۋەت ئېقىمىنىڭ بىۋاسىتە ئوينىشى كېرەكلىكىنى كونترول قىلىدۇ.';
 
   @override
-  String get settingsAutoAftkrtEnabled => 'ئاپتوماتىك (AFTKRT قوزغىتىلدى)';
+  String get settingsAutoAftkrtEnabled => 'ئاپتوماتىك';
 
   @override
-  String get settingsEnabledOnThisDevice => 'بۇ ئۈسكۈنىدە قوزغىتىلدى';
+  String get settingsEnabledOnThisDevice => 'قوزغىتىلغان';
 
   @override
-  String get settingsDisabledPreferTranscode =>
-      'چەكلەنگەن (transcode نى ياخشى كۆرۈڭ)';
+  String get settingsDisabledPreferTranscode => 'تاقاق';
 
   @override
   String get settingsResumeRewindDescription =>
@@ -12646,16 +12781,16 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get sinceYouWatchedSourceDescription =>
-      'Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
+      'Choose recommendation source (Moonfin Recommends custom local algorithm, Server Recommends from your media server, or TMDb\'s similarity metrics. Note: Online recommendations require Seerr integration).';
 
   @override
   String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Jellyfin Recommends';
+  String get sinceYouWatchedSourceServer => 'Server Recommends';
 
   @override
-  String get sinceYouWatchedSourceOnline => 'TMDb Similarity';
+  String get sinceYouWatchedSourceOnline => 'TMDb ئوخشاشلىقى';
 
   @override
   String get sinceYouWatchedSourceType => 'Source Type';
@@ -12707,7 +12842,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Select which studios should be included on the home row.';
 
   @override
-  String get selectAllStudios => 'Select All';
+  String get selectAllStudios => 'ھەممىنى تاللاڭ';
 
   @override
   String get deselectAllStudios => 'Deselect All';
@@ -12725,7 +12860,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'Filters';
+  String get filtersHeader => 'سۈزگۈچ';
 
   @override
   String get showHeader => 'Show';
@@ -12813,10 +12948,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get externalRowSortDefault => 'Default (List Order)';
 
   @override
-  String get externalRowSortName => 'Name';
+  String get externalRowSortName => 'ئىسمى';
 
   @override
-  String get externalRowSortReleaseDate => 'Release Date';
+  String get externalRowSortReleaseDate => 'ئېلان قىلىنغان ۋاقىت';
 
   @override
   String get externalRowSortRating => 'Rating';
@@ -12825,7 +12960,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get externalRowSortPopularity => 'Popularity';
 
   @override
-  String get externalRowSortShuffle => 'Shuffle';
+  String get externalRowSortShuffle => 'تەرتىپسىز قويۇش';
 
   @override
   String get audioPlaylists => 'ئاۋاز قويۇش تىزىملىكلىرى';
@@ -13560,7 +13695,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get watchPartyBackToClose => 'Back to close';
 
   @override
-  String get watchPartyType => 'Type';
+  String get watchPartyType => 'تىپ';
 
   @override
   String get watchPartyReplyHaha => 'Haha';
@@ -13690,7 +13825,7 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String achievementsUnlockedMore(int count) {
-    return '+$count more';
+    return 'يەنە +$count';
   }
 
   @override
@@ -13774,10 +13909,10 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => 'كۈندىلىك';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => 'ھەپتىلىك';
 
   @override
   String achievementsQuestReward(int points) {
@@ -13828,7 +13963,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Score to spend and the boosts you hold';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => 'كۆرۈنۈش';
 
   @override
   String get achievementsAppearanceSubtitle =>
@@ -13838,7 +13973,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get achievementsAvatars => 'Avatars';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'ماۋزۇلار';
 
   @override
   String get achievementsEquipped => 'Equipped';
@@ -13870,7 +14005,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Your records and how the server is doing';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => 'كۆرۈلگەن';
 
   @override
   String get achievementsStatsBests => 'Bests';
@@ -13951,7 +14086,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get achievementsStatLanguages => 'Languages watched';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'ئىشلەتكۈچى';
 
   @override
   String get achievementsStatBadgesUnlocked => 'Badges unlocked';
@@ -13963,7 +14098,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get achievementsStatCommonBadge => 'Most common badge';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => 'پائالىيەت';
 
   @override
   String get achievementsActivitySubtitle =>
@@ -14182,7 +14317,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get friendsAccept => 'Accept';
 
   @override
-  String get friendsDecline => 'Decline';
+  String get friendsDecline => 'رەت قىلىش';
 
   @override
   String get friendsCancelRequest => 'Cancel request';
@@ -14362,7 +14497,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get chatGroupInfo => 'Group info';
 
   @override
-  String get chatGroupName => 'Group name';
+  String get chatGroupName => 'گۇرۇپپا ئىسمى';
 
   @override
   String chatMemberCount(int count) {
@@ -14379,7 +14514,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get chatOwner => 'Owner';
 
   @override
-  String get chatAdmin => 'Admin';
+  String get chatAdmin => 'باشقۇرغۇچى';
 
   @override
   String get chatMakeAdmin => 'Make admin';
@@ -14397,14 +14532,14 @@ class AppLocalizationsUg extends AppLocalizations {
   String get chatNobodyToAdd => 'No one left to add.';
 
   @override
-  String get chatLeave => 'Leave group';
+  String get chatLeave => 'گۇرۇپپىدىن ئايرىلىش';
 
   @override
   String get chatLeaveBody =>
       'Leave this group? Someone will have to add you back to rejoin.';
 
   @override
-  String get chatCreate => 'Create group';
+  String get chatCreate => 'گۇرۇپپا قۇرۇش';
 
   @override
   String get chatPickMembers => 'Pick at least two friends';
@@ -15329,7 +15464,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get playlistTypes => 'Playlist Types';
 
   @override
-  String get playlistTypeVideo => 'Video';
+  String get playlistTypeVideo => 'سىن';
 
   @override
   String get playlistTypeMusicVideo => 'Music Video';
@@ -15338,10 +15473,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'ئاۋازلىق كىتاب';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'كىتاب';
 
   @override
   String get playlistTypePhoto => 'Photo';
@@ -15356,7 +15491,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'ئاۋاز قويۇش تىزىملىكلىرى';
 
   @override
   String get audiobookPlaylistsSection => 'Audiobook Playlists';
@@ -15498,10 +15633,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get filterUnreleased => 'Unreleased';
 
   @override
-  String get filterTrailers => 'Trailers';
+  String get filterTrailers => 'ئالدىن كۆرۈنۈشلەر';
 
   @override
-  String get filterExtras => 'Extras';
+  String get filterExtras => 'قوشۇمچىلار';
 
   @override
   String get filterThemeSongs => 'Theme Songs';
@@ -15537,10 +15672,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get seerrMinVotes => 'Minimum Votes';
 
   @override
-  String get seerrOriginalLanguage => 'Original Language';
+  String get seerrOriginalLanguage => 'ئەسلى تىل';
 
   @override
-  String get seerrRuntime => 'Runtime';
+  String get seerrRuntime => 'ئۇزۇنلۇقى';
 
   @override
   String get subtitleHdrSeparate => 'Separate HDR Style';
@@ -15661,10 +15796,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get setupOptional => 'Optional';
 
   @override
-  String get setupStyleClassic => 'Classic';
+  String get setupStyleClassic => 'كلاسسىك';
 
   @override
-  String get setupStyleModern => 'Modern';
+  String get setupStyleModern => 'زامانىۋى';
 
   @override
   String get setupRowsClassicHint => 'Compact. More rows on screen at once.';
@@ -15712,7 +15847,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'The poster up front, with play under it and the details beside it.';
 
   @override
-  String get setupStylePremiere => 'Premiere';
+  String get setupStylePremiere => 'تۇنجى قويۇلۇش';
 
   @override
   String get setupDetailPremiereHint =>
@@ -15996,7 +16131,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get autoDownloadKeepUnwatched => 'Keep Unwatched Episodes';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => 'ھەممىسى';
 
   @override
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
@@ -16034,7 +16169,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Never remove this automatically after watching';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => 'ھەرگىز بولمايدۇ';
 
   @override
   String get autoDownloadDeleteImmediately => 'Right after watching';
@@ -16103,7 +16238,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'چۈشۈرۈش';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
@@ -16241,13 +16376,13 @@ class AppLocalizationsUg extends AppLocalizations {
   String get animationSpeedSlow => 'Slow';
 
   @override
-  String get animationSpeedMedium => 'Medium';
+  String get animationSpeedMedium => 'ئوتتۇراھال';
 
   @override
   String get animationSpeedFast => 'Fast';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'تاقاق';
 
   @override
   String get pageTransitionFadeNone => 'No Fade';
@@ -16312,13 +16447,13 @@ class AppLocalizationsUg extends AppLocalizations {
       'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
-  String get bottomNavbarTabsAutomatic => 'Automatic';
+  String get bottomNavbarTabsAutomatic => 'ئاپتوماتىك';
 
   @override
   String get bottomNavbarTabsPinned => 'Pinned';
 
   @override
-  String get bottomNavbarTabsAvailable => 'Available';
+  String get bottomNavbarTabsAvailable => 'ئىشلەتكىلى بولىدۇ';
 
   @override
   String get bottomNavbarTabsReset => 'Reset to Automatic';
@@ -16471,7 +16606,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get settingsWatchTogetherSection => 'Watch Parties';
 
   @override
-  String get settingsAdvancedSection => 'Advanced';
+  String get settingsAdvancedSection => 'ئالىي';
 
   @override
   String get settingsDecodingAndRenderingSection => 'Decoding & Rendering';
@@ -16554,16 +16689,16 @@ class AppLocalizationsUg extends AppLocalizations {
   String get siloServerRowSubtitle => 'From your server';
 
   @override
-  String get playlistSortReleaseDate => 'Release Date';
+  String get playlistSortReleaseDate => 'ئېلان قىلىنغان ۋاقىت';
 
   @override
   String get playlistSortCriticRating => 'Critic Rating';
 
   @override
-  String get playlistSortRuntime => 'Runtime';
+  String get playlistSortRuntime => 'ئۇزۇنلۇقى';
 
   @override
-  String get playlistSortLastPlayed => 'Last Played';
+  String get playlistSortLastPlayed => 'ئەڭ ئاخىرقى قويۇلغان';
 
   @override
   String get playlistSortPlayCount => 'Play Count';
@@ -16604,7 +16739,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get librarySortAlbumArtist => 'Album Artist';
 
   @override
-  String get librarySortAlbum => 'Album';
+  String get librarySortAlbum => 'ئالبوم';
 
   @override
   String get librarySortArtist => 'Artist';
@@ -16613,7 +16748,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get librarySortTrackNumber => 'Track Number';
 
   @override
-  String get librarySortGenre => 'Genre';
+  String get librarySortGenre => 'ژانىر';
 
   @override
   String get librarySortFoldersFirst => 'Folders First';
@@ -17014,7 +17149,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Also record a future showing automatically once one is found, to get a complete recording?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => 'ھازىر';
 
   @override
   String get recordPromptLater => 'Future showing';
@@ -17121,7 +17256,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get siloApproveSignInHint => 'Code shown on the other device';
 
   @override
-  String get siloApproveSignInApprove => 'Approve';
+  String get siloApproveSignInApprove => 'تەستىق';
 
   @override
   String get siloApproveSignInDone =>
@@ -17714,7 +17849,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Style, filters and actions for the calendar';
 
   @override
-  String get calendarSettingsView => 'View';
+  String get calendarSettingsView => 'كۆرۈش';
 
   @override
   String get calendarSettingsStyle => 'Calendar style';
@@ -17756,7 +17891,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Also list episodes and movies Sonarr and Radarr aren\'t set to download';
 
   @override
-  String get calendarSettingsSpecials => 'Specials';
+  String get calendarSettingsSpecials => 'ئالاھىدە';
 
   @override
   String get calendarSettingsSpecialsSubtitle =>
@@ -17777,7 +17912,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
 
   @override
-  String get calendarSettingsColorByType => 'Type';
+  String get calendarSettingsColorByType => 'تىپ';
 
   @override
   String get calendarSettingsImageType => 'Card image';
@@ -17794,7 +17929,7 @@ class AppLocalizationsUg extends AppLocalizations {
       'Hide episode titles and stills for shows you\'re behind on';
 
   @override
-  String get calendarSettingsActions => 'Actions';
+  String get calendarSettingsActions => 'ھەرىكەتلەر';
 
   @override
   String get calendarSettingsSelectAction => 'Selecting an item';
@@ -17866,7 +18001,7 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
-  String get afterHoursPlay => 'Play';
+  String get afterHoursPlay => 'قويۇش';
 
   @override
   String get afterHoursLeaderboards => 'Leaderboards';
@@ -18007,7 +18142,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get afterHoursHowToPlay => 'How to play';
 
   @override
-  String get afterHoursStart => 'Start';
+  String get afterHoursStart => 'باشلىنىش';
 
   @override
   String get afterHoursBackToGame => 'Back to the game';
@@ -18117,7 +18252,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get afterHoursCastTangleLine => 'Slowly chases your plug.';
 
   @override
-  String get afterHoursCastStatic => 'Static';
+  String get afterHoursCastStatic => 'مۇقىم';
 
   @override
   String get afterHoursCastStaticLine =>
@@ -18222,4 +18357,30 @@ class AppLocalizationsUg extends AppLocalizations {
   @override
   String get afterHoursPixelPurgeCardRemote =>
       'Left and Right slide the scrubber.';
+
+  @override
+  String get remoteMediaNotificationTitle => 'Remote playback notification';
+
+  @override
+  String get remoteMediaNotificationSubtitle =>
+      'Show system media controls when watching on another device';
+
+  @override
+  String get remoteActivityWatching => 'Watching on Moonfin';
+
+  @override
+  String get remoteActivityListening => 'Listening on Moonfin';
+
+  @override
+  String get clickpadSeeking => 'Allow Clickpad Seeking';
+
+  @override
+  String get clickpadSeekingDescription =>
+      'When Left, Right and touchpad swipes can seek. Otherwise the first one brings up the controls.';
+
+  @override
+  String get clickpadSeekingControlsVisible => 'When controls are showing';
+
+  @override
+  String get clickpadSeekingPausedOnly => 'Only while paused';
 }

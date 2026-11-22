@@ -50,6 +50,7 @@ import 'package:moonfin/ui/screens/calendar/calendar_countdown_view.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_month_screen.dart';
 import 'package:moonfin/ui/screens/detail/detail_buttons.dart';
 import 'package:moonfin/ui/screens/home/home_backdrop.dart';
+import 'package:moonfin/ui/screens/home/home_row_card_image.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:moonfin/ui/screens/playback/osd_buttons.dart';
 import 'package:moonfin/ui/screens/settings/live_preview/preview_row_samples.dart';
@@ -61,6 +62,7 @@ import 'package:moonfin/ui/widgets/bounded_network_image.dart';
 import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
+import 'package:moonfin/ui/widgets/modern_row.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
@@ -594,6 +596,10 @@ void main() {
   });
 
   testWidgets('a tried option stands in for the saved value', (tester) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.navbarPosition,
+      NavbarPosition.top,
+    );
     final controller = SettingsPreviewController();
     late BuildContext context;
     await tester.pumpWidget(
@@ -807,6 +813,10 @@ void main() {
   testWidgets('a picker previews the option in focus until it closes', (
     tester,
   ) async {
+    await GetIt.instance<UserPreferences>().set(
+      UserPreferences.navbarPosition,
+      NavbarPosition.top,
+    );
     final controller = SettingsPreviewController();
     await tester.pumpWidget(
       host(
@@ -2121,6 +2131,158 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  testWidgets('Modern posters match the real Home at a tried card size', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
+      ..tryValue('pref_desktop_ui_scale', DesktopUiScale.large)
+      ..focus(
+        const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
+      )
+      ..tryValue('poster_size', PosterSize.extraLarge);
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+
+    final height = modernImageHeight(
+      PosterSize.extraLarge,
+      homeRowPlatformScale(DesktopUiScale.large.scaleFactor),
+    );
+    expect(
+      find.byWidgetPredicate((w) => w is SizedBox && w.height == height),
+      findsWidgets,
+    );
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('Classic sample rows draw the image type picked for each row', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v1)
+      ..focus(
+        const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
+      );
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    final thumbHeight =
+        PosterSize.medium.landscapeHeight *
+        homeRowPlatformScale(DesktopUiScale.medium.scaleFactor);
+    final thumbs = find.byWidgetPredicate(
+      (w) =>
+          w is SizedBox &&
+          w.height == thumbHeight &&
+          w.width == thumbHeight * (16 / 9),
+    );
+
+    // Every row draws posters until one is set to something else.
+    await pump();
+    expect(thumbs, findsNothing);
+
+    controller.tryValue(
+      UserPreferences.homeRowImageType(HomeSectionType.resume).key,
+      ImageType.thumb,
+    );
+    await pump();
+    expect(thumbs, findsWidgets);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('a phone keeps the focused card\'s details inside the row', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
+      ..focus(
+        const SettingsPreviewEntry(title: 'Card Size', prefKey: 'poster_size'),
+      );
+    await tester.pumpWidget(
+      host(
+        controller,
+        const SizedBox(width: 390, height: 844, child: SettingsLivePreview()),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+
+    // The 390 wide screen less the row's 16 leading and 20 trailing inset.
+    expect(
+      find.byWidgetPredicate((w) => w is Positioned && w.width == 354),
+      findsWidgets,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Positioned && w.width != null && w.width! > 354,
+      ),
+      findsNothing,
+    );
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('the paused description shows with the controls away', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    final controller = SettingsPreviewController()
+      ..focus(
+        const SettingsPreviewEntry(
+          title: 'Show Description on Pause',
+          prefKey: 'showDescriptionOnPause',
+        ),
+      )
+      ..tryValue('showDescriptionOnPause', true);
+    Future<void> pump() async {
+      await tester.pumpWidget(
+        host(
+          controller,
+          const SizedBox(width: 960, height: 600, child: SettingsLivePreview()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.takeException(), isNull);
+    }
+
+    final controls = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_PlayerControls',
+    );
+
+    await pump();
+    expect(find.text('PAUSED'), findsOneWidget);
+    expect(controls, findsNothing);
+
+    controller.tryValue('showDescriptionOnPause', false);
+    await pump();
+    expect(find.text('PAUSED'), findsNothing);
+    expect(controls, findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   testWidgets('the classic info band clips text still at an older scale', (
     tester,
   ) async {
@@ -2405,7 +2567,7 @@ void main() {
     await pump();
     rowsLeft(NavbarPosition.left);
     await pump();
-    // Home's rows start 56 in beside the rail against 48 under a TV's top
+    // Home's rows start 56 in beside the rail against 16 under a TV's top
     // bar, rather than after the rail's whole width.
     final scale =
         tester
@@ -2418,7 +2580,7 @@ void main() {
         1150;
     expect(
       tester.getTopLeft(find.text(l10n.continueWatching)).dx - underTopBar,
-      closeTo(8 * scale, 0.5),
+      closeTo(40 * scale, 0.5),
     );
 
     // The docked keyboard opens under the field rather than in its place, and
@@ -3493,6 +3655,8 @@ void main() {
         UserPreferences.libraryCardTitles.key,
         UserPreferences.useDetailedSubHeadings.key,
         UserPreferences.hideBackdropsInLibraries.key,
+        UserPreferences.hideLibraryWatchProgress.key,
+        UserPreferences.hideLibraryUnwatchedCount.key,
         UserPreferences.musicLibraryStyle.key,
         UserPreferences.bookLibraryStyle.key,
       ]) {
@@ -4282,6 +4446,56 @@ void main() {
       await prefs.set(UserPreferences.hideHomeWatchProgress, true);
       await show(tester, controller);
       expect(card(tester, 'Dune').playedPercentage, isNull);
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a phone grows the first Modern card the way a tap does', (
+      tester,
+    ) async {
+      tv();
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
+      await prefs.set(UserPreferences.posterSize, PosterSize.extraLarge);
+      await homeRows([HomeSectionType.resume]);
+      home([
+        HomeRow(
+          id: 'resume',
+          title: 'Continue Watching',
+          rowType: HomeRowType.resume,
+          items: [watched('Dune', {}), watched('Arrival', {})],
+        ),
+      ]);
+      final controller = SettingsPreviewController()
+        ..focus(
+          const SettingsPreviewEntry(
+            title: 'Row Padding',
+            prefKey: 'pref_modern_home_rows_padding',
+          ),
+        );
+      addTearDown(controller.dispose);
+      serve(controller, (_) async => throw StateError('Home has every row'));
+      await show(tester, controller);
+
+      // Grown at Extra Large the card would be wider than the phone, so it
+      // stops at the row's width as on Home.
+      final dune = card(tester, 'Dune');
+      expect(dune.externalIsFocused, isTrue);
+      expect(dune.width, setupPreviewSize().width - 32);
+      expect(dune.aspectRatio, greaterThan(1));
+      expect(card(tester, 'Arrival').externalIsFocused, isFalse);
+
+      // A phone's Classic cards never show focus.
+      await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v1);
+      await show(tester, controller);
+      expect(
+        tester
+            .widgetList<MediaCard>(find.byType(MediaCard))
+            .where((card) => card.externalIsFocused == true),
+        isEmpty,
+      );
+      expect(find.text('Dune'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
       debugDefaultTargetPlatformOverride = null;
     });

@@ -4,8 +4,14 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import org.json.JSONObject
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
@@ -31,6 +37,7 @@ class MoonfinArtProvider : ContentProvider() {
     override fun onCreate(): Boolean = true
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor {
+        if (uri.path == "/letter") return letterTile(uri.getQueryParameter("c"))
         val remote = uri.getQueryParameter("u")
             ?: throw FileNotFoundException("missing url")
         val url = try {
@@ -48,19 +55,70 @@ class MoonfinArtProvider : ContentProvider() {
         val dir = File(ctx.cacheDir, "carart").apply { mkdirs() }
         val file = File(dir, hashName(remote))
         if (!file.exists() || file.length() == 0L) {
-            download(url, file)
+            download(withToken(url), file)
         }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 
+    // The browse-by-letter tiles. The car tints category icons, so this is a
+    // white glyph on a clear background, drawn once and cached. Only '#' and
+    // A-Z are drawn, so nothing else from the URI reaches the canvas.
+    private fun letterTile(raw: String?): ParcelFileDescriptor {
+        val letter = raw?.takeIf { it == "#" || (it.length == 1 && it[0] in 'A'..'Z') }
+            ?: throw FileNotFoundException("bad letter")
+        val ctx = context ?: throw FileNotFoundException("no context")
+        val dir = File(ctx.cacheDir, "carart").apply { mkdirs() }
+        val file = File(dir, "letter_${letter[0].code}.png")
+        if (!file.exists() || file.length() == 0L) {
+            val size = 192
+            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.WHITE
+                textAlign = Paint.Align.CENTER
+                textSize = size * 0.6f
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            val baseline = size / 2f - (paint.descent() + paint.ascent()) / 2f
+            Canvas(bitmap).drawText(letter, size / 2f, baseline, paint)
+            val tmp = File.createTempFile("letter", ".tmp", dir)
+            try {
+                tmp.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                if (!tmp.renameTo(file)) tmp.copyTo(file, overwrite = true)
+            } finally {
+                bitmap.recycle()
+                if (tmp.exists()) tmp.delete()
+            }
+        }
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+    }
+
+    // shared_preferences stores its keys under the flutter. prefix.
+    private fun flutterPref(key: String): String? = context
+        ?.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        ?.getString("flutter.$key", null)
+
     private fun allowedHosts(): Set<String> {
-        val ctx = context ?: return emptySet()
-        // shared_preferences stores its keys under the flutter. prefix.
-        val raw = ctx
-            .getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-            .getString("flutter.moonfin_art_hosts", "")
-            ?: ""
+        val raw = flutterPref("moonfin_art_hosts") ?: ""
         return raw.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+    }
+
+    // The app keeps the server token out of the URI, so it's added back here.
+    // URIs saved by older builds still carry it and are left as they are.
+    private fun withToken(url: URL): URL {
+        val raw = flutterPref("moonfin_art_tokens") ?: return url
+        val port = if (url.port == -1) url.defaultPort else url.port
+        val token = runCatching {
+            JSONObject(raw).optString("${url.protocol}://${url.host.lowercase()}:$port")
+        }.getOrNull()
+        if (token.isNullOrEmpty()) return url
+        val name = token.substringBefore('=')
+        val query = url.query
+        if (query != null &&
+            query.split('&').any { it.substringBefore('=').equals(name, ignoreCase = true) }
+        ) {
+            return url
+        }
+        return URL("$url${if (query == null) "?" else "&"}$token")
     }
 
     private fun download(url: URL, dest: File) {

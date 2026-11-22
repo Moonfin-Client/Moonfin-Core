@@ -2,25 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/repositories/tmdb_repository.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart'
+    show DesktopUiScale, RecommendationSystemSource;
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/detail/frost/frost_detail_content.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_navbar.dart';
+import 'package:moonfin/ui/widgets/offline_aware_image.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
+import 'package:moonfin/ui/widgets/seerr/seerr_image_urls.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -43,6 +52,24 @@ class _PlaybackManager extends Mock implements PlaybackManager {}
 class _OfflineRepository extends Mock implements OfflineRepository {}
 
 class _QueueService extends Mock implements QueueService {}
+
+/// Answers every recommendation lookup with [items], the way the TMDb
+/// Similarity source hands back titles from Seerr.
+class _Recommendations extends RowDataSource {
+  _Recommendations(super.client, this.items);
+
+  final List<AggregatedItem> items;
+
+  @override
+  Future<List<AggregatedItem>> getRecommendations({
+    required String serverId,
+    required AggregatedItem baseItem,
+    required bool isLocal,
+    List<String>? candidateItemTypes,
+    int limit = 15,
+    bool? includeWatched,
+  }) async => items;
+}
 
 Future<UserPreferences> _preferences() async {
   SharedPreferences.setMockInitialValues({});
@@ -156,6 +183,7 @@ void main() {
     Size size = const Size(1920, 1080),
     FocusNode? playNode,
     double? bottomBar,
+    List<String>? seerrPushes,
   }) async {
     tester.view.devicePixelRatio = 1.0;
     tester.view.physicalSize = size;
@@ -172,25 +200,47 @@ void main() {
       actionsExpanded: false,
       onActionsExpandedChanged: (_) {},
     );
+    final home = Scaffold(
+      body: ListenableBuilder(
+        listenable: Listenable.merge([vm, prefs]),
+        builder: (context, _) => bottomBar == null
+            ? content(context)
+            : BottomNavInsetScope(
+                height: bottomBar,
+                child: Builder(builder: content),
+              ),
+      ),
+    );
+    final theme = AppTheme.buildTheme(ThemeRegistry.active);
     await tester.pumpWidget(
       MediaQuery(
         data: MediaQueryData(size: size),
-        child: MaterialApp(
-          theme: AppTheme.buildTheme(ThemeRegistry.active),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: ListenableBuilder(
-              listenable: Listenable.merge([vm, prefs]),
-              builder: (context, _) => bottomBar == null
-                  ? content(context)
-                  : BottomNavInsetScope(
-                      height: bottomBar,
-                      child: Builder(builder: content),
+        // With [seerrPushes] the page sits under a router that records every
+        // Seerr page it is asked to open.
+        child: seerrPushes == null
+            ? MaterialApp(
+                theme: theme,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: home,
+              )
+            : MaterialApp.router(
+                theme: theme,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: GoRouter(
+                  routes: [
+                    GoRoute(path: '/', builder: (_, _) => home),
+                    GoRoute(
+                      path: '/seerr/media/:id',
+                      builder: (_, state) {
+                        seerrPushes.add(state.uri.toString());
+                        return const SizedBox.shrink();
+                      },
                     ),
-            ),
-          ),
-        ),
+                  ],
+                ),
+              ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 500));
@@ -331,6 +381,68 @@ void main() {
     expect(find.byType(DraggableScrollableSheet), findsOneWidget);
   });
 
+  testWidgets('a Seerr title on the Similar tab shows its TMDb poster and '
+      'request status, and opens its Seerr page', (tester) async {
+    await prefs.set(
+      UserPreferences.recommendationSystemSource,
+      RecommendationSystemSource.online,
+    );
+    GetIt.instance.unregister<RowDataSource>();
+    GetIt.instance.registerSingleton<RowDataSource>(
+      _Recommendations(client, [
+        AggregatedItem(
+          id: '603',
+          serverId: 'seerr',
+          rawData: {
+            'Name': 'Seerr title',
+            'Type': 'Movie',
+            'PosterPath': '/poster.jpg',
+            'SeerrMediaType': 'movie',
+            'SeerrStatus': SeerrMediaStatus.available,
+          },
+        ),
+        AggregatedItem(
+          id: '1399',
+          serverId: 'seerr',
+          rawData: {
+            'Name': 'Seerr series',
+            'Type': 'Series',
+            'SeerrMediaType': 'tv',
+          },
+        ),
+      ]),
+    );
+    final pushes = <String>[];
+    await pumpContent(
+      tester,
+      viewModel('Movie', data: movieWithTracks()),
+      size: const Size(390, 844),
+      seerrPushes: pushes,
+    );
+    await tester.pump();
+
+    await tester.tap(find.text('Similar'));
+    await tester.pump(const Duration(milliseconds: 600));
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Seerr title'), findsOneWidget);
+    expect(find.text('Available'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is OfflineAwareImage &&
+            widget.imageUrl == '$seerrPosterBase/poster.jpg',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Seerr series'));
+    await tester.pumpAndSettle();
+    expect(pushes, [
+      Destinations.seerrMedia('1399', mediaType: 'tv', title: 'Seerr series'),
+    ]);
+  });
+
   testWidgets('a phone keeps its buttons above the bottom navbar', (
     tester,
   ) async {
@@ -386,6 +498,108 @@ void main() {
     );
     expect(narrow.width, closeTo(1280, 0.01));
     expect(narrow.height, closeTo(768, 0.01));
+  });
+
+  test('a window draws the stage at the UI scale while it fits', () {
+    Size stage(double width, double height, double uiScale) => frostStageSize(
+      BoxConstraints.tightFor(width: width, height: height),
+      uiScale: uiScale,
+      fill: false,
+    );
+
+    expect(stage(3840, 2160, 1), const Size(3840, 2160));
+    final big = stage(3840, 2160, 1.6);
+    expect(big.width, closeTo(2400, 0.01));
+    expect(big.height, closeTo(1350, 0.01));
+    final small = stage(3840, 2160, 0.9);
+    expect(small.width, closeTo(4266.67, 0.01));
+    expect(small.height, closeTo(2400, 0.01));
+    // 1280 by 720 at 1.6 doesn't fit 1920 by 1080, so it fills the room.
+    expect(stage(1920, 1080, 1.6), const Size(1280, 720));
+    expect(stage(800, 600, 1).width, closeTo(1280, 0.01));
+  });
+
+  test('a TV fills its room at the default UI scale and only shrinks from '
+      'there', () {
+    Size stage(double uiScale) => frostStageSize(
+      const BoxConstraints.tightFor(width: 1920, height: 1080),
+      uiScale: uiScale,
+    );
+
+    expect(stage(1), const Size(1280, 720));
+    expect(stage(1.6), const Size(1280, 720));
+    final small = stage(0.9);
+    expect(small.width, closeTo(1422.22, 0.01));
+    expect(small.height, closeTo(800, 0.01));
+  });
+
+  group('text gives back the part of the UI scale the stage carries', () {
+    const box = Key('box');
+    late double textScale;
+
+    Future<void> pumpStage(WidgetTester tester) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(3840, 2160);
+      addTearDown(tester.view.reset);
+      await prefs.set(
+        UserPreferences.desktopUiScale,
+        DesktopUiScale.greatGrandparents,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(1.6)),
+            child: FrostStage(
+              navbarTop: false,
+              child: Builder(
+                builder: (context) {
+                  textScale = MediaQuery.textScalerOf(context).scale(1);
+                  return const Align(
+                    alignment: Alignment.topLeft,
+                    child: SizedBox(key: box, width: 100, height: 100),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    group('on a desktop', () {
+      setUp(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop),
+      );
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+
+      testWidgets('the stage carries all of it', (tester) async {
+        await pumpStage(tester);
+
+        expect(textScale, closeTo(1, 0.001));
+        expect(tester.getRect(find.byKey(box)).width, closeTo(160, 0.01));
+      });
+    });
+
+    group('on a TV', () {
+      setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+      tearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+
+      testWidgets('the stage fills the room and the text keeps it', (
+        tester,
+      ) async {
+        await pumpStage(tester);
+
+        expect(textScale, closeTo(1.6, 0.001));
+        expect(
+          tester.getRect(find.byKey(box)).width,
+          closeTo(100 * (3840 - 72) / 1280, 0.01),
+        );
+      });
+    });
   });
 
   testWidgets('the ratings strip shares a width or keeps each column to its '

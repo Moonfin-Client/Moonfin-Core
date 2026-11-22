@@ -48,6 +48,7 @@ import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/socket_handler.dart';
+import '../../playback/remote_media_notification_service.dart';
 import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
@@ -263,12 +264,13 @@ class SessionRepository {
       GetIt.instance<ServerMessagesService>().clear();
     }
 
-    final server = _serverRepository.getServer(serverId);
-    if (server == null) {
+    final stored = _serverRepository.getServer(serverId);
+    if (stored == null) {
       _logger.w('Server $serverId not found in stored servers');
       _setState(SessionState.ready);
       return false;
     }
+    final server = await _serverRepository.withCheckedType(stored);
 
     final users = _authStore.getUsers(serverId);
     final userIndex = users.indexWhere((u) => u.id == userId);
@@ -351,6 +353,9 @@ class SessionRepository {
     }
 
     setActiveServerClient(client);
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      GetIt.instance<RemoteMediaNotificationService>().clearSessions();
+    }
     resetUserScopedSingletons();
     setActiveStreamResolver(client);
     _cancelSocketIdleTimer();
@@ -607,14 +612,18 @@ class SessionRepository {
       // A socket that dropped while the app sat idle is waiting out its
       // backoff, and the user is here now, so do not make them wait for it.
       _socketHandler.retryNow();
-      return;
+    } else {
+      _socketSuspended = false;
+      final serverId = _activeServerId;
+      if (serverId != null) {
+        final client = _clientFactory.getClientIfExists(serverId);
+        if (client != null) {
+          _socketHandler.connectTo(client);
+        }
+      }
     }
-    _socketSuspended = false;
-    final serverId = _activeServerId;
-    if (serverId == null) return;
-    final client = _clientFactory.getClientIfExists(serverId);
-    if (client != null) {
-      _socketHandler.connectTo(client);
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      unawaited(GetIt.instance<RemoteMediaNotificationService>().refresh());
     }
   }
 
@@ -669,6 +678,10 @@ class SessionRepository {
         getIt<CastService>().activeKindNotifier.value != null) {
       return true;
     }
+    if (getIt.isRegistered<RemoteMediaNotificationService>() &&
+        getIt<RemoteMediaNotificationService>().keepsSocketAlive) {
+      return true;
+    }
     return false;
   }
 
@@ -715,6 +728,15 @@ class SessionRepository {
       _router.go('${Destinations.server}?serverId=$serverId');
     }());
   }
+
+  bool _hasOtherSignedInUser(String? serverId, String? userId) =>
+      _authStore.getServers().any(
+        (server) => _authStore.getUsers(server.id).any(
+          (u) =>
+              u.accessToken.isNotEmpty &&
+              !(u.serverId == serverId && u.id == userId),
+        ),
+      );
 
   /// The other stored profiles of [userId]'s Silo account on [serverId].
   /// Empty for Jellyfin and Emby users and for a lone profile.
@@ -800,7 +822,9 @@ class SessionRepository {
     if (PlatformDetection.isMobile && !tokenKnownInvalid) {
       try {
         if (GetIt.instance.isRegistered<PushMessagingService>()) {
-          await GetIt.instance<PushMessagingService>().unregister();
+          await GetIt.instance<PushMessagingService>().unregister(
+            deleteToken: !_hasOtherSignedInUser(serverId, userId),
+          );
         }
       } catch (_) {}
     }
@@ -841,6 +865,9 @@ class SessionRepository {
     _socketConnectionSubscription?.cancel();
     _socketConnectionSubscription = null;
     userDataSync.reset();
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      GetIt.instance<RemoteMediaNotificationService>().clearSessions();
+    }
     _socketHandler.disconnect();
 
     if (serverId != null) {
@@ -920,6 +947,9 @@ class SessionRepository {
     _socketConnectionSubscription = _socketHandler.connections.listen(
       (_) => unawaited(_reportRemoteCapabilities(client)),
     );
+    if (GetIt.instance.isRegistered<RemoteMediaNotificationService>()) {
+      unawaited(GetIt.instance<RemoteMediaNotificationService>().refresh());
+    }
   }
 
   // Plugin events pushed over the session websocket (Emby transport) get
@@ -1130,6 +1160,15 @@ class SessionRepository {
       return;
     }
 
+    final command = message.playCommand.toLowerCase();
+    final queuesOnly =
+        command == 'playnext' || command == 'playlast' || command == 'enqueue';
+    // A command that starts playback takes its turn on arrival, before its
+    // items load, so a Stop sent after it outdates it even while they load.
+    final generation = queuesOnly
+        ? _remoteNavigationGeneration
+        : ++_remoteNavigationGeneration;
+
     final loaded = await Future.wait(
       message.itemIds.map((itemId) async {
         try {
@@ -1152,11 +1191,10 @@ class SessionRepository {
 
     final startIndex = message.startIndex.clamp(0, items.length - 1).toInt();
     final manager = GetIt.instance<PlaybackManager>();
-    final command = message.playCommand.toLowerCase();
 
     switch (command) {
       case 'playnow':
-        await _playRemoteItems(manager, items, startIndex, message);
+        await _playRemoteItems(manager, items, startIndex, message, generation);
         break;
       case 'playnext':
         for (final item in items.reversed) {
@@ -1168,18 +1206,21 @@ class SessionRepository {
         manager.queueService.addItems(items);
         break;
       default:
-        await _playRemoteItems(manager, items, startIndex, message);
+        await _playRemoteItems(manager, items, startIndex, message, generation);
         break;
     }
   }
 
+  /// Plays [items] for a remote command that took [generation] on arrival,
+  /// unless a newer remote command took over while its items loaded.
   Future<void> _playRemoteItems(
     PlaybackManager manager,
     List<AggregatedItem> items,
     int startIndex,
     PlayMessage message,
+    int generation,
   ) async {
-    _remoteNavigationGeneration++;
+    if (generation != _remoteNavigationGeneration) return;
     _remoteSearch?.close();
     final item = items[startIndex];
     final isLiveTv = _isLiveTvItem(item);
@@ -1189,7 +1230,7 @@ class SessionRepository {
           )
         : true;
 
-    _ensurePlayerRouteForItem(item);
+    if (!await _ensurePlayerRouteForItem(item, generation)) return;
     await manager.playItems(
       items,
       startIndex: startIndex,
@@ -1213,11 +1254,31 @@ class SessionRepository {
         item.rawData['TimerId'] != null;
   }
 
-  void _ensurePlayerRouteForItem(AggregatedItem item) {
-    final currentPath = appRouter.routerDelegate.currentConfiguration.uri.path;
+  /// Opens the player [item] plays in, unless one is already open. Returns
+  /// false when a newer remote command took over while Live TV was closing.
+  Future<bool> _ensurePlayerRouteForItem(
+    AggregatedItem item,
+    int generation,
+  ) async {
+    // A pushed player leaves the configuration's uri on the page under it, so
+    // only the top route shows a player already open. Reading the uri pushed a
+    // second player, which a later Stop left behind empty.
+    final currentPath = _remoteRoutePath;
     if (currentPath == Destinations.videoPlayer ||
         currentPath == Destinations.audioPlayer) {
-      return;
+      return true;
+    }
+    if (currentPath == Destinations.liveTvPlayer) {
+      // Pushed over Live TV, the new player left it underneath for Stop to
+      // uncover. Live TV stops the manager when its page goes, so it has to be
+      // gone before the new item starts or it would stop that one too.
+      final liveTv = _closeDialogsAbovePage();
+      _leaveTopPage();
+      if (liveTv != null) {
+        await liveTv.completed;
+        await WidgetsBinding.instance.endOfFrame;
+      }
+      if (generation != _remoteNavigationGeneration) return false;
     }
 
     final mediaType = item.rawData['MediaType'] as String?;
@@ -1227,9 +1288,32 @@ class SessionRepository {
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    appRouter.push(
+    _router.push(
       isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
     );
+    return true;
+  }
+
+  /// Closes any dialog above the top page and returns that page, so a later
+  /// step can tell it is still the same page and not just one at its path.
+  PageRoute<dynamic>? _closeDialogsAbovePage() {
+    PageRoute<dynamic>? page;
+    _router.routerDelegate.navigatorKey.currentState?.popUntil((route) {
+      if (route is! PageRoute) return false;
+      page = route;
+      return true;
+    });
+    return page;
+  }
+
+  /// Leaves the top page the way the viewer's own Back would, or goes home
+  /// when nothing is under it.
+  void _leaveTopPage() {
+    if (_router.canPop()) {
+      _router.pop();
+    } else {
+      _router.go(Destinations.home);
+    }
   }
 
   Future<void> _handlePlaystateMessage(PlaystateMessage message) async {
@@ -1241,7 +1325,7 @@ class SessionRepository {
       case 'play':
         await manager.resume();
       case 'stop':
-        await manager.stop(userInitiated: false);
+        await _stopRemotePlayback(manager);
       case 'seek':
         final seek = _durationFromTicks(message.seekPositionTicks);
         if (seek != null) {
@@ -1266,6 +1350,43 @@ class SessionRepository {
       default:
         break;
     }
+  }
+
+  /// Screens that show what the playback manager plays, and so are left empty
+  /// once it stops.
+  static const _remoteStopPlayerRoutes = {
+    Destinations.videoPlayer,
+    Destinations.audioPlayer,
+    Destinations.liveTvPlayer,
+  };
+
+  /// Stops playback and leaves its player the way the viewer's own Back would,
+  /// so a remote Stop doesn't strand an empty player on screen. Any other page
+  /// stays where it is.
+  Future<void> _stopRemotePlayback(PlaybackManager manager) async {
+    // Stop outdates any PlayNow still on its way, even one that left Live TV
+    // for the page under it and has not opened its player yet.
+    final generation = ++_remoteNavigationGeneration;
+    if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) {
+      await manager.stop(userInitiated: false);
+      return;
+    }
+    final player = _closeDialogsAbovePage();
+    final backend = manager.backend;
+    if (OverlaySheetController.hasOpenSheet) {
+      await OverlaySheetController.closeAllSheets();
+    }
+    // A PlayNow while the sheets closed started something this Stop predates.
+    if (generation != _remoteNavigationGeneration) return;
+    await manager.stop(userInitiated: false);
+    if (generation != _remoteNavigationGeneration) return;
+    if (backend is NativeApplePlayerBackend) await backend.dismissPlayer();
+    if (generation != _remoteNavigationGeneration) return;
+    // The player may have closed itself while playback stopped, or the viewer
+    // may have left it, even for another player at the same path.
+    if (!_remoteStopPlayerRoutes.contains(_remoteRoutePath)) return;
+    if (player != null && !player.isCurrent) return;
+    _leaveTopPage();
   }
 
   /// Moves playback by the same amount this device's own skip buttons use, so

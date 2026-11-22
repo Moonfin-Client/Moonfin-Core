@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Växla mellan Moonfin och Neon Pulse utan att starta om appen",
+    "settingsAppearanceThemeSubtitle": "Använd ett helt anpassat tema och växla mellan ett användargränssnitt inspirerat av Apple eller Material.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -176,7 +176,7 @@
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "Nuvarande Moonfin look som ni alla har börjat älska",
+    "themeMoonfinSubtitle": "Den ursprungliga, rena standardversionen av Moonfin.",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
@@ -2266,7 +2266,7 @@
     "@seerr": {
         "description": "Seerr brand name"
     },
-    "savedMedia": "Sparade media",
+    "savedMedia": "Nedladdningar",
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
@@ -3558,11 +3558,11 @@
     "@recentlyReleased": {
         "description": "Home section: recently released"
     },
-    "myMedia": "Mina media",
+    "myMedia": "Min media",
     "@myMedia": {
         "description": "Home section: my media"
     },
-    "myMediaSmall": "Mina media (liten)",
+    "myMediaSmall": "Min media (liten)",
     "@myMediaSmall": {
         "description": "Home section: my media small"
     },
@@ -7288,7 +7288,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klassisk är Moonfins ursprungliga centrerade layout. Modern är en responsiv, filmisk layout.",
+    "detailScreenStyleSubtitle": "Hur en film eller serie ser ut när man öppnar den.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7320,7 +7320,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Använd Moonfin Recommends lokala biblioteksalgoritm eller TMDb:s likhetsmått online. Obs: Onlinerekommendationer kräver Seerr-integration.",
+    "recommendationSystemSubtitle": "Använd algoritmen ”Moonfin Recommends” för lokala bibliotek, ”Server Recommends” från din mediaserver eller likhetsmått från TMDb online. Obs! Online-rekommendationer kräver integration med Seerr.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -7332,7 +7332,7 @@
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Begränsa efter åldersgräns?",
+    "recommendationsApplyParentalRatingCap": "Tillämpa betygsgräns på rekommendationer",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -9040,7 +9040,7 @@
         "description": "Action that increases a numeric personal rating."
     },
     "emulatorCoreDownloading": "Laddar ner",
-    "castMembers": "Casta",
+    "castMembers": "Medverkande",
     "@castMembers": {
         "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
     },
@@ -9407,5 +9407,3233 @@
     "watchPartyType": "Typ",
     "@watchPartyType": {
         "description": "TV quick bar button that opens the keyboard to type a chat message"
+    },
+    "moveUp": "Flytta upp",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Flytta ned",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "settingsAudioPassthroughMode": "Passthrough",
+    "@settingsAudioPassthroughMode": {
+        "description": "Title of the audio passthrough mode selector"
+    },
+    "interfaceLayoutAutomatic": "Automatiskt",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "adminMetadataPersonKindAuthor": "Författare",
+    "adminMetadataLockFieldOverview": "Översikt",
+    "screensaverGeneralSettings": "Allmänna inställningar",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverBackdropNeonPulse": "Neon Pulse",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "animeMarkerMixed": "Mixat",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "achievementsDailyQuests": "Dagligen",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Varje vecka",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsTitles": "Titlar",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatUsers": "Användare",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Aktivitet",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "bottomNavbarTabsAutomatic": "Automatiskt",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "chatPhoto": "Foto",
+    "@chatPhoto": {
+        "description": "Preview of a chat message that is an image"
+    },
+    "chatAdmin": "Administration",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatCreate": "Skapa grupp",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "trackActionViewDetails": "Visa detaljer",
+    "achievementsUnlockedMore": "+{count} till",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSectionTagline": "Slogan",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "seasonalDensityNormal": "Normal",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalRowCountry": "Land",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatiskt",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "adminExternalIdTypeBook": "Bok",
+    "adminImageTypeMenu": "Meny",
+    "adminGroupOverview": "Översikt",
+    "seriesRecordingAllEpisodes": "Alla avsnitt",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "settingsPreviewSaved": "Sparat",
+    "@settingsPreviewSaved": {
+        "description": "Tag on the option that is saved while another option is being tried in the Settings live preview"
+    },
+    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceOnline": "TMDb-likhet",
+    "calendarSettingsView": "Se",
+    "@calendarSettingsView": {
+        "description": "Calendar settings section header for how the calendar opens and lays out weeks"
+    },
+    "calendarSettingsSpecials": "Specialerbjudanden",
+    "@calendarSettingsSpecials": {
+        "description": "Calendar setting that lists special episodes, the ones in season 0"
+    },
+    "calendarSettingsActions": "Åtgärder",
+    "@calendarSettingsActions": {
+        "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "afterHoursStart": "Start",
+    "@afterHoursStart": {
+        "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "animeMarkerAnimeCanon": "Anime Canon",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMangaCanon": "Manga Canon",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbed": "Undertextad",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerDubbed": "Dubbad",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbedAndDubbed": "Undertextad/dubbad",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerSubbedShort": "Sub",
+    "@animeMarkerSubbedShort": {
+        "description": "Short form of the Subbed badge"
+    },
+    "animeMarkerDubbedShort": "Dub",
+    "@animeMarkerDubbedShort": {
+        "description": "Short form of the Dubbed badge"
+    },
+    "animeMarkerSubbedAndDubbedShort": "Sub/Dub",
+    "@animeMarkerSubbedAndDubbedShort": {
+        "description": "Short form of the Subbed/Dubbed badge"
+    },
+    "animeMarkerRecap": "Sammanfattning",
+    "@animeMarkerRecap": {
+        "description": "Badge on an anime episode that recaps earlier episodes"
+    },
+    "signingIn": "Loggar in...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "quickConnectScanHint": "Eller skanna den här koden med en telefon som är inloggad på din server",
+    "@quickConnectScanHint": {
+        "description": "Caption under the Quick Connect QR code that opens the server's web page with the code filled in"
+    },
+    "quickConnectTapOrScanHint": "Tryck för att godkänna i din webbläsare, eller skanna den här koden med en annan enhet",
+    "@quickConnectTapOrScanHint": {
+        "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
+    },
+    "timesUpTitle": "Tiden är ute",
+    "@timesUpTitle": {
+        "description": "Title of the screen that covers the app when the user's access schedule doesn't allow the current time"
+    },
+    "timesUpMessage": "Det här kontot är inte tillgängligt just nu.",
+    "@timesUpMessage": {
+        "description": "Explanation on the Time's up screen"
+    },
+    "timesUpResumesToday": "Du kan använda den igen idag kl. {time}.",
+    "@timesUpResumesToday": {
+        "description": "When access returns, on the Time's up screen, for a time later today",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "timesUpResumesTomorrow": "Du kan använda den igen i morgon kl. {time}.",
+    "@timesUpResumesTomorrow": {
+        "description": "When access returns, on the Time's up screen, for a time tomorrow",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "timesUpResumesOn": "Du kan använda den igen på {day} at {time}.",
+    "@timesUpResumesOn": {
+        "description": "When access returns, on the Time's up screen, for a time on a later day",
+        "placeholders": {
+            "day": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "loginForbidden": "Det går inte att logga in med det här kontot just nu. Det kan bero på att det är utanför de tillåtna tiderna, att kontot är spärrat eller inaktiverat. Försök igen senare eller kontakta en administratör.",
+    "@loginForbidden": {
+        "description": "Sign in error when the server refuses the account with a 403, which Jellyfin does for an access schedule, a lockout or a disabled account without saying which"
+    },
+    "signedInOnThisDevice": "Inloggad på den här enheten",
+    "@signedInOnThisDevice": {
+        "description": "Status under a user on the Who's watching screen when this device already has their session"
+    },
+    "pinRequired": "PIN-kod krävs",
+    "@pinRequired": {
+        "description": "Status under a user or account that asks for a PIN before signing in"
+    },
+    "passwordRequired": "Lösenord krävs",
+    "@passwordRequired": {
+        "description": "Status under a user on the Who's watching screen who needs a password to sign in"
+    },
+    "continueAsUser": "Fortsätt som {name}",
+    "@continueAsUser": {
+        "description": "Phone button that signs in as the selected user on the Who's watching screen",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "switchToUser": "Byt till {name}",
+    "@switchToUser": {
+        "description": "Phone button in the Switch User sheet that switches to the selected account",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "signedInAsOnServer": "Inloggad som {user} på {server}",
+    "@signedInAsOnServer": {
+        "description": "Line at the top of the Switch User screen naming the current account and its server",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "server": {
+                "type": "String"
+            }
+        }
+    },
+    "detailScreenStyleSpotlight": "Spotlight",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "Fler åtgärder",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "spotlightCastCrewStudios": "Skådespelare, filmteam och produktionsbolag",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Kapitel och extramaterial",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightFileDetails": "Filinformation",
+    "@spotlightFileDetails": {
+        "description": "Title of the spotlight summary card that opens the file details modal"
+    },
+    "spotlightSimilarRecommendations": "Liknande och rekommendationer",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Säsonger och avsnitt",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "Fler avsnitt",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Filmografi",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightPlaylistOrder": "Spellistans ordning",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "spotlightMoviesAndShows": "Filmer och serier",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Liknande (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Rekommendationer (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 person} other{{count} people}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightFactsCount": "{count, plural, =1{1 fact} other{{count} facts}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 studio} other{{count} studios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} other{{count} extras}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 season} other{{count} seasons}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 movie} other{{count} movies}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 show} other{{count} shows}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, =1{1 item} other{{count} items}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 album} other{{count} albums}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightCollectionsCount": "{count, plural, =1{1 collection} other{{count} collections}}",
+    "@spotlightCollectionsCount": {
+        "description": "Count fragment on spotlight summary cards: collections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTitlesCount": "{count, plural, =1{1 title} other{{count} titles}}",
+    "@spotlightTitlesCount": {
+        "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailScreenStyleNouveau": "Nouveau",
+    "@detailScreenStyleNouveau": {
+        "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
+    },
+    "detailScreenStyleMinimalist": "Minimalistisk",
+    "@detailScreenStyleMinimalist": {
+        "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
+    },
+    "detailScreenStyleStage": "Stage",
+    "@detailScreenStyleStage": {
+        "description": "Detail screen style option: the poster leads, with play under it and the details beside it"
+    },
+    "detailScreenStyleQuickLook": "Översikt",
+    "@detailScreenStyleQuickLook": {
+        "description": "Detail screen style option: a drawer over the screen the title was picked on, instead of a full page"
+    },
+    "detailScreenStyleFrost": "Frost",
+    "@detailScreenStyleFrost": {
+        "description": "Detail screen style option: the title in a glass window over a blurred copy of its art, with tabs under the buttons"
+    },
+    "quickLookOpenFullPage": "Öppna helsida",
+    "@quickLookOpenFullPage": {
+        "description": "Button at the foot of the Quick Look drawer that opens the title's full details page"
+    },
+    "quickLookBackToClose": "Tillbaka till stängning",
+    "@quickLookBackToClose": {
+        "description": "Hint on the Quick Look drawer telling a TV viewer that the Back button closes it"
+    },
+    "quickLookSeasonPlayed": "{played} of {total}",
+    "@quickLookSeasonPlayed": {
+        "description": "How many of a season's episodes have been watched, on a season card in the Quick Look drawer",
+        "placeholders": {
+            "played": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "recommendationSystemJellyfin": "Serverens rekommendationer",
+    "@recommendationSystemJellyfin": {
+        "description": "Recommendation system option: Server Recommends"
+    },
+    "interfaceLayout": "Gränssnittets utformning",
+    "@interfaceLayout": {
+        "description": "Setting to override which UI layout the app uses"
+    },
+    "interfaceLayoutSubtitle": "Åsidosätt den upptäckta layouten om enheten avläses felaktigt. Starta om Moonfin för att ändringarna ska träda i kraft.",
+    "@interfaceLayoutSubtitle": {
+        "description": "Subtitle for the interface layout setting"
+    },
+    "interfaceLayoutPhone": "Telefon",
+    "@interfaceLayoutPhone": {
+        "description": "Interface layout option: phone layout"
+    },
+    "oledMode": "OLED-läge",
+    "@oledMode": {
+        "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+    },
+    "oledModeSubtitle": "Förstärk svarta nyanser och ge bilderna mer djup. Fungerar bäst på OLED-skärmar.",
+    "@oledModeSubtitle": {
+        "description": "Explanation under the OLED Mode setting"
+    },
+    "oledModeSubtle": "Subtil",
+    "@oledModeSubtle": {
+        "description": "OLED Mode level that darkens surfaces gently and lightly enriches artwork"
+    },
+    "oledModeVivid": "Vivid",
+    "@oledModeVivid": {
+        "description": "OLED Mode level that uses pure black surfaces and the strongest artwork enrichment"
+    },
+    "performanceModeSubtitle": "Funktionen mäter automatiskt enheten och begränsar användningen på enheter med begränsat minne, vilket innebär att färre bilder sparas i minnet och att trailrar sparas som stillbilder. Ändringen träder i kraft vid nästa start.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "performanceModeStandard": "Standard",
+    "@performanceModeStandard": {
+        "description": "Performance option: never hold back"
+    },
+    "performanceModeReduced": "Nedsatt",
+    "@performanceModeReduced": {
+        "description": "Performance option: always hold back"
+    },
+    "rendererMode": "Renderare",
+    "@rendererMode": {
+        "description": "Label for the TV graphics renderer setting"
+    },
+    "rendererModeSubtitle": "Auto använder Impeller på enheter där grafiken körs smidigt och Skia på alla andra enheter. Välj Skia om animationer eller video ser fel ut. Träder i kraft vid nästa start.",
+    "@rendererModeSubtitle": {
+        "description": "Explanation under the TV graphics renderer setting"
+    },
+    "rendererModeSkia": "Skia",
+    "@rendererModeSkia": {
+        "description": "Renderer option: always use the Skia renderer"
+    },
+    "trailerPreviewHeldBack": "Avstängd eftersom prestandan är inställd på ”Reducerad” för den här enheten",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "keyboardStyle": "Tangentbordsstil",
+    "@keyboardStyle": {
+        "description": "Label for the setting that picks how the on-screen keyboard looks, or whether the TV's own keyboard is used"
+    },
+    "keyboardStyleDescription": "I läget ”Native” används TV:ns eget tangentbord. ”Classic” är det ursprungliga Moonfin-tangentbordet. ”Glass” är en frostat panel med större tangenter. I läget ”Docked” fyller tangentbordet hela skärmens nedre del och visar vad du skriver ovanför tangenterna.",
+    "@keyboardStyleDescription": {
+        "description": "Explanation under the keyboard style setting"
+    },
+    "keyboardStyleNative": "Native",
+    "@keyboardStyleNative": {
+        "description": "Keyboard style option: the TV or device's own system keyboard"
+    },
+    "keyboardStyleDocked": "I docka",
+    "@keyboardStyleDocked": {
+        "description": "Keyboard style option: a full-width keyboard docked to the bottom of the screen"
+    },
+    "keyboardSpace": "mellanslag",
+    "@keyboardSpace": {
+        "description": "Label on the on-screen keyboard's space bar, lowercase like a printed key"
+    },
+    "keyboardHoldForAccents": "lämna utrymme för accenter",
+    "@keyboardHoldForAccents": {
+        "description": "On-screen keyboard hint next to an OK button cap: holding OK on a letter shows its accented versions"
+    },
+    "keyboardClose": "stäng",
+    "@keyboardClose": {
+        "description": "On-screen keyboard hint next to a Back button cap, lowercase like the hold for accents hint: Back closes the keyboard"
+    },
+    "controller": "Styrenhet",
+    "@controller": {
+        "description": "Settings section header for game controller options"
+    },
+    "gamepadNavigation": "Navigering med spelkontroll",
+    "@gamepadNavigation": {
+        "description": "Settings label for the switch that lets a game controller move focus and select items"
+    },
+    "gamepadNavigationDescription": "Låt en ansluten spelkontroll flytta fokus och välja objekt",
+    "@gamepadNavigationDescription": {
+        "description": "Settings subtitle for the gamepad navigation switch"
+    },
+    "signInWithPlex": "Logga in med Plex",
+    "@signInWithPlex": {
+        "description": "Plex sign-in option label and title of the Plex sign-in screen"
+    },
+    "plexLinkInstructions": "Gå till plex.tv/link på valfri enhet och ange den här koden",
+    "@plexLinkInstructions": {
+        "description": "Instructions above the code on the Plex sign-in screen"
+    },
+    "plexOpenLink": "Öppna plex.tv/link",
+    "@plexOpenLink": {
+        "description": "Button that opens plex.tv/link in the browser with the code filled in"
+    },
+    "plexWaitingForApproval": "Väntar på att du ska godkänna koden...",
+    "@plexWaitingForApproval": {
+        "description": "Status shown while the app waits for the Plex code to be approved"
+    },
+    "plexSignInWithPassword": "Logga in med lösenord",
+    "@plexSignInWithPassword": {
+        "description": "Button on the Plex sign-in screen that swaps the code for an email or username and password form"
+    },
+    "plexVerificationCode": "Bekräftelsekod",
+    "@plexVerificationCode": {
+        "description": "Field for the account's two-step verification code, shown once Plex asks for it"
+    },
+    "plexNoServers": "Inga Plex-servrar hittades för detta konto",
+    "@plexNoServers": {
+        "description": "Shown when the Plex account has no servers"
+    },
+    "gameOrientation": "Spelets inriktning",
+    "@gameOrientation": {
+        "description": "Setting and in-game menu row for how the device is held while playing games"
+    },
+    "gameOrientationSubtitle": "Skärmens orientering vid spelande",
+    "@gameOrientationSubtitle": {
+        "description": "Subtitle of the game orientation setting"
+    },
+    "animeMarkerFiller": "Fyllmedel",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "landscape": "Landskap",
+    "@landscape": {
+        "description": "Orientation choice: the device held sideways"
+    },
+    "portrait": "Porträtt",
+    "@portrait": {
+        "description": "Orientation choice: the device held upright"
+    },
+    "gameKeepPlaying": "Fortsätt spela",
+    "@gameKeepPlaying": {
+        "description": "Exit confirmation choice that returns to the game"
+    },
+    "gameSaveAndExit": "Spara och avsluta",
+    "@gameSaveAndExit": {
+        "description": "Exit confirmation choice that saves the game state and then leaves, staying in the game if the save fails"
+    },
+    "gameExitGame": "Avsluta spelet",
+    "@gameExitGame": {
+        "description": "Exit confirmation choice that leaves the game"
+    },
+    "gameSavingBeforeExit": "Sparar…",
+    "@gameSavingBeforeExit": {
+        "description": "Shown over the paused game while it saves on the way out"
+    },
+    "gameSaveFailedStillPlaying": "Det gick inte att spara speltillståndet. Spelet pågår fortfarande.",
+    "@gameSaveFailedStillPlaying": {
+        "description": "Message shown when Save & exit could not save, so the game keeps running"
+    },
+    "uiScaleGrandparents": "Far- och morföräldrar",
+    "@uiScaleGrandparents": {
+        "description": "UI scaling option above extra large"
+    },
+    "uiScaleGreatGrandparents": "Farfar- och farmorföräldrar",
+    "@uiScaleGreatGrandparents": {
+        "description": "UI scaling option above Grandparents"
+    },
+    "scrollDirection": "Rullningsriktning",
+    "@scrollDirection": {
+        "description": "Section header for scroll direction selection in library display settings"
+    },
+    "scrollDirectionVertical": "Vertikal",
+    "@scrollDirectionVertical": {
+        "description": "Library scroll direction option: vertical grid (default)"
+    },
+    "scrollDirectionHorizontal": "Horisontellt",
+    "@scrollDirectionHorizontal": {
+        "description": "Library scroll direction option: horizontal grid for ultrawide displays"
+    },
+    "scrollToTop": "Bläddra till toppen",
+    "@scrollToTop": {
+        "description": "Tooltip for the button that returns a scrolled list to the top"
+    },
+    "latestComics": "Senaste serierna",
+    "@latestComics": {
+        "description": "Row title for recently added comics in the book library"
+    },
+    "comics": "Serier",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "noBooksFoundDescription": "Det här biblioteket innehåller ännu inga böcker, ljudböcker eller serietidningar.",
+    "@noBooksFoundDescription": {
+        "description": "Description shown when a books library has no items"
+    },
+    "additionalParts": "Tilläggsdelar",
+    "@additionalParts": {
+        "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
+    },
+    "finalizingDownload": "Slutför…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "queuedDownload": "Queued",
+    "@queuedDownload": {
+        "description": "Status label for a download waiting in the queue for a free download slot"
+    },
+    "queuedMoreCount": "{count, plural, =1{1 more queued} other{{count} more queued}}",
+    "@queuedMoreCount": {
+        "description": "Row under the active downloads list standing in for queued items not shown individually",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "failedToDeleteItemWithError": "Borttagningen misslyckades med följande fel: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "noOtherAudioTracks": "Inga andra ljudspår",
+    "@noOtherAudioTracks": {
+        "description": "Shown when the remote's Audio button is pressed and the channel has one audio track or none"
+    },
+    "searchingSubtitles": "Söker efter undertexter…",
+    "@searchingSubtitles": {
+        "description": "Shown while a remote subtitle search is running"
+    },
+    "fetchingSubtitles": "Hämta undertexter",
+    "@fetchingSubtitles": {
+        "description": "Playback status shown while the selected subtitle file is loading"
+    },
+    "downloadingSubtitle": "Hämtar undertexter…",
+    "@downloadingSubtitle": {
+        "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"
+    },
+    "downloadScopeTitle": "Vad ska man ladda ner?",
+    "@downloadScopeTitle": {
+        "description": "Title of the sheet asking whether to download all or only unwatched items"
+    },
+    "downloadAllEpisodes": "Alla avsnitt",
+    "@downloadAllEpisodes": {
+        "description": "Download scope option: every episode of a series or season"
+    },
+    "downloadUnwatchedEpisodes": "Alla avsnitt som jag inte har sett",
+    "@downloadUnwatchedEpisodes": {
+        "description": "Download scope option: only episodes not yet marked as watched"
+    },
+    "downloadAllMovies": "Alla filmer",
+    "@downloadAllMovies": {
+        "description": "Download scope option: every movie in a collection"
+    },
+    "downloadUnwatchedMovies": "Alla filmer jag inte har sett",
+    "@downloadUnwatchedMovies": {
+        "description": "Download scope option: only collection movies not yet marked as watched"
+    },
+    "downloadScopeLoading": "Laddar objekt...",
+    "@downloadScopeLoading": {
+        "description": "Subtitle shown in the download scope sheet while the item list is being fetched"
+    },
+    "downloadScopeLoadFailed": "Det gick inte att ladda ner filerna",
+    "@downloadScopeLoadFailed": {
+        "description": "Snackbar shown when the item list for a batch download could not be fetched"
+    },
+    "downloadEstimateTotal": "~{size} totalt",
+    "@downloadEstimateTotal": {
+        "description": "Estimated total download size for a batch, e.g. '~1.2 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadBytesOfTotal": "{received} of {total}",
+    "@downloadBytesOfTotal": {
+        "description": "Transfer status of a running download, e.g. '1.2 GB of 4.6 GB'",
+        "placeholders": {
+            "received": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSpeed": "{speed}/s",
+    "@downloadSpeed": {
+        "description": "Transfer rate of a running download, e.g. '25.3 MB/s'",
+        "placeholders": {
+            "speed": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSizeTotal": "{size} totalt",
+    "@downloadSizeTotal": {
+        "description": "Exact total file size of a batch of original files, e.g. '12.4 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadEstimateUnknownCount": "{count} okänt",
+    "@downloadEstimateUnknownCount": {
+        "description": "Appended to a batch size estimate when some items had no runtime to estimate from",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "starring": "MED",
+    "@starring": {
+        "description": "Metadata label for the leading cast"
+    },
+    "episodeDirector": "Avsnittsregissör",
+    "@episodeDirector": {
+        "description": "Role label for an episode director"
+    },
+    "episodeDirectorWithRole": "{role} (Avsnitt Direktör)",
+    "@episodeDirectorWithRole": {
+        "description": "Role label formatting an episode director with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "episodeWriter": "Manusförfattare för avsnittet",
+    "@episodeWriter": {
+        "description": "Role label for an episode writer"
+    },
+    "episodeWriterWithRole": "{role} (Manusförfattare)",
+    "@episodeWriterWithRole": {
+        "description": "Role label formatting an episode writer with an existing role description",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "guestStar": "Gästskådespelare",
+    "@guestStar": {
+        "description": "Role label for a guest star"
+    },
+    "guestStarWithRole": "{role} (Gästroll)",
+    "@guestStarWithRole": {
+        "description": "Role label formatting a character role as a guest star",
+        "placeholders": {
+            "role": {
+                "type": "String"
+            }
+        }
+    },
+    "shuffleAll": "Slumpa Alla",
+    "@shuffleAll": {
+        "description": "Action button label for shuffling all tracks of an artist"
+    },
+    "aiTranslated": "Översatt med AI",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "machineTranslated": "Maskinöversatt",
+    "@machineTranslated": {
+        "description": "Label for a remote subtitle the provider marked as machine translated"
+    },
+    "hearingImpaired": "SDH",
+    "@hearingImpaired": {
+        "description": "Label for a remote subtitle marked as hearing impaired"
+    },
+    "framerateFps": "{rate} fps",
+    "@framerateFps": {
+        "description": "Framerate of a remote subtitle, shown in its detail line",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "showMpvStats": "Visa mpv-statistik (Skift+I)",
+    "@showMpvStats": {
+        "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "bookFormatComic": "Serietidning",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
+    },
+    "hideMpvStats": "Dölj mpv-statistik (Shift+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "keyboardShortcutsTitle": "Tangentbordsgenvägar",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "keyboardShortcutsSubtitle": "Tangenter för appen, videospelaren och läsaren",
+    "@keyboardShortcutsSubtitle": {
+        "description": "Subtitle of the About tile that opens the keyboard shortcut list"
+    },
+    "keyboardShortcutsPlayerHint": "Tangenter för appen, videospelaren och läsaren",
+    "@keyboardShortcutsPlayerHint": {
+        "description": "Footnote on the keyboard shortcuts settings screen"
+    },
+    "keyboardShortcutsSectionApp": "Överallt",
+    "@keyboardShortcutsSectionApp": {
+        "description": "Keyboard shortcut section for keys that work on every screen"
+    },
+    "keyboardShortcutsSectionAppScope": "På vilken skärm som helst",
+    "@keyboardShortcutsSectionAppScope": {
+        "description": "Under the Everywhere section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionPlayer": "Videospelare",
+    "@keyboardShortcutsSectionPlayer": {
+        "description": "Keyboard shortcut section for the video player"
+    },
+    "keyboardShortcutsSectionPlayerScope": "När en video är öppen, spelas upp eller är pausad",
+    "@keyboardShortcutsSectionPlayerScope": {
+        "description": "Under the Video player section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionReader": "Bok- och serieläsare",
+    "@keyboardShortcutsSectionReader": {
+        "description": "Keyboard shortcut section for the ebook and comic reader"
+    },
+    "keyboardShortcutsSectionReaderScope": "När man läser en bok eller en serietidning",
+    "@keyboardShortcutsSectionReaderScope": {
+        "description": "Under the reader section title: when those keys apply"
+    },
+    "keyNameArrowKeys": "Piltangenterna",
+    "@keyNameArrowKeys": {
+        "description": "Key cap label standing for the four arrow keys"
+    },
+    "keyNameEnter": "Tryck på Enter",
+    "@keyNameEnter": {
+        "description": "Key cap label for the Enter key"
+    },
+    "keyNameEsc": "Esc",
+    "@keyNameEsc": {
+        "description": "Key cap label for the Escape key"
+    },
+    "keyNameBackspace": "Backspace",
+    "@keyNameBackspace": {
+        "description": "Key cap label for the Backspace key"
+    },
+    "keyNamePageUp": "Sidan upp",
+    "@keyNamePageUp": {
+        "description": "Key cap label for the Page Up key"
+    },
+    "keyNamePageDown": "Sida nedåt",
+    "@keyNamePageDown": {
+        "description": "Key cap label for the Page Down key"
+    },
+    "keyNameEnd": "Slut",
+    "@keyNameEnd": {
+        "description": "Key cap label for the End key"
+    },
+    "keyNameShift": "Skift",
+    "@keyNameShift": {
+        "description": "Key cap label for the Shift modifier"
+    },
+    "keyNameCtrl": "Ctrl",
+    "@keyNameCtrl": {
+        "description": "Key cap label for the Control modifier"
+    },
+    "keyNameAlt": "Alt",
+    "@keyNameAlt": {
+        "description": "Key cap label for the Alt modifier"
+    },
+    "keyNameScrollWheel": "Rullhjul",
+    "@keyNameScrollWheel": {
+        "description": "Key cap label standing for the mouse scroll wheel"
+    },
+    "shortcutMoveFocus": "Bläddra mellan objekten",
+    "@shortcutMoveFocus": {
+        "description": "What the arrow keys do outside the player"
+    },
+    "shortcutActivate": "Öppna det markerade objektet",
+    "@shortcutActivate": {
+        "description": "What Enter does outside the player"
+    },
+    "shortcutGoBack": "Gå tillbaka",
+    "@shortcutGoBack": {
+        "description": "What Esc and Backspace do outside the player"
+    },
+    "shortcutToggleFullscreen": "Aktivera eller inaktivera helskärmsläge",
+    "@shortcutToggleFullscreen": {
+        "description": "F11 and Alt+Enter anywhere, F in the player"
+    },
+    "shortcutQuit": "Avsluta Moonfin",
+    "@shortcutQuit": {
+        "description": "What Ctrl+Q does on desktop"
+    },
+    "shortcutPlayPause": "Spela upp eller pausa",
+    "@shortcutPlayPause": {
+        "description": "Player shortcut action"
+    },
+    "shortcutShowControlsOrPlayPause": "Visa kontrollerna, eller uppspelning/paus om de visas",
+    "@shortcutShowControlsOrPlayPause": {
+        "description": "What Enter does in the player"
+    },
+    "shortcutSeekBack": "Sök bakåt (håll ned för större hopp)",
+    "@shortcutSeekBack": {
+        "description": "Player shortcut action. The step is the skip back length from settings"
+    },
+    "shortcutSeekForward": "Titta framåt (håll kvar för större hopp)",
+    "@shortcutSeekForward": {
+        "description": "Player shortcut action. The step is the skip forward length from settings"
+    },
+    "shortcutVolumeUp": "Höj volymen",
+    "@shortcutVolumeUp": {
+        "description": "Player shortcut action"
+    },
+    "shortcutVolumeDown": "Sänk volymen",
+    "@shortcutVolumeDown": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMute": "Stäng av eller slå på ljudet",
+    "@shortcutMute": {
+        "description": "Player shortcut action"
+    },
+    "shortcutToggleSubtitles": "Slå på eller stäng av undertexter",
+    "@shortcutToggleSubtitles": {
+        "description": "Player shortcut action"
+    },
+    "shortcutSlower": "Ta det lugnt",
+    "@shortcutSlower": {
+        "description": "Player shortcut action"
+    },
+    "shortcutFaster": "Snabba upp",
+    "@shortcutFaster": {
+        "description": "Player shortcut action"
+    },
+    "shortcutPlaybackInfo": "Visa uppspelningsinformation",
+    "@shortcutPlaybackInfo": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMpvStats": "Aktivera eller inaktivera MPV-statistik",
+    "@shortcutMpvStats": {
+        "description": "Player shortcut action, Windows only"
+    },
+    "shortcutRecropBlackBars": "Beskär svarta fält",
+    "@shortcutRecropBlackBars": {
+        "description": "Player shortcut to run letterbox crop detection now"
+    },
+    "shortcutLeaveFullscreenOrStop": "Avsluta helskärmsläget, eller avbryt om det inte är helskärmsläge",
+    "@shortcutLeaveFullscreenOrStop": {
+        "description": "What Esc does in the player"
+    },
+    "shortcutHideControls": "Dölj kontrollerna",
+    "@shortcutHideControls": {
+        "description": "What Backspace and Delete do in the player: hide the controls or the panel on top of them"
+    },
+    "shortcutStopPlayback": "Avbryt uppspelningen",
+    "@shortcutStopPlayback": {
+        "description": "Player shortcut action"
+    },
+    "shortcutNextItem": "Nästa punkt",
+    "@shortcutNextItem": {
+        "description": "Player shortcut action for the next-track media key"
+    },
+    "shortcutPreviousItem": "Föregående post",
+    "@shortcutPreviousItem": {
+        "description": "Player shortcut action for the previous-track media key"
+    },
+    "shortcutSkipSegment": "Hoppa över intro eller eftertexter när det erbjuds",
+    "@shortcutSkipSegment": {
+        "description": "Player shortcut action that presses the skip intro or credits button while it is showing"
+    },
+    "shortcutShowShortcuts": "Visa den här listan",
+    "@shortcutShowShortcuts": {
+        "description": "What ? and F1 do in the player"
+    },
+    "shortcutNextPage": "Nästa sida",
+    "@shortcutNextPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutPreviousPage": "Föregående sida",
+    "@shortcutPreviousPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutScrollPage": "Bläddra på sidan (e-böcker)",
+    "@shortcutScrollPage": {
+        "description": "What the up and down arrows do in the ebook reader"
+    },
+    "shortcutFirstPage": "Första sidan eller början av kapitlet",
+    "@shortcutFirstPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutLastPage": "Sista sidan eller slutet av kapitlet",
+    "@shortcutLastPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutZoom": "Zooma in eller ut (serier)",
+    "@shortcutZoom": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutResetZoom": "Återställ zoom (serier)",
+    "@shortcutResetZoom": {
+        "description": "Reader shortcut action"
+    },
+    "videoRenderer": "Videorenderare",
+    "@videoRenderer": {
+        "description": "Settings label for choosing where Windows draws video, in its own window or inside the app"
+    },
+    "videoRendererDescription": "I ”Native”-fönstret får du den jämnaste rörelsen och HDR-bilden skickas vidare till skärmen utan att bearbetas. Prova ett annat alternativ om videon inte fungerar som den ska.",
+    "@videoRendererDescription": {
+        "description": "Settings description for the video renderer choice"
+    },
+    "videoRendererNativeWindow": "Inbyggt fönster (rekommenderas)",
+    "@videoRendererNativeWindow": {
+        "description": "Video renderer option that plays every title in its own window"
+    },
+    "keyNameSpace": "Rymden",
+    "@keyNameSpace": {
+        "description": "Key cap label for the space bar"
+    },
+    "videoRendererNativeHdrOnly": "Eget fönster endast för HDR",
+    "@videoRendererNativeHdrOnly": {
+        "description": "Video renderer option that uses its own window for HDR titles and the in-app renderer for SDR"
+    },
+    "videoRendererInApp": "I appen (äldre version)",
+    "@videoRendererInApp": {
+        "description": "Video renderer option that draws every title inside the app and converts HDR to SDR"
+    },
+    "bookReadingUnavailableTitle": "Man kan inte läsa böcker på Apple TV",
+    "@bookReadingUnavailableTitle": {
+        "description": "Title of the dialog shown on Apple TV when the user tries to open a book or comic, which tvOS has no reader for"
+    },
+    "bookReadingUnavailableMessage": "Öppna den i Moonfin på en mobil, surfplatta eller dator för att läsa den. Ljudböckerna kan fortfarande spelas upp här.",
+    "@bookReadingUnavailableMessage": {
+        "description": "Body of the dialog shown on Apple TV when the user tries to open a book or comic"
+    },
+    "noProgramData": "Inga programuppgifter",
+    "@noProgramData": {
+        "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+    },
+    "liveTvJumpToLive": "Gå till Live",
+    "@liveTvJumpToLive": {
+        "description": "Live TV player button that leaves a rewound or paused stream and returns to what is airing now"
+    },
+    "nextSeriesRecording": "Nästa inspelning av serien: {dateTime}",
+    "@nextSeriesRecording": {
+        "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Oct 5, 2026 · 8:00 PM"
+            }
+        }
+    },
+    "noUpcomingSeriesRecording": "Serien är schemalagd för inspelning, men i programguiden finns inga kommande avsnitt",
+    "@noUpcomingSeriesRecording": {
+        "description": "A series recording rule exists but no future episode timer is available"
+    },
+    "seriesRecordingSkipsShowing": "Serien kommer att hoppa över detta avsnitt vid inspelningen",
+    "@seriesRecordingSkipsShowing": {
+        "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
+    },
+    "seriesRecordingEpisodesQuestion": "Vilka avsnitt bör spelas in?",
+    "@seriesRecordingEpisodesQuestion": {
+        "description": "Prompt in the dialog that chooses which episodes a series recording takes"
+    },
+    "seriesRecordingAllEpisodesDescription": "Varje sändning, inklusive repriser",
+    "@seriesRecordingAllEpisodesDescription": {
+        "description": "Explains the All Episodes series recording choice"
+    },
+    "seriesRecordingNotRecordedEpisodes": "Avsnitt som ännu inte har spelats in",
+    "@seriesRecordingNotRecordedEpisodes": {
+        "description": "Series recording choice that skips episodes already in the library"
+    },
+    "seriesRecordingNotRecordedEpisodesDescription": "Hoppar över avsnitt som redan finns i ditt bibliotek och spelar in varje avsnitt en gång",
+    "@seriesRecordingNotRecordedEpisodesDescription": {
+        "description": "Explains the Episodes Not Already Recorded series recording choice"
+    },
+    "seriesRecordingNewEpisodesOnly": "Endast nya avsnitt",
+    "@seriesRecordingNewEpisodesOnly": {
+        "description": "Series recording choice that records only first airings"
+    },
+    "seriesRecordingNewEpisodesOnlyDescription": "Endast första sändningar, inga repriser",
+    "@seriesRecordingNewEpisodesOnlyDescription": {
+        "description": "Explains the New Episodes Only series recording choice"
+    },
+    "seriesRecordingSettings": "Serieinställningar",
+    "@seriesRecordingSettings": {
+        "description": "Action that changes which episodes an existing series recording takes"
+    },
+    "seriesRecordingUpdated": "Uppdatering av serieinspelningarna",
+    "@seriesRecordingUpdated": {
+        "description": "Confirmation after changing a series recording's settings"
+    },
+    "failedToUpdateSeriesRecording": "Det går inte att uppdatera serieinspelningen",
+    "@failedToUpdateSeriesRecording": {
+        "description": "Error after changing a series recording's settings failed"
+    },
+    "recordCurrentEpisode": "Spela in det här avsnittet",
+    "@recordCurrentEpisode": {
+        "description": "Live TV player action to record only the current episode"
+    },
+    "recordCurrentProgram": "Spela in det här programmet",
+    "@recordCurrentProgram": {
+        "description": "Live TV player action to record only the current program"
+    },
+    "cancelCurrentRecording": "Avbryt denna inspelning",
+    "@cancelCurrentRecording": {
+        "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
+    },
+    "seriesSetToRecord": "Serien är redo att slå rekord",
+    "@seriesSetToRecord": {
+        "description": "Snackbar confirmation after scheduling a live TV series recording"
+    },
+    "seriesRecordingCancelled": "Serieinspelningen har ställts in",
+    "@seriesRecordingCancelled": {
+        "description": "Snackbar confirmation after cancelling a live TV series recording"
+    },
+    "unableToCreateSeriesRecording": "Det går inte att skapa en serieinspelning",
+    "@unableToCreateSeriesRecording": {
+        "description": "Error when creating a live TV series recording fails"
+    },
+    "watchChannelLive": "Se kanalen live",
+    "@watchChannelLive": {
+        "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
+    },
+    "playbackStreamLost": "Uppspelningen avbröts och kunde inte återupptas.",
+    "@playbackStreamLost": {
+        "description": "Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream"
+    },
+    "playbackVideoUnsupported": "Den här enheten kan inte spela upp den här videon på grund av formatet. Prova med en extern spelare.",
+    "@playbackVideoUnsupported": {
+        "description": "Shown when the player can't show an item's video and no transcode is left to try, instead of playing the audio over a black screen"
+    },
+    "liveReconnecting": "Återansluter… ({attempt} of {total})",
+    "@liveReconnecting": {
+        "description": "Overlay shown while a live channel's bounded recovery is retrying",
+        "placeholders": {
+            "attempt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "playerMatchingDisplayRate": "Anpassa skärmen till {fps} fps…",
+    "@playerMatchingDisplayRate": {
+        "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+        "placeholders": {
+            "fps": {
+                "type": "String"
+            }
+        }
+    },
+    "activeDownloads": "Aktiva nedladdningar",
+    "@activeDownloads": {
+        "description": "Tab title for downloads that are transferring or queued"
+    },
+    "savedMediaCount": "{count, plural, =1{1 item} other{{count} items}}",
+    "@savedMediaCount": {
+        "description": "How many downloads the saved media list holds, shown beside the total size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOfLimit": "{used} of {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaSelectItems": "Välj artiklar",
+    "@savedMediaSelectItems": {
+        "description": "Overflow menu entry that turns on multi-select in the saved media list"
+    },
+    "savedMediaNoDownloads": "Inget har sparats ännu",
+    "@savedMediaNoDownloads": {
+        "description": "Empty state title when no downloads are on the device"
+    },
+    "savedMediaNoDownloadsDetail": "Nedladdningar som du startar visas här och kan spelas upp utan internetanslutning.",
+    "@savedMediaNoDownloadsDetail": {
+        "description": "Empty state body when no downloads are on the device"
+    },
+    "savedMediaNoActiveDownloads": "Det pågår ingen nedladdning just nu",
+    "@savedMediaNoActiveDownloads": {
+        "description": "Empty state for the active downloads tab"
+    },
+    "savedMediaNoResults": "Inga nedladdningar stämmer överens med den sökningen",
+    "@savedMediaNoResults": {
+        "description": "Empty state when a search over saved media matches nothing"
+    },
+    "savedMediaPlayFromStart": "Spela från början",
+    "@savedMediaPlayFromStart": {
+        "description": "Row menu action that restarts a partly watched download from the beginning"
+    },
+    "savedMediaGoToDetails": "Gå till detaljer",
+    "@savedMediaGoToDetails": {
+        "description": "Row menu action that opens the item's detail screen"
+    },
+    "savedMediaDeleteDownload": "Ta bort nedladdning",
+    "@savedMediaDeleteDownload": {
+        "description": "Row menu action that removes one downloaded file from the device"
+    },
+    "savedMediaDeleteSeason": "Ta bort {season}",
+    "@savedMediaDeleteSeason": {
+        "description": "Menu action that removes every saved episode of one season",
+        "placeholders": {
+            "season": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaDeleteEpisodes": "{count, plural, =1{Delete 1 episode} other{Delete {count} episodes}}",
+    "@savedMediaDeleteEpisodes": {
+        "description": "Menu action that removes every saved episode of one series",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOpenShow": "Öppen utställning",
+    "@savedMediaOpenShow": {
+        "description": "Row menu action that opens a saved show's seasons and episodes"
+    },
+    "savedMediaPlayNextUnwatched": "Spela upp nästa som du inte har sett",
+    "@savedMediaPlayNextUnwatched": {
+        "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+    },
+    "savedMediaCancelDownload": "Avbryt nedladdningen",
+    "@savedMediaCancelDownload": {
+        "description": "Row menu action that stops a running or queued transfer"
+    },
+    "sortBySize": "Storlek",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "sortByDateAdded": "Datum för tillägg",
+    "@sortByDateAdded": {
+        "description": "Sort option: most recently downloaded first"
+    },
+    "settingsSearchHint": "Sökinställning",
+    "@settingsSearchHint": {
+        "description": "Hint text in the settings search field"
+    },
+    "recordSeries": "Rekordserie",
+    "@recordSeries": {
+        "description": "Button label to record every showing of a live TV series"
+    },
+    "showPosterLabels": "Etiketter för affischer",
+    "@showPosterLabels": {
+        "description": "Setting that shows or hides the labels the server admin adds to posters"
+    },
+    "showPosterLabelsSubtitle": "Visa märkningarna på affischerna, till exempel 4K eller HDR.",
+    "@showPosterLabelsSubtitle": {
+        "description": "Subtitle of the Poster Labels setting"
+    },
+    "mixedRowsOnly": "Endast blandade rader",
+    "@mixedRowsOnly": {
+        "description": "Option: only show the label on rows holding both movies and series"
+    },
+    "loadingAnimation": "Laddningsanimation",
+    "@loadingAnimation": {
+        "description": "Setting title for custom loading animation"
+    },
+    "loadingAnimationDescription": "Anpassa de laddningsanimationer som används i hela Moonfin",
+    "@loadingAnimationDescription": {
+        "description": "Description for loading animation customization settings"
+    },
+    "loadingAnimationConfiguration": "Konfiguration av laddningsanimation",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "loadingAnimationImage": "Bild",
+    "@loadingAnimationImage": {
+        "description": "Title for loading animation image selection"
+    },
+    "loadingAnimationImageMoonfinLogo": "Moonfin logotypen",
+    "@loadingAnimationImageMoonfinLogo": {
+        "description": "Loading animation image option: Moonfin Logo"
+    },
+    "loadingAnimationImageSpinner": "Spinner",
+    "@loadingAnimationImageSpinner": {
+        "description": "Loading animation image option: Spinner"
+    },
+    "loadingAnimationImageRunner": "Löpare",
+    "@loadingAnimationImageRunner": {
+        "description": "Loading animation image option: Runner"
+    },
+    "loadingAnimationImageMoonPhases": "Månfaser",
+    "@loadingAnimationImageMoonPhases": {
+        "description": "Loading animation image option: Moon Phases"
+    },
+    "loadingAnimationImageMoonfinPhases": "Moonfin-faser",
+    "@loadingAnimationImageMoonfinPhases": {
+        "description": "Loading animation image option: Moonfin Phases in brand gradient"
+    },
+    "loadingAnimationImageNeonfinPhases": "Neonfins faser",
+    "@loadingAnimationImageNeonfinPhases": {
+        "description": "Loading animation image option: Neonfin Phases in neon colors"
+    },
+    "loadingAnimationSize": "Animationens storlek",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationPosition": "Animationsposition",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationPositionTopLeft": "Övre vänstra hörnet",
+    "@loadingAnimationPositionTopLeft": {
+        "description": "Loading animation position: Top-Left"
+    },
+    "loadingAnimationPositionTopCenter": "Övre mitten",
+    "@loadingAnimationPositionTopCenter": {
+        "description": "Loading animation position: Top-Center"
+    },
+    "loadingAnimationPositionTopRight": "Övre högra hörnet",
+    "@loadingAnimationPositionTopRight": {
+        "description": "Loading animation position: Top-Right"
+    },
+    "loadingAnimationPositionMiddleLeft": "Mitten-vänster",
+    "@loadingAnimationPositionMiddleLeft": {
+        "description": "Loading animation position: Middle-Left"
+    },
+    "loadingAnimationPositionMiddle": "Mitten",
+    "@loadingAnimationPositionMiddle": {
+        "description": "Loading animation position: Middle"
+    },
+    "loadingAnimationPositionMiddleRight": "Mitten-höger",
+    "@loadingAnimationPositionMiddleRight": {
+        "description": "Loading animation position: Middle-Right"
+    },
+    "loadingAnimationPositionBottomLeft": "Nederst till vänster",
+    "@loadingAnimationPositionBottomLeft": {
+        "description": "Loading animation position: Bottom-Left"
+    },
+    "loadingAnimationPositionBottomCenter": "Längst ner i mitten",
+    "@loadingAnimationPositionBottomCenter": {
+        "description": "Loading animation position: Bottom-Center"
+    },
+    "loadingAnimationPositionBottomRight": "Nederst till höger",
+    "@loadingAnimationPositionBottomRight": {
+        "description": "Loading animation position: Bottom-Right"
+    },
+    "loadingAnimationSpeed": "Animationshastighet",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "loadingAnimationSpeedSlow": "Långsamt",
+    "@loadingAnimationSpeedSlow": {
+        "description": "Loading animation speed option: Slow"
+    },
+    "loadingAnimationSpeedModerate": "Måttlig",
+    "@loadingAnimationSpeedModerate": {
+        "description": "Loading animation speed option: Moderate"
+    },
+    "loadingAnimationSpeedFast": "Snabbt",
+    "@loadingAnimationSpeedFast": {
+        "description": "Loading animation speed option: Fast"
+    },
+    "loadingAnimationSpeedUltra": "Ultra",
+    "@loadingAnimationSpeedUltra": {
+        "description": "Loading animation speed option: Ultra"
+    },
+    "showLoadingAnimationText": "Visa text",
+    "@showLoadingAnimationText": {
+        "description": "Setting toggle for showing loading animation text"
+    },
+    "loadingAnimationPreview": "Förhandsgranskning",
+    "@loadingAnimationPreview": {
+        "description": "Label for loading animation preview window"
+    },
+    "seasonalChristmas": "Jul",
+    "@seasonalChristmas": {
+        "description": "Seasonal effect: snow with falling baubles and stars"
+    },
+    "seasonalPetals": "Vårens blomblad",
+    "@seasonalPetals": {
+        "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+    },
+    "seasonalFireflies": "Tulikärpäset",
+    "@seasonalFireflies": {
+        "description": "Seasonal effect: glowing fireflies for summer"
+    },
+    "seasonalHalloween": "Halloween",
+    "@seasonalHalloween": {
+        "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+    },
+    "seasonalDensity": "Densitet",
+    "@seasonalDensity": {
+        "description": "Setting for how many seasonal effect particles are on screen at once"
+    },
+    "seasonalDensityLight": "Ljus",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "seasonalDensityHeavy": "Tung",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
+    },
+    "seasonalFollower": "Focus Follower",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "Ett högtidsinslag, som planchettan till Halloween, följer det du väljer på startsidan",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "seasonalFollowerPointerDescription": "Ett högtidssymbol, till exempel en planchette till Halloween, ersätter muspekaren på startsidan",
+    "@seasonalFollowerPointerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer"
+    },
+    "seasonalRow": "Säsongsrad",
+    "@seasonalRow": {
+        "description": "Name of the Home row that shows holiday movies"
+    },
+    "seasonalRowDescription": "Visa en rad julfilmer från ditt bibliotek, med förslag från Seerr om sådana finns.",
+    "@seasonalRowDescription": {
+        "description": "Explains the seasonal Home row setting"
+    },
+    "seasonalRowSubtitle": "Säsongsbetonat",
+    "@seasonalRowSubtitle": {
+        "description": "Source label shown under the seasonal row's title"
+    },
+    "countryUnitedStates": "Förenta staterna",
+    "@countryUnitedStates": {
+        "description": "Country name"
+    },
+    "countryCanada": "Kanada",
+    "@countryCanada": {
+        "description": "Country name"
+    },
+    "seasonalRowHolidays": "Helgdagar",
+    "@seasonalRowHolidays": {
+        "description": "Heading for the list of holidays the seasonal row can show"
+    },
+    "seasonalRowHolidaysHint": "Avmarkera en helgdag för att dölja raden med den.",
+    "@seasonalRowHolidaysHint": {
+        "description": "Hint under the holiday checklist"
+    },
+    "seasonalRowAllYear": "Visa hela året",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Visa en rad med helgdagar även utanför helgdagarna, med en annan markerad helgdag för varje dag.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "holidayNewYear": "Nyår",
+    "@holidayNewYear": {
+        "description": "Seasonal row title for New Year's"
+    },
+    "holidayValentines": "Alla hjärtans dag",
+    "@holidayValentines": {
+        "description": "Seasonal row title for Valentine's Day"
+    },
+    "holidayEaster": "Påsk",
+    "@holidayEaster": {
+        "description": "Seasonal row title for Easter"
+    },
+    "holidayPride": "Stolthet",
+    "@holidayPride": {
+        "description": "Seasonal row title for Pride month"
+    },
+    "holidayHalloween": "Halloween",
+    "@holidayHalloween": {
+        "description": "Seasonal row title for Halloween"
+    },
+    "holidayThanksgiving": "Tacksägelsedagen",
+    "@holidayThanksgiving": {
+        "description": "Seasonal row title for Thanksgiving"
+    },
+    "holidayChristmas": "Julfilmer",
+    "@holidayChristmas": {
+        "description": "Seasonal row title for Christmas"
+    },
+    "holidayLunarNewYear": "Det kinesiska nyåret",
+    "@holidayLunarNewYear": {
+        "description": "Seasonal row title for Lunar New Year"
+    },
+    "holidayDiwali": "Ljusfestivalen",
+    "@holidayDiwali": {
+        "description": "Seasonal row title for Diwali"
+    },
+    "detailsBackgroundOpacity": "Bakgrundsopacitet för detaljvy",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "cropBlackBars": "Beskär svarta fält",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Identifiera kodade letterbox-ränder efter att uppspelningen har startat, beskär dem och fyll sedan skärmen. Beskär på nytt med hjälp av spelarens zoomknapp.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "cropBlackBarsRecropInterval": "Intervall mellan skördar",
+    "@cropBlackBarsRecropInterval": {
+        "description": "Setting for how often to re-detect encoded letterbox bars"
+    },
+    "cropBlackBarsOnce": "När man väl är vid start",
+    "@cropBlackBarsOnce": {
+        "description": "Letterbox recrop interval: detect once after playback starts"
+    },
+    "cropBlackBarsEverySecond": "Varje sekund",
+    "@cropBlackBarsEverySecond": {
+        "description": "Letterbox recrop interval: scan about once a second"
+    },
+    "settingsCropBlackBarsIntervalDescription": "Följ förändringar i bildförhållandet under uppspelningen.",
+    "@settingsCropBlackBarsIntervalDescription": {
+        "description": "Description for the letterbox recrop-interval setting"
+    },
+    "playerRecroppingBlackBars": "Ombeskärning av svarta fält",
+    "@playerRecroppingBlackBars": {
+        "description": "Toast when the player re-runs letterbox crop detection"
+    },
+    "playerBlackBarsCropped": "Svarta fält har beskärts",
+    "@playerBlackBarsCropped": {
+        "description": "Toast after a manual recrop found letterbox bars and cropped them"
+    },
+    "playerNoBlackBarsFound": "Inga svarta fält hittades",
+    "@playerNoBlackBarsFound": {
+        "description": "Toast after a manual recrop found that the picture fills the frame"
+    },
+    "playerBlackBarsNotDetected": "Det gick inte att upptäcka svarta fält. Försök igen i en ljusare scen",
+    "@playerBlackBarsNotDetected": {
+        "description": "Toast after a manual recrop saw only dark or unclear frames"
+    },
+    "manual": "Handbok",
+    "@manual": {
+        "description": "Option: manual"
+    },
+    "autoDetect": "Automatisk detektering",
+    "@autoDetect": {
+        "description": "Option: detect the value automatically"
+    },
+    "trickplayDisplayStyleSingle": "Enstaka miniatyrbild",
+    "@trickplayDisplayStyleSingle": {
+        "description": "Trickplay display style option: one thumbnail at the scrub position"
+    },
+    "trickplayDisplayStyleStrip": "Filmremsa",
+    "@trickplayDisplayStyleStrip": {
+        "description": "Trickplay display style option: a row of 5 thumbnails around the scrub position"
+    },
+    "trickplayModeFull": "Helskärm",
+    "@trickplayModeFull": {
+        "description": "Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing"
+    },
+    "trickplaySettingsPreviewHint": "Dra i skjutreglaget för att förhandsgranska skrubbningen",
+    "@trickplaySettingsPreviewHint": {
+        "description": "Hint shown below the live trickplay settings preview"
+    },
+    "trickplayPreviewScale": "Förhandsgranskningsstorlek",
+    "@trickplayPreviewScale": {
+        "description": "Setting for the size of the trickplay seek preview"
+    },
+    "trickplayVerticalOffset": "Avstånd från sökfältet",
+    "@trickplayVerticalOffset": {
+        "description": "Setting for the vertical position of the trickplay seek preview relative to the seekbar"
+    },
+    "trickplayFollowScrubPosition": "Följ skrubbpositionen",
+    "@trickplayFollowScrubPosition": {
+        "description": "Setting for whether the trickplay preview horizontally tracks the scrub handle"
+    },
+    "trickplayFollowScrubPositionSubtitle": "Förhandsgranska bilderna längs sökreglaget när du drar med fingret, istället för att de förblir centrerade",
+    "@trickplayFollowScrubPositionSubtitle": {
+        "description": "Description for the trickplay follow-scrub-position setting"
+    },
+    "trickplayPauseWhileScrubbing": "Paus under skrubbning",
+    "@trickplayPauseWhileScrubbing": {
+        "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+    },
+    "trickplayPauseWhileScrubbingSubtitle": "Uppspelningen pausas medan du söker och återupptas när du trycker på uppspelningsknappen. Stäng av den här funktionen för att fortsätta uppspelningen och hoppa direkt till den nya platsen",
+    "@trickplayPauseWhileScrubbingSubtitle": {
+        "description": "Description for the trickplay pause-while-scrubbing setting"
+    },
+    "showChapterMarkers": "Kapitelmarkeringar",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "showChapterMarkersDescription": "Markera var varje kapitel börjar på sökreglaget",
+    "@showChapterMarkersDescription": {
+        "description": "Description for the chapter marks setting"
+    },
+    "playerSwipeGestures": "Markera var varje kapitel börjar på sökreglaget",
+    "@playerSwipeGestures": {
+        "description": "Setting for player swipe gestures"
+    },
+    "playerSwipeGesturesDescription": "Dra uppåt eller nedåt på spelaren för att justera ljusstyrkan till vänster och volymen till höger",
+    "@playerSwipeGesturesDescription": {
+        "description": "Description for player swipe gestures"
+    },
+    "invertGestureIndicators": "Vänd gestindikatorer",
+    "@invertGestureIndicators": {
+        "description": "Setting title for inverting placement of brightness and volume gesture indicators"
+    },
+    "invertGestureIndicatorsDescription": "Placera de visuella indikatorerna för ljusstyrka och volym på samma sida eller på motsatt sida av skärmen i förhållande till svepningen",
+    "@invertGestureIndicatorsDescription": {
+        "description": "Description explaining gesture indicator placement relative to the swipe side"
+    },
+    "gestureIndicatorSame": "Samma",
+    "@gestureIndicatorSame": {
+        "description": "Option to display gesture indicators on the same side as the swipe"
+    },
+    "gestureIndicatorInverted": "Upp och ned",
+    "@gestureIndicatorInverted": {
+        "description": "Option to display gesture indicators on the opposite side from the swipe"
+    },
+    "osdButtons": "Spelarknappar",
+    "@osdButtons": {
+        "description": "Settings screen for choosing which buttons the player shows"
+    },
+    "osdButtonsDescription": "Välj vilka knappar spelaren visar",
+    "@osdButtonsDescription": {
+        "description": "Subtitle for the player buttons settings tile"
+    },
+    "osdButtonsSectionDescription": "Uppspelningskontrollerna visas alltid. Allt nedanför är upp till dig, och varje typ av enhet sparar sin egen lista.",
+    "@osdButtonsSectionDescription": {
+        "description": "Explains that transport controls can't be hidden and that the list is per device kind"
+    },
+    "detailButtons": "Åtgärdsknappar",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "detailButtonsDescription": "Välj vilka knappar som ska visas i detaljvyn",
+    "@detailButtonsDescription": {
+        "description": "Subtitle for the details action buttons settings tile"
+    },
+    "detailButtonsSectionDescription": "\"Spela upp\" visas alltid först och låsta knappar visas alltid. Allt annat är upp till dig, och varje typ av enhet sparar sin egen lista.",
+    "@detailButtonsSectionDescription": {
+        "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+    },
+    "screensaverComponentMoonfinLogo": "Moonfin logotypen",
+    "@screensaverComponentMoonfinLogo": {
+        "description": "Screensaver component: Moonfin Logo"
+    },
+    "screensaverComponentRunner": "Löpare",
+    "@screensaverComponentRunner": {
+        "description": "Screensaver component: Runner"
+    },
+    "setupStyleSpotlight": "Spotlight",
+    "@setupStyleSpotlight": {
+        "description": "Name of the hero-first detail layout, offered in the setup wizard"
+    },
+    "animationSpeedSlow": "Långsamt",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedFast": "Snabbt",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "achievementsRecap": "Sammanfattning",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "setupStyleMinimalist": "Minimalistisk",
+    "@setupStyleMinimalist": {
+        "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+    },
+    "libraryStyleDocked": "I docka",
+    "@libraryStyleDocked": {
+        "description": "Library style option: a side panel on TV and desktop, a bottom bar on phones"
+    },
+    "librarySortPlaylistOrder": "Spellistans ordning",
+    "@librarySortPlaylistOrder": {
+        "description": "Sort option: the playlist's own track order"
+    },
+    "playerTransportDocked": "I docka",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "setupStyleStage": "Stage",
+    "@setupStyleStage": {
+        "description": "Name of the poster-led detail layout, offered in the setup wizard"
+    },
+    "setupStyleQuickLook": "Översikt",
+    "@setupStyleQuickLook": {
+        "description": "Name of the detail layout that opens a drawer over the current screen, offered in the setup wizard"
+    },
+    "setupStyleFrost": "Frost",
+    "@setupStyleFrost": {
+        "description": "Name of the detail layout that floats the title in a glass window, offered in the setup wizard"
+    },
+    "sinceYouWatchedSourceServer": "Serverens rekommendationer",
+    "watchPartyBackToClose": "Tillbaka till stängning",
+    "@watchPartyBackToClose": {
+        "description": "TV hint on the watch party quick bar"
+    },
+    "actionButtonsOnScreen": "Åtgärdsknappar på skärmen",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenDescription": "Anpassa hur många åtgärdsknappar som ska visas innan de döljs i menyn ”Fler åtgärder”.",
+    "@actionButtonsOnScreenDescription": {
+        "description": "Subtitle explaining how action buttons overflow into More Actions"
+    },
+    "actionButtonsOnScreenAuto": "Auto (standardinställning för temat)",
+    "@actionButtonsOnScreenAuto": {
+        "description": "Option showing theme default number of action buttons"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (Endast uppspelning)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "actionButtonsOnScreenAll": "Alla (horisontell rullning)",
+    "@actionButtonsOnScreenAll": {
+        "description": "Option showing all action buttons in a horizontal scrollable row"
+    },
+    "detailMetadata": "Metadata-rad",
+    "@detailMetadata": {
+        "description": "Settings screen for choosing and reordering details screen metadata items"
+    },
+    "detailMetadataDescription": "Välj och ändra ordningen på vilka metadata som ska visas på informationsskärmen",
+    "@detailMetadataDescription": {
+        "description": "Subtitle for the details metadata settings tile"
+    },
+    "detailMetadataSectionDescription": "Aktivera eller inaktivera metadataobjekt och ange i vilken ordning de ska visas på detaljskärmen. Varje typ av enhet har sin egen lista.",
+    "@detailMetadataSectionDescription": {
+        "description": "Explains how to customize and reorder details screen metadata items"
+    },
+    "detailMetadataYear": "Utgivningsår",
+    "@detailMetadataYear": {
+        "description": "Item label for release or production year in metadata row"
+    },
+    "detailMetadataRuntimeAndSeasons": "Sändningstid & säsonger",
+    "@detailMetadataRuntimeAndSeasons": {
+        "description": "Item label for runtime or season/episode counts in metadata row"
+    },
+    "detailMetadataStatusSubtitle": "Visar om serien pågår, har avslutats eller kommer tillbaka",
+    "@detailMetadataStatusSubtitle": {
+        "description": "Subtitle explaining the series status metadata badge"
+    },
+    "detailMetadataSeerrAvailability": "Seerrs tillgänglighet",
+    "@detailMetadataSeerrAvailability": {
+        "description": "Item label for Seerr request and availability badge in metadata row"
+    },
+    "detailMetadataSeerrAvailabilitySubtitle": "Visar status för förfrågningar och medietillgänglighet från Seerr",
+    "@detailMetadataSeerrAvailabilitySubtitle": {
+        "description": "Subtitle explaining the Seerr availability metadata badge"
+    },
+    "detailMetadataUpcomingEpisodeDate": "Kommande avsnitt",
+    "@detailMetadataUpcomingEpisodeDate": {
+        "description": "Item label for upcoming episode air date badge in metadata row"
+    },
+    "detailMetadataUpcomingEpisodeDateSubtitle": "Använder Sonarr och TMDB för att visa kommande releasedatum",
+    "@detailMetadataUpcomingEpisodeDateSubtitle": {
+        "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+    },
+    "detailSections": "Avsnitt",
+    "@detailSections": {
+        "description": "Settings tile title for switching Details screen sections on and off"
+    },
+    "detailSectionsDescription": "Välj vilka delar av skärmen ”Detaljer” som ska visas",
+    "@detailSectionsDescription": {
+        "description": "Settings tile subtitle for the Details screen sections list"
+    },
+    "detailSectionsScreenDescription": "Endast de avsnitt som kan visas i den aktuella utformningen av detaljskärmen visas i listan. Om du döljer ett avsnitt döljs det i alla utformningar där det förekommer.",
+    "@detailSectionsScreenDescription": {
+        "description": "Explanatory text at the top of the Details screen sections list"
+    },
+    "detailSectionGroupHeader": "Rubrik",
+    "@detailSectionGroupHeader": {
+        "description": "Group heading for the title area of the Details screen"
+    },
+    "detailSectionGroupSections": "Avsnitt",
+    "@detailSectionGroupSections": {
+        "description": "Group heading for the rows, tabs and cards of the Details screen"
+    },
+    "detailSectionGroupPerson": "Personsidor",
+    "@detailSectionGroupPerson": {
+        "description": "Group heading for sections only shown on a person's Details screen"
+    },
+    "detailSectionGroupCollection": "Samlingssidor",
+    "@detailSectionGroupCollection": {
+        "description": "Group heading for sections only shown on a collection's Details screen"
+    },
+    "detailSectionLogoSubtitle": "Visar titeln som text när den är avstängd",
+    "@detailSectionLogoSubtitle": {
+        "description": "Subtitle for the logo section switch"
+    },
+    "detailSectionVersionBadge": "Versionsmärkning",
+    "@detailSectionVersionBadge": {
+        "description": "Details screen section: the badge shown when an item has more than one version"
+    },
+    "detailSectionCastSubtitle": "Även på samlingssidorna",
+    "@detailSectionCastSubtitle": {
+        "description": "Subtitle for the cast section switch"
+    },
+    "detailSectionCrew": "Regissörer & manusförfattare",
+    "@detailSectionCrew": {
+        "description": "Details screen section: directors and writers"
+    },
+    "detailSectionMoreLikeThisSubtitle": "Liknande album och artister",
+    "@detailSectionMoreLikeThisSubtitle": {
+        "description": "Subtitle for the More Like This section switch"
+    },
+    "detailSectionMoreEpisodes": "More episodes",
+    "@detailSectionMoreEpisodes": {
+        "description": "Details screen section: the other episodes of a show on an episode's page"
+    },
+    "detailSectionMoreEpisodesSubtitle": "På avsnittssidorna",
+    "@detailSectionMoreEpisodesSubtitle": {
+        "description": "Subtitle for the More episodes section switch"
+    },
+    "detailSectionMediaInfo": "Medieinformation",
+    "@detailSectionMediaInfo": {
+        "description": "Details screen section: file, stream and Direct Play details"
+    },
+    "detailSectionMediaInfoSubtitle": "Kontroll av filer, strömmar och Direct Play",
+    "@detailSectionMediaInfoSubtitle": {
+        "description": "Subtitle for the media info section switch"
+    },
+    "detailSectionSeerrGenresTags": "Genrer & taggar",
+    "@detailSectionSeerrGenresTags": {
+        "description": "Details screen Seerr section: genre and keyword chips"
+    },
+    "detailSectionSeerrStats": "Statistik",
+    "@detailSectionSeerrStats": {
+        "description": "Details screen Seerr section: TMDB score, status, budget and revenue"
+    },
+    "detailSectionSeerrStreaming": "Streamingtjänster",
+    "@detailSectionSeerrStreaming": {
+        "description": "Details screen Seerr section: logos of the services streaming the title in the user's region"
+    },
+    "seerrStreamingOn": "Streaming på",
+    "@seerrStreamingOn": {
+        "description": "Heading over the logos of the services streaming a Seerr title"
+    },
+    "detailSectionSeerrSimilar": "Liknande titlar",
+    "@detailSectionSeerrSimilar": {
+        "description": "Details screen Seerr section: similar titles"
+    },
+    "detailSectionSeerrCollection": "Samlingsbanner",
+    "@detailSectionSeerrCollection": {
+        "description": "Details screen Seerr section: the banner for the collection a movie is part of"
+    },
+    "detailSectionSeerrPersonCrew": "Medverkande",
+    "@detailSectionSeerrPersonCrew": {
+        "description": "Details screen Seerr section: a person's crew credits"
+    },
+    "detailSectionPersonPagesSubtitle": "På personsidor",
+    "@detailSectionPersonPagesSubtitle": {
+        "description": "Subtitle for Seerr sections only shown on a person's Details screen"
+    },
+    "detailSectionBirthplace": "Födelseort",
+    "@detailSectionBirthplace": {
+        "description": "Details screen section: a person's place of birth"
+    },
+    "detailSectionPersonLinks": "Länkar",
+    "@detailSectionPersonLinks": {
+        "description": "Details screen section: buttons that open a person's IMDb, TMDB and social media pages"
+    },
+    "detailSectionPersonLinksSubtitle": "IMDb, TMDB och sociala medier",
+    "@detailSectionPersonLinksSubtitle": {
+        "description": "Subtitle under the person links section switch"
+    },
+    "detailSectionGuestAppearances": "Gästframträdanden",
+    "@detailSectionGuestAppearances": {
+        "description": "Details screen section: a person's guest appearances"
+    },
+    "detailSectionMusicVideos": "Musikvideor",
+    "@detailSectionMusicVideos": {
+        "description": "Details screen section: a person's music videos"
+    },
+    "detailSectionPlaylistOrder": "Spellistans ordning",
+    "@detailSectionPlaylistOrder": {
+        "description": "Details screen section: a collection's playlist order"
+    },
+    "detailSectionBookGenres": "Bokgenrer",
+    "@detailSectionBookGenres": {
+        "description": "Details screen section: the genre chips on a book's page"
+    },
+    "detailSectionPhotoExif": "Bildinformation",
+    "@detailSectionPhotoExif": {
+        "description": "Details screen section: camera and image details on a photo's page"
+    },
+    "upcomingEpisodeNext": "Nästa: {date} (S{season}:E{episode})",
+    "@upcomingEpisodeNext": {
+        "description": "Formatted badge text for an upcoming episode release date",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            },
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "upcomingEpisodeTomorrow": "I morgon",
+    "@upcomingEpisodeTomorrow": {
+        "description": "Upcoming episode airs tomorrow"
+    },
+    "radarrCalendarRow": "Kommande filmer (Radarr)",
+    "@radarrCalendarRow": {
+        "description": "Home row title for upcoming movies from the Radarr calendar"
+    },
+    "sonarrCalendarRow": "Kommande TV-program (Sonarr)",
+    "@sonarrCalendarRow": {
+        "description": "Home row title for upcoming episodes from the Sonarr calendar"
+    },
+    "mergedCalendarRow": "Kommande utgåvor",
+    "@mergedCalendarRow": {
+        "description": "Home row title when the Radarr and Sonarr calendars are merged"
+    },
+    "arrCalendarsRowSubtitle": "Radarr- och Sonarr-kalendrar",
+    "@arrCalendarsRowSubtitle": {
+        "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+    },
+    "radarrCalendarRowSubtitle": "Radarr kalendern",
+    "@radarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Radarr calendar home row"
+    },
+    "sonarrCalendarRowSubtitle": "Sonarr Kalendern",
+    "@sonarrCalendarRowSubtitle": {
+        "description": "Subtitle under the Sonarr calendar home row"
+    },
+    "calendarReleaseIn": "{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})",
+    "@calendarReleaseIn": {
+        "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            },
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "calendarReleaseCinema": "Bio",
+    "@calendarReleaseCinema": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Cinema · Tomorrow (Nov 4)'"
+    },
+    "calendarReleaseDigital": "Digitalt",
+    "@calendarReleaseDigital": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Digital · Tomorrow (Nov 4)'"
+    },
+    "calendarReleasePhysical": "Fysisk",
+    "@calendarReleasePhysical": {
+        "description": "Release format before the date in the Radarr calendar row, e.g. 'Physical · Tomorrow (Nov 4)'"
+    },
+    "upcomingCalendars": "Kommande evenemang",
+    "@upcomingCalendars": {
+        "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+    },
+    "upcomingCalendarsDescription": "Välj vad som ska visas i Radarr- och Sonarr-raderna.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "radarrCalendarShowCinema": "Visa kommande biopremiärer",
+    "@radarrCalendarShowCinema": {
+        "description": "Includes cinema release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowDigital": "Visa kommande digitala utgåvor",
+    "@radarrCalendarShowDigital": {
+        "description": "Includes digital release dates in the Radarr calendar row"
+    },
+    "radarrCalendarShowPhysical": "Visa kommande fysiska utgåvor",
+    "@radarrCalendarShowPhysical": {
+        "description": "Includes physical release dates in the Radarr calendar row"
+    },
+    "calendarShowReleaseDate": "Visa utgivningsdatum på startskärmen",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "radarrCalendarHideDownloaded": "Dölj filmer som redan finns på servern",
+    "@radarrCalendarHideDownloaded": {
+        "description": "Leaves out movies Radarr already downloaded from the calendar row"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Visa information om avsnittet",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "sonarrCalendarHideDownloaded": "Dölj avsnitt som redan finns på servern",
+    "@sonarrCalendarHideDownloaded": {
+        "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+    },
+    "mergeRadarrSonarrCalendars": "Slå ihop Sonarr- och Radarr-kalendrarna",
+    "@mergeRadarrSonarrCalendars": {
+        "description": "Shows the Radarr and Sonarr calendars as a single home row"
+    },
+    "buttonOrderHint": "Använd pilarna för att ändra ordningen. På en fjärrkontroll flyttar vänster och höger den markerade knappen. Om du inaktiverar en knapp hamnar den under de övriga.",
+    "@buttonOrderHint": {
+        "description": "Explains how to reorder the buttons in a row"
+    },
+    "buttonShownInSyncPlayGroup": "Visas endast när du deltar i en tittarfest",
+    "@buttonShownInSyncPlayGroup": {
+        "description": "Hint under the SyncPlay and Watch with group buttons in the button settings, which only appear once the user has joined a group"
+    },
+    "orientationLock": "Skärmorienteringslås",
+    "@orientationLock": {
+        "description": "Player button that locks the screen orientation"
+    },
+    "fullscreen": "Helskärm",
+    "@fullscreen": {
+        "description": "Player button that toggles fullscreen"
+    },
+    "transcodeAudioCodecs": "Omkodning av ljudkodekar",
+    "@transcodeAudioCodecs": {
+        "description": "Setting that lists the audio codecs the server converts instead of the device playing them"
+    },
+    "transcodeAudioCodecsDescription": "Servern omvandlar ljud i dessa format istället för att skicka det som det är.",
+    "@transcodeAudioCodecsDescription": {
+        "description": "Description for the transcode audio codecs setting"
+    },
+    "settingsAudioPassthroughModeDescription": "Hur komprimerat surroundljud når din TV eller din receiver.",
+    "settingsAudioPassthroughModeDisabled": "Inaktiverat (avkoda alltid på den här enheten)",
+    "settingsAudioPassthroughModeAuto": "Auto (stöd för enheter som identifierats automatiskt)",
+    "settingsAudioPassthroughModeManual": "Handbok (välj format nedan)",
+    "settingsAudioPassthroughOutput": "Genomgångsutgång",
+    "@settingsAudioPassthroughOutput": {
+        "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputDescription": "Den som packar bitströmmar för HDMI-anslutningen. Prova appen Packer om passthrough inte fungerar eller krånglar på den här enheten.",
+    "settingsAudioPassthroughOutputPlatform": "Automatisk systempackare (AudioTrack RAW)",
+    "settingsAudioPassthroughOutputIec": "App-packare (AudioTrack IEC)",
+    "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+    "settingsDownmixToStereoDescription": "Mixa ner allt avkodat ljud till två kanaler.",
+    "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, inklusive Dolby Atmos (JOC).",
+    "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, inklusive DTS:X.",
+    "settingsAudioTrueHdIncludesAtmos": "Bitstream TrueHD, inklusive Dolby Atmos.",
+    "subtitleDownloadLanguages": "Språk för nedladdning av undertexter",
+    "@subtitleDownloadLanguages": {
+        "description": "Setting that picks which languages a subtitle download searches"
+    },
+    "subtitleDownloadLanguagesDescription": "Språk att söka efter vid nedladdning av undertexter, upp till 5. Systemet söker automatiskt efter ett språk som väljs utifrån ditt standardspråk för undertexter eller videon.",
+    "@subtitleDownloadLanguagesDescription": {
+        "description": "Description for the subtitle download languages setting"
+    },
+    "preferredSecondarySubtitleLanguage": "Önskat språk för undertexter (alternativ)",
+    "@preferredSecondarySubtitleLanguage": {
+        "description": "Preferred language used to sort secondary subtitle tracks in the picker. It doesn't turn subtitles on."
+    },
+    "secondarySubtitlesEnabledSubtitle": "Visa ett andra undertextspår samtidigt. I undertextmenyn frågas man då först vilket spår som ska vara det primära och vilket det sekundära.",
+    "@secondarySubtitlesEnabledSubtitle": {
+        "description": "Subtitle of the setting that turns secondary subtitles on, explaining the extra step it adds to the subtitle menu"
+    },
+    "primarySubtitleSlot": "Grundspår",
+    "@primarySubtitleSlot": {
+        "description": "Label for the primary subtitle selection slot"
+    },
+    "secondarySubtitleSlot": "Andra spåret",
+    "@secondarySubtitleSlot": {
+        "description": "Label for the secondary subtitle selection slot"
+    },
+    "secondarySubtitleTrack": "Sekundära undertexter",
+    "@secondarySubtitleTrack": {
+        "description": "Title of the picker for the secondary subtitle track"
+    },
+    "secondaryDelayAdjustment": "Justering av sekundärfördröjning",
+    "@secondaryDelayAdjustment": {
+        "description": "Title of the secondary subtitle delay menu. This adjustment is added to the primary subtitle delay."
+    },
+    "decreaseValue": "Minskning {setting}",
+    "@decreaseValue": {
+        "description": "Tooltip for the button that lowers a setting's value",
+        "placeholders": {
+            "setting": {
+                "type": "String"
+            }
+        }
+    },
+    "increaseValue": "Öka {setting}",
+    "@increaseValue": {
+        "description": "Tooltip for the button that raises a setting's value",
+        "placeholders": {
+            "setting": {
+                "type": "String"
+            }
+        }
+    },
+    "semiTransparentWhite": "Halvgenomskinligt vitt",
+    "@semiTransparentWhite": {
+        "description": "Color: semi-transparent white"
+    },
+    "lightGray": "Ljusgrå",
+    "@lightGray": {
+        "description": "Color: light gray"
+    },
+    "darkGray": "Mörkgrå",
+    "@darkGray": {
+        "description": "Color: dark gray"
+    },
+    "blue": "Blå",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "magenta": "Magenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "resetProfileTitle": "Återställ {profile}?",
+    "@resetProfileTitle": {
+        "description": "Title of the dialog confirming a profile reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetProfileDescription": "Detta raderar profilen {profile} från servern och återställer alla synkroniserade inställningar på den här enheten till standard.",
+    "@resetProfileDescription": {
+        "description": "Body of the dialog confirming a device profile reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetGlobalProfileDescription": "Detta raderar alla sparade profiler från servern och återställer alla synkroniserade inställningar på den här enheten till standard.",
+    "@resetGlobalProfileDescription": {
+        "description": "Body of the dialog confirming a global profile reset"
+    },
+    "profileReset": "Återställde profilen {profile} till standard.",
+    "@profileReset": {
+        "description": "Message after a profile was reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetRatingsTitle": "Återställ betyg?",
+    "@resetRatingsTitle": {
+        "description": "Title of the dialog confirming a ratings reset"
+    },
+    "resetRatingsDescription": "Detta återställer alla betygssinställningar till standard, inklusive vilka källor som visas och i vilken ordning de visas.",
+    "@resetRatingsDescription": {
+        "description": "Body of the dialog confirming a ratings reset"
+    },
+    "ratingsReset": "Återställde alla betyg till standard.",
+    "@ratingsReset": {
+        "description": "Message after the ratings settings were reset"
+    },
+    "failedToResetProfile": "Misslyckades med att återställa profilen {profile}.",
+    "@failedToResetProfile": {
+        "description": "Message when a profile reset failed",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "tvOfflineDownloads": "Aktivera nedladdningar offline",
+    "@tvOfflineDownloads": {
+        "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
+    },
+    "tvOfflineDownloadsSubtitle": "Visa nedladdningsalternativ på artikelsidorna",
+    "@tvOfflineDownloadsSubtitle": {
+        "description": "Subtitle for the TV-only offline downloads toggle"
+    },
+    "sdCard": "SD-kort",
+    "@sdCard": {
+        "description": "Download location option for a removable storage volume"
+    },
+    "downloadLocationLimitedByAndroid": "Android tillåter endast Moonfin att skriva till de mappar som appen äger, och den här enheten har inget utbytbart lagringsutrymme. Aktivera alternativet ”Spara i mappen Nedladdningar” ovan för att spara nedladdningar på en plats som andra appar kan komma åt.",
+    "@downloadLocationLimitedByAndroid": {
+        "description": "Note shown when the only download location Android allows is the default one"
+    },
+    "transcodingTimeRemainingUnavailable": "Omkodning: Återstående tid ej tillgänglig",
+    "@transcodingTimeRemainingUnavailable": {
+        "description": "Notice shown below downloading text when downloading a transcoded stream"
+    },
+    "showLiveTvButton": "Knappen ”Visa direktsänd TV”",
+    "@showLiveTvButton": {
+        "description": "Setting for showing live TV button"
+    },
+    "showDownloadsButton": "Visa knappen Hämta",
+    "@showDownloadsButton": {
+        "description": "Setting for showing downloads button"
+    },
+    "showLibrariesIndividually": "Visa bibliotek ett i taget",
+    "@showLibrariesIndividually": {
+        "description": "Setting that puts each library in the navigation bar as its own button instead of grouping them under the Libraries menu"
+    },
+    "showLibrariesIndividuallySubtitle": "Visa varje bibliotek som en egen knapp i navigeringsfältet istället för i menyn ”Bibliotek”",
+    "@showLibrariesIndividuallySubtitle": {
+        "description": "Subtitle for the Show Libraries Individually setting"
+    },
+    "mergeLibrariesByType": "Slå ihop film- och TV-seriebiblioteken",
+    "@mergeLibrariesByType": {
+        "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+    },
+    "mergeLibrariesByTypeDescription": "När bibliotek med flera servrar är aktiverat visas ett filmbibliotek och ett TV-seriebibliotek för alla servrar. En titel som finns på flera servrar listas endast en gång.",
+    "@mergeLibrariesByTypeDescription": {
+        "description": "Description for the setting that merges movie and series libraries across servers"
+    },
+    "mergedServerCount": "{count, plural, other{On {count} servers}}",
+    "@mergedServerCount": {
+        "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mergedCopiesNotChanged": "Har inte ändrats den {servers}",
+    "@mergedCopiesNotChanged": {
+        "description": "Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names",
+        "placeholders": {
+            "servers": {
+                "type": "String"
+            }
+        }
+    },
+    "recentlyAddedAndReleased": "Nyligen tillagda och släppta",
+    "@recentlyAddedAndReleased": {
+        "description": "Section title for Recently Added and Recently Released home row settings"
+    },
+    "hideWatchedInRecentRows": "Dölj visade",
+    "@hideWatchedInRecentRows": {
+        "description": "Setting to hide watched items from Recently Added and Recently Released home rows"
+    },
+    "hideWatchedInRecentRowsDescription": "Dölj visat innehåll från raderna Nyligen tillagda och Nyligen släppta på startsidan.",
+    "@hideWatchedInRecentRowsDescription": {
+        "description": "Description for hiding watched items from Recently Added and Recently Released home rows"
+    },
+    "mergeRecentRowsByType": "Slå ihop de senaste raderna efter typ",
+    "@mergeRecentRowsByType": {
+        "description": "Setting for merging recently added and recently released libraries by media type"
+    },
+    "mergeRecentRowsByTypeDescription": "Slå ihop separata bibliotek av samma typ för raderna Nyligen tillagda och Nyligen släppta på startsidan.",
+    "@mergeRecentRowsByTypeDescription": {
+        "description": "Description for merging recent home rows by media type"
+    },
+    "libraryView": "Biblioteksvy",
+    "@libraryView": {
+        "description": "Section title for library view settings"
+    },
+    "libraryStyle": "Stil för videobiblioteket",
+    "@libraryStyle": {
+        "description": "Label for the setting that picks the library page header layout"
+    },
+    "libraryStyleDescription": "”Classic” är den ursprungliga rubriken med ikonknappar. ”Modern” samlar sökfunktionen samt märkta knappar för sortering, gruppering och filtrering i en enda rad. ”Docked” flyttar kontrollerna och bokstäverna till en sidopanel.",
+    "@libraryStyleDescription": {
+        "description": "Explanation under the library style setting on TV and desktop"
+    },
+    "libraryStyleDescriptionPhone": "”Classic” är den ursprungliga rubriken med ikonknappar. ”Modern” lägger till etiketterade sorterings-, grupperings- och filterrutor under sökfältet. ”Docked” placerar kontrollerna i en rad längst ned på skärmen.",
+    "@libraryStyleDescriptionPhone": {
+        "description": "Explanation under the library style setting on phones"
+    },
+    "bookLibraryStyle": "Bokbibliotekets stil",
+    "@bookLibraryStyle": {
+        "description": "Label for the setting that picks the book and audiobook library layout"
+    },
+    "bookLibraryStyleDescription": "”Classic” visar de ursprungliga hyllorna under en utvald titel. ”Reading Room” visar det du läser just nu på stora kort. ”Bookstore” låter dig bläddra igenom hela biblioteket i ett rutnät.",
+    "@bookLibraryStyleDescription": {
+        "description": "Explanation under the book library style setting"
+    },
+    "bookLibraryStyleReadingRoom": "Läsesalen",
+    "@bookLibraryStyleReadingRoom": {
+        "description": "Book library style option: large Continue cards over a few shelves"
+    },
+    "bookLibraryStyleBookstore": "Bokhandel",
+    "@bookLibraryStyleBookstore": {
+        "description": "Book library style option: browse entries over a title grid"
+    },
+    "musicLibraryStyle": "Musikbibliotekets stil",
+    "@musicLibraryStyle": {
+        "description": "Label for the setting that picks the music library layout"
+    },
+    "musicLibraryStyleDescription": "”Classic” visar de ursprungliga raderna under ett ”Jump Back In”-kort. ”Quick Access” inleds med ett rutnät med dina senaste album och spellistor. ”Immersive” inleds med det album du lyssnar på just nu.",
+    "@musicLibraryStyleDescription": {
+        "description": "Explanation under the music library style setting"
+    },
+    "musicLibraryStyleQuickAccess": "Snabbtillgång",
+    "@musicLibraryStyleQuickAccess": {
+        "description": "Music library style option: a grid of recent albums and playlists over the rows"
+    },
+    "musicLibraryStyleImmersive": "Fängslande",
+    "@musicLibraryStyleImmersive": {
+        "description": "Music library style option: a full-width album hero over the rows"
+    },
+    "jumpBackIn": "Kom tillbaka",
+    "@jumpBackIn": {
+        "description": "Heading over the albums and playlists the user played recently in a music library"
+    },
+    "yourPlaylists": "Dina spellistor",
+    "@yourPlaylists": {
+        "description": "Heading over the user's playlists in a music library"
+    },
+    "fromThisAlbum": "Från detta album",
+    "@fromThisAlbum": {
+        "description": "Heading over the track list of the album shown in the music library hero"
+    },
+    "searchMusic": "Sök efter musik",
+    "@searchMusic": {
+        "description": "Placeholder and label for the search control in a music library"
+    },
+    "bookSeriesCount": "{count, plural, =1{1 series} other{{count} series}}",
+    "@bookSeriesCount": {
+        "description": "How many series a book library holds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookInProgressCount": "{count} pågår",
+    "@bookInProgressCount": {
+        "description": "How many books or audiobooks are started but not finished",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookBrowseAllTitles": "{count, plural, =1{Browse 1 title} other{Browse all {count} titles}}",
+    "@bookBrowseAllTitles": {
+        "description": "Link from the book library to the full title grid",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "searchBooks": "Sök efter böcker",
+    "@searchBooks": {
+        "description": "Button in the book library that opens search within it"
+    },
+    "libraryShowLabel": "Visa",
+    "@libraryShowLabel": {
+        "description": "Library button that opens the played status filter, followed by its current value such as All or Unwatched"
+    },
+    "libraryAToZ": "A till Z",
+    "@libraryAToZ": {
+        "description": "Library bottom bar button that turns the alphabet on and off"
+    },
+    "libraryJumpToLetter": "Gå till bokstaven",
+    "@libraryJumpToLetter": {
+        "description": "Label of the alphabet in a library, which scrolls to the first item starting with the chosen letter"
+    },
+    "libraryOrder": "Biblioteksbeställning",
+    "@libraryOrder": {
+        "description": "Title of the settings screen that reorders the user's libraries"
+    },
+    "libraryOrderSubtitle": "Välj i vilken ordning dina bibliotek ska visas",
+    "@libraryOrderSubtitle": {
+        "description": "Subtitle of the Library Order entry in the libraries settings"
+    },
+    "libraryOrderDescription": "Dina bibliotek visas i den här ordningen på ”Mina medier”, i raderna med nyligen tillagda objekt och i navigeringsfältet. Ordningen sparas på ditt serverkonto, så andra appar som du loggar in på använder den också.",
+    "@libraryOrderDescription": {
+        "description": "Explanation shown at the top of the Library Order settings screen"
+    },
+    "libraryOrderTvHint": "Tryck åt vänster eller höger för att flytta det markerade biblioteket.",
+    "@libraryOrderTvHint": {
+        "description": "Remote control hint on the Library Order settings screen"
+    },
+    "libraryOrderSaveFailed": "Det gick inte att spara biblioteksbeställningen",
+    "@libraryOrderSaveFailed": {
+        "description": "Error shown when saving the library order to the server fails"
+    },
+    "peekHomeRows": "Peek-startsidor",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "peekHomeRowsDescription": "Visa den övre halvan av den första raden längst ner på mediefältet",
+    "@peekHomeRowsDescription": {
+        "description": "Description of the Peek Home Rows media bar setting"
+    },
+    "mediaBarModeBookshelf": "Bokhylla",
+    "@mediaBarModeBookshelf": {
+        "description": "Media bar style option: Bookshelf"
+    },
+    "mediaBarModeGallery": "Galleri",
+    "@mediaBarModeGallery": {
+        "description": "Media bar style option: Gallery"
+    },
+    "mediaBarModeAya": "Aya",
+    "@mediaBarModeAya": {
+        "description": "Media bar style option: Aya"
+    },
+    "mediaBarSourceType": "Källa",
+    "@mediaBarSourceType": {
+        "description": "Setting for which titles the media bar draws from"
+    },
+    "mediaBarSourceRandom": "Slumpmässigt",
+    "@mediaBarSourceRandom": {
+        "description": "Media bar source: any eligible title"
+    },
+    "mediaBarNewReleaseBanner": "Banner för ny release",
+    "@mediaBarNewReleaseBanner": {
+        "description": "Setting that flags new series, seasons, episodes and movies in the media bar"
+    },
+    "mediaBarNewReleaseDaysDescription": "Hur länge efter att ett avsnitt har sänts räknas det fortfarande som nytt?",
+    "mediaBarNewSeries": "Ny serie",
+    "@mediaBarNewSeries": {
+        "description": "Media bar label on a series whose first season was released recently"
+    },
+    "mediaBarNewSeason": "Ny säsong",
+    "@mediaBarNewSeason": {
+        "description": "Media bar label on a series whose latest season was released all at once recently"
+    },
+    "mediaBarNewEpisodes": "Nya avsnitt",
+    "@mediaBarNewEpisodes": {
+        "description": "Media bar label on a series with one or more episodes that aired recently"
+    },
+    "mediaBarNewMovie": "Ny film",
+    "@mediaBarNewMovie": {
+        "description": "Media bar label on a movie that came out recently"
+    },
+    "mediaBarNewReleasesSection": "Nya utgåvor",
+    "@mediaBarNewReleasesSection": {
+        "description": "Media bar settings section with the new release label settings"
+    },
+    "mediaBarSourceNewReleasesAll": "Nya utgåvor",
+    "@mediaBarSourceNewReleasesAll": {
+        "description": "Media bar source showing what came out recently: new series, seasons, episodes and movies"
+    },
+    "mediaBarNewReleaseBannerAllDescription": "Markera nya serier, säsonger, avsnitt och filmer.",
+    "@mediaBarNewReleaseBannerAllDescription": {
+        "description": "Description of the media bar new release label setting"
+    },
+    "mediaBarNewReleaseKinds": "Etiketter",
+    "@mediaBarNewReleaseKinds": {
+        "description": "Setting that picks which titles get a new release label in the media bar"
+    },
+    "mediaBarNewEpisodeDays": "Fönster för nytt avsnitt",
+    "@mediaBarNewEpisodeDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewMovieDays": "Nytt filmfönster",
+    "@mediaBarNewMovieDays": {
+        "description": "Setting for how many days after its release a movie counts as new in the media bar"
+    },
+    "mediaBarNewMovieDaysDescription": "Hur länge en film förblir ny efter premiären. Biofilmer läggs ofta upp på servrarna en tid efter premiären, så räkna med en längre tid än för tv-avsnitt.",
+    "@mediaBarNewMovieDaysDescription": {
+        "description": "Description of the new movie window setting"
+    },
+    "mediaBarNewMovieDetail": "Visa slogan",
+    "@mediaBarNewMovieDetail": {
+        "description": "Setting for whether the New Movie label has a second line"
+    },
+    "mediaBarNewMovieDetailDescription": "Under ”Ny film” visas filmens slogan. Om det inte finns någon slogan visas endast rubriken.",
+    "@mediaBarNewMovieDetailDescription": {
+        "description": "Description of the New Movie second line setting"
+    },
+    "trailerVolume": "Trailerns volym",
+    "@trailerVolume": {
+        "description": "Setting for how loud media bar trailers play"
+    },
+    "trailerVolumeDescription": "Hur högt mediebarstrailers spelas upp",
+    "@trailerVolumeDescription": {
+        "description": "Description for the trailer volume slider"
+    },
+    "trailerCaptions": "Undertexter till trailern",
+    "@trailerCaptions": {
+        "description": "Setting for YouTube trailer captions"
+    },
+    "trailerCaptionsDescription": "Visa undertexter i YouTube-trailers",
+    "@trailerCaptionsDescription": {
+        "description": "Description for YouTube trailer captions"
+    },
+    "previewVolume": "Förhandsgranska volym",
+    "@previewVolume": {
+        "description": "Setting for how loud media previews on cards play"
+    },
+    "previewVolumeDescription": "Hur högt spelas medieförhandsvisningar på korten",
+    "@previewVolumeDescription": {
+        "description": "Description for the preview volume slider"
+    },
+    "recentlyReleasedSeriesType": "Nyligen släppta serier – sortera efter",
+    "@recentlyReleasedSeriesType": {
+        "description": "Setting for sorting series in recently released series row"
+    },
+    "recentlyReleasedSeriesTypeDescription": "Sortera de senaste serierna på startsidan efter serie, senaste säsong eller sändningsdatum för det senaste avsnittet",
+    "@recentlyReleasedSeriesTypeDescription": {
+        "description": "Description for recently released series type setting"
+    },
+    "favoriteChannels": "Favoritkanaler",
+    "@favoriteChannels": {
+        "description": "Home row: favourited live TV channels"
+    },
+    "continueWatchingDefaultAction": "Standardåtgärd",
+    "@continueWatchingDefaultAction": {
+        "description": "Setting for default click action on Continue Watching and Next Up items"
+    },
+    "continueWatchingDefaultActionDescription": "Vad som händer när man väljer ett alternativ under ”Fortsätt titta” eller ”Nästa”",
+    "@continueWatchingDefaultActionDescription": {
+        "description": "Description for Continue Watching and Next Up default click action setting"
+    },
+    "goToDetailsScreen": "Gå till detaljer",
+    "@goToDetailsScreen": {
+        "description": "Option to navigate to the details screen for an item"
+    },
+    "playImmediately": "Spela direkt",
+    "@playImmediately": {
+        "description": "Option to play an item immediately"
+    },
+    "nextUpMaxDays": "Max antal dagar i ”Next Up”",
+    "@nextUpMaxDays": {
+        "description": "Setting for how far back the Next Up row reaches"
+    },
+    "nextUpMaxDaysDescription": "Hur länge ett program finns kvar i Next Up efter att du senast tittade på det",
+    "@nextUpMaxDaysDescription": {
+        "description": "Description for the Next Up window setting"
+    },
+    "daysValue": "{days} dagar",
+    "@daysValue": {
+        "description": "A number of days",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "homeRowsPadding": "Radavstånd",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "homeRowsPaddingDescription": "Anpassa avståndet mellan hemraderna",
+    "@homeRowsPaddingDescription": {
+        "description": "Description for home rows padding setting"
+    },
+    "homeRowsGenresAndStudios": "Genrer och studior",
+    "@homeRowsGenresAndStudios": {
+        "description": "Home Rows editor: heading of the group of disabled genre and studio rows"
+    },
+    "homeRowsStreamingServices": "Streamingtjänster",
+    "@homeRowsStreamingServices": {
+        "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
+    },
+    "pinSynced": "PIN-kod synkroniserad",
+    "@pinSynced": {
+        "description": "Shown under the PIN switch when the PIN is kept on the server, so it applies on every device"
+    },
+    "pinResetFailed": "PIN-koden på servern kunde inte raderas. Om den fortfarande är inställd, be en serveradministratör att ta bort den.",
+    "@pinResetFailed": {
+        "description": "Shown on sign in when Forgot PIN could not clear a PIN kept on the server"
+    },
+    "screensaverDuringAudio": "Visa under musik och ljudböcker",
+    "@screensaverDuringAudio": {
+        "description": "Screensaver setting that lets the screensaver start while music or an audiobook plays"
+    },
+    "screensaverDuringAudioDescription": "Låt skärmsläckaren starta medan ljudet spelas upp, så att skivomslaget inte ligger kvar på skärmen i timmar.",
+    "@screensaverDuringAudioDescription": {
+        "description": "Description under the Show During Music and Audiobooks screensaver setting"
+    },
+    "sleepAfterIdle": "Låt TV:n stängas av efter",
+    "@sleepAfterIdle": {
+        "description": "TV setting for how long without a button press before the TV's own screensaver and sleep timer take over"
+    },
+    "sleepAfterIdleDescriptionAndroid": "Stäng Moonfin efter en så lång tid utan att du tryckt på någon knapp, så att TV:ns egen skärmsläckare och vilolägesinställning kan ta över. Allt som är pausat avbryts först, så att återupptagningspunkten bevaras.",
+    "@sleepAfterIdleDescriptionAndroid": {
+        "description": "Description under the Let TV Sleep After setting on Android TV, where the app closes"
+    },
+    "sleepAfterIdleDescriptionAppleTv": "Efter en längre tid utan att du tryckt på någon knapp återgår skärmen till Apple TV:s egen skärmsläckare och viloläge. Moonfin förblir öppet, så du kan fortsätta precis där du slutade.",
+    "@sleepAfterIdleDescriptionAppleTv": {
+        "description": "Description under the Let TV Sleep After setting on Apple TV, where the app stays open"
+    },
+    "screensaverVisualComponents": "Visuella komponenter",
+    "@screensaverVisualComponents": {
+        "description": "Section header for screensaver visual components"
+    },
+    "screensaverLibraryContent": "Bibliotekets innehåll",
+    "@screensaverLibraryContent": {
+        "description": "Section header for screensaver library content"
+    },
+    "screensaverBackdropCalm": "Calm",
+    "@screensaverBackdropCalm": {
+        "description": "Screensaver backdrop: Calm"
+    },
+    "screensaverBackdropAurora": "Aurora",
+    "@screensaverBackdropAurora": {
+        "description": "Screensaver backdrop: Aurora"
+    },
+    "screensaverAdditionalComponent": "Tilläggskomponent",
+    "@screensaverAdditionalComponent": {
+        "description": "Setting for screensaver additional component"
+    },
+    "screensaverComponentMovement": "Komponentens rörelse",
+    "@screensaverComponentMovement": {
+        "description": "Setting for screensaver component movement"
+    },
+    "screensaverComponentPosition": "Komponentens placering",
+    "@screensaverComponentPosition": {
+        "description": "Setting for screensaver component position"
+    },
+    "screensaverComponentSize": "Komponentstorlek",
+    "@screensaverComponentSize": {
+        "description": "Setting for screensaver component size"
+    },
+    "screensaverSourceLibrariesDefault": "Alla (standard)",
+    "@screensaverSourceLibrariesDefault": {
+        "description": "Subtitle when no source libraries are explicitly filtered in screensaver"
+    },
+    "mdblistWatchingNow": "Tittar på MDBList",
+    "@mdblistWatchingNow": {
+        "description": "Title of the Watching on MDBList home row"
+    },
+    "watchingNowWatchersCount": "{count} tittar på",
+    "@watchingNowWatchersCount": {
+        "description": "Badge on Watching on MDBList card showing current watchers count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchingNowLiveSummary": "{users} tittar just nu · {movies} filmer · {shows} shows",
+    "@watchingNowLiveSummary": {
+        "description": "Subtitle for Watching on MDBList home row showing live site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "watchingNowLiveSummaryToday": "{users} såg idag · {movies} filmer · {shows} shows",
+    "@watchingNowLiveSummaryToday": {
+        "description": "Subtitle for Watching on MDBList home row showing 24-hour fallback site statistics",
+        "placeholders": {
+            "users": {
+                "type": "String"
+            },
+            "movies": {
+                "type": "String"
+            },
+            "shows": {
+                "type": "String"
+            }
+        }
+    },
+    "moonbaseAddress": "Adress till Moonbase",
+    "@moonbaseAddress": {
+        "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
+    },
+    "pluginConnected": "Ansluten",
+    "@pluginConnected": {
+        "description": "Status line on the Settings Sync screen when the server plugin answers"
+    },
+    "pluginConnectedVersion": "Ansluten, version {version}",
+    "@pluginConnectedVersion": {
+        "description": "Status line on the Settings Sync screen with the server plugin's version",
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
+    "pluginSyncOn": "Synkronisera på",
+    "@pluginSyncOn": {
+        "description": "Caption under the settings sync switch while sync is on"
+    },
+    "pluginSyncOff": "Synkronisering avstängd",
+    "@pluginSyncOff": {
+        "description": "Caption under the settings sync switch while sync is off"
+    },
+    "syncProfileDescription": "Den här enheten synkroniseras med den profil du väljer tills du väljer en annan.",
+    "@syncProfileDescription": {
+        "description": "Caption above the settings profile cards on the Settings Sync screen"
+    },
+    "profileAppliesEverywhere": "Gäller överallt",
+    "@profileAppliesEverywhere": {
+        "description": "Subtitle of the Global settings profile card"
+    },
+    "profileOverridesGlobal": "Åsidosätter globala inställningar",
+    "@profileOverridesGlobal": {
+        "description": "Subtitle of the Desktop, Mobile and TV settings profile cards"
+    },
+    "profileThisDevice": "Denna enhet",
+    "@profileThisDevice": {
+        "description": "Marks the settings profile card that matches the current device"
+    },
+    "profileLoad": "Ladda",
+    "@profileLoad": {
+        "description": "Button that replaces this device's settings with the chosen profile from the server"
+    },
+    "profileLoadSubtitle": "Server till den här enheten",
+    "@profileLoadSubtitle": {
+        "description": "Line under the Load button saying which way the settings go"
+    },
+    "profileSaveSubtitle": "Denna enhet till servern",
+    "@profileSaveSubtitle": {
+        "description": "Line under the Save button saying which way the settings go"
+    },
+    "resetNamedProfile": "Återställ {profile} Profil",
+    "@resetNamedProfile": {
+        "description": "Button that resets the chosen settings profile, for example Reset TV Profile",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "genresAndTags": "Genrer och taggar",
+    "@genresAndTags": {
+        "description": "Button and dialog title for browsing a title's genres, networks and tags"
+    },
+    "seerrDiscoverSliders": "Seerr Discover reglage",
+    "@seerrDiscoverSliders": {
+        "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
+    },
+    "yourWatchlist": "Din bevakningslista",
+    "@yourWatchlist": {
+        "description": "Seerr row: watchlist"
+    },
+    "showMissingCollectionItems": "Visa saknade objekt i samlingen",
+    "@showMissingCollectionItems": {
+        "description": "Setting title to show missing items from Seerr on Collection pages"
+    },
+    "showMissingCollectionItemsDesc": "Lägg till saknade artiklar på samlingssidorna",
+    "@showMissingCollectionItemsDesc": {
+        "description": "Setting subtitle explaining that missing items will be included on Collection pages"
+    },
+    "showSeerrAvailabilityBadges": "Visa Seerrs tillgänglighetsmärken",
+    "@showSeerrAvailabilityBadges": {
+        "description": "Setting title for showing Seerr availability badges on posters across the app"
+    },
+    "showSeerrAvailabilityBadgesDescription": "Visa Seerr-statusen på affischer och säsonger i hela appen",
+    "@showSeerrAvailabilityBadgesDescription": {
+        "description": "Setting description for showing Seerr availability badges on posters across the app"
+    },
+    "seerrBadgeStyle": "Emblemstil",
+    "@seerrBadgeStyle": {
+        "description": "Setting title for how posters show their Seerr status"
+    },
+    "seerrBadgeStyleDescription": "Badgen placerar Seerrs prick i ett hörn. Bannern visar statusen längs affischens överkant.",
+    "@seerrBadgeStyleDescription": {
+        "description": "Setting description for the Seerr badge style choices"
+    },
+    "seerrBadgeStyleBadge": "Märke",
+    "@seerrBadgeStyleBadge": {
+        "description": "Seerr badge style that shows a status dot in a poster corner"
+    },
+    "seerrNotifyNewMediaTitle": "Nya medier har lagts till",
+    "@seerrNotifyNewMediaTitle": {
+        "description": "Title for the toggle that notifies about anything newly added to the server library, not just requested media"
+    },
+    "seerrNotifyNewMediaSubtitle": "Har något nytt lagts till i serverbiblioteket?",
+    "@seerrNotifyNewMediaSubtitle": {
+        "description": "Subtitle for the new media notifications toggle"
+    },
+    "seerrTestNotification": "Skicka testmeddelande",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "Kontrollera leveransen av push-meddelanden i appen och i bakgrunden",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "Skickat till {count, plural, =1{1 device} other{{count} devices}}.",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "En avisering har skickats via appen. Serverpush är inte aktiverat.",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "Det gick inte att skicka testmeddelandet",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "Server Push",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "Push-meddelande från enheten",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "Registrerad",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "Inte registrerad",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
+    },
+    "seerrDownloadingSize": "Hämtar · {done} / {total}",
+    "@seerrDownloadingSize": {
+        "description": "Label above the Seerr download progress bar when byte counts are known",
+        "placeholders": {
+            "done": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrDownloadedOfTotal": "{done} / {total}",
+    "@seerrDownloadedOfTotal": {
+        "description": "Short form of the Seerr download label, used when the card is too narrow for the verb",
+        "placeholders": {
+            "done": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrPercentValue": "{percent}%",
+    "@seerrPercentValue": {
+        "description": "Standalone percentage shown at the end of the Seerr download bar label",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrWaitingForImport": "Hämtad, väntar på import",
+    "@seerrWaitingForImport": {
+        "description": "Label on the Seerr download bar when the download has finished and Radarr/Sonarr has not imported it into the library yet"
+    },
+    "seerrDownloadStalled": "Fastnat",
+    "@seerrDownloadStalled": {
+        "description": "Label on the Seerr download bar when the download is not making progress, for example a torrent with no seeders"
+    },
+    "seerrDownloadFailed": "Nedladdningen misslyckades",
+    "@seerrDownloadFailed": {
+        "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "seerrImportBlocked": "Importen har blockerats",
+    "@seerrImportBlocked": {
+        "description": "Label on the Seerr download bar when the download finished but Radarr/Sonarr refuses to import it, for example because the release contains an executable"
+    },
+    "seerrNotFoundYet": "Har inte hittats ännu",
+    "@seerrNotFoundYet": {
+        "description": "Shown where the Seerr download bar would be, when a request was approved and Radarr or Sonarr has the released movie or aired episodes but has not found a release to download yet"
+    },
+    "seerrSearchingIndexers": "Sökindexerare",
+    "@seerrSearchingIndexers": {
+        "description": "Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now"
+    },
+    "seerrNotFoundYetSearched": "Har inte hittats än · har sökts efter {when}",
+    "@seerrNotFoundYetSearched": {
+        "description": "Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNotAvailableYet": "Finns inte ännu",
+    "@seerrNotAvailableYet": {
+        "description": "Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it"
+    },
+    "seerrAvailableOn": "Finns tillgängligt {date}",
+    "@seerrAvailableOn": {
+        "description": "Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNextEpisodeOn": "Nästa avsnitt {date}",
+    "@seerrNextEpisodeOn": {
+        "description": "Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrGetDifferentRelease": "Hämta en annan version",
+    "@seerrGetDifferentRelease": {
+        "description": "Admin-only button on a Seerr title's detail screen, and the title and confirm button of its dialog. It removes a stuck download, blocks that release, and has Radarr/Sonarr search for another one"
+    },
+    "seerrGetDifferentReleaseConfirm": "{service} kommer att ta bort {release} från nedladdningsklienten, blockera den så att den inte hämtas igen och söka efter en annan version.",
+    "@seerrGetDifferentReleaseConfirm": {
+        "description": "Body of the confirm dialog for Get a different release",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            },
+            "release": {
+                "type": "String",
+                "example": "Big.Buck.Bunny.2008.1080p.WEB-DL.x264"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseDone": "Borttagen. {service} letar efter ytterligare en utgåva.",
+    "@seerrGetDifferentReleaseDone": {
+        "description": "Short confirmation after Get a different release removed the stuck download",
+        "placeholders": {
+            "service": {
+                "type": "String",
+                "example": "Radarr"
+            }
+        }
+    },
+    "seerrGetDifferentReleaseFailed": "Det gick inte att ta bort nedladdningen",
+    "@seerrGetDifferentReleaseFailed": {
+        "description": "Error shown when Get a different release could not remove the stuck download"
+    },
+    "requestMore4k": "Begär mer i 4K",
+    "@requestMore4k": {
+        "description": "Button to request more seasons in 4K, shown next to the non-4K Request More button"
+    },
+    "request4k": "Begär 4K",
+    "@request4k": {
+        "description": "Button to submit a 4K media request, shown next to the non-4K Request button"
+    },
+    "requested4k": "4K begärt",
+    "@requested4k": {
+        "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
+    },
+    "cancelRequest4k": "Avbryt 4K-begäran",
+    "@cancelRequest4k": {
+        "description": "Button/dialog title to cancel a 4K media request"
+    },
+    "requestedByLabel": "På begäran av",
+    "@requestedByLabel": {
+        "description": "Label above the name of whoever requested media, where the name sits on its own line"
+    },
+    "manageRequests": "Hantera förfrågningar",
+    "@manageRequests": {
+        "description": "Details screen button opening the pending requests to approve or decline"
+    },
+    "watchlist": "Bevakningslista",
+    "@watchlist": {
+        "description": "Details screen button adding the title to the Seerr watchlist"
+    },
+    "onWatchlist": "På bevakningslistan",
+    "@onWatchlist": {
+        "description": "Details screen button label when the title is already on the Seerr watchlist"
+    },
+    "requestSeriesOrMovie4k": "Begär 4K {type}",
+    "@requestSeriesOrMovie4k": {
+        "description": "Bottom sheet title for requesting media in 4K",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrSeriesContinuing": "Serien fortsätter · Framtida säsonger kan beställas",
+    "@seerrSeriesContinuing": {
+        "description": "Banner in the Seerr request dialog for a continuing series whose aired seasons are all in the library"
+    },
+    "seerrSeriesMatchDescription": "Vi kunde inte matcha den här serien automatiskt. Välj rätt alternativ nedan.",
+    "@seerrSeriesMatchDescription": {
+        "description": "Shown above Sonarr's matches in the Seerr request dialog when the series has no TVDB id, so the user has to pick which series to request"
+    },
+    "seerrSeriesNoMatch": "Vi kunde inte hitta någon matchning för den här serien, så den går inte att beställa.",
+    "@seerrSeriesNoMatch": {
+        "description": "Shown in the Seerr request dialog when the series has no TVDB id and Sonarr found no series to match it with"
+    },
+    "seerrSeriesMatchFailed": "Sonarr kunde inte hitta någon träff för den här serien, eller gick inte att nå. Försök igen, eller kolla serien på Seerr.",
+    "@seerrSeriesMatchFailed": {
+        "description": "Shown in the Seerr request dialog above a Retry button when looking up Sonarr's matches for a series with no TVDB id fails. Seerr reports a series Sonarr doesn't know and an unreachable Sonarr the same way, so the text covers both"
+    },
+    "adminPremiereNoteLiveTv": "För att kunna se direktsänd TV krävs Emby Premiere. Utan det importerar servern varken kanaler eller spelar in något.",
+    "adminPremiereNoteBackups": "Funktionen ”Säkerhetskopiering och återställning” kräver Emby Premiere när provperioden löper ut.",
+    "adminGeneralRunAtStartup": "Starta servern vid uppstart",
+    "adminGeneralLaunchWebApp": "Öppna webbappen i en webbläsare när servern startar",
+    "adminGeneralBannerText": "Text i bannern på startsidan",
+    "adminGeneralBannerTextHelp": "Visas för alla användare på deras startskärm",
+    "adminGeneralSectionMaintenance": "Underhållsläge",
+    "adminGeneralMaintenanceMode": "Sätt servern i underhållsläge",
+    "adminGeneralMaintenanceModeHelp": "Användarna ser endast underhållsmeddelandet.",
+    "adminGeneralMaintenanceMessage": "Underhållsmeddelande",
+    "adminGeneralMaintenanceMessageHelp": "Lämna fältet tomt om du vill visa ett allmänt meddelande på varje användares språk.",
+    "adminGeneralSectionUpdates": "Automatiska uppdateringar",
+    "adminGeneralAutoUpdate": "Uppdatera servern automatiskt",
+    "adminGeneralAutoRestart": "Starta om automatiskt för att installera uppdateringarna",
+    "adminGeneralAutoRestartHelp": "Servern startas om endast när inga användare är aktiva.",
+    "adminTaskTriggerSystemEvent": "Efter en systemhändelse ({event})",
+    "@adminTaskTriggerSystemEvent": {
+        "placeholders": {
+            "event": {
+                "type": "String"
+            }
+        }
+    },
+    "adminPluginNeedsPremiere": "Kräver Emby Premiere efter en 14-dagars gratis provperiod",
+    "adminEmbyBackupsHelp": "Emby säkerhetskopierar via tillägget ”Backup & Restore”.",
+    "adminEmbyBackupsNoPlugin": "Tillägget ”Backup & Restore” är inte installerat. Installera det från tilläggskatalogen för att säkerhetskopiera den här servern.",
+    "adminEmbyBackupNow": "Säkerhetskopiera nu",
+    "adminEmbyFullBackup": "Fullständig säkerhetskopiering",
+    "adminEmbyLightBackups": "Databasbackuper",
+    "adminEmbyBackupServerVersion": "Emby {version}",
+    "@adminEmbyBackupServerVersion": {
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
+    "adminEmbyRestoreConfirm": "Återställ {name}? Den ersätter serverns bibliotek, inställningar, användare och lösenord, och servern stängs av när processen är klar. Du kan behöva starta om den själv.",
+    "@adminEmbyRestoreConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminEmbyRestoreServerId": "Återställ servern ID",
+    "adminEmbyRestoreServerIdHelp": "Stäng av den här funktionen när du återställer samma säkerhetskopia på fler än en server.",
+    "adminEmbyRestoreShuttingDown": "Återställningen är klar och servern stängs av. Starta den igen om den inte startar om av sig själv.",
+    "adminHiddenRemotely": "Dölj inloggningsskärmarna vid fjärranslutning",
+    "adminHiddenFromUnusedDevices": "Dölj inloggningsskärmarna på enheter där de aldrig har loggat in",
+    "adminSimultaneousStreamLimitHelp": "Begränsar hur många videoklipp den här användaren kan spela upp samtidigt.",
+    "adminUnlimited": "Obegränsat",
+    "adminAutoRemoteQuality": "Automatisk fjärrstyrningskvalitet (Mbps)",
+    "adminAutoRemoteQualityHelp": "Used remotely when the player is set to auto quality. Leave empty to detect it.",
+    "adminAllowCameraUpload": "Tillåt uppladdning via kamera",
+    "adminAllowSubtitleDownloading": "Tillåt nedladdning av undertexter",
+    "adminAllowMediaConversion": "Tillåt mediekonvertering",
+    "adminAllowSyncTranscoding": "Tillåt nedladdningar som kräver omkodning",
+    "adminAllowSharingPersonalItems": "Tillåt delning av spellistor med andra användare",
+    "adminAllowPreferenceAccess": "Tillåt användarna att ändra sitt eget lösenord och sin profilbild",
+    "adminTagMode": "Dagsläge",
+    "adminEmbyConnectUser": "Användarnamn eller e-postadress för Emby Connect",
+    "adminEmbyConnectHelp": "Gör det möjligt för den här användaren att logga in från vilken Emby-app som helst utan att känna till serveradressen.",
+    "adminEmbyConnectLink": "Länk",
+    "adminEmbyConnectUnlink": "Ta bort länken",
+    "adminEmbyConnectLinked": "Kopplat till Emby Connect",
+    "adminEmbyConnectPending": "Inbjudan har skickats. Länken aktiveras så snart de accepterar den.",
+    "adminEmbyConnectUnlinked": "Länken till Emby Connect har tagits bort",
+    "adminEmbyConnectNotFound": "Det finns inget Emby Connect-konto med det användarnamnet eller den e-postadressen.",
+    "adminLibImportPlaylists": "Importera spellistfiler",
+    "adminLibExcludeFromSearch": "Uteslut från den globala sökningen",
+    "adminLibForcedSubtitlesOnly": "Ladda endast ner tvingade undertexter",
+    "adminLibImportCollections": "Importera samlingar från metadata-nedladdare",
+    "adminLibThumbnailInterval": "Intervall för förhandsgranskningsminiatyrer",
+    "adminLibThumbnailEverySeconds": "Varje {count} sekunder",
+    "@adminLibThumbnailEverySeconds": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibThumbnailAtChapters": "Vid kapitelmarkeringarna",
+    "adminLibSaveThumbnailsWithMedia": "Spara förhandsgranskningsminiatyrer i mediemappar",
+    "adminLibrarySectionMarkers": "Inledningsmarkörer",
+    "adminLibIntroDetection": "Upptäck intro",
+    "adminLibIntroDetectionDuringScan": "Upptäck introer under genomsökningen av biblioteket",
+    "adminProviderEmbyGuide": "Emby Guide Data",
+    "adminLiveTvEmbyGuideSelectLineup": "Välj ett programutbud. Om inga visas, kontrollera postnumret. Programutbud kräver Emby Premiere.",
+    "adminLiveTvWakeServer": "Väck servern för inspelningar",
+    "adminDrawerLiveTvChannels": "Live-TV-kanaler",
+    "adminPageDescLiveTvChannels": "Slå på och stänga av kanaler samt ställa in deras ordning",
+    "adminLiveTvChannelsEmpty": "Det finns inga kanaler ännu. De visas här så snart en tuner har konfigurerats och servern har importerat sina kanaler.",
+    "adminTranscodingHwaHelp": "Med alternativet ”Avancerat” kan du välja och ordna hårdvarukodekerna.",
+    "adminTranscodingHwDecoders": "Rekommenderade hårdvarudekodare",
+    "adminTranscodingHwEncoders": "Rekommenderade hårdvarubaserade kodare",
+    "adminTranscodingTempPathHelp": "Var transkodaren sparar sina arbetsfiler. Lämna fältet tomt för att använda serverns datamapp.",
+    "adminTranscodingThrottleHelp": "Saktar ner omkodningen när tillräckligt mycket har buffrats, för att minska CPU-användningen.",
+    "adminTranscodingDownmixHelp": "Höjer volymen när ljudet nedmixas. 1 behåller den ursprungliga volymen.",
+    "adminTranscodingFontExtraction": "Tillåt utdragning av teckensnitt i realtid",
+    "adminTranscodingMaxResolution": "Högsta upplösning vid transkodning",
+    "adminTranscodingMaxResolutionHelp": "En gräns för varje omkodning, oavsett vilken kvalitet appen begär.",
+    "adminTranscodingToneMapSoftware": "Tonmappning vid programvarubaserad omkodning",
+    "adminTranscodingToneMapHardware": "Tonmappning vid hårdvarubaserad omkodning",
+    "adminTranscodingToneMapHelp": "Förhindrar att HDR-video ser mörk och blek ut när den omkodas.",
+    "adminNetworkingLocalAddress": "Lokal IP-adress",
+    "adminNetworkingLocalAddressHelp": "Den lokala adressen som servern tilldelar apparna. Lämna fältet tomt för att den ska upptäckas automatiskt.",
+    "adminNetworkingBehindProxy": "HTTPS hanteras av en omvänd proxy",
+    "adminNetworkingExternalDomain": "Extern domän",
+    "adminNetworkingExternalDomainHelp": "En domän eller ett dynamiskt DNS-namn för fjärranslutningar, utan angivande av protokoll eller port. Ett anpassat certifikat kräver detta.",
+    "adminNetworkingUpnp": "Aktivera automatisk portmappning",
+    "adminNetworkingUpnpHelp": "Försöker koppla den offentliga porten till den lokala porten med hjälp av UPnP. Vissa routrar stöder inte detta.",
+    "adminNetworkingProxyHeaders": "Läs proxy-rubrikerna för klientadresserna",
+    "adminNetworkingProxyHeadersHelp": "Använder rubriker som X-Forwarded-For för att hitta varje klients adress. Aktivera endast denna funktion bakom en omvänd proxy.",
+    "adminNetworkingProxyHeadersRemote": "Endast när de har fjärradresser",
+    "adminNetworkingIpv4Only": "Använd IPv4 för utgående förfrågningar",
+    "adminNetworkingIpv4OnlyHelp": "När metadataleverantörer och andra tjänster inte kan nås via IPv6.",
+    "adminOnePerLine": "En per rad",
+    "adminStreamingStreamLimit": "Maximalt antal samtidiga videoströmmar",
+    "adminStreamingStreamLimitHelp": "Hur många videoklipp som kan spelas upp samtidigt på servern. 0 betyder att det inte finns någon begränsning.",
+    "adminSyncJobsConversions": "Konverteringsuppdrag",
+    "adminSyncJobsDownloads": "Ladda ner jobb",
+    "adminSyncJobsEmpty": "Inga lediga tjänster",
+    "adminSyncJobCancel": "Avbryt uppdraget",
+    "adminSyncJobCancelConfirm": "Avbryt {name} och ta bort den från listan?",
+    "@adminSyncJobCancelConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSyncJobConverting": "Konvertering",
+    "adminSyncJobReady": "Redo för överföring",
+    "adminSyncJobTransferring": "Överföring",
+    "adminSyncJobCompletedWithError": "Slutfört med fel",
+    "adminSyncJobItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+    "@adminSyncJobItemCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDrawerDatabase": "Databas",
+    "adminPageDescDatabase": "Cache-storlek och underhåll",
+    "adminDatabaseWarning": "Detta är avancerade inställningar. Låt dem vara på standardinställningarna om du inte har någon anledning att ändra dem.",
+    "adminDatabaseCacheSize": "Databasens cacheminne (MB)",
+    "adminDatabaseCacheSizeHelp": "Hur stor del av varje databasfil som servern lagrar i minnet. En högre värde kan göra servern snabbare. Träder i kraft efter en omstart.",
+    "adminDatabaseOptimize": "Optimera databasen när servern stängs av",
+    "personalRatingStars": "5 stjärnor",
+    "@personalRatingStars": {
+        "description": "Personal rating style using a five-star scale."
+    },
+    "homeScreenBackdropFullScreen": "Helskärm",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Helskärm",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
     }
 }

@@ -26,6 +26,9 @@ class GalleryCoverflow extends StatefulWidget {
   /// in the tree before it can start and report playback.
   final bool fullWidthTrailer;
 
+  /// Room left at the top for the status bar and the navigation over it.
+  final double topInset;
+
   const GalleryCoverflow({
     super.key,
     required this.items,
@@ -37,6 +40,7 @@ class GalleryCoverflow extends StatefulWidget {
     this.activeTrailer,
     this.trailerActive = false,
     this.fullWidthTrailer = false,
+    this.topInset = 0,
   });
 
   @override
@@ -84,14 +88,13 @@ class _GalleryCoverflowState extends State<GalleryCoverflow> {
       widget.items.length - 1,
     )];
     final glow = glowColorForGenres(active.genres);
-    final topInset = MediaQuery.paddingOf(context).top;
 
     return Stack(
       fit: StackFit.expand,
       children: [
         _AmbientGlow(color: glow),
         Padding(
-          padding: EdgeInsets.only(top: topInset + 8),
+          padding: EdgeInsets.only(top: widget.topInset + 8),
           child: Column(
             children: [
               Expanded(child: _buildCarousel(glow)),

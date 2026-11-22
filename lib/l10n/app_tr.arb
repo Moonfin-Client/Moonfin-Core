@@ -7015,7 +7015,7 @@
     "homeRowsStyleModern": "Modern",
     "homeRowsSection": "Ana Sayfa Satırları",
     "rowsType": "Satır Tipi",
-    "rowsTypeDescription": "Klasik mod, satır başına görsel türünü ve bilgi katmanını korur. Modern mod ise dikey görsellerden yatay arka planlara uzanan satırlar kullanır.",
+    "rowsTypeDescription": "Klasik, satır bazlı görsel türünü ve bilgi katmanını korur. Modern, portreden arka plana dönüşen satırları kullanır. Atlıkarınca, her satırın altına bir ayrıntı paneli ekler.",
     "displayFavoritesRows": "Favoriler Satırlarını Görüntüle",
     "displayFavoritesRowsSubtitle": "Favori Filmleri, Dizileri ve diğer favori satırlarını Ana Sayfa Bölümlerinde göster.",
     "favoritesRowSorting": "Favoriler Satırı Sıralaması",
@@ -8508,7 +8508,7 @@
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemSubtitle": "Moonfin Önerileri yerel kütüphane algoritmasını, Jellyfin Önerileri sunucu motorunu veya çevrimiçi TMDb Benzerlik Metriklerini kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.",
+    "recommendationSystemSubtitle": "Yerel kütüphane algoritması olan Moonfin Önerileri'ni, medya sunucunuzdan gelen Sunucu Önerileri'ni veya çevrimiçi TMDb Benzerlik Ölçütleri'ni kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -10477,7 +10477,7 @@
     "@detailScreenStyleMinimalist": {
         "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
     },
-    "recommendationSystemJellyfin": "Jellyfin Önerileri",
+    "recommendationSystemJellyfin": "Sunucu Önerileri",
     "@recommendationSystemJellyfin": {
         "description": "Recommendation system option: Jellyfin Recommends"
     },
@@ -16803,9 +16803,9 @@
     "displaySinceYouWatchedRows": "İzlediğiniz İçin Satırlarını Göster",
     "displaySinceYouWatchedRowsSubtitle": "İzlediğiniz İçin satırlarını Ana Ekran Bölümleri'nde göster ve özelleştir.",
     "sinceYouWatchedSource": "Öneri Kaynağı",
-    "sinceYouWatchedSourceDescription": "Öneri kaynağını seçin (Moonfin Önerileri: özel yerel algoritma, Jellyfin Önerileri: sunucu motoru veya TMDb'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).",
+    "sinceYouWatchedSourceDescription": "Öneri kaynağını seçin (Moonfin Önerileri özel yerel algoritması, medya sunucunuzdan gelen Sunucu Önerileri veya TMDb'nin benzerlik ölçütleri. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir).",
     "sinceYouWatchedSourceLocal": "Moonfin Önerileri",
-    "sinceYouWatchedSourceServer": "Jellyfin Önerileri",
+    "sinceYouWatchedSourceServer": "Sunucu Önerileri",
     "sinceYouWatchedSourceOnline": "TMDb Benzerliği",
     "sinceYouWatchedSourceType": "Kaynak Tipi",
     "sinceYouWatchedSourceTypeDescription": "Önerilecek öğelerin tipini seçin",
@@ -18696,5 +18696,174 @@
     "afterHoursPixelPurgeCardRemote": "Sol ve Sağ kaydırıcıyı hareket ettirir.",
     "@afterHoursPixelPurgeCardRemote": {
         "description": "Short remote controls of the Pixel Purge arcade game on its How to play card. The scrubber is the seek bar used as the paddle. Keep under about 90 characters, it shows as one line"
+    },
+    "homeRowsStreamingServices": "Yayın Platformları",
+    "@homeRowsStreamingServices": {
+        "description": "Home Rows editor: heading of the group of disabled rows showing what's popular on Netflix, Prime Video, Disney+ and other streaming services"
+    },
+    "homeRowsStyleCarousel": "Atlıkarınca",
+    "@homeRowsStyleCarousel": {
+        "description": "Name of the home row style that shows a large details panel under each row's posters"
+    },
+    "setupRowsCarouselHint": "Altında geniş bir ayrıntı paneli yer alan afişler.",
+    "@setupRowsCarouselHint": {
+        "description": "What the carousel home row style gives you"
+    },
+    "clickpadSeeking": "Clickpad ile İleri/Geri Sarmaya İzin Ver",
+    "@clickpadSeeking": {
+        "description": "Apple TV video playback setting label for when clicks and swipes on the Siri Remote clickpad may jump through the video"
+    },
+    "clickpadSeekingDescription": "Sol, Sağ ve dokunmatik yüzey kaydırmalarının ne zaman ileri/geri sarabileceğini belirler. Aksi durumda ilk hareket kontrolleri ekrana getirir.",
+    "@clickpadSeekingDescription": {
+        "description": "Subtitle of the Apple TV clickpad seeking setting. Explains that when seeking isn't allowed, a click or swipe only shows the player controls"
+    },
+    "clickpadSeekingControlsVisible": "Kontroller ekrandayken",
+    "@clickpadSeekingControlsVisible": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while the player controls are on screen"
+    },
+    "clickpadSeekingPausedOnly": "Yalnızca duraklatılmışken",
+    "@clickpadSeekingPausedOnly": {
+        "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+    },
+    "playerBlackBarsCropped": "Siyah bantlar kırpıldı",
+    "@playerBlackBarsCropped": {
+        "description": "Toast after a manual recrop found letterbox bars and cropped them"
+    },
+    "playerNoBlackBarsFound": "Siyah bantlar bulunamadı",
+    "@playerNoBlackBarsFound": {
+        "description": "Toast after a manual recrop found that the picture fills the frame"
+    },
+    "playerBlackBarsNotDetected": "Siyah bantlar tespit edilemedi. Daha aydınlık bir sahnede yeniden deneyin",
+    "@playerBlackBarsNotDetected": {
+        "description": "Toast after a manual recrop saw only dark or unclear frames"
+    },
+    "mergeLibrariesByType": "Filmler ve Diziler Kütüphanelerini Birleştir",
+    "@mergeLibrariesByType": {
+        "description": "Setting that shows every server's movie libraries as one library, and every server's TV show libraries as another, when multi-server libraries are on. Use the same words for TV shows as the tvShows string, which names the merged library"
+    },
+    "mergeLibrariesByTypeDescription": "Çoklu sunucu kütüphaneleri açıkken tüm sunucular için tek bir Filmler ve Diziler kütüphanesi gösterilir. Birden fazla sunucudaki ortak içerikler tek sefer listelenir.",
+    "@mergeLibrariesByTypeDescription": {
+        "description": "Description for the setting that merges movie and series libraries across servers"
+    },
+    "mergedServerCount": "{count, plural, other{{count} sunucuda}}",
+    "@mergedServerCount": {
+        "description": "Accessibility label of the small badge on the card of a title that several servers hold, in a library merged across servers and in search. count is how many servers hold it and is always 2 or more",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mergedCopiesNotChanged": "{servers} üzerinde değiştirilmedi",
+    "@mergedCopiesNotChanged": {
+        "description": "Message shown after marking a title watched, unwatched or favorite when the change couldn't be made on some of the servers that hold the title. servers is a comma separated list of server names",
+        "placeholders": {
+            "servers": {
+                "type": "String"
+            }
+        }
+    },
+    "mediaBarNewMovie": "Yeni Film",
+    "@mediaBarNewMovie": {
+        "description": "Media bar label on a movie that came out recently"
+    },
+    "mediaBarNewReleasesSection": "Yeni Çıkanlar",
+    "@mediaBarNewReleasesSection": {
+        "description": "Media bar settings section with the new release label settings"
+    },
+    "mediaBarSourceNewReleasesAll": "Yeni Çıkanlar",
+    "@mediaBarSourceNewReleasesAll": {
+        "description": "Media bar source showing what came out recently: new series, seasons, episodes and movies"
+    },
+    "mediaBarNewReleaseBannerAllDescription": "Yeni dizileri, sezonları, bölümleri ve filmleri işaretle.",
+    "@mediaBarNewReleaseBannerAllDescription": {
+        "description": "Description of the media bar new release label setting"
+    },
+    "mediaBarNewReleaseKinds": "Etiketler",
+    "@mediaBarNewReleaseKinds": {
+        "description": "Setting that picks which titles get a new release label in the media bar"
+    },
+    "mediaBarNewEpisodeDays": "Yeni Bölüm Penceresi",
+    "@mediaBarNewEpisodeDays": {
+        "description": "Setting for how many days an episode counts as new in the media bar"
+    },
+    "mediaBarNewMovieDays": "Yeni Film Penceresi",
+    "@mediaBarNewMovieDays": {
+        "description": "Setting for how many days after its release a movie counts as new in the media bar"
+    },
+    "mediaBarNewMovieDaysDescription": "Bir filmin çıktıktan sonra ne kadar süre yeni kalacağı. Sinema filmleri sunuculara genellikle vizyona girdikten bir süre sonra ulaşır; bu nedenle bölümlerden daha uzun bir süre belirleyin.",
+    "@mediaBarNewMovieDaysDescription": {
+        "description": "Description of the new movie window setting"
+    },
+    "mediaBarNewMovieDetail": "Sloganı Göster",
+    "@mediaBarNewMovieDetail": {
+        "description": "Setting for whether the New Movie label has a second line"
+    },
+    "mediaBarNewMovieDetailDescription": "Yeni Film etiketinin altında filmin sloganını göster. Slogan yoksa etiket tek başına kalır.",
+    "@mediaBarNewMovieDetailDescription": {
+        "description": "Description of the New Movie second line setting"
+    },
+    "seerrSearchingIndexers": "Dizinleyicilerde aranıyor",
+    "@seerrSearchingIndexers": {
+        "description": "Shown where the Seerr download bar would be, while Radarr or Sonarr is searching the indexers for an approved request right now"
+    },
+    "seerrNotFoundYetSearched": "Henüz bulunamadı · {when} arandı",
+    "@seerrNotFoundYetSearched": {
+        "description": "Shown where the Seerr download bar would be, when Radarr watches for an approved, released movie but hasn't found a release, with when it last searched the indexers. {when} is a relative time such as '3h ago'",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNotAvailableYet": "Henüz mevcut değil",
+    "@seerrNotAvailableYet": {
+        "description": "Shown where the Seerr download bar would be, when Radarr has an approved movie that hasn't reached its minimum availability yet, so it doesn't search for it"
+    },
+    "seerrAvailableOn": "{date} tarihinde mevcut",
+    "@seerrAvailableOn": {
+        "description": "Shown where the Seerr download bar would be, when Radarr will start looking for an approved movie on {date}, its release date. {date} is a short formatted date such as 'Jan 15'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNextEpisodeOn": "Sonraki bölüm: {date}",
+    "@seerrNextEpisodeOn": {
+        "description": "Shown where the Seerr download bar would be, when Sonarr has every aired episode of the requested seasons and the next one airs on {date}. {date} is a short formatted date such as 'Nov 20'",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "playerTooltipPictureInPicture": "Pencere içinde pencere",
+    "@playerTooltipPictureInPicture": {
+        "description": "Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings"
+    },
+    "playerTooltipExitPictureInPicture": "Pencere içinde pencereden çık",
+    "@playerTooltipExitPictureInPicture": {
+        "description": "Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window"
+    },
+    "playerPlayingInPictureInPicture": "Pencere içinde pencere modunda oynatılıyor",
+    "@playerPlayingInPictureInPicture": {
+        "description": "Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window"
+    },
+    "remoteMediaNotificationTitle": "Uzaktan oynatma bildirimi",
+    "@remoteMediaNotificationTitle": {
+        "description": "Toggle in General settings on Android mobile to show a system media notification when another device on the same account is playing"
+    },
+    "remoteMediaNotificationSubtitle": "Başka bir cihazda izlerken sistem medya kontrollerini göster",
+    "@remoteMediaNotificationSubtitle": {
+        "description": "Subtitle for the remote playback notification toggle in General settings on Android mobile"
+    },
+    "remoteActivityWatching": "Moonfin üzerinden izleniyor",
+    "@remoteActivityWatching": {
+        "description": "Line in the Android media notification that mirrors a video another device on the same account is playing. Moonfin is the app name"
+    },
+    "remoteActivityListening": "Moonfin üzerinden dinleniyor",
+    "@remoteActivityListening": {
+        "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
     }
 }
