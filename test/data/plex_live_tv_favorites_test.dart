@@ -113,7 +113,7 @@ void main() {
     GetIt.instance.registerSingleton<UserRepository>(users);
     cloud = _Cloud();
     http = Dio()..interceptors.add(cloud);
-    PlexLiveTvFavorites.testHttp = http;
+    PlexLiveTvFavorites.testApi = PlexLiveTvFavoritesApi(dio: http);
   });
 
   tearDown(() async {

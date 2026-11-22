@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_plex/server_plex.dart';
 
 import '../../auth/models/user.dart';
 import '../../auth/repositories/user_repository.dart';
@@ -27,15 +27,12 @@ bool isPlexLiveTvChannel(MediaServerClient client, String channelId) =>
 /// than synthetic guide IDs, which can collide between PMS servers.
 class PlexLiveTvFavorites {
   static const _freePrefix = 'channel-plex-';
-  static const _url = 'https://epg.provider.plex.tv/settings/favoriteChannels';
   static const _freeSource = 'provider://tv.plex.provider.epg';
-  static final _http = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 8),
-    receiveTimeout: const Duration(seconds: 15),
-  ));
+  static final _api = PlexLiveTvFavoritesApi();
 
+  // Tests inject only the provider transport; user and cache logic stays here.
   @visibleForTesting
-  static Dio? testHttp;
+  static PlexLiveTvFavoritesApi? testApi;
 
   static final _pending = <String, Future<void>>{};
   // A short-lived successful read is shared by Home and search.
@@ -75,7 +72,7 @@ class PlexLiveTvFavorites {
     _favoriteListRevision = 0;
     _clientIds = Expando<int>('Plex favorite clients');
     _nextClientId = 0;
-    testHttp = null;
+    testApi = null;
   }
 
   static Preference<List<String>> _preference(String userId) =>
@@ -117,17 +114,6 @@ class PlexLiveTvFavorites {
     return (id: userId, token: token);
   }
 
-  static Map<String, String> _headers(
-    MediaServerClient client,
-    String token,
-  ) => {
-        'X-Plex-Token': token,
-        'X-Plex-Client-Identifier': client.deviceInfo.id,
-        'X-Plex-Product': client.deviceInfo.appName,
-        'X-Plex-Provider-Version': '5.1',
-        'Accept': 'application/json',
-      };
-
   static void _checkAccount(MediaServerClient client, String token) {
     if (_account(client).token != token) {
       throw StateError('Plex account changed while saving favorites');
@@ -150,38 +136,20 @@ class PlexLiveTvFavorites {
   static Future<List<Map<String, dynamic>>> _read(
     MediaServerClient client,
     String token,
-  ) async {
-    final response = await (testHttp ?? _http).get<Map<String, dynamic>>(
-      _url,
-      options: Options(headers: _headers(client, token)),
-    );
-    final container = response.data?['MediaContainer'];
-    if (container is! Map) {
-      throw const FormatException('Invalid Plex favorite-channel response');
-    }
-    final raw = container['FavoriteChannel'];
-    if (raw == null && container['size'] == 0) {
-      return [];
-    }
-    if (raw is! List || raw.any((item) => item is! Map)) {
-      throw const FormatException('Invalid Plex favorite-channel list');
-    }
-    return [for (final row in raw) Map<String, dynamic>.from(row as Map)];
-  }
+  ) => (testApi ?? _api).readFavorites(
+    deviceInfo: client.deviceInfo,
+    accountToken: token,
+  );
 
   static Future<void> _write(
     MediaServerClient client,
     String token,
     List<Map<String, dynamic>> rows,
-  ) async {
-    await (testHttp ?? _http).put<void>(
-      _url,
-      data: rows,
-      options: Options(
-        headers: {..._headers(client, token), 'Content-Type': 'application/json'},
-      ),
-    );
-  }
+  ) => (testApi ?? _api).writeFavorites(
+    deviceInfo: client.deviceInfo,
+    accountToken: token,
+    rows: rows,
+  );
 
   static String _key(Map<String, dynamic> info) =>
       (info['source'] as String) + '\u0000' + (info['id'] as String);
@@ -236,7 +204,6 @@ class PlexLiveTvFavorites {
   ) async {
     _checkAccount(client, token);
     final userId = client.userId!;
-    final known = _catalog(client).channels;
     final pref = _preference(userId);
     final prefs = GetIt.instance<UserPreferences>();
     final previous = prefs.get(pref).toSet();
@@ -245,11 +212,6 @@ class PlexLiveTvFavorites {
       for (final row in rows)
         if (row['source'] is String && row['id'] is String) _key(row),
     };
-    for (final entry in known.entries) {
-      if (rows.any((row) => _matches(entry.value, row))) {
-        favorites.add(_key(entry.value));
-      }
-    }
     await prefs.set(pref, favorites.toList()..sort());
     _checkAccount(client, token);
     _publishCached(client, token);
