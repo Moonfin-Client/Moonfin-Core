@@ -103,6 +103,7 @@ void main() {
         sortBy: any(named: 'sortBy'),
         sortOrder: any(named: 'sortOrder'),
         recursive: any(named: 'recursive'),
+        collapseBoxSetItems: any(named: 'collapseBoxSetItems'),
         parentId: any(named: 'parentId'),
         startIndex: any(named: 'startIndex'),
         limit: any(named: 'limit'),

@@ -408,6 +408,9 @@ class MediaBarRepository {
             // rather than the titles, so only a recursive walk reaches anything.
             // The type filter keeps the walk to movies and series either way.
             recursive: true,
+            // With grouping into collections on, Jellyfin would hand back the
+            // collection in place of its titles, and the bar skips those.
+            collapseBoxSetItems: false,
             parentId: parentId,
             limit: _poolSize,
             fields: _fields,
@@ -679,6 +682,7 @@ class MediaBarRepository {
             parentId: parentId,
             includeItemTypes: const ['Movie'],
             recursive: true,
+            collapseBoxSetItems: false,
             sortBy: 'PremiereDate',
             sortOrder: 'Descending',
             minPremiereDate: DateTime.now().subtract(Duration(days: days)),
@@ -834,6 +838,7 @@ class MediaBarRepository {
             sortBy: 'SortName',
             sortOrder: 'Ascending',
             recursive: true,
+            collapseBoxSetItems: false,
             parentId: parentId,
             limit: reducedLimit,
             fields: _fields,
