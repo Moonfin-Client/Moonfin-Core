@@ -7,6 +7,7 @@ import 'package:moonfin/ui/widgets/personal_rating_dialog.dart';
 Widget _app({
   required FocusNode focusNode,
   required PersonalRatingStyle style,
+  int intervals = 11,
   double? rating,
   bool? likes,
   required Future<void> Function(bool) onThumb,
@@ -23,6 +24,7 @@ Widget _app({
           onPressed: () => PersonalRatingDialog.show(
             context,
             style: style,
+            intervals: intervals,
             rating: rating,
             likes: likes,
             onSetThumbRating: onThumb,
@@ -140,5 +142,93 @@ void main() {
     await tester.pump();
 
     expect(find.text('7 / 10'), findsOneWidget);
+  });
+
+  testWidgets('cancel button closes dialog without saving', (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    double? savedRating;
+
+    await tester.pumpWidget(
+      _app(
+        focusNode: focusNode,
+        style: PersonalRatingStyle.numeric,
+        rating: 8,
+        onThumb: (_) async {},
+        onNumeric: (rating) async => savedRating = rating,
+        onClear: () async {},
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Increase'));
+    await tester.pump();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(savedRating, isNull);
+    expect(find.text('Cancel'), findsNothing);
+  });
+
+  testWidgets('numeric mode respects 21 and 41 intervals', (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    double? savedRating;
+
+    await tester.pumpWidget(
+      _app(
+        focusNode: focusNode,
+        style: PersonalRatingStyle.numeric,
+        intervals: 41,
+        rating: 8,
+        onThumb: (_) async {},
+        onNumeric: (rating) async => savedRating = rating,
+        onClear: () async {},
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Increase'));
+    await tester.pump();
+    expect(find.text('8.25 / 10'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(savedRating, 8.25);
+  });
+
+  testWidgets('stars mode at 21 intervals supports quarter-star taps',
+      (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    double? savedRating;
+
+    await tester.pumpWidget(
+      _app(
+        focusNode: focusNode,
+        style: PersonalRatingStyle.stars,
+        intervals: 21,
+        rating: 4,
+        onThumb: (_) async {},
+        onNumeric: (rating) async => savedRating = rating,
+        onClear: () async {},
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final thirdStar = find.byKey(const ValueKey('personal_rating_star_2'));
+    final bounds = tester.getRect(thirdStar);
+    await tester.tapAt(
+      Offset(bounds.left + bounds.width * 0.1, bounds.center.dy),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('2.25 / 5'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(savedRating, 4.5);
   });
 }

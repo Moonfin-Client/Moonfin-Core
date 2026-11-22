@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
+import '../../util/personal_rating_intervals.dart';
 import 'overlay_sheet.dart';
 
 class PersonalRatingDialog extends StatefulWidget {
   final PersonalRatingStyle style;
+  final int intervals;
   final double? rating;
   final bool? likes;
   final Future<void> Function(bool likes) onSetThumbRating;
@@ -18,6 +19,7 @@ class PersonalRatingDialog extends StatefulWidget {
   const PersonalRatingDialog({
     super.key,
     required this.style,
+    this.intervals = defaultPersonalRatingIntervals,
     required this.rating,
     required this.likes,
     required this.onSetThumbRating,
@@ -28,6 +30,7 @@ class PersonalRatingDialog extends StatefulWidget {
   static Future<void> show(
     BuildContext context, {
     required PersonalRatingStyle style,
+    int intervals = defaultPersonalRatingIntervals,
     required double? rating,
     required bool? likes,
     required Future<void> Function(bool likes) onSetThumbRating,
@@ -39,6 +42,7 @@ class PersonalRatingDialog extends StatefulWidget {
       useRootNavigator: false,
       builder: (_) => PersonalRatingDialog(
         style: style,
+        intervals: intervals,
         rating: rating,
         likes: likes,
         onSetThumbRating: onSetThumbRating,
@@ -75,8 +79,15 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
     return rating.clamp(0, 10).toDouble();
   }
 
+  int get _maxDecimals =>
+      personalRatingMaxDecimals(widget.style, widget.intervals);
+
   String _formatRating(AppLocalizations l10n, double value) =>
-      NumberFormat.decimalPattern(l10n.localeName).format(value);
+      formatPersonalRatingNumber(
+        value,
+        _maxDecimals,
+        locale: l10n.localeName,
+      );
 
   Future<void> _submit(Future<void> Function() mutation) async {
     if (_saving) return;
@@ -130,6 +141,7 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
   }
 
   Widget _buildStarsEditor(AppLocalizations l10n) {
+    const starTargetWidth = 48.0;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -142,8 +154,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
             if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
                 _draftRating > 0) {
               setState(() {
-                _draftRating =
-                    (_draftRating - 0.5).clamp(0, 10).toDouble();
+                _draftRating = stepPersonalRatingDown(
+                  _draftRating,
+                  PersonalRatingStyle.stars,
+                  widget.intervals,
+                );
                 _ratingChanged = true;
               });
               return KeyEventResult.handled;
@@ -151,8 +166,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
             if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
                 _draftRating < 10) {
               setState(() {
-                _draftRating =
-                    (_draftRating + 0.5).clamp(0, 10).toDouble();
+                _draftRating = stepPersonalRatingUp(
+                  _draftRating,
+                  PersonalRatingStyle.stars,
+                  widget.intervals,
+                );
                 _ratingChanged = true;
               });
               return KeyEventResult.handled;
@@ -178,9 +196,12 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
                   onTapDown: _saving
                       ? null
                       : (details) {
-                          final isHalf = details.localPosition.dx < 24;
                           setState(() {
-                            _draftRating = (index + (isHalf ? 0.5 : 1)) * 2;
+                            _draftRating = starTapRating(
+                              index,
+                              details.localPosition.dx / starTargetWidth,
+                              widget.intervals,
+                            );
                             _ratingChanged = true;
                           });
                         },
@@ -210,15 +231,17 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
           onPressed: _saving || _draftRating <= 0
               ? null
               : () => setState(() {
-                  _draftRating = (_draftRating.ceilToDouble() - 1)
-                      .clamp(0, 10)
-                      .toDouble();
+                  _draftRating = stepPersonalRatingDown(
+                    _draftRating,
+                    PersonalRatingStyle.numeric,
+                    widget.intervals,
+                  );
                   _ratingChanged = true;
                 }),
           icon: const Icon(Icons.remove),
         ),
         SizedBox(
-          width: 120,
+          width: 140,
           child: Text(
             l10n.personalRatingOutOfTen(_formatRating(l10n, _draftRating)),
             textAlign: TextAlign.center,
@@ -230,9 +253,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
           onPressed: _saving || _draftRating >= 10
               ? null
               : () => setState(() {
-                  _draftRating = (_draftRating.floorToDouble() + 1)
-                      .clamp(0, 10)
-                      .toDouble();
+                  _draftRating = stepPersonalRatingUp(
+                    _draftRating,
+                    PersonalRatingStyle.numeric,
+                    widget.intervals,
+                  );
                   _ratingChanged = true;
                 }),
           icon: const Icon(Icons.add),
@@ -261,6 +286,10 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
             icon: const Icon(Icons.clear),
             label: Text(l10n.personalRatingClear),
           ),
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
         if (!isThumbs)
           FilledButton(
             onPressed: _saving || !_ratingChanged

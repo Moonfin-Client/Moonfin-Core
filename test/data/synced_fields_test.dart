@@ -231,6 +231,7 @@ void main() {
     'personPageGroupItems',
     'personPageSortOption',
     'personalRatingStyle',
+    'personalRatingIntervals',
     'musicPlaybackTimeDisplay',
     'pgsDirectPlay',
     'playbackTimeAboveCenter',

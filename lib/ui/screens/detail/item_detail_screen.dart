@@ -82,6 +82,7 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../util/focus/key_event_utils.dart';
 import '../../../util/date_format_util.dart';
 import '../../../util/overview_text.dart';
+import '../../../util/personal_rating_intervals.dart';
 import '../../../util/seerr_credits.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
@@ -6890,6 +6891,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         : PersonalRatingStyle.thumbs;
   }
 
+  int _personalRatingIntervals() => effectivePersonalRatingIntervals(
+    _personalRatingStyle(),
+    GetIt.instance<UserPreferences>().get(
+      UserPreferences.personalRatingIntervals,
+    ),
+  );
+
   bool? _displayRatingLikes(AggregatedItem item) =>
       item.personalRatingLikes ??
       (item.personalRating == null
@@ -6910,11 +6918,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         return likes ? l10n.like : l10n.dislike;
       case PersonalRatingStyle.stars:
         if (rating == null) return l10n.rate;
-        final stars = rating / 2;
-        if (stars == 0) return l10n.personalRatingOutOfFive('0');
-        final fullStars = stars.floor();
-        final hasHalfStar = stars - fullStars >= 0.25;
-        return '${'★' * fullStars}${hasHalfStar ? '½' : ''}';
+        return formatPersonalStarActionLabel(
+          rating,
+          _personalRatingIntervals(),
+          l10n.personalRatingOutOfFive('0'),
+        );
       case PersonalRatingStyle.numeric:
         return rating == null ? l10n.rate : l10n.personalRatingRated;
     }
@@ -6926,6 +6934,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return PersonalRatingDialog.show(
       context,
       style: _personalRatingStyle(),
+      intervals: _personalRatingIntervals(),
       rating: item.personalRating,
       likes: _displayRatingLikes(item),
       onSetThumbRating: viewModel.setThumbRating,
@@ -7512,6 +7521,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
           iconBuilder: (size, color) => _PersonalRatingActionIcon(
             style: _personalRatingStyle(),
+            intervals: _personalRatingIntervals(),
             rating: item.personalRating,
             likes: _displayRatingLikes(item),
             size: size,
@@ -13002,6 +13012,7 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
 
 class _PersonalRatingActionIcon extends StatelessWidget {
   final PersonalRatingStyle style;
+  final int intervals;
   final double? rating;
   final bool? likes;
   final double size;
@@ -13009,6 +13020,7 @@ class _PersonalRatingActionIcon extends StatelessWidget {
 
   const _PersonalRatingActionIcon({
     required this.style,
+    required this.intervals,
     required this.rating,
     required this.likes,
     required this.size,
@@ -13038,9 +13050,13 @@ class _PersonalRatingActionIcon extends StatelessWidget {
           Text(
             rating == null
                 ? '–'
-                : rating == rating!.roundToDouble()
-                ? rating!.toInt().toString()
-                : rating!.toString(),
+                : formatPersonalRatingNumber(
+                    rating!,
+                    personalRatingMaxDecimals(
+                      PersonalRatingStyle.numeric,
+                      intervals,
+                    ),
+                  ),
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.w800,

@@ -80,7 +80,67 @@ class _DetailsScreenSettingsScreenState
                       PersonalRatingStyle.stars => l10n.personalRatingStars,
                       PersonalRatingStyle.numeric => l10n.personalRatingNumeric,
                     },
+                    onChangedValue: (style) {
+                      if (style != PersonalRatingStyle.thumbs) {
+                        final current = prefs.get(
+                          UserPreferences.personalRatingIntervals,
+                        );
+                        final normalized = effectivePersonalRatingIntervals(
+                          style,
+                          current,
+                        );
+                        if (normalized != current) {
+                          prefs.set(
+                            UserPreferences.personalRatingIntervals,
+                            normalized,
+                          );
+                        }
+                      }
+                      _pushPersonalizationSync();
+                    },
                   ),
+                  if (GetIt.instance<MediaServerClient>()
+                          .userLibraryApi
+                          .supportsNumericUserRatings &&
+                      prefs.get(UserPreferences.personalRatingStyle) !=
+                          PersonalRatingStyle.thumbs)
+                    Builder(
+                      builder: (context) {
+                        final ratingStyle = prefs.get(
+                          UserPreferences.personalRatingStyle,
+                        );
+                        final isStars =
+                            ratingStyle == PersonalRatingStyle.stars;
+                        return IntPickerPreferenceTile(
+                          preference: UserPreferences.personalRatingIntervals,
+                          title: l10n.personalRatingIntervals,
+                          icon: Icons.tune,
+                          options: isStars
+                              ? {
+                                  6: l10n.personalRatingIntervalWhole,
+                                  11: l10n.personalRatingIntervalHalf,
+                                  21: l10n.personalRatingIntervalQuarter,
+                                }
+                              : {
+                                  11: l10n.personalRatingIntervalWhole,
+                                  21: l10n.personalRatingIntervalHalf,
+                                  41: l10n.personalRatingIntervalQuarter,
+                                },
+                          dialogOptions: isStars
+                              ? {
+                                  6: l10n.personalRatingIntervalStarsWhole,
+                                  11: l10n.personalRatingIntervalStarsHalf,
+                                  21: l10n.personalRatingIntervalStarsQuarter,
+                                }
+                              : {
+                                  11: l10n.personalRatingIntervalNumericWhole,
+                                  21: l10n.personalRatingIntervalNumericHalf,
+                                  41: l10n.personalRatingIntervalNumericQuarter,
+                                },
+                          onChanged: _pushPersonalizationSync,
+                        );
+                      },
+                    ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.detailsBackdropEnabled,
                     title: l10n.detailsScreenBackdrop,

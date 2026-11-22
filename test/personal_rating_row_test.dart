@@ -17,9 +17,9 @@ void main() {
       ),
     );
 
-    expect(find.text('9.0'), findsOneWidget);
+    expect(find.text('9'), findsOneWidget);
     expect(find.text('7.8'), findsOneWidget);
-    final personal = tester.getTopLeft(find.text('9.0'));
+    final personal = tester.getTopLeft(find.text('9'));
     final community = tester.getTopLeft(find.text('7.8'));
     expect(personal.dx, lessThan(community.dx));
   });
@@ -46,7 +46,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('9.0'), findsNothing);
+    expect(find.text('9'), findsNothing);
 
     await tester.pumpWidget(
       _app(
@@ -58,6 +58,6 @@ void main() {
         ),
       ),
     );
-    expect(find.text('9.0'), findsOneWidget);
+    expect(find.text('9'), findsOneWidget);
   });
 }
