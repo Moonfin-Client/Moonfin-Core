@@ -67,10 +67,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   final Set<String> _actionInProgress = {};
   bool _hasChanged = false;
 
-  /// The fetch that fills in the item the page handed over, which may list
-  /// only some of its artwork.
-  Future<void> _openingRefresh = Future<void>.value();
-
   final Set<String> _deselectedSources = {};
   bool _onlyShowInterfaceLanguage = true;
   String _selectedResolution = 'All';
@@ -192,7 +188,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     for (final category in _supportedCategories) {
       _fetchRemoteImages(category);
     }
-    _openingRefresh = _refreshItemMetadata(_item);
+    _refreshItemMetadata(_item);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusFirstItem();
       _checkLibrariesWriteAccess();
@@ -874,9 +870,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     );
 
     if (confirm != true || _actionInProgress.isNotEmpty) return;
-    // Clear All works from the full list of the item's artwork.
-    await _openingRefresh;
-    if (!mounted || _actionInProgress.isNotEmpty) return;
 
     setState(() {
       _actionInProgress.addAll(categories);
@@ -885,6 +878,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       for (final category in categories) {
+        // The opening fetch may land at any point before or during the loop.
         final tags = _tagsOf(_latestOf(item), category);
         if (tags.isEmpty) continue;
 
