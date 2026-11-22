@@ -2406,11 +2406,11 @@ class RowDataSource {
     }
   }
 
-  /// A server row's title in the app's language, read from the server's list
-  /// of rows (kept for a while, so the row's own load already fetched it).
-  /// The stored [fallback] is the server's English title, kept when the list
-  /// can't be read or no longer has the row.
-  Future<String> _serverSectionTitle(
+  /// The server's own row a server row shows, to name it in the app's
+  /// language, read from the server's list of rows (kept for a while, so the
+  /// row's own load already fetched it). Null when the list can't be read or
+  /// no longer has the row, and the stored [fallback] title stays.
+  Future<ServerHomeSection?> _serverSection(
     ServerHomeSectionsApi api,
     String sectionId,
     String fallback,
@@ -2422,15 +2422,17 @@ class RowDataSource {
       // Moonbase's admin defaults name a row by its kind ("type:<kind>"),
       // the first row of that kind as the server reads it, and give it a
       // name of their own. Only a row still under the server's own title
-      // takes the translation.
+      // takes the translation. Case is ignored, since Moonbase's stock names
+      // are the server's titles in sentence case ("Hidden gems").
       if (section != null &&
-          (section.id == sectionId || section.title == fallback)) {
-        return localizeServerSectionTitle(section, _l10n);
+          (section.id == sectionId ||
+              section.title.toLowerCase() == fallback.toLowerCase())) {
+        return section;
       }
     } catch (e) {
       debugPrint('[RowDataSource] Server row titles unavailable: $e');
     }
-    return fallback;
+    return null;
   }
 
   /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.
@@ -2626,9 +2628,13 @@ class RowDataSource {
         final serverApi = api as ServerHomeSectionsApi;
         final response = await serverApi.getServerHomeSectionItems(section);
         final items = _parseItems(response, serverId);
+        final serverSection = await _serverSection(serverApi, section, title);
         return HomeRow(
           id: rowId,
-          title: await _serverSectionTitle(serverApi, section, title),
+          title: serverSection == null
+              ? title
+              : localizeServerSectionTitle(serverSection, _l10n),
+          serverSection: serverSection,
           rowType: HomeRowType.pluginDynamic,
           items: items,
           totalCount: items.length,

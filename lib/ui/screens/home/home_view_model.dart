@@ -3813,6 +3813,7 @@ class HomeViewModel extends ChangeNotifier {
       HomeRow(
         id: 'seasonal',
         title: localizeServerSectionTitle(section, currentAppLocalizations()),
+        serverSection: section,
         rowType: HomeRowType.pluginDynamic,
         items: items,
       ),
