@@ -360,7 +360,7 @@ collect_transitive_libs() {
 runtime_skip_pattern() {
   local skip='linux-vdso|ld-linux|libc[.]so|libm[.]so|libpthread|libdl[.]so|librt[.]so'
   skip="$skip"'|libstdc[+][+]|libgcc_s'
-  skip="$skip"'|libX[a-z]|libxcb|libxkb|libxshmfence|libICE|libSM'
+  skip="$skip"'|libX[a-z0-9]|libxcb|libxkb|libxshmfence|libICE|libSM'
   skip="$skip"'|libwayland|libffi|libpcre'
   skip="$skip"'|libGL[.]so|libGLX|libGLdispatch|libGLESv|libEGL|libOpenGL'
   skip="$skip"'|libdrm|libgbm'
