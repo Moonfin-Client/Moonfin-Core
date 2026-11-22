@@ -845,7 +845,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       ),
     );
 
-    if (confirm != true) return;
+    if (confirm != true || _actionInProgress.isNotEmpty) return;
 
     setState(() {
       _actionInProgress.addAll(categories);
@@ -1518,7 +1518,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     return FocusableWrapper(
       key: const ValueKey('clear_all_artwork_button'),
       focusNode: _clearAllFocusNode,
-      onSelect: _clearAllArtwork,
+      onSelect: _actionInProgress.isNotEmpty ? null : _clearAllArtwork,
       borderRadius: 8,
       suppressFocusGlow: true,
       onNavigateLeft: () {

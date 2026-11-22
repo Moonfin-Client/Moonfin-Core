@@ -301,6 +301,30 @@ void main() {
     },
   );
 
+  testWidgets('Clear All does nothing while another save runs', (tester) async {
+    admin.saving = Completer<void>();
+    final result = await open(tester);
+    await uploadBackdrop(tester);
+
+    final clearAll = find.text(l10n.clearAllArtworkButton);
+    await tester.ensureVisible(clearAll);
+    await tester.tap(clearAll);
+    await settle(tester);
+    expect(find.text(l10n.confirmClearAll), findsNothing);
+
+    // The upload still holds the dialog open until it lands.
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await settle(tester);
+    expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+    admin.saving!.complete();
+    await settle(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await settle(tester);
+
+    expect(find.byType(ChangeArtworkDialog), findsNothing);
+    expect(await result, isTrue);
+  });
+
   testWidgets("an upload's late refresh does not land on the item moved to", (
     tester,
   ) async {
