@@ -1365,6 +1365,17 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     var nextOrder = _sections.length;
     for (final section in discovered) {
       final standsIn = byType.remove('type:${section.kind}');
+      // A "type:<kind>" row from Moonbase's defaults shows this section, so
+      // it takes the section's label too.
+      if (standsIn) {
+        for (final s in _sections) {
+          if (isType(s) &&
+              s.pluginSection == 'type:${section.kind}' &&
+              ((s.serverId ?? '').isEmpty || s.serverId == serverId)) {
+            _serverSections[s.stableId] = section;
+          }
+        }
+      }
       final cfg = HomeSectionConfig.pluginDynamic(
         serverId: serverId,
         pluginSection: section.id,

@@ -2406,9 +2406,6 @@ class RowDataSource {
     }
   }
 
-  /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.
-  /// Dispatches on [pluginSource] so callers can mix HSS rows (server-driven
-  /// REST endpoint) and other dynamic source rows (like collections, genres, or playlists).
   /// A server row's title in the app's language, read from the server's list
   /// of rows (kept for a while, so the row's own load already fetched it).
   /// The stored [fallback] is the server's English title, kept when the list
@@ -2432,6 +2429,9 @@ class RowDataSource {
     return fallback;
   }
 
+  /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.
+  /// Dispatches on [pluginSource] so callers can mix HSS rows (server-driven
+  /// REST endpoint) and other dynamic source rows (like collections, genres, or playlists).
   Future<HomeRow> loadDynamicSection({
     required String rowId,
     required String section,
