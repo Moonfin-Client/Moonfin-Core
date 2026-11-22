@@ -231,4 +231,33 @@ void main() {
 
     expect(savedRating, 4.5);
   });
+
+  testWidgets('off-grid saved rating snaps for display without enabling save',
+      (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    double? savedRating;
+
+    await tester.pumpWidget(
+      _app(
+        focusNode: focusNode,
+        style: PersonalRatingStyle.stars,
+        intervals: 11,
+        rating: 8.5,
+        onThumb: (_) async {},
+        onNumeric: (rating) async => savedRating = rating,
+        onClear: () async {},
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('4.5 / 5'), findsOneWidget);
+    final saveButton = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Save'),
+    );
+    expect(saveButton.onPressed, isNull);
+    expect(savedRating, isNull);
+  });
 }

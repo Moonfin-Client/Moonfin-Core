@@ -712,20 +712,24 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'quick look',
       'frost',
     ]),
-    details.leaf(
-      'pref_personal_rating_intervals',
-      l10n.personalRatingIntervals,
-      keywords: [
-        'rating',
-        'stars',
-        'numeric',
-        'steps',
-        'half',
-        'quarter',
-        'precision',
-        'granularity',
-      ],
-    ),
+    if (GetIt.instance.isRegistered<MediaServerClient>() &&
+        GetIt.instance<MediaServerClient>()
+            .userLibraryApi
+            .supportsNumericUserRatings)
+      details.leaf(
+        'pref_personal_rating_intervals',
+        l10n.personalRatingIntervals,
+        keywords: [
+          'rating',
+          'stars',
+          'numeric',
+          'steps',
+          'half',
+          'quarter',
+          'precision',
+          'granularity',
+        ],
+      ),
     details.leaf(
       'pref_show_details_backdrop',
       l10n.detailsScreenBackdrop,

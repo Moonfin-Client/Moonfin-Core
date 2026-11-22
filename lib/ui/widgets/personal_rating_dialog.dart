@@ -70,7 +70,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
   @override
   void initState() {
     super.initState();
-    _draftRating = _normalizedRating(widget.rating);
+    _draftRating = snapPersonalRatingToGrid(
+      _normalizedRating(widget.rating),
+      widget.style,
+      widget.intervals,
+    );
     _ratingChanged = widget.rating == null;
   }
 
