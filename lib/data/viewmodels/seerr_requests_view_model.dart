@@ -354,6 +354,13 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         : SeerrRequestFilter.all;
   }
 
+  // Requests removed here. A list read that was out during a removal can
+  // still hold one, and must not bring its card back.
+  final Set<int> _removedIds = {};
+  // Counts removals, so a page read that was out during one starts again
+  // from where the server's list now is.
+  int _removals = 0;
+
   Future<void> load({bool isRefresh = false}) async {
     _state = _state.copyWith(
       isLoading: !isRefresh,
@@ -424,13 +431,22 @@ class SeerrRequestsViewModel extends ChangeNotifier {
 
     try {
       final user = _state.currentUser!;
-      final response = await _repo.getRequests(
+      final offset = _state.requests.length;
+      final removalsAtStart = _removals;
+      Future<SeerrRequestListResponse> page(int at) => _repo.getRequests(
         filter: _state.filter.apiValue,
         sort: _state.sort,
         requestedBy: user.canViewAllRequests ? null : user.id,
         limit: _pageSize,
-        offset: _state.requests.length,
+        offset: at,
       );
+      var response = await page(offset);
+      // Each removal meanwhile moved the server's list up by one, past the
+      // page that was asked for.
+      final removedSince = _removals - removalsAtStart;
+      if (removedSince > 0) {
+        response = await page(offset > removedSince ? offset - removedSince : 0);
+      }
 
       final merged = [
         ..._state.requests,
@@ -509,6 +525,9 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     List<SeerrRequest> requests,
     SeerrRequestFilter filter,
   ) {
+    if (_removedIds.isNotEmpty) {
+      requests = requests.where((r) => !_removedIds.contains(r.id)).toList();
+    }
     if (filter != SeerrRequestFilter.all) return requests;
     final now = DateTime.now();
     return requests.where((r) {
@@ -555,7 +574,20 @@ class SeerrRequestsViewModel extends ChangeNotifier {
       await _repo.removeFailedRequest(requestId);
     } on SeerrRequestException catch (e) {
       if (e.kind == SeerrRequestErrorKind.duplicate) {
-        await _patchRequest(requestId);
+        // Read on its own rather than through _patchRequest, whose fallback
+        // reloads the whole list and can swap it for an error screen.
+        try {
+          final updated = await _repo.getRequest(requestId);
+          _state = _state.copyWith(
+            requests: _state.requests
+                .map((r) => r.id == requestId ? updated : r)
+                .toList(),
+          );
+        } catch (_) {
+          _endAction(requestId);
+          return SeerrRemoveResult.failed;
+        }
+        _endAction(requestId);
         return SeerrRemoveResult.refused;
       }
       _endAction(requestId);
@@ -564,6 +596,8 @@ class SeerrRequestsViewModel extends ChangeNotifier {
       _endAction(requestId);
       return SeerrRemoveResult.failed;
     }
+    _removedIds.add(requestId);
+    _removals++;
     _state = _state.copyWith(
       requests: _state.requests.where((r) => r.id != requestId).toList(),
     );

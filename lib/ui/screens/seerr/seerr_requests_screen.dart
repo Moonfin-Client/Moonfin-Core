@@ -121,6 +121,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   /// request now in the removed one's place rather than back up the screen.
   int? _refocusRequestId;
   int _refocusTick = 0;
+  bool _removeConfirmOpen = false;
   final _animatedIssueIds = <int>{};
 
   @override
@@ -173,6 +174,12 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
 
   @override
   void didPopNext() {
+    // The Remove confirm closing is not a return from another screen, and a
+    // reload then would race the removal it starts.
+    if (_removeConfirmOpen) {
+      _removeConfirmOpen = false;
+      return;
+    }
     // Coming back from a detail screen where a request may have changed.
     if (_tab == 0) {
       _requestsVm?.refresh();
@@ -561,6 +568,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     final message = requester != null && me != null && requester.id != me
         ? l10n.removeOthersFailedRequestForTitle(title, requester.bestName)
         : l10n.removeFailedRequestForTitle(title);
+    _removeConfirmOpen = true;
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
@@ -573,6 +581,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
         actions: [
           adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
+            autofocus: true,
             focusRingColor: AppColorScheme.accent,
             child: Text(l10n.keep),
           ),
@@ -589,6 +598,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
         ],
       ),
     );
+    _removeConfirmOpen = false;
     if (confirmed != true || !mounted) return;
     final messenger = ScaffoldMessenger.maybeOf(context);
     final remote =
@@ -1604,6 +1614,18 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   final _removeFocus = FocusNode(debugLabel: 'request-remove');
 
   SeerrRequest get request => widget.request;
+
+  @override
+  void initState() {
+    super.initState();
+    // A card shifted up by a removal can be built anew, and then gets its
+    // focus hand-off here rather than in didUpdateWidget.
+    if (widget.focusToken != 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _cardFocus.requestFocus();
+      });
+    }
+  }
 
   @override
   void didUpdateWidget(_RequestCard oldWidget) {
