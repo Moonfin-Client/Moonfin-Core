@@ -5191,10 +5191,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           child: IgnorePointer(
             child: PlaybackStatsOverlay(
               // A new item starts with empty graphs. Offline items are bare
-              // paths with no id, so the path keys them.
-              key: ValueKey(
+              // paths with no id, so the path keys them. The server is part
+              // of the key because ids can repeat across servers.
+              key: ValueKey((
+                _serverIdForQueueItem(_queue.currentItem),
                 _itemIdForQueueItem(_queue.currentItem) ?? _queue.currentItem,
-              ),
+              )),
               read: () => media3.networkStats,
               serverBitrate: cap != null && (source == null || cap < source)
                   ? cap
