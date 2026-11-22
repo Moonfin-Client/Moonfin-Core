@@ -9,6 +9,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -268,6 +269,14 @@ void main() {
     });
 
     GetIt.instance.registerSingleton<MediaServerClient>(client);
+    // Production always registers the sync service, even without Moonbase.
+    GetIt.instance.registerLazySingleton<PluginSyncService>(
+      () => PluginSyncService(
+        GetIt.instance<UserPreferences>(),
+        GetIt.instance<PreferenceStore>(),
+      ),
+      dispose: (service) => service.dispose(),
+    );
   });
 
   tearDown(() async {

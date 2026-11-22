@@ -508,6 +508,7 @@ class UserPreferences extends ChangeNotifier {
     'live_tv_channel_sort_by',
     'live_tv_last_channel_id',
     'live_tv_saved_filters',
+    'live_tv_saved_filters_unsynced',
     'music_playback_time_display',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
@@ -4250,6 +4251,11 @@ class UserPreferences extends ChangeNotifier {
   static const liveTvSavedFilters = Preference<List<String>>(
     key: 'live_tv_saved_filters',
     defaultValue: [],
+  );
+  // Local edits awaiting Moonbase, scoped to the signed-in server and user.
+  static const liveTvSavedFiltersUnsynced = Preference<bool>(
+    key: 'live_tv_saved_filters_unsynced',
+    defaultValue: false,
   );
 
   /// Last Live TV channel watched on this server/account. Channel IDs are

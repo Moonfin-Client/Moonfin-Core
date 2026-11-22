@@ -13,6 +13,7 @@ import '../../util/settings_save_retry.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../services/user_data_sync.dart';
 import '../services/plex_live_tv_favorites.dart';
+import '../services/plugin_sync_service.dart';
 import '../models/live_tv_recording_state.dart';
 import '../models/series_recording_episodes.dart';
 
@@ -588,10 +589,9 @@ class LiveTvGuideViewModel extends ChangeNotifier {
 
   Future<void> toggleSavedFilter(GuideFilterChoice choice) async {
     if (!choice.canFavorite) return;
-    final prefs = GetIt.instance<UserPreferences>();
-    final keys = prefs.get(UserPreferences.liveTvSavedFilters).toSet();
-    if (!keys.remove(choice.preferenceKey)) keys.add(choice.preferenceKey);
-    await prefs.set(UserPreferences.liveTvSavedFilters, keys.toList());
+    await GetIt.instance<PluginSyncService>().changePinnedGuideFilter(
+      _client, filter: choice.preferenceKey,
+    );
     _notifyListeners();
   }
 

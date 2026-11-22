@@ -13,6 +13,7 @@ import 'package:server_plex/server_plex.dart' show plexItemToJellyfin;
 import 'package:server_silo/server_silo.dart';
 
 import '../../auth/services/silo_token_storage.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import '../../data/repositories/seerr_repository.dart';
 import 'seerr/seerr_discover_sliders.dart';
 import 'incomplete_recordings_service.dart';
@@ -211,6 +212,8 @@ class PluginSyncService extends ChangeNotifier {
   int _settingsStreamReconnectAttempt = 0;
 
   bool _isSyncingFromServer = false;
+  // Order pin saves and incoming settings so an old response cannot win.
+  Future<void> _guidePinSync = Future<void>.value();
   Timer? _pushDebounceTimer;
   static const _pushDebounce = Duration(milliseconds: 1000);
 
@@ -220,7 +223,7 @@ class PluginSyncService extends ChangeNotifier {
   final Map<String, String> _lastSyncedProfileJson = {};
 
   /// Set while sign-in is still working out what the server holds.
-  bool _readingProfileOnSignIn = false;
+  Completer<void>? _signInProfileRead;
 
   PluginSyncService(this._prefs, this._store, {@visibleForTesting Dio? dio})
     : _dio = dio ?? Dio(pluginRequestOptions()) {
@@ -575,7 +578,8 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   Future<void> syncOnLogin(MediaServerClient client, {String? serverId}) async {
-    _readingProfileOnSignIn = true;
+    final readDone = Completer<void>();
+    _signInProfileRead = readDone;
     final userKey = _userSyncKey(client, serverId: serverId);
     _signInSettingsRead.remove(userKey);
     var retrying = false;
@@ -595,54 +599,45 @@ class PluginSyncService extends ChangeNotifier {
           UserPreferences.pluginSyncInitializedForServer(
             _serverSyncKey(client, serverId: serverId),
           );
-      if (_prefs.get(syncInitializedPref)) {
-        if (_prefs.get(UserPreferences.pluginSyncEnabled) &&
-            availability == _PluginAvailabilityStatus.available) {
-          await _refreshCustomThemes(client, serverId: serverId);
-
-          final profile = syncProfile;
-          final resolved = await _fetchResolvedProfile(client, profile);
-          if (resolved != null) {
-            await _applyServerSettings(client, profile, resolved);
-          }
-
-          unawaited(_startSettingsStream(client));
-        }
-
-        if (availability == _PluginAvailabilityStatus.unknown) {
-          retrying = _scheduleSyncRetry(client, serverId: serverId);
-        }
-        return;
-      }
-
+      final initialized = _prefs.get(syncInitializedPref);
       if (availability == _PluginAvailabilityStatus.unknown) {
         retrying = _scheduleSyncRetry(client, serverId: serverId);
         return;
       }
-
       if (availability != _PluginAvailabilityStatus.available) {
-        await _prefs.set(syncInitializedPref, true);
-        await _applyFallbackHomeRows();
+        if (!initialized) {
+          await _prefs.set(syncInitializedPref, true);
+          await _applyFallbackHomeRows();
+        }
+        return;
+      }
+      if (initialized && !_prefs.get(UserPreferences.pluginSyncEnabled)) {
         return;
       }
 
       await _refreshCustomThemes(client, serverId: serverId);
-
       final profile = syncProfile;
-      final resolved = await _fetchResolvedProfile(client, profile);
-      if (resolved == null) {
-        return;
+      final resolved = await _fetchProfileAndImportGuidePins(
+        client, profile, serverId: serverId,
+      );
+      if (resolved != null) {
+        if (!initialized) {
+          await _prefs.set(UserPreferences.pluginSyncEnabled, true);
+        }
+        await _applyServerSettings(client, profile, resolved);
+        if (!initialized) await _prefs.set(syncInitializedPref, true);
       }
-
-      await _prefs.set(UserPreferences.pluginSyncEnabled, true);
-
-      await _applyServerSettings(client, profile, resolved);
-      await _prefs.set(syncInitializedPref, true);
-      unawaited(_startSettingsStream(client));
+      // Existing profiles still listen for changes after a failed read.
+      if (initialized || resolved != null) {
+        unawaited(_startSettingsStream(client));
+      }
     } catch (_) {
       resetState();
     } finally {
-      _readingProfileOnSignIn = false;
+      if (identical(_signInProfileRead, readDone)) {
+        _signInProfileRead = null;
+      }
+      readDone.complete();
       // A retry reads them later, so the wait isn't over yet.
       if (!retrying) _signInSettingsRead.add(userKey);
     }
@@ -776,14 +771,16 @@ class PluginSyncService extends ChangeNotifier {
       return;
     }
 
-    final profile = syncProfile;
-    final resolved = await _fetchResolvedProfile(client, profile);
-    if (resolved == null) {
-      return;
-    }
-
-    await _applyServerSettings(client, profile, resolved);
-    notifyListeners();
+    final current = _guidePinAccountCheck(client);
+    if (!current()) return;
+    await _withGuidePinSync(() async {
+      if (!current()) return;
+      final profile = syncProfile;
+      final resolved = await _fetchProfileAndImportGuidePins(client, profile);
+      if (resolved == null || !current()) return;
+      await _applyServerSettings(client, profile, resolved);
+      notifyListeners();
+    });
   }
 
   /// Sign-in leaves this running rather than waiting on it. The server can
@@ -949,6 +946,153 @@ class PluginSyncService extends ChangeNotifier {
     if (_prefs.get(UserPreferences.seerrEnabled)) return;
     _setLocalSeerrEnabled(true);
     await pushSettings(client);
+  }
+
+  /// Use the existing settings/profile route for intentional pin changes.
+  /// A legacy Moonbase may accept the request without supporting pin updates.
+  Future<List<String>?> _postGuidePinsChange(
+    MediaServerClient client,
+    String profile,
+    Map<String, dynamic> change,
+  ) async {
+    final ep = await moonbaseEndpoint(client, _dio);
+    if (ep == null) throw StateError('Moonbase is unavailable');
+    final response = await _dio.post<Map<String, dynamic>>(
+      '${ep.base}/Moonfin/Settings/Profile/$profile',
+      data: {
+        'profile': <String, dynamic>{},
+        'clientId': 'moonfin-flutter',
+        'liveTvSavedFilterChange': change,
+      },
+      options: Options(
+        headers: {...ep.headers, 'Content-Type': 'application/json'},
+      ),
+    );
+    final pins = response.data?['liveTvSavedFilters'] ??
+        response.data?['LiveTvSavedFilters'];
+    if (pins == null) return null; // Older Moonbase ignored the pin change.
+    if (pins is! List || pins.any((value) => value is! String)) {
+      throw const FormatException('Moonbase did not return saved guide filters');
+    }
+    return List<String>.from(pins);
+  }
+
+  Future<T> _withGuidePinSync<T>(Future<T> Function() work) {
+    final running = _guidePinSync.then((_) => work());
+    _guidePinSync = running.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    return running;
+  }
+
+  /// Toggle the latest queued pin list; Moonbase changes stay atomic.
+  Future<List<String>?> changePinnedGuideFilter(
+    MediaServerClient client, {
+    required String filter,
+  }) {
+    final current = _guidePinAccountCheck(client);
+    return _withGuidePinSync(() async {
+      void requireCurrent() {
+        if (!current()) {
+          throw StateError('Live TV account changed while saving a guide shortcut');
+        }
+      }
+
+      while (_signInProfileRead != null) {
+        await _signInProfileRead!.future;
+      }
+      requireCurrent();
+      final keys = _prefs.get(UserPreferences.liveTvSavedFilters).toSet();
+      final shouldAdd = !keys.contains(filter);
+      var canPost =
+          _pluginAvailable && _prefs.get(UserPreferences.pluginSyncEnabled);
+      if (canPost && _prefs.get(UserPreferences.liveTvSavedFiltersUnsynced)) {
+        canPost = await _importPendingGuidePins(client, syncProfile) != null;
+      }
+      requireCurrent();
+      final pins = canPost
+          ? await _postGuidePinsChange(client, syncProfile, {
+              'action': shouldAdd ? 'add' : 'remove',
+              'filter': filter,
+            })
+          : null;
+      requireCurrent();
+      if (pins != null) {
+        await _prefs.set(UserPreferences.liveTvSavedFilters, pins);
+      } else {
+        // No plugin or an old plugin: keep local edits pending for import.
+        if (!keys.remove(filter)) keys.add(filter);
+        await _prefs.set(UserPreferences.liveTvSavedFilters, keys.toList());
+        await _prefs.set(UserPreferences.liveTvSavedFiltersUnsynced, true);
+      }
+      return pins;
+    });
+  }
+
+  // Active clients have an offline wrapper; compare their online clients.
+  static MediaServerClient _onlineClient(MediaServerClient client) =>
+      client is ConnectivityAwareMediaServerClient
+          ? client.onlineClient
+          : client;
+
+  // Capture the account once so queued operations reject stale responses.
+  bool Function() _guidePinAccountCheck(
+    MediaServerClient client, {
+    String? serverId,
+  }) {
+    final userId = client.userId;
+    final scope = _prefs.activeProfileScopeSuffix();
+    return () =>
+        client.userId == userId &&
+        _prefs.activeProfileScopeSuffix() == scope &&
+        (!GetIt.instance.isRegistered<MediaServerClient>() ||
+            identical(
+              _onlineClient(GetIt.instance<MediaServerClient>()),
+              _onlineClient(client),
+            )) &&
+        (serverId == null || scope == '${serverId}_${userId ?? ''}');
+  }
+
+  /// Import pending local pins without gating ordinary settings restoration.
+  Future<List<String>?> _importPendingGuidePins(
+    MediaServerClient client,
+    String profile, {
+    String? serverId,
+  }) async {
+    final current = _guidePinAccountCheck(client, serverId: serverId);
+    if (!current()) return null;
+    try {
+      final pins = await _postGuidePinsChange(client, profile, {
+        'action': 'initializeIfAbsent',
+        'filters': _prefs.get(UserPreferences.liveTvSavedFilters),
+      });
+      if (pins == null || !current()) return null;
+      await _prefs.set(UserPreferences.liveTvSavedFiltersUnsynced, false);
+      return current() ? pins : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> _fetchProfileAndImportGuidePins(
+    MediaServerClient client,
+    String profile, {
+    String? serverId,
+  }) async {
+    var resolved = await _fetchResolvedProfile(client, profile);
+    if (!_prefs.get(UserPreferences.liveTvSavedFiltersUnsynced)) return resolved;
+    final pins = await _importPendingGuidePins(
+      client, profile, serverId: serverId,
+    );
+    if (pins == null) {
+      resolved?.remove('liveTvSavedFilters');
+    } else {
+      // Import can create a previously missing server profile.
+      resolved ??= await _fetchResolvedProfile(client, profile);
+      resolved?['liveTvSavedFilters'] = pins;
+    }
+    return resolved;
   }
 
   Future<void> pushSettings(
@@ -1265,15 +1409,18 @@ class PluginSyncService extends ChangeNotifier {
       if (!supportedProfiles.contains(profile)) return false;
       if (!_pluginAvailable) return false;
 
+      final current = _guidePinAccountCheck(client);
+      if (!current()) return false;
       await _refreshCustomThemes(client);
 
-      final resolved = await _fetchResolvedProfile(client, profile);
-      if (resolved == null) {
-        return false;
-      }
-      await _applyServerSettings(client, profile, resolved);
-
-      return true;
+      // Order the manual pull with pin saves and incoming settings events.
+      return await _withGuidePinSync(() async {
+        if (!current()) return false;
+        final resolved = await _fetchProfileAndImportGuidePins(client, profile);
+        if (resolved == null || !current()) return false;
+        await _applyServerSettings(client, profile, resolved);
+        return true;
+      });
     } catch (_) {
       return false;
     }
@@ -2532,7 +2679,7 @@ class PluginSyncService extends ChangeNotifier {
   /// made in that window would write local state over the stored profile and
   /// take the rows it defines with it. Waiting keeps the change.
   void _pushWhenProfileRead() {
-    if (_readingProfileOnSignIn) {
+    if (_signInProfileRead != null) {
       _pushDebounceTimer = Timer(_pushDebounce, _pushWhenProfileRead);
       return;
     }

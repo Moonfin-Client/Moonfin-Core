@@ -82,7 +82,10 @@ void main() {
   late _MockClient client;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'pref_last_server_id': 'srv1'});
+    SharedPreferences.setMockInitialValues({
+      'pref_last_server_id': 'srv1',
+      'pref_last_user_id': 'user1',
+    });
     final store = PreferenceStore();
     await store.init();
     final prefs = UserPreferences(store);
@@ -96,6 +99,7 @@ void main() {
     client = _MockClient();
     when(() => client.baseUrl).thenReturn('http://plugin.test');
     when(() => client.accessToken).thenReturn('token');
+    when(() => client.userId).thenReturn('user1');
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.deviceInfo).thenReturn(
       const DeviceInfo(
