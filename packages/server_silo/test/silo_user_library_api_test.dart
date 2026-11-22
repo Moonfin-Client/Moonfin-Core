@@ -140,11 +140,11 @@ void main() {
       expect(await sent((a) => a.updateNumericUserRating(_film, rating: 7)), [
         'PUT {"rating":7}',
       ]);
-      expect(siloRatingFromScore(7.5), 8);
-      expect(siloRatingFromScore(10), 10);
-      expect(siloRatingFromScore(1), 1);
-      expect(siloRatingFromScore(0), 1, reason: 'Silo\'s lowest is 1');
-      expect(siloRatingFromScore(12), 10);
+      expect(toSiloRating(7.5), 8);
+      expect(toSiloRating(10), 10);
+      expect(toSiloRating(1), 1);
+      expect(toSiloRating(0), 1, reason: 'Silo\'s lowest is 1');
+      expect(toSiloRating(12), 10);
     });
 
     test('clearing', () async {

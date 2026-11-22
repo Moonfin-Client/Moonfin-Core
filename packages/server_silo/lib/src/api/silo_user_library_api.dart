@@ -20,7 +20,8 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
   Future<Map<String, dynamic>> getItem(String itemId) => _items.getItem(itemId);
 
   /// Silo rates 1 to 10 (shown as five stars with half stars), which
-  /// Moonfin's star and numeric rating styles can show. See [updateNumericUserRating].
+  /// Moonfin's star and numeric rating styles can show. See
+  /// [updateNumericUserRating].
   @override
   bool get supportsNumericUserRatings => true;
 
@@ -84,7 +85,7 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
   Future<void> updateNumericUserRating(
     String itemId, {
     required double rating,
-  }) => _setRating(itemId, siloRatingFromScore(rating));
+  }) => _setRating(itemId, toSiloRating(rating));
 
   /// `DELETE /ratings/{id}`. An item that wasn't rated succeeds.
   @override
@@ -186,4 +187,4 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
 }
 
 /// Moonfin's personal rating (0 to 10) as Silo's whole rating (1 to 10).
-int siloRatingFromScore(double rating) => rating.round().clamp(1, 10).toInt();
+int toSiloRating(double rating) => rating.round().clamp(1, 10).toInt();
