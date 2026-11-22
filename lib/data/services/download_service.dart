@@ -1425,6 +1425,14 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     final transmux = Media3TransmuxDownloader.instance;
     while (transmux.isBusy && !cancelToken.isCancelled) {
       await Future.any([transmux.idle, cancelToken.whenCancel]);
+      // The wait can be long, so the phone may have left Wi-Fi meanwhile.
+      if (!cancelToken.isCancelled && !await _checkWifiPolicy()) {
+        throw DioException(
+          type: DioExceptionType.unknown,
+          requestOptions: RequestOptions(path: url),
+          message: 'WiFi-only mode enabled. Connect to WiFi to download.',
+        );
+      }
     }
     if (cancelToken.isCancelled) {
       throw cancelToken.cancelError ??
