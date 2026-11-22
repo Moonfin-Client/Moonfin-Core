@@ -337,7 +337,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   bool _fullPageOpened = false;
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
-  String? _lastDetailBackdropItemId;
+  String? _lastDetailBackdropKey;
   final GlobalKey<NouveauDetailContentState> _nouveauContentKey =
       GlobalKey<NouveauDetailContentState>();
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -528,13 +528,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     }
     if (item != null) {
       final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
-      bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
+      final backdropKey = detailBackdropKey(item);
+      bool needInitialBackdrop = _lastDetailBackdropKey != backdropKey;
       if (useTrackBackdrop && _lastFocusedBackdropItemId == null) {
         needInitialBackdrop = true;
       }
 
       if (needInitialBackdrop) {
-        _lastDetailBackdropItemId = item.id;
+        _lastDetailBackdropKey = backdropKey;
         _focusedPrimaryBackdropUrlCache.clear();
 
         final target = useTrackBackdrop ? _viewModel.tracks.first : item;
@@ -1036,6 +1037,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     };
   }
 }
+
+/// What the page last picked its backdrop for. A reload after Change Artwork
+/// keeps the item's id but brings new backdrop tags, so it picks again; a
+/// favourite or other user data change keeps both, so it doesn't.
+@visibleForTesting
+String detailBackdropKey(AggregatedItem item) =>
+    '${item.id}|${item.backdropImageTags.join(',')}';
 
 /// The Classic layout on its own, so a test can drive its focus without
 /// standing up everything the full screen reaches for.

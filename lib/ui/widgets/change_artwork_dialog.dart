@@ -31,16 +31,24 @@ class ImageDimensions {
 class ChangeArtworkDialog extends StatefulWidget {
   final AggregatedItem item;
 
-  const ChangeArtworkDialog({super.key, required this.item});
+  /// Called each time the dialog saves or removes artwork.
+  final VoidCallback? onChanged;
 
+  const ChangeArtworkDialog({super.key, required this.item, this.onChanged});
+
+  /// Resolves to true when any artwork was changed, whether the dialog was
+  /// shut with its close button, back, Escape or a tap outside it.
   static Future<bool?> show(
     BuildContext context, {
     required AggregatedItem item,
-  }) {
-    return showFocusRestoringDialog<bool>(
+  }) async {
+    var changed = false;
+    final closedWith = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (_) => ChangeArtworkDialog(item: item),
+      builder: (_) =>
+          ChangeArtworkDialog(item: item, onChanged: () => changed = true),
     );
+    return changed || closedWith == true;
   }
 
   @override
@@ -209,6 +217,11 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       node.dispose();
     }
     super.dispose();
+  }
+
+  void _markChanged() {
+    _hasChanged = true;
+    widget.onChanged?.call();
   }
 
   Future<void> _refreshItemMetadata() async {
@@ -721,7 +734,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           if (_historyIndex >= 0 && _historyIndex < _history.length) {
             _history[_historyIndex] = _item;
           }
-          _hasChanged = true;
+          _markChanged();
           _actionInProgress.remove(category);
         });
       }
@@ -791,7 +804,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           if (_historyIndex >= 0 && _historyIndex < _history.length) {
             _history[_historyIndex] = _item;
           }
-          _hasChanged = true;
+          _markChanged();
           _actionInProgress.remove(category);
         });
       }
@@ -869,7 +882,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           if (_historyIndex >= 0 && _historyIndex < _history.length) {
             _history[_historyIndex] = _item;
           }
-          _hasChanged = true;
+          _markChanged();
           _actionInProgress.clear();
         });
       }
@@ -925,11 +938,13 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         bytes: fileBytes,
         contentType: mimeType,
       );
+      _markChanged();
+      // Picks up the new tag, so the row shows the upload, not "Missing".
+      await _refreshItemMetadata();
 
       if (mounted) {
         _fetchRemoteImages(category);
         setState(() {
-          _hasChanged = true;
           _actionInProgress.remove(category);
         });
         ScaffoldMessenger.of(
