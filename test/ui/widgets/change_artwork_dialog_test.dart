@@ -23,12 +23,24 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     'BackdropImageTags': <String>[],
   };
 
+  /// Other items the dialog can move to, by id.
+  final others = <String, Map<String, dynamic>>{};
+
+  /// While set, a fetch of [heldId] waits on it, the way a slow server answers.
+  String? heldId;
+  Completer<void>? held;
+
   @override
   Future<Map<String, dynamic>> getItem(
     String itemId, {
     String? mediaSourceId,
     String? fields,
-  }) async => Map<String, dynamic>.from(item);
+  }) async {
+    if (itemId == heldId) await held?.future;
+    return Map<String, dynamic>.from(
+      itemId == item['Id'] ? item : others[itemId]!,
+    );
+  }
 }
 
 class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
@@ -138,7 +150,7 @@ void main() {
               onPressed: () => result = ChangeArtworkDialog.show(
                 context,
                 item: AggregatedItem(
-                  id: 'a1',
+                  id: items.item['Id'] as String,
                   serverId: 'server',
                   rawData: items.item,
                 ),
@@ -255,6 +267,75 @@ void main() {
       expect(await result, isTrue);
     },
   );
+
+  testWidgets(
+    'a second upload into a row that is still saving is turned away',
+    (tester) async {
+      admin.saving = Completer<void>();
+      final result = await open(tester);
+      await uploadBackdrop(tester);
+
+      await tester.tap(find.text(l10n.uploadButton).at(1));
+      await settle(tester);
+      expect(admin.uploads, [ImageType.backdrop]);
+
+      // Still held open by the first save, and free once it lands.
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+      admin.saving!.complete();
+      await settle(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      expect(await result, isTrue);
+    },
+  );
+
+  testWidgets("an upload's late refresh does not land on the item moved to", (
+    tester,
+  ) async {
+    items.item = {
+      'Id': 'e1',
+      'Type': 'Episode',
+      'Name': 'Pilot',
+      'SeriesName': 'Show',
+      'SeriesId': 's1',
+      'SeasonName': 'Season 1',
+      'SeasonId': 'se1',
+      'ImageTags': {'Primary': 'still'},
+    };
+    items.others['se1'] = {
+      'Id': 'se1',
+      'Type': 'Season',
+      'Name': 'Season 1',
+      'SeriesName': 'Show',
+      'SeriesId': 's1',
+      'ImageTags': {'Primary': 'poster', 'Banner': 'banner'},
+      'BackdropImageTags': ['backdrop'],
+    };
+    await open(tester);
+
+    // The episode's refresh after the upload is slow to come back.
+    items.heldId = 'e1';
+    items.held = Completer<void>();
+    await tester.tap(find.text(l10n.uploadButton).first);
+    await settle(tester);
+    expect(admin.uploads, [ImageType.primary]);
+
+    // Meanwhile the season link moves the dialog to the season.
+    await tester.tap(find.text('Season 1'));
+    await settle(tester);
+    expect(find.text('Pilot'), findsNothing);
+
+    items.held!.complete();
+    await settle(tester);
+
+    // Still the season: the episode's answer was dropped.
+    expect(find.text('Pilot'), findsNothing);
+    expect(find.text('Season 1'), findsOneWidget);
+  });
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);

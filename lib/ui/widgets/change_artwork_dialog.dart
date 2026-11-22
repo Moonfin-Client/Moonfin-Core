@@ -225,13 +225,16 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _refreshItemMetadata() async {
+    // The dialog can move to another item (a series or season link) while
+    // this is in flight; that item's response must not land on it.
+    final itemId = _item.id;
     try {
       final client = GetIt.instance<MediaServerClient>();
-      final updatedRaw = await client.itemsApi.getItem(_item.id);
-      if (mounted) {
+      final updatedRaw = await client.itemsApi.getItem(itemId);
+      if (mounted && _item.id == itemId) {
         setState(() {
           _item = AggregatedItem(
-            id: _item.id,
+            id: itemId,
             serverId: _item.serverId,
             rawData: updatedRaw,
           );
@@ -897,6 +900,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _uploadLocalImage(String category) async {
+    // One write per row at a time, so the row's in-progress entry, which keeps
+    // the dialog open, lasts until the last save into it finishes.
+    if (_actionInProgress.contains(category)) return;
     final l10n = AppLocalizations.of(context);
     try {
       final result = await FilePicker.pickFiles(
@@ -926,6 +932,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       if (fileBytes == null) {
         throw 'Could not read file bytes';
       }
+      // Another upload into this row may have started while the picker was open.
+      if (_actionInProgress.contains(category)) return;
 
       setState(() {
         _actionInProgress.add(category);
