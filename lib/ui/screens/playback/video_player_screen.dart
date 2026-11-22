@@ -5190,8 +5190,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         child: ExcludeFocus(
           child: IgnorePointer(
             child: PlaybackStatsOverlay(
-              // A new item starts with empty graphs.
-              key: ValueKey(_itemIdForQueueItem(_queue.currentItem)),
+              // A new item starts with empty graphs. Offline items are bare
+              // paths with no id, so the path keys them.
+              key: ValueKey(
+                _itemIdForQueueItem(_queue.currentItem) ?? _queue.currentItem,
+              ),
               read: () => media3.networkStats,
               serverBitrate: cap != null && (source == null || cap < source)
                   ? cap
