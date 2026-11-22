@@ -177,6 +177,47 @@ void main() {
     vm.dispose();
   });
 
+  test('a page still moved by a removal after the last read is dropped',
+      () async {
+    final silo = _FakeSilo(25);
+    final vm = SeerrRequestsViewModel(silo);
+    await vm.load();
+
+    final reads = [for (var k = 0; k < 6; k++) silo.holds[20 - k] = Completer<void>()];
+    final loading = vm.loadMore();
+    for (var k = 0; k < 6; k++) {
+      await pumpEventQueue();
+      expect(await vm.removeFailedRequest(5 + k), SeerrRemoveResult.removed);
+      reads[k].complete();
+    }
+
+    await loading;
+    expect(silo.offsets, [0, 20, 19, 18, 17, 16, 15]);
+    expect(_ids(vm), [
+      for (var i = 1; i <= 20; i++)
+        if (i < 5 || i > 10) i,
+    ]);
+    expect(vm.state.isLoadingMore, isFalse);
+    expect(vm.state.hasMore, isTrue);
+    vm.dispose();
+  });
+
+  test('no page is read while a refresh is out', () async {
+    final silo = _FakeSilo(25);
+    final vm = SeerrRequestsViewModel(silo);
+    await vm.load();
+
+    silo.hold = Completer<void>();
+    final refreshing = vm.refresh();
+    await pumpEventQueue();
+    await vm.loadMore();
+    silo.hold!.complete();
+    await refreshing;
+    expect(silo.offsets, [0, 0]);
+    expect(_ids(vm), [for (var i = 1; i <= 20; i++) i]);
+    vm.dispose();
+  });
+
   test('a full load forgets removed ids, which the web may reuse', () async {
     final silo = _FakeSilo(3);
     final vm = SeerrRequestsViewModel(silo);

@@ -439,7 +439,10 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   }
 
   Future<void> loadMore() async {
+    // A refresh keeps the old cards up, so a page read from their count would
+    // land past the refreshed first page.
     if (_state.isLoading ||
+        _state.isRefreshing ||
         _state.isLoadingMore ||
         !_state.hasMore ||
         _state.currentUser == null) {
@@ -465,19 +468,25 @@ class SeerrRequestsViewModel extends ChangeNotifier {
       );
       // Each removal that finishes meanwhile moves the server's list up by
       // one, past the page that was asked for. Read again from where the
-      // page now starts until no removal moved it during the read.
+      // page now starts until no removal moved it during the read. If
+      // removals keep moving it, the page is dropped and the next scroll
+      // asks again.
       var at = offset;
       var response = await page(at);
-      for (var tries = 0; tries < 5; tries++) {
+      for (var reads = 1; ; reads++) {
         await _removalsSettled();
         if (gen != _listGen) return;
         final removed = _removals - removalsAtStart;
         final next = offset > removed ? offset - removed : 0;
         if (next == at) break;
+        if (reads >= 6) {
+          _state = _state.copyWith(isLoadingMore: false);
+          notifyListeners();
+          return;
+        }
         at = next;
         response = await page(at);
       }
-      if (gen != _listGen) return;
 
       final merged = [
         ..._state.requests,
