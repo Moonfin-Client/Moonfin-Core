@@ -713,6 +713,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'frost',
     ]),
     details.leaf(
+      'pref_personal_rating_intervals',
+      l10n.personalRatingIntervals,
+      keywords: [
+        'rating',
+        'stars',
+        'numeric',
+        'steps',
+        'half',
+        'quarter',
+        'precision',
+        'granularity',
+      ],
+    ),
+    details.leaf(
       'pref_show_details_backdrop',
       l10n.detailsScreenBackdrop,
       keywords: ['background images'],

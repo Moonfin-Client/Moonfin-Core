@@ -74,18 +74,33 @@ String formatPersonalRatingNumber(
   return fixed.replaceFirst(RegExp(r'\.?0+$'), '');
 }
 
+/// Snaps a 0–10 [serverRating] to the nearest grid point for [style] and
+/// [intervals] so badges, action labels, and dialogs agree on off-grid values.
+double snapPersonalRatingToGrid(
+  double serverRating,
+  PersonalRatingStyle style,
+  int intervals,
+) {
+  final step = personalRatingServerStep(style, intervals);
+  final clamped = serverRating.clamp(0.0, 10.0).toDouble();
+  final snapped = ((clamped / step).round() * step).clamp(0.0, 10.0).toDouble();
+  return (snapped * 100).round() / 100;
+}
+
 /// Formats a 0–10 server rating for badges/rows according to [style] and
-/// [intervals], trimming trailing zeros.
+/// [intervals], snapping off-grid values to the active interval grid and
+/// trimming trailing zeros.
 String formatPersonalRatingBadge(
   double serverRating,
   PersonalRatingStyle style,
   int intervals,
 ) {
+  final snapped = snapPersonalRatingToGrid(serverRating, style, intervals);
   final maxDecimals = personalRatingMaxDecimals(style, intervals);
   if (style == PersonalRatingStyle.stars) {
-    return '${formatPersonalRatingNumber(serverRating / 2, maxDecimals)}/5';
+    return '${formatPersonalRatingNumber(snapped / 2, maxDecimals)}/5';
   }
-  return formatPersonalRatingNumber(serverRating, maxDecimals);
+  return formatPersonalRatingNumber(snapped, maxDecimals);
 }
 
 /// Formats the compact star action button label (`★★★★`, `★★★★½`, `★★★★¼`, etc.)
@@ -99,13 +114,19 @@ String formatPersonalStarActionLabel(
     PersonalRatingStyle.stars,
     intervals,
   );
-  final stars = (serverRating / 2).clamp(0.0, 5.0).toDouble();
+  final snappedStars =
+      snapPersonalRatingToGrid(
+        serverRating,
+        PersonalRatingStyle.stars,
+        effective,
+      ) /
+      2;
   final subdivisions = switch (effective) {
     6 => 1,
     11 => 2,
     _ => 4,
   };
-  final snappedUnits = (stars * subdivisions).round();
+  final snappedUnits = (snappedStars * subdivisions).round();
   if (snappedUnits <= 0) return zeroLabel;
   final full = snappedUnits ~/ subdivisions;
   final remainder = snappedUnits % subdivisions;

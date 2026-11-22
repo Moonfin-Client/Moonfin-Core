@@ -112,6 +112,9 @@ class _DetailsScreenSettingsScreenState
                         final isStars =
                             ratingStyle == PersonalRatingStyle.stars;
                         return IntPickerPreferenceTile(
+                          key: ValueKey(
+                            'pref_personal_rating_intervals_${ratingStyle.name}',
+                          ),
                           preference: UserPreferences.personalRatingIntervals,
                           title: l10n.personalRatingIntervals,
                           icon: Icons.tune,

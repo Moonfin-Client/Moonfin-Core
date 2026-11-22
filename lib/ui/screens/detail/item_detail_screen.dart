@@ -13051,7 +13051,11 @@ class _PersonalRatingActionIcon extends StatelessWidget {
             rating == null
                 ? '–'
                 : formatPersonalRatingNumber(
-                    rating!,
+                    snapPersonalRatingToGrid(
+                      rating!,
+                      PersonalRatingStyle.numeric,
+                      intervals,
+                    ),
                     personalRatingMaxDecimals(
                       PersonalRatingStyle.numeric,
                       intervals,

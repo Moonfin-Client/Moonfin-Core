@@ -26,6 +26,7 @@ void main() {
       expect(formatPersonalRatingBadge(8.0, PersonalRatingStyle.stars, 6), '4/5');
       expect(formatPersonalRatingBadge(8.5, PersonalRatingStyle.stars, 6), '4/5');
       expect(formatPersonalRatingBadge(8.0, PersonalRatingStyle.stars, 11), '4/5');
+      expect(formatPersonalRatingBadge(8.5, PersonalRatingStyle.stars, 11), '4.5/5');
       expect(formatPersonalRatingBadge(9.0, PersonalRatingStyle.stars, 11), '4.5/5');
       expect(formatPersonalRatingBadge(8.5, PersonalRatingStyle.stars, 21), '4.25/5');
       expect(formatPersonalRatingBadge(9.0, PersonalRatingStyle.stars, 21), '4.5/5');
