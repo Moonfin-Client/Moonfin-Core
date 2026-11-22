@@ -227,7 +227,28 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     widget.onChanged?.call();
   }
 
-  void _applyRefreshedItem(AggregatedItem item, Map<String, dynamic> rawData) {
+  /// The latest fetch started for each item, so an older answer that comes back
+  /// last does not undo a newer one.
+  final Map<String, int> _refreshGenerations = {};
+
+  int _startRefresh(String itemId) =>
+      _refreshGenerations[itemId] = (_refreshGenerations[itemId] ?? 0) + 1;
+
+  /// [item] as the dialog last saw it, which a refresh may have replaced.
+  AggregatedItem _latestOf(AggregatedItem item) {
+    if (_item.id == item.id) return _item;
+    for (final entry in _history) {
+      if (entry.id == item.id) return entry;
+    }
+    return item;
+  }
+
+  void _applyRefreshedItem(
+    AggregatedItem item,
+    Map<String, dynamic> rawData,
+    int generation,
+  ) {
+    if (_refreshGenerations[item.id] != generation) return;
     final refreshed = AggregatedItem(
       id: item.id,
       serverId: item.serverId,
@@ -242,9 +263,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   Future<void> _refreshItemMetadata(AggregatedItem item) async {
     try {
       final client = GetIt.instance<MediaServerClient>();
+      final generation = _startRefresh(item.id);
       final updatedRaw = await client.itemsApi.getItem(item.id);
       if (mounted) {
-        setState(() => _applyRefreshedItem(item, updatedRaw));
+        setState(() => _applyRefreshedItem(item, updatedRaw, generation));
       }
     } catch (e) {
       debugPrint('Failed to refresh item metadata: $e');
@@ -738,10 +760,11 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       );
       _markChanged();
 
+      final generation = _startRefresh(item.id);
       final updatedRaw = await client.itemsApi.getItem(item.id);
       if (mounted) {
         setState(() {
-          _applyRefreshedItem(item, updatedRaw);
+          _applyRefreshedItem(item, updatedRaw, generation);
           _actionInProgress.remove(category);
         });
       }
@@ -802,10 +825,11 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       );
       _markChanged();
 
+      final generation = _startRefresh(item.id);
       final updatedRaw = await client.itemsApi.getItem(item.id);
       if (mounted) {
         setState(() {
-          _applyRefreshedItem(item, updatedRaw);
+          _applyRefreshedItem(item, updatedRaw, generation);
           _actionInProgress.remove(category);
         });
       }
@@ -846,6 +870,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     );
 
     if (confirm != true || _actionInProgress.isNotEmpty) return;
+    // The opening fetch may have landed while the confirmation was up.
+    final latest = _latestOf(item);
 
     setState(() {
       _actionInProgress.addAll(categories);
@@ -854,7 +880,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       for (final category in categories) {
-        final tags = _tagsOf(item, category);
+        final tags = _tagsOf(latest, category);
         if (tags.isEmpty) continue;
 
         if (category == 'Backdrop') {
@@ -876,17 +902,18 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         }
       }
 
+      final generation = _startRefresh(item.id);
       final updatedRaw = await client.itemsApi.getItem(item.id);
       if (mounted) {
         setState(() {
-          _applyRefreshedItem(item, updatedRaw);
-          _actionInProgress.clear();
+          _applyRefreshedItem(item, updatedRaw, generation);
+          _actionInProgress.removeAll(categories);
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _actionInProgress.clear();
+          _actionInProgress.removeAll(categories);
         });
         await _handleActionError(e, 'clear');
       }

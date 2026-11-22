@@ -27,7 +27,8 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   /// Other items the dialog can move to, by id.
   final others = <String, Map<String, dynamic>>{};
 
-  /// While set, a fetch of [heldId] waits on it, the way a slow server answers.
+  /// While set, the next fetch of [heldId] waits on it, the way a slow server
+  /// answers. It answers with the item as it was when it was asked for.
   String? heldId;
   Completer<void>? held;
 
@@ -40,11 +41,15 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     String? mediaSourceId,
     String? fields,
   }) async {
-    if (itemId == heldId) await held?.future;
-    if (failing) throw Exception('connection lost');
-    return Map<String, dynamic>.from(
+    final answer = Map<String, dynamic>.from(
       itemId == item['Id'] ? item : others[itemId]!,
     );
+    if (itemId == heldId) {
+      heldId = null;
+      await held?.future;
+    }
+    if (failing) throw Exception('connection lost');
+    return answer;
   }
 }
 
@@ -61,6 +66,9 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
 
   /// While set, an upload waits on it, the way a large file keeps saving.
   Completer<void>? saving;
+
+  /// While set, a delete waits on it.
+  Completer<void>? deleting;
 
   @override
   Future<Map<String, dynamic>> getRemoteImages(
@@ -79,7 +87,10 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     String itemId, {
     required ImageType imageType,
     int? imageIndex,
-  }) async => deletes.add(imageType);
+  }) async {
+    deletes.add(imageType);
+    await deleting?.future;
+  }
 
   @override
   Future<void> downloadRemoteImage(
@@ -167,8 +178,12 @@ void main() {
     }
   }
 
-  /// Opens the dialog for the album. Returns what it resolves to once closed.
-  Future<Future<bool?>> open(WidgetTester tester) async {
+  /// Opens the dialog for the album, or for [shown] when the page holds a
+  /// slimmer copy of it. Returns what it resolves to once closed.
+  Future<Future<bool?>> open(
+    WidgetTester tester, {
+    Map<String, dynamic>? shown,
+  }) async {
     tester.view.physicalSize = const Size(1400, 2400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -186,7 +201,7 @@ void main() {
                 item: AggregatedItem(
                   id: items.item['Id'] as String,
                   serverId: 'server',
-                  rawData: items.item,
+                  rawData: shown ?? items.item,
                 ),
               ),
               child: const Text('open'),
@@ -503,6 +518,109 @@ void main() {
       expect(await result, isTrue);
     });
   });
+
+  testWidgets('an older refresh coming back last does not bring back Missing', (
+    tester,
+  ) async {
+    // The opening fetch is slow and answers with the album before the upload.
+    items.heldId = 'a1';
+    items.held = Completer<void>();
+    await open(tester);
+    await uploadBackdrop(tester);
+    expect(find.text(l10n.missing), findsOneWidget);
+
+    items.held!.complete();
+    await settle(tester);
+
+    expect(find.text(l10n.missing), findsOneWidget);
+  });
+
+  testWidgets('Clear All removes what the opening fetch found', (tester) async {
+    // The page's copy only knows the cover; the server also has disc art.
+    items.item = {
+      ...items.item,
+      'ImageTags': {'Primary': 'cover', 'Disc': 'disc'},
+    };
+    items.heldId = 'a1';
+    items.held = Completer<void>();
+    await open(
+      tester,
+      shown: {
+        ...items.item,
+        'ImageTags': {'Primary': 'cover'},
+      },
+    );
+
+    final clearAll = find.text(l10n.clearAllArtworkButton);
+    await tester.ensureVisible(clearAll);
+    await tester.tap(clearAll);
+    await settle(tester);
+    // The opening fetch lands while the confirmation is up.
+    items.held!.complete();
+    await settle(tester);
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+
+    expect(admin.deletes, [ImageType.primary, ImageType.disc]);
+  });
+
+  testWidgets(
+    "Clear All finishing leaves another item's save holding it open",
+    (tester) async {
+      items.item = {
+        'Id': 'e1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'Show',
+        'SeriesId': 's1',
+        'SeasonName': 'Season 1',
+        'SeasonId': 'se1',
+        'ImageTags': {'Primary': 'still'},
+      };
+      items.others['se1'] = {
+        'Id': 'se1',
+        'Type': 'Season',
+        'Name': 'Season 1',
+        'SeriesName': 'Show',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'poster', 'Banner': 'banner'},
+        'BackdropImageTags': <String>[],
+      };
+      final result = await open(tester);
+
+      // Clear All on the episode is still deleting...
+      admin.deleting = Completer<void>();
+      final clearAll = find.text(l10n.clearAllArtworkButton);
+      await tester.ensureVisible(clearAll);
+      await tester.tap(clearAll);
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+
+      // ...while a backdrop upload starts on the season.
+      await tester.tap(find.text('Season 1'));
+      await settle(tester);
+      admin.saving = Completer<void>();
+      final backdropUpload = find.text(l10n.uploadButton).at(1);
+      await tester.ensureVisible(backdropUpload);
+      await tester.tap(backdropUpload);
+      await settle(tester);
+      expect(admin.uploads, [ImageType.backdrop]);
+
+      admin.deleting!.complete();
+      await settle(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+
+      admin.saving!.complete();
+      await settle(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      expect(await result, isTrue);
+    },
+  );
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);
