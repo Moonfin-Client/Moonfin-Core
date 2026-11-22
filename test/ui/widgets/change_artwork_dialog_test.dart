@@ -214,6 +214,18 @@ void main() {
     expect(await result, isTrue);
   });
 
+  // The colour the close button's X is drawn in.
+  Color? closeIconColor(WidgetTester tester) => tester
+      .widget<RichText>(
+        find.descendant(
+          of: find.byIcon(Icons.close),
+          matching: find.byType(RichText),
+        ),
+      )
+      .text
+      .style
+      ?.color;
+
   testWidgets(
     'it cannot be shut while a save runs, and reports the change after',
     (tester) async {
@@ -228,9 +240,14 @@ void main() {
       await tester.tap(find.byIcon(Icons.close));
       await settle(tester);
       expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+      final disabled = Theme.of(
+        tester.element(find.byType(ChangeArtworkDialog)),
+      ).disabledColor;
+      expect(closeIconColor(tester), disabled);
 
       admin.saving!.complete();
       await settle(tester);
+      expect(closeIconColor(tester), isNot(disabled));
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await settle(tester);
 

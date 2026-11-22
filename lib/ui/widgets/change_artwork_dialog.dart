@@ -1394,7 +1394,12 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                           () {}, // Block focus leaving to the right
                       child: Padding(
                         padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.close),
+                        child: Icon(
+                          Icons.close,
+                          color: saving
+                              ? Theme.of(context).disabledColor
+                              : null,
+                        ),
                       ),
                     ),
                   ],
