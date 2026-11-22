@@ -583,11 +583,15 @@ class SeerrRequestsViewModel extends ChangeNotifier {
                 .map((r) => r.id == requestId ? updated : r)
                 .toList(),
           );
+          _endAction(requestId);
+          // A retry may have it downloading now.
+          unawaited(
+            _loadArrQueues([updated]).whenComplete(_syncDownloadPolling),
+          );
         } catch (_) {
           _endAction(requestId);
           return SeerrRemoveResult.failed;
         }
-        _endAction(requestId);
         return SeerrRemoveResult.refused;
       }
       _endAction(requestId);
