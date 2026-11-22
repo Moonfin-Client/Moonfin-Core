@@ -116,6 +116,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   // the selected tab header automatically grabs focus at that time
   final _initialFocusNode = FocusNode(debugLabel: 'seerrInitialContent');
   final _animatedRequestIds = <int>{};
+
+  /// The card that takes focus after a removal, so the remote lands on the
+  /// request now in the removed one's place rather than back up the screen.
+  int? _refocusRequestId;
   final _animatedIssueIds = <int>{};
 
   @override
@@ -448,6 +452,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           onDecline: () => vm.declineRequest(req.id),
           onRetry: () => vm.retryRequest(req.id),
           onRemove: () => _confirmRemove(vm, req),
+          takeFocus: _refocusRequestId == req.id,
           onFocusGained: () => _snapToTileRow(index),
           splitRequester: _splitRequester,
         ),
@@ -525,6 +530,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 onDecline: () => vm.declineRequest(req.id),
                 onRetry: () => vm.retryRequest(req.id),
                 onRemove: () => _confirmRemove(vm, req),
+                takeFocus: _refocusRequestId == req.id,
               ),
             );
           },
@@ -570,7 +576,16 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     );
     if (confirmed != true || !mounted) return;
     final messenger = ScaffoldMessenger.maybeOf(context);
-    if (await vm.removeFailedRequest(request.id)) return;
+    final remote =
+        FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
+    final before = vm.state.requests;
+    final at = before.indexWhere((r) => r.id == request.id);
+    if (await vm.removeFailedRequest(request.id)) {
+      if (!remote || !mounted || at < 0 || before.length < 2) return;
+      final next = before[at + 1 < before.length ? at + 1 : at - 1];
+      setState(() => _refocusRequestId = next.id);
+      return;
+    }
     messenger?.showSnackBar(
       SnackBar(content: Text(l10n.removeFailedRequestRefused)),
     );
@@ -1513,6 +1528,9 @@ class _RequestCard extends StatefulWidget {
   /// Deletes a failed Silo request; offered when [SeerrRequest.canRemove].
   final VoidCallback? onRemove;
 
+  /// Set on the card that takes focus after the one before it was removed.
+  final bool takeFocus;
+
   /// Fired when this card takes focus, so the grid can slide its row to a
   /// whole-row offset instead of leaving the next one half cut.
   final VoidCallback? onFocusGained;
@@ -1532,6 +1550,7 @@ class _RequestCard extends StatefulWidget {
     this.onDecline,
     this.onRetry,
     this.onRemove,
+    this.takeFocus = false,
     this.onFocusGained,
     this.splitRequester = false,
   });
@@ -1548,6 +1567,22 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   final _removeFocus = FocusNode(debugLabel: 'request-remove');
 
   SeerrRequest get request => widget.request;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.takeFocus) _focusSoon();
+  }
+
+  @override
+  void didUpdateWidget(_RequestCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.takeFocus && !oldWidget.takeFocus) _focusSoon();
+  }
+
+  void _focusSoon() => WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) _cardFocus.requestFocus();
+  });
 
   @override
   void dispose() {
