@@ -30,6 +30,14 @@ class _ImageApi extends Fake implements ImageApi {
     int? index,
     String? tag,
   }) => 'backdrop/$itemId/$index?tag=$tag';
+
+  @override
+  String getPrimaryImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? maxHeight,
+    String? tag,
+  }) => 'primary/$itemId?tag=$tag';
 }
 
 /// A server with one movie whose backdrop tags a test can change, the way
@@ -67,132 +75,134 @@ AggregatedItem _item(Map<String, dynamic> rawData) => AggregatedItem(
 );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  late _Client client;
+  late BackgroundService backgrounds;
+
+  setUp(() async {
+    await GetIt.instance.reset();
+    userDataSync.reset();
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+    final pluginSync = _PluginSyncService();
+    when(() => pluginSync.seerrAvailable).thenReturn(false);
+    GetIt.instance.registerSingleton<PluginSyncService>(pluginSync);
+    client = _Client();
+    when(() => client.baseUrl).thenReturn('http://server');
+    when(() => client.imageApi).thenReturn(_ImageApi());
+    final factory = _Factory();
+    when(() => factory.clientForServerOrActive(any())).thenReturn(client);
+    GetIt.instance.registerSingleton<MediaServerClientFactory>(factory);
+    backgrounds = BackgroundService();
+  });
+
+  tearDown(() {
+    backgrounds.dispose();
+    userDataSync.reset();
+    return GetIt.instance.reset();
+  });
+
+  String key(Map<String, dynamic> rawData) =>
+      detailBackdropKey(backgrounds, _item(rawData));
+
   group('detailBackdropKey', () {
-    test('new backdrop tags on the same item give a new key', () {
+    test('new backdrop tags on the item give a new key', () {
       expect(
-        detailBackdropKey(
-          _item({
-            'BackdropImageTags': ['new'],
-          }),
-        ),
+        key({
+          'BackdropImageTags': ['new'],
+        }),
         isNot(
-          detailBackdropKey(
-            _item({
-              'BackdropImageTags': ['old'],
-            }),
-          ),
+          key({
+            'BackdropImageTags': ['old'],
+          }),
         ),
       );
       expect(
-        detailBackdropKey(
-          _item({
-            'BackdropImageTags': ['new'],
+        key({
+          'BackdropImageTags': ['new'],
+        }),
+        isNot(key({})),
+      );
+    });
+
+    test('a new parent backdrop gives a new key', () {
+      expect(
+        key({
+          'Type': 'Episode',
+          'ParentBackdropItemId': 's1',
+          'ParentBackdropImageTags': ['new'],
+        }),
+        isNot(
+          key({
+            'Type': 'Episode',
+            'ParentBackdropItemId': 's1',
+            'ParentBackdropImageTags': ['old'],
           }),
         ),
-        isNot(detailBackdropKey(_item({}))),
+      );
+    });
+
+    test('a new cover on an album without a backdrop gives a new key', () {
+      expect(
+        key({
+          'Type': 'MusicAlbum',
+          'ImageTags': {'Primary': 'new'},
+        }),
+        isNot(
+          key({
+            'Type': 'MusicAlbum',
+            'ImageTags': {'Primary': 'old'},
+          }),
+        ),
       );
     });
 
     test('a user data change keeps the key', () {
       expect(
-        detailBackdropKey(
-          _item({
-            'BackdropImageTags': ['old'],
-            'UserData': {'IsFavorite': true},
-          }),
-        ),
-        detailBackdropKey(
-          _item({
-            'BackdropImageTags': ['old'],
-            'UserData': {'IsFavorite': false},
-          }),
-        ),
+        key({
+          'BackdropImageTags': ['old'],
+          'UserData': {'IsFavorite': true},
+        }),
+        key({
+          'BackdropImageTags': ['old'],
+          'UserData': {'IsFavorite': false},
+        }),
       );
     });
   });
 
-  group('a detail page after Change Artwork', () {
-    TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'a reload after Change Artwork gives a new key, and a favourite keeps it',
+    () async {
+      final itemsApi = _ItemsApi();
+      when(() => client.itemsApi).thenReturn(itemsApi);
+      final tmdbRepository = TmdbRepository(client);
+      final vm = ItemDetailViewModel(
+        itemId: 'm1',
+        client: client,
+        mutations: ItemMutationRepository(client),
+        mdbListRepository: MdbListRepository(client, tmdbRepository),
+        tmdbRepository: tmdbRepository,
+      );
+      addTearDown(vm.dispose);
 
-    late _Client client;
-    late BackgroundService backgrounds;
+      await vm.load();
+      await pumpEventQueue();
+      final before = detailBackdropKey(backgrounds, vm.item!);
 
-    setUp(() async {
-      await GetIt.instance.reset();
-      userDataSync.reset();
-      SharedPreferences.setMockInitialValues({});
-      final store = PreferenceStore();
-      await store.init();
-      GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
-      final pluginSync = _PluginSyncService();
-      when(() => pluginSync.seerrAvailable).thenReturn(false);
-      GetIt.instance.registerSingleton<PluginSyncService>(pluginSync);
-      client = _Client();
-      when(() => client.baseUrl).thenReturn('http://server');
-      when(() => client.imageApi).thenReturn(_ImageApi());
-      final factory = _Factory();
-      when(() => factory.clientForServerOrActive(any())).thenReturn(client);
-      GetIt.instance.registerSingleton<MediaServerClientFactory>(factory);
-      backgrounds = BackgroundService();
-    });
+      itemsApi.backdropTags = const ['new'];
+      await vm.load();
+      await pumpEventQueue();
+      final reloaded = detailBackdropKey(backgrounds, vm.item!);
+      expect(reloaded, isNot(before));
 
-    tearDown(() {
-      backgrounds.dispose();
-      userDataSync.reset();
-      return GetIt.instance.reset();
-    });
-
-    test(
-      'the reload shows the new backdrop, and a favourite keeps it',
-      () async {
-        final itemsApi = _ItemsApi();
-        when(() => client.itemsApi).thenReturn(itemsApi);
-        final tmdbRepository = TmdbRepository(client);
-        final vm = ItemDetailViewModel(
-          itemId: 'm1',
-          client: client,
-          mutations: ItemMutationRepository(client),
-          mdbListRepository: MdbListRepository(client, tmdbRepository),
-          tmdbRepository: tmdbRepository,
-        );
-        addTearDown(vm.dispose);
-
-        // The detail screen's rule: on every notify, pick the backdrop again
-        // only when the key moved.
-        String? lastKey;
-        var picks = 0;
-        vm.addListener(() {
-          final item = vm.item;
-          if (item == null) return;
-          final key = detailBackdropKey(item);
-          if (key == lastKey) return;
-          lastKey = key;
-          picks++;
-          backgrounds.setBackground(item);
-        });
-
-        await vm.load();
-        await pumpEventQueue();
-        expect(backgrounds.currentUrl, 'backdrop/m1/0?tag=old');
-        expect(picks, 1);
-
-        // Change Artwork saves a new backdrop, closes and the page reloads.
-        itemsApi.backdropTags = const ['new'];
-        await vm.load();
-        await pumpEventQueue();
-        expect(backgrounds.currentUrl, 'backdrop/m1/0?tag=new');
-        expect(picks, 2);
-
-        userDataSync.publish('m1', {'IsFavorite': true});
-        await pumpEventQueue();
-        expect(vm.item?.isFavorite, isTrue);
-        expect(backgrounds.currentUrl, 'backdrop/m1/0?tag=new');
-        expect(
-          picks,
-          2,
-          reason: 'a favourite does not pick the backdrop again',
-        );
-      },
-    );
-  });
+      userDataSync.publish('m1', {'IsFavorite': true});
+      await pumpEventQueue();
+      expect(vm.item?.isFavorite, isTrue);
+      expect(detailBackdropKey(backgrounds, vm.item!), reloaded);
+    },
+  );
 }

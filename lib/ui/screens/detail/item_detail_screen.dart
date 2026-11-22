@@ -528,7 +528,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     }
     if (item != null) {
       final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
-      final backdropKey = detailBackdropKey(item);
+      final backdropKey = detailBackdropKey(_backgroundService, item);
       bool needInitialBackdrop = _lastDetailBackdropKey != backdropKey;
       if (useTrackBackdrop && _lastFocusedBackdropItemId == null) {
         needInitialBackdrop = true;
@@ -1038,12 +1038,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   }
 }
 
-/// What the page last picked its backdrop for. A reload after Change Artwork
-/// keeps the item's id but brings new backdrop tags, so it picks again; a
-/// favourite or other user data change keeps both, so it doesn't.
+/// What the page last picked its backdrop for: the artwork [backgrounds] would
+/// show behind [item], whether that is the item's own backdrop, its parent's or
+/// its cover. A reload after Change Artwork brings new tags for that artwork,
+/// so it picks again; a favourite or other user data change keeps them, so it
+/// doesn't.
 @visibleForTesting
-String detailBackdropKey(AggregatedItem item) =>
-    '${item.id}|${item.backdropImageTags.join(',')}';
+String detailBackdropKey(BackgroundService backgrounds, AggregatedItem item) =>
+    backgrounds.backdropUrlsFor(item).join('|');
 
 /// The Classic layout on its own, so a test can drive its focus without
 /// standing up everything the full screen reaches for.
