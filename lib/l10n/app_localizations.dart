@@ -10900,6 +10900,24 @@ abstract class AppLocalizations {
   /// **'Keep'**
   String get keep;
 
+  /// Button and dialog title for deleting a failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Request'**
+  String get removeRequest;
+
+  /// Confirmation message before deleting a failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'Your failed request for \"{title}\" will be deleted. You can request it again later.'**
+  String removeFailedRequestForTitle(String title);
+
+  /// Snackbar when Silo refuses to delete a failed request because it changed
+  ///
+  /// In en, this message translates to:
+  /// **'The request wasn\'t removed. It was retried, or part of it arrived.'**
+  String get removeFailedRequestRefused;
+
   /// Snackbar when Seerr item cannot be found in Jellyfin
   ///
   /// In en, this message translates to:

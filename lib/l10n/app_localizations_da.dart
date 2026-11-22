@@ -6184,6 +6184,18 @@ class AppLocalizationsDa extends AppLocalizations {
   String get keep => 'Holde';
 
   @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
   String get itemNotFoundInLibrary =>
       'Element blev ikke fundet i dit Moonfin-bibliotek';
 

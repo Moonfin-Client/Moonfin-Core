@@ -6145,6 +6145,18 @@ class AppLocalizationsHe extends AppLocalizations {
   String get keep => 'לִשְׁמוֹר';
 
   @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
   String get itemNotFoundInLibrary => 'הפריט לא נמצא בספריית Moonfin שלך';
 
   @override

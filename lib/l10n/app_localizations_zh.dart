@@ -5979,6 +5979,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get keep => '保留';
 
   @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
   String get itemNotFoundInLibrary => '在你的 Moonfin 媒体库中未找到此媒体项';
 
   @override

@@ -21,6 +21,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -446,6 +447,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           onApprove: () => vm.approveRequest(req.id),
           onDecline: () => vm.declineRequest(req.id),
           onRetry: () => vm.retryRequest(req.id),
+          onRemove: () => _confirmRemove(vm, req),
           onFocusGained: () => _snapToTileRow(index),
           splitRequester: _splitRequester,
         ),
@@ -522,11 +524,55 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 onApprove: () => vm.approveRequest(req.id),
                 onDecline: () => vm.declineRequest(req.id),
                 onRetry: () => vm.retryRequest(req.id),
+                onRemove: () => _confirmRemove(vm, req),
               ),
             );
           },
         ),
       ),
+    );
+  }
+
+  /// Confirms deleting a failed Silo request, then deletes it. Silo refuses
+  /// one that was retried or got a copy meanwhile; the card then shows where
+  /// it stands and a snackbar says why it stayed.
+  Future<void> _confirmRemove(
+    SeerrRequestsViewModel vm,
+    SeerrRequest request,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final media = request.media;
+    final title = media?.title ?? media?.name ?? l10n.unknown;
+    final confirmed = await showFocusRestoringDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog.adaptive(
+        backgroundColor: const Color(0xFF1A1A2E),
+        title: Text(
+          l10n.removeRequest,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          l10n.removeFailedRequestForTitle(title),
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          adaptiveDialogAction(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.keep),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red[300]),
+            child: Text(l10n.removeRequest),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (await vm.removeFailedRequest(request.id)) return;
+    messenger?.showSnackBar(
+      SnackBar(content: Text(l10n.removeFailedRequestRefused)),
     );
   }
 
@@ -1464,6 +1510,9 @@ class _RequestCard extends StatefulWidget {
   final VoidCallback? onDecline;
   final VoidCallback? onRetry;
 
+  /// Deletes a failed Silo request; offered when [SeerrRequest.canRemove].
+  final VoidCallback? onRemove;
+
   /// Fired when this card takes focus, so the grid can slide its row to a
   /// whole-row offset instead of leaving the next one half cut.
   final VoidCallback? onFocusGained;
@@ -1482,6 +1531,7 @@ class _RequestCard extends StatefulWidget {
     this.onApprove,
     this.onDecline,
     this.onRetry,
+    this.onRemove,
     this.onFocusGained,
     this.splitRequester = false,
   });
@@ -1495,6 +1545,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   final _approveFocus = FocusNode(debugLabel: 'request-approve');
   final _declineFocus = FocusNode(debugLabel: 'request-decline');
   final _retryFocus = FocusNode(debugLabel: 'request-retry');
+  final _removeFocus = FocusNode(debugLabel: 'request-remove');
 
   SeerrRequest get request => widget.request;
 
@@ -1504,6 +1555,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     _approveFocus.dispose();
     _declineFocus.dispose();
     _retryFocus.dispose();
+    _removeFocus.dispose();
     super.dispose();
   }
 
@@ -1519,7 +1571,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
 
     return _CardActionFocus(
       cardFocus: _cardFocus,
-      actionFocuses: [_approveFocus, _declineFocus, _retryFocus],
+      actionFocuses: [_approveFocus, _declineFocus, _retryFocus, _removeFocus],
       child: MouseRegion(
         onEnter: (_) => setHovered(true),
         onExit: (_) => setHovered(false),
@@ -1782,7 +1834,8 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   }
 
   /// The phone card's action row: approve and decline side by side, each half
-  /// the width with its label, or retry, or the spinner. Empty when there is
+  /// the width with its label, or retry and remove the same way, or the
+  /// spinner. Empty when there is
   /// nothing to do, so those cards keep the provenance at the foot.
   List<Widget> _phoneActions(
     AppLocalizations l10n,
@@ -1823,15 +1876,35 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           ),
         ],
       );
-    } else if (widget.canManage &&
-        request.status == SeerrRequest.statusFailed) {
-      row = _CardActionButton(
-        label: l10n.retry,
-        icon: Icons.refresh,
-        color: AppColorScheme.statusPending,
-        focusNode: _retryFocus,
-        onPressed: widget.onRetry,
-      );
+    } else if (request.status == SeerrRequest.statusFailed &&
+        (widget.canManage || request.canRemove)) {
+      final retry = widget.canManage
+          ? _CardActionButton(
+              label: l10n.retry,
+              icon: Icons.refresh,
+              color: AppColorScheme.statusPending,
+              focusNode: _retryFocus,
+              onPressed: widget.onRetry,
+            )
+          : null;
+      final remove = request.canRemove
+          ? _CardActionButton(
+              label: l10n.remove,
+              icon: Icons.delete_outline,
+              color: AppColorScheme.statusError,
+              focusNode: _removeFocus,
+              onPressed: widget.onRemove,
+            )
+          : null;
+      row = retry != null && remove != null
+          ? Row(
+              children: [
+                Expanded(child: retry),
+                SizedBox(width: 8 * scale),
+                Expanded(child: remove),
+              ],
+            )
+          : (retry ?? remove)!;
     } else {
       return const [];
     }
@@ -1843,8 +1916,8 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     ];
   }
 
-  /// The buttons over the poster's foot: approve and decline, retry, or the
-  /// spinner. Icon only, since a TV tile is too narrow for two labelled
+  /// The buttons over the poster's foot: approve and decline, retry and
+  /// remove, or the spinner. Icon only, since a TV tile is too narrow for two labelled
   /// buttons. The stacked card builds its own labelled pair inline.
   List<Widget> _actions(AppLocalizations l10n) {
     if (widget.isActioning) {
@@ -1885,16 +1958,26 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
         ),
       ];
     }
-    if (widget.canManage && request.status == SeerrRequest.statusFailed) {
+    if (request.status == SeerrRequest.statusFailed) {
       return [
-        _CardActionButton(
-          label: l10n.retry,
-          icon: Icons.refresh,
-          color: AppColorScheme.statusPending,
-          focusNode: _retryFocus,
-          onPressed: widget.onRetry,
-          compact: true,
-        ),
+        if (widget.canManage)
+          _CardActionButton(
+            label: l10n.retry,
+            icon: Icons.refresh,
+            color: AppColorScheme.statusPending,
+            focusNode: _retryFocus,
+            onPressed: widget.onRetry,
+            compact: true,
+          ),
+        if (request.canRemove)
+          _CardActionButton(
+            label: l10n.removeRequest,
+            icon: Icons.delete_outline,
+            color: AppColorScheme.statusError,
+            focusNode: _removeFocus,
+            onPressed: widget.onRemove,
+            compact: true,
+          ),
       ];
     }
     return const [];

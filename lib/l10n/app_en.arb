@@ -8144,6 +8144,23 @@
   "@keep": {
     "description": "Button to keep/dismiss a cancel dialog"
   },
+  "removeRequest": "Remove Request",
+  "@removeRequest": {
+    "description": "Button and dialog title for deleting a failed Silo request"
+  },
+  "removeFailedRequestForTitle": "Your failed request for \"{title}\" will be deleted. You can request it again later.",
+  "@removeFailedRequestForTitle": {
+    "description": "Confirmation message before deleting a failed Silo request",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFailedRequestRefused": "The request wasn't removed. It was retried, or part of it arrived.",
+  "@removeFailedRequestRefused": {
+    "description": "Snackbar when Silo refuses to delete a failed request because it changed"
+  },
   "itemNotFoundInLibrary": "Item not found in your Moonfin library",
   "@itemNotFoundInLibrary": {
     "description": "Snackbar when Seerr item cannot be found in Jellyfin"

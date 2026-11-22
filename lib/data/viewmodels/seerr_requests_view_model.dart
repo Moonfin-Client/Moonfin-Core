@@ -540,6 +540,29 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   Future<void> retryRequest(int requestId) =>
       _runAction(requestId, () => _repo.retryRequest(requestId));
 
+  /// Deletes a failed Silo request and drops its card. False when Silo
+  /// refused, which it does once the request was retried or got a copy; the
+  /// card is then read again so it shows where the request stands.
+  Future<bool> removeFailedRequest(int requestId) async {
+    _state = _state.copyWith(actioningRequestId: requestId);
+    notifyListeners();
+    try {
+      await _repo.removeFailedRequest(requestId);
+    } catch (_) {
+      await _patchRequest(requestId);
+      return false;
+    }
+    _state = _state.copyWith(
+      requests: _state.requests.where((r) => r.id != requestId).toList(),
+      actioningRequestId: null,
+    );
+    notifyListeners();
+    _repo.invalidateBadgeCount();
+    final user = _state.currentUser;
+    if (user != null) await _loadCounts(user);
+    return true;
+  }
+
   Future<void> _runAction(int requestId, Future<void> Function() action) async {
     _state = _state.copyWith(actioningRequestId: requestId);
     notifyListeners();

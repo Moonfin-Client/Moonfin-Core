@@ -497,6 +497,68 @@ void main() {
     expect(pending.results.map((r) => r.media!.tmdbId), [2, 4]);
   });
 
+  test('a failed request that delivered nothing can be removed, where Silo '
+      'offers it', () async {
+    Map<String, Object> req(String id, String outcome, List<String> targets) => {
+      'id': id,
+      'media_type': 'movie',
+      'tmdb_id': id.length,
+      'title': id,
+      'status': 'queued',
+      'outcome': outcome,
+      'state': outcome == 'failed' ? 'failed' : 'processing',
+      'seasons': [],
+      'requested_by_user_id': '7',
+      'targets': [
+        for (final t in targets) {'id': '1', 'quality': '1080p', 'status': t},
+      ],
+      'created_at': '2026-01-02T03:04:05.000Z',
+      'updated_at': '2026-01-02T03:04:05.000Z',
+    };
+    final mine = (
+      200,
+      {
+        'items': [
+          req('7390012345678901234', 'failed', ['failed']),
+          req('r-partial', 'failed', ['completed', 'failed']),
+          req('r-active', 'active', ['queued']),
+        ],
+      },
+    );
+    final supported = (
+      200,
+      {
+        'state': 'enabled',
+        'allowed': true,
+        'requests_enabled': true,
+        'remove_failed_supported': true,
+      },
+    );
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/status': supported,
+      'GET /api/v2/requests/mine': mine,
+      'DELETE /api/v2/requests/7390012345678901234': (204, null),
+      'DELETE /api/v2/requests/r-partial': _problem(409, 'conflict'),
+    });
+    final client = _client(silo);
+
+    final list = SeerrRequestListResponse.fromJson(await client.getRequests());
+    expect(list.results.map((r) => r.canRemove), [true, false, false]);
+
+    await client.removeFailedRequest(list.results.first.id);
+    expect(silo.calls.last, 'DELETE /api/v2/requests/7390012345678901234');
+    await expectLater(
+      client.removeFailedRequest(list.results[1].id),
+      throwsA(isA<SeerrRequestException>()),
+    );
+
+    // An older Silo doesn't say it has the route, so nothing offers it.
+    final old = _client(_Silo({..._base(), 'GET /api/v2/requests/mine': mine}));
+    final oldList = SeerrRequestListResponse.fromJson(await old.getRequests());
+    expect(oldList.results.any((r) => r.canRemove), isFalse);
+  });
+
   test('an admin sees who made each request', () async {
     // Silo sends its ids as strings.
     Map<String, Object> req(int n, String by) => {
