@@ -597,6 +597,37 @@ void main() {
     expect(admin.deletes, [ImageType.primary, ImageType.disc]);
   });
 
+  testWidgets('Clear All removes what the opening fetch found in a row it '
+      'had already passed', (tester) async {
+    // The page's copy only knows the backdrop; the server also has a cover.
+    items.item = {
+      ...items.item,
+      'ImageTags': {'Primary': 'cover'},
+      'BackdropImageTags': ['backdrop'],
+    };
+    items.heldId = 'a1';
+    items.held = Completer<void>();
+    await open(
+      tester,
+      shown: {...items.item, 'ImageTags': <String, dynamic>{}},
+    );
+
+    final clearAll = find.text(l10n.clearAllArtworkButton);
+    await tester.ensureVisible(clearAll);
+    await tester.tap(clearAll);
+    await settle(tester);
+    admin.deleting = Completer<void>();
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+    // The opening fetch lands after Clear All has started.
+    items.held!.complete();
+    await settle(tester);
+    admin.deleting!.complete();
+    await settle(tester);
+
+    expect(admin.deletes, [ImageType.primary, ImageType.backdrop]);
+  });
+
   testWidgets(
     "Clear All finishing leaves another item's save holding it open",
     (tester) async {
