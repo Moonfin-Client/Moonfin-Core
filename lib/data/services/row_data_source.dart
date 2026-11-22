@@ -2417,12 +2417,16 @@ class RowDataSource {
   ) async {
     try {
       final sections = await api.getServerHomeSections();
-      // Moonbase's admin defaults name a row by its kind ("type:<kind>"):
-      // the first row of that kind, as the server reads it.
-      final section = sections.firstWhereOrNull(
-        (s) => s.id == sectionId || 'type:${s.kind}' == sectionId,
-      );
-      if (section != null) return localizeServerSectionTitle(section, _l10n);
+      final section = sections.firstWhereOrNull((s) => s.id == sectionId) ??
+          sections.firstWhereOrNull((s) => 'type:${s.kind}' == sectionId);
+      // Moonbase's admin defaults name a row by its kind ("type:<kind>"),
+      // the first row of that kind as the server reads it, and give it a
+      // name of their own. Only a row still under the server's own title
+      // takes the translation.
+      if (section != null &&
+          (section.id == sectionId || section.title == fallback)) {
+        return localizeServerSectionTitle(section, _l10n);
+      }
     } catch (e) {
       debugPrint('[RowDataSource] Server row titles unavailable: $e');
     }

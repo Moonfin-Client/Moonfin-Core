@@ -1365,13 +1365,15 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     var nextOrder = _sections.length;
     for (final section in discovered) {
       final standsIn = byType.remove('type:${section.kind}');
-      // A "type:<kind>" row from Moonbase's defaults shows this section, so
-      // it takes the section's label too.
+      // A "type:<kind>" row from Moonbase's defaults shows this section. It
+      // takes the section's label while it has the section's own title, not
+      // a name the admin gave it.
       if (standsIn) {
         for (final s in _sections) {
           if (isType(s) &&
               s.pluginSection == 'type:${section.kind}' &&
-              ((s.serverId ?? '').isEmpty || s.serverId == serverId)) {
+              ((s.serverId ?? '').isEmpty || s.serverId == serverId) &&
+              (s.pluginDisplayText ?? '') == section.title) {
             _serverSections[s.stableId] = section;
           }
         }

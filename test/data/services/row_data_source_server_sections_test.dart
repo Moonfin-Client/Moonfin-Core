@@ -49,8 +49,9 @@ void main() {
   group('a server row\'s title', () {
     Future<String> titleOf(
       String section,
-      Future<List<ServerHomeSection>> Function() sections,
-    ) async {
+      Future<List<ServerHomeSection>> Function() sections, {
+      String stored = 'stored title',
+    }) async {
       final api = _MockSectionsItemsApi();
       when(
         () => api.getServerHomeSectionItems(section),
@@ -61,7 +62,7 @@ void main() {
       final row = await RowDataSource(client).loadDynamicSection(
         rowId: 'r',
         section: section,
-        title: 'stored title',
+        title: stored,
         serverId: 'srv',
         pluginSource: HomeSectionPluginSource.server,
       );
@@ -83,10 +84,19 @@ void main() {
       );
     });
 
-    test('is found for a row named by its kind', () async {
+    test('of a row named by its kind keeps the name Moonbase gave it', () async {
+      // Under the server's own title it is translated.
+      expect(
+        await titleOf(
+          'type:recently_added',
+          () async => [keyed],
+          stored: 'Recently Added in Films',
+        ),
+        'Recently Added in Films',
+      );
       expect(
         await titleOf('type:recently_added', () async => [keyed]),
-        'Recently Added in Films',
+        'stored title',
       );
     });
 
