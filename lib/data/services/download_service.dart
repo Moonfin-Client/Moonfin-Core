@@ -1420,6 +1420,12 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     required CancelToken cancelToken,
     required _ProgressCallback onReceiveProgress,
   }) async {
+    // One transmux runs at a time. Wait for it rather than fall back, since
+    // the other engines save the server's stream as-is, which can't seek.
+    final transmux = Media3TransmuxDownloader.instance;
+    while (transmux.isBusy && !cancelToken.isCancelled) {
+      await Future.any([transmux.idle, cancelToken.whenCancel]);
+    }
     if (cancelToken.isCancelled) {
       throw cancelToken.cancelError ??
           DioException(
