@@ -1250,6 +1250,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     final theme = Theme.of(context);
     final saving = _actionInProgress.isNotEmpty;
 
+    // The dialog stays open while a save runs, so show() can still report it
+    // and the caller reloads once the server has the new artwork. PopScope
+    // stops back and tap-outside; showFocusRestoringDialog pops on back keys
+    // itself, bypassing PopScope, so this Focus swallows them first.
     return PopScope(
       canPop: !saving,
       child: Focus(
