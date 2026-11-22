@@ -40,7 +40,10 @@ import 'plugin_sync_service.dart';
   if (row.id.startsWith('latest_')) {
     return (id: row.id.substring('latest_'.length), isCollection: false);
   }
-  final parsed = RowDataSource._parseStableId(row.id);
+  final parsed = RowDataSource._parseStableId(
+    row.id,
+    serverId: row.items.firstOrNull?.serverId,
+  );
   if (parsed?.source != HomeSectionPluginSource.collections) return null;
   final collectionId = parsed!.additionalData.trim();
   return collectionId.isEmpty ? null : (id: collectionId, isCollection: true);
@@ -1595,8 +1598,33 @@ class RowDataSource {
     );
   }
 
-  static _ParsedStableId? _parseStableId(String id) {
+  /// Splits a plugin row's stable id into its parts. With the row's
+  /// [serverId] known, everything after the section is the additional data,
+  /// colons included: Silo's collection and playlist ids have their own
+  /// (`silo-libcollection:1:42`). Without it, the last part is.
+  static _ParsedStableId? _parseStableId(String id, {String? serverId}) {
     if (!id.startsWith('pluginDynamic:')) return null;
+    if (serverId != null && serverId.isNotEmpty) {
+      final sub = id.substring('pluginDynamic:'.length);
+      final sourceEnd = sub.indexOf(':');
+      final head = sourceEnd > 0
+          ? '${sub.substring(0, sourceEnd)}:$serverId:'
+          : null;
+      if (head != null && sub.startsWith(head)) {
+        final rest = sub.substring(head.length);
+        final sectionEnd = rest.indexOf(':');
+        if (sectionEnd >= 0) {
+          return _ParsedStableId(
+            source: HomeSectionPluginSource.fromSerialized(
+              sub.substring(0, sourceEnd),
+            ),
+            serverId: serverId,
+            section: rest.substring(0, sectionEnd),
+            additionalData: rest.substring(sectionEnd + 1),
+          );
+        }
+      }
+    }
     final lastColon = id.lastIndexOf(':');
     if (lastColon < 0) return null;
     final additionalData = id.substring(lastColon + 1);
@@ -1640,7 +1668,7 @@ class RowDataSource {
 
     switch (row.rowType) {
       case HomeRowType.playlists:
-        final parsed = _parseStableId(row.id);
+        final parsed = _parseStableId(row.id, serverId: serverId);
         if (parsed != null &&
             parsed.source == HomeSectionPluginSource.playlists) {
           final playlistId = parsed.additionalData;
@@ -1703,7 +1731,7 @@ class RowDataSource {
       case HomeRowType.collections:
         final sortPref = prefs?.get(UserPreferences.collectionsRowSortBy) ??
             LibrarySortBy.playlistOrder;
-        final parsed = _parseStableId(row.id);
+        final parsed = _parseStableId(row.id, serverId: serverId);
         final isPinnedCollection =
             parsed != null &&
             parsed.source == HomeSectionPluginSource.collections;
@@ -1793,7 +1821,7 @@ class RowDataSource {
         final includeItemTypes = prefs
             ?.get(UserPreferences.genresRowItemFilter)
             .includeItemTypes;
-        final parsed = _parseStableId(row.id);
+        final parsed = _parseStableId(row.id, serverId: serverId);
         if (row.id == 'genres') {
           final browseItemTypes = normalizeBrowsableGenreItemTypes(
             includeItemTypes,
