@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../auth/repositories/session_repository.dart';
 import '../data/database/offline_database.dart' show DownloadedItem;
 import '../data/models/aggregated_item.dart';
 import '../data/repositories/offline_repository.dart';
@@ -67,6 +69,27 @@ class MediaBrowseService {
   static const offlineMessageId = 'msg|offline';
 
   static bool isMessageId(String mediaId) => mediaId.startsWith('msg|');
+
+  /// The Android Auto hints on [item] in a form CarPlay can draw: the shelf it
+  /// sits under, whether that shelf is a cover grid or a grid of icon tiles,
+  /// and how far through it is, from 0 to 1.
+  static ({String? shelf, bool cover, bool tile, double? progress}) carLayout(
+    MediaItem item,
+  ) {
+    final extras = item.extras ?? const <String, dynamic>{};
+    final status = extras[_kCompletionStatus];
+    final style = extras[_kSingleItemStyle];
+    return (
+      shelf: extras[_kGroupTitle] as String?,
+      cover: style == AndroidContentStyle.gridItemHintValue,
+      tile: style == AndroidContentStyle.categoryGridItemHintValue,
+      progress: status == _fullyPlayed
+          ? 1.0
+          : status == _partiallyPlayed
+              ? (extras[_kCompletionPercentage] as num?)?.toDouble()
+              : null,
+    );
+  }
 
   static const _pageSize = 100;
   // Ceiling for a single browse response. MediaBrowserServiceCompat sends
@@ -168,7 +191,17 @@ class MediaBrowseService {
 
   Future<MediaServerClient?> _client() async {
     if (_clientFactory.clients.isNotEmpty) {
-      return _clientFactory.getActiveClient();
+      // getActiveClient is only the last client registered. With several saved
+      // servers that can be another account's session, so the signed-in
+      // account's server wins when there is one.
+      final getIt = GetIt.instance;
+      final serverId = getIt.isRegistered<SessionRepository>()
+          ? getIt<SessionRepository>().activeServerId
+          : null;
+      return (serverId == null
+              ? null
+              : _clientFactory.getClientIfExists(serverId)) ??
+          _clientFactory.getActiveClient();
     }
     return _bootstrap.ensureSession();
   }

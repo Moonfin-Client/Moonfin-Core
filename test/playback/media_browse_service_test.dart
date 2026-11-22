@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/data/database/offline_database.dart'
     show DownloadedItem;
 import 'package:moonfin/data/repositories/offline_repository.dart';
@@ -242,6 +244,38 @@ class _FakeClientFactory implements MediaServerClientFactory {
   @override
   MediaServerClient? getClientIfExists(String serverId) =>
       serverId == 'srv' ? _client : null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      super.noSuchMethod(invocation);
+}
+
+// Two saved servers, registered in this order, so getActiveClient (the last
+// one) is not the signed-in account's.
+class _TwoServerFactory implements MediaServerClientFactory {
+  _TwoServerFactory(this._signedIn, this._other);
+
+  final MediaServerClient _signedIn;
+  final MediaServerClient _other;
+
+  @override
+  Map<String, MediaServerClient> get clients =>
+      {'signedin': _signedIn, 'other': _other};
+
+  @override
+  MediaServerClient getActiveClient() => _other;
+
+  @override
+  MediaServerClient? getClientIfExists(String serverId) => clients[serverId];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      super.noSuchMethod(invocation);
+}
+
+class _FakeSessionRepository implements SessionRepository {
+  @override
+  String? get activeServerId => 'signedin';
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -1015,5 +1049,25 @@ void main() {
         expect(await service.resolvePlayRequest('dl|srv|missing'), isNull);
       });
     });
+  });
+
+  test('the car browses the signed-in account\'s server, not the last one '
+      'registered', () async {
+    GetIt.instance.registerSingleton<SessionRepository>(_FakeSessionRepository());
+    addTearDown(() => GetIt.instance.unregister<SessionRepository>());
+    final service = MediaBrowseService(
+      _TwoServerFactory(
+        _FakeClient(_FakeItemsApi(totalItems: 0)),
+        _FakeClient(_FakeItemsApi(totalItems: 0)),
+      ),
+      _FakeBootstrap(),
+      _FakeResumeService(),
+      _FakeSessionStore(),
+      _FakeOfflineRepository(),
+    );
+
+    final nodes = await service.getChildren('tab|music');
+
+    expect(nodes.first.id, 'sec|albums|signedin');
   });
 }

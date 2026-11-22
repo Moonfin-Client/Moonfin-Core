@@ -19,6 +19,7 @@ class CarPlayService {
   final PlaybackManager _manager;
 
   StreamSubscription<void>? _queueSub;
+  StreamSubscription<bool>? _playingSub;
   bool? _lastPushedAudiobookMode;
   Map<String, Object>? _lastPushedModes;
 
@@ -34,11 +35,19 @@ class CarPlayService {
       _pushNowPlayingContextIfChanged();
       _pushPlaybackModesIfChanged();
     });
+    // A pause is when play history and book positions have moved, so the
+    // car's Listen Now and Audiobooks tabs reload then, as on Android Auto.
+    _playingSub = _manager.state.playingStream.listen((playing) {
+      if (playing || _browse.dropRecents().isEmpty) return;
+      unawaited(_channel.invokeMethod('invalidate').catchError((_) {}));
+    });
   }
 
   void dispose() {
     _queueSub?.cancel();
     _queueSub = null;
+    _playingSub?.cancel();
+    _playingSub = null;
     _channel.setMethodCallHandler(null);
   }
 
@@ -136,13 +145,46 @@ class CarPlayService {
 
   Map<String, dynamic> _toBrowseJson(MediaItem item) {
     final playable = item.playable ?? true;
+    final layout = MediaBrowseService.carLayout(item);
     return {
       'id': item.id,
-      'title': item.title,
-      'subtitle': item.artist,
+      'title': item.displayTitle ?? item.title,
+      'subtitle': item.displaySubtitle ?? item.artist,
       'artUri': item.artUri?.toString(),
       'browsable': !playable,
       'playable': playable,
+      'iconName': ?_symbolFor(item.id),
+      'shelf': ?layout.shelf,
+      'cover': layout.cover,
+      'tile': layout.tile,
+      'progress': ?layout.progress,
+    };
+  }
+
+  // Android Auto draws these rows from the app's own drawables, which have no
+  // iOS copy, so CarPlay gets the matching SF Symbol.
+  static String? _symbolFor(String id) {
+    final parts = id.split('|');
+    final az = parts.indexOf('az');
+    if (az >= 0) {
+      final letter = parts.elementAtOrNull(az + 1);
+      if (letter == '#') return 'number.circle';
+      return letter?.length == 1 ? '${letter!.toLowerCase()}.circle' : null;
+    }
+    return switch (parts.first) {
+      'shuffle' || 'dlshuffle' => 'shuffle',
+      'mix' => 'wand.and.stars',
+      'sec' => switch (parts.elementAtOrNull(1)) {
+          'albums' => 'square.stack',
+          'artists' => 'music.mic',
+          'musicplaylists' => 'music.note.list',
+          'genres' => 'guitars',
+          'favorites' => 'heart',
+          'recent' => 'clock.arrow.circlepath',
+          'booklib' => 'books.vertical',
+          _ => null,
+        },
+      _ => null,
     };
   }
 
