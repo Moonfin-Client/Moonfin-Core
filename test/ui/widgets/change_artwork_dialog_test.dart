@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +37,9 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
   final _FakeItemsApi items;
   final uploads = <ImageType>[];
 
+  /// While set, an upload waits on it, the way a large file keeps saving.
+  Completer<void>? saving;
+
   @override
   Future<Map<String, dynamic>> getRemoteImages(
     String itemId, {
@@ -53,6 +58,7 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     required String contentType,
   }) async {
     uploads.add(imageType);
+    await saving?.future;
     items.item = {
       ...items.item,
       'BackdropImageTags': ['uploaded'],
@@ -207,6 +213,31 @@ void main() {
     expect(find.byType(ChangeArtworkDialog), findsNothing);
     expect(await result, isTrue);
   });
+
+  testWidgets(
+    'it cannot be shut while a save runs, and reports the change after',
+    (tester) async {
+      admin.saving = Completer<void>();
+      final result = await open(tester);
+      await uploadBackdrop(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      await tester.tapAt(const Offset(2, 2));
+      await settle(tester);
+      await tester.tap(find.byIcon(Icons.close));
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+
+      admin.saving!.complete();
+      await settle(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      expect(await result, isTrue);
+    },
+  );
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);

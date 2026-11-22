@@ -1246,7 +1246,27 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final saving = _actionInProgress.isNotEmpty;
 
+    return PopScope(
+      canPop: !saving,
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onKeyEvent: (_, event) => _actionInProgress.isNotEmpty
+            ? handleBackKeyAction(event, () {})
+            : KeyEventResult.ignored,
+        child: _buildDialog(context, l10n, theme, saving),
+      ),
+    );
+  }
+
+  Widget _buildDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool saving,
+  ) {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -1363,7 +1383,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                       disableScale: true,
                       borderRadius: 8,
                       suppressFocusGlow: true,
-                      onSelect: () => Navigator.pop(context, _hasChanged),
+                      onSelect: saving
+                          ? null
+                          : () => Navigator.pop(context, _hasChanged),
                       onNavigateDown: () =>
                           _getFirstFilterFocusNode().requestFocus(),
                       onNavigateLeft: () =>
