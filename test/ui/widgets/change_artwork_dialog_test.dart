@@ -71,10 +71,18 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
   }) async {
     uploads.add(imageType);
     await saving?.future;
-    items.item = {
-      ...items.item,
-      'BackdropImageTags': ['uploaded'],
-    };
+    items.item = imageType == ImageType.backdrop
+        ? {
+            ...items.item,
+            'BackdropImageTags': ['uploaded'],
+          }
+        : {
+            ...items.item,
+            'ImageTags': {
+              ...items.item['ImageTags'] as Map,
+              imageType.toServerString(): 'uploaded',
+            },
+          };
   }
 }
 
@@ -336,6 +344,52 @@ void main() {
     expect(find.text('Pilot'), findsNothing);
     expect(find.text('Season 1'), findsOneWidget);
   });
+
+  testWidgets(
+    'an upload finishing after a move refreshes the item it was for',
+    (tester) async {
+      items.item = {
+        'Id': 'e1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'Show',
+        'SeriesId': 's1',
+        'SeasonName': 'Season 1',
+        'SeasonId': 'se1',
+        'ImageTags': <String, String>{},
+      };
+      items.others['se1'] = {
+        'Id': 'se1',
+        'Type': 'Season',
+        'Name': 'Season 1',
+        'SeriesName': 'Show',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'poster', 'Banner': 'banner'},
+        'BackdropImageTags': ['backdrop'],
+      };
+      await open(tester);
+      expect(find.text(l10n.missing), findsOneWidget);
+
+      // The episode's upload is still saving when the season link is used.
+      admin.saving = Completer<void>();
+      await tester.tap(find.text(l10n.uploadButton).first);
+      await settle(tester);
+      expect(admin.uploads, [ImageType.primary]);
+      await tester.tap(find.text('Season 1'));
+      await settle(tester);
+      expect(find.text('Pilot'), findsNothing);
+
+      admin.saving!.complete();
+      await settle(tester);
+      expect(find.text('Pilot'), findsNothing);
+
+      // Back on the episode, its Primary row shows the upload.
+      await tester.tap(find.byIcon(Icons.chevron_left));
+      await settle(tester);
+      expect(find.text('Pilot'), findsWidgets);
+      expect(find.text(l10n.missing), findsNothing);
+    },
+  );
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);
