@@ -27,6 +27,10 @@ class _FakeSilo extends Fake implements SeerrRepository {
   final offsets = <int>[];
   Completer<void>? hold;
   bool readBeforeHold = false;
+  // Holds the read at that offset, taking its page once let go.
+  final holds = <int, Completer<void>>{};
+  // Holds a removal's reply after Silo has already dropped the request.
+  Completer<void>? removeHold;
   Object? removeError;
   Object? getRequestError;
   SeerrRequest? reread;
@@ -51,6 +55,7 @@ class _FakeSilo extends Fake implements SeerrRepository {
     offsets.add(offset);
     var page = readBeforeHold ? _page(offset, limit) : null;
     await hold?.future;
+    await holds.remove(offset)?.future;
     page ??= _page(offset, limit);
     return SeerrRequestListResponse(results: page);
   }
@@ -59,6 +64,7 @@ class _FakeSilo extends Fake implements SeerrRepository {
   Future<void> removeFailedRequest(int requestId) async {
     if (removeError != null) throw removeError!;
     list.removeWhere((r) => r.id == requestId);
+    await removeHold?.future;
   }
 
   @override
@@ -121,6 +127,66 @@ void main() {
     await loading;
     expect(silo.offsets, [0, 20, 19]);
     expect(_ids(vm), [for (var i = 1; i <= 25; i++) if (i != 5) i]);
+    vm.dispose();
+  });
+
+  test('a removal Silo applied before its reply moves a page read meanwhile',
+      () async {
+    final silo = _FakeSilo(25);
+    final vm = SeerrRequestsViewModel(silo);
+    await vm.load();
+
+    final read = silo.holds[20] = Completer<void>();
+    final loading = vm.loadMore();
+    await pumpEventQueue();
+    silo.removeHold = Completer<void>();
+    final removing = vm.removeFailedRequest(5);
+    await pumpEventQueue();
+    read.complete();
+    await pumpEventQueue();
+    silo.removeHold!.complete();
+    expect(await removing, SeerrRemoveResult.removed);
+
+    await loading;
+    expect(silo.offsets, [0, 20, 19]);
+    expect(_ids(vm), [for (var i = 1; i <= 25; i++) if (i != 5) i]);
+    vm.dispose();
+  });
+
+  test('a removal during the page read again moves it once more', () async {
+    final silo = _FakeSilo(25);
+    final vm = SeerrRequestsViewModel(silo);
+    await vm.load();
+
+    final first = silo.holds[20] = Completer<void>();
+    final again = silo.holds[19] = Completer<void>();
+    final loading = vm.loadMore();
+    await pumpEventQueue();
+    expect(await vm.removeFailedRequest(5), SeerrRemoveResult.removed);
+    first.complete();
+    await pumpEventQueue();
+    expect(await vm.removeFailedRequest(6), SeerrRemoveResult.removed);
+    again.complete();
+
+    await loading;
+    expect(silo.offsets, [0, 20, 19, 18]);
+    expect(_ids(vm), [
+      for (var i = 1; i <= 25; i++)
+        if (i != 5 && i != 6) i,
+    ]);
+    vm.dispose();
+  });
+
+  test('a full load forgets removed ids, which the web may reuse', () async {
+    final silo = _FakeSilo(3);
+    final vm = SeerrRequestsViewModel(silo);
+    await vm.load();
+    expect(await vm.removeFailedRequest(2), SeerrRemoveResult.removed);
+
+    // A rebuilt client gave another request the removed one's number.
+    silo.list.insert(1, _failed(2));
+    await vm.refresh();
+    expect(_ids(vm), [1, 2, 3]);
     vm.dispose();
   });
 

@@ -354,17 +354,35 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         : SeerrRequestFilter.all;
   }
 
-  // Requests removed here. A list read that was out during a removal can
-  // still hold one, and must not bring its card back.
+  // Requests removed since the last full load started. A list read that was
+  // out during a removal can still hold one, and must not bring its card
+  // back. Cleared on each load: a read sent after a removal finished no
+  // longer lists it, and on the web the ids can be renumbered meanwhile.
   final Set<int> _removedIds = {};
   // Counts removals, so a page read that was out during one starts again
   // from where the server's list now is.
   int _removals = 0;
+  // Removals still waiting on Silo. Silo may already have dropped the
+  // request from its list, so a page read waits for them before trusting
+  // its offset.
+  int _removalsInFlight = 0;
+  Completer<void>? _removalsIdle;
+  // Bumped by each full load, so a read from an older one is dropped.
+  int _listGen = 0;
+
+  Future<void> _removalsSettled() async {
+    while (_removalsInFlight > 0) {
+      await (_removalsIdle ??= Completer<void>()).future;
+    }
+  }
 
   Future<void> load({bool isRefresh = false}) async {
+    final gen = ++_listGen;
+    _removedIds.clear();
     _state = _state.copyWith(
       isLoading: !isRefresh,
       isRefreshing: isRefresh,
+      isLoadingMore: false,
       requests: isRefresh ? _state.requests : const [],
       error: null,
     );
@@ -384,6 +402,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         limit: _pageSize,
         offset: 0,
       );
+      if (gen != _listGen) return;
 
       _state = SeerrRequestsState(
         requests: _visibleRequests(response.results, filter),
@@ -408,6 +427,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
 
       await _loadCounts(user);
     } catch (e) {
+      if (gen != _listGen) return;
       _state = _state.copyWith(
         isLoading: false,
         isRefreshing: false,
@@ -429,8 +449,11 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     _state = _state.copyWith(isLoadingMore: true);
     notifyListeners();
 
+    final gen = _listGen;
     try {
       final user = _state.currentUser!;
+      await _removalsSettled();
+      if (gen != _listGen) return;
       final offset = _state.requests.length;
       final removalsAtStart = _removals;
       Future<SeerrRequestListResponse> page(int at) => _repo.getRequests(
@@ -440,13 +463,21 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         limit: _pageSize,
         offset: at,
       );
-      var response = await page(offset);
-      // Each removal meanwhile moved the server's list up by one, past the
-      // page that was asked for.
-      final removedSince = _removals - removalsAtStart;
-      if (removedSince > 0) {
-        response = await page(offset > removedSince ? offset - removedSince : 0);
+      // Each removal that finishes meanwhile moves the server's list up by
+      // one, past the page that was asked for. Read again from where the
+      // page now starts until no removal moved it during the read.
+      var at = offset;
+      var response = await page(at);
+      for (var tries = 0; tries < 5; tries++) {
+        await _removalsSettled();
+        if (gen != _listGen) return;
+        final removed = _removals - removalsAtStart;
+        final next = offset > removed ? offset - removed : 0;
+        if (next == at) break;
+        at = next;
+        response = await page(at);
       }
+      if (gen != _listGen) return;
 
       final merged = [
         ..._state.requests,
@@ -464,6 +495,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         _loadArrQueues(response.results).whenComplete(_syncDownloadPolling),
       );
     } catch (_) {
+      if (gen != _listGen) return;
       _state = _state.copyWith(isLoadingMore: false, hasMore: false);
     }
     notifyListeners();
@@ -568,6 +600,18 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   /// shows where the request stands. Any other error leaves the card as it
   /// was. Removing a failed request changes no count the badge shows.
   Future<SeerrRemoveResult> removeFailedRequest(int requestId) async {
+    _removalsInFlight++;
+    try {
+      return await _removeFailedRequest(requestId);
+    } finally {
+      if (--_removalsInFlight == 0) {
+        _removalsIdle?.complete();
+        _removalsIdle = null;
+      }
+    }
+  }
+
+  Future<SeerrRemoveResult> _removeFailedRequest(int requestId) async {
     _state = _state.copyWith(actioningRequestId: requestId);
     notifyListeners();
     try {
