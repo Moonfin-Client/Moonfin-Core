@@ -46,6 +46,7 @@ import 'epg/widgets/epg_now_next_card.dart';
 import 'epg/widgets/epg_program_cell.dart';
 import 'guide/guide_cell.dart';
 import 'guide/guide_filter_picker.dart';
+import 'guide/guide_filter_labels.dart';
 import 'guide/guide_layout_profile.dart';
 import 'guide/guide_selection.dart';
 import 'guide/guide_window.dart';
@@ -1335,18 +1336,31 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       size.width >= size.height;
 
   void _scheduleGuideWindowUpdate(Duration window) {
-    if (_vm.state != GuideState.ready || window == _lastLayoutWindow) return;
-    // Don't retry a failed resize on every rebuild. The next move can try again.
+    if (_vm.state != GuideState.ready) return;
+    if (_vm.guideWindow == window) {
+      _lastLayoutWindow = window;
+      return;
+    }
+    if (window == _lastLayoutWindow) return;
+    // Keep the request latched while it's in flight, without retrying a
+    // genuine listings failure on every rebuild.
     _lastLayoutWindow = window;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted || _lastLayoutWindow != window) return;
       try {
+        final failureRevision = _vm.failedWindowMoveRevision;
         await _vm.setWindow(window);
-        // If a reload interrupts the resize, try again when the guide is ready.
-        if (mounted &&
-            _lastLayoutWindow == window &&
-            _vm.state != GuideState.ready &&
-            _vm.guideWindow != window) {
+        if (!mounted || _lastLayoutWindow != window) return;
+        if (_vm.guideWindow == window) return;
+        if (_vm.failedWindowMoveRevision != failureRevision) {
+          _showWindowFailure(_vm.windowStart.add(window));
+          return;
+        }
+        // A reload can supersede the resize and finish before this await
+        // resumes. Queue another frame even if the guide is already ready.
+        if (_vm.state == GuideState.ready) {
+          setState(() => _lastLayoutWindow = null);
+        } else {
           _lastLayoutWindow = null;
         }
       } catch (_) {
@@ -1425,14 +1439,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   /// have changed without moving focus.
   ({GuideChannel? channel, GuideProgram? program}) _currentPreview() {
     final focused = _channelRailFocused.value ? null : _focusedProgram.value;
-    final id =
-        focused?.channelId ??
-        _focusedChannel.value?.id ??
-        (widget.miniPlayerMode ? widget.currentChannel?.id : null);
+    final trackedId = focused?.channelId ?? _focusedChannel.value?.id;
+    final id = trackedId != null &&
+            _vm.filteredChannels.any((channel) => channel.id == trackedId)
+        ? trackedId
+        : (widget.miniPlayerMode ? widget.currentChannel?.id : null);
     final channel = id == null ? null : _vm.channelForId(id);
     if (channel == null) return (channel: null, program: null);
 
-    if (focused != null) {
+    if (focused != null && focused.channelId == channel.id) {
       final programs = _vm.programsForChannel(channel.id);
       final match = programs.where((p) => p.id == focused.id).firstOrNull;
       if (match != null) return (channel: channel, program: match);
@@ -2673,19 +2688,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     );
   }
 
-  String _filterLabel(GuideFilter filter, [AppLocalizations? labels]) {
-    final l10n = labels ?? AppLocalizations.of(context);
-    return switch (filter) {
-      GuideFilter.all => l10n.all,
-      GuideFilter.movies => l10n.movies,
-      GuideFilter.series => l10n.series,
-      GuideFilter.sports => l10n.sports,
-      GuideFilter.news => l10n.news,
-      GuideFilter.kids => l10n.kids,
-      GuideFilter.premiere => l10n.premiere,
-      GuideFilter.favorites => l10n.favorites,
-    };
-  }
+  String _filterLabel(GuideFilter filter, [AppLocalizations? labels]) =>
+      guideFilterLabel(filter, labels ?? AppLocalizations.of(context));
 
   Widget _buildBody() {
     switch (_vm.state) {
@@ -3188,6 +3192,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       return;
     }
     if (!mounted || _vm.windowStart != clamped) return;
+    _failedLiveReset = false;
     final selection = _selection;
     if (selection == null) return;
     final cells = _cellsForChannel(selection.channelId);
@@ -3274,6 +3279,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _cancelPendingVerticalMove();
     await _vm.goToNow(windowStart: guideLeftEdge(DateTime.now()));
     if (!mounted) return;
+    if (_vm.state == GuideState.ready && _vm.atLivePosition) {
+      _failedLiveReset = false;
+    }
     _anchorToWindowStart();
   }
 
@@ -3494,7 +3502,16 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           case GuideCellKind.loading:
             break;
           case GuideCellKind.failed:
-            unawaited(_vm.retryFailedPrograms());
+            if (_vm.listingsAccessDenied) {
+              final l10n = AppLocalizations.of(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.failedToLoadGuide(
+                  describeError(_vm.error!, l10n),
+                ))),
+              );
+            } else {
+              unawaited(_vm.retryFailedPrograms());
+            }
         }
       },
       onTopEdge: rowIndex == 0 ? _focusWindowBarFromGrid : null,

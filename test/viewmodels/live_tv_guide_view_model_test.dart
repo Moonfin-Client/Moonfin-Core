@@ -249,15 +249,7 @@ void main() {
   test('load() fetches only the first batch; loadMorePrograms() paginates the rest', () async {
     // 120 channels → batches of 50 (never one giant all-channels request).
     final channels = List.generate(120, (i) => _channel('c$i'));
-    when(
-      () => liveTv.getChannels(
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
-        fields: any(named: 'fields'),
-        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-        userId: any(named: 'userId'),
-      ),
-    ).thenAnswer((_) async => {'Items': channels});
+    _stubChannels(liveTv, channels);
 
     final vm = LiveTvGuideViewModel(client);
     await vm.load();
@@ -325,15 +317,7 @@ void main() {
   });
 
   test('a stale lazy batch cannot merge into a reloaded window', () async {
-    when(
-      () => liveTv.getChannels(
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
-        fields: any(named: 'fields'),
-        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-        userId: any(named: 'userId'),
-      ),
-    ).thenAnswer(
+    when(() => _channelsRequest(liveTv)).thenAnswer(
       (_) async => {
         'Items': [_channel('c1')],
       },
@@ -379,15 +363,7 @@ void main() {
   });
 
   test('targeted replacement leaves unrelated channels untouched', () async {
-    when(
-      () => liveTv.getChannels(
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
-        fields: any(named: 'fields'),
-        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-        userId: any(named: 'userId'),
-      ),
-    ).thenAnswer(
+    when(() => _channelsRequest(liveTv)).thenAnswer(
       (_) async => {
         'Items': [_channel('c0'), _channel('c1')],
       },
@@ -436,15 +412,7 @@ void main() {
 
   test('a targeted initial load requests only the named channels', () async {
     final channels = List.generate(120, (i) => _channel('c$i'));
-    when(
-      () => liveTv.getChannels(
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
-        fields: any(named: 'fields'),
-        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-        userId: any(named: 'userId'),
-      ),
-    ).thenAnswer((_) async => {'Items': channels});
+    _stubChannels(liveTv, channels);
 
     final vm = LiveTvGuideViewModel(client);
     await vm.load(initialChannelIds: const ['c7', 'c9']);
@@ -471,15 +439,7 @@ void main() {
   test(
     'moving the window replaces loaded rows without a loading state',
     () async {
-      when(
-        () => liveTv.getChannels(
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
-          fields: any(named: 'fields'),
-          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-          userId: any(named: 'userId'),
-        ),
-      ).thenAnswer(
+      when(() => _channelsRequest(liveTv)).thenAnswer(
         (_) async => {
           'Items': [_channel('c0')],
         },
@@ -554,15 +514,7 @@ void main() {
       requestedTo = <DateTime>[];
       requestedChannelIds = <List<String>>[];
 
-      when(
-        () => liveTv.getChannels(
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
-          fields: any(named: 'fields'),
-          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-          userId: any(named: 'userId'),
-        ),
-      ).thenAnswer(
+      when(() => _channelsRequest(liveTv)).thenAnswer(
         (_) async => {
           'Items': [_channel('c0')],
         },
@@ -711,15 +663,7 @@ void main() {
     test(
       'rolling refresh reanchors beyond cached coverage in one bounded window',
       () async {
-        when(
-          () => liveTv.getChannels(
-            sortBy: any(named: 'sortBy'),
-            sortOrder: any(named: 'sortOrder'),
-            fields: any(named: 'fields'),
-            enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-            userId: any(named: 'userId'),
-          ),
-        ).thenAnswer(
+        when(() => _channelsRequest(liveTv)).thenAnswer(
           (_) async => {
             'Items': [_channel('c0'), _channel('c1')],
           },
@@ -914,15 +858,7 @@ void main() {
 
   group('re-entry and exit', () {
     setUp(() {
-      when(
-        () => liveTv.getChannels(
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
-          fields: any(named: 'fields'),
-          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-          userId: any(named: 'userId'),
-        ),
-      ).thenAnswer(
+      when(() => _channelsRequest(liveTv)).thenAnswer(
         (_) async => {
           'Items': [_channel('c0')],
         },
@@ -1026,15 +962,7 @@ void main() {
 
   group('recording defaults carry the program id', () {
     setUp(() {
-      when(
-        () => liveTv.getChannels(
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
-          fields: any(named: 'fields'),
-          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-          userId: any(named: 'userId'),
-        ),
-      ).thenAnswer(
+      when(() => _channelsRequest(liveTv)).thenAnswer(
         (_) async => {
           'Items': [_channel('c0')],
         },
@@ -1071,15 +999,7 @@ void main() {
         {'Id': 'c2', 'Name': 'Ch 2', 'ChannelNumber': '2'},
         {'Id': 'c3', 'Name': 'Ch 3', 'ChannelNumber': '3'},
       ];
-      when(
-        () => liveTv.getChannels(
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
-          fields: any(named: 'fields'),
-          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-          userId: any(named: 'userId'),
-        ),
-      ).thenAnswer((_) async => {'Items': channels});
+      _stubChannels(liveTv, channels);
       final userLibrary = _MockUserLibraryApi();
       when(() => client.userLibraryApi).thenReturn(userLibrary);
       when(() => userLibrary.markFavorite(any())).thenAnswer((_) async {});
@@ -1227,15 +1147,7 @@ void main() {
 
   test('a lineup from before a user switch is dropped', () async {
     final reply = Completer<Map<String, dynamic>>();
-    when(
-      () => liveTv.getChannels(
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
-        fields: any(named: 'fields'),
-        enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
-        userId: any(named: 'userId'),
-      ),
-    ).thenAnswer((_) => reply.future);
+    when(() => _channelsRequest(liveTv)).thenAnswer((_) => reply.future);
     final vm = LiveTvGuideViewModel(client);
     final loading = vm.load();
     await pumpEventQueue();
@@ -1256,6 +1168,72 @@ void main() {
   });
 
   group('category filters', () {
+    test('a stale session clears category loading and old rows', () async {
+      _stubChannels(liveTv, [_channel('c0')]);
+      final pending = Completer<Map<String, dynamic>>();
+      when(() => _guide(liveTv, category: GuideFilter.sports))
+          .thenAnswer((_) => pending.future);
+
+      final vm = LiveTvGuideViewModel(client);
+      addTearDown(vm.dispose);
+      await vm.load();
+      vm.setFilter(GuideFilter.sports);
+      await pumpEventQueue();
+      expect(vm.state, GuideState.loading);
+
+      userDataSync.reset();
+      pending.complete({
+        'Items': [_program('old-session', 'c0', isSports: true)],
+      });
+      await pumpEventQueue();
+
+      expect(vm.state, GuideState.ready);
+      expect(vm.filteredChannels, isEmpty);
+      expect(vm.hasMorePrograms, isTrue);
+    });
+
+    // Both cases start with healthy c0 and an initially failed c1.
+    // The retry's error type decides whether to preserve c0 or fail the guide.
+    void stubFailedSportsRetry(Object error) {
+      _stubChannels(liveTv, [_channel('c0'), _channel('c1')]);
+      when(() => _guide(liveTv, category: GuideFilter.sports))
+          .thenAnswer((inv) async {
+        if (_requestedIds(inv).length == 1) throw error;
+        return {
+          'Items': [_program('sport-c0', 'c0', isSports: true)],
+          'FailedChannelIds': ['c1'],
+        };
+      });
+    }
+
+    test('a malformed targeted retry still reports a guide error', () async {
+      stubFailedSportsRetry(const FormatException('Invalid EPG grid'));
+
+      final vm = LiveTvGuideViewModel(client);
+      addTearDown(vm.dispose);
+      await vm.load();
+      vm.setFilter(GuideFilter.sports);
+      await pumpEventQueue();
+
+      expect(vm.state, GuideState.error);
+      expect(vm.error, isA<FormatException>());
+    });
+
+    test('temporary retry failure keeps healthy category programs', () async {
+      stubFailedSportsRetry(TimeoutException('Plex grid temporarily unavailable'));
+
+      final vm = LiveTvGuideViewModel(client);
+      addTearDown(vm.dispose);
+      await vm.load();
+      vm.setFilter(GuideFilter.sports);
+      await pumpEventQueue();
+
+      expect(vm.state, GuideState.ready);
+      expect(vm.filteredChannels.map((channel) => channel.id), ['c0']);
+      expect(vm.hasFailedCategoryListings, isTrue);
+      expect(vm.programsForChannel('c0').single.id, 'sport-c0');
+    });
+
     test('a partial category batch retries only failed channels', () async {
       _stubChannels(liveTv, [_channel('c0'), _channel('c1'), _channel('c2')]);
       final requests = <List<String>>[];

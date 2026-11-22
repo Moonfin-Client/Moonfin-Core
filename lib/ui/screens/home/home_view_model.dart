@@ -119,7 +119,7 @@ class HomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   Future<void> _loadDone = Future<void>.value();
   bool _disposed = false;
-  bool _liveTvFavoritesReloading = false;
+  Future<void>? _liveTvFavoritesRefresh;
   bool _liveTvFavoritesReloadPending = false;
   int _homeLoadGeneration = 0;
   Future<void> _bgMerge = Future<void>.value();
@@ -829,18 +829,22 @@ class HomeViewModel extends ChangeNotifier {
   /// Refreshes channel favorites without reloading every Home section.
   /// Adding or removing a guide favorite can change which cards belong here.
   Future<void> _reloadLiveTvFavoriteChannels() async {
-    if (_liveTvFavoritesReloading) {
+    if (_liveTvFavoritesRefresh case final running?) {
       _liveTvFavoritesReloadPending = true;
-      return;
+      return running;
     }
-    _liveTvFavoritesReloading = true;
+    // Overlapping Home returns must wait for the active refresh (including
+    // a queued rerun) before the caller restores focus to the favorites row.
+    final done = Completer<void>();
+    _liveTvFavoritesRefresh = done.future;
     try {
       do {
         _liveTvFavoritesReloadPending = false;
         await _reloadLiveTvFavoriteChannelsOnce();
       } while (!_disposed && _liveTvFavoritesReloadPending);
     } finally {
-      _liveTvFavoritesReloading = false;
+      _liveTvFavoritesRefresh = null;
+      done.complete();
     }
   }
 

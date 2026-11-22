@@ -25,6 +25,7 @@ import '../../../util/clock_format.dart';
 import '../../../util/platform_detection.dart';
 import '../livetv/channel_tune_observer.dart';
 import '../livetv/live_tv_guide_screen.dart';
+import '../livetv/guide/guide_filter_labels.dart';
 import '../../navigation/destinations.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../theme/app_theme_controller.dart';
@@ -665,21 +666,9 @@ class _AppleTvLiveTvPlayerHostScreenState
     return 'none';
   }
 
-  List<String> _categoryLabels(GuideProgram program, AppLocalizations l10n) {
-    return [
-      for (final tag in program.categoryTags)
-        switch (tag) {
-          GuideFilter.all => l10n.all,
-          GuideFilter.movies => l10n.movies,
-          GuideFilter.series => l10n.series,
-          GuideFilter.sports => l10n.sports,
-          GuideFilter.news => l10n.news,
-          GuideFilter.kids => l10n.kids,
-          GuideFilter.premiere => l10n.premiere,
-          GuideFilter.favorites => l10n.favorites,
-        },
-    ];
-  }
+  List<String> _categoryLabels(GuideProgram program, AppLocalizations l10n) => [
+    for (final tag in program.categoryTags) guideFilterLabel(tag, l10n),
+  ];
 
   Map<String, dynamic>? _liveProgramPayload() {
     final program = _currentProgram;
@@ -971,6 +960,8 @@ class _AppleTvLiveTvPlayerHostScreenState
               );
             }
           });
+        } else {
+          _carouselPrewarm?.clearVisibleChannels();
         }
         // The schedule listener sends the lineup when listings change.
         return;

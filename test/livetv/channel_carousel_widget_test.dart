@@ -12,6 +12,7 @@ import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel_card.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel_overlay.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin/util/tv_ui_scale.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
@@ -129,6 +130,16 @@ const double _stripWidth = ChannelCarouselCard.cardPitch * 5;
 const double _surfaceWidth = _stripWidth + 100;
 const double _stripCentre = _surfaceWidth / 2;
 
+List<GuideChannel> _guideChannels(int count, {bool numbered = false}) => [
+  for (var i = 0; i < count; i++)
+    GuideChannel(
+      id: 'ch$i',
+      name: 'Channel $i',
+      number: numbered ? '${i + 1}' : null,
+      rawData: const {},
+    ),
+];
+
 List<ChannelCarouselEntry> _lineup(int count) => List.generate(
   count,
   (i) => ChannelCarouselEntry(
@@ -219,18 +230,14 @@ void main() {
     VoidCallback? onShowControls,
     Duration inactivity = const Duration(seconds: 5),
   }) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
     await tester.binding.setSurfaceSize(const Size(1000, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final client = _CarouselClient();
-    final channels = List.generate(
-      20,
-      (i) => GuideChannel(
-        id: 'ch$i',
-        name: 'Channel $i',
-        number: '${i + 1}',
-        rawData: const {},
-      ),
-    );
+    final channels = _guideChannels(20, numbered: true);
     final vm = _CarouselGuide(client, channels);
     await tester.pumpWidget(
       MaterialApp(
@@ -386,17 +393,14 @@ void main() {
   testWidgets('a failed cold-open top-up does not hide the channel strip', (
     tester,
   ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
     await tester.binding.setSurfaceSize(const Size(1000, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final client = _CarouselClient();
-    final channels = [
-      for (var i = 0; i < 6; i++)
-        GuideChannel(
-          id: 'ch$i',
-          name: 'Channel $i',
-          rawData: const {},
-        ),
-    ];
+    final channels = _guideChannels(6);
     final vm = _CarouselGuide(client, channels)..failTopUp = true;
     final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
     try {
@@ -432,10 +436,7 @@ void main() {
     tester,
   ) async {
     final client = _CarouselClient();
-    final channels = [
-      for (var i = 0; i < 20; i++)
-        GuideChannel(id: 'ch$i', name: 'Channel $i', rawData: const {}),
-    ];
+    final channels = _guideChannels(20);
     final vm = _CarouselGuide(client, channels)
       ..failedChannels.addAll(['ch10', 'ch14']);
     final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
@@ -457,14 +458,39 @@ void main() {
     }
   });
 
+  testWidgets('failed visible cards retry again after cooldown', (tester) async {
+    final client = _CarouselClient();
+    final channels = _guideChannels(4);
+    final vm = _CarouselGuide(client, channels)..failedChannels.add('ch1');
+    final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
+    try {
+      prewarm.tuned(channels, 'ch1');
+      await tester.pump(ChannelCarouselPrewarm.settleDelay);
+      await tester.pump();
+      await prewarm.ensureVisibleChannels(['ch1']);
+      await tester.pump(ChannelCarouselPrewarm.failedListingsRetryDelay);
+      await tester.pump();
+      final first = vm.requests.where((ids) =>
+          ids.length == 1 && ids.single == 'ch1').length;
+      expect(first, greaterThan(0));
+
+      await tester.pump(const Duration(seconds: 30));
+      await tester.pump();
+      expect(
+        vm.requests.where((ids) =>
+            ids.length == 1 && ids.single == 'ch1').length,
+        greaterThan(first),
+      );
+    } finally {
+      prewarm.dispose();
+    }
+  });
+
   testWidgets('failed-channel retry is armed even when top-up throws', (
     tester,
   ) async {
     final client = _CarouselClient();
-    final channels = [
-      for (var i = 0; i < 4; i++)
-        GuideChannel(id: 'ch$i', name: 'Channel $i', rawData: const {}),
-    ];
+    final channels = _guideChannels(4);
     final vm = _CarouselGuide(client, channels)
       ..failedChannels.add('ch1');
     final prewarm = ChannelCarouselPrewarm(client, viewModelFactory: (_) => vm);
@@ -492,15 +518,7 @@ void main() {
     tester,
   ) async {
     final client = _CarouselClient();
-    final channels = List.generate(
-      4,
-      (i) => GuideChannel(
-        id: 'ch$i',
-        name: 'Channel $i',
-        number: '${i + 1}',
-        rawData: const {},
-      ),
-    );
+    final channels = _guideChannels(4, numbered: true);
     final vm = _CarouselGuide(client, channels)
       ..duringLoad = notifyLiveTvRecordingsChanged;
     final prewarm = ChannelCarouselPrewarm(
@@ -522,15 +540,7 @@ void main() {
     tester,
   ) async {
     final client = _CarouselClient();
-    final channels = List.generate(
-      4,
-      (i) => GuideChannel(
-        id: 'ch$i',
-        name: 'Channel $i',
-        number: '${i + 1}',
-        rawData: const {},
-      ),
-    );
+    final channels = _guideChannels(4, numbered: true);
     final vm = _CarouselGuide(client, channels);
     var now = DateTime(2026, 9, 13, 18);
     final prewarm = ChannelCarouselPrewarm(
@@ -555,15 +565,7 @@ void main() {
     'normal tune only ensures missing programs when coverage is current',
     (tester) async {
       final client = _CarouselClient();
-      final channels = List.generate(
-        4,
-        (i) => GuideChannel(
-          id: 'ch$i',
-          name: 'Channel $i',
-          number: '${i + 1}',
-          rawData: const {},
-        ),
-      );
+      final channels = _guideChannels(4, numbered: true);
       final vm = _CarouselGuide(client, channels);
       final prewarm = ChannelCarouselPrewarm(
         client,
@@ -704,15 +706,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1000, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final client = _CarouselClient();
-    final channels = List.generate(
-      20,
-      (i) => GuideChannel(
-        id: 'ch$i',
-        name: 'Channel $i',
-        number: '${i + 1}',
-        rawData: const {},
-      ),
-    );
+    final channels = _guideChannels(20, numbered: true);
     final vm = _CarouselGuide(client, channels);
     late StateSetter setHostState;
     const currentChannelId = 'ch10';
@@ -805,15 +799,7 @@ void main() {
     final above = FocusNode(debugLabel: 'above');
     addTearDown(above.dispose);
     final client = _CarouselClient();
-    final channels = List.generate(
-      20,
-      (i) => GuideChannel(
-        id: 'ch$i',
-        name: 'Channel $i',
-        number: '${i + 1}',
-        rawData: const {},
-      ),
-    );
+    final channels = _guideChannels(20, numbered: true);
     final vm = _CarouselGuide(client, channels);
     var dismissals = 0;
     var controls = 0;

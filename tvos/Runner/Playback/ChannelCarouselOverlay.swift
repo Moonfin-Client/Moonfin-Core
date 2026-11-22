@@ -207,6 +207,12 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // A temporary modal can hide this carousel without dismissing it.
+        // Restore its visible-channel neighborhood when it reappears.
+        if !dismissed && lastVisibleIds.isEmpty {
+            bindCards()
+            resetInactivity()
+        }
         guard scrim.transform.isIdentity, scrim.frame.height > 0 else { return }
         scrim.transform = CGAffineTransform(translationX: 0, y: scrim.frame.height)
         UIView.animate(
@@ -215,6 +221,20 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
         ) {
             self.scrim.transform = .identity
         }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // The host can replace this overlay with a prompt without going
+        // through dismissCarousel. Either way, stop prewarming offscreen cards.
+        clearVisibleChannelTracking()
+        stopTimers()
+    }
+
+    private func clearVisibleChannelTracking() {
+        guard !lastVisibleIds.isEmpty else { return }
+        lastVisibleIds.removeAll()
+        onVisibleChannelsChanged?([])
     }
 
     private func stopTimers() {
@@ -226,6 +246,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     private func dismissCarousel(showingControls: Bool = false) {
         guard !dismissed else { return }
         dismissed = true
+        clearVisibleChannelTracking()
         stopTimers()
         UIView.animate(
             withDuration: carouselExitDuration, delay: 0,
@@ -443,6 +464,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     private func tuneCenteredChannel() {
         guard let id = centeredChannel?.channelId else { return }
         dismissed = true
+        clearVisibleChannelTracking()
         stopTimers()
         dismiss(animated: false) { [weak self] in
             self?.onChannelSelected?(id)

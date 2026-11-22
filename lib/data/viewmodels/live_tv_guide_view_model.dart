@@ -926,12 +926,15 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     }
     final recordingRevision = liveTvRecordingRevision.value;
     try {
-      if (_isCategory(_filter) &&
-          !await _refreshCategoryRows(recordingRevision)) {
+      final categoryResult = _isCategory(_filter)
+          ? await _refreshCategoryRows(recordingRevision)
+          : true;
+      if (categoryResult == null ||
+          recordingRevision != liveTvRecordingRevision.value) {
         return;
       }
-      if (recordingRevision != liveTvRecordingRevision.value) return;
       if (await _refreshLoadedChannels(_now(), includeAll: true) &&
+          categoryResult &&
           recordingRevision == liveTvRecordingRevision.value) {
         _loadedRecordingRevision = recordingRevision;
       }
@@ -946,8 +949,9 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   /// A category view keeps its own program lists. A recording change doesn't
   /// change which programs belong to the category, so the channels already
   /// shown are fetched again and their lists swapped.
-  Future<bool> _refreshCategoryRows(int recordingRevision) async {
+  Future<bool?> _refreshCategoryRows(int recordingRevision) async {
     final request = _categoryRequest;
+    final session = userDataSync.session;
     final filter = _filter;
     final channels = _categoryPrograms.keys
         .map(channelForId)
@@ -963,11 +967,12 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         !_disposed &&
         request == _categoryRequest &&
         filter == _filter &&
+        session == userDataSync.session &&
         recordingRevision == liveTvRecordingRevision.value;
     for (var i = 0; i < channels.length; i += size) {
       final batch = channels.sublist(i, min(i + size, channels.length));
       final fetched = await _fetchPrograms(batch, category: filter);
-      if (!current()) return false;
+      if (!current()) return null;
       failed.addAll(fetched.failedChannelIds);
       for (final channel in batch) {
         if (fetched.failedChannelIds.contains(channel.id)) continue;
@@ -976,7 +981,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         if (programs != null) refreshed[channel.id] = programs;
       }
     }
-    if (!current()) return false;
+    if (!current()) return null;
     // A successful empty result means this channel left the category.
     // Only failed requests retain the old entry and can be retried.
     _categoryPrograms.removeWhere((id, _) => succeeded.contains(id));
@@ -1165,24 +1170,42 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   Future<void> _loadCategoryPrograms() async {
     _resetCategory();
     final request = _categoryRequest;
+    final session = userDataSync.session;
     _categoryFetchInFlight = true;
     _listingsStatePage = null;
     _error = null;
     _state = GuideState.loading;
     _notifyListeners();
     try {
-      await _walkCategory();
-      if (request != _categoryRequest) return;
+      if (!await _walkCategory()) return;
+      if (request != _categoryRequest || session != userDataSync.session) {
+        return;
+      }
       _categoryLoadedFor = _filter;
       _state = GuideState.ready;
     } catch (e) {
-      if (request != _categoryRequest) return;
+      if (request != _categoryRequest || session != userDataSync.session) {
+        return;
+      }
       _listingsStatePage = _pageGeneration;
       _error = e;
       _state = GuideState.error;
+    } finally {
+      // A replaced category owns its own loading state. Only clean up the
+      // request that still owns this slot.
+      if (!_disposed && request == _categoryRequest) {
+        if (session != userDataSync.session) {
+          // A session switch can invalidate the walk without starting another
+          // load. Discard the old rows and reload on the next guide entry.
+          _resetCategory();
+          _reloadOnEntry = true;
+          if (_state == GuideState.loading) _state = GuideState.ready;
+        } else {
+          _categoryFetchInFlight = false;
+        }
+        _notifyListeners();
+      }
     }
-    _categoryFetchInFlight = false;
-    _notifyListeners();
   }
 
   /// Look up one channel outside the loaded page of a program category.
@@ -1218,11 +1241,18 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       ? _categoryBatchSize
       : _programBatchSize;
 
-  Future<void> _walkCategory() async {
+  Future<bool> _walkCategory() async {
     final request = _categoryRequest;
     final filter = _filter;
+    final session = userDataSync.session;
+    bool current() =>
+        !_disposed &&
+        request == _categoryRequest &&
+        filter == _filter &&
+        session == userDataSync.session;
     final startRows = _categoryPrograms.length;
-    while (_categoryHighWater < _pageChannels.length &&
+    while (current() &&
+        _categoryHighWater < _pageChannels.length &&
         _categoryPrograms.length - startRows < _categoryMinRowsPerPage) {
       final size = _batchSizeFor(filter);
       final end = min(_categoryHighWater + size, _pageChannels.length);
@@ -1231,18 +1261,31 @@ class LiveTvGuideViewModel extends ChangeNotifier {
           .where((c) => !_categoryQueriedIds.contains(c.id))
           .toList();
       final fetched = await _fetchPrograms(batch, category: filter);
-      if (request != _categoryRequest) return;
+      if (!current()) return false;
       var failed = fetched.failedChannelIds;
       if (failed.isNotEmpty) {
-        // Retry only the failed channels once.
-        final retry = await _fetchPrograms(
-          batch.where((channel) => failed.contains(channel.id)).toList(),
-          category: filter,
-        );
-        if (request != _categoryRequest) return;
-        fetched.programs.addAll(retry.programs);
-        failed = retry.failedChannelIds;
+        // A temporary failure in the targeted retry must not discard
+        // listings that succeeded in the first request.
+        try {
+          final retry = await _fetchPrograms(
+            batch.where((channel) => failed.contains(channel.id)).toList(),
+            category: filter,
+          );
+          if (!current()) return false;
+          fetched.programs.addAll(retry.programs);
+          failed = retry.failedChannelIds;
+        } catch (error) {
+          if (!current()) return false;
+          // Keep the first reply only when the retry failed temporarily.
+          // Malformed responses and other unexpected errors still surface.
+          if (_accessDenied(error) ||
+              (error is! TimeoutException &&
+                  !isTransientTransportFailure(error))) {
+            rethrow;
+          }
+        }
       }
+      if (!current()) return false;
       _categoryFailedIds.addAll(failed);
       // Track category failures separately from All Channels. Mark the batch
       // as visited so failed channels don't block pagination; Retry handles them.
@@ -1252,6 +1295,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       _categoryPrograms.addAll(fetched.programs);
       _notifyListeners();
     }
+    return current();
   }
 
   /// Selecting the same category again retries only its missing EPG channels.
@@ -1285,6 +1329,8 @@ class LiveTvGuideViewModel extends ChangeNotifier {
           return;
         }
         final requested = batch.map((c) => c.id).toSet();
+        final recovered = requested.difference(reply.failedChannelIds);
+        _categoryPrograms.removeWhere((id, _) => recovered.contains(id));
         _categoryFailedIds.removeAll(requested);
         _categoryFailedIds.addAll(reply.failedChannelIds);
         _categoryPrograms.addAll(reply.programs);
@@ -1691,6 +1737,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       final requestedRows = windowStart != null && category == null
           ? _pageChannels.where((channel) {
               return _programsLoadedIds.contains(channel.id) ||
+                  _failedProgramIds.contains(channel.id) ||
                   _programsPending[channel.id]?.generation == generation;
             }).toList()
           : const <GuideChannel>[];
@@ -1951,10 +1998,12 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         !hasMorePrograms) {
       return;
     }
+    final session = userDataSync.session;
     bool current() =>
         !_disposed &&
         generation == _programGeneration &&
-        pageGeneration == _pageGeneration;
+        pageGeneration == _pageGeneration &&
+        session == userDataSync.session;
     final requestedEnd = min(
       _programsHighWater + _programBatchSize,
       _pageChannels.length,
