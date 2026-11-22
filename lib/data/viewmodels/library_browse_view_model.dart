@@ -1022,8 +1022,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
     // Asking for the total makes the server run the collapsed query a second
     // time just to count it, and the first page already said how many there
-    // are, so later pages skip it. A merged browse and the rating sort keep
-    // their own paging.
+    // are, so later pages skip it. Only Jellyfin and Emby take the flag and
+    // give an exact total; Silo's can be an estimate that grows as pages come
+    // in, so it keeps counting. A merged browse and the rating sort keep their
+    // own paging.
     final collapsedBrowse = collapseBoxSets == true &&
         !isMergedBrowse &&
         _sortBy != LibrarySortBy.myRating;
@@ -1031,7 +1033,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       pageSize = _collapsedPageSize;
     }
     final skipTotalCount =
-        collapsedBrowse && startIndex > 0 && _serverTotalCount != null;
+        collapsedBrowse &&
+        startIndex > 0 &&
+        _serverTotalCount != null &&
+        (_client.serverType == ServerType.jellyfin ||
+            _client.serverType == ServerType.emby);
 
     // Plain directories come in full with the first page and everything else
     // follows by name.

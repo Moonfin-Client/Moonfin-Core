@@ -15,11 +15,14 @@ class _Request {
 }
 
 /// Serves [itemCount] items in order and, like Jellyfin, reports the page's
-/// own length as the total when the count is turned off.
+/// own length as the total when the count is turned off. With
+/// [estimatedTotal] it reports what was seen plus one while there is more,
+/// as Silo can, and ignores the count flag.
 class _SlicingItemsApi implements ItemsApi {
-  _SlicingItemsApi(this.itemCount);
+  _SlicingItemsApi(this.itemCount, {this.estimatedTotal = false});
 
   final int itemCount;
+  final bool estimatedTotal;
   final List<_Request> requests = <_Request>[];
 
   @override
@@ -77,10 +80,14 @@ class _SlicingItemsApi implements ItemsApi {
       for (var i = start; i < end; i++)
         <String, dynamic>{'Id': 'item-$i', 'Name': 'Item $i'},
     ];
+    final int total;
+    if (estimatedTotal) {
+      total = end < itemCount ? end + 1 : itemCount;
+    } else {
+      total = enableTotalRecordCount == false ? page.length : itemCount;
+    }
     return <String, dynamic>{
-      'TotalRecordCount': enableTotalRecordCount == false
-          ? page.length
-          : itemCount,
+      'TotalRecordCount': total,
       'Items': page,
     };
   }
@@ -97,10 +104,13 @@ class _SlicingItemsApi implements ItemsApi {
 }
 
 class _FakeClient implements MediaServerClient {
-  _FakeClient(this.itemsApi);
+  _FakeClient(this.itemsApi, this.serverType);
 
   @override
   final ItemsApi itemsApi;
+
+  @override
+  final ServerType serverType;
 
   @override
   String get baseUrl => 'http://server';
@@ -120,6 +130,7 @@ class _FakeMdbListRepository implements MdbListRepository {
 Future<LibraryBrowseViewModel> _viewModel(
   _SlicingItemsApi api, {
   required bool groupCollections,
+  ServerType serverType = ServerType.jellyfin,
 }) async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
   final store = PreferenceStore();
@@ -128,7 +139,7 @@ Future<LibraryBrowseViewModel> _viewModel(
   await prefs.set(UserPreferences.groupItemsIntoCollections, groupCollections);
   return LibraryBrowseViewModel(
     libraryId: 'shows',
-    client: _FakeClient(api),
+    client: _FakeClient(api, serverType),
     prefs: prefs,
     mdbListRepository: _FakeMdbListRepository(),
   );
@@ -182,6 +193,27 @@ void main() {
 
     expect(api.requests.last.startIndex, 0);
     expect(api.requests.last.enableTotalRecordCount, isNull);
+  });
+
+  test('a server with an estimated total keeps counting every page', () async {
+    final api = _SlicingItemsApi(640, estimatedTotal: true);
+    final vm = await _viewModel(
+      api,
+      groupCollections: true,
+      serverType: ServerType.silo,
+    );
+    addTearDown(vm.dispose);
+
+    await vm.load();
+    await vm.loadMore();
+    await vm.loadMore();
+
+    expect(
+      api.requests.map((r) => r.enableTotalRecordCount),
+      everyElement(isNull),
+    );
+    expect(vm.items, hasLength(640));
+    expect(vm.hasMore, isFalse);
   });
 
   test('an uncollapsed browse keeps its usual paging', () async {
