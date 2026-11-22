@@ -10,6 +10,7 @@ import '../services/plugin_sync_service.dart';
 import '../services/seerr/arr_queue.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_download_progress.dart';
+import '../services/seerr/seerr_error.dart';
 import '../services/seerr/seerr_models.dart';
 
 enum SeerrRequestFilter { all, pending, approved, processing, available, failed }
@@ -19,6 +20,9 @@ extension SeerrRequestFilterApi on SeerrRequestFilter {
 }
 
 const _pageSize = 20;
+
+/// How removing a failed Silo request went.
+enum SeerrRemoveResult { removed, refused, failed }
 
 class SeerrRequestsState {
   final bool isLoading;
@@ -540,27 +544,39 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   Future<void> retryRequest(int requestId) =>
       _runAction(requestId, () => _repo.retryRequest(requestId));
 
-  /// Deletes a failed Silo request and drops its card. False when Silo
-  /// refused, which it does once the request was retried or got a copy; the
-  /// card is then read again so it shows where the request stands.
-  Future<bool> removeFailedRequest(int requestId) async {
+  /// Deletes a failed Silo request and drops its card. Silo refuses one that
+  /// was retried or got a copy meanwhile; the card is then read again so it
+  /// shows where the request stands. Any other error leaves the card as it
+  /// was. Removing a failed request changes no count the badge shows.
+  Future<SeerrRemoveResult> removeFailedRequest(int requestId) async {
     _state = _state.copyWith(actioningRequestId: requestId);
     notifyListeners();
     try {
       await _repo.removeFailedRequest(requestId);
+    } on SeerrRequestException catch (e) {
+      if (e.kind == SeerrRequestErrorKind.duplicate) {
+        await _patchRequest(requestId);
+        return SeerrRemoveResult.refused;
+      }
+      _endAction(requestId);
+      return SeerrRemoveResult.failed;
     } catch (_) {
-      await _patchRequest(requestId);
-      return false;
+      _endAction(requestId);
+      return SeerrRemoveResult.failed;
     }
     _state = _state.copyWith(
       requests: _state.requests.where((r) => r.id != requestId).toList(),
-      actioningRequestId: null,
     );
+    _endAction(requestId);
+    return SeerrRemoveResult.removed;
+  }
+
+  /// Clears the spinner, unless another card's action has taken it since.
+  void _endAction(int requestId) {
+    if (_state.actioningRequestId == requestId) {
+      _state = _state.copyWith(actioningRequestId: null);
+    }
     notifyListeners();
-    _repo.invalidateBadgeCount();
-    final user = _state.currentUser;
-    if (user != null) await _loadCounts(user);
-    return true;
   }
 
   Future<void> _runAction(int requestId, Future<void> Function() action) async {

@@ -6227,6 +6227,15 @@ class AppLocalizationsSq extends AppLocalizations {
       'The request wasn\'t removed. It was retried, or part of it arrived.';
 
   @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
+
+  @override
   String get itemNotFoundInLibrary =>
       'Artikulli nuk u gjet në bibliotekën tuaj Moonfin';
 

@@ -5868,11 +5868,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Onko palvelimen kirjastoon lisätty mitään uutta';
 
   @override
-  String get seerrTestNotification => 'Lähetä testiviesti';
+  String get seerrTestNotification => 'Send Test Notification';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Tarkista sovelluksen sisäisten ja taustalla tapahtuvien push-ilmoitusten toimitus';
+      'Verify in-app and background push delivery';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5885,30 +5885,29 @@ class AppLocalizationsFi extends AppLocalizations {
       count,
       locale: localeName,
       other: '$countString devices',
-      one: '1 laite',
+      one: '1 device',
     );
-    return 'Toimitettu $_temp0.';
+    return 'Dispatched to $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'Sovelluksen sisäinen ilmoitus lähetetty. Palvelimen push-ilmoitukset eivät ole käytössä.';
+      'In-app notification sent. Server push is not enabled.';
 
   @override
-  String get seerrTestNotificationFailed =>
-      'Testiviestin lähettäminen epäonnistui';
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
 
   @override
-  String get seerrPushServerStatus => 'Palvelimen lähetys';
+  String get seerrPushServerStatus => 'Server Push';
 
   @override
-  String get seerrPushDeviceStatus => 'Laitteen push-ilmoitus';
+  String get seerrPushDeviceStatus => 'Device Push';
 
   @override
-  String get seerrPushDeviceRegistered => 'Rekisteröity';
+  String get seerrPushDeviceRegistered => 'Registered';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Ei rekisteröity';
+  String get seerrPushDeviceNotRegistered => 'Not registered';
 
   @override
   String loggedInAs(String username) {
@@ -6228,6 +6227,15 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get removeFailedRequestRefused =>
       'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
 
   @override
   String get itemNotFoundInLibrary => 'Kohdetta ei löydy Moonfin kirjastostasi';

@@ -553,6 +553,10 @@ void main() {
       throwsA(isA<SeerrRequestException>()),
     );
 
+    // Already gone (removed on another device) is what was asked for.
+    await client.removeFailedRequest(list.results.last.id);
+    expect(silo.calls.last, 'DELETE /api/v2/requests/r-active');
+
     // An older Silo doesn't say it has the route, so nothing offers it.
     final old = _client(_Silo({..._base(), 'GET /api/v2/requests/mine': mine}));
     final oldList = SeerrRequestListResponse.fromJson(await old.getRequests());

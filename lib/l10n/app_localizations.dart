@@ -10918,6 +10918,18 @@ abstract class AppLocalizations {
   /// **'The request wasn\'t removed. It was retried, or part of it arrived.'**
   String get removeFailedRequestRefused;
 
+  /// Confirmation message before an admin deletes another user's failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'The failed request for \"{title}\" by {name} will be deleted. They can request it again later.'**
+  String removeOthersFailedRequestForTitle(String title, String name);
+
+  /// Snackbar when deleting a failed Silo request fails for a reason other than the request changing
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t remove the request. Try again.'**
+  String get removeFailedRequestError;
+
   /// Snackbar when Seerr item cannot be found in Jellyfin
   ///
   /// In en, this message translates to:

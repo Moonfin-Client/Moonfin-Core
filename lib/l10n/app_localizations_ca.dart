@@ -5908,11 +5908,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Qualsevol contingut multimèdia nou afegit a la biblioteca';
 
   @override
-  String get seerrTestNotification => 'Envia una notificació de prova';
+  String get seerrTestNotification => 'Send Test Notification';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Comprova el lliurament de notificacions push dins de l\'aplicació i en segon pla';
+      'Verify in-app and background push delivery';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5924,31 +5924,30 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString dispositius',
-      one: '1 dispositiu',
+      other: '$countString devices',
+      one: '1 device',
     );
-    return 'S\'ha enviat a $_temp0.';
+    return 'Dispatched to $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'S\'ha enviat la notificació dins de l\'aplicació. Les notificacions push del servidor no estan activades.';
+      'In-app notification sent. Server push is not enabled.';
 
   @override
-  String get seerrTestNotificationFailed =>
-      'No s\'ha pogut enviar la notificació de prova';
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
 
   @override
-  String get seerrPushServerStatus => 'Push del servidor';
+  String get seerrPushServerStatus => 'Server Push';
 
   @override
-  String get seerrPushDeviceStatus => 'Push del dispositiu';
+  String get seerrPushDeviceStatus => 'Device Push';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registrat';
+  String get seerrPushDeviceRegistered => 'Registered';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'No registrat';
+  String get seerrPushDeviceNotRegistered => 'Not registered';
 
   @override
   String loggedInAs(String username) {
@@ -6272,6 +6271,15 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get removeFailedRequestRefused =>
       'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
 
   @override
   String get itemNotFoundInLibrary =>

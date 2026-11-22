@@ -5647,10 +5647,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get seerrNotifyNewMediaSubtitle => '服务器媒体库新增内容提醒';
 
   @override
-  String get seerrTestNotification => '发送测试通知';
+  String get seerrTestNotification => 'Send Test Notification';
 
   @override
-  String get seerrTestNotificationDesc => '验证应用内与后台推送送达';
+  String get seerrTestNotificationDesc =>
+      'Verify in-app and background push delivery';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5659,26 +5660,33 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     final String countString = countNumberFormat.format(count);
 
-    return '已下发至 $countString 台设备。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString devices',
+      one: '1 device',
+    );
+    return 'Dispatched to $_temp0.';
   }
 
   @override
-  String get seerrTestNotificationPushDisabled => '已发送应用内通知，服务器推送未开启。';
+  String get seerrTestNotificationPushDisabled =>
+      'In-app notification sent. Server push is not enabled.';
 
   @override
-  String get seerrTestNotificationFailed => '发送测试通知失败';
+  String get seerrTestNotificationFailed => 'Failed to send test notification';
 
   @override
-  String get seerrPushServerStatus => '服务器推送';
+  String get seerrPushServerStatus => 'Server Push';
 
   @override
-  String get seerrPushDeviceStatus => '设备推送';
+  String get seerrPushDeviceStatus => 'Device Push';
 
   @override
-  String get seerrPushDeviceRegistered => '已注册';
+  String get seerrPushDeviceRegistered => 'Registered';
 
   @override
-  String get seerrPushDeviceNotRegistered => '未注册';
+  String get seerrPushDeviceNotRegistered => 'Not registered';
 
   @override
   String loggedInAs(String username) {
@@ -5989,6 +5997,15 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get removeFailedRequestRefused =>
       'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
 
   @override
   String get itemNotFoundInLibrary => '在你的 Moonfin 媒体库中未找到此媒体项';

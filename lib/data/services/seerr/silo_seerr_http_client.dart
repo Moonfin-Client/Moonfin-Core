@@ -148,12 +148,11 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   /// read it yet. An older Silo leaves the flag out and gets no Remove.
   Future<void> _readRemoveFailed() async {
     if (_removeFailed != null) return;
+    // Left unknown on a failed read, so the next list read asks again.
     try {
       final status = await _get('/requests/status');
       _removeFailed = status['remove_failed_supported'] == true;
-    } catch (_) {
-      _removeFailed = false;
-    }
+    } catch (_) {}
   }
 
   /// The server's rule for removeFailedRequest: failed, and no quality was
@@ -1159,11 +1158,16 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   }
 
   /// Silo deletes a failed request that delivered nothing, with its history.
-  /// It answers 409 once the request is no longer failed or got a copy.
+  /// It answers 409 once the request is no longer failed or got a copy. A
+  /// 404 means it is already gone, which is what was asked for.
   @override
   Future<void> removeFailedRequest(int requestId) async {
     final id = Uri.encodeComponent(_requestId(requestId));
-    await _mutate(() => _dio.delete<dynamic>('$_api/requests/$id'));
+    try {
+      await _mutate(() => _dio.delete<dynamic>('$_api/requests/$id'));
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 404) rethrow;
+    }
   }
 
   Future<void> _adminAction(int requestId, String action) async {

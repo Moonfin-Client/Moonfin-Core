@@ -120,6 +120,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   /// The card that takes focus after a removal, so the remote lands on the
   /// request now in the removed one's place rather than back up the screen.
   int? _refocusRequestId;
+  int _refocusTick = 0;
   final _animatedIssueIds = <int>{};
 
   @override
@@ -452,7 +453,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           onDecline: () => vm.declineRequest(req.id),
           onRetry: () => vm.retryRequest(req.id),
           onRemove: () => _confirmRemove(vm, req),
-          takeFocus: _refocusRequestId == req.id,
+          focusToken: _refocusRequestId == req.id ? _refocusTick : 0,
           onFocusGained: () => _snapToTileRow(index),
           splitRequester: _splitRequester,
         ),
@@ -530,7 +531,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 onDecline: () => vm.declineRequest(req.id),
                 onRetry: () => vm.retryRequest(req.id),
                 onRemove: () => _confirmRemove(vm, req),
-                takeFocus: _refocusRequestId == req.id,
+                focusToken: _refocusRequestId == req.id ? _refocusTick : 0,
               ),
             );
           },
@@ -541,14 +542,25 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
 
   /// Confirms deleting a failed Silo request, then deletes it. Silo refuses
   /// one that was retried or got a copy meanwhile; the card then shows where
-  /// it stands and a snackbar says why it stayed.
+  /// it stands and a snackbar says why it stayed. With a remote, focus goes
+  /// to the card now in the removed one's place, or back to a refused one.
   Future<void> _confirmRemove(
     SeerrRequestsViewModel vm,
     SeerrRequest request,
   ) async {
     final l10n = AppLocalizations.of(context);
     final media = request.media;
-    final title = media?.title ?? media?.name ?? l10n.unknown;
+    final title =
+        media?.title ??
+        media?.name ??
+        vm.state.summaryFor(request)?.title ??
+        l10n.unknown;
+    final me = vm.state.currentUser?.id;
+    final requester = request.requestedBy;
+    // An admin can remove anyone's, so say whose it is when it isn't theirs.
+    final message = requester != null && me != null && requester.id != me
+        ? l10n.removeOthersFailedRequestForTitle(title, requester.bestName)
+        : l10n.removeFailedRequestForTitle(title);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
@@ -557,19 +569,22 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           l10n.removeRequest,
           style: const TextStyle(color: Colors.white),
         ),
-        content: Text(
-          l10n.removeFailedRequestForTitle(title),
-          style: const TextStyle(color: Colors.white70),
-        ),
+        content: Text(message, style: const TextStyle(color: Colors.white70)),
         actions: [
           adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
+            focusRingColor: AppColorScheme.accent,
             child: Text(l10n.keep),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red[300]),
-            child: Text(l10n.removeRequest),
+            isDestructive: true,
+            backgroundColor: const Color(0xFFB71C1C),
+            focusedBackgroundColor: const Color(0xFFD32F2F),
+            child: Text(
+              l10n.removeRequest,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -580,15 +595,36 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
         FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
     final before = vm.state.requests;
     final at = before.indexWhere((r) => r.id == request.id);
-    if (await vm.removeFailedRequest(request.id)) {
-      if (!remote || !mounted || at < 0 || before.length < 2) return;
-      final next = before[at + 1 < before.length ? at + 1 : at - 1];
-      setState(() => _refocusRequestId = next.id);
-      return;
+    final result = await vm.removeFailedRequest(request.id);
+    if (!mounted) return;
+    switch (result) {
+      case SeerrRemoveResult.removed:
+        if (remote && at >= 0 && before.length > 1) {
+          _refocus(before[at + 1 < before.length ? at + 1 : at - 1].id);
+        }
+      case SeerrRemoveResult.refused:
+        if (remote) _refocus(request.id);
+        messenger?.showSnackBar(
+          SnackBar(content: Text(l10n.removeFailedRequestRefused)),
+        );
+      case SeerrRemoveResult.failed:
+        if (remote) _refocus(request.id);
+        messenger?.showSnackBar(
+          SnackBar(content: Text(l10n.removeFailedRequestError)),
+        );
     }
-    messenger?.showSnackBar(
-      SnackBar(content: Text(l10n.removeFailedRequestRefused)),
-    );
+  }
+
+  /// Hands focus to one card on the next build, once. The tick makes a
+  /// second hand-off to the same card count as new.
+  void _refocus(int requestId) {
+    setState(() {
+      _refocusRequestId = requestId;
+      _refocusTick++;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refocusRequestId = null;
+    });
   }
 
   void _onRequestTap(SeerrRequest request) {
@@ -1528,8 +1564,9 @@ class _RequestCard extends StatefulWidget {
   /// Deletes a failed Silo request; offered when [SeerrRequest.canRemove].
   final VoidCallback? onRemove;
 
-  /// Set on the card that takes focus after the one before it was removed.
-  final bool takeFocus;
+  /// Non-zero, and new, on the card that should take focus: the one now in
+  /// a removed card's place, or a card whose removal was refused.
+  final int focusToken;
 
   /// Fired when this card takes focus, so the grid can slide its row to a
   /// whole-row offset instead of leaving the next one half cut.
@@ -1550,7 +1587,7 @@ class _RequestCard extends StatefulWidget {
     this.onDecline,
     this.onRetry,
     this.onRemove,
-    this.takeFocus = false,
+    this.focusToken = 0,
     this.onFocusGained,
     this.splitRequester = false,
   });
@@ -1569,20 +1606,14 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   SeerrRequest get request => widget.request;
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.takeFocus) _focusSoon();
-  }
-
-  @override
   void didUpdateWidget(_RequestCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.takeFocus && !oldWidget.takeFocus) _focusSoon();
+    if (widget.focusToken != 0 && widget.focusToken != oldWidget.focusToken) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _cardFocus.requestFocus();
+      });
+    }
   }
-
-  void _focusSoon() => WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted) _cardFocus.requestFocus();
-  });
 
   @override
   void dispose() {
