@@ -12623,5 +12623,17 @@
     "adminDatabaseWarning": "Detta är avancerade inställningar. Låt dem vara på standardinställningarna om du inte har någon anledning att ändra dem.",
     "adminDatabaseCacheSize": "Databasens cacheminne (MB)",
     "adminDatabaseCacheSizeHelp": "Hur stor del av varje databasfil som servern lagrar i minnet. En högre värde kan göra servern snabbare. Träder i kraft efter en omstart.",
-    "adminDatabaseOptimize": "Optimera databasen när servern stängs av"
+    "adminDatabaseOptimize": "Optimera databasen när servern stängs av",
+    "personalRatingStars": "5 stjärnor",
+    "@personalRatingStars": {
+        "description": "Personal rating style using a five-star scale."
+    },
+    "homeScreenBackdropFullScreen": "Helskärm",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "detailsBackdropFullScreen": "Helskärm",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    }
 }
