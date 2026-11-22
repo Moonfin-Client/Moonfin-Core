@@ -1,0 +1,141 @@
+{
+ "sections": [
+  {
+   "id": "148726481659419950",
+   "section_type": "continue_watching",
+   "title": "Continue Watching",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.continueWatching"
+  },
+  {
+   "id": "148726660756200750",
+   "section_type": "continue_watching",
+   "title": "Continue Listening",
+   "featured": false,
+   "item_limit": 20,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.continueListening"
+  },
+  {
+   "id": "148726481659485486",
+   "section_type": "trending_discover",
+   "title": "Trending This Week",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.trendingThisWeek"
+  },
+  {
+   "id": "148726481659551022",
+   "section_type": "recently_added",
+   "title": "Recently Added Movies",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.recentlyAddedMovies"
+  },
+  {
+   "id": "148726481659616558",
+   "section_type": "recently_added",
+   "title": "Recently Added TV",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.recentlyAddedTv"
+  },
+  {
+   "id": "148726481659682094",
+   "section_type": "recommended_for_you",
+   "title": "Recommended for You",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.recommendedForYou"
+  },
+  {
+   "id": "148726481659747630",
+   "section_type": "because_you_watched",
+   "title": "Because You Watched",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.becauseYouWatched"
+  },
+  {
+   "id": "148726481659813166",
+   "section_type": "returning_shows",
+   "title": "Returning Shows",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.returningShows"
+  },
+  {
+   "id": "148726481659878702",
+   "section_type": "critically_acclaimed",
+   "title": "Top Rated",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.topRated"
+  },
+  {
+   "id": "148726481659944238",
+   "section_type": "hidden_gems",
+   "title": "Hidden Gems",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.hiddenGems"
+  },
+  {
+   "id": "148726481660009774",
+   "section_type": "seasonal_themed",
+   "title": "Seasonal Picks",
+   "featured": false,
+   "item_limit": 100,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.seasonalPicks"
+  },
+  {
+   "id": "148726660756266286",
+   "section_type": "recently_added",
+   "title": "Recently Added in AudioBooks",
+   "featured": false,
+   "item_limit": 20,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.recentlyAddedIn",
+   "title_args": {
+    "library": "AudioBooks"
+   }
+  },
+  {
+   "id": "148726660756331822",
+   "section_type": "recently_released",
+   "title": "Recently Released in AudioBooks",
+   "featured": false,
+   "item_limit": 20,
+   "is_custom": false,
+   "customized": false,
+   "title_key": "home.section.recentlyReleasedIn",
+   "title_args": {
+    "library": "AudioBooks"
+   }
+  }
+ ],
+ "included_sections": []
+}

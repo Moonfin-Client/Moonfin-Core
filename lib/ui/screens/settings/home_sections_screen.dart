@@ -24,6 +24,7 @@ import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/server_section_title.dart';
 import '../../../util/server_url.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -1340,6 +1341,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   bool _mergeServerSections(List<ServerHomeSection> discovered) {
     final serverId = GetIt.instance<MediaServerClient>().baseUrl;
     var changed = false;
+    _serverSections.clear();
 
     bool isOwn(HomeSectionConfig s) =>
         s.isPluginDynamic &&
@@ -1372,6 +1374,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         order: nextOrder++,
       );
       freshIds.add(cfg.stableId);
+      _serverSections[cfg.stableId] = section;
       final idx = _sections.indexWhere((s) => s.stableId == cfg.stableId);
       if (idx >= 0) {
         if (_sections[idx].pluginDisplayText != section.title) {
@@ -1806,7 +1809,15 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     });
   }
 
+  /// The server's own rows as last read, by their entry's stable id, so their
+  /// labels show in the app's language while the entry keeps the server's
+  /// English title.
+  final Map<String, ServerHomeSection> _serverSections = {};
+
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
+    if (_serverSections[cfg.stableId] case final section?) {
+      return localizeServerSectionTitle(section, l10n);
+    }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true
           ? cfg.pluginDisplayText!

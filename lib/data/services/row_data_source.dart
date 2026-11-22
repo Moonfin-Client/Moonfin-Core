@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
+import 'package:collection/collection.dart';
 
 import '../../preference/home_section_config.dart';
 import '../../preference/user_preferences.dart';
@@ -15,6 +16,7 @@ import '../models/home_row.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/latest_media_row_normalizer.dart';
 import '../../util/parental_filter.dart';
+import '../../util/server_section_title.dart';
 import '../utils/aggregated_item_sort.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/genre_browse_utils.dart';
@@ -2407,6 +2409,29 @@ class RowDataSource {
   /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.
   /// Dispatches on [pluginSource] so callers can mix HSS rows (server-driven
   /// REST endpoint) and other dynamic source rows (like collections, genres, or playlists).
+  /// A server row's title in the app's language, read from the server's list
+  /// of rows (kept for a while, so the row's own load already fetched it).
+  /// The stored [fallback] is the server's English title, kept when the list
+  /// can't be read or no longer has the row.
+  Future<String> _serverSectionTitle(
+    ServerHomeSectionsApi api,
+    String sectionId,
+    String fallback,
+  ) async {
+    try {
+      final sections = await api.getServerHomeSections();
+      // Moonbase's admin defaults name a row by its kind ("type:<kind>"):
+      // the first row of that kind, as the server reads it.
+      final section = sections.firstWhereOrNull(
+        (s) => s.id == sectionId || 'type:${s.kind}' == sectionId,
+      );
+      if (section != null) return localizeServerSectionTitle(section, _l10n);
+    } catch (e) {
+      debugPrint('[RowDataSource] Server row titles unavailable: $e');
+    }
+    return fallback;
+  }
+
   Future<HomeRow> loadDynamicSection({
     required String rowId,
     required String section,
@@ -2594,12 +2619,12 @@ class RowDataSource {
             rowType: HomeRowType.pluginDynamic,
           );
         }
-        final response = await (api as ServerHomeSectionsApi)
-            .getServerHomeSectionItems(section);
+        final serverApi = api as ServerHomeSectionsApi;
+        final response = await serverApi.getServerHomeSectionItems(section);
         final items = _parseItems(response, serverId);
         return HomeRow(
           id: rowId,
-          title: title,
+          title: await _serverSectionTitle(serverApi, section, title),
           rowType: HomeRowType.pluginDynamic,
           items: items,
           totalCount: items.length,
