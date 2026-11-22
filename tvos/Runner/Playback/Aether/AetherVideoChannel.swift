@@ -302,7 +302,9 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             "isPlaying": isPlaying,
             "isBuffering": isBuffering,
             "isSubtitleLoading": p.isSubtitleLoading,
+            "rebuffers": p.rebufferCount,
         ]
+        if let bps = p.networkActivityBps { state["networkActivityBps"] = bps }
         if let range = p.seekableLiveRange {
             state["liveWindowStartMs"] = Int((range.lowerBound * 1000).rounded())
             state["liveEdgeMs"] = Int((range.upperBound * 1000).rounded())

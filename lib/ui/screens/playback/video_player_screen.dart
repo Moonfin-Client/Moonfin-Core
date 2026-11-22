@@ -49,6 +49,7 @@ import '../../../playback/mpv_letterbox_crop.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../../playback/playback_lifecycle_handler.dart';
 import '../../../playback/playback_info_sections.dart';
+import '../../../playback/playback_network_stats.dart';
 import '../../../playback/hdr_stream_capability.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../data/models/aggregated_item.dart';
@@ -5203,8 +5204,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     BuildContext context, {
     required bool controlsUp,
   }) {
-    final media3 = _activeMedia3Backend;
-    if (!_playbackStatsVisible || media3 == null) return null;
+    final backend = _activeBackend;
+    if (!_playbackStatsVisible || backend is! PlaybackNetworkStatsSource) {
+      return null;
+    }
+    // The interface isn't a PlayerBackend, so the check doesn't promote.
+    final statsSource = backend as PlaybackNetworkStatsSource;
     // TVs can overscan, so it keeps to the margins the TV top bar uses.
     final tv = PlatformDetection.useLeanbackUi;
     final top = MediaQuery.of(context).padding.top;
@@ -5233,7 +5238,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 _serverIdForQueueItem(_queue.currentItem),
                 _itemIdForQueueItem(_queue.currentItem) ?? _queue.currentItem,
               )),
-              read: () => media3.networkStats,
+              read: () => statsSource.networkStats,
               serverBitrate: cap != null && (source == null || cap < source)
                   ? cap
                   : source,
@@ -8760,7 +8765,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // mpv's own statistics overlay, the Shift+I one, offered as a button so
     // it can be found without knowing the key.
     final mediaKit = _mpvStatsBackend;
-    final hasPlaybackStats = _activeMedia3Backend != null;
+    final hasPlaybackStats = _activeBackend is PlaybackNetworkStatsSource;
     unawaited(
       showStreamInfoDialog(
         context: context,
