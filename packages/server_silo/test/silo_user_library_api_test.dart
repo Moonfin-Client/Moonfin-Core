@@ -124,26 +124,27 @@ void main() {
       ];
     }
 
-    test('thumbs: up is 5 stars, down is 1', () async {
+    test('thumbs: up is 10, down is 2 (one star)', () async {
       expect(await sent((a) => a.updateUserRating(_film, likes: true)), [
-        'PUT {"rating":5}',
+        'PUT {"rating":10}',
       ]);
       expect(await sent((a) => a.updateUserRating(_film, likes: false)), [
-        'PUT {"rating":1}',
+        'PUT {"rating":2}',
       ]);
     });
 
-    test('out of 10 as whole stars, half a star up', () async {
+    test('out of 10 as a whole number, half up', () async {
       expect(await sent((a) => a.updateNumericUserRating(_film, rating: 8)), [
-        'PUT {"rating":4}',
+        'PUT {"rating":8}',
       ]);
       expect(await sent((a) => a.updateNumericUserRating(_film, rating: 7)), [
-        'PUT {"rating":4}',
+        'PUT {"rating":7}',
       ]);
-      expect(siloStarsFromRating(10), 5);
-      expect(siloStarsFromRating(1), 1);
-      expect(siloStarsFromRating(0), 1, reason: 'Silo\'s lowest is 1 star');
-      expect(siloStarsFromRating(12), 5);
+      expect(siloRatingFromScore(7.5), 8);
+      expect(siloRatingFromScore(10), 10);
+      expect(siloRatingFromScore(1), 1);
+      expect(siloRatingFromScore(0), 1, reason: 'Silo\'s lowest is 1');
+      expect(siloRatingFromScore(12), 10);
     });
 
     test('clearing', () async {
@@ -159,7 +160,7 @@ void main() {
                 ...extra,
               })!['UserData']
               as Map;
-      expect(userDataOf({'user_rating': 4})['Rating'], 8.0);
+      expect(userDataOf({'user_rating': 7})['Rating'], 7.0);
       expect(userDataOf({}).containsKey('Rating'), isFalse);
       expect(userDataOf({}).containsKey('Likes'), isFalse);
     });
