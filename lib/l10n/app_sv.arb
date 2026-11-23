@@ -942,7 +942,7 @@
     "@movies": {
         "description": "Section header for movies"
     },
-    "other": "Andra",
+    "other": "Övrigt",
     "@other": {
         "description": "Section header for other items"
     },
@@ -9229,7 +9229,7 @@
     "@chatLeave": {
         "description": "Action that leaves a group chat"
     },
-    "detailSectionGroupOther": "Andra",
+    "detailSectionGroupOther": "Övrigt",
     "@detailSectionGroupOther": {
         "description": "Group heading for Details screen sections that fit no other group"
     },
