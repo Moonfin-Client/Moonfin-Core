@@ -74,10 +74,23 @@ class _EditableStringPreferenceTileState
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: controller,
-              autofocus: true,
-              decoration: InputDecoration(hintText: widget.hintText),
+            // A one-line field spends Down on its caret, so a TV remote
+            // could never reach the buttons below it.
+            Shortcuts(
+              shortcuts: PlatformDetection.isTV
+                  ? const {
+                      SingleActivator(LogicalKeyboardKey.arrowDown):
+                          DirectionalFocusIntent(
+                            TraversalDirection.down,
+                            ignoreTextFields: false,
+                          ),
+                    }
+                  : const {},
+              child: TextField(
+                controller: controller,
+                autofocus: true,
+                decoration: InputDecoration(hintText: widget.hintText),
+              ),
             ),
             if (widget.pickPath != null)
               Align(
