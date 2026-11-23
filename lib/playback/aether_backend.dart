@@ -338,6 +338,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
           payload['mediaType']?.toString() != 'audio' &&
           _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       'dolbyVisionBaseLayerOnly': needsBaseLayerOnlyForDolbyVisionAv1(payload),
+      'videoCodec': payload['videoCodec']?.toString(),
       'externalSubtitles': payload['externalSubtitles'] ?? const [],
       'secondarySubtitleTrackId': payload['secondarySubtitleTrackId'],
       'secondarySubtitleUrl': payload['secondarySubtitleUrl'],

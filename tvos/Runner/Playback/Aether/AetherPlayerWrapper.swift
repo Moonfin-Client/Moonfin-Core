@@ -923,6 +923,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var audioStreamIndex: Int32?
         var audioBridgeLossless = false
         var dolbyVisionBaseLayerOnly = false
+        var videoCodec: String?
 
         /// Sidecars the host wants listed. They ride the load rather than
         /// arriving after it, because the engine clears its external registry
@@ -1160,6 +1161,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         #else
             let preserveASS = false
         #endif
+        // A box with an AV1 decoder hands AV1 to AVPlayer, which plays the
+        // sound over a black picture (#2374). dav1d, which every older box
+        // already uses, shows it. A transcode is a remote playlist of another
+        // codec, so it stays on its own route.
+        #if os(tvOS)
+            let decodePath: DecodePath =
+                sourceConfiguration.videoCodec == "av1" && !isRemotePlaylist ? .software : .automatic
+        #else
+            let decodePath = DecodePath.automatic
+        #endif
         let options = LoadOptions(
             httpHeaders: sourceConfiguration.headers,
             dolbyVisionHandling: sourceConfiguration.dolbyVisionBaseLayerOnly
@@ -1177,7 +1188,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             probesize: isLiveSession ? Self.liveProbeBytes : nil,
             maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
             externalSubtitles: sourceConfiguration.externalSubtitles,
-            autoplay: sourceConfiguration.autoPlay
+            autoplay: sourceConfiguration.autoPlay,
+            preferredDecodePath: decodePath
         )
 
         // Nothing else bounds the open. A load wedged on the network keeps
