@@ -1,0 +1,24 @@
+name: server_iptv
+description: Local IPTV (Xtream/M3U) catalog backend.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  server_core:
+    path: ../server_core
+  dio: ^5.9.2
+  drift: ^2.28.2
+  xml: ^6.6.1
+  flutter_secure_storage: ^10.0.0
+
+dev_dependencies:
+  drift_dev: ^2.28.0
+  build_runner: ^2.5.4
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
