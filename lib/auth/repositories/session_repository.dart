@@ -666,9 +666,13 @@ class SessionRepository {
   /// and a joined group or a live cast session needs it too.
   bool _shouldKeepSocketAlive() {
     final getIt = GetIt.instance;
-    if (getIt.isRegistered<PlaybackManager>() &&
-        getIt<PlaybackManager>().state.isPlaying) {
-      return true;
+    if (getIt.isRegistered<PlaybackManager>()) {
+      final manager = getIt<PlaybackManager>();
+      // A paused stream still shows on the server, and the server only
+      // offers remote control (Stop included) while the socket is open.
+      if (manager.state.isPlaying || manager.currentResolution != null) {
+        return true;
+      }
     }
     if (getIt.isRegistered<SyncPlayManager>() &&
         getIt<SyncPlayManager>().state.groupId != null) {
