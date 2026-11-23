@@ -934,7 +934,7 @@
     "@chapters": {
         "description": "Section header for chapters"
     },
-    "features": "Drag",
+    "features": "Funktioner",
     "@features": {
         "description": "Section header for special features"
     },
