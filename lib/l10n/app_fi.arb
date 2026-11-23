@@ -18963,5 +18963,13 @@
     "carInstantMix": "Välitön Sekoitus",
     "@carInstantMix": {
         "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
+    },
+    "topNavbarStyleClassic": "Klassinen",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klassinen",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
