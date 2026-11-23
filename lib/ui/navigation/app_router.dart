@@ -22,6 +22,13 @@ import '../screens/admin/admin_routes.dart';
 import '../../util/signed_in_server_features.dart';
 import '../screens/auth/emby_connect_screen.dart';
 import '../screens/auth/plex_sign_in_screen.dart';
+import '../screens/iptv/iptv_duplicates_screen.dart';
+import '../screens/iptv/iptv_groups_screen.dart';
+import '../screens/iptv/iptv_health_check_screen.dart';
+import '../screens/iptv/iptv_m3u_editor_screen.dart';
+import '../screens/iptv/iptv_playlists_screen.dart';
+import '../screens/iptv/iptv_profiles_screen.dart';
+import '../screens/iptv/iptv_setup_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/server_screen.dart';
 import '../screens/auth/server_select_screen.dart';
@@ -90,6 +97,8 @@ const _authRoutes = {
   Destinations.serverSelect,
   Destinations.embyConnect,
   Destinations.plexSignIn,
+  Destinations.iptvSetup,
+  Destinations.iptvProfiles,
   Destinations.webDiagnostics,
   Destinations.server,
   Destinations.login,
@@ -279,6 +288,43 @@ final appRouter = GoRouter(
       path: Destinations.plexSignIn,
       builder: (context, state) =>
           PlexSignInScreen(address: state.uri.queryParameters['address']),
+    ),
+    GoRoute(
+      path: Destinations.iptvSetup,
+      builder: (context, state) => const IptvSetupScreen(),
+    ),
+    GoRoute(
+      path: Destinations.iptvGroups,
+      builder: (context, state) => const IptvGroupsScreen(),
+    ),
+    GoRoute(
+      path: Destinations.iptvProfiles,
+      builder: (context, state) => const IptvProfilesScreen(),
+    ),
+    GoRoute(
+      path: Destinations.iptvPlaylists,
+      builder: (context, state) => const IptvPlaylistsScreen(),
+    ),
+    GoRoute(
+      path: Destinations.iptvEditor,
+      builder: (context, state) => IptvM3uEditorScreen(
+        playlistId: _iptvPlaylistId(state),
+        playlistName: state.uri.queryParameters['name'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Destinations.iptvHealthCheck,
+      builder: (context, state) => IptvHealthCheckScreen(
+        playlistId: _iptvPlaylistId(state),
+        playlistName: state.uri.queryParameters['name'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Destinations.iptvDuplicates,
+      builder: (context, state) => IptvDuplicatesScreen(
+        playlistId: _iptvPlaylistId(state),
+        playlistName: state.uri.queryParameters['name'] ?? '',
+      ),
     ),
     GoRoute(
       path: Destinations.webDiagnostics,
@@ -956,3 +1002,6 @@ class RetroArtworkRouteObserver extends NavigatorObserver {
     _sync();
   }
 }
+
+int _iptvPlaylistId(GoRouterState state) =>
+    int.tryParse(state.uri.queryParameters['playlistId'] ?? '') ?? 0;

@@ -119,6 +119,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   required bool showThemeEditor,
   required void Function(Widget screen) push,
   required VoidCallback openAdmin,
+  required VoidCallback? openIptv,
   required VoidCallback openThemeEditor,
 }) {
   final prefs = GetIt.instance<UserPreferences>();
@@ -2383,6 +2384,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         'badges',
         'banner',
       ]),
+
+    if (openIptv != null)
+      _SettingsSearchEntry(
+        id: 'iptv',
+        title: l10n.iptvTitle,
+        subtitle: l10n.iptvSettingsSubtitle,
+        icon: Icons.stream,
+        onOpen: openIptv,
+        matchText:
+            '${l10n.iptvTitle} ${l10n.iptvSettingsSubtitle} '
+            'xtream m3u playlist epg guide tmdb backup',
+      ),
 
     about.screen(keywords: ['version', 'update', 'discord', 'license']),
     if (PlatformDetection.useDesktopUi)

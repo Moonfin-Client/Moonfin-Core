@@ -28,6 +28,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
     show SiloUsersApi, siloAccessChangedEvent;
+import 'package:server_iptv/server_iptv.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/carplay_service.dart';
@@ -43,6 +44,8 @@ import '../services/silo_token_storage.dart';
 import '../../data/services/achievements_service.dart';
 import '../../data/services/item_membership_service.dart';
 import '../../data/services/plex_tv_service.dart';
+import '../../data/services/iptv/iptv_recording_service.dart';
+import '../../data/services/iptv/iptv_reminder_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
@@ -140,6 +143,9 @@ class SessionRepository {
   static const Duration _socketIdleGrace = Duration(seconds: 60);
   Timer? _socketIdleTimer;
   bool _socketSuspended = false;
+
+  bool _iptvAutoRefreshRunning = false;
+  bool _iptvRefreshPending = false;
 
   final _stateController = StreamController<SessionState>.broadcast();
 
@@ -390,6 +396,30 @@ class SessionRepository {
     await _authPrefs.setLastServerId(serverId);
     await _authPrefs.setLastUserId(userId);
 
+    // The local IPTV backend has no remote session, so there are no
+    // capabilities to report and no plugin to sync.
+    if (server.serverType == ServerType.iptv) {
+      try {
+        if (IptvRecordingService.supported) {
+          GetIt.instance<IptvRecordingService>().start();
+        }
+        if (IptvReminderService.supported) {
+          unawaited(GetIt.instance<IptvReminderService>().rescheduleAll());
+        }
+        // An engine booted for Android Auto or media resumption has no use
+        // for a guide download or a playlist import, so they wait for the app
+        // to open.
+        if (_socketSuspended) {
+          _iptvRefreshPending = true;
+        } else {
+          _startIptvRefresh();
+        }
+      } catch (_) {}
+      _setState(SessionState.ready);
+      return true;
+    }
+    _stopIptvAutoRefresh();
+
     final shouldPrioritizeInitialSync = !_pluginSyncService
         .isSyncInitializedForServer(client, serverId: serverId);
     final Future<void> postLoginSyncFuture = _postLoginSync(
@@ -608,6 +638,11 @@ class SessionRepository {
   /// if it was dropped while backgrounded.
   void onAppResumed() {
     _cancelSocketIdleTimer();
+    if (_iptvRefreshPending) {
+      try {
+        _startIptvRefresh();
+      } catch (_) {}
+    }
     if (!_socketSuspended) {
       // A socket that dropped while the app sat idle is waiting out its
       // backoff, and the user is here now, so do not make them wait for it.
@@ -644,6 +679,27 @@ class SessionRepository {
     _socketIdleTimer = null;
     _socketHandler.disconnect();
     _socketSuspended = true;
+  }
+
+  /// Guide data goes stale while the app is closed, so a quiet background
+  /// refresh starts, and playlists past their refresh interval re-import
+  /// while the app stays open.
+  void _startIptvRefresh() {
+    _iptvRefreshPending = false;
+    unawaited(GetIt.instance<EpgService>().refreshAllSources());
+    GetIt.instance<PlaylistService>().startAutoRefresh(
+      const Duration(hours: 1),
+    );
+    _iptvAutoRefreshRunning = true;
+  }
+
+  // Checks the flag first so a session that never used IPTV doesn't build
+  // the IPTV services just to stop a timer that isn't running.
+  void _stopIptvAutoRefresh() {
+    _iptvRefreshPending = false;
+    if (!_iptvAutoRefreshRunning) return;
+    _iptvAutoRefreshRunning = false;
+    GetIt.instance<PlaylistService>().stopAutoRefresh();
   }
 
   void _cancelSocketIdleTimer() {
@@ -816,6 +872,7 @@ class SessionRepository {
 
     _cancelSocketIdleTimer();
     _socketSuspended = false;
+    _stopIptvAutoRefresh();
 
     // Drop this device's push registration while the session/token is still
     // live, otherwise the plugin keeps sending closed-app pushes after logout.
@@ -871,11 +928,17 @@ class SessionRepository {
     _socketHandler.disconnect();
 
     if (serverId != null) {
-      await _credentialStore.deleteToken(serverId);
-      // A profile whose account stays signed in stays listed, so the user
-      // grid still offers every profile of the account.
-      if (userId != null && !keepsSiloLogin) {
-        await _authStore.removeUser(serverId, userId);
+      // IPTV profiles are local-only. Signing out returns to the profile
+      // picker but must never delete the profile or its sentinel token.
+      final isIptv =
+          _serverRepository.getServer(serverId)?.serverType == ServerType.iptv;
+      if (!isIptv) {
+        await _credentialStore.deleteToken(serverId);
+        // A profile whose account stays signed in stays listed, so the user
+        // grid still offers every profile of the account.
+        if (userId != null && !keepsSiloLogin) {
+          await _authStore.removeUser(serverId, userId);
+        }
       }
       _clientFactory.removeClient(serverId);
       resetActiveStreamResolver();

@@ -251,6 +251,11 @@ class MediaBarRepository {
         excludedGenres,
       );
       if (items.isEmpty) {
+        // Plenty of IPTV providers send no backdrops, so an empty bar is
+        // normal there and just stays hidden.
+        if (_client.serverType == ServerType.iptv) {
+          return const MediaBarDisabled();
+        }
         return const MediaBarError('No items with backdrop images found');
       }
       return MediaBarReady(items);

@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -10,25 +11,30 @@ import 'offline_database_location.dart';
 QueryExecutor openConnection() {
   return LazyDatabase(() async {
     final file = await offlineDatabaseFile();
-
-    if (PlatformDetection.isAppleTV) {
-      open.overrideForAll(_openAppleSqlite);
-      return NativeDatabase(file);
-    }
-
-    if (PlatformDetection.isLinux) {
-      // Desktop libraries (KDE/GNOME) load the system libsqlite3 at startup,
-      // which collides with the bundled sqlite and crashes sqlite3_initialize.
-      // Point the database isolate at the system library so only one sqlite is
-      // active in the process.
-      return NativeDatabase.createInBackground(
-        file,
-        isolateSetup: _useSystemSqlite,
-      );
-    }
-
-    return NativeDatabase.createInBackground(file);
+    return openNativeDatabaseForFile(file);
   });
+}
+
+/// Platform-aware [NativeDatabase] setup shared by every on-device drift
+/// database.
+QueryExecutor openNativeDatabaseForFile(File file) {
+  if (PlatformDetection.isAppleTV) {
+    open.overrideForAll(_openAppleSqlite);
+    return NativeDatabase(file);
+  }
+
+  if (PlatformDetection.isLinux) {
+    // Desktop libraries (KDE/GNOME) load the system libsqlite3 at startup,
+    // which collides with the bundled sqlite and crashes sqlite3_initialize.
+    // Point the database isolate at the system library so only one sqlite is
+    // active in the process.
+    return NativeDatabase.createInBackground(
+      file,
+      isolateSetup: _useSystemSqlite,
+    );
+  }
+
+  return NativeDatabase.createInBackground(file);
 }
 
 Future<void> _useSystemSqlite() async {

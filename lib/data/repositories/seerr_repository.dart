@@ -201,7 +201,10 @@ class SeerrRepository {
   /// Where the Seerr proxy is and how to sign calls to it. Jellyfin and Emby
   /// serve it themselves, and Plex's is Moonbase for Plex, next to it.
   Future<MoonfinProxyConfig?> _proxyConfig(String baseUrl, String? token) async {
-    if (token == null || token.isEmpty) return null;
+    // The local IPTV catalog has no server to host the plugin.
+    if (token == null || token.isEmpty || _client.serverType == ServerType.iptv) {
+      return null;
+    }
     if (_client.serverType == ServerType.plex) {
       final ep = await moonbaseEndpoint(_client, _endpointDio);
       if (ep == null) return null;

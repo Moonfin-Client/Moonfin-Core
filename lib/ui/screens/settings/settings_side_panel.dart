@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:path_provider/path_provider.dart';
@@ -343,6 +344,13 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
     }
   }
 
+  bool get _hasIptv => GetIt.instance<ServerRepository>().iptvServer != null;
+
+  void _openIptvPlaylists() {
+    _closeSettingsPanel();
+    context.push(Destinations.iptvPlaylists);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -630,6 +638,23 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
           l10n.integrations,
           seerrBrand(l10n.settingsServicesSubtitle),
           () => const _ServicesScreen(),
+          preview: false,
+        ),
+      if (_hasIptv)
+        _SettingsCategory(
+          l10n.iptvTitle,
+          l10n.iptvSettingsSubtitle,
+          () => _SettingsEntryListScreen(
+            title: l10n.iptvTitle,
+            entries: [
+              _PanelEntry(
+                icon: Icons.stream,
+                title: l10n.iptvTitle,
+                subtitle: l10n.iptvSettingsSubtitle,
+                onTap: _openIptvPlaylists,
+              ),
+            ],
+          ),
           preview: false,
         ),
       _SettingsCategory(
@@ -1044,6 +1069,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel>
         _closeSettingsPanel();
         context.navigateTopLevel(Destinations.admin);
       },
+      openIptv: _hasIptv ? _openIptvPlaylists : null,
       openThemeEditor: () => unawaited(_openThemeEditor(context)),
     );
     final results = _filterSettingsIndex(index, _query);

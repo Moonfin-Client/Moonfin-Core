@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_iptv/server_iptv.dart';
 
 import '../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../data/offline/offline_catalog.dart';
@@ -25,6 +26,7 @@ import '../../playback/server_transcode_capabilities.dart';
 import '../../util/download_grouping.dart' show downloadNotificationLabel;
 import '../../util/download_utils.dart' show formatBytes;
 import '../../preference/user_preferences.dart';
+import 'iptv_module.dart' show iptvLabels;
 
 final _getIt = GetIt.instance;
 
@@ -38,6 +40,16 @@ void registerServerModule() {
       deviceInfo: _getIt<DeviceInfo>(),
       // A user whose access schedule just ended is turned away from every request.
       onForbidden: () => _getIt<AccessScheduleService>().noteRefused(),
+      iptvClientBuilder: () => IptvMediaServerClient(
+        database: _getIt<IptvDatabase>(),
+        credentials: _getIt<IptvCredentialStore>(),
+        deviceInfo: _getIt<DeviceInfo>(),
+        tmdbService: TmdbService(
+          apiKeyProvider: () =>
+              _getIt<UserPreferences>().get(UserPreferences.tmdbApiKey),
+        ),
+        labels: iptvLabels,
+      ),
     ),
   );
 
@@ -86,9 +98,12 @@ void setActiveServerClient(
   final rawClient = client is ConnectivityAwareMediaServerClient
       ? client.onlineClient
       : client;
+  // The IPTV backend is a local catalog, and swapping it for the downloads
+  // catalog would blank it out, so it never routes offline.
   final wrapped = ConnectivityAwareMediaServerClient(
     rawClient,
-    useOffline: shouldUseOfflineCatalog,
+    useOffline: () =>
+        rawClient.serverType != ServerType.iptv && shouldUseOfflineCatalog(),
     catalog: _getIt<OfflineCatalog>(),
     storagePath: _getIt<StoragePathService>(),
     pendingRatings: _getIt<PendingRatingStore>(),

@@ -219,6 +219,9 @@ class ConnectivityService extends ChangeNotifier {
     }
     final syncService = getIt<SyncService>();
     final client = getIt<MediaServerClient>();
+    // The IPTV catalog is local, so there's no server to reconcile progress
+    // with.
+    if (client.serverType == ServerType.iptv) return;
     if (_inFlightSync != null) {
       if (!identical(client, _inFlightSyncClient)) _syncQueued = true;
       return;

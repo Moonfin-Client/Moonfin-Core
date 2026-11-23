@@ -29,6 +29,7 @@ import '../util/http_overrides_stub.dart'
 import '../util/platform_detection.dart';
 import 'modules/app_module.dart';
 import 'modules/auth_module.dart';
+import 'modules/iptv_module.dart';
 import 'modules/server_module.dart';
 import 'modules/playback_module.dart';
 import 'modules/preference_module.dart';
@@ -440,6 +441,7 @@ Future<void> configureBackgroundDependencies({bool offline = false}) async {
 
   registerPreferenceModule(preferenceStore);
   if (offline) registerOfflineStorage();
+  registerIptvModule();
   registerServerModule();
   registerAuthModule();
   await getIt<AuthenticationStore>().init();
@@ -492,6 +494,7 @@ Future<void> configureDependencies() async {
   connectivityService.initialize();
   getIt.registerSingleton<ConnectivityService>(connectivityService);
 
+  registerIptvModule();
   registerServerModule();
   registerAuthModule();
   await getIt<AuthenticationStore>().init();
