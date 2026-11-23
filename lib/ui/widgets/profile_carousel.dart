@@ -11,12 +11,17 @@ class ProfileEntry {
     required this.id,
     required this.name,
     this.avatarUrl,
+    this.color,
     this.badge = ProfileBadge.none,
   });
 
   final String id;
   final String name;
   final String? avatarUrl;
+
+  /// The initial's background when there's no image, instead of the one
+  /// picked from [id].
+  final Color? color;
   final ProfileBadge badge;
 }
 
@@ -72,7 +77,7 @@ class ProfileAvatar extends StatelessWidget {
                 ),
               )
             : ColoredBox(
-                color: profileInitialsColor(entry.id),
+                color: entry.color ?? profileInitialsColor(entry.id),
                 child: Center(
                   child: Text(
                     initial.toUpperCase(),

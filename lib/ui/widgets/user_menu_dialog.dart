@@ -15,6 +15,7 @@ import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../auth/services/silo_household.dart';
 import '../../auth/store/authentication_store.dart';
+import '../../data/services/iptv/iptv_profiles_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
 import '../../data/services/pin_guard.dart';
@@ -135,6 +136,9 @@ class _AccountDialogState extends State<_AccountDialog> {
   }
 
   String? _avatarUrl(_StoredAccount account) {
+    // Local IPTV profiles have no server-hosted avatar to fetch.
+    if (account.server.serverType == ServerType.iptv) return null;
+
     final apiKey = account.user.accessToken;
     if (apiKey.isEmpty) return null;
 
@@ -285,6 +289,7 @@ class _AccountDialogState extends State<_AccountDialog> {
     id: account.user.id,
     name: account.user.name,
     avatarUrl: _avatarUrl(account),
+    color: IptvProfilesService.colorForTag(account.user.imageTag),
     badge: _isActive(account)
         ? ProfileBadge.active
         : account.user.siloHasPin
@@ -294,11 +299,13 @@ class _AccountDialogState extends State<_AccountDialog> {
 
   Widget _buildAccountSubtitle(_StoredAccount account) {
     final l10n = AppLocalizations.of(context);
+    final serverName = account.server.name;
+    final product = account.server.serverType.productName;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ProfileStatusLine(
-          '${account.server.name} · ${account.server.serverType.productName}',
+          serverName == product ? product : '$serverName · $product',
         ),
         if (_isActive(account)) ...[
           const SizedBox(height: 4),

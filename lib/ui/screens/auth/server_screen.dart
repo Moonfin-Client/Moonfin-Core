@@ -14,6 +14,7 @@ import '../../../auth/repositories/server_user_repository.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../auth/services/silo_household.dart';
 import '../../../auth/store/authentication_preferences.dart';
+import '../../../data/services/iptv/iptv_profiles_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/pin_guard.dart';
 import '../../../data/services/server_pin_service.dart';
@@ -197,8 +198,15 @@ class _ServerScreenState extends State<ServerScreen> {
       if (!verified) return;
     }
 
-    final alwaysAuthenticate =
+    var alwaysAuthenticate =
         GetIt.instance<AuthenticationPreferences>().shouldAlwaysAuthenticate;
+
+    // IPTV profiles are local-only and have no password backend, so the
+    // login screen can never authenticate them. Their optional gate is the
+    // PIN checked above, so always-authenticate must not divert them.
+    if (server.serverType == ServerType.iptv) {
+      alwaysAuthenticate = false;
+    }
 
     // A Silo profile locked with a PIN asks for it first.
     final stored = _userRepo
@@ -414,9 +422,8 @@ class _ServerScreenState extends State<ServerScreen> {
               children: [
                 _pillButton(
                   icon: Icons.person,
-                  label: l10n.addUser,
-                  onPressed: () =>
-                      context.go('${Destinations.login}?serverId=${server.id}'),
+                  label: _addUserLabel(server, l10n),
+                  onPressed: () => _onAddUserPressed(server),
                 ),
                 _pillButton(
                   icon: Icons.home,
@@ -474,9 +481,8 @@ class _ServerScreenState extends State<ServerScreen> {
                         entries: entries,
                         selected: _selected,
                         onSelected: (index) => setState(() => _selected = index),
-                        onAdd: () =>
-                            context.go('${Destinations.login}?serverId=${server.id}'),
-                        addLabel: l10n.addUser,
+                        onAdd: () => _onAddUserPressed(server),
+                        addLabel: _addUserLabel(server, l10n),
                       ),
                       ..._buildNotices(server),
                     ],
@@ -631,6 +637,7 @@ class _ServerScreenState extends State<ServerScreen> {
 
   String? _userImageUrl(_MergedUser user) {
     final server = _server!;
+    if (server.serverType == ServerType.iptv) return null;
     // Plex keeps every account's avatar on plex.tv, under its uuid.
     if (server.serverType == ServerType.plex) {
       return 'https://plex.tv/users/${user.id}/avatar';
@@ -653,10 +660,28 @@ class _ServerScreenState extends State<ServerScreen> {
           user.hasPassword &&
           _server?.serverType == ServerType.plex);
 
+  /// IPTV profiles are created and edited locally, so the add-user button
+  /// opens profile management instead of the server login form. The list
+  /// reloads afterward to pick up new names and avatars.
+  Future<void> _onAddUserPressed(Server server) async {
+    if (server.serverType == ServerType.iptv) {
+      await context.push(Destinations.iptvProfiles);
+      if (mounted) await _load();
+      return;
+    }
+    context.go('${Destinations.login}?serverId=${server.id}');
+  }
+
+  String _addUserLabel(Server server, AppLocalizations l10n) =>
+      server.serverType == ServerType.iptv
+      ? l10n.iptvManageProfiles
+      : l10n.addUser;
+
   ProfileEntry _entryFor(_MergedUser user) => ProfileEntry(
     id: user.id,
     name: user.name,
     avatarUrl: _userImageUrl(user),
+    color: IptvProfilesService.colorForTag(user.imageTag),
     badge: _asksForPin(user) ? ProfileBadge.pin : ProfileBadge.none,
   );
 

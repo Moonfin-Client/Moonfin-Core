@@ -16,6 +16,11 @@ class CredentialField extends StatefulWidget {
   final String label;
   final bool enabled;
   final bool isPassword;
+
+  /// What the TV keyboard is for, when it isn't a name or a password.
+  final InputPurpose? inputPurpose;
+  final String? Function(String?)? validator;
+  final bool autofocus;
   final FocusNode? up;
   final FocusNode? down;
   final VoidCallback? onSubmitted;
@@ -28,6 +33,9 @@ class CredentialField extends StatefulWidget {
     required this.label,
     this.enabled = true,
     this.isPassword = false,
+    this.inputPurpose,
+    this.validator,
+    this.autofocus = false,
     this.up,
     this.down,
     this.onSubmitted,
@@ -77,6 +85,7 @@ class _CredentialFieldState extends State<CredentialField> {
 
     return Focus(
       focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
           return KeyEventResult.ignored;
@@ -116,9 +125,12 @@ class _CredentialFieldState extends State<CredentialField> {
             key: _tvFieldKey,
             controller: widget.controller,
             isFocused: focused,
-            inputPurpose: widget.isPassword
-                ? InputPurpose.password
-                : InputPurpose.username,
+            inputPurpose:
+                widget.inputPurpose ??
+                (widget.isPassword
+                    ? InputPurpose.password
+                    : InputPurpose.username),
+            validator: widget.validator,
             keyboardStyle: GetIt.instance<UserPreferences>().get(
               UserPreferences.keyboardStyle,
             ),

@@ -18,9 +18,12 @@ class ServerUserRepository {
 
   Future<List<PublicUser>> getPublicServerUsers(Server server) async {
     // Silo has no public user list (`/Users/Public`): people sign in with
-    // their account, then pick a household profile. Asking for one only fails
-    // and logs an error.
-    if (server.serverType == ServerType.silo) return const [];
+    // their account, then pick a household profile. IPTV profiles all live
+    // on this device. Asking either one only fails and logs an error.
+    if (server.serverType == ServerType.silo ||
+        server.serverType == ServerType.iptv) {
+      return const [];
+    }
 
     final dio = Dio(
       BaseOptions(

@@ -66,6 +66,14 @@ class Destinations {
   /// First-run setup. Sits between login and home the first time a user lands
   /// on a server, and is reachable again from About afterwards.
   static const setup = '/setup';
+  // IPTV
+  static const iptvSetup = '/iptv/setup';
+  static const iptvGroups = '/iptv/groups';
+  static const iptvProfiles = '/iptv/profiles';
+  static const iptvPlaylists = '/iptv/playlists';
+  static const iptvEditor = '/iptv/editor';
+  static const iptvHealthCheck = '/iptv/health';
+  static const iptvDuplicates = '/iptv/duplicates';
 
   // General
   static const home = '/home';

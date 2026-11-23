@@ -273,6 +273,31 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
+  /// The single local IPTV pseudo-server. All Xtream/M3U playlists live under
+  /// this one server, and its "users" are local profiles.
+  static const iptvServerId = 'iptv_local';
+  static const iptvServerAddress = 'iptv://local';
+
+  Server? get iptvServer => getServer(iptvServerId);
+
+  /// Creates (or returns) the IPTV pseudo-server. Nothing is probed because
+  /// the catalog is on-device.
+  Future<Server> addIptvServer() async {
+    final existing = getServer(iptvServerId);
+    if (existing != null) return existing;
+
+    final server = Server(
+      id: iptvServerId,
+      name: 'IPTV',
+      address: iptvServerAddress,
+      version: '1',
+      serverType: ServerType.iptv,
+      dateAdded: DateTime.now(),
+    );
+    await saveServer(server);
+    return server;
+  }
+
   Future<void> updateServer(Server server) async {
     final index = _servers.indexWhere((s) => s.id == server.id);
     if (index >= 0) {
