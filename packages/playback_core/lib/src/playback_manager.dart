@@ -267,6 +267,7 @@ class PlaybackManager implements AudioOwnable {
   // reset of the ordinary recovery latch without swallowing later errors.
   String? _suppressedDecoderFailureEventId;
   dynamic _videoDecoderRecoveryAttemptedQueueItem;
+  dynamic _containerRecoveryAttemptedQueueItem;
   // True only while a re-resolve stops the old player, before the
   // replacement starts, so the old player's typed failures stay dropped.
   bool _reResolveStoppingOldPlayer = false;
@@ -619,6 +620,7 @@ class PlaybackManager implements AudioOwnable {
   void _beginNewPlaybackSource(String reason) {
     _abandonLiveRecovery(reason);
     _videoDecoderRecoveryAttemptedQueueItem = null;
+    _containerRecoveryAttemptedQueueItem = null;
   }
 
   /// Clears the live recovery attempt count, its timestamp, and any held
@@ -2839,12 +2841,19 @@ class PlaybackManager implements AudioOwnable {
     // and recover when we can actually re-resolve, otherwise let the failure
     // surface.
     if (kind == 'unsupported_container' || kind == 'unsupported_video') {
-      if (!canReResolve()) {
+      // One re-resolve per item. A source the server can't transcode, such as
+      // an IPTV stream, comes back as the same direct play and fails the same
+      // way, which looped for as long as the player stayed open.
+      final alreadyTried =
+          queueItem != null &&
+          identical(queueItem, _containerRecoveryAttemptedQueueItem);
+      if (!canReResolve() || alreadyTried) {
         if (kind == 'unsupported_video' && !_streamRecoveryInFlight) {
           await _stopForUnsupportedVideo();
         }
         return;
       }
+      _containerRecoveryAttemptedQueueItem = queueItem;
       _suppressNextGenericBackendError = true;
       await recoverViaTranscode();
       return;
@@ -3086,6 +3095,7 @@ class PlaybackManager implements AudioOwnable {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     _videoDecoderRecoveryAttemptedQueueItem = null;
+    _containerRecoveryAttemptedQueueItem = null;
     await _playCurrentItem(
       startPosition: startPosition,
       enableDirectPlay: enableDirectPlay,

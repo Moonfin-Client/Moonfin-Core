@@ -762,6 +762,36 @@ void main() {
     }
   });
 
+  test('a container error on a source with no transcode recovers once',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'iptv', 'Type': 'TvChannel'},
+      ]);
+
+      // An IPTV source answers the transcode request with the same direct
+      // stream. The first failure gets the one re-resolve, the next ones get
+      // none.
+      for (var i = 0; i < 3; i++) {
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'unsupported_container',
+        });
+        await pumpEventQueue(times: 10);
+      }
+
+      expect(resolver.calls, 2);
+    } finally {
+      manager.dispose();
+    }
+  });
+
   test('the veto chain runs after a transcode recovery', () async {
     final backend = _TestBackend();
     final resolver = _TestResolver()
