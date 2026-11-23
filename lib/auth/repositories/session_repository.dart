@@ -27,7 +27,7 @@ import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
-    show SiloMediaServerClient, SiloUsersApi, siloAccessChangedEvent;
+    show SiloUsersApi, siloAccessChangedEvent;
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/carplay_service.dart';
@@ -130,9 +130,9 @@ class SessionRepository {
   SessionState _state = SessionState.ready;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
 
-  /// Silo's per-session control lane, while signed in to a Silo server.
+  /// Silo's per-session control lane, for a Silo session playing from any
+  /// server. Made at the first sign-in.
   SiloPlaybackControlSocket? _siloPlaybackControl;
-  SiloMediaServerClient? _siloPlaybackControlClient;
   RemoteSearchSession? _remoteSearch;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
   StreamSubscription<ServerWebSocketMessage>? _accessChangedSubscription;
@@ -372,7 +372,7 @@ class SessionRepository {
       _socketHandler.connectTo(client);
     }
     _bindRemoteCommandHandling();
-    _bindSiloPlaybackControl(client);
+    _bindSiloPlaybackControl();
     _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
     _bindAccessChanges(client);
@@ -871,9 +871,13 @@ class SessionRepository {
 
     _remoteCommandSubscription?.cancel();
     _remoteCommandSubscription = null;
-    _siloPlaybackControl?.dispose();
-    _siloPlaybackControl = null;
-    _siloPlaybackControlClient = null;
+    // The lane outlives the sign-in: only a session on the server signed
+    // out of loses it (playback has stopped by now anyway).
+    final signedOut = serverId == null
+        ? null
+        : _clientFactory.getClientIfExists(serverId);
+    final signedOutSilo = signedOut == null ? null : siloClientOf(signedOut);
+    if (signedOutSilo != null) _siloPlaybackControl?.forget(signedOutSilo);
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
     _accessChangedSubscription?.cancel();
@@ -956,19 +960,11 @@ class SessionRepository {
 
   /// Silo sends an administrator's message, pause, resume and stop on a lane
   /// of the playing session rather than on the events socket. It runs through
-  /// the same handling as a Jellyfin remote. Not tied to the events socket's
-  /// idle rules: it is open only while a Silo session plays.
-  void _bindSiloPlaybackControl(MediaServerClient client) {
-    final silo = siloClientOf(client);
-    // The same login again (a re-pin of the active account) keeps the lane
-    // rather than reconnecting it.
-    if (silo != null && identical(silo, _siloPlaybackControlClient)) return;
-    _siloPlaybackControl?.dispose();
-    _siloPlaybackControl = null;
-    _siloPlaybackControlClient = silo;
-    if (silo == null) return;
-    _siloPlaybackControl = SiloPlaybackControlSocket.forClient(
-      silo,
+  /// the same handling as a Jellyfin remote. Not tied to the events socket or
+  /// to the signed-in server: it is open only while a Silo session plays, on
+  /// the server that session is on, so switching servers mid-movie keeps it.
+  void _bindSiloPlaybackControl() {
+    _siloPlaybackControl ??= SiloPlaybackControlSocket.forApp(
       handle: _handleRemoteCommand,
       playedHere: (sessionId) =>
           GetIt.instance.isRegistered<PlaybackManager>() &&

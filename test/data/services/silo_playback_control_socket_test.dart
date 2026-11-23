@@ -93,16 +93,32 @@ DioException _refused(int status) => DioException(
   ),
 );
 
-const _playing = SiloPlaybackLifecycle(
-  sessionId: 's1',
+/// A server's client, as the lifecycle names it.
+class _Server extends Fake implements MediaServerClient {
+  _Server(this.name);
+
+  final String name;
+}
+
+final _serverA = _Server('a');
+final _serverB = _Server('b');
+
+/// A client that isn't Silo's: no endpoint.
+final _notSilo = _Server('jellyfin');
+
+SiloPlaybackLifecycle _change(
+  MediaServerClient client, {
+  String session = 's1',
+  bool playing = true,
+}) => SiloPlaybackLifecycle(
+  client: client,
+  sessionId: session,
   installationId: 'inst',
-  playing: true,
+  playing: playing,
 );
-const _ended = SiloPlaybackLifecycle(
-  sessionId: 's1',
-  installationId: 'inst',
-  playing: false,
-);
+
+final _playing = _change(_serverA);
+final _ended = _change(_serverA, playing: false);
 
 Future<void> _until(bool Function() done) async {
   final deadline = DateTime.now().add(const Duration(seconds: 5));
@@ -119,6 +135,7 @@ void main() {
   late Future<void> Function(ServerWebSocketMessage) handler;
   late bool usable;
   late List<String> ticketsFor;
+  late List<String> ticketServers;
   late Object? ticketError;
   late SiloPlaybackControlSocket socket;
   late bool playedHere;
@@ -127,18 +144,27 @@ void main() {
       SiloPlaybackControlSocket(
         lifecycle: lifecycle.stream,
         playingNow: playingNow,
-
-        capabilities: () async =>
-            SiloPlaybackControlCapabilities(available: usable, allowed: true),
-        ticket: (sessionId, installationId) async {
-          ticketsFor.add('$sessionId/$installationId');
-          final error = ticketError;
-          if (error != null) throw error;
-          return _ticket(ticketsFor.length);
+        endpointFor: (change) {
+          final server = change.client as _Server;
+          if (identical(server, _notSilo)) return null;
+          return SiloControlEndpoint(
+            server: server,
+            capabilities: () async => SiloPlaybackControlCapabilities(
+              available: usable,
+              allowed: true,
+            ),
+            ticket: (sessionId, installationId) async {
+              ticketsFor.add('$sessionId/$installationId');
+              ticketServers.add(server.name);
+              final error = ticketError;
+              if (error != null) throw error;
+              return _ticket(ticketsFor.length);
+            },
+            uri: lane.uri,
+            clientVersion: '1.2.3',
+          );
         },
-        uri: lane.uri,
         handle: (message) => handler(message),
-        clientVersion: '1.2.3',
         playedHere: (_) => playedHere,
         closeGrace: const Duration(seconds: 2),
         retryDelay: (_) => const Duration(milliseconds: 20),
@@ -152,6 +178,7 @@ void main() {
     handler = (message) async => handled.add(message);
     usable = true;
     ticketsFor = [];
+    ticketServers = [];
     ticketError = null;
     playedHere = true;
     socket = build();
@@ -290,6 +317,55 @@ void main() {
     lifecycle.add(_ended);
     await _until(() => lane.sockets.single.closeCode != null);
     expect(socket.connected, isFalse);
+  });
+
+  test('a session on another server opens its lane on that server, '
+      'and lets the first one go', () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    // Played from a second server mid-session (not the signed-in one).
+    lifecycle.add(_change(_serverB, session: 's2'));
+    final hello = await lane.next(
+      (f) => f['type'] == 'hello' && f['session_id'] == 's2',
+    );
+    expect(hello['_on'], 1);
+    expect(ticketServers, ['a', 'b']);
+    await _until(() => lane.sockets.first.closeCode != null);
+
+    // The same session id on the other server is another session.
+    lifecycle.add(_change(_serverA, session: 's2', playing: false));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(socket.connected, isTrue);
+
+    lane.command('pause', session: 's2');
+    await lane.next((f) => f['type'] == 'result');
+    expect(handled.single, isA<PlaystateMessage>());
+
+    lifecycle.add(_change(_serverB, session: 's2', playing: false));
+    await _until(() => lane.sockets.last.closeCode != null);
+    expect(socket.connected, isFalse);
+  });
+
+  test('signing out of a server lets only its session\'s lane go', () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    socket.forget(_serverB);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(socket.connected, isTrue);
+
+    socket.forget(_serverA);
+    await _until(() => lane.sockets.single.closeCode != null);
+    expect(socket.sessionId, isNull);
+  });
+
+  test('a session on a server that isn\'t Silo gets no lane', () async {
+    lifecycle.add(_change(_notSilo));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(ticketsFor, isEmpty);
+    expect(socket.sessionId, isNull);
   });
 
   test('a server without the lane gets no ticket', () async {

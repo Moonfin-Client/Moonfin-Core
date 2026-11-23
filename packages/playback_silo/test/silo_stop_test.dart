@@ -62,12 +62,11 @@ void main() {
     test('a session that starts playing, then stops, says so', () async {
       final s = await _started(_stopped);
       final changes = <SiloPlaybackLifecycle>[];
-      final sub = SiloPlaybackSessions.of(
-        s.client,
-      ).lifecycle.listen(changes.add);
+      final sub = SiloPlaybackSessions.lifecycle.listen(changes.add);
 
       await s.service.onPlaybackStart(_item, s.stream);
-      expect(SiloPlaybackSessions.of(s.client).playingNow?.sessionId, _session);
+      expect(SiloPlaybackSessions.playingNow?.sessionId, _session);
+      expect(SiloPlaybackSessions.playingNow?.client, same(s.client));
       await s.service.onPlaybackStop(
         _item,
         s.stream,
@@ -78,8 +77,11 @@ void main() {
 
       expect(changes.map((c) => c.playing), [true, false]);
       expect(changes.map((c) => c.sessionId).toSet(), {_session});
+      // Each change names the client the session is on, so a session from
+      // a server other than the signed-in one is followed on its own server.
+      expect(changes.every((c) => identical(c.client, s.client)), isTrue);
       // A listener that starts after the end finds nothing playing.
-      expect(SiloPlaybackSessions.of(s.client).playingNow, isNull);
+      expect(SiloPlaybackSessions.playingNow, isNull);
       expect(
         changes.first.installationId,
         'c621caf1-c95a-4626-a74f-bee7cf6b1402',
@@ -92,9 +94,7 @@ void main() {
         SiloTestServer.problemRoute(404, 'not_found', 'Session not found.'),
       ];
       final changes = <SiloPlaybackLifecycle>[];
-      final sub = SiloPlaybackSessions.of(
-        s.client,
-      ).lifecycle.listen(changes.add);
+      final sub = SiloPlaybackSessions.lifecycle.listen(changes.add);
 
       await s.service.onPlaybackStart(_item, s.stream);
       await s.service.onPlaybackProgress(

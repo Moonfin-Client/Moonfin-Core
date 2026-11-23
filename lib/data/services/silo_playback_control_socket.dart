@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../auth/services/silo_token_storage.dart';
 import 'log_service.dart';
 
 /// Runs one remote command the way the server's own socket would have
@@ -18,6 +19,51 @@ import 'log_service.dart';
 typedef SiloControlCommandHandler = Future<void> Function(
   ServerWebSocketMessage message,
 );
+
+/// What the control socket needs from the server a session plays on.
+class SiloControlEndpoint {
+  const SiloControlEndpoint({
+    required this.server,
+    required this.capabilities,
+    required this.ticket,
+    required this.uri,
+    required this.clientVersion,
+    this.accessExpiresAt,
+  });
+
+  /// [silo]'s control API, ticket and token.
+  factory SiloControlEndpoint.of(SiloMediaServerClient silo) {
+    final api = silo.playbackControlApi;
+    return SiloControlEndpoint(
+      server: silo,
+      capabilities: api.capabilities,
+      ticket: (sessionId, installationId) =>
+          api.createTicket(sessionId, installationId: installationId),
+      uri: api.socketUri,
+      clientVersion: silo.deviceInfo.appVersion,
+      // A token Silo gave no lifetime reads as already expiring, which
+      // would renew every few seconds: Silo's own close covers it then.
+      accessExpiresAt: () {
+        final tokens = silo.session.tokens;
+        if (tokens == null || tokens.lifetime <= Duration.zero) return null;
+        return tokens.expiresAt;
+      },
+    );
+  }
+
+  /// The server's client, which [SiloPlaybackControlSocket.forget] names.
+  final Object server;
+  final Future<SiloPlaybackControlCapabilities> Function() capabilities;
+
+  /// A ticket for a session id and installation id.
+  final Future<SiloEventsTicket> Function(String, String) ticket;
+  final Uri Function(String) uri;
+  final String clientVersion;
+
+  /// When the access token expires. Silo ends a connection then, whatever
+  /// the ticket's limit, so the socket is renewed before it.
+  final DateTime? Function()? accessExpiresAt;
+}
 
 /// Silo's playback control socket
 /// (`/api/v2/playback/sessions/{id}/control/ws`, `silo.playback-control.v2`).
@@ -28,9 +74,11 @@ typedef SiloControlCommandHandler = Future<void> Function(
 /// a pause or stop ends the session once its deadline passes.
 ///
 /// The socket is extra, never something playback waits on. It opens after a
-/// Silo session starts playing ([SiloPlaybackSessions.lifecycle]), closes when
+/// Silo session starts playing ([SiloPlaybackSessions.lifecycle]), on the
+/// server that session is on (not necessarily the signed-in one), closes when
 /// the session ends, and a server without it, a refused ticket or a dropped
-/// connection only means these commands don't arrive.
+/// connection only means these commands don't arrive. One socket serves the
+/// app, since one session plays at a time.
 ///
 /// Each command is acknowledged at once, run through [SiloControlCommandHandler]
 /// (the same handling as a Jellyfin remote), and answered with a result:
@@ -40,13 +88,9 @@ class SiloPlaybackControlSocket {
   SiloPlaybackControlSocket({
     required Stream<SiloPlaybackLifecycle> lifecycle,
     SiloPlaybackLifecycle? playingNow,
-    required this._capabilities,
-    required this._ticket,
-    required this._uri,
+    required this._endpointFor,
     required this._handle,
-    required this._clientVersion,
     bool Function(String sessionId)? playedHere,
-    DateTime? Function()? accessExpiresAt,
     WebSocketChannel Function(Uri uri, List<String> protocols)? connect,
     @visibleForTesting this.connectTimeout = const Duration(seconds: 15),
     @visibleForTesting this.renewMargin = const Duration(minutes: 1),
@@ -55,47 +99,34 @@ class SiloPlaybackControlSocket {
     @visibleForTesting this.retryDelay,
     @visibleForTesting DateTime Function()? clock,
   }) : _playedHere = playedHere ?? ((_) => true),
-       _accessExpiresAt = accessExpiresAt ?? (() => null),
        _clock = clock ?? DateTime.now,
        _connect =
            connect ??
            ((uri, protocols) =>
                WebSocketChannel.connect(uri, protocols: protocols)) {
     _lifecycleSub = lifecycle.listen(_onLifecycle);
-    // A session already playing when the socket is made (a sign-in again
+    // A session already playing when the socket is made (a sign-in
     // mid-movie) doesn't announce itself again.
     if (playingNow != null) _onLifecycle(playingNow);
   }
 
-  /// The socket for [silo]'s playback sessions. [playedHere] says whether
-  /// the app's own player plays a session: one handed to an external player
-  /// gets no lane, so Silo keeps ending it on an admin stop as before.
-  factory SiloPlaybackControlSocket.forClient(
-    SiloMediaServerClient silo, {
+  /// The app's socket, following Silo sessions on every client. [playedHere]
+  /// says whether the app's own player plays a session: one handed to an
+  /// external player gets no lane, so Silo keeps ending it on an admin stop
+  /// as before.
+  factory SiloPlaybackControlSocket.forApp({
     required SiloControlCommandHandler handle,
     required bool Function(String sessionId) playedHere,
-  }) {
-    final api = silo.playbackControlApi;
-    final sessions = SiloPlaybackSessions.of(silo);
-    return SiloPlaybackControlSocket(
-      lifecycle: sessions.lifecycle,
-      playingNow: sessions.playingNow,
-      capabilities: api.capabilities,
-      ticket: (sessionId, installationId) =>
-          api.createTicket(sessionId, installationId: installationId),
-      uri: api.socketUri,
-      handle: handle,
-      clientVersion: silo.deviceInfo.appVersion,
-      playedHere: playedHere,
-      // A token Silo gave no lifetime reads as already expiring, which
-      // would renew every few seconds: Silo's own close covers it then.
-      accessExpiresAt: () {
-        final tokens = silo.session.tokens;
-        if (tokens == null || tokens.lifetime <= Duration.zero) return null;
-        return tokens.expiresAt;
-      },
-    );
-  }
+  }) => SiloPlaybackControlSocket(
+    lifecycle: SiloPlaybackSessions.lifecycle,
+    playingNow: SiloPlaybackSessions.playingNow,
+    endpointFor: (change) {
+      final silo = siloClientOf(change.client);
+      return silo == null ? null : SiloControlEndpoint.of(silo);
+    },
+    handle: handle,
+    playedHere: playedHere,
+  );
 
   /// The commands Moonfin runs, announced in the hello.
   static const supportedCommands = [
@@ -113,18 +144,10 @@ class SiloPlaybackControlSocket {
   /// commands don't arrive, so it isn't worth asking for tickets all movie.
   static const maxAttempts = 10;
 
-  final Future<SiloPlaybackControlCapabilities> Function() _capabilities;
-
-  /// A ticket for a session id and installation id.
-  final Future<SiloEventsTicket> Function(String, String) _ticket;
-  final Uri Function(String) _uri;
+  /// The server a session plays on, or null for a client that isn't Silo's.
+  final SiloControlEndpoint? Function(SiloPlaybackLifecycle) _endpointFor;
   final SiloControlCommandHandler _handle;
-  final String _clientVersion;
   final bool Function(String) _playedHere;
-
-  /// When the access token expires. Silo ends a connection then, whatever
-  /// the ticket's limit, so the socket is renewed before it.
-  final DateTime? Function() _accessExpiresAt;
   final DateTime Function() _clock;
   final WebSocketChannel Function(Uri, List<String>) _connect;
 
@@ -148,8 +171,10 @@ class SiloPlaybackControlSocket {
   final _logger = Logger();
   late final StreamSubscription<SiloPlaybackLifecycle> _lifecycleSub;
 
-  String? _sessionId;
-  String? _installationId;
+  /// The session the socket follows, and the server it is on.
+  SiloPlaybackLifecycle? _following;
+  SiloControlEndpoint? _endpoint;
+  String? get _sessionId => _following?.sessionId;
 
   /// Bumped whenever the session changes or the socket is closed, so work
   /// started for an earlier one stops when it comes back.
@@ -178,9 +203,11 @@ class SiloPlaybackControlSocket {
 
   void _onLifecycle(SiloPlaybackLifecycle change) {
     if (_disposed) return;
+    final following = _following;
+    final same = following != null && following.isSameSession(change);
     if (change.playing) {
       // A replan of the session playing now keeps its lane.
-      if (change.sessionId == _sessionId) {
+      if (same) {
         if (_gaveUp) {
           _gaveUp = false;
           _attempt = 0;
@@ -194,23 +221,26 @@ class SiloPlaybackControlSocket {
       }
       // A session handed to an external player leaves the lane alone.
       if (!_playedHere(change.sessionId)) return;
+      final endpoint = _endpointFor(change);
       _close();
-      _sessionId = change.sessionId;
-      _installationId = change.installationId;
+      if (endpoint == null) return;
+      _following = change;
+      _endpoint = endpoint;
       _attempt = 0;
       unawaited(_open(_generation));
-    } else if (change.sessionId == _sessionId) {
+    } else if (same) {
       _close();
     }
   }
 
   Future<void> _open(int generation) async {
-    final sessionId = _sessionId;
-    final installationId = _installationId;
+    final following = _following;
+    final endpoint = _endpoint;
     WebSocketChannel? opened;
     try {
-      if (sessionId == null || installationId == null) return;
-      final capabilities = await _capabilities();
+      if (following == null || endpoint == null) return;
+      final sessionId = following.sessionId;
+      final capabilities = await endpoint.capabilities();
       if (generation != _generation) return;
       if (!capabilities.usable) {
         // An older server, or one with the lane off: nothing to open, and
@@ -218,11 +248,14 @@ class SiloPlaybackControlSocket {
         return;
       }
 
-      final ticket = await _ticket(sessionId, installationId);
+      final ticket = await endpoint.ticket(
+        sessionId,
+        following.installationId,
+      );
       if (generation != _generation) return;
 
       final channel = opened = _connect(
-        _uri(sessionId),
+        endpoint.uri(sessionId),
         ticket.offeredProtocols,
       );
       await channel.ready.timeout(connectTimeout);
@@ -234,7 +267,7 @@ class SiloPlaybackControlSocket {
         jsonEncode({
           'type': 'hello',
           'session_id': sessionId,
-          'client': {'name': 'Moonfin', 'version': _clientVersion},
+          'client': {'name': 'Moonfin', 'version': endpoint.clientVersion},
           'capabilities': {'commands': supportedCommands},
         }),
       );
@@ -252,7 +285,7 @@ class SiloPlaybackControlSocket {
         if (identical(channel, _channel)) _attempt = 0;
       });
       _channelSub = channel.stream.listen(
-        (data) => _onFrame(data, channel, sessionId),
+        (data) => _onFrame(data, channel, sessionId, generation),
         onError: (Object error) => _dropped(generation, channel, error),
         onDone: () => _dropped(generation, channel),
       );
@@ -280,7 +313,7 @@ class SiloPlaybackControlSocket {
     _renewTimer = Timer(
       renewalDelay(
         maxConnection: maxConnection,
-        accessExpiresAt: _accessExpiresAt(),
+        accessExpiresAt: _endpoint?.accessExpiresAt?.call(),
         now: _clock(),
         margin: renewMargin,
       ),
@@ -360,7 +393,12 @@ class SiloPlaybackControlSocket {
     );
   }
 
-  void _onFrame(dynamic data, WebSocketChannel channel, String sessionId) {
+  void _onFrame(
+    dynamic data,
+    WebSocketChannel channel,
+    String sessionId,
+    int generation,
+  ) {
     if (data is! String) return;
     final Object? decoded;
     try {
@@ -372,7 +410,7 @@ class SiloPlaybackControlSocket {
     // A command for a session that is over (its connection still closing)
     // must not reach whatever plays now. One on the old connection of a
     // renewal is still this session's.
-    if (sessionId != _sessionId) return;
+    if (generation != _generation) return;
     if (decoded['type'] != 'command') return;
     final commandId = decoded['command_id'];
     if (commandId is! String || commandId.isEmpty) return;
@@ -383,6 +421,7 @@ class SiloPlaybackControlSocket {
     run =
         _run(
           channel,
+          generation,
           sessionId,
           commandId,
           name is String ? name : '',
@@ -397,6 +436,7 @@ class SiloPlaybackControlSocket {
 
   Future<void> _run(
     WebSocketChannel channel,
+    int generation,
     String sessionId,
     String commandId,
     String name,
@@ -406,7 +446,7 @@ class SiloPlaybackControlSocket {
       // Silo takes answers only from the connection holding the lane, which
       // after a renewal is the new one.
       final current = _channel;
-      final target = current != null && sessionId == _sessionId
+      final target = current != null && generation == _generation
           ? current
           : channel;
       try {
@@ -471,8 +511,8 @@ class SiloPlaybackControlSocket {
   /// Stops following the current session.
   void _close() {
     _generation++;
-    _sessionId = null;
-    _installationId = null;
+    _following = null;
+    _endpoint = null;
     _renewing = false;
     _gaveUp = false;
     _stableTimer?.cancel();
@@ -524,6 +564,12 @@ class SiloPlaybackControlSocket {
       level: error == null ? LogLevel.info : LogLevel.warning,
       error: error,
     );
+  }
+
+  /// Lets go of a session on [server] (its login signed out). A session on
+  /// another server keeps its lane.
+  void forget(Object server) {
+    if (identical(_endpoint?.server, server)) _close();
   }
 
   void dispose() {
