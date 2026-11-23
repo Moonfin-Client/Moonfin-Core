@@ -40,7 +40,7 @@ final class GamepadNavigationHostViewController: GCEventViewController {
 class AppDelegate: FlutterAppDelegate {
     private var nativeApplePlayerChannel: NativeApplePlayerChannel?
     private var aetherVideoChannel: AetherVideoChannel?
-    private var topShelfChannel: TopShelfChannel?
+    fileprivate var topShelfChannel: TopShelfChannel?
     private var previewChannel: AppleTvPreviewChannel?
     private var systemChannel: AppleTvSystemChannel?
     private var audioChannel: AppleTvAudioChannel?
@@ -129,6 +129,36 @@ class AppDelegate: FlutterAppDelegate {
         }
         nativeApplePlayerChannel?.handleGuideButton()
         return true
+    }
+}
+
+/// tvOS 27 won't launch an app built with its SDK unless it adopts the scene
+/// life cycle. FlutterSceneDelegate moves the window the app delegate built
+/// into the scene. URLs and user activities now arrive here instead of at the
+/// app delegate, so they're passed on to its handlers.
+class SceneDelegate: FlutterSceneDelegate {
+    private var appDelegate: AppDelegate? { UIApplication.shared.delegate as? AppDelegate }
+
+    override func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        super.scene(scene, willConnectTo: session, options: connectionOptions)
+        if let url = connectionOptions.urlContexts.first?.url {
+            appDelegate?.topShelfChannel?.deliverDeepLink(url, isLaunch: true)
+        }
+    }
+
+    override func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            _ = appDelegate?.application(UIApplication.shared, open: url)
+        }
+    }
+
+    override func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        _ = appDelegate?.application(
+            UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
     }
 }
 
