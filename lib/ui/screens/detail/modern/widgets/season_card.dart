@@ -4,6 +4,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/media_badge.dart';
+import '../../../../widgets/poster_badges.dart';
 import '../../../../widgets/seerr/seerr_status_dot.dart';
 
 /// Glassy season card with a subtle background image, title, episode count and a
@@ -44,6 +45,9 @@ class SeasonCard extends StatelessWidget {
   /// Count of unplayed episodes in this season, if partially watched or unwatched.
   final int? unplayedCount;
 
+  /// The season's id, to show its poster labels.
+  final String? posterBadgeItemId;
+
   const SeasonCard({
     super.key,
     required this.title,
@@ -63,6 +67,7 @@ class SeasonCard extends StatelessWidget {
     this.badge,
     this.isPlayed = false,
     this.unplayedCount,
+    this.posterBadgeItemId,
   });
 
   @override
@@ -139,11 +144,36 @@ class SeasonCard extends StatelessWidget {
               // Top left, dropped below the Seerr dot or banner when there is one so
               // the two stack rather than overlap. The watched badges sit top right,
               // under a banner too.
-              if (badge != null)
+              if (badge != null || posterBadgeItemId != null)
                 Positioned(
                   top: seerrStyle == SeerrBadgeStyle.badge ? 30 : bannerInset + 6,
                   left: 6,
-                  child: badge!,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ?badge,
+                      if (posterBadgeItemId != null)
+                        PosterBadges(
+                          itemId: posterBadgeItemId!,
+                          scale: 0.85,
+                          padding: badge != null
+                              ? const EdgeInsets.only(top: 4)
+                              : EdgeInsets.zero,
+                        ),
+                    ],
+                  ),
+                ),
+              // The other corners, clear of the watched badge and the episode count.
+              if (posterBadgeItemId != null)
+                Positioned.fill(
+                  child: PosterBadgeCorners(
+                    itemId: posterBadgeItemId!,
+                    scale: 0.85,
+                    top: bannerInset +
+                        (isPlayed || (unplayedCount ?? 0) > 0 ? 34 : 6),
+                    bottom: isFallbackImage ? 40 : 26,
+                  ),
                 ),
               if (isPlayed)
                 Positioned(

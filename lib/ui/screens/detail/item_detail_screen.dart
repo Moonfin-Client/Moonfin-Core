@@ -15637,10 +15637,32 @@ class DetailSeasonsRow extends StatelessWidget {
                     ? 30
                     : (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) + 6,
                 left: 6,
-                child: AnimeSeasonAudioBadge(
-                  seriesId: season.seriesId,
-                  seasonId: season.id,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimeSeasonAudioBadge(
+                      seriesId: season.seriesId,
+                      seasonId: season.id,
+                      scale: 0.85,
+                    ),
+                    PosterBadges(
+                      itemId: season.id,
+                      scale: 0.85,
+                      padding: const EdgeInsets.only(top: 4),
+                    ),
+                  ],
+                ),
+              ),
+              // The other corners, clear of the Seerr banner and the watched badge.
+              Positioned.fill(
+                child: PosterBadgeCorners(
+                  itemId: season.id,
                   scale: 0.85,
+                  top: (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) +
+                      (season.isPlayed || (season.unplayedItemCount ?? 0) > 0
+                          ? 34
+                          : 6),
                 ),
               ),
             ],

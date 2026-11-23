@@ -1394,6 +1394,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       );
 
       return SeasonCard(
+        posterBadgeItemId: seerrOnlyVm != null ? null : season.id,
         seerrStatus: seerrSeasonStatus[season.indexNumber],
         badge: AnimeSeasonAudioBadge(
           seriesId: season.seriesId,
