@@ -69,6 +69,10 @@
   -->
   <key>FLTAssetsPath</key>
   <string>flutter_assets</string>
+  <!-- Keep the engine's built-in deep linking off so raw moonfin:// URIs
+       only reach DeepLinkService. -->
+  <key>FlutterDeepLinkingEnabled</key>
+  <false/>
   <key>UIApplicationSceneManifest</key>
   <dict>
     <key>UIApplicationSupportsMultipleScenes</key>

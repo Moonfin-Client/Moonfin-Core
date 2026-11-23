@@ -101,10 +101,6 @@ class AppDelegate: FlutterAppDelegate {
             textures: flutterViewController,
             rootViewController: flutterViewController)
 
-        if let launchUrl = launchOptions?[.url] as? URL {
-            topShelfChannel?.deliverDeepLink(launchUrl, isLaunch: true)
-        }
-
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
@@ -133,9 +129,9 @@ class AppDelegate: FlutterAppDelegate {
 }
 
 /// tvOS 27 won't launch an app built with its SDK unless it adopts the scene
-/// life cycle. FlutterSceneDelegate moves the window the app delegate built
-/// into the scene. URLs and user activities now arrive here instead of at the
-/// app delegate, so they're passed on to its handlers.
+/// life cycle. FlutterSceneDelegate moves the app delegate's root view
+/// controller into a window on the scene. URLs and user activities now arrive
+/// here instead of at the app delegate, so they're passed on to its handlers.
 class SceneDelegate: FlutterSceneDelegate {
     private var appDelegate: AppDelegate? { UIApplication.shared.delegate as? AppDelegate }
 
