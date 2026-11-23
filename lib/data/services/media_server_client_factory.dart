@@ -17,12 +17,21 @@ import 'storage_path_service.dart';
 
 class MediaServerClientFactory {
   final DeviceInfo deviceInfo;
+
+  /// Builds the local IPTV catalog client (wired in the DI layer so this
+  /// factory stays free of the IPTV package's database types).
+  final MediaServerClient Function()? iptvClientBuilder;
+
   final Map<String, MediaServerClient> _clients = {};
 
   /// Called when a Jellyfin server answers a request with 403.
   final void Function()? onForbidden;
 
-  MediaServerClientFactory({required this.deviceInfo, this.onForbidden});
+  MediaServerClientFactory({
+    required this.deviceInfo,
+    this.onForbidden,
+    this.iptvClientBuilder,
+  });
 
   Map<String, MediaServerClient> get clients => Map.unmodifiable(_clients);
 
@@ -102,8 +111,10 @@ class MediaServerClientFactory {
     final raw = _createRawClient(serverType: serverType, baseUrl: baseUrl);
     final getIt = GetIt.instance;
     // Background isolates skip the offline stack, so there's nothing to route
-    // to and the raw client is all they need.
-    if (!getIt.isRegistered<OfflineCatalog>() ||
+    // to and the raw client is all they need. The IPTV catalog is local and
+    // never routes to the downloads catalog either.
+    if (serverType == ServerType.iptv ||
+        !getIt.isRegistered<OfflineCatalog>() ||
         !getIt.isRegistered<StoragePathService>() ||
         !getIt.isRegistered<PendingRatingStore>()) {
       return raw;
@@ -154,6 +165,12 @@ class MediaServerClientFactory {
           deviceInfo: deviceInfo,
           platform: _siloDevicePlatform(),
         );
+      case ServerType.iptv:
+        final builder = iptvClientBuilder;
+        if (builder == null) {
+          throw StateError('IPTV client builder not configured');
+        }
+        return builder();
     }
   }
 

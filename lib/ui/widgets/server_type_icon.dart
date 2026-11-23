@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
@@ -17,15 +18,24 @@ class ServerTypeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColorScheme.onSurface;
-    return CustomPaint(
-      size: Size.square(size),
-      painter: switch (serverType) {
-        ServerType.jellyfin => _JellyfinLogoPainter(effectiveColor),
-        ServerType.emby => _EmbyLogoPainter(effectiveColor),
-        ServerType.plex => _PlexLogoPainter(effectiveColor),
-        ServerType.silo => _SiloGlyphPainter(effectiveColor),
-      },
-    );
+    final painter = switch (serverType) {
+      ServerType.jellyfin => _JellyfinLogoPainter(effectiveColor),
+      ServerType.emby => _EmbyLogoPainter(effectiveColor),
+      ServerType.plex => _PlexLogoPainter(effectiveColor),
+      ServerType.silo => _SiloGlyphPainter(effectiveColor),
+      ServerType.iptv => null,
+    };
+    if (painter == null) {
+      // IPTV is served by Moonfin itself, so it wears the Moonfin mark, tinted
+      // like the other server icons.
+      return SvgPicture.asset(
+        'assets/icons/moonfin_logo.svg',
+        width: size,
+        height: size,
+        colorFilter: ColorFilter.mode(effectiveColor, BlendMode.srcIn),
+      );
+    }
+    return CustomPaint(size: Size.square(size), painter: painter);
   }
 }
 

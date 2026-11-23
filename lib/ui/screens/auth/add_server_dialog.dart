@@ -90,13 +90,10 @@ const _warningText = Color(0xFFFFD27A);
     tile: const Color(0x245EC7BC),
     glyph: const Color(0xFF5EC7BC),
   ),
-};
-
-String _brand(ServerType type) => switch (type) {
-  ServerType.jellyfin => 'Jellyfin',
-  ServerType.emby => 'Emby',
-  ServerType.plex => 'Plex',
-  ServerType.silo => 'Silo',
+  ServerType.iptv => (
+    tile: const Color(0x247E57C2),
+    glyph: const Color(0xFFB39DDB),
+  ),
 };
 
 ButtonStyle _primaryStyle({bool compact = false}) {
@@ -155,23 +152,113 @@ ButtonStyle _noticeButtonStyle() {
   );
 }
 
-class AddServerButton extends StatefulWidget {
+class AddServerButton extends StatelessWidget {
   const AddServerButton({super.key, required this.onPressed, this.focusNode});
 
   final VoidCallback? onPressed;
   final FocusNode? focusNode;
 
   @override
-  State<AddServerButton> createState() => _AddServerButtonState();
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final accent = AppColorScheme.accent;
+    return _SetupCard(
+      onPressed: onPressed,
+      focusNode: focusNode,
+      primary: true,
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: accent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withValues(alpha: 0.35),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Icon(Icons.add_rounded, color: _onAccent),
+      ),
+      title: l10n.addServer,
+      subtitle: l10n.addServerButtonSubtitle,
+      trailing: [
+        for (final type in ServerType.values)
+          // IPTV is set up on its own screen.
+          if (type != ServerType.iptv)
+            ServerTypeIcon(serverType: type, size: 16, color: _fg(0.5)),
+      ],
+    );
+  }
 }
 
-class _AddServerButtonState extends State<AddServerButton> {
+/// Opens the IPTV playlist setup. It sits under [AddServerButton] with the
+/// same shape and a quieter fill, so adding a server stays the main action.
+class AddIptvButton extends StatelessWidget {
+  const AddIptvButton({super.key, required this.onPressed});
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final tint = _serverTint(ServerType.iptv);
+    return _SetupCard(
+      onPressed: onPressed,
+      primary: false,
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: tint.tile,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.center,
+        child: ServerTypeIcon(
+          serverType: ServerType.iptv,
+          size: 22,
+          color: tint.glyph,
+        ),
+      ),
+      title: l10n.iptvTitle,
+      subtitle: l10n.iptvButtonSubtitle,
+    );
+  }
+}
+
+class _SetupCard extends StatefulWidget {
+  const _SetupCard({
+    required this.onPressed,
+    required this.primary,
+    required this.leading,
+    required this.title,
+    required this.subtitle,
+    this.focusNode,
+    this.trailing = const [],
+  });
+
+  final VoidCallback? onPressed;
+  final bool primary;
+  final Widget leading;
+  final String title;
+  final String subtitle;
+  final FocusNode? focusNode;
+
+  /// Small marks after the text, dropped when the card is too narrow.
+  final List<Widget> trailing;
+
+  @override
+  State<_SetupCard> createState() => _SetupCardState();
+}
+
+class _SetupCardState extends State<_SetupCard> {
   bool _hovered = false;
   bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final accent = AppColorScheme.accent;
     final enabled = widget.onPressed != null;
     final lit = enabled && (_hovered || _focused);
@@ -181,10 +268,14 @@ class _AddServerButtonState extends State<AddServerButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
         decoration: BoxDecoration(
-          color: accent.withValues(alpha: lit ? 0.18 : 0.10),
+          color: widget.primary
+              ? accent.withValues(alpha: lit ? 0.18 : 0.10)
+              : _fg(lit ? 0.08 : 0.04),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: accent.withValues(alpha: lit ? 0.85 : 0.45),
+            color: widget.primary || lit
+                ? accent.withValues(alpha: lit ? 0.85 : 0.45)
+                : _fg(0.14),
           ),
         ),
         // A ring drawn as a shadow sits under the see-through fill and lights
@@ -210,22 +301,7 @@ class _AddServerButtonState extends State<AddServerButton> {
               child: LayoutBuilder(
                 builder: (context, constraints) => Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: accent,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: accent.withValues(alpha: 0.35),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Icon(Icons.add_rounded, color: _onAccent),
-                    ),
+                    widget.leading,
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
@@ -233,7 +309,7 @@ class _AddServerButtonState extends State<AddServerButton> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            l10n.addServer,
+                            widget.title,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -242,7 +318,7 @@ class _AddServerButtonState extends State<AddServerButton> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            l10n.addServerButtonSubtitle,
+                            widget.subtitle,
                             style: TextStyle(
                               fontSize: 13,
                               height: 1.3,
@@ -253,14 +329,10 @@ class _AddServerButtonState extends State<AddServerButton> {
                       ),
                     ),
                     if (constraints.maxWidth >= 360)
-                      for (final type in ServerType.values)
+                      for (final mark in widget.trailing)
                         Padding(
                           padding: const EdgeInsetsDirectional.only(start: 10),
-                          child: ServerTypeIcon(
-                            serverType: type,
-                            size: 16,
-                            color: _fg(0.5),
-                          ),
+                          child: mark,
                         ),
                   ],
                 ),
@@ -1054,7 +1126,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
                       spacing: 6,
                       runSpacing: 6,
                       children: [
-                        _Chip(_brand(server.serverType)),
+                        _Chip(server.serverType.productName),
                         if (server.version.isNotEmpty)
                           _Chip('${l10n.version} ${server.version}'),
                       ],

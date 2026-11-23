@@ -1435,6 +1435,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  playback_iptv:
+    dependency: "direct main"
+    description:
+      path: "packages/playback_iptv"
+      relative: true
+    source: path
+    version: "0.1.0"
   playback_jellyfin:
     dependency: "direct main"
     description:
@@ -1690,6 +1697,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/server_emby"
+      relative: true
+    source: path
+    version: "0.1.0"
+  server_iptv:
+    dependency: "direct main"
+    description:
+      path: "packages/server_iptv"
       relative: true
     source: path
     version: "0.1.0"
@@ -1992,7 +2006,7 @@ packages:
     source: hosted
     version: "0.7.12"
   timezone:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: timezone
       sha256: "9f4e5a1a0e4fef7dd3424842c0575db01bfb7a11730e8d55753fcd5c5c98767b"

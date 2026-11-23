@@ -38,8 +38,33 @@ abstract class ServerWebSocketClient {
       ServerType.emby => EmbyWebSocketClient(client),
       ServerType.plex => PlexWebSocketClient(client),
       ServerType.silo => SiloEventsSocketClient(client),
+      // The local IPTV backend has no server socket, so sessions stay silent.
+      ServerType.iptv => NoOpWebSocketClient(),
     };
   }
+}
+
+class NoOpWebSocketClient implements ServerWebSocketClient {
+  @override
+  Stream<ServerWebSocketMessage> get messages => const Stream.empty();
+
+  @override
+  Stream<void> get connections => const Stream.empty();
+
+  @override
+  Future<void> connect() async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  void retryNow() {}
+
+  @override
+  void send(String messageType, [Object? data]) {}
+
+  @override
+  void dispose() {}
 }
 
 /// The reconnect, keep alive and logging machinery every server type shares.

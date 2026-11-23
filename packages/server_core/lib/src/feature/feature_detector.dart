@@ -19,6 +19,7 @@ class FeatureDetector {
   bool get _isEmby => serverType == ServerType.emby;
   bool get _isSilo => serverType == ServerType.silo;
   bool get _isPlex => serverType == ServerType.plex;
+  bool get _isIptv => serverType == ServerType.iptv;
 
   bool get supportsSyncPlay => _isJellyfin;
   /// Sprite-sheet seek previews (Jellyfin's `Trickplay`). Silo's are read
@@ -49,8 +50,9 @@ class FeatureDetector {
 
   /// Seerr requests and discovery. Moonfin reaches Seerr through the Moonfin
   /// plugin's proxy (`/Moonfin/Seerr/*`) on Jellyfin and Emby. On Silo the
-  /// same screens use Silo's own requests (`/api/v2/requests`).
-  bool get supportsJellyseerr => true;
+  /// same screens use Silo's own requests (`/api/v2/requests`). The local IPTV
+  /// catalog has no Seerr.
+  bool get supportsJellyseerr => !_isIptv;
 
   /// A version that doesn't parse counts as recent enough, since the
   /// alternative is hiding a feature on every server that reports something
@@ -71,7 +73,8 @@ class FeatureDetector {
   bool get supportsMusic => !_isSilo;
 
   /// Playlists. Silo has none. Its personal collections are the nearest thing.
-  bool get supportsPlaylists => !_isSilo;
+  /// The local IPTV catalog has none either.
+  bool get supportsPlaylists => !_isSilo && !_isIptv;
 
   /// Instant mix. Silo has no equivalent.
   bool get supportsInstantMix => !_isSilo;
@@ -98,7 +101,8 @@ class FeatureDetector {
   /// Remote control: listing the account's other sessions and sending them
   /// play, pause and navigation commands (the Jellyfin/Emby Sessions API).
   /// Silo has no equivalent, and its Watch Together is a separate protocol.
-  bool get supportsRemoteControl => !_isSilo;
+  /// The local IPTV catalog has no sessions to control.
+  bool get supportsRemoteControl => !_isSilo && !_isIptv;
 
   /// Hiding a library from the Latest rows (`UserConfiguration`'s
   /// `LatestItemsExcludes`, "Show in Latest Media" in the library settings).
@@ -107,16 +111,16 @@ class FeatureDetector {
   bool get supportsLatestItemsExcludes => !_isSilo;
 
   /// Personal likes and dislikes. Plex has none, and its own rating already
-  /// stands in for favorites.
-  bool get supportsPersonalRatings => !_isPlex;
+  /// stands in for favorites. The local IPTV catalog has no server to keep them.
+  bool get supportsPersonalRatings => !_isPlex && !_isIptv;
 
   /// Favoriting people. Plex can only favorite media, and Silo keeps no
   /// person favorites.
   bool get supportsPersonFavorites => !_isPlex && !_isSilo;
 
-  /// Trailer links on items. Plex keeps none, so a trailer is searched for on
-  /// YouTube instead.
-  bool get supportsRemoteTrailers => !_isPlex;
+  /// Trailer links on items. Plex and IPTV providers keep none, so a trailer
+  /// is searched for on YouTube instead.
+  bool get supportsRemoteTrailers => !_isPlex && !_isIptv;
 
   /// Downloading a transcoded copy. Plex's transcoder makes streams rather
   /// than files, so Plex only downloads originals.
@@ -161,8 +165,9 @@ class FeatureDetector {
 
   /// Measuring bandwidth against the server for auto bitrate. Silo has no
   /// bandwidth test route, and its playback start applies the server's own
-  /// policy to the client's bandwidth.
-  bool get supportsBandwidthTest => !_isSilo;
+  /// policy to the client's bandwidth. IPTV streams come straight from the
+  /// provider, with nothing to measure against.
+  bool get supportsBandwidthTest => !_isSilo && !_isIptv;
 
   /// Reporting reading progress inside an EPUB to the server.
   bool get supportsBookProgressReports => _isJellyfin;

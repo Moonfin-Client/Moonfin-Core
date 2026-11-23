@@ -1,5 +1,5 @@
 import 'package:punycoder/punycoder.dart';
-import 'package:server_core/server_core.dart' show MediaServerClient;
+import 'package:server_core/server_core.dart' show MediaServerClient, ServerType;
 
 final _schemeRegex = RegExp(r'^[a-zA-Z][a-zA-Z0-9+.-]*://');
 
@@ -161,6 +161,8 @@ String? tokenAuthedUrl(MediaServerClient client, String? url) {
       lower.contains('x-emby-token=')) {
     return url;
   }
+  // The IPTV profile's token is a local sentinel that providers don't know.
+  if (client.serverType == ServerType.iptv) return url;
   final sep = url.contains('?') ? '&' : '?';
   return '$url$sep${client.serverType.tokenQueryParam}='
       '${Uri.encodeQueryComponent(token)}';

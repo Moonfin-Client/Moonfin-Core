@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:playback_emby/playback_emby.dart';
+import 'package:playback_iptv/playback_iptv.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
@@ -48,6 +49,7 @@ class AirPlayProvider
         environment: () =>
             siloReceiverEnvironment('airplay', manufacturer: 'Apple'),
       ).createStreamResolver(),
+      ServerType.iptv => IptvPlugin(client).createStreamResolver(),
     };
   }
 
@@ -115,8 +117,10 @@ class AirPlayProvider
     final token = client.accessToken;
     // Silo's resolver puts the token in the URLs that take one, and only on
     // its own origin. Appending it here would repeat it, or hand it to a
-    // proxy node.
+    // proxy node. The IPTV profile's token is a local sentinel that
+    // providers don't know.
     if (!castNeedsSessionReports(client) &&
+        client.serverType != ServerType.iptv &&
         token != null &&
         token.isNotEmpty &&
         !streamUrl.toLowerCase().contains('api_key=') &&

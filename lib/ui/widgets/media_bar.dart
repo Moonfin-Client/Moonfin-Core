@@ -17,6 +17,7 @@ import 'package:moonfin_native_video/moonfin_native_video.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:playback_emby/playback_emby.dart';
+import 'package:playback_iptv/playback_iptv.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
@@ -1847,6 +1848,7 @@ class _MediaBarState extends State<MediaBar>
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
       ServerType.plex => PlexMediaStreamResolver(client),
       ServerType.silo => siloPluginFor(client).createStreamResolver(),
+      ServerType.iptv => IptvPlugin(client).createStreamResolver(),
     };
   }
 

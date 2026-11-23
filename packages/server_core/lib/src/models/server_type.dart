@@ -2,7 +2,11 @@ enum ServerType {
   jellyfin,
   emby,
   plex,
-  silo;
+  silo,
+
+  /// Local IPTV backend: Xtream Codes / M3U playlists served
+  /// from an on-device catalog rather than a remote media server.
+  iptv;
 
   /// The query parameter that carries the access token on media URLs.
   ///
@@ -16,6 +20,8 @@ enum ServerType {
     ServerType.emby => 'api_key',
     ServerType.plex => 'X-Plex-Token',
     ServerType.silo => 'token',
+    // IPTV has no server to sign in to, so there's no real token to carry.
+    ServerType.iptv => 'ApiKey',
   };
 
   /// Emby has no Drop subtitle method and rejects a stream request naming it.
@@ -31,6 +37,7 @@ enum ServerType {
     ServerType.emby => 'Emby',
     ServerType.plex => 'Plex',
     ServerType.silo => 'Silo',
+    ServerType.iptv => 'IPTV',
   };
 
   /// Classifies a server from its product name, then its version.

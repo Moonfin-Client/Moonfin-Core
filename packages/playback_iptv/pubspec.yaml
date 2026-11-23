@@ -1,0 +1,13 @@
+name: playback_iptv
+description: IPTV playback plugin - direct stream resolution and local session reporting.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  playback_core:
+    path: ../playback_core
+  server_core:
+    path: ../server_core

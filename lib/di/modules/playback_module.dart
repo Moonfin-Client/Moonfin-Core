@@ -6,6 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_emby/playback_emby.dart';
 import 'package:playback_plex/playback_plex.dart';
+import 'package:playback_iptv/playback_iptv.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
@@ -803,6 +804,10 @@ void setActiveStreamResolver(MediaServerClient client) {
     ),
     ServerType.silo => () {
       final p = siloPluginFor(client, environment: siloPlaybackEnvironment);
+      return (p.createStreamResolver(), p.createPlaySessionService());
+    }(),
+    ServerType.iptv => () {
+      final p = IptvPlugin(client);
       return (p.createStreamResolver(), p.createPlaySessionService());
     }(),
   };

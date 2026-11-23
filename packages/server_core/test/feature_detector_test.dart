@@ -200,4 +200,13 @@ void main() {
       });
     }
   });
+
+  test('IPTV turns off what a local catalog has no backend for', () {
+    final f = _for(ServerType.iptv);
+    expect(f.supportsPlaylists, isFalse);
+    expect(f.supportsJellyseerr, isFalse);
+    expect(f.supportsRemoteControl, isFalse);
+    expect(f.supportsPersonalRatings, isFalse);
+    expect(f.supportsRemoteTrailers, isFalse);
+  });
 }

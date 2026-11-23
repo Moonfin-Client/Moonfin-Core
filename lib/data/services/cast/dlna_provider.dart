@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:playback_emby/playback_emby.dart';
+import 'package:playback_iptv/playback_iptv.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_plex/playback_plex.dart';
 import 'package:server_core/server_core.dart';
@@ -202,6 +203,7 @@ class DlnaProvider
         client,
         environment: () => siloReceiverEnvironment('dlna'),
       ).createStreamResolver(),
+      ServerType.iptv => IptvPlugin(client).createStreamResolver(),
     };
   }
 
