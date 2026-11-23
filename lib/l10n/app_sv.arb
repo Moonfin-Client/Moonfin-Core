@@ -13052,5 +13052,9 @@
     "librarySortMyRating": "Mitt betyg",
     "@librarySortMyRating": {
         "description": "Sort option: by the viewer's own like or dislike"
+    },
+    "years": "Årtal",
+    "@years": {
+        "description": "Heading for the release year filters in the library filter picker."
     }
 }
