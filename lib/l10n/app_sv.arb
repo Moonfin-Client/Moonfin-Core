@@ -761,7 +761,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Ospelad",
+    "unwatched": "Inte spelad",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
