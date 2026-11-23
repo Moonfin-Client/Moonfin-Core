@@ -1618,43 +1618,49 @@ class SessionRepository {
   /// doesn't, so a message the sender saw go through always lands somewhere.
   Future<void> _showRemoteMessage(String text, String? header) async {
     // The Apple native player sits above every Flutter page, so while it is
-    // on screen a message drawn by Flutter would be hidden behind the video.
-    // In the background a notification is still the way to reach the viewer.
-    final foreground = switch (WidgetsBinding.instance.lifecycleState) {
+    // on screen a message drawn by Flutter would be hidden behind the video:
+    // the player's own alert shows it. In the background a notification is
+    // tried first, and the alert waits for the viewer where there is none
+    // (tvOS has no notifications).
+    final backend = GetIt.instance.isRegistered<PlaybackManager>()
+        ? GetIt.instance<PlaybackManager>().backend
+        : null;
+    final nativePlayer = backend is NativeApplePlayerBackend &&
+            backend.isPlayerOnScreen
+        ? backend
+        : null;
+    final background = switch (WidgetsBinding.instance.lifecycleState) {
       AppLifecycleState.paused ||
       AppLifecycleState.hidden ||
-      AppLifecycleState.detached => false,
-      _ => true,
+      AppLifecycleState.detached => true,
+      _ => false,
     };
-    if (foreground && GetIt.instance.isRegistered<PlaybackManager>()) {
-      final backend = GetIt.instance<PlaybackManager>().backend;
-      if (backend is NativeApplePlayerBackend && backend.isPlayerOnScreen) {
-        final title = header?.trim();
-        await backend.showMessage(
+    final l10n = currentAppLocalizations();
+    final title = (header != null && header.trim().isNotEmpty)
+        ? header.trim()
+        : l10n.serverMessagesNotificationTitle;
+    Future<void> showOnPlayer(NativeApplePlayerBackend player) =>
+        player.showMessage(
           text.trim(),
-          title: (title == null || title.isEmpty)
-              ? currentAppLocalizations().serverMessagesNotificationTitle
-              : title,
-          closeLabel: currentAppLocalizations().close,
+          title: title,
+          closeLabel: l10n.close,
         );
-        return;
-      }
+
+    if (nativePlayer != null && !background) {
+      await showOnPlayer(nativePlayer);
+      return;
     }
     final delivered = await GetIt.instance<DownloadNotificationService>()
         .showRemoteMessage(text: text, header: header);
     if (delivered) return;
+    if (nativePlayer != null) {
+      await showOnPlayer(nativePlayer);
+      return;
+    }
 
     final context = appRouter.routerDelegate.navigatorKey.currentContext;
     if (context == null || !context.mounted) return;
-    final l10n = currentAppLocalizations();
-    FloatingNotification.show(
-      context,
-      (header != null && header.trim().isNotEmpty)
-          ? header.trim()
-          : l10n.serverMessagesNotificationTitle,
-      text.trim(),
-      null,
-    );
+    FloatingNotification.show(context, title, text.trim(), null);
   }
 
   void dispose() {

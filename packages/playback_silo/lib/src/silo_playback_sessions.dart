@@ -110,21 +110,32 @@ class SiloPlaybackSessions {
   /// session reports it playing again.
   Stream<SiloPlaybackLifecycle> get lifecycle => _lifecycle.stream;
 
-  void notePlaying(SiloPlaybackSession session) => _lifecycle.add(
-    SiloPlaybackLifecycle(
+  SiloPlaybackLifecycle? _playingNow;
+
+  /// The session that last started playing and hasn't ended, for a listener
+  /// that starts while it plays.
+  SiloPlaybackLifecycle? get playingNow => _playingNow;
+
+  void notePlaying(SiloPlaybackSession session) {
+    final change = SiloPlaybackLifecycle(
       sessionId: session.sessionId,
       installationId: session.installationId,
       playing: true,
-    ),
-  );
+    );
+    _playingNow = change;
+    _lifecycle.add(change);
+  }
 
-  void noteEnded(SiloPlaybackSession session) => _lifecycle.add(
-    SiloPlaybackLifecycle(
-      sessionId: session.sessionId,
-      installationId: session.installationId,
-      playing: false,
-    ),
-  );
+  void noteEnded(SiloPlaybackSession session) {
+    if (_playingNow?.sessionId == session.sessionId) _playingNow = null;
+    _lifecycle.add(
+      SiloPlaybackLifecycle(
+        sessionId: session.sessionId,
+        installationId: session.installationId,
+        playing: false,
+      ),
+    );
+  }
 }
 
 /// One change in [SiloPlaybackSessions.lifecycle].

@@ -39,6 +39,7 @@ typedef SiloControlCommandHandler = Future<void> Function(
 class SiloPlaybackControlSocket {
   SiloPlaybackControlSocket({
     required Stream<SiloPlaybackLifecycle> lifecycle,
+    SiloPlaybackLifecycle? playingNow,
     required this._capabilities,
     required this._ticket,
     required this._uri,
@@ -61,6 +62,9 @@ class SiloPlaybackControlSocket {
            ((uri, protocols) =>
                WebSocketChannel.connect(uri, protocols: protocols)) {
     _lifecycleSub = lifecycle.listen(_onLifecycle);
+    // A session already playing when the socket is made (a sign-in again
+    // mid-movie) doesn't announce itself again.
+    if (playingNow != null) _onLifecycle(playingNow);
   }
 
   /// The socket for [silo]'s playback sessions. [playedHere] says whether
@@ -74,6 +78,7 @@ class SiloPlaybackControlSocket {
     final api = silo.playbackControlApi;
     return SiloPlaybackControlSocket(
       lifecycle: SiloPlaybackSessions.of(silo).lifecycle,
+      playingNow: SiloPlaybackSessions.of(silo).playingNow,
       capabilities: api.capabilities,
       ticket: (sessionId, installationId) =>
           api.createTicket(sessionId, installationId: installationId),
@@ -144,11 +149,15 @@ class SiloPlaybackControlSocket {
   int _generation = 0;
   WebSocketChannel? _channel;
   StreamSubscription? _channelSub;
-  DateTime? _connectedAt;
+  Timer? _stableTimer;
   Timer? _retryTimer;
   Timer? _renewTimer;
   int _attempt = 0;
   bool _renewing = false;
+
+  /// Set once [maxAttempts] connects failed. The session's next replan gives
+  /// the lane another try.
+  bool _gaveUp = false;
   bool _disposed = false;
   final _running = <WebSocketChannel, Set<Future<void>>>{};
 
@@ -164,9 +173,17 @@ class SiloPlaybackControlSocket {
     if (_disposed) return;
     if (change.playing) {
       // A replan of the session playing now keeps its lane.
-      if (change.sessionId == _sessionId) return;
-      _close();
+      if (change.sessionId == _sessionId) {
+        if (_gaveUp) {
+          _gaveUp = false;
+          _attempt = 0;
+          unawaited(_open(_generation));
+        }
+        return;
+      }
+      // A session handed to an external player leaves the lane alone.
       if (!_playedHere(change.sessionId)) return;
+      _close();
       _sessionId = change.sessionId;
       _installationId = change.installationId;
       _attempt = 0;
@@ -179,9 +196,9 @@ class SiloPlaybackControlSocket {
   Future<void> _open(int generation) async {
     final sessionId = _sessionId;
     final installationId = _installationId;
-    if (sessionId == null || installationId == null) return;
     WebSocketChannel? opened;
     try {
+      if (sessionId == null || installationId == null) return;
       final capabilities = await _capabilities();
       if (generation != _generation) return;
       if (!capabilities.usable) {
@@ -202,7 +219,6 @@ class SiloPlaybackControlSocket {
         unawaited(_closeChannel(channel));
         return;
       }
-      _log('Silo playback control connected');
       channel.sink.add(
         jsonEncode({
           'type': 'hello',
@@ -217,8 +233,13 @@ class SiloPlaybackControlSocket {
       // the old one keeps it long enough to send its result.
       final previous = _channel;
       final previousSub = _channelSub;
+      // A renewal every token lifetime would fill the network log.
+      if (previous == null) _log('Silo playback control connected');
       _channel = channel;
-      _connectedAt = _clock();
+      _stableTimer?.cancel();
+      _stableTimer = Timer(stableAfter, () {
+        if (identical(channel, _channel)) _attempt = 0;
+      });
       _channelSub = channel.stream.listen(
         (data) => _onFrame(data, channel, sessionId),
         onError: (Object error) => _dropped(generation, channel, error),
@@ -236,8 +257,8 @@ class SiloPlaybackControlSocket {
         return;
       }
       _log('Silo playback control failed, retrying', error);
-      // A failed renewal leaves the old connection up until it drops.
-      if (_channel == null) _scheduleRetry(generation);
+      // A failed renewal tries again while the old connection still holds.
+      _scheduleRetry(generation, renew: _channel != null);
     } finally {
       if (generation == _generation) _renewing = false;
     }
@@ -257,8 +278,9 @@ class SiloPlaybackControlSocket {
   }
 
   /// When a connection opened [now] is renewed: [margin] before the ticket's
-  /// limit or the access token's expiry, whichever comes first, and not
-  /// sooner than five seconds.
+  /// limit or the access token's expiry, whichever comes first (an expiry
+  /// less than a minute out is left to Silo's close), and not sooner than
+  /// five seconds.
   @visibleForTesting
   static Duration renewalDelay({
     required Duration maxConnection,
@@ -269,7 +291,11 @@ class SiloPlaybackControlSocket {
     var delay = maxConnection - margin;
     if (accessExpiresAt != null) {
       final untilExpiry = accessExpiresAt.difference(now) - margin;
-      if (untilExpiry < delay) delay = untilExpiry;
+      // A token that seems about to expire (one Silo gave no lifetime) would
+      // renew every few seconds; Silo's own close then starts the next one.
+      if (untilExpiry >= const Duration(minutes: 1) && untilExpiry < delay) {
+        delay = untilExpiry;
+      }
     }
     const floor = Duration(seconds: 5);
     return delay < floor ? floor : delay;
@@ -288,12 +314,9 @@ class SiloPlaybackControlSocket {
     _channelSub = null;
     _renewTimer?.cancel();
     _renewTimer = null;
+    _stableTimer?.cancel();
+    _stableTimer = null;
     _retire(channel, null);
-    final connectedAt = _connectedAt;
-    if (connectedAt != null &&
-        _clock().difference(connectedAt) >= stableAfter) {
-      _attempt = 0;
-    }
     // A renewal on its way brings the next connection, or retries itself.
     if (_renewing) return;
     _log('Silo playback control closed, reconnecting', error);
@@ -309,9 +332,10 @@ class SiloPlaybackControlSocket {
     unawaited(_open(generation));
   }
 
-  void _scheduleRetry(int generation) {
+  void _scheduleRetry(int generation, {bool renew = false}) {
     if (_disposed || generation != _generation) return;
     if (_attempt >= maxAttempts) {
+      _gaveUp = true;
       _log('Silo playback control given up for this session');
       return;
     }
@@ -324,7 +348,10 @@ class SiloPlaybackControlSocket {
         );
     _attempt++;
     _retryTimer?.cancel();
-    _retryTimer = Timer(delay, () => unawaited(_open(generation)));
+    _retryTimer = Timer(
+      delay,
+      renew ? () => _renew(generation) : () => unawaited(_open(generation)),
+    );
   }
 
   void _onFrame(dynamic data, WebSocketChannel channel, String sessionId) {
@@ -336,10 +363,10 @@ class SiloPlaybackControlSocket {
       return;
     }
     if (decoded is! Map) return;
-    // A connection being let go finishes what it started, but takes nothing
-    // new: its session may already be over, and a command for it must not
-    // reach whatever plays now.
-    if (!identical(channel, _channel)) return;
+    // A command for a session that is over (its connection still closing)
+    // must not reach whatever plays now. One on the old connection of a
+    // renewal is still this session's.
+    if (sessionId != _sessionId) return;
     if (decoded['type'] != 'command') return;
     final commandId = decoded['command_id'];
     if (commandId is! String || commandId.isEmpty) return;
@@ -365,8 +392,14 @@ class SiloPlaybackControlSocket {
     Map payload,
   ) async {
     void reply(String type, String status, [String? error]) {
+      // Silo takes answers only from the connection holding the lane, which
+      // after a renewal is the new one.
+      final current = _channel;
+      final target = current != null && sessionId == _sessionId
+          ? current
+          : channel;
       try {
-        channel.sink.add(
+        target.sink.add(
           jsonEncode({
             'type': type,
             'command_id': commandId,
@@ -430,6 +463,9 @@ class SiloPlaybackControlSocket {
     _sessionId = null;
     _installationId = null;
     _renewing = false;
+    _gaveUp = false;
+    _stableTimer?.cancel();
+    _stableTimer = null;
     _retryTimer?.cancel();
     _retryTimer = null;
     _renewTimer?.cancel();
@@ -438,7 +474,6 @@ class SiloPlaybackControlSocket {
     final sub = _channelSub;
     _channel = null;
     _channelSub = null;
-    _connectedAt = null;
     if (channel != null) _retire(channel, sub);
   }
 
@@ -452,8 +487,10 @@ class SiloPlaybackControlSocket {
           await Future.wait(running).timeout(closeGrace);
         } catch (_) {}
       }
-      await sub?.cancel();
+      // Closed before the listener goes, so a frame already on its way is
+      // still read.
       await _closeChannel(channel);
+      await sub?.cancel();
     }());
   }
 

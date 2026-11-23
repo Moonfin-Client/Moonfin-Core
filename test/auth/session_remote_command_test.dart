@@ -155,9 +155,11 @@ class _NativeApplePlayerBackend extends Fake implements NativeApplePlayerBackend
 
 class _FakeNotifications extends Fake implements DownloadNotificationService {
   final List<String> messages = [];
+  bool delivers = true;
 
   @override
   Future<bool> showRemoteMessage({required String text, String? header}) async {
+    if (!delivers) return false;
     messages.add(text);
     return true;
   }
@@ -1429,9 +1431,14 @@ void main() {
   test('with the app in the background, a message is a notification even '
       'with the native player presented', () async {
     final binding = TestWidgetsFlutterBinding.instance;
+    final before = binding.lifecycleState;
     binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    // The binding can't go back to "not reported yet"; the code reads that
+    // and resumed alike (not in the background).
     addTearDown(
-      () => binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed),
+      () => binding.handleAppLifecycleStateChanged(
+        before ?? AppLifecycleState.resumed,
+      ),
     );
     final backend = _NativeApplePlayerBackend();
     manager.backend = backend;
@@ -1439,6 +1446,24 @@ void main() {
 
     expect(backend.alerts, isEmpty);
     expect(notifications.messages, ['hello']);
+  });
+
+  test('in the background with no notifications (tvOS), the player\'s alert '
+      'waits for the viewer', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    final before = binding.lifecycleState;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    addTearDown(
+      () => binding.handleAppLifecycleStateChanged(
+        before ?? AppLifecycleState.resumed,
+      ),
+    );
+    notifications.delivers = false;
+    final backend = _NativeApplePlayerBackend();
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts.single.message, 'hello');
   });
 
   test('once the native player is gone, a message is a notification again',

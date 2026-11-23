@@ -36,6 +36,7 @@ class _FakeLane {
       sockets.add(socket);
       socket.listen((data) {
         final frame = jsonDecode(data as String) as Map<String, dynamic>;
+        frame['_on'] = sockets.indexOf(socket);
         received.add(frame);
         _frames.add(frame);
       });
@@ -122,6 +123,27 @@ void main() {
   late SiloPlaybackControlSocket socket;
   late bool playedHere;
 
+  SiloPlaybackControlSocket build({SiloPlaybackLifecycle? playingNow}) =>
+      SiloPlaybackControlSocket(
+        lifecycle: lifecycle.stream,
+        playingNow: playingNow,
+
+        capabilities: () async =>
+            SiloPlaybackControlCapabilities(available: usable, allowed: true),
+        ticket: (sessionId, installationId) async {
+          ticketsFor.add('$sessionId/$installationId');
+          final error = ticketError;
+          if (error != null) throw error;
+          return _ticket(ticketsFor.length);
+        },
+        uri: lane.uri,
+        handle: (message) => handler(message),
+        clientVersion: '1.2.3',
+        playedHere: (_) => playedHere,
+        closeGrace: const Duration(seconds: 2),
+        retryDelay: (_) => const Duration(milliseconds: 20),
+      );
+
   setUp(() async {
     lane = _FakeLane();
     await lane.start();
@@ -132,23 +154,7 @@ void main() {
     ticketsFor = [];
     ticketError = null;
     playedHere = true;
-    socket = SiloPlaybackControlSocket(
-      lifecycle: lifecycle.stream,
-      capabilities: () async =>
-          SiloPlaybackControlCapabilities(available: usable, allowed: true),
-      ticket: (sessionId, installationId) async {
-        ticketsFor.add('$sessionId/$installationId');
-        final error = ticketError;
-        if (error != null) throw error;
-        return _ticket(ticketsFor.length);
-      },
-      uri: lane.uri,
-      handle: (message) => handler(message),
-      clientVersion: '1.2.3',
-      playedHere: (_) => playedHere,
-      closeGrace: const Duration(seconds: 2),
-      retryDelay: (_) => const Duration(milliseconds: 20),
-    );
+    socket = build();
   });
 
   tearDown(() async {
@@ -188,12 +194,10 @@ void main() {
     );
     final result = await lane.next((f) => f['type'] == 'result');
 
-    expect(lane.of('ack').single, {
-      'type': 'ack',
-      'command_id': 'c1',
-      'session_id': 's1',
-      'status': 'accepted',
-    });
+    final ack = lane.of('ack').single;
+    expect(ack['command_id'], 'c1');
+    expect(ack['session_id'], 's1');
+    expect(ack['status'], 'accepted');
     expect(result['status'], 'completed');
     final message = handled.single as GeneralCommandMessage;
     expect(message.name, 'DisplayMessage');
@@ -346,9 +350,51 @@ void main() {
     final result = await lane.next((f) => f['type'] == 'result');
     expect(result['command_id'], 'slow');
     expect(result['status'], 'completed');
+    // Silo takes answers only from the connection holding the lane.
+    expect(result['_on'], 1);
     await _until(() => lane.sockets.first.closeCode != null);
     expect(socket.connected, isTrue);
   });
+
+  test('a socket made while a session plays opens its lane', () async {
+    socket.dispose();
+    socket = build(playingNow: _playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    expect(ticketsFor, ['s1/inst']);
+  });
+
+  test(
+    'a lane given up on gets another try on the session\'s replan',
+    () async {
+      ticketError = _refused(503);
+      lifecycle.add(_playing);
+      await _until(
+        () => ticketsFor.length == SiloPlaybackControlSocket.maxAttempts + 1,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      ticketError = null;
+      lifecycle.add(_playing);
+      await lane.next((f) => f['type'] == 'hello');
+    },
+  );
+
+  test(
+    'a renewal that fails tries again while the old connection holds',
+    () async {
+      lifecycle.add(_playing);
+      await lane.next((f) => f['type'] == 'hello');
+      ticketError = _refused(503);
+      socket.renewNow();
+      await _until(() => ticketsFor.length >= 3);
+      expect(lane.sockets.single.closeCode, isNull);
+
+      ticketError = null;
+      await lane.next((f) => f['type'] == 'hello' && f['_on'] == 1);
+      await _until(() => lane.sockets.first.closeCode != null);
+    },
+  );
 
   test('a connection being let go takes no new command', () async {
     final release = Completer<void>();
@@ -423,9 +469,22 @@ void main() {
       );
     });
 
-    test('never sooner than five seconds', () {
+    test('a token that seems about to expire is left to Silo\'s close', () {
       expect(
         delay(now.add(const Duration(seconds: 30))),
+        const Duration(hours: 3, minutes: 59),
+      );
+      expect(delay(now), const Duration(hours: 3, minutes: 59));
+    });
+
+    test('never sooner than five seconds', () {
+      expect(
+        SiloPlaybackControlSocket.renewalDelay(
+          maxConnection: const Duration(seconds: 30),
+          accessExpiresAt: null,
+          now: now,
+          margin: const Duration(minutes: 1),
+        ),
         const Duration(seconds: 5),
       );
     });
