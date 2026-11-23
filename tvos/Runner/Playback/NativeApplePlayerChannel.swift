@@ -138,6 +138,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         case "showMessage":
             playerVC?.presentMessage(
                 (args["message"] as? String) ?? "",
+                title: args["title"] as? String,
                 actionLabel: args["actionLabel"] as? String,
                 closeLabel: (args["closeLabel"] as? String) ?? "OK"
             ) { [weak self] in

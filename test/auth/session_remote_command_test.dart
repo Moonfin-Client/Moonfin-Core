@@ -140,6 +140,14 @@ class _NativeApplePlayerBackend extends Fake implements NativeApplePlayerBackend
   bool get isPlayerPresented => !dismissed;
   @override
   Future<void> dismissPlayer() async => dismissed = true;
+  final alerts = <({String message, String? title})>[];
+  @override
+  Future<void> showMessage(
+    String message, {
+    String? title,
+    String? actionLabel,
+    required String closeLabel,
+  }) async => alerts.add((message: message, title: title));
 }
 
 class _FakeNotifications extends Fake implements DownloadNotificationService {
@@ -1389,6 +1397,30 @@ void main() {
     await sendGeneral('DisplayMessage', args: {'Text': 'dinner is ready'});
 
     expect(notifications.messages, ['dinner is ready']);
+  });
+
+  test('a message during native Apple playback is the player\'s alert, '
+      'since the video covers anything Flutter draws', () async {
+    final backend = _NativeApplePlayerBackend();
+    manager.backend = backend;
+    await sendGeneral(
+      'DisplayMessage',
+      args: {'Text': 'restarting at 9', 'Header': 'From your admin'},
+    );
+
+    expect(backend.alerts.single.message, 'restarting at 9');
+    expect(backend.alerts.single.title, 'From your admin');
+    expect(notifications.messages, isEmpty);
+  });
+
+  test('once the native player is gone, a message is a notification again',
+      () async {
+    final backend = _NativeApplePlayerBackend()..dismissed = true;
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts, isEmpty);
+    expect(notifications.messages, ['hello']);
   });
 
   test("an empty message isn't shown at all", () async {

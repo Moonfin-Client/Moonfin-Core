@@ -51,7 +51,10 @@ class SiloPlaySessionService implements PlayerService {
     int? positionTicks,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
-  }) async {}
+  }) async {
+    final session = _live(resolution);
+    if (session != null) _sessions.notePlaying(session);
+  }
 
   /// One progress sample: the media position in seconds (the player's plus
   /// the stream's timeline offset, which the playback manager already
@@ -117,6 +120,7 @@ class SiloPlaySessionService implements PlayerService {
     if (SiloPlaybackApi.isSessionGone(error) ||
         SiloPlaybackApi.isInstallationChanged(error)) {
       session.ended = true;
+      _sessions.noteEnded(session);
       return true;
     }
     return false;
@@ -151,6 +155,7 @@ class SiloPlaySessionService implements PlayerService {
     if (pending != null) return pending;
     if (session.ended) {
       _sessions.remove(session.sessionId);
+      _sessions.noteEnded(session);
       return Future.value();
     }
     final current = session.resolution;
@@ -199,14 +204,17 @@ class SiloPlaySessionService implements PlayerService {
       // Ended either way: a stop Silo never got lets the session expire.
       session.ended = true;
       _sessions.remove(session.sessionId);
+      _sessions.noteEnded(session);
     }
   }
 
   /// Tells the client [session]'s item changed. Silo's events socket is
   /// silent about a stopped session, so without this a season's list kept
   /// an episode just finished unwatched.
-  void _noteEnded(SiloPlaybackSession session) =>
-      _silo?.notePlaybackEnded(session.itemId);
+  void _noteEnded(SiloPlaybackSession session) {
+    _silo?.notePlaybackEnded(session.itemId);
+    _sessions.noteEnded(session);
+  }
 
   /// Silo has no live TV.
   @override

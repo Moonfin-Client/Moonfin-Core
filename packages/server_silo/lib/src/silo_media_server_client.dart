@@ -18,6 +18,7 @@ import 'api/silo_watch_party_api.dart';
 import 'api/silo_images_api.dart';
 import 'api/silo_unsupported.dart';
 import 'api/silo_playback_api.dart';
+import 'api/silo_playback_control_api.dart';
 import 'api/silo_profiles_api.dart';
 import 'api/silo_system_api.dart';
 import 'api/silo_user_views_api.dart';
@@ -127,6 +128,7 @@ class SiloMediaServerClient extends MediaServerClient
     itemsApi.noteProfileChanged();
     downloadsApi.invalidateCapability();
     playbackApi.forgetCapabilities();
+    playbackControlApi.forget();
   }
 
   /// Proof that a PIN-locked profile was unlocked (`X-Profile-Token`).
@@ -378,6 +380,13 @@ class SiloMediaServerClient extends MediaServerClient
   /// Silo's realtime events socket: its capability and tickets (no Moonfin
   /// interface, see [SiloEventsApi]).
   late final SiloEventsApi eventsApi = SiloEventsApi(
+    _dio,
+    baseUrl: () => _baseUrl,
+  );
+
+  /// Silo's playback control socket: its capability, tickets and URL (no
+  /// Moonfin interface, see [SiloPlaybackControlApi]).
+  late final SiloPlaybackControlApi playbackControlApi = SiloPlaybackControlApi(
     _dio,
     baseUrl: () => _baseUrl,
   );

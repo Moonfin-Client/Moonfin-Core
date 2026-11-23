@@ -29,6 +29,7 @@ export 'src/api/silo_themes.dart';
 export 'src/api/silo_track_preferences.dart';
 export 'src/api/silo_trickplay.dart';
 export 'src/api/silo_playback_api.dart';
+export 'src/api/silo_playback_control_api.dart';
 export 'src/api/silo_profiles_api.dart';
 export 'src/api/silo_remote_subtitles.dart';
 export 'src/silo_image_cache_key.dart';

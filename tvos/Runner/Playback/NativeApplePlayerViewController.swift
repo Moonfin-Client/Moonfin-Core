@@ -3559,10 +3559,17 @@ final class NativeApplePlayerViewController: UIViewController {
     /// that failed to tune. An action label adds a button that calls onAction.
     /// It goes over whatever is already up, like the channel strip.
     func presentMessage(
-        _ message: String, actionLabel: String?, closeLabel: String,
+        _ message: String, title: String? = nil, actionLabel: String?, closeLabel: String,
         onAction: @escaping () -> Void
     ) {
-        let alert = makePlayerMenu(title: message, message: nil, preferredStyle: .alert)
+        // A titled message (a server's) shows its title above the text;
+        // otherwise the text is the alert's title, as before.
+        let titled = !(title ?? "").isEmpty
+        let alert = makePlayerMenu(
+            title: titled ? title : message,
+            message: titled ? message : nil,
+            preferredStyle: .alert
+        )
         if let actionLabel, !actionLabel.isEmpty {
             alert.addAction(makePlayerAction(title: actionLabel, style: .default) { _ in onAction() })
         }

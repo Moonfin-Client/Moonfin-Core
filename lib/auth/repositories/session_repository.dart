@@ -47,6 +47,7 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/server_messages_service.dart';
+import '../../data/services/silo_playback_control_socket.dart';
 import '../../data/services/socket_handler.dart';
 import '../../playback/remote_media_notification_service.dart';
 import '../../data/services/user_data_sync.dart';
@@ -128,6 +129,9 @@ class SessionRepository {
   String? _activeUserId;
   SessionState _state = SessionState.ready;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
+
+  /// Silo's per-session control lane, while signed in to a Silo server.
+  SiloPlaybackControlSocket? _siloPlaybackControl;
   RemoteSearchSession? _remoteSearch;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
   StreamSubscription<ServerWebSocketMessage>? _accessChangedSubscription;
@@ -367,6 +371,7 @@ class SessionRepository {
       _socketHandler.connectTo(client);
     }
     _bindRemoteCommandHandling();
+    _bindSiloPlaybackControl(client);
     _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
     _bindAccessChanges(client);
@@ -865,6 +870,8 @@ class SessionRepository {
 
     _remoteCommandSubscription?.cancel();
     _remoteCommandSubscription = null;
+    _siloPlaybackControl?.dispose();
+    _siloPlaybackControl = null;
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
     _accessChangedSubscription?.cancel();
@@ -942,6 +949,21 @@ class SessionRepository {
           _logger.w('Remote command failed: ${error.runtimeType}');
         }),
       ),
+    );
+  }
+
+  /// Silo sends an administrator's message, pause, resume and stop on a lane
+  /// of the playing session rather than on the events socket. It runs through
+  /// the same handling as a Jellyfin remote. Not tied to the events socket's
+  /// idle rules: it is open only while a Silo session plays.
+  void _bindSiloPlaybackControl(MediaServerClient client) {
+    _siloPlaybackControl?.dispose();
+    _siloPlaybackControl = null;
+    final silo = siloClientOf(client);
+    if (silo == null) return;
+    _siloPlaybackControl = SiloPlaybackControlSocket.forClient(
+      silo,
+      handle: _handleRemoteCommand,
     );
   }
 
@@ -1585,6 +1607,22 @@ class SessionRepository {
   /// notification where the device has them and an in-app banner where it
   /// doesn't, so a message the sender saw go through always lands somewhere.
   Future<void> _showRemoteMessage(String text, String? header) async {
+    // The Apple native player sits above every Flutter page, so a
+    // notification drawn by Flutter would be hidden behind the video.
+    if (GetIt.instance.isRegistered<PlaybackManager>()) {
+      final backend = GetIt.instance<PlaybackManager>().backend;
+      if (backend is NativeApplePlayerBackend && backend.isPlayerPresented) {
+        final title = header?.trim();
+        await backend.showMessage(
+          text.trim(),
+          title: (title == null || title.isEmpty)
+              ? currentAppLocalizations().serverMessagesNotificationTitle
+              : title,
+          closeLabel: currentAppLocalizations().close,
+        );
+        return;
+      }
+    }
     final delivered = await GetIt.instance<DownloadNotificationService>()
         .showRemoteMessage(text: text, header: header);
     if (delivered) return;
@@ -1608,6 +1646,7 @@ class SessionRepository {
     _remoteKeys.releaseAll();
     _remoteSearch?.close();
     _remoteCommandSubscription?.cancel();
+    _siloPlaybackControl?.dispose();
     _pluginEventSubscription?.cancel();
     _accessChangedSubscription?.cancel();
     _stateController.close();

@@ -150,14 +150,16 @@ class NativeApplePlayerBackend
   Future<void> showWatchPartyEvent(Map<String, dynamic> event) =>
       _invoke<void>('showWatchPartyEvent', event);
 
-  /// An alert over the player. [actionLabel] adds a button that answers with
-  /// a `messageAction` event.
+  /// An alert over the player, with [title] above [message] when given.
+  /// [actionLabel] adds a button that answers with a `messageAction` event.
   Future<void> showMessage(
     String message, {
+    String? title,
     String? actionLabel,
     required String closeLabel,
   }) => _invoke<void>('showMessage', {
     'message': message,
+    'title': ?title,
     'actionLabel': ?actionLabel,
     'closeLabel': closeLabel,
   });
