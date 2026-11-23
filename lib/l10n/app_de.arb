@@ -11925,5 +11925,13 @@
     "watchPartyBackToClose": "Mit Zurück schließen",
     "@watchPartyBackToClose": {
         "description": "TV hint on the watch party quick bar"
+    },
+    "topNavbarStyleClassic": "Klassisch",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klassisch",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
