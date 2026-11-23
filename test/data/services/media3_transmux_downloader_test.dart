@@ -162,13 +162,17 @@ void main() {
       await pumpEventQueue();
       expect(idle, isFalse);
 
+      final failed = expectLater(
+        future,
+        throwsA(isA<TransmuxFailedException>()),
+      );
       await _emit({
         'event': 'error',
         'taskId': 'a::7',
         'message': 'read timed out',
         'errorCode': 2001,
       });
-      await expectLater(future, throwsA(isA<TransmuxFailedException>()));
+      await failed;
       await pumpEventQueue();
       expect(idle, isTrue);
       expect(transmux.isBusy, isFalse);

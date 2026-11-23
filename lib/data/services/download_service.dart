@@ -1426,7 +1426,11 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     while (transmux.isBusy && !cancelToken.isCancelled) {
       await Future.any([transmux.idle, cancelToken.whenCancel]);
       // The wait can be long, so the phone may have left Wi-Fi meanwhile.
-      if (!cancelToken.isCancelled && !await _checkWifiPolicy()) {
+      // Check cancellation again after the await so a cancel isn't reported as
+      // a Wi-Fi failure.
+      if (!cancelToken.isCancelled &&
+          !await _checkWifiPolicy() &&
+          !cancelToken.isCancelled) {
         throw DioException(
           type: DioExceptionType.unknown,
           requestOptions: RequestOptions(path: url),
