@@ -18719,5 +18719,17 @@
     "watchPartyFull": "Esta sala está llena.",
     "@watchPartyFull": {
         "description": "Join error: the room has no space left"
+    },
+    "carListenNow": "Escuchar Ahora",
+    "@carListenNow": {
+        "description": "Car tab with quick starts, recently played and in-progress items"
+    },
+    "carRecentlyPlayed": "Reproducido Recientemente",
+    "@carRecentlyPlayed": {
+        "description": "Car shelf and tile listing the music played most recently"
+    },
+    "carInstantMix": "Mezcla Instantánea",
+    "@carInstantMix": {
+        "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
     }
 }
