@@ -1004,7 +1004,7 @@ class _ContentRowsState extends State<_ContentRows>
   static const _previewStartDelay = Duration(milliseconds: 1200);
   static Duration get _focusHandoffDuration => navigationAnimationDuration;
   // Ease out so the scroll starts moving as soon as the key is pressed.
-  static const _focusHandoffCurve = Curves.easeOutCubic;
+  static const _focusHandoffCurve = Curves.easeOutSine;
   static const _mediaBarFadeDuration = Duration(milliseconds: 220);
   static const double _activeRowRecalcDistance = 48.0;
 
