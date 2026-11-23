@@ -20,6 +20,12 @@ typedef SiloControlCommandHandler = Future<void> Function(
   ServerWebSocketMessage message,
 );
 
+/// Runs an administrator's terminate of [sessionId]: Silo has already ended
+/// the session, so the player stops and says why ([reason] is the admin's
+/// text, if any).
+typedef SiloTerminateHandler =
+    Future<void> Function(String sessionId, String? reason);
+
 /// What the control socket needs from the server a session plays on.
 class SiloControlEndpoint {
   const SiloControlEndpoint({
@@ -86,6 +92,7 @@ class SiloPlaybackControlSocket {
     SiloPlaybackLifecycle? playingNow,
     required this._endpointFor,
     required this._handle,
+    this._terminate,
     bool Function(String sessionId)? playedHere,
     WebSocketChannel Function(Uri uri, List<String> protocols)? connect,
     @visibleForTesting this.connectTimeout = const Duration(seconds: 15),
@@ -112,6 +119,7 @@ class SiloPlaybackControlSocket {
   /// as before.
   factory SiloPlaybackControlSocket.forApp({
     required SiloControlCommandHandler handle,
+    required SiloTerminateHandler terminate,
     required bool Function(String sessionId) playedHere,
   }) => SiloPlaybackControlSocket(
     lifecycle: SiloPlaybackSessions.lifecycle,
@@ -121,6 +129,7 @@ class SiloPlaybackControlSocket {
       return silo == null ? null : SiloControlEndpoint.of(silo);
     },
     handle: handle,
+    terminate: terminate,
     playedHere: playedHere,
   );
 
@@ -133,6 +142,7 @@ class SiloPlaybackControlSocket {
     'display_message',
     'server_restarting',
     'server_shutting_down',
+    'terminate',
   ];
 
   /// Failed connects in a row before the socket gives up on a session (about
@@ -143,6 +153,7 @@ class SiloPlaybackControlSocket {
   /// The server a session plays on, or null for a client that isn't Silo's.
   final SiloControlEndpoint? Function(SiloPlaybackLifecycle) _endpointFor;
   final SiloControlCommandHandler _handle;
+  final SiloTerminateHandler? _terminate;
   final bool Function(String) _playedHere;
   final DateTime Function() _clock;
   final WebSocketChannel Function(Uri, List<String>) _connect;
@@ -294,6 +305,9 @@ class SiloPlaybackControlSocket {
         // The session is over or isn't this installation's lane: no later
         // ticket would be granted.
         _log('Silo playback control not opened', error);
+        // A renewal's refusal leaves the old connection up until it closes;
+        // that close mustn't ask for another ticket.
+        _gaveUp = true;
         return;
       }
       _log('Silo playback control failed, retrying', error);
@@ -368,7 +382,7 @@ class SiloPlaybackControlSocket {
   }
 
   void _scheduleRetry(int generation, {bool renew = false}) {
-    if (_disposed || generation != _generation) return;
+    if (_disposed || generation != _generation || _gaveUp) return;
     if (_attempt >= maxAttempts) {
       _gaveUp = true;
       _log('Silo playback control given up for this session');
@@ -413,6 +427,7 @@ class SiloPlaybackControlSocket {
     if (decoded['session_id'] != sessionId) return;
     final name = decoded['name'];
     final payload = decoded['payload'];
+    final reason = decoded['reason'];
     late final Future<void> run;
     run =
         _run(
@@ -422,6 +437,7 @@ class SiloPlaybackControlSocket {
           commandId,
           name is String ? name : '',
           payload is Map ? payload : const {},
+          reason is String && reason.trim().isNotEmpty ? reason.trim() : null,
         ).whenComplete(() {
           final running = _running[channel];
           running?.remove(run);
@@ -437,6 +453,7 @@ class SiloPlaybackControlSocket {
     String commandId,
     String name,
     Map payload,
+    String? reason,
   ) async {
     void reply(String type, String status, [String? error]) {
       // Silo takes answers only from the connection holding the lane, which
@@ -458,6 +475,24 @@ class SiloPlaybackControlSocket {
       } catch (_) {}
     }
 
+    // The viewer moved on (Next) before this session's stop closed the
+    // lane: its command must not reach what plays now.
+    if (!_playedHere(sessionId)) {
+      reply('result', 'rejected', 'not_playing');
+      return;
+    }
+    final terminate = _terminate;
+    if (name == 'terminate' && terminate != null) {
+      reply('ack', 'accepted');
+      try {
+        await terminate(sessionId, reason);
+        reply('result', 'completed');
+      } catch (error) {
+        _log('Silo playback command $name failed', error);
+        reply('result', 'rejected', 'failed');
+      }
+      return;
+    }
     final message = commandMessage(name, payload);
     if (message == null) {
       reply('result', 'rejected', 'unsupported');

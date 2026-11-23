@@ -4275,6 +4275,14 @@ class PlaybackManager implements AudioOwnable {
       ? error
       : null;
 
+  /// The server ended [playSessionId] on purpose and said so (Silo: an
+  /// administrator's terminate on the playback control socket). Ends it like
+  /// a refused progress report would, if it is still the one playing.
+  Future<void> endSessionByServer(String playSessionId, String message) async {
+    if (_ownedPlaySessionId != playSessionId) return;
+    await _stopEndedByServer(message);
+  }
+
   /// The server ended the current item's session on purpose, so what is
   /// buffered must not play on and nothing may reopen it: stop, say why, and
   /// close the player. The stop takes the next session token and viewer

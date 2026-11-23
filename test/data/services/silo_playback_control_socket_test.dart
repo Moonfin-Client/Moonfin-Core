@@ -49,6 +49,7 @@ class _FakeLane {
     String id = 'c1',
     String session = 's1',
     Map<String, Object?>? payload,
+    String? reason,
   }) => sockets.last.add(
     jsonEncode({
       'type': 'command',
@@ -56,6 +57,7 @@ class _FakeLane {
       'session_id': session,
       'name': name,
       'payload': ?payload,
+      'reason': ?reason,
     }),
   );
 
@@ -139,6 +141,7 @@ void main() {
   late Object? ticketError;
   late SiloPlaybackControlSocket socket;
   late bool playedHere;
+  late List<String> terminated;
 
   SiloPlaybackControlSocket build({SiloPlaybackLifecycle? playingNow}) =>
       SiloPlaybackControlSocket(
@@ -164,6 +167,8 @@ void main() {
           );
         },
         handle: (message) => handler(message),
+        terminate: (sessionId, reason) async =>
+            terminated.add('$sessionId|$reason'),
         playedHere: (_) => playedHere,
         closeGrace: const Duration(seconds: 2),
         retryDelay: (_) => const Duration(milliseconds: 20),
@@ -180,6 +185,7 @@ void main() {
     ticketServers = [];
     ticketError = null;
     playedHere = true;
+    terminated = [];
     socket = build();
   });
 
@@ -286,6 +292,35 @@ void main() {
 
     expect(result['status'], 'rejected');
   });
+
+  test('a terminate ends the session with the admin\'s reason', () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    lane.command('terminate', reason: 'Bandwidth');
+    final result = await lane.next((f) => f['type'] == 'result');
+
+    expect(lane.of('ack').single['status'], 'accepted');
+    expect(result['status'], 'completed');
+    expect(terminated, ['s1|Bandwidth']);
+    expect(handled, isEmpty);
+  });
+
+  test(
+    'a command for a session the player has moved on from is rejected',
+    () async {
+      lifecycle.add(_playing);
+      await lane.next((f) => f['type'] == 'hello');
+      playedHere = false;
+
+      lane.command('pause');
+      final result = await lane.next((f) => f['type'] == 'result');
+
+      expect(result['status'], 'rejected');
+      expect(result['error'], 'not_playing');
+      expect(handled, isEmpty);
+    },
+  );
 
   test('a stop that ends the session still sends its result', () async {
     handler = (message) async {
@@ -472,6 +507,19 @@ void main() {
       await _until(() => lane.sockets.first.closeCode != null);
     },
   );
+
+  test('a renewal Silo refuses for good asks no more tickets', () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+    ticketError = _refused(410);
+    socket.renewNow();
+    await _until(() => ticketsFor.length == 2);
+
+    await lane.sockets.single.close();
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    expect(ticketsFor, hasLength(2));
+  });
 
   test('a connection being let go takes no new command', () async {
     final release = Completer<void>();

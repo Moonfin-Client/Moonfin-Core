@@ -25,6 +25,7 @@ import 'package:go_router/go_router.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:playback_silo/playback_silo.dart' show siloEndedOnServerMessage;
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
     show SiloUsersApi, siloAccessChangedEvent;
@@ -964,7 +965,26 @@ class SessionRepository {
   /// gets its lane too.
   void _bindSiloPlaybackControl() {
     _siloPlaybackControl ??= SiloPlaybackControlSocket.forApp(
-      handle: _handleRemoteCommand,
+      handle: (message) {
+        // In a watch party the room's controls take pause and resume, and a
+        // guest of a host-only room can't: say so rather than `completed`.
+        if (message is PlaystateMessage &&
+            message.command.toLowerCase() != 'stop' &&
+            GetIt.instance.isRegistered<PlaybackManager>() &&
+            GetIt.instance<PlaybackManager>().hasTransportInterceptor) {
+          throw StateError('Transport belongs to the watch party');
+        }
+        return _handleRemoteCommand(message);
+      },
+      terminate: (sessionId, reason) async {
+        if (!GetIt.instance.isRegistered<PlaybackManager>()) return;
+        await GetIt.instance<PlaybackManager>().endSessionByServer(
+          sessionId,
+          reason == null
+              ? siloEndedOnServerMessage
+              : '$siloEndedOnServerMessage\n$reason',
+        );
+      },
       playedHere: (sessionId) =>
           GetIt.instance.isRegistered<PlaybackManager>() &&
           GetIt.instance<PlaybackManager>().currentResolution?.playSessionId ==
