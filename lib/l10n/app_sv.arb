@@ -13040,5 +13040,9 @@
     "detailSectionReviews": "Omdömen",
     "@detailSectionReviews": {
         "description": "Details screen section: user reviews from TMDB"
+    },
+    "groupByDecade": "Årtionde",
+    "@groupByDecade": {
+        "description": "Option to group library items by release decade"
     }
 }
