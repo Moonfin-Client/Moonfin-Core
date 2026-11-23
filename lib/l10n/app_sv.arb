@@ -753,7 +753,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Sedda",
+    "watched": "Visad",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -761,7 +761,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Osedda",
+    "unwatched": "Inte spelad",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
