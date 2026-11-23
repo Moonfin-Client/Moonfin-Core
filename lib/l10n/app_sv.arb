@@ -934,7 +934,7 @@
     "@chapters": {
         "description": "Section header for chapters"
     },
-    "features": "Funktioner",
+    "features": "Innehåll",
     "@features": {
         "description": "Section header for special features"
     },
