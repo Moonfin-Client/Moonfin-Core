@@ -4739,7 +4739,7 @@
     "adminAllowContentDeletion": "Tillåt radering av innehåll",
     "adminAllowContentDownloading": "Tillåt nedladdning av innehåll",
     "adminAllowPublicSharing": "Tillåt offentlig delning",
-    "adminAllowRemoteControl": "Tillåt fjärrkontroll av andra användare",
+    "adminAllowRemoteControl": "Tillåt fjärrstyrning av andra användare",
     "adminAllowSharedDeviceControl": "Tillåt delad enhetskontroll",
     "adminAllowRemoteAccess": "Tillåt fjärråtkomst",
     "adminRemoteBitrateLimit": "Fjärrklientbithastighetsgräns (bps)",
