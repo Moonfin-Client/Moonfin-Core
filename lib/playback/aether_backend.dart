@@ -175,8 +175,10 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
 
   // The engine has no single read-ahead limit in seconds and no memory
   // budget for the buffer, so the ceiling and memory rows stay out.
+  // `bufferedMs` is zero on live, which has no duration, so this reads the
+  // engine's buffer frontier instead.
   PlaybackNetworkStats _networkStatsFrom(Map<String, dynamic> map) {
-    final ahead = _toInt(map['bufferedMs']) - _toInt(map['positionMs']);
+    final ahead = _toInt(map['bufferedPositionMs']) - _toInt(map['positionMs']);
     return PlaybackNetworkStats(
       bufferAhead: Duration(milliseconds: ahead < 0 ? 0 : ahead),
       activityBitsPerSecond: map['networkActivityBps'] == null

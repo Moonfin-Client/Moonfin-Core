@@ -299,6 +299,7 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             "positionMs": Int((p.currentTime * 1000).rounded()),
             "durationMs": Int((p.duration * 1000).rounded()),
             "bufferedMs": Int((p.duration * Double(p.bufferProgress) * 1000).rounded()),
+            "bufferedPositionMs": Int((p.bufferedPosition * 1000).rounded()),
             "isPlaying": isPlaying,
             "isBuffering": isBuffering,
             "isSubtitleLoading": p.isSubtitleLoading,

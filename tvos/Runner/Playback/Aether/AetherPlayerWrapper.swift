@@ -29,6 +29,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     @Published var currentTime: TimeInterval = 0
     @Published var duration: TimeInterval = 0
     @Published var bufferProgress: Float = 0
+    /// The engine's buffer frontier in seconds, on the same axis as
+    /// `currentTime`. Unlike `bufferProgress` it doesn't need a duration, so
+    /// it still reads on live streams.
+    private(set) var bufferedPosition: TimeInterval = 0
     @Published var audioTracks: [PlayerTrack] = []
     @Published var subtitleTracks: [PlayerTrack] = []
     /// Broadcast captions the engine found inside the video, offered
@@ -396,6 +400,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self else { return }
+                self.bufferedPosition = value
                 self.bufferProgress =
                     self.duration > 0
                     ? Float(min(max(value / self.duration, 0), 1)) : 0

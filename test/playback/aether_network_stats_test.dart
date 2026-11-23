@@ -17,11 +17,13 @@ Future<void> _send(Map<String, dynamic> payload) {
       );
 }
 
-Map<String, dynamic> _state({int? networkActivityBps}) => {
+Map<String, dynamic> _state({int? networkActivityBps, bool live = false}) => {
   'event': 'state',
   'positionMs': 10000,
-  'durationMs': 60000,
-  'bufferedMs': 25500,
+  // Live has no duration, so the wrapper's bufferedMs is zero there.
+  'durationMs': live ? 0 : 60000,
+  'bufferedMs': live ? 0 : 25500,
+  'bufferedPositionMs': 25500,
   'isPlaying': true,
   'isBuffering': false,
   'rebuffers': 2,
@@ -66,6 +68,15 @@ void main() {
     // The engine reports neither, so their rows stay out.
     expect(stats.bufferCeiling, isNull);
     expect(stats.bufferedBytes, isNull);
+  });
+
+  test('reads the buffer ahead on a live stream', () async {
+    await _send(_state(live: true));
+
+    expect(
+      backend.networkStats!.bufferAhead,
+      const Duration(milliseconds: 15500),
+    );
   });
 
   test('a new item starts without the last one\'s reading', () async {
