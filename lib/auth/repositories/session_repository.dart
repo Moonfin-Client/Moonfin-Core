@@ -960,8 +960,8 @@ class SessionRepository {
   /// idle rules: it is open only while a Silo session plays.
   void _bindSiloPlaybackControl(MediaServerClient client) {
     final silo = siloClientOf(client);
-    // The same login again (a re-pin of the active account) keeps the lane:
-    // the session playing now wouldn't announce itself to a new one.
+    // The same login again (a re-pin of the active account) keeps the lane
+    // rather than reconnecting it.
     if (silo != null && identical(silo, _siloPlaybackControlClient)) return;
     _siloPlaybackControl?.dispose();
     _siloPlaybackControl = null;

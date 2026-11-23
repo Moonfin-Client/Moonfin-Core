@@ -194,10 +194,12 @@ void main() {
     );
     final result = await lane.next((f) => f['type'] == 'result');
 
-    final ack = lane.of('ack').single;
-    expect(ack['command_id'], 'c1');
-    expect(ack['session_id'], 's1');
-    expect(ack['status'], 'accepted');
+    expect(Map.of(lane.of('ack').single)..remove('_on'), {
+      'type': 'ack',
+      'command_id': 'c1',
+      'session_id': 's1',
+      'status': 'accepted',
+    });
     expect(result['status'], 'completed');
     final message = handled.single as GeneralCommandMessage;
     expect(message.name, 'DisplayMessage');
@@ -469,12 +471,11 @@ void main() {
       );
     });
 
-    test('a token that seems about to expire is left to Silo\'s close', () {
+    test('a token about to expire renews at the floor', () {
       expect(
         delay(now.add(const Duration(seconds: 30))),
-        const Duration(hours: 3, minutes: 59),
+        const Duration(seconds: 5),
       );
-      expect(delay(now), const Duration(hours: 3, minutes: 59));
     });
 
     test('never sooner than five seconds', () {

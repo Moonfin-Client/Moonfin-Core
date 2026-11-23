@@ -76,9 +76,10 @@ class SiloPlaybackControlSocket {
     required bool Function(String sessionId) playedHere,
   }) {
     final api = silo.playbackControlApi;
+    final sessions = SiloPlaybackSessions.of(silo);
     return SiloPlaybackControlSocket(
-      lifecycle: SiloPlaybackSessions.of(silo).lifecycle,
-      playingNow: SiloPlaybackSessions.of(silo).playingNow,
+      lifecycle: sessions.lifecycle,
+      playingNow: sessions.playingNow,
       capabilities: api.capabilities,
       ticket: (sessionId, installationId) =>
           api.createTicket(sessionId, installationId: installationId),
@@ -86,7 +87,13 @@ class SiloPlaybackControlSocket {
       handle: handle,
       clientVersion: silo.deviceInfo.appVersion,
       playedHere: playedHere,
-      accessExpiresAt: () => silo.session.tokens?.expiresAt,
+      // A token Silo gave no lifetime reads as already expiring, which
+      // would renew every few seconds: Silo's own close covers it then.
+      accessExpiresAt: () {
+        final tokens = silo.session.tokens;
+        if (tokens == null || tokens.lifetime <= Duration.zero) return null;
+        return tokens.expiresAt;
+      },
     );
   }
 
@@ -177,7 +184,11 @@ class SiloPlaybackControlSocket {
         if (_gaveUp) {
           _gaveUp = false;
           _attempt = 0;
-          unawaited(_open(_generation));
+          if (_channel != null) {
+            _renew(_generation);
+          } else {
+            unawaited(_open(_generation));
+          }
         }
         return;
       }
@@ -228,9 +239,9 @@ class SiloPlaybackControlSocket {
         }),
       );
 
-      // A renewal opens the new connection before letting the old one go:
-      // Silo hands the lane to the newest, and a command still running on
-      // the old one keeps it long enough to send its result.
+      // A renewal opens the new connection before letting the old one go,
+      // so the lane is never empty; Silo hands it to the newest, and answers
+      // to commands still running go there.
       final previous = _channel;
       final previousSub = _channelSub;
       // A renewal every token lifetime would fill the network log.
@@ -248,8 +259,8 @@ class SiloPlaybackControlSocket {
       if (previous != null) _retire(previous, previousSub);
       _scheduleRenewal(generation, ticket.maxConnection);
     } catch (error) {
-      if (generation != _generation) return;
       unawaited(_closeChannel(opened));
+      if (generation != _generation) return;
       if (SiloPlaybackControlApi.isFinalRefusal(error)) {
         // The session is over or isn't this installation's lane: no later
         // ticket would be granted.
@@ -278,9 +289,8 @@ class SiloPlaybackControlSocket {
   }
 
   /// When a connection opened [now] is renewed: [margin] before the ticket's
-  /// limit or the access token's expiry, whichever comes first (an expiry
-  /// less than a minute out is left to Silo's close), and not sooner than
-  /// five seconds.
+  /// limit or the access token's expiry, whichever comes first, and not
+  /// sooner than five seconds.
   @visibleForTesting
   static Duration renewalDelay({
     required Duration maxConnection,
@@ -291,11 +301,7 @@ class SiloPlaybackControlSocket {
     var delay = maxConnection - margin;
     if (accessExpiresAt != null) {
       final untilExpiry = accessExpiresAt.difference(now) - margin;
-      // A token that seems about to expire (one Silo gave no lifetime) would
-      // renew every few seconds; Silo's own close then starts the next one.
-      if (untilExpiry >= const Duration(minutes: 1) && untilExpiry < delay) {
-        delay = untilExpiry;
-      }
+      if (untilExpiry < delay) delay = untilExpiry;
     }
     const floor = Duration(seconds: 5);
     return delay < floor ? floor : delay;
@@ -374,13 +380,18 @@ class SiloPlaybackControlSocket {
     final name = decoded['name'];
     final payload = decoded['payload'];
     late final Future<void> run;
-    run = _run(
-      channel,
-      sessionId,
-      commandId,
-      name is String ? name : '',
-      payload is Map ? payload : const {},
-    ).whenComplete(() => _running[channel]?.remove(run));
+    run =
+        _run(
+          channel,
+          sessionId,
+          commandId,
+          name is String ? name : '',
+          payload is Map ? payload : const {},
+        ).whenComplete(() {
+          final running = _running[channel];
+          running?.remove(run);
+          if (running != null && running.isEmpty) _running.remove(channel);
+        });
     (_running[channel] ??= {}).add(run);
   }
 
