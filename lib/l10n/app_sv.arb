@@ -13044,5 +13044,13 @@
     "groupByDecade": "Årtionde",
     "@groupByDecade": {
         "description": "Option to group library items by release decade"
+    },
+    "personalRatingMine": "Mitt betyg",
+    "@personalRatingMine": {
+        "description": "Label under the viewer's own rating in the ratings row."
+    },
+    "librarySortMyRating": "Mitt betyg",
+    "@librarySortMyRating": {
+        "description": "Sort option: by the viewer's own like or dislike"
     }
 }
