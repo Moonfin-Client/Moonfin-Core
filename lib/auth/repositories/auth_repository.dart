@@ -114,6 +114,44 @@ class AuthRepository {
     }
   }
 
+  /// Sign-in with a session the server already issued (SSO through the web
+  /// page): the token is checked against `/Users/Me` and stored like any login.
+  Future<LoginState> authenticateWithAccessToken({
+    required MediaServerClient client,
+    required String serverId,
+    required String accessToken,
+    required String userId,
+  }) async {
+    await cancelRequiredSiloPasswordChange();
+    _stateController.add(const Authenticating());
+    try {
+      client.accessToken = accessToken;
+      client.userId = userId;
+      final u = await client.usersApi.getCurrentUser();
+      return _handleAuthResult(
+        result: {
+          'AccessToken': accessToken,
+          'User': {
+            'Id': u.id.isNotEmpty ? u.id : userId,
+            'Name': u.name,
+            'PrimaryImageTag': u.primaryImageTag,
+            'Policy': u.raw['Policy'],
+          },
+        },
+        client: client,
+        serverId: serverId,
+        fallbackName: '',
+      );
+    } on DioException catch (e) {
+      return _handleDioError(e);
+    } catch (e) {
+      _logger.e('Token auth failed', error: e);
+      final state = ApiClientError(error: e.toString(), errorType: 'exception');
+      _stateController.add(state);
+      return state;
+    }
+  }
+
   Future<LoginState> _handleAuthResult({
     required Map<String, dynamic> result,
     required MediaServerClient client,

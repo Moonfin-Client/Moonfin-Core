@@ -10,6 +10,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'sso_web_login.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
@@ -137,6 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _pwBtnFocus = FocusNode();
   final _allowCertFocus = FocusNode();
   final _clientCertFocus = FocusNode();
+  final _ssoFocus = FocusNode();
+  bool _webLoginAvailable = false;
 
   Server? _server;
   MediaServerClient? _client;
@@ -228,6 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _pwBtnFocus.dispose();
     _allowCertFocus.dispose();
     _clientCertFocus.dispose();
+    _ssoFocus.dispose();
     _quickConnectTimer?.cancel();
     super.dispose();
   }
@@ -355,6 +359,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _supportsQuickConnect = supportsQC;
         _showQuickConnect = supportsQC;
         _quickConnectWebLink = features.supportsQuickConnectWebLink;
+        _webLoginAvailable =
+            ssoWebLoginSupported && server.serverType == ServerType.jellyfin;
       });
       if (supportsQC) {
         _startQuickConnect(isInitial: true);
@@ -587,6 +593,37 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       return;
     }
+    await _completeSignIn(authResult);
+  }
+
+  Future<void> _signInWithWeb() async {
+    final server = _server;
+    final client = _client;
+    if (server == null || client == null) return;
+    final creds = await showSsoWebLogin(
+      context,
+      serverAddress: server.address,
+    );
+    if (creds == null || !mounted) return;
+    final authResult = await _authRepo.authenticateWithAccessToken(
+      client: client,
+      serverId: server.id,
+      accessToken: creds.accessToken,
+      userId: creds.userId,
+    );
+    if (!mounted) return;
+    if (authResult is! Authenticated) {
+      setState(
+        () => _errorMessage = authResult is ApiClientError
+            ? authResult.error
+            : AppLocalizations.of(context).loginFailed,
+      );
+      return;
+    }
+    await _completeSignIn(authResult);
+  }
+
+  Future<void> _completeSignIn(Authenticated authResult) async {
     await _sessionRepo.switchCurrentSession(
       serverId: authResult.serverId,
       userId: authResult.userId,
@@ -955,6 +992,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildCredentialsContent(),
               ] else
                 _buildCredentialsContent(),
+              // shortcut: label not localized, add an ARB string when gen-l10n is at hand.
+              if (_webLoginAvailable) ...[
+                const SizedBox(height: 12),
+                _buildActionButton(
+                  label: 'Sign in with server website',
+                  focusNode: _ssoFocus,
+                  onPressed: _signInWithWeb,
+                ),
+              ],
             ],
           ),
         ),
