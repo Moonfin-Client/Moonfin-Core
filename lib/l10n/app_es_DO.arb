@@ -7661,5 +7661,13 @@
     "calendarSettingsActions": "Comportamiento",
     "@calendarSettingsActions": {
         "description": "Calendar settings section header for what buttons and selecting an entry do"
+    },
+    "topNavbarStyleClassic": "Clásico",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clásico",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
