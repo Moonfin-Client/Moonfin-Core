@@ -862,22 +862,20 @@ class SessionRepository {
     // last profile too (AuthenticationStore.removeUser).
     final keepsSiloLogin =
         serverId != null && _siloSiblings(serverId, userId).isNotEmpty;
-    if (serverId != null && !tokenKnownInvalid && !keepsSiloLogin) {
+    final signedOut = serverId == null
+        ? null
+        : _clientFactory.getClientIfExists(serverId);
+    if (!tokenKnownInvalid && !keepsSiloLogin) {
       try {
-        final client = _clientFactory.getClientIfExists(serverId);
-        await client?.authApi.logout();
+        await signedOut?.authApi.logout();
       } catch (_) {}
     }
 
     _remoteCommandSubscription?.cancel();
     _remoteCommandSubscription = null;
     // The lane outlives the sign-in: only a session on the server signed
-    // out of loses it (playback has stopped by now anyway).
-    final signedOut = serverId == null
-        ? null
-        : _clientFactory.getClientIfExists(serverId);
-    final signedOutSilo = signedOut == null ? null : siloClientOf(signedOut);
-    if (signedOutSilo != null) _siloPlaybackControl?.forget(signedOutSilo);
+    // out of loses it (its stop normally closes it already).
+    if (signedOut != null) _siloPlaybackControl?.forget(signedOut);
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
     _accessChangedSubscription?.cancel();
@@ -962,7 +960,8 @@ class SessionRepository {
   /// of the playing session rather than on the events socket. It runs through
   /// the same handling as a Jellyfin remote. Not tied to the events socket or
   /// to the signed-in server: it is open only while a Silo session plays, on
-  /// the server that session is on, so switching servers mid-movie keeps it.
+  /// the server that session is on, so a title from another signed-in server
+  /// gets its lane too.
   void _bindSiloPlaybackControl() {
     _siloPlaybackControl ??= SiloPlaybackControlSocket.forApp(
       handle: _handleRemoteCommand,
@@ -1666,6 +1665,7 @@ class SessionRepository {
     _remoteSearch?.close();
     _remoteCommandSubscription?.cancel();
     _siloPlaybackControl?.dispose();
+    _siloPlaybackControl = null;
     _pluginEventSubscription?.cancel();
     _accessChangedSubscription?.cancel();
     _stateController.close();

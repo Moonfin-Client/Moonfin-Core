@@ -80,7 +80,9 @@ class SiloPlaybackSession {
 }
 
 /// The Silo sessions of one client, by session id, shared by its resolver
-/// and its session service (both built from the same client).
+/// and its session service (both built from the same client). Their starts
+/// and ends go on [lifecycle], one stream for all clients, since one session
+/// plays at a time.
 class SiloPlaybackSessions {
   SiloPlaybackSessions._(this._client);
 

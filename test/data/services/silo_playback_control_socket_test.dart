@@ -148,7 +148,6 @@ void main() {
           final server = change.client as _Server;
           if (identical(server, _notSilo)) return null;
           return SiloControlEndpoint(
-            server: server,
             capabilities: () async => SiloPlaybackControlCapabilities(
               available: usable,
               allowed: true,

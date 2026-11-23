@@ -23,7 +23,6 @@ typedef SiloControlCommandHandler = Future<void> Function(
 /// What the control socket needs from the server a session plays on.
 class SiloControlEndpoint {
   const SiloControlEndpoint({
-    required this.server,
     required this.capabilities,
     required this.ticket,
     required this.uri,
@@ -35,7 +34,6 @@ class SiloControlEndpoint {
   factory SiloControlEndpoint.of(SiloMediaServerClient silo) {
     final api = silo.playbackControlApi;
     return SiloControlEndpoint(
-      server: silo,
       capabilities: api.capabilities,
       ticket: (sessionId, installationId) =>
           api.createTicket(sessionId, installationId: installationId),
@@ -51,8 +49,6 @@ class SiloControlEndpoint {
     );
   }
 
-  /// The server's client, which [SiloPlaybackControlSocket.forget] names.
-  final Object server;
   final Future<SiloPlaybackControlCapabilities> Function() capabilities;
 
   /// A ticket for a session id and installation id.
@@ -566,10 +562,17 @@ class SiloPlaybackControlSocket {
     );
   }
 
-  /// Lets go of a session on [server] (its login signed out). A session on
-  /// another server keeps its lane.
-  void forget(Object server) {
-    if (identical(_endpoint?.server, server)) _close();
+  /// Lets go of a session on [client]'s server (its login signed out). A
+  /// session on another server keeps its lane.
+  void forget(MediaServerClient client) {
+    final following = _following;
+    if (following == null) return;
+    // Either may be the offline-aware wrapper around the Silo client.
+    final silo = siloClientOf(client);
+    if (identical(client, following.client) ||
+        (silo != null && identical(silo, siloClientOf(following.client)))) {
+      _close();
+    }
   }
 
   void dispose() {
