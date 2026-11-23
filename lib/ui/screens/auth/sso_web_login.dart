@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -17,20 +18,38 @@ bool get ssoWebLoginSupported =>
     !kIsWeb && (PlatformDetection.isAndroid || PlatformDetection.isIOS ||
         PlatformDetection.isMacOS || PlatformDetection.isWindows);
 
-/// Opens the server's own Jellyfin web login (`/web/`) in a private webview,
-/// so any method it offers works (password, Quick Connect, SSO plugins...).
-/// Once signed in, the web client stores the session in localStorage
-/// (`jellyfin_credentials`) and that is read. Null if the page is closed.
+/// Provider names configured in the server's SSO plugin
+/// (9p4/jellyfin-plugin-sso, `GET /sso/OID/GetNames`, anonymous).
+/// Empty when the plugin isn't installed or the call fails.
+Future<List<String>> fetchSsoProviders(String serverAddress) async {
+  try {
+    final base = serverAddress.replaceAll(RegExp(r'/+$'), '');
+    final res = await Dio().get<dynamic>(
+      '$base/sso/OID/GetNames',
+      options: Options(receiveTimeout: const Duration(seconds: 5)),
+    );
+    final data = res.data;
+    return data is List ? data.map((e) => e.toString()).toList() : const [];
+  } catch (_) {
+    return const [];
+  }
+}
+
+/// Opens `/sso/OID/start/<provider>` in a private webview. The plugin's
+/// callback page signs in and the Jellyfin web client stores the session in
+/// localStorage (`jellyfin_credentials`), which is read. Null if the page is
+/// closed.
 Future<SsoCredentials?> showSsoWebLogin(
   BuildContext context, {
   required String serverAddress,
+  required String provider,
 }) {
   final base = serverAddress.replaceAll(RegExp(r'/+$'), '');
   return Navigator.of(context, rootNavigator: true).push<SsoCredentials>(
     MaterialPageRoute(
       fullscreenDialog: true,
       builder: (_) => _SsoWebLoginPage(
-        startUrl: '$base/web/',
+        startUrl: '$base/sso/OID/start/${Uri.encodeComponent(provider)}',
       ),
     ),
   );

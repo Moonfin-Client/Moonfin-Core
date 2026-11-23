@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _allowCertFocus = FocusNode();
   final _clientCertFocus = FocusNode();
   final _ssoFocus = FocusNode();
-  bool _webLoginAvailable = false;
+  List<String> _ssoProviders = const [];
 
   Server? _server;
   MediaServerClient? _client;
@@ -359,9 +359,12 @@ class _LoginScreenState extends State<LoginScreen> {
         _supportsQuickConnect = supportsQC;
         _showQuickConnect = supportsQC;
         _quickConnectWebLink = features.supportsQuickConnectWebLink;
-        _webLoginAvailable =
-            ssoWebLoginSupported && server.serverType == ServerType.jellyfin;
       });
+      if (ssoWebLoginSupported && server.serverType == ServerType.jellyfin) {
+        fetchSsoProviders(server.address).then((p) {
+          if (mounted) setState(() => _ssoProviders = p);
+        });
+      }
       if (supportsQC) {
         _startQuickConnect(isInitial: true);
       } else {
@@ -596,13 +599,14 @@ class _LoginScreenState extends State<LoginScreen> {
     await _completeSignIn(authResult);
   }
 
-  Future<void> _signInWithWeb() async {
+  Future<void> _signInWithSso(String provider) async {
     final server = _server;
     final client = _client;
     if (server == null || client == null) return;
     final creds = await showSsoWebLogin(
       context,
       serverAddress: server.address,
+      provider: provider,
     );
     if (creds == null || !mounted) return;
     final authResult = await _authRepo.authenticateWithAccessToken(
@@ -992,13 +996,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildCredentialsContent(),
               ] else
                 _buildCredentialsContent(),
-              // shortcut: label not localized, add an ARB string when gen-l10n is at hand.
-              if (_webLoginAvailable) ...[
+              // shortcut: first SSO provider only and label not localized; add a picker/ARB string when needed.
+              if (_ssoProviders.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _buildActionButton(
-                  label: 'Sign in with server website',
+                  label: 'Sign in with SSO',
                   focusNode: _ssoFocus,
-                  onPressed: _signInWithWeb,
+                  onPressed: () => _signInWithSso(_ssoProviders.first),
                 ),
               ],
             ],
