@@ -15646,25 +15646,28 @@ class DetailSeasonsRow extends StatelessWidget {
                       seasonId: season.id,
                       scale: 0.85,
                     ),
-                    PosterBadges(
-                      itemId: season.id,
-                      scale: 0.85,
-                      padding: const EdgeInsets.only(top: 4),
-                    ),
+                    // A Seerr-only season isn't in the library, so it has no labels.
+                    if (onSeasonTap == null)
+                      PosterBadges(
+                        itemId: season.id,
+                        scale: 0.85,
+                        padding: const EdgeInsets.only(top: 4),
+                      ),
                   ],
                 ),
               ),
               // The other corners, clear of the Seerr banner and the watched badge.
-              Positioned.fill(
-                child: PosterBadgeCorners(
-                  itemId: season.id,
-                  scale: 0.85,
-                  top: (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) +
-                      (season.isPlayed || (season.unplayedItemCount ?? 0) > 0
-                          ? 34
-                          : 6),
+              if (onSeasonTap == null)
+                Positioned.fill(
+                  child: PosterBadgeCorners(
+                    itemId: season.id,
+                    scale: 0.85,
+                    top: (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) +
+                        (season.isPlayed || (season.unplayedItemCount ?? 0) > 0
+                            ? 34
+                            : 6),
+                  ),
                 ),
-              ),
             ],
             focusColor: isNeon
                 ? AppColorScheme.accent
