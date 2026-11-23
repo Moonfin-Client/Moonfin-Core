@@ -60,6 +60,12 @@ class _LiveTvChannelPlayerLoaderState extends State<LiveTvChannelPlayerLoader> {
         fields: 'ImageTags,UserData',
         enableTotalRecordCount: false,
         userId: client.userId,
+        // Cap the zap list so a huge IPTV lineup doesn't load and map tens of
+        // thousands of channels on the main thread. A target outside the cap
+        // still plays through the single-channel fallback below.
+        limit: client.serverType == ServerType.iptv
+            ? LiveTvGuideViewModel.maxGuideChannels
+            : null,
       );
       final items = (response['Items'] as List?) ?? const [];
       final sortBy =

@@ -196,6 +196,7 @@ void main() {
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user');
     when(() => client.liveTvApi).thenReturn(liveTv);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
 
     backend = _Backend();
     manager = _Manager(backend);
@@ -386,6 +387,7 @@ void main() {
         sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        limit: any(named: 'limit'),
         userId: any(named: 'userId'),
       ),
     ).thenAnswer(

@@ -100,6 +100,7 @@ void _stubChannels(LiveTvApi liveTv, List<Map<String, dynamic>> channels) {
       sortOrder: any(named: 'sortOrder'),
       fields: any(named: 'fields'),
       enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+      limit: any(named: 'limit'),
       userId: any(named: 'userId'),
     ),
   ).thenAnswer((_) async => {'Items': channels});
@@ -115,6 +116,7 @@ void main() {
     liveTv = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTv);
     when(() => client.userId).thenReturn('user');
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => _guide(liveTv)).thenAnswer((_) async => {'Items': <dynamic>[]});
   });
 
@@ -146,6 +148,7 @@ void main() {
         sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        limit: any(named: 'limit'),
         userId: any(named: 'userId'),
       ),
     ).thenAnswer((_) async => {'Items': channels});
@@ -241,6 +244,7 @@ void main() {
         sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        limit: any(named: 'limit'),
         userId: any(named: 'userId'),
       ),
     ).thenAnswer(
@@ -295,6 +299,7 @@ void main() {
         sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        limit: any(named: 'limit'),
         userId: any(named: 'userId'),
       ),
     ).thenAnswer(
@@ -351,6 +356,7 @@ void main() {
         sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        limit: any(named: 'limit'),
         userId: any(named: 'userId'),
       ),
     ).thenAnswer((_) async => {'Items': channels});
@@ -385,6 +391,7 @@ void main() {
           sortOrder: any(named: 'sortOrder'),
           fields: any(named: 'fields'),
           enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          limit: any(named: 'limit'),
           userId: any(named: 'userId'),
         ),
       ).thenAnswer(
@@ -462,6 +469,7 @@ void main() {
           sortOrder: any(named: 'sortOrder'),
           fields: any(named: 'fields'),
           enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          limit: any(named: 'limit'),
           userId: any(named: 'userId'),
         ),
       ).thenAnswer(
@@ -619,6 +627,7 @@ void main() {
             sortOrder: any(named: 'sortOrder'),
             fields: any(named: 'fields'),
             enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+            limit: any(named: 'limit'),
             userId: any(named: 'userId'),
           ),
         ).thenAnswer(
@@ -821,6 +830,7 @@ void main() {
           sortOrder: any(named: 'sortOrder'),
           fields: any(named: 'fields'),
           enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          limit: any(named: 'limit'),
           userId: any(named: 'userId'),
         ),
       ).thenAnswer(
@@ -933,6 +943,7 @@ void main() {
           sortOrder: any(named: 'sortOrder'),
           fields: any(named: 'fields'),
           enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          limit: any(named: 'limit'),
           userId: any(named: 'userId'),
         ),
       ).thenAnswer(
@@ -978,6 +989,7 @@ void main() {
           sortOrder: any(named: 'sortOrder'),
           fields: any(named: 'fields'),
           enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          limit: any(named: 'limit'),
           userId: any(named: 'userId'),
         ),
       ).thenAnswer((_) async => {'Items': channels});
@@ -1131,6 +1143,7 @@ void main() {
         sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
         enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+        limit: any(named: 'limit'),
         userId: any(named: 'userId'),
       ),
     ).thenAnswer((_) => reply.future);

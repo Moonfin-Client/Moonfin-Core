@@ -956,14 +956,36 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     _atLivePosition = true;
   }
 
+  /// Huge IPTV lineups can reach tens of thousands of channels. The guide
+  /// caps what it renders and surfaces a banner so the user can narrow the
+  /// lineup instead of hanging the grid.
+  static const int maxGuideChannels = 1500;
+
+  int _totalChannelCount = 0;
+
+  /// Total lineup size reported by the server, before the guide cap.
+  int get totalChannelCount => _totalChannelCount;
+
+  int get loadedChannelCount => _channels.length;
+
+  bool get isChannelListTruncated => _totalChannelCount > _channels.length;
+
+  /// True when the lineup comes from the local IPTV catalog, which offers a
+  /// group allowlist for narrowing huge lineups.
+  bool get isIptvLineup => _client.serverType == ServerType.iptv;
+
   Future<bool> _fetchChannels(int loadGeneration) async {
     final revision = userDataSync.revision;
     final session = userDataSync.session;
+    final iptv = isIptvLineup;
     final response = await _client.liveTvApi.getChannels(
-      sortBy: 'SortName',
+      // IPTV keeps the provider's numbering, so the cap holds the start of
+      // the lineup and not whatever sorts first by name.
+      sortBy: iptv ? null : 'SortName',
       sortOrder: 'Ascending',
       fields: 'ImageTags,UserData',
-      enableTotalRecordCount: false,
+      enableTotalRecordCount: iptv,
+      limit: iptv ? maxGuideChannels : null,
       userId: _client.userId,
     );
     // A user switch while this was out would publish the old user's favorites.
@@ -999,6 +1021,9 @@ class LiveTvGuideViewModel extends ChangeNotifier {
             .map((channel) => channel.withSyncedUserData())
             .toList()
           ..sort(comparatorFor(_sortBy));
+    _totalChannelCount = iptv
+        ? (response['TotalRecordCount'] as num?)?.toInt() ?? _channels.length
+        : _channels.length;
     return true;
   }
 

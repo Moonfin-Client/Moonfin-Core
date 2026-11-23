@@ -6,9 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../auth/repositories/server_repository.dart';
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/series_recording_episodes.dart';
+import '../../../data/services/iptv/iptv_recording_service.dart';
+import '../../../data/services/iptv/iptv_reminder_service.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../data/services/user_data_sync.dart';
 import '../../../l10n/app_localizations.dart';
@@ -1355,17 +1360,16 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         );
       case GuideState.ready:
         final channels = _vm.filteredChannels;
-        if (channels.isEmpty) {
-          return Center(
-            child: Text(
-              AppLocalizations.of(context).noChannelsFound,
-              style: TextStyle(color: Colors.white.withAlpha(179)),
-            ),
-          );
+        if (channels.isEmpty) return _buildNoChannels();
+        if (_mobileView == EpgMobileView.grid) {
+          return _buildGuideGrid(channels);
         }
-        return _mobileView == EpgMobileView.grid
-            ? _buildGuideGrid(channels)
-            : _buildNowNextList(channels);
+        return Column(
+          children: [
+            if (_vm.isChannelListTruncated) _buildTruncationBanner(),
+            Expanded(child: _buildNowNextList(channels)),
+          ],
+        );
     }
   }
 
@@ -1760,16 +1764,72 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         );
       case GuideState.ready:
         final channels = _vm.filteredChannels;
-        if (channels.isEmpty) {
-          return Center(
-            child: Text(
-              AppLocalizations.of(context).noChannelsFound,
-              style: TextStyle(color: Colors.white.withAlpha(179)),
-            ),
-          );
-        }
+        if (channels.isEmpty) return _buildNoChannels();
         return _buildGuideGrid(channels);
     }
+  }
+
+  /// Shown when the lineup exceeds the guide cap so the user knows rows are
+  /// missing and, on IPTV, can narrow the lineup by group.
+  Widget _buildTruncationBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      color: Colors.amber.withValues(alpha: 0.12),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline, size: 16, color: Colors.amber),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).iptvShowingChannels(
+                _vm.loadedChannelCount,
+                _vm.totalChannelCount,
+              ),
+              style: const TextStyle(color: Colors.amber, fontSize: 12),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (_vm.isIptvLineup)
+            TextButton(
+              onPressed: _openIptvGroups,
+              child: Text(
+                AppLocalizations.of(context).iptvManageGroups,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// An IPTV lineup is empty when no channel group is turned on, so it links
+  /// to the group list from here too.
+  Widget _buildNoChannels() {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            l10n.noChannelsFound,
+            style: TextStyle(color: Colors.white.withAlpha(179)),
+          ),
+          if (_vm.isIptvLineup)
+            TextButton(
+              onPressed: _openIptvGroups,
+              child: Text(l10n.iptvManageGroups),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openIptvGroups() async {
+    await context.push(Destinations.iptvGroups);
+    if (!mounted) return;
+    unawaited(_vm.load(windowStart: guideLeftEdge(DateTime.now())));
   }
 
   Widget _buildGuideGrid(List<GuideChannel> channels) {
@@ -1778,6 +1838,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
     return Column(
       children: [
+        if (_vm.isChannelListTruncated) _buildTruncationBanner(),
         HorizontalScrollSection(
           title: '',
           scrollController: _timeHeaderHorizontalScrollController,
@@ -2548,13 +2609,40 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     if (restoredIndex >= 0) _focusChannelRow(restoredIndex);
   }
 
-  void _showProgramDetails(GuideProgram program) {
+  /// Plays an archived program through the channel's catchup stream.
+  Future<void> _watchCatchup(GuideProgram program) async {
+    final manager = GetIt.instance<PlaybackManager>();
+    await manager.playItems([
+      AggregatedItem(
+        id: program.id,
+        serverId: ServerRepository.iptvServerId,
+        rawData: program.rawData,
+      ),
+    ]);
+    if (!mounted) return;
+    unawaited(context.push(Destinations.videoPlayer));
+  }
+
+  Future<void> _showProgramDetails(GuideProgram program) async {
     _cancelPendingVerticalMove();
     final pageContext = context;
     final channel = _vm.channelForId(program.channelId);
     final isFavoriteChannel = channel?.isFavorite ?? false;
     final hasTimer = program.hasTimer;
     final hasSeriesTimer = program.hasSeriesTimer;
+    final supportsCatchup = program.rawData['SupportsCatchup'] == true;
+    final canRecord = !_vm.isIptvLineup || IptvRecordingService.supported;
+    final canRemind =
+        _vm.isIptvLineup &&
+        IptvReminderService.supported &&
+        program.startDate.isAfter(DateTime.now());
+    final hasReminder =
+        canRemind &&
+        await GetIt.instance<IptvReminderService>().isReminderSet(
+          channelItemId: program.channelId,
+          start: program.startDate,
+        );
+    if (!mounted) return;
     final now = DateTime.now();
     // That airing is over. Only a future or currently-airing showing can still be recorded.
     final isEnded = now.isAfter(program.endDate);
@@ -2665,8 +2753,20 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             ),
           ),
           actions: [
+            if (supportsCatchup)
+              adaptiveDialogAction(
+                onPressed: () {
+                  if (dialogActionInProgress) return;
+                  dialogActionInProgress = true;
+                  Navigator.of(dialogContext).pop();
+                  _watchCatchup(program);
+                },
+                child: Text(
+                  program.isLive ? l10n.iptvWatchFromBeginning : l10n.watch,
+                ),
+              ),
             // That airing is over. Single-episode recording no longer applies.
-            if (!isEnded)
+            if (!isEnded && canRecord)
               adaptiveDialogAction(
                 autofocus: isRecordingNow,
                 focusNode: isRecordingNow ? defaultActionFocusNode : null,
@@ -2766,7 +2866,56 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 },
                 child: Text(l10n.seriesRecordingSettings),
               ),
-            if (program.isSeries)
+            if (canRemind)
+              adaptiveDialogAction(
+                onPressed: () async {
+                  if (dialogActionInProgress) return;
+                  dialogActionInProgress = true;
+                  final reminders = GetIt.instance<IptvReminderService>();
+                  try {
+                    if (hasReminder) {
+                      await reminders.removeReminder(
+                        channelItemId: program.channelId,
+                        start: program.startDate,
+                      );
+                    } else {
+                      await reminders.addReminder(
+                        channelItemId: program.channelId,
+                        title: program.name,
+                        start: program.startDate,
+                      );
+                    }
+                    if (!pageContext.mounted || !dialogContext.mounted) return;
+                    Navigator.of(dialogContext).pop();
+                    ScaffoldMessenger.of(pageContext).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          hasReminder
+                              ? l10n.iptvReminderCancelled
+                              : l10n.iptvReminderSet,
+                        ),
+                      ),
+                    );
+                  } catch (_) {
+                    dialogActionInProgress = false;
+                    if (!pageContext.mounted) return;
+                    ScaffoldMessenger.of(pageContext).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          hasReminder
+                              ? l10n.iptvReminderCancelFailed
+                              : l10n.iptvReminderSetFailed,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  hasReminder ? l10n.iptvCancelReminder : l10n.iptvRemindMe,
+                ),
+              ),
+            // The IPTV recorder has no series rules.
+            if (program.isSeries && !_vm.isIptvLineup)
               adaptiveDialogAction(
                 onPressed: () async {
                   if (dialogActionInProgress) return;
