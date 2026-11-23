@@ -45,6 +45,8 @@ class _FakeManager extends Fake implements PlaybackManager {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late _FakeManager manager;
   late _CountingSocketHandler socket;
   late SessionRepository repository;
