@@ -100,6 +100,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('oledMode', UserPreferences.oledMode, SyncCodec.enumName, enumValues: prefs.OledMode.values),
   SyncedField('navbarPosition', UserPreferences.navbarPosition, SyncCodec.enumName, enumValues: NavigationLayout.availableNavbarPositions),
   SyncedField('bottomNavbarStyle', UserPreferences.bottomNavbarStyle, SyncCodec.enumName, enumValues: prefs.BottomNavbarStyle.values),
+  SyncedField('topNavbarStyle', UserPreferences.topNavbarStyle, SyncCodec.enumName, enumValues: prefs.TopNavbarStyle.values),
+  SyncedField('sidebarStyle', UserPreferences.sidebarStyle, SyncCodec.enumName, enumValues: prefs.SidebarStyle.values),
   SyncedField('bottomNavbarTabs', UserPreferences.bottomNavbarTabs, SyncCodec.csvList),
   SyncedField('focusColor', UserPreferences.focusColor, SyncCodec.enumName, enumValues: prefs.AppTheme.values),
   SyncedField('watchedIndicator', UserPreferences.watchedIndicatorBehavior, SyncCodec.enumName, enumValues: prefs.WatchedIndicatorBehavior.values),

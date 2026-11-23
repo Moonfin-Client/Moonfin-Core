@@ -5876,11 +5876,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Qualsevol contingut multimèdia nou afegit a la biblioteca';
 
   @override
-  String get seerrTestNotification => 'Send Test Notification';
+  String get seerrTestNotification => 'Envia una notificació de prova';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Verify in-app and background push delivery';
+      'Comprova el lliurament de notificacions push dins de l\'aplicació i en segon pla';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5892,30 +5892,31 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString devices',
-      one: '1 device',
+      other: '$countString dispositius',
+      one: '1 dispositiu',
     );
-    return 'Dispatched to $_temp0.';
+    return 'S\'ha enviat a $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'In-app notification sent. Server push is not enabled.';
+      'S\'ha enviat la notificació dins de l\'aplicació. Les notificacions push del servidor no estan activades.';
 
   @override
-  String get seerrTestNotificationFailed => 'Failed to send test notification';
+  String get seerrTestNotificationFailed =>
+      'No s\'ha pogut enviar la notificació de prova';
 
   @override
-  String get seerrPushServerStatus => 'Server Push';
+  String get seerrPushServerStatus => 'Push del servidor';
 
   @override
-  String get seerrPushDeviceStatus => 'Device Push';
+  String get seerrPushDeviceStatus => 'Push del dispositiu';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registered';
+  String get seerrPushDeviceRegistered => 'Registrat';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Not registered';
+  String get seerrPushDeviceNotRegistered => 'No registrat';
 
   @override
   String loggedInAs(String username) {
@@ -18661,4 +18662,65 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get clickpadSeekingPausedOnly => 'Només en pausa';
+
+  @override
+  String get topNavbarStyle => 'Top Bar Style';
+
+  @override
+  String get topNavbarStyleClassic => 'Classic';
+
+  @override
+  String get topNavbarStyleTabline => 'Tabline';
+
+  @override
+  String get topNavbarStyleAtlas => 'Atlas';
+
+  @override
+  String get topNavbarStyleClassicHint => 'The standard bar';
+
+  @override
+  String get topNavbarStyleTablineHint =>
+      'Text tabs with an underline, no pill';
+
+  @override
+  String get topNavbarStyleAtlasHint =>
+      'Tabs open a panel with shortcuts and artwork';
+
+  @override
+  String get sidebarStyle => 'Sidebar Style';
+
+  @override
+  String get sidebarStyleClassic => 'Classic';
+
+  @override
+  String get sidebarStyleReel => 'Reel';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'The standard sidebar';
+
+  @override
+  String get sidebarStyleReelHint =>
+      'A wheel that turns through the destinations';
+
+  @override
+  String get sidebarStyleMosaicHint => 'A panel of tiles with library artwork';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Continue in $section';
+  }
+
+  @override
+  String navFeatured(String title) {
+    return 'Featured: $title';
+  }
+
+  @override
+  String get navOpenMenu => 'Open menu';
+
+  @override
+  String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
 }

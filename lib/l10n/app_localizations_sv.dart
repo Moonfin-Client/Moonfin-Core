@@ -3712,87 +3712,88 @@ class AppLocalizationsSv extends AppLocalizations {
       'Spel är alltid prioriterat och de låsta knapparna visas alltid. Allt annat bestämmer du själv, och varje typ av enhet har sin egen lista.';
 
   @override
-  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+  String get actionButtonsOnScreen => 'Åtgärdsknappar på skärmen';
 
   @override
   String get actionButtonsOnScreenDescription =>
-      'Customize how many action buttons appear before folding into the More Actions menu.';
+      'Anpassa hur många åtgärdsknappar som ska visas innan de döljs i menyn ”Fler åtgärder”.';
 
   @override
-  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+  String get actionButtonsOnScreenAuto =>
+      'Auto (standardinställning för temat)';
 
   @override
-  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+  String get actionButtonsOnScreenPlayOnly => '1 (Endast uppspelning)';
 
   @override
-  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
+  String get actionButtonsOnScreenAll => 'Alla (horisontell rullning)';
 
   @override
-  String get detailMetadata => 'Metadata Row';
+  String get detailMetadata => 'Metadata-rad';
 
   @override
   String get detailMetadataDescription =>
-      'Choose and reorder what metadata the details screen shows';
+      'Välj och ändra ordningen på vilka metadata som ska visas på informationsskärmen';
 
   @override
   String get detailMetadataSectionDescription =>
-      'Turn metadata items on or off, and arrange the order they appear on the details screen. Each kind of device keeps its own list.';
+      'Aktivera eller inaktivera metadataobjekt och ange i vilken ordning de ska visas på detaljskärmen. Varje typ av enhet har sin egen lista.';
 
   @override
-  String get detailMetadataYear => 'Release Year';
+  String get detailMetadataYear => 'Utgivningsår';
 
   @override
   String get detailMetadataParentalRating => 'Åldersgräns';
 
   @override
-  String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
+  String get detailMetadataRuntimeAndSeasons => 'Sändningstid & säsonger';
 
   @override
   String get detailMetadataStatus => 'Seriestatus';
 
   @override
   String get detailMetadataStatusSubtitle =>
-      'Shows whether the series is continuing, ended, or returning';
+      'Visar om serien pågår, har avslutats eller kommer tillbaka';
 
   @override
   String get detailMetadataGenres => 'Genrer';
 
   @override
-  String get detailMetadataSeerrAvailability => 'Seerr Availability';
+  String get detailMetadataSeerrAvailability => 'Seerrs tillgänglighet';
 
   @override
   String get detailMetadataSeerrAvailabilitySubtitle =>
-      'Shows request and media availability status from Seerr';
+      'Visar status för förfrågningar och medietillgänglighet från Seerr';
 
   @override
-  String get detailMetadataUpcomingEpisodeDate => 'Upcoming Episodes';
+  String get detailMetadataUpcomingEpisodeDate => 'Kommande avsnitt';
 
   @override
   String get detailMetadataUpcomingEpisodeDateSubtitle =>
-      'Uses Sonarr and TMDB to show upcoming release dates';
+      'Använder Sonarr och TMDB för att visa kommande releasedatum';
 
   @override
-  String get detailSections => 'Sections';
+  String get detailSections => 'Avsnitt';
 
   @override
   String get detailSectionsDescription =>
-      'Choose which parts of the Details screen to show';
+      'Välj vilka delar av skärmen ”Detaljer” som ska visas';
 
   @override
   String get detailSectionsScreenDescription =>
-      'Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.';
+      'Endast de avsnitt som kan visas i den aktuella utformningen av detaljskärmen visas i listan. Om du döljer ett avsnitt döljs det i alla utformningar där det förekommer.';
 
   @override
-  String get detailSectionGroupHeader => 'Header';
+  String get detailSectionGroupHeader => 'Rubrik';
 
   @override
-  String get detailSectionGroupSections => 'Sections';
+  String get detailSectionGroupSections => 'Avsnitt';
 
   @override
-  String get detailSectionGroupPerson => 'Person pages';
+  String get detailSectionGroupPerson => 'Personsidor';
 
   @override
-  String get detailSectionGroupCollection => 'Collection pages';
+  String get detailSectionGroupCollection => 'Samlingssidor';
 
   @override
   String get detailSectionGroupOther => 'Andra';
@@ -3801,7 +3802,8 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailSectionLogo => 'Logotyp';
 
   @override
-  String get detailSectionLogoSubtitle => 'Shows the title as text when off';
+  String get detailSectionLogoSubtitle =>
+      'Visar titeln som text när den är avstängd';
 
   @override
   String get detailSectionTagline => 'Slogan';
@@ -3810,7 +3812,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailSectionPoster => 'Affisch';
 
   @override
-  String get detailSectionVersionBadge => 'Version badge';
+  String get detailSectionVersionBadge => 'Versionsmärkning';
 
   @override
   String get detailSectionUpNext => 'Nästa avsnitt';
@@ -3822,10 +3824,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailSectionCast => 'Casta';
 
   @override
-  String get detailSectionCastSubtitle => 'Also on collection pages';
+  String get detailSectionCastSubtitle => 'Även på samlingssidorna';
 
   @override
-  String get detailSectionCrew => 'Directors & writers';
+  String get detailSectionCrew => 'Regissörer & manusförfattare';
 
   @override
   String get detailSectionStudios => 'Studior';
@@ -3843,92 +3845,92 @@ class AppLocalizationsSv extends AppLocalizations {
   String get detailSectionMoreLikeThis => 'Mer sånt här';
 
   @override
-  String get detailSectionMoreLikeThisSubtitle =>
-      'Also similar albums and artists';
+  String get detailSectionMoreLikeThisSubtitle => 'Liknande album och artister';
 
   @override
   String get detailSectionMoreEpisodes => 'More episodes';
 
   @override
-  String get detailSectionMoreEpisodesSubtitle => 'On episode pages';
+  String get detailSectionMoreEpisodesSubtitle => 'På avsnittssidorna';
 
   @override
-  String get detailSectionMediaInfo => 'Media info';
+  String get detailSectionMediaInfo => 'Medieinformation';
 
   @override
   String get detailSectionMediaInfoSubtitle =>
-      'File, streams and Direct Play check';
+      'Kontroll av filer, strömmar och Direct Play';
 
   @override
-  String get detailSectionSeerrGenresTags => 'Genres & tags';
+  String get detailSectionSeerrGenresTags => 'Genrer & taggar';
 
   @override
-  String get detailSectionSeerrStats => 'Stats';
+  String get detailSectionSeerrStats => 'Statistik';
 
   @override
-  String get detailSectionSeerrStreaming => 'Streaming services';
+  String get detailSectionSeerrStreaming => 'Streamingtjänster';
 
   @override
-  String get seerrStreamingOn => 'Streaming on';
+  String get seerrStreamingOn => 'Streaming på';
 
   @override
   String get detailSectionSeerrRecommendations => 'Rekommendationer';
 
   @override
-  String get detailSectionSeerrSimilar => 'Similar titles';
+  String get detailSectionSeerrSimilar => 'Liknande titlar';
 
   @override
-  String get detailSectionSeerrCollection => 'Collection banner';
+  String get detailSectionSeerrCollection => 'Samlingsbanner';
 
   @override
   String get detailSectionSeerrPersonAppearances => 'Medverkan';
 
   @override
-  String get detailSectionSeerrPersonCrew => 'Crew credits';
+  String get detailSectionSeerrPersonCrew => 'Medverkande';
 
   @override
-  String get detailSectionPersonPagesSubtitle => 'On person pages';
+  String get detailSectionPersonPagesSubtitle => 'På personsidor';
 
   @override
   String get detailSectionBiography => 'Biografi';
 
   @override
-  String get detailSectionBirthplace => 'Birthplace';
+  String get detailSectionBirthplace => 'Födelseort';
 
   @override
-  String get detailSectionPersonLinks => 'Links';
+  String get detailSectionPersonLinks => 'Länkar';
 
   @override
-  String get detailSectionPersonLinksSubtitle => 'IMDb, TMDB and social media';
+  String get detailSectionPersonLinksSubtitle =>
+      'IMDb, TMDB och sociala medier';
 
   @override
-  String get detailSectionGuestAppearances => 'Guest appearances';
+  String get detailSectionGuestAppearances => 'Gästframträdanden';
 
   @override
-  String get detailSectionMusicVideos => 'Music videos';
+  String get detailSectionMusicVideos => 'Musikvideor';
 
   @override
-  String get detailSectionPlaylistOrder => 'Playlist order';
+  String get detailSectionPlaylistOrder => 'Spellistans ordning';
 
   @override
-  String get detailSectionBookGenres => 'Book genres';
+  String get detailSectionBookGenres => 'Bokgenrer';
 
   @override
-  String get detailSectionPhotoExif => 'Photo details';
+  String get detailSectionPhotoExif => 'Bildinformation';
 
   @override
   String upcomingEpisodeNext(String date, int season, int episode) {
-    return 'Next: $date (S$season:E$episode)';
+    return 'Nästa: $date (S$season:E$episode)';
   }
 
   @override
   String get upcomingEpisodeToday => 'I dag';
 
   @override
-  String get upcomingEpisodeTomorrow => 'Tomorrow';
+  String get upcomingEpisodeTomorrow => 'I morgon';
 
   @override
-  String get radarrCalendarRow => 'Upcoming Movies (Radarr)';
+  String get radarrCalendarRow => 'Kommande filmer (Radarr)';
 
   @override
   String get sonarrCalendarRow => 'Upcoming TV Shows (Sonarr)';
@@ -4919,7 +4921,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get libraryStyleModern => 'Modern';
 
   @override
-  String get libraryStyleDocked => 'Docked';
+  String get libraryStyleDocked => 'I docka';
 
   @override
   String get bookLibraryStyle => 'Book Library Style';
@@ -5537,10 +5539,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get screensaverAdditionalComponent => 'Additional Component';
 
   @override
-  String get screensaverComponentMoonfinLogo => 'Moonfin Logo';
+  String get screensaverComponentMoonfinLogo => 'Moonfin logotypen';
 
   @override
-  String get screensaverComponentRunner => 'Runner';
+  String get screensaverComponentRunner => 'Löpare';
 
   @override
   String get screensaverComponentMovement => 'Component Movement';
@@ -12789,7 +12791,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get sinceYouWatchedSourceLocal => 'Moonfin Recommends';
 
   @override
-  String get sinceYouWatchedSourceServer => 'Server Recommends';
+  String get sinceYouWatchedSourceServer => 'Serverens rekommendationer';
 
   @override
   String get sinceYouWatchedSourceOnline => 'TMDb-likhet';
@@ -13692,7 +13694,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get watchPartySendToParty => 'Send to the party';
 
   @override
-  String get watchPartyBackToClose => 'Back to close';
+  String get watchPartyBackToClose => 'Tillbaka till stängning';
 
   @override
   String get watchPartyType => 'Typ';
@@ -13844,7 +13846,7 @@ class AppLocalizationsSv extends AppLocalizations {
       'How you compare with other users on this server';
 
   @override
-  String get achievementsRecap => 'Recap';
+  String get achievementsRecap => 'Sammanfattning';
 
   @override
   String get achievementsRecapSubtitle => 'What you watched recently';
@@ -15829,7 +15831,7 @@ class AppLocalizationsSv extends AppLocalizations {
       'Full-screen, with sections stacked instead of tabs.';
 
   @override
-  String get setupStyleMinimalist => 'Minimalist';
+  String get setupStyleMinimalist => 'Minimalistisk';
 
   @override
   String get setupDetailMinimalistHint =>
@@ -15850,7 +15852,7 @@ class AppLocalizationsSv extends AppLocalizations {
       'The title centered over a full screen backdrop, with everything else down the page.';
 
   @override
-  String get setupStyleQuickLook => 'Quick Look';
+  String get setupStyleQuickLook => 'Översikt';
 
   @override
   String get setupDetailQuickLookHint =>
@@ -16369,13 +16371,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get animationSpeedExtraSlow => 'Extra Slow';
 
   @override
-  String get animationSpeedSlow => 'Slow';
+  String get animationSpeedSlow => 'Långsamt';
 
   @override
   String get animationSpeedMedium => 'Mellan';
 
   @override
-  String get animationSpeedFast => 'Fast';
+  String get animationSpeedFast => 'Snabbt';
 
   @override
   String get animationSpeedOff => 'Av';
@@ -16717,7 +16719,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playlistNoMatchingTracks => 'No tracks match the active filters';
 
   @override
-  String get librarySortPlaylistOrder => 'Playlist Order';
+  String get librarySortPlaylistOrder => 'Spellistans ordning';
 
   @override
   String get librarySortDateAdded => 'Datum Tillagt';
@@ -17087,7 +17089,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playerTransportOnScreen => 'On screen';
 
   @override
-  String get playerTransportDocked => 'Docked';
+  String get playerTransportDocked => 'I docka';
 
   @override
   String get incompleteRecording => 'Incomplete';
@@ -18379,4 +18381,65 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get clickpadSeekingPausedOnly => 'Only while paused';
+
+  @override
+  String get topNavbarStyle => 'Top Bar Style';
+
+  @override
+  String get topNavbarStyleClassic => 'Classic';
+
+  @override
+  String get topNavbarStyleTabline => 'Tabline';
+
+  @override
+  String get topNavbarStyleAtlas => 'Atlas';
+
+  @override
+  String get topNavbarStyleClassicHint => 'The standard bar';
+
+  @override
+  String get topNavbarStyleTablineHint =>
+      'Text tabs with an underline, no pill';
+
+  @override
+  String get topNavbarStyleAtlasHint =>
+      'Tabs open a panel with shortcuts and artwork';
+
+  @override
+  String get sidebarStyle => 'Sidebar Style';
+
+  @override
+  String get sidebarStyleClassic => 'Classic';
+
+  @override
+  String get sidebarStyleReel => 'Reel';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'The standard sidebar';
+
+  @override
+  String get sidebarStyleReelHint =>
+      'A wheel that turns through the destinations';
+
+  @override
+  String get sidebarStyleMosaicHint => 'A panel of tiles with library artwork';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Continue in $section';
+  }
+
+  @override
+  String navFeatured(String title) {
+    return 'Featured: $title';
+  }
+
+  @override
+  String get navOpenMenu => 'Open menu';
+
+  @override
+  String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
 }

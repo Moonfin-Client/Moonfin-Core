@@ -52,6 +52,13 @@ import '../navigation/app_router.dart';
 import 'offline_aware_image.dart';
 import 'adaptive/sf_symbol.dart';
 import 'user_avatar_image.dart';
+import 'media_bar.dart';
+import 'nav_styles/mosaic_nav.dart';
+import 'nav_styles/nav_back_guard.dart';
+import 'nav_styles/nav_entry.dart';
+import 'nav_styles/reel_nav.dart';
+import '../../data/services/saved_media_presence.dart';
+import '../../data/services/server_messages_service.dart';
 
 const _kExpandedWidthDesktop = 240.0;
 const _kExpandedWidthMobile = 260.0;
@@ -100,6 +107,12 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   final _friendsFocusNode = FocusNode(debugLabel: 'LeftSidebarFriends');
   final _profileFocusNode = FocusNode(debugLabel: 'LeftSidebarProfile');
   final _musicCardFocusNode = FocusNode(debugLabel: 'SidebarMusicCard');
+  final _mosaicRestFocus = FocusNode(debugLabel: 'MosaicMenuButton');
+  final Map<String, FocusNode> _tileFocus = {};
+  // Where the Reel stands on its endless wheel. It's only wrapped onto the
+  // entries when one is looked up, so each entry's widget glides as it turns.
+  int _reelCenter = 0;
+  List<NavEntry> _styleEntriesCache = const [];
   late final VoidCallback _focusNavbarCallback;
   late final VoidCallback _focusAvatarCallback;
   VoidCallback? _previousFocusNavbarCallback;
@@ -137,7 +150,16 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     super.initState();
     _currentTime = ValueNotifier<String>('');
     _focusNavbarCallback = () {
-      if (!mounted || _homeFocusNode.context == null) return;
+      if (!mounted) return;
+      if (_style == SidebarStyle.mosaic) {
+        if (_isExpanded) {
+          _focusMosaicTile();
+        } else {
+          _expand();
+        }
+        return;
+      }
+      if (_homeFocusNode.context == null) return;
       // Expand the rail directly instead of relying on the focus listener,
       // whose expansion can be blocked right after this sidebar mounts.
       if (!_isMobile && !_isExpanded) {
@@ -251,6 +273,10 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     _friendsFocusNode.dispose();
     _profileFocusNode.dispose();
     _musicCardFocusNode.dispose();
+    _mosaicRestFocus.dispose();
+    for (final node in _tileFocus.values) {
+      node.dispose();
+    }
     _sidebarFocus.dispose();
     _scrollController.dispose();
     _userSub?.cancel();
@@ -384,7 +410,14 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
 
   void _expand() {
     if (_isExpanded) return;
+    final style = _style;
+    if (style == SidebarStyle.reel) {
+      _reelCenter = currentNavEntryIndex(_styleEntriesCache);
+    }
     setState(() => _isExpanded = true);
+    if (style == SidebarStyle.mosaic && !_isMobile) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _focusMosaicTile());
+    }
     _labelTimer?.cancel();
     final delay = PlatformDetection.isTV
         ? const Duration(milliseconds: 150)
@@ -628,7 +661,459 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return _buildDrawerLayout();
+    final style = _style;
+    if (style == SidebarStyle.classic) return _buildDrawerLayout();
+    return _buildStyledLayout(style);
+  }
+
+  SidebarStyle get _style => _prefs.get(UserPreferences.sidebarStyle);
+
+  FocusNode _tileFocusFor(String id) =>
+      _tileFocus.putIfAbsent(id, () => FocusNode(debugLabel: 'MosaicTile $id'));
+
+  void _focusMosaicTile() {
+    if (!mounted || !_isExpanded) return;
+    FocusNode node = _homeFocusNode;
+    for (final e in _styleEntriesCache) {
+      if (e.current && e.kind != NavEntryKind.home) {
+        node = _tileFocusFor(e.id);
+        break;
+      }
+    }
+    if (node.context != null) {
+      node.requestFocus();
+    } else if (_homeFocusNode.context != null) {
+      _homeFocusNode.requestFocus();
+    }
+  }
+
+  void _closeStyled() {
+    _collapse();
+    if (!_isMobile) _restoreFocusOutsideSidebar();
+  }
+
+  void _turnReel(int delta) {
+    if (_styleEntriesCache.isEmpty) return;
+    setState(() => _reelCenter += delta);
+  }
+
+  void _selectReel() {
+    final entries = _styleEntriesCache;
+    if (entries.isEmpty) return;
+    entries[_reelCenter % entries.length].onSelect();
+  }
+
+  Widget _avatar(double size) {
+    final user = _userRepo.currentUser;
+    final initial = (user?.name.isNotEmpty == true)
+        ? user!.name[0].toUpperCase()
+        : '?';
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF00A4DC), Color(0xFF0077B6)],
+        ),
+      ),
+      child: ClipOval(
+        // Decoded at the painted size, SVG presets drawn as vectors.
+        child: UserAvatarImage(
+          url: _userImageUrl,
+          size: size,
+          fallback: Center(
+            child: Text(
+              initial,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: size * 0.45,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// The destinations of the Reel and Mosaic sidebars, under the same rules as
+  /// the classic list, except that libraries always show one by one since
+  /// both styles are built around them.
+  List<NavEntry> _styleEntries(
+    AppLocalizations l10n, {
+    required bool withProfile,
+  }) {
+    final kidsMode = _kidsMode;
+    final sync = GetIt.instance<PluginSyncService>();
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    final showLibraries =
+        !kidsMode && _prefs.get(UserPreferences.showLibrariesInToolbar);
+    final showSyncPlay =
+        !kidsMode &&
+        _prefs.get(UserPreferences.syncPlayEnabled) &&
+        _prefs.get(UserPreferences.showSyncPlayButton);
+    final getIt = GetIt.instance;
+    final messages = getIt.isRegistered<ServerMessagesService>()
+        ? getIt<ServerMessagesService>()
+        : null;
+    final achievements = getIt.isRegistered<AchievementsService>()
+        ? getIt<AchievementsService>()
+        : null;
+    final user = _userRepo.currentUser;
+
+    void goTop(String route) {
+      if (_isActive(route)) {
+        _exitSidebarToContent();
+        return;
+      }
+      _collapse();
+      _markNavigationAwayFromSidebar();
+      context.navigateTopLevel(route);
+    }
+
+    // Dialogs hand focus back to whatever held it, which a closed sidebar no
+    // longer draws, so it goes back to the content instead.
+    Future<void> openOver(Future<dynamic> Function() open) async {
+      _collapse();
+      await open();
+      if (mounted && !_isMobile) _restoreFocusOutsideSidebar();
+    }
+
+    Widget asset(String path, double size, Color color) => Image.asset(
+      path,
+      width: size,
+      height: size,
+      color: color,
+      fit: BoxFit.contain,
+    );
+
+    return [
+      if (withProfile && user != null)
+        NavEntry(
+          id: 'profile',
+          kind: NavEntryKind.profile,
+          label: user.name,
+          iconBuilder: (size, _) => _avatar(size),
+          onSelect: () {
+            _collapse();
+            showUserMenu(context);
+          },
+        ),
+      NavEntry(
+        id: 'home',
+        kind: NavEntryKind.home,
+        label: l10n.home,
+        icon: Icons.home_rounded,
+        current: _isActive(Destinations.home),
+        onSelect: () {
+          if (_isActive(Destinations.home)) {
+            homeRefreshBus.request(newMediaBar: true);
+            _exitSidebarToContent();
+            return;
+          }
+          _collapse();
+          homeRefreshBus.requestAfterNavigation();
+          _markNavigationAwayFromSidebar();
+          context.go(Destinations.home);
+        },
+      ),
+      NavEntry(
+        id: 'search',
+        label: l10n.search,
+        icon: Icons.search_rounded,
+        current: _isActive(Destinations.search),
+        onSelect: () => goTop(Destinations.search),
+      ),
+      if (_prefs.get(UserPreferences.showShuffleButton))
+        NavEntry(
+          id: 'shuffle',
+          label: l10n.shuffle,
+          icon: Icons.shuffle_rounded,
+          onSelect: () => openOver(() => showShuffleOverlay(context)),
+        ),
+      if (_prefs.get(UserPreferences.showGenresButton))
+        NavEntry(
+          id: 'genres',
+          label: l10n.genres,
+          iconBuilder: (size, color) =>
+              asset('assets/icons/genres.png', size, color),
+          current: _isActive(Destinations.allGenres),
+          onSelect: () => goTop(Destinations.allGenres),
+        ),
+      if (_prefs.get(UserPreferences.showFavoritesButton))
+        NavEntry(
+          id: 'favorites',
+          label: l10n.favorites,
+          icon: Icons.favorite_rounded,
+          current: _isActive(Destinations.allFavorites),
+          onSelect: () => goTop(Destinations.allFavorites),
+        ),
+      if (_showLiveTvButton)
+        NavEntry(
+          id: 'livetv',
+          kind: NavEntryKind.liveTv,
+          label: l10n.liveTv,
+          icon: Icons.live_tv_rounded,
+          current: _isActive(Destinations.liveTvGuide),
+          onSelect: () => goTop(Destinations.liveTvGuide),
+        ),
+      if (showSyncPlay)
+        NavEntry(
+          id: 'syncplay',
+          label: l10n.watchParties,
+          icon: Icons.groups_rounded,
+          onSelect: () {
+            _collapse();
+            _markNavigationAwayFromSidebar();
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => watchTogetherScreen()),
+            );
+          },
+        ),
+      if (!kidsMode &&
+          _prefs.get(UserPreferences.showSeerrButton) &&
+          sync.seerrAvailable)
+        NavEntry(
+          id: 'seerr',
+          kind: NavEntryKind.seerr,
+          label: seerrPrefs.labelOrDefault(l10n.seerr),
+          iconBuilder: (size, color) => SeerrIcon(size: size, color: color),
+          current: _isActive(Destinations.seerrDiscover),
+          onSelect: () => goTop(Destinations.seerrDiscover),
+        ),
+      if (!kidsMode &&
+          _prefs.get(UserPreferences.showCalendarButton) &&
+          sync.calendarAvailable)
+        NavEntry(
+          id: 'calendar',
+          label: l10n.calendar,
+          icon: Icons.calendar_month_rounded,
+          current: _isActive(Destinations.calendar),
+          onSelect: () => goTop(Destinations.calendar),
+        ),
+      if (showLibraries)
+        for (final lib in _navLibraries)
+          NavEntry(
+            id: 'lib:${lib.serverId}:${lib.id}',
+            kind: NavEntryKind.library,
+            label: lib.name,
+            icon: libraryIcon(lib),
+            library: lib,
+            current: _isActive(
+              Uri.parse(
+                libraryRoute(
+                  lib.id,
+                  lib.collectionType,
+                  lib.name,
+                  serverId: lib.serverId,
+                ),
+              ).path,
+            ),
+            onSelect: () {
+              _collapse();
+              _openLibrary(lib);
+            },
+          ),
+      if (DownloadsNavSlot.isOffered() && DownloadsNavSlot.hasSavedMedia())
+        NavEntry(
+          id: 'downloads',
+          label: l10n.savedMedia,
+          icon: Icons.download_for_offline,
+          onSelect: () => openOver(() => showDownloadsDialog(context)),
+        ),
+      if (FriendsNavSlot.isOffered() && FriendsNavSlot.isAvailable())
+        NavEntry(
+          id: 'friends',
+          label: l10n.friends,
+          icon: Icons.people_alt_rounded,
+          badge: achievements?.socialBadgeCount ?? 0,
+          onSelect: () => openOver(() => FriendsNavSlot.open(context)),
+        ),
+      if (_prefs.get(UserPreferences.showServerMessagesButton) &&
+          (messages?.messages.isNotEmpty ?? false))
+        NavEntry(
+          id: 'messages',
+          label: l10n.serverMessages,
+          icon: Icons.info_outline_rounded,
+          badge: messages!.unreadCount,
+          onSelect: () => openOver(() => showServerMessagesDialog(context)),
+        ),
+      NavEntry(
+        id: 'settings',
+        label: l10n.settings,
+        icon: Icons.settings_rounded,
+        onSelect: () => openOver(
+          () => SettingsPanel.open(context, const SettingsSidePanel()),
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildStyledLayout(SidebarStyle style) {
+    final l10n = AppLocalizations.of(context);
+    final getIt = GetIt.instance;
+    final listenable = Listenable.merge([
+      if (getIt.isRegistered<SavedMediaPresence>()) getIt<SavedMediaPresence>(),
+      if (getIt.isRegistered<ServerMessagesService>())
+        getIt<ServerMessagesService>(),
+      if (getIt.isRegistered<AchievementsService>()) getIt<AchievementsService>(),
+      if (style == SidebarStyle.mosaic) MediaBar.featuredSlide,
+    ]);
+    return ListenableBuilder(
+      listenable: listenable,
+      builder: (context, _) {
+        final entries = _styleEntries(
+          l10n,
+          withProfile: style == SidebarStyle.reel,
+        );
+        _styleEntriesCache = entries;
+        final nav = style == SidebarStyle.reel
+            ? _buildReel(entries, l10n)
+            : _buildMosaic(entries, l10n);
+        return NavBackGuard(
+          open: _isExpanded,
+          onClose: _closeStyled,
+          child: FocusScope(
+            node: _sidebarFocus,
+            onKeyEvent: style == SidebarStyle.reel ? _onReelKey : _onMosaicKey,
+            child: nav,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildReel(List<NavEntry> entries, AppLocalizations l10n) {
+    final reel = ReelNav(
+      entries: entries,
+      center: _reelCenter,
+      open: _isExpanded,
+      phone: _isMobile,
+      openLabel: l10n.navOpenMenu,
+      hint: l10n.navReelSwipeHint,
+      onOpen: () {
+        _expand();
+        if (!_isMobile) _homeFocusNode.requestFocus();
+      },
+      onClose: _closeStyled,
+      onTurn: _turnReel,
+      onSelect: _selectReel,
+      onBack: _isMobile && widget.showBackButton
+          ? () => context.popOrHome()
+          : null,
+    );
+    if (_isMobile) return reel;
+    // One node serves both states. The wheel keeps focus in its window and
+    // the keys turn it, so nothing inside it takes focus of its own.
+    return Focus(focusNode: _homeFocusNode, child: reel);
+  }
+
+  Widget _buildMosaic(List<NavEntry> entries, AppLocalizations l10n) {
+    final featured = MediaBar.featuredSlide.value;
+    final clockBehavior = _prefs.get(UserPreferences.clockBehavior);
+    final showClock =
+        !_isMobile &&
+        (clockBehavior == ClockBehavior.always ||
+            clockBehavior == ClockBehavior.inMenus);
+    return MosaicNav(
+      entries: entries,
+      open: _isExpanded,
+      phone: _isMobile,
+      onOpen: _expand,
+      onClose: _closeStyled,
+      restFocus: _mosaicRestFocus,
+      homeFocus: _homeFocusNode,
+      profileFocus: _profileFocusNode,
+      focusFor: _tileFocusFor,
+      onProfile: () {
+        _collapse();
+        showUserMenu(context);
+      },
+      avatarBuilder: _avatar,
+      userName: _userRepo.currentUser?.name ?? '',
+      openLabel: l10n.navOpenMenu,
+      liveLabel: l10n.liveBadge,
+      featuredLabel: featured == null ? null : l10n.navFeatured(featured.title),
+      featuredImageUrl: featured?.backdropUrl,
+      onBack: _isMobile && widget.showBackButton
+          ? () => context.popOrHome()
+          : null,
+      clock: showClock
+          ? ValueListenableBuilder<String>(
+              valueListenable: _currentTime,
+              builder: (context, time, _) => Text(
+                time,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 14,
+                ),
+              ),
+            )
+          : null,
+    );
+  }
+
+  KeyEventResult _onReelKey(FocusNode node, KeyEvent event) {
+    if (!event.isActionable) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    if (key.isUpKey || key.isDownKey) {
+      if (_isExpanded) {
+        _turnReel(key.isUpKey ? -1 : 1);
+      } else {
+        _expand();
+      }
+      return KeyEventResult.handled;
+    }
+    if (isActivateKey(event)) {
+      if (_isExpanded) {
+        _selectReel();
+      } else {
+        _expand();
+      }
+      return KeyEventResult.handled;
+    }
+    if (key.isRightKey || (key.isBackKey && _isExpanded)) {
+      if (event is KeyDownEvent) _closeStyled();
+      return KeyEventResult.handled;
+    }
+    if (key.isLeftKey) return KeyEventResult.handled;
+    return KeyEventResult.ignored;
+  }
+
+  KeyEventResult _onMosaicKey(FocusNode node, KeyEvent event) {
+    if (!event.isActionable) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    if (!_isExpanded) {
+      if (key.isRightKey) {
+        if (event is KeyDownEvent) _restoreFocusOutsideSidebar();
+        return KeyEventResult.handled;
+      }
+      if (key.isUpKey || key.isDownKey || key.isLeftKey) {
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
+    if (key.isBackKey) {
+      if (event is KeyDownEvent) _closeStyled();
+      return KeyEventResult.handled;
+    }
+    final direction = key.isUpKey
+        ? TraversalDirection.up
+        : key.isDownKey
+        ? TraversalDirection.down
+        : key.isLeftKey
+        ? TraversalDirection.left
+        : key.isRightKey
+        ? TraversalDirection.right
+        : null;
+    if (direction == null) return KeyEventResult.ignored;
+    final primary = FocusManager.instance.primaryFocus;
+    final moved = primary != null && primary.focusInDirection(direction);
+    if (!moved && direction == TraversalDirection.right) _closeStyled();
+    return KeyEventResult.handled;
   }
 
   Widget _buildDrawerLayout() {
@@ -1334,20 +1819,6 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
 
   Widget _buildUserSection() {
     final user = _userRepo.currentUser;
-    final initial = (user?.name.isNotEmpty == true)
-        ? user!.name[0].toUpperCase()
-        : '?';
-    final fallback = Center(
-      child: Text(
-        initial,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-        ),
-      ),
-    );
-
     final tvCompact = PlatformDetection.isTV && !_showLabels;
     final innerPad = tvCompact ? 0.0 : 6.0;
     final isFocused = InputModeTracker.showFocusVisuals(
@@ -1357,26 +1828,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     final tvFocused = PlatformDetection.isTV && isFocused;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
 
-    final avatar = Container(
-      width: 40,
-      height: 40,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF00A4DC), Color(0xFF0077B6)],
-        ),
-      ),
-      child: ClipOval(
-        // Decoded at the painted size, SVG presets drawn as vectors.
-        child: UserAvatarImage(
-          url: _userImageUrl,
-          size: 40,
-          fallback: fallback,
-        ),
-      ),
-    );
+    final avatar = _avatar(40);
 
     final content = AnimatedContainer(
       duration: const Duration(milliseconds: 150),

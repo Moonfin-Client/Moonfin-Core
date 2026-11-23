@@ -90,8 +90,33 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                   _pushPersonalizationSync();
                 },
               ),
-              // The picker above writes through its own binding, so this
-              // watches the preferences to follow it.
+              // The picker above writes through its own binding, so these
+              // watch the preferences to follow it.
+              ListenableBuilder(
+                listenable: prefs,
+                builder: (context, _) => switch (
+                    NavigationLayout.sanitizeNavbarPosition(
+                      prefs.get(UserPreferences.navbarPosition),
+                    )) {
+                  NavbarPosition.top => EnumPreferenceTile<TopNavbarStyle>(
+                    preference: UserPreferences.topNavbarStyle,
+                    title: l10n.topNavbarStyle,
+                    icon: Icons.web_asset_rounded,
+                    labelOf: (v) => topNavbarStyleLabel(l10n, v),
+                    dialogSubtitleOf: (v) => topNavbarStyleHint(l10n, v),
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  NavbarPosition.left => EnumPreferenceTile<SidebarStyle>(
+                    preference: UserPreferences.sidebarStyle,
+                    title: l10n.sidebarStyle,
+                    icon: Icons.view_quilt_rounded,
+                    labelOf: (v) => sidebarStyleLabel(l10n, v),
+                    dialogSubtitleOf: (v) => sidebarStyleHint(l10n, v),
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  NavbarPosition.bottom => const SizedBox.shrink(),
+                },
+              ),
               ListenableBuilder(
                 listenable: prefs,
                 builder: (context, _) => !NavigationLayout.usesBottomNavbar

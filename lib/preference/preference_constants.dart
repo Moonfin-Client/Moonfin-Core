@@ -139,6 +139,20 @@ enum BottomNavbarStyle {
   strip,
 }
 
+/// How the top bar is drawn while [NavbarPosition.top] is in effect.
+enum TopNavbarStyle {
+  classic,
+  tabline,
+  atlas,
+}
+
+/// How the sidebar is drawn while [NavbarPosition.left] is in effect.
+enum SidebarStyle {
+  classic,
+  reel,
+  mosaic,
+}
+
 enum NextUpBehavior {
   extended,
   minimal,
