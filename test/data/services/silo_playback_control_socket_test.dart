@@ -521,6 +521,29 @@ void main() {
     expect(ticketsFor, hasLength(2));
   });
 
+  test('a renewal refused for its token reconnects when the old one closes',
+      () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+    ticketError = _refused(401);
+    socket.renewNow();
+    await _until(() => ticketsFor.length == 2);
+
+    ticketError = null;
+    await lane.sockets.single.close();
+    await lane.next((f) => f['type'] == 'hello' && f['_on'] == 1);
+  });
+
+  test('a lane Silo refused is not asked for again on a replan', () async {
+    ticketError = _refused(409);
+    lifecycle.add(_playing);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    lifecycle.add(_playing);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(ticketsFor, hasLength(1));
+  });
+
   test('a connection being let go takes no new command', () async {
     final release = Completer<void>();
     handler = (message) async {

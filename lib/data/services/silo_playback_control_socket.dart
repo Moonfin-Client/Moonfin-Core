@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:dio/dio.dart' show DioException;
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -197,6 +198,10 @@ class SiloPlaybackControlSocket {
   /// Set once [maxAttempts] connects failed. The session's next replan gives
   /// the lane another try.
   bool _gaveUp = false;
+
+  /// Set when Silo refused the session's lane for good. Unlike [_gaveUp], a
+  /// replan doesn't ask again; the next session does.
+  bool _refused = false;
   bool _disposed = false;
   final _running = <WebSocketChannel, Set<Future<void>>>{};
 
@@ -215,7 +220,7 @@ class SiloPlaybackControlSocket {
     if (change.playing) {
       // A replan of the session playing now keeps its lane.
       if (same) {
-        if (_gaveUp) {
+        if (_gaveUp && !_refused) {
           _gaveUp = false;
           _attempt = 0;
           if (_channel != null) {
@@ -301,13 +306,23 @@ class SiloPlaybackControlSocket {
     } catch (error) {
       unawaited(_closeChannel(opened));
       if (generation != _generation) return;
-      if (SiloPlaybackControlApi.isFinalRefusal(error)) {
+      // A renewal refused for an expired or changed token (401/403) gets a
+      // fresh ticket once the old connection closes, as before; a session
+      // that is over or not this installation's (409/410) never will.
+      final status = error is DioException ? error.response?.statusCode : null;
+      final renewal = _channel != null;
+      if (SiloPlaybackControlApi.isFinalRefusal(error) &&
+          (!renewal || status == 409 || status == 410)) {
         // The session is over or isn't this installation's lane: no later
         // ticket would be granted.
         _log('Silo playback control not opened', error);
         // A renewal's refusal leaves the old connection up until it closes;
         // that close mustn't ask for another ticket.
-        _gaveUp = true;
+        _refused = true;
+        return;
+      }
+      if (SiloPlaybackControlApi.isFinalRefusal(error)) {
+        _log('Silo playback control renewal refused', error);
         return;
       }
       _log('Silo playback control failed, retrying', error);
@@ -367,7 +382,7 @@ class SiloPlaybackControlSocket {
     _stableTimer = null;
     _retire(channel, null);
     // A renewal on its way brings the next connection, or retries itself.
-    if (_renewing) return;
+    if (_renewing || _refused) return;
     _log('Silo playback control closed, reconnecting', error);
     _scheduleRetry(generation);
   }
@@ -382,7 +397,9 @@ class SiloPlaybackControlSocket {
   }
 
   void _scheduleRetry(int generation, {bool renew = false}) {
-    if (_disposed || generation != _generation || _gaveUp) return;
+    if (_disposed || generation != _generation || _gaveUp || _refused) {
+      return;
+    }
     if (_attempt >= maxAttempts) {
       _gaveUp = true;
       _log('Silo playback control given up for this session');
@@ -546,6 +563,7 @@ class SiloPlaybackControlSocket {
     _endpoint = null;
     _renewing = false;
     _gaveUp = false;
+    _refused = false;
     _stableTimer?.cancel();
     _stableTimer = null;
     _retryTimer?.cancel();

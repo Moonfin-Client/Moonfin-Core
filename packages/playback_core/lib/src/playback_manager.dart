@@ -1478,6 +1478,10 @@ class PlaybackManager implements AudioOwnable {
   /// to every member of the group as if the user had asked for it.
   bool get hasTransportInterceptor => _transportInterceptor != null;
 
+  /// The server session the player streams from, kept across replans and
+  /// given up when the item stops. Null when nothing streams from one.
+  String? get ownedPlaySessionId => _ownedPlaySessionId;
+
   Future<bool> _maybeIntercept(
     TransportAction action, {
     Duration? position,

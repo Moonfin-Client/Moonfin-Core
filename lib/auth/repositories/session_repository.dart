@@ -968,10 +968,14 @@ class SessionRepository {
       handle: (message) {
         // In a watch party the room's controls take pause and resume, and a
         // guest of a host-only room can't: say so rather than `completed`.
+        // Only that room's interceptor refuses; a cast or SyncPlay one
+        // carries the action on.
         if (message is PlaystateMessage &&
             message.command.toLowerCase() != 'stop' &&
             GetIt.instance.isRegistered<PlaybackManager>() &&
-            GetIt.instance<PlaybackManager>().hasTransportInterceptor) {
+            GetIt.instance<PlaybackManager>().hasTransportInterceptor &&
+            GetIt.instance.isRegistered<SiloWatchPartyManager>() &&
+            GetIt.instance<SiloWatchPartyManager>().blocksTransport) {
           throw StateError('Transport belongs to the watch party');
         }
         return _handleRemoteCommand(message);
@@ -985,10 +989,14 @@ class SessionRepository {
               : '$siloEndedOnServerMessage\n$reason',
         );
       },
-      playedHere: (sessionId) =>
-          GetIt.instance.isRegistered<PlaybackManager>() &&
-          GetIt.instance<PlaybackManager>().currentResolution?.playSessionId ==
-              sessionId,
+      // A replan clears the resolution until the new one is up, but the
+      // player still streams from its session.
+      playedHere: (sessionId) {
+        if (!GetIt.instance.isRegistered<PlaybackManager>()) return false;
+        final manager = GetIt.instance<PlaybackManager>();
+        return manager.currentResolution?.playSessionId == sessionId ||
+            manager.ownedPlaySessionId == sessionId;
+      },
     );
   }
 
