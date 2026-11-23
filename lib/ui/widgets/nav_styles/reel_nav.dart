@@ -144,7 +144,7 @@ class _ReelNavState extends State<ReelNav> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final s = widget.phone ? 1.0 : (size.height / 720).clamp(0.75, 1.25);
+    final s = navStyleScale(size, phone: widget.phone);
     return widget.open ? _buildOpen(size, s) : _buildRest(size, s);
   }
 

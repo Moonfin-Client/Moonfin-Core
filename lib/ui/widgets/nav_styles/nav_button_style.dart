@@ -6,6 +6,21 @@ import '../../../preference/preference_constants.dart';
 /// The Atlas panel's fill, which an open tab shares to read as joined to it.
 const kAtlasPanelColor = Color(0xFF1B1F26);
 
+/// Atlas is a solid bar. The navbar color still tints it, at the strength
+/// its opacity setting gives the classic pill.
+Color atlasBarColor(Color navbarColor, double opacity) => Color.alphaBlend(
+  navbarColor.withValues(alpha: opacity * 0.35),
+  const Color(0xFF0C0E12),
+).withValues(alpha: 0.92);
+
+/// The soft scrim Tabline's tabs sit on.
+const kTablineScrim = LinearGradient(
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  colors: [Color(0xBF000000), Color(0x59000000), Color(0x00000000)],
+  stops: [0, 0.55, 1],
+);
+
 /// Tells the toolbar buttons under it which top bar style draws them.
 class NavButtonStyle extends InheritedWidget {
   const NavButtonStyle({super.key, required this.style, required super.child});

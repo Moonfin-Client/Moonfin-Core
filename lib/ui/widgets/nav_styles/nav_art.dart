@@ -1,9 +1,14 @@
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../util/artwork_request_size.dart';
+import '../offline_aware_image.dart';
 
 ImageApi? _imageApi(String serverId) {
   try {
@@ -77,7 +82,7 @@ String? navPosterArtUrl(AggregatedItem item, {int maxWidth = 300}) {
 
 /// A library's own cover, or the cover of the library a merged one borrows
 /// its artwork from.
-String? navLibraryCoverUrl(AggregatedLibrary lib, {int maxWidth = 480}) {
+String? _libraryCoverUrl(AggregatedLibrary lib, {required int maxWidth}) {
   final api = _imageApi(lib.serverId);
   if (api == null) return null;
   final tag = lib.imageTags?['Primary'] as String?;
@@ -86,5 +91,51 @@ String? navLibraryCoverUrl(AggregatedLibrary lib, {int maxWidth = 480}) {
     lib.imageItemId ?? lib.id,
     maxWidth: maxWidth,
     tag: tag,
+  );
+}
+
+/// The widths a 16:9 library cover filling [box] is asked for and decoded
+/// at, in the screen's real pixels.
+({int request, int decode}) navLibraryCoverSize(
+  Size box,
+  double devicePixelRatio,
+) {
+  final pixels = math.max(box.width, box.height * 16 / 9) * devicePixelRatio;
+  return (
+    request: artworkRequestWidth(pixels, 1, ArtworkShape.landscape),
+    decode: ArtworkDecode.stepUp(pixels.ceil()),
+  );
+}
+
+/// A library's cover filling its box. Covers carry the library's name as
+/// text, which the 2x cap on artwork visibly blurs on denser screens.
+class NavLibraryCover extends StatelessWidget {
+  const NavLibraryCover({
+    super.key,
+    required this.library,
+    required this.fallback,
+  });
+
+  final AggregatedLibrary library;
+
+  /// Shown when the library has no cover or it fails to load.
+  final Widget fallback;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final size = navLibraryCoverSize(
+        box.biggest,
+        MediaQuery.devicePixelRatioOf(context),
+      );
+      final url = _libraryCoverUrl(library, maxWidth: size.request);
+      if (url == null) return fallback;
+      return OfflineAwareImage(
+        imageUrl: url,
+        fit: BoxFit.cover,
+        memCacheWidth: size.decode,
+        errorWidget: (_, _, _) => fallback,
+      );
+    },
   );
 }

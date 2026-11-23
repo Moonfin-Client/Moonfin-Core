@@ -1012,7 +1012,16 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   }
 
   Widget _buildMosaic(List<NavEntry> entries, AppLocalizations l10n) {
-    final featured = MediaBar.featuredSlide.value;
+    final mediaBarMode = UserPreferences.normalizeMediaBarMode(
+      _prefs.get(UserPreferences.mediaBarMode),
+    );
+    // Only the slideshow publishes a slide, so with the bar off or a banner
+    // the one kept from before would be stale.
+    final featured =
+        mediaBarMode == UserPreferences.mediaBarModeOff ||
+            mediaBarMode == UserPreferences.mediaBarModeBanner
+        ? null
+        : MediaBar.featuredSlide.value;
     final clockBehavior = _prefs.get(UserPreferences.clockBehavior);
     final showClock =
         !_isMobile &&

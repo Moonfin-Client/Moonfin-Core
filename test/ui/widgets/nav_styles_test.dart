@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
+import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/widgets/nav_styles/atlas_panel.dart';
+import 'package:moonfin/ui/widgets/nav_styles/nav_art.dart';
 import 'package:moonfin/ui/widgets/nav_styles/nav_entry.dart';
 import 'package:moonfin/ui/widgets/nav_styles/reel_nav.dart';
 
@@ -96,6 +99,87 @@ void main() {
 
     test('books only offer their main page', () {
       expect(atlasLibraryLinks(l10n, lib('books')).length, 1);
+    });
+  });
+
+  test('library covers size to the screen\'s real density', () {
+    // A Mosaic tile on a 2.75x phone, past the 2x cap other artwork stops at.
+    final phone = navLibraryCoverSize(const Size(154, 81), 2.75);
+    expect(phone.decode, 440);
+    expect(phone.request, 480);
+
+    // A box taller than 16:9 is covered by the height, so the width follows it.
+    final tall = navLibraryCoverSize(const Size(100, 100), 2);
+    expect(tall.decode, 360);
+    expect(tall.request, 480);
+  });
+
+  group('AtlasPanel', () {
+    Future<void> open(WidgetTester tester, AtlasPanelSpec spec) async {
+      final scope = FocusScopeNode();
+      final first = FocusNode();
+      addTearDown(scope.dispose);
+      addTearDown(first.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: AtlasPanel(
+              spec: spec,
+              scopeNode: scope,
+              firstFocus: first,
+              onExit: () {},
+              onOpen: (_, {required topLevel}) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    Future<void> close(WidgetTester tester) =>
+        tester.pumpWidget(const SizedBox());
+
+    AtlasPanelSpec spec(String key, Future<AtlasPanelData> Function() load) =>
+        AtlasPanelSpec(
+          key: key,
+          title: 'Movies',
+          links: const [AtlasLink('Browse All', '/library')],
+          cardsTitle: 'Continue',
+          load: load,
+        );
+
+    const data = AtlasPanelData(
+      cards: [AtlasTile(title: 'Loaded Card', route: '/item')],
+    );
+
+    testWidgets('a failed load tries again on the next open', (tester) async {
+      var calls = 0;
+      final failing = spec('test:retry', () async {
+        calls++;
+        if (calls == 1) throw Exception('offline');
+        return data;
+      });
+      await open(tester, failing);
+      expect(find.text('Loaded Card'), findsNothing);
+      await close(tester);
+      await open(tester, failing);
+      expect(calls, 2);
+      expect(find.text('Loaded Card'), findsOneWidget);
+    });
+
+    testWidgets('a load that worked is kept for the next open', (tester) async {
+      var calls = 0;
+      final working = spec('test:kept', () async {
+        calls++;
+        return data;
+      });
+      await open(tester, working);
+      await close(tester);
+      await open(tester, working);
+      expect(calls, 1);
+      expect(find.text('Loaded Card'), findsOneWidget);
     });
   });
 }

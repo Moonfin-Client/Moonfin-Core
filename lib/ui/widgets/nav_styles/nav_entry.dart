@@ -34,6 +34,11 @@ class NavEntry {
       iconBuilder?.call(size, color) ?? Icon(icon, size: size, color: color);
 }
 
+/// Reel and Mosaic are laid out for a 720 point tall screen and scale from
+/// there, while phones keep their own sizes.
+double navStyleScale(Size screen, {required bool phone}) =>
+    phone ? 1.0 : (screen.height / 720).clamp(0.75, 1.25);
+
 /// The entry of the page on screen, or Home when none of them is.
 int currentNavEntryIndex(List<NavEntry> entries) {
   var home = 0;

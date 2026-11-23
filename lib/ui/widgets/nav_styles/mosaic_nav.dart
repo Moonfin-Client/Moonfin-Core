@@ -9,6 +9,31 @@ import 'nav_focusable.dart';
 const _kPanelColor = Color(0xFF0E0F12);
 const _kTileColor = Color(0xFF1A1A1A);
 
+/// The button the closed Mosaic sidebar rests as.
+Widget mosaicMenuButton({
+  required bool focused,
+  required bool phone,
+  required double scale,
+}) => AnimatedContainer(
+  duration: const Duration(milliseconds: 150),
+  width: (phone ? 40 : 44) * scale,
+  height: (phone ? 40 : 44) * scale,
+  decoration: BoxDecoration(
+    color: focused
+        ? Colors.white
+        : (phone
+              ? Colors.black.withValues(alpha: 0.4)
+              : const Color(0xB814161A)),
+    shape: BoxShape.circle,
+    border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+  ),
+  child: Icon(
+    Icons.apps_rounded,
+    size: 22 * scale,
+    color: focused ? Colors.black : Colors.white,
+  ),
+);
+
 /// The Mosaic sidebar. At rest it's a single menu button, and open it's a
 /// solid panel of tiles where each library shows its own cover.
 class MosaicNav extends StatelessWidget {
@@ -60,32 +85,15 @@ class MosaicNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final s = phone ? 1.0 : (size.height / 720).clamp(0.75, 1.25);
+    final s = navStyleScale(size, phone: phone);
     final top = MediaQuery.paddingOf(context).top;
     if (!open) {
       final button = NavFocusable(
         focusNode: restFocus,
         semanticLabel: openLabel,
         onPressed: onOpen,
-        builder: (context, focused) => AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: (phone ? 40 : 44) * s,
-          height: (phone ? 40 : 44) * s,
-          decoration: BoxDecoration(
-            color: focused
-                ? Colors.white
-                : (phone
-                      ? Colors.black.withValues(alpha: 0.4)
-                      : const Color(0xB814161A)),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-          ),
-          child: Icon(
-            Icons.apps_rounded,
-            size: 22 * s,
-            color: focused ? Colors.black : Colors.white,
-          ),
-        ),
+        builder: (context, focused) =>
+            mosaicMenuButton(focused: focused, phone: phone, scale: s),
       );
       return SizedBox(
         width: phone ? size.width : 72 * s,
@@ -520,7 +528,6 @@ class MosaicNav extends StatelessWidget {
             );
           default:
             final lib = e.library;
-            final url = lib == null ? null : navLibraryCoverUrl(lib);
             final fallback = Padding(
               padding: EdgeInsets.all(14 * s),
               child: Align(
@@ -533,20 +540,12 @@ class MosaicNav extends StatelessWidget {
               current: e.current,
               radius: radius,
               height: height,
-              gradient: url == null
-                  ? const LinearGradient(
-                      colors: [Color(0xFF2A2E36), Color(0xFF17191E)],
-                    )
-                  : null,
-              child: url == null
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2A2E36), Color(0xFF17191E)],
+              ),
+              child: lib == null
                   ? fallback
-                  : OfflineAwareImage(
-                      imageUrl: url,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: height,
-                      errorWidget: (_, _, _) => fallback,
-                    ),
+                  : NavLibraryCover(library: lib, fallback: fallback),
             );
         }
       },

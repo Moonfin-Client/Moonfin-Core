@@ -32,12 +32,16 @@ class AtlasTile {
     required this.route,
     this.subtitle,
     this.imageUrl,
+    this.library,
     this.progress,
   });
 
   final String title;
   final String? subtitle;
   final String? imageUrl;
+
+  /// A library whose cover is the art, drawn by [NavLibraryCover].
+  final AggregatedLibrary? library;
 
   /// Played fraction from 0 to 1, drawn as a bar along the bottom.
   final double? progress;
@@ -178,11 +182,7 @@ AtlasPanelSpec atlasLibrariesSpec(
     load: () async => AtlasPanelData(
       cards: [
         for (final lib in libraries.take(3))
-          AtlasTile(
-            title: lib.name,
-            imageUrl: navLibraryCoverUrl(lib),
-            route: routeOf(lib),
-          ),
+          AtlasTile(title: lib.name, library: lib, route: routeOf(lib)),
       ],
     ),
   );
@@ -196,7 +196,12 @@ Future<AtlasPanelData> _cachedData(AtlasPanelSpec spec) {
       DateTime.now().difference(hit.$1) < const Duration(minutes: 5)) {
     return hit.$2;
   }
-  final future = spec.load!().catchError((Object _) => const AtlasPanelData());
+  late final Future<AtlasPanelData> future;
+  future = spec.load!().catchError((Object _) {
+    // A failed load isn't kept, so the next open tries again.
+    if (identical(_cache[spec.key]?.$2, future)) _cache.remove(spec.key);
+    return const AtlasPanelData();
+  });
   _cache[spec.key] = (DateTime.now(), future);
   return future;
 }
@@ -229,8 +234,12 @@ Future<AtlasPanelData> _loadLibrary(
   final api = GetIt.instance<MediaServerClientFactory>()
       .clientForServerOrActive(lib.serverId)
       .itemsApi;
+  Object? failure;
   Future<Map<String, dynamic>> safe(Future<Map<String, dynamic>> f) =>
-      f.catchError((Object _) => <String, dynamic>{});
+      f.catchError((Object error) {
+        failure = error;
+        return <String, dynamic>{};
+      });
   final results = await Future.wait([
     resume
         ? safe(
@@ -255,6 +264,8 @@ Future<AtlasPanelData> _loadLibrary(
   ]);
   final resumeItems = _itemsOf(results[0], lib.serverId);
   final latestItems = _itemsOf(results[1], lib.serverId);
+  final error = failure;
+  if (error != null && resumeItems.isEmpty && latestItems.isEmpty) throw error;
   return AtlasPanelData(
     cards: [
       for (final item in resumeItems.take(2))
@@ -701,21 +712,29 @@ class _AtlasPanelState extends State<AtlasPanel> {
     );
   }
 
-  Widget _art(String? url, {required double width, required double height}) =>
-      SizedBox(
-        width: width,
-        height: height,
-        child: url == null
-            ? const ColoredBox(color: Color(0xFF2A2E36))
-            : OfflineAwareImage(
-                imageUrl: url,
-                fit: BoxFit.cover,
-                width: width,
-                height: height,
-                errorWidget: (_, _, _) =>
-                    const ColoredBox(color: Color(0xFF2A2E36)),
-              ),
-      );
+  Widget _art(
+    String? url, {
+    required double width,
+    required double height,
+    AggregatedLibrary? library,
+  }) {
+    const blank = ColoredBox(color: Color(0xFF2A2E36));
+    return SizedBox(
+      width: width,
+      height: height,
+      child: library != null
+          ? NavLibraryCover(library: library, fallback: blank)
+          : url == null
+          ? blank
+          : OfflineAwareImage(
+              imageUrl: url,
+              fit: BoxFit.cover,
+              width: width,
+              height: height,
+              errorWidget: (_, _, _) => blank,
+            ),
+    );
+  }
 
   BoxDecoration? _ring(bool focused, double radius) => focused
       ? BoxDecoration(
@@ -745,7 +764,12 @@ class _AtlasPanelState extends State<AtlasPanel> {
                   borderRadius: BorderRadius.circular(radius),
                   child: Stack(
                     children: [
-                      _art(tile.imageUrl, width: width, height: height),
+                      _art(
+                        tile.imageUrl,
+                        width: width,
+                        height: height,
+                        library: tile.library,
+                      ),
                       if (tile.progress case final progress? when progress > 0)
                         Positioned(
                           left: 0,

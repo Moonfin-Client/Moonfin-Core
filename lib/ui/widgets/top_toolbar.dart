@@ -76,8 +76,8 @@ class TopToolbar extends StatefulWidget {
   final bool showBackButton;
   final FocusNode? contentFocusNode;
 
-  /// True while focus is inside the toolbar, so screens can avoid stealing its
-  /// d-pad keys. Mirrors [LeftSidebar.isFocusedNotifier].
+  /// True while focus is inside the toolbar or its Atlas panel, so screens can
+  /// avoid stealing its d-pad keys. Mirrors [LeftSidebar.isFocusedNotifier].
   static final ValueNotifier<bool> isFocusedNotifier = ValueNotifier<bool>(
     false,
   );
@@ -192,6 +192,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     NavigationLayout.chromeFocusRoots.add(_toolbarScopeNode);
     _avatarFocus.addListener(_onAvatarFocusChanged);
     FocusManager.instance.addListener(_trackPreviousFocus);
+    _atlasPanelScope.addListener(_syncFocusedFlag);
     _updateClock();
     _clockTimer = Timer.periodic(
       const Duration(seconds: 30),
@@ -423,6 +424,12 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
       librariesForNav(_libraries, _showLiveTvButton, hideLiveTv: _kidsMode);
 
   bool get _kidsMode => _prefs.get(UserPreferences.kidsModeEnabled);
+
+  void _syncFocusedFlag() {
+    final hasFocus = _toolbarScopeNode.hasFocus || _atlasPanelScope.hasFocus;
+    _toolbarHadFocus = hasFocus;
+    TopToolbar.isFocusedNotifier.value = hasFocus;
+  }
 
   void _trackPreviousFocus() {
     _followAtlasFocus();
@@ -852,13 +859,6 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     );
   }
 
-  /// Atlas is a solid bar. The navbar color still tints it, at the strength
-  /// its opacity setting gives the classic pill.
-  Color _atlasBarColor() => Color.alphaBlend(
-    _overlayColor().withValues(alpha: _overlayOpacity() * 0.35),
-    const Color(0xFF0C0E12),
-  ).withValues(alpha: 0.92);
-
   Widget _buildTablineEnd({required bool showClock}) {
     final l10n = AppLocalizations.of(context);
     return NavButtonStyle(
@@ -1022,10 +1022,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               : EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
           child: Focus(
             focusNode: _toolbarScopeNode,
-            onFocusChange: (hasFocus) {
-              _toolbarHadFocus = hasFocus;
-              TopToolbar.isFocusedNotifier.value = hasFocus;
-            },
+            onFocusChange: (_) => _syncFocusedFlag(),
             onKeyEvent: (_, event) {
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -1210,18 +1207,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               height: top + totalHeight * 1.9,
               child: const IgnorePointer(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xBF000000),
-                        Color(0x59000000),
-                        Color(0x00000000),
-                      ],
-                      stops: [0, 0.55, 1],
-                    ),
-                  ),
+                  decoration: BoxDecoration(gradient: kTablineScrim),
                 ),
               ),
             ),
@@ -1239,7 +1225,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               overlayChildBuilder: _buildAtlasOverlay,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: _atlasBarColor(),
+                  color: atlasBarColor(_overlayColor(), _overlayOpacity()),
                   border: Border(
                     bottom: BorderSide(
                       color: Colors.white.withValues(alpha: 0.06),
