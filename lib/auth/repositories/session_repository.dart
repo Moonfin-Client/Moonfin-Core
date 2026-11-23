@@ -27,7 +27,7 @@ import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
-    show SiloUsersApi, siloAccessChangedEvent;
+    show SiloMediaServerClient, SiloUsersApi, siloAccessChangedEvent;
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/carplay_service.dart';
@@ -132,6 +132,7 @@ class SessionRepository {
 
   /// Silo's per-session control lane, while signed in to a Silo server.
   SiloPlaybackControlSocket? _siloPlaybackControl;
+  SiloMediaServerClient? _siloPlaybackControlClient;
   RemoteSearchSession? _remoteSearch;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
   StreamSubscription<ServerWebSocketMessage>? _accessChangedSubscription;
@@ -872,6 +873,7 @@ class SessionRepository {
     _remoteCommandSubscription = null;
     _siloPlaybackControl?.dispose();
     _siloPlaybackControl = null;
+    _siloPlaybackControlClient = null;
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
     _accessChangedSubscription?.cancel();
@@ -957,13 +959,21 @@ class SessionRepository {
   /// the same handling as a Jellyfin remote. Not tied to the events socket's
   /// idle rules: it is open only while a Silo session plays.
   void _bindSiloPlaybackControl(MediaServerClient client) {
+    final silo = siloClientOf(client);
+    // The same login again (a re-pin of the active account) keeps the lane:
+    // the session playing now wouldn't announce itself to a new one.
+    if (silo != null && identical(silo, _siloPlaybackControlClient)) return;
     _siloPlaybackControl?.dispose();
     _siloPlaybackControl = null;
-    final silo = siloClientOf(client);
+    _siloPlaybackControlClient = silo;
     if (silo == null) return;
     _siloPlaybackControl = SiloPlaybackControlSocket.forClient(
       silo,
       handle: _handleRemoteCommand,
+      playedHere: (sessionId) =>
+          GetIt.instance.isRegistered<PlaybackManager>() &&
+          GetIt.instance<PlaybackManager>().currentResolution?.playSessionId ==
+              sessionId,
     );
   }
 
@@ -1607,11 +1617,18 @@ class SessionRepository {
   /// notification where the device has them and an in-app banner where it
   /// doesn't, so a message the sender saw go through always lands somewhere.
   Future<void> _showRemoteMessage(String text, String? header) async {
-    // The Apple native player sits above every Flutter page, so a
-    // notification drawn by Flutter would be hidden behind the video.
-    if (GetIt.instance.isRegistered<PlaybackManager>()) {
+    // The Apple native player sits above every Flutter page, so while it is
+    // on screen a message drawn by Flutter would be hidden behind the video.
+    // In the background a notification is still the way to reach the viewer.
+    final foreground = switch (WidgetsBinding.instance.lifecycleState) {
+      AppLifecycleState.paused ||
+      AppLifecycleState.hidden ||
+      AppLifecycleState.detached => false,
+      _ => true,
+    };
+    if (foreground && GetIt.instance.isRegistered<PlaybackManager>()) {
       final backend = GetIt.instance<PlaybackManager>().backend;
-      if (backend is NativeApplePlayerBackend && backend.isPlayerPresented) {
+      if (backend is NativeApplePlayerBackend && backend.isPlayerOnScreen) {
         final title = header?.trim();
         await backend.showMessage(
           text.trim(),

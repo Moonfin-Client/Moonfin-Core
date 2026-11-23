@@ -136,8 +136,11 @@ class _NativeApplePlayerBackend extends Fake implements NativeApplePlayerBackend
   @override
   Future<void> sendRemoteNavigation(String command) async =>
       navigation.add(command);
+  bool suspended = false;
   @override
   bool get isPlayerPresented => !dismissed;
+  @override
+  bool get isPlayerOnScreen => !dismissed && !suspended;
   @override
   Future<void> dismissPlayer() async => dismissed = true;
   final alerts = <({String message, String? title})>[];
@@ -1411,6 +1414,31 @@ void main() {
     expect(backend.alerts.single.message, 'restarting at 9');
     expect(backend.alerts.single.title, 'From your admin');
     expect(notifications.messages, isEmpty);
+  });
+
+  test('while the Live TV guide has the native player off screen, a message '
+      'is a notification', () async {
+    final backend = _NativeApplePlayerBackend()..suspended = true;
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts, isEmpty);
+    expect(notifications.messages, ['hello']);
+  });
+
+  test('with the app in the background, a message is a notification even '
+      'with the native player presented', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    addTearDown(
+      () => binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed),
+    );
+    final backend = _NativeApplePlayerBackend();
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts, isEmpty);
+    expect(notifications.messages, ['hello']);
   });
 
   test('once the native player is gone, a message is a notification again',

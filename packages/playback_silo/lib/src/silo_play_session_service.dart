@@ -43,7 +43,8 @@ class SiloPlaySessionService implements PlayerService {
     return session;
   }
 
-  /// Nothing to send: the start opened the session.
+  /// Nothing to send (the start opened the session). Says the session is
+  /// playing, for its playback control socket.
   @override
   Future<void> onPlaybackStart(
     dynamic mediaItem,
@@ -115,6 +116,7 @@ class SiloPlaySessionService implements PlayerService {
     if (SiloPlaybackApi.isEndedByServer(error)) {
       session.ended = true;
       _noteEnded(session);
+      _sessions.noteEnded(session);
       throw siloEndedOnServerRefusal;
     }
     if (SiloPlaybackApi.isSessionGone(error) ||
@@ -155,7 +157,6 @@ class SiloPlaySessionService implements PlayerService {
     if (pending != null) return pending;
     if (session.ended) {
       _sessions.remove(session.sessionId);
-      _sessions.noteEnded(session);
       return Future.value();
     }
     final current = session.resolution;
@@ -211,10 +212,8 @@ class SiloPlaySessionService implements PlayerService {
   /// Tells the client [session]'s item changed. Silo's events socket is
   /// silent about a stopped session, so without this a season's list kept
   /// an episode just finished unwatched.
-  void _noteEnded(SiloPlaybackSession session) {
-    _silo?.notePlaybackEnded(session.itemId);
-    _sessions.noteEnded(session);
-  }
+  void _noteEnded(SiloPlaybackSession session) =>
+      _silo?.notePlaybackEnded(session.itemId);
 
   /// Silo has no live TV.
   @override

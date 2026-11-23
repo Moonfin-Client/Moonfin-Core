@@ -109,18 +109,15 @@ class SiloPlaybackControlApi {
   }
 
   /// Whether a refused ticket means this session's lane can't be opened at
-  /// all, so asking again is pointless: the session is gone or ended (`404`,
-  /// `410`), it isn't this login's (`401`, `403`), or another installation
-  /// holds it (`409`). Anything else (`503` while a restarted server rebuilds
-  /// the session, no answer) is worth another try.
+  /// all, so asking again is pointless: the session ended (`410`), it isn't
+  /// this login's (`401`, `403`), or another installation holds it (`409`).
+  /// A `404` is retried: a server without a durable attempt store answers it
+  /// for a live session it hasn't rebuilt yet after a restart. Anything else
+  /// (`503` while it rebuilds, no answer) is retried too.
   static bool isFinalRefusal(Object error) {
     if (error is! DioException) return false;
     final status = error.response?.statusCode;
-    return status == 401 ||
-        status == 403 ||
-        status == 404 ||
-        status == 409 ||
-        status == 410;
+    return status == 401 || status == 403 || status == 409 || status == 410;
   }
 
   /// The socket's URL for [sessionId], with `ws`/`wss`. No credential goes in

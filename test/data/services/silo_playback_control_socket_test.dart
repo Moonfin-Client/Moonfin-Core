@@ -120,6 +120,7 @@ void main() {
   late List<String> ticketsFor;
   late Object? ticketError;
   late SiloPlaybackControlSocket socket;
+  late bool playedHere;
 
   setUp(() async {
     lane = _FakeLane();
@@ -130,6 +131,7 @@ void main() {
     usable = true;
     ticketsFor = [];
     ticketError = null;
+    playedHere = true;
     socket = SiloPlaybackControlSocket(
       lifecycle: lifecycle.stream,
       capabilities: () async =>
@@ -143,6 +145,7 @@ void main() {
       uri: lane.uri,
       handle: (message) => handler(message),
       clientVersion: '1.2.3',
+      playedHere: (_) => playedHere,
       closeGrace: const Duration(seconds: 2),
       retryDelay: (_) => const Duration(milliseconds: 20),
     );
@@ -318,6 +321,114 @@ void main() {
     await _until(() => lane.sockets.length == 2);
 
     expect(lane.offeredProtocols.last.last, 'silo.ticket.ticket2');
+  });
+
+  test('a renewal opens the new connection before letting the old one go, '
+      'and a command running on the old one still answers', () async {
+    final release = Completer<void>();
+    handler = (message) async {
+      handled.add(message);
+      await release.future;
+    };
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    lane.command('pause', id: 'slow');
+    await lane.next((f) => f['type'] == 'ack');
+    socket.renewNow();
+    await _until(() => lane.sockets.length == 2);
+    await lane.next(
+      (f) => f['type'] == 'hello' && lane.received.indexOf(f) > 0,
+    );
+    expect(lane.sockets.first.closeCode, isNull);
+
+    release.complete();
+    final result = await lane.next((f) => f['type'] == 'result');
+    expect(result['command_id'], 'slow');
+    expect(result['status'], 'completed');
+    await _until(() => lane.sockets.first.closeCode != null);
+    expect(socket.connected, isTrue);
+  });
+
+  test('a connection being let go takes no new command', () async {
+    final release = Completer<void>();
+    handler = (message) async {
+      handled.add(message);
+      await release.future;
+    };
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+    lane.command('pause', id: 'first');
+    await lane.next((f) => f['type'] == 'ack');
+
+    // The session ends; its connection stays open for the running pause.
+    lifecycle.add(_ended);
+    lane.sockets.single.add(
+      jsonEncode({
+        'type': 'command',
+        'command_id': 'late',
+        'session_id': 's1',
+        'name': 'stop',
+      }),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    release.complete();
+    await lane.next((f) => f['type'] == 'result');
+
+    expect(handled, hasLength(1));
+    expect(lane.received.where((f) => f['command_id'] == 'late'), isEmpty);
+  });
+
+  test('a session the app\'s own player is not playing gets no lane', () async {
+    playedHere = false;
+    lifecycle.add(_playing);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(ticketsFor, isEmpty);
+    expect(socket.sessionId, isNull);
+  });
+
+  test('a lane that keeps failing is given up on', () async {
+    ticketError = _refused(503);
+    lifecycle.add(_playing);
+    await _until(
+      () => ticketsFor.length == SiloPlaybackControlSocket.maxAttempts + 1,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    expect(ticketsFor, hasLength(SiloPlaybackControlSocket.maxAttempts + 1));
+  });
+
+  group('renewalDelay', () {
+    final now = DateTime.utc(2026, 11, 23, 12);
+    Duration delay(DateTime? expires) => SiloPlaybackControlSocket.renewalDelay(
+      maxConnection: const Duration(hours: 4),
+      accessExpiresAt: expires,
+      now: now,
+      margin: const Duration(minutes: 1),
+    );
+
+    test('the ticket\'s limit when the token lasts longer', () {
+      expect(
+        delay(now.add(const Duration(hours: 8))),
+        const Duration(hours: 3, minutes: 59),
+      );
+      expect(delay(null), const Duration(hours: 3, minutes: 59));
+    });
+
+    test('before the token expires, since Silo closes the lane then', () {
+      expect(
+        delay(now.add(const Duration(hours: 2))),
+        const Duration(hours: 1, minutes: 59),
+      );
+    });
+
+    test('never sooner than five seconds', () {
+      expect(
+        delay(now.add(const Duration(seconds: 30))),
+        const Duration(seconds: 5),
+      );
+    });
   });
 
   group('commandMessage', () {

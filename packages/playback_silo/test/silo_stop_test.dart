@@ -73,7 +73,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       await sub.cancel();
 
-      expect(changes.map((c) => c.playing), [true, false, false]);
+      expect(changes.map((c) => c.playing), [true, false]);
       expect(changes.map((c) => c.sessionId).toSet(), {_session});
       expect(
         changes.first.installationId,

@@ -143,14 +143,14 @@ void main() {
         statusCode: status,
       ),
     );
-    for (final status in [401, 403, 404, 409, 410]) {
+    for (final status in [401, 403, 409, 410]) {
       expect(
         SiloPlaybackControlApi.isFinalRefusal(refused(status)),
         isTrue,
         reason: '$status',
       );
     }
-    for (final status in [500, 502, 503]) {
+    for (final status in [404, 500, 502, 503]) {
       expect(
         SiloPlaybackControlApi.isFinalRefusal(refused(status)),
         isFalse,
