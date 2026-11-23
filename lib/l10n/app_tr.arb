@@ -18865,5 +18865,13 @@
     "remoteActivityListening": "Moonfin üzerinden dinleniyor",
     "@remoteActivityListening": {
         "description": "Line in the Android media notification that mirrors music or an audiobook another device on the same account is playing. Moonfin is the app name"
+    },
+    "topNavbarStyleClassic": "Klasik",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klasik",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
