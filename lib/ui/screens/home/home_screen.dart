@@ -3352,10 +3352,12 @@ class _ContentRowsState extends State<_ContentRows>
   /// Scrolls the rows for a d-pad move. A stock animateTo blocks pointers
   /// while it runs, and flipping that block rebuilds the semantics of every
   /// row when an accessibility service is on, which can push the move's first
-  /// frame past its vsync. Unless a mouse is in use there's nothing to block.
+  /// frame past its vsync. Without a touchscreen or a mouse in use there's
+  /// nothing to block.
   Future<void> _animateRowScroll(double to) {
     final position = _scrollController.position;
     if (!PlatformDetection.isTV ||
+        PlatformDetection.canUsePhoneLayout ||
         RendererBinding.instance.mouseTracker.mouseIsConnected ||
         position is! ScrollPositionWithSingleContext) {
       return _scrollController.animateTo(
