@@ -13060,5 +13060,9 @@
     "playlistSortPlayCount": "Antal uppspelningar",
     "@playlistSortPlayCount": {
         "description": "Label for sorting playlist items by play count"
+    },
+    "librarySortDateEpisodeAdded": "Datum avsnitt lades till",
+    "@librarySortDateEpisodeAdded": {
+        "description": "Sort option for series: when the newest episode was added"
     }
 }
