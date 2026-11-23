@@ -18939,5 +18939,13 @@
     "carInstantMix": "Mescla instantània",
     "@carInstantMix": {
         "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
+    },
+    "topNavbarStyleClassic": "Clàssic",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clàssic",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
