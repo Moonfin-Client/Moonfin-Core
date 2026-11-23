@@ -18927,5 +18927,17 @@
     "seerrPushDeviceNotRegistered": "No registrat",
     "@seerrPushDeviceNotRegistered": {
         "description": "Status indicating this device is not registered for push"
+    },
+    "carListenNow": "Escolta ara",
+    "@carListenNow": {
+        "description": "Car tab with quick starts, recently played and in-progress items"
+    },
+    "carRecentlyPlayed": "Reproduït recentment",
+    "@carRecentlyPlayed": {
+        "description": "Car shelf and tile listing the music played most recently"
+    },
+    "carInstantMix": "Mescla instantània",
+    "@carInstantMix": {
+        "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
     }
 }
