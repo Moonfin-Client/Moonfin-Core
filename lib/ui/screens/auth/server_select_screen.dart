@@ -648,6 +648,14 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     focusNode: _addServerFocus,
                   ),
                 );
+
+                actions.add(
+                  AddIptvButton(
+                    onPressed: _isConnecting
+                        ? null
+                        : () => context.go(Destinations.iptvSetup),
+                  ),
+                );
               }
 
               if (PlatformDetection.isWeb) {
@@ -718,7 +726,9 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     ),
                   ),
                   Text(
-                    '${server.displayAddress ?? server.address} • ${server.version}',
+                    server.serverType == ServerType.iptv
+                        ? AppLocalizations.of(context).iptvSavedServerSubtitle
+                        : '${server.displayAddress ?? server.address} • ${server.version}',
                     style: TextStyle(
                       fontSize: 13,
                       color: _loginForeground(0.5),
