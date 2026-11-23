@@ -18680,5 +18680,13 @@
     "seerrPushDeviceNotRegistered": "未注册",
     "@seerrPushDeviceNotRegistered": {
         "description": "Status indicating this device is not registered for push"
+    },
+    "topNavbarStyleClassic": "经典",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "经典",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
