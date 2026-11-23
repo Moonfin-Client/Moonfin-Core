@@ -4302,7 +4302,7 @@
     "@appearances": {
         "description": "Section title for cast appearances"
     },
-    "crewSection": "Besättning",
+    "crewSection": "Filmteam",
     "@crewSection": {
         "description": "Section title for crew credits"
     },
