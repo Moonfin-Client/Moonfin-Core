@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:dio/dio.dart' show DioException;
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -220,7 +219,7 @@ class SiloPlaybackControlSocket {
     if (change.playing) {
       // A replan of the session playing now keeps its lane.
       if (same) {
-        if (_gaveUp && !_refused) {
+        if (_gaveUp) {
           _gaveUp = false;
           _attempt = 0;
           if (_channel != null) {
@@ -306,23 +305,25 @@ class SiloPlaybackControlSocket {
     } catch (error) {
       unawaited(_closeChannel(opened));
       if (generation != _generation) return;
-      // A renewal refused for an expired or changed token (401/403) gets a
-      // fresh ticket once the old connection closes, as before; a session
-      // that is over or not this installation's (409/410) never will.
-      final status = error is DioException ? error.response?.statusCode : null;
-      final renewal = _channel != null;
-      if (SiloPlaybackControlApi.isFinalRefusal(error) &&
-          (!renewal || status == 409 || status == 410)) {
+      if (SiloPlaybackControlApi.isSessionGone(error)) {
         // The session is over or isn't this installation's lane: no later
-        // ticket would be granted.
+        // ticket would be granted, not on a replan either. A renewal's
+        // refusal leaves the old connection up until it closes; that close
+        // mustn't ask for another ticket.
         _log('Silo playback control not opened', error);
-        // A renewal's refusal leaves the old connection up until it closes;
-        // that close mustn't ask for another ticket.
         _refused = true;
         return;
       }
       if (SiloPlaybackControlApi.isFinalRefusal(error)) {
-        _log('Silo playback control renewal refused', error);
+        // Refused for the token (401/403): a renewal gets a fresh ticket once
+        // the old connection closes (now, if it already has); a first open
+        // tries again on the session's replan.
+        _log('Silo playback control refused', error);
+        if (!_renewing) {
+          _gaveUp = true;
+        } else if (_channel == null) {
+          _scheduleRetry(generation);
+        }
         return;
       }
       _log('Silo playback control failed, retrying', error);

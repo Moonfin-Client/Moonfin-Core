@@ -544,6 +544,19 @@ void main() {
     expect(ticketsFor, hasLength(1));
   });
 
+  test('a lane refused for its token is asked for again on a replan',
+      () async {
+    ticketError = _refused(401);
+    lifecycle.add(_playing);
+    await _until(() => ticketsFor.length == 1);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(ticketsFor, hasLength(1));
+
+    ticketError = null;
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+  });
+
   test('a connection being let go takes no new command', () async {
     final release = Completer<void>();
     handler = (message) async {

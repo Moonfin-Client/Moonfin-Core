@@ -120,6 +120,14 @@ class SiloPlaybackControlApi {
     return status == 401 || status == 403 || status == 409 || status == 410;
   }
 
+  /// Whether [error] says the session is over (410) or its lane belongs to
+  /// another installation (409): unlike a 401/403, no later ticket comes.
+  static bool isSessionGone(Object error) {
+    if (error is! DioException) return false;
+    final status = error.response?.statusCode;
+    return status == 409 || status == 410;
+  }
+
   /// The socket's URL for [sessionId], with `ws`/`wss`. No credential goes in
   /// the URL. The port is always written out (see
   /// [SiloEventsApi.socketUri]).
