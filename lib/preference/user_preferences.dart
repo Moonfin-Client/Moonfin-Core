@@ -4132,6 +4132,16 @@ class UserPreferences extends ChangeNotifier {
   static Preference<String> moonbaseUrlForServer(String serverId) =>
       Preference(key: 'pref_moonbase_url_$serverId', defaultValue: '');
 
+  /// A Plex user's Library Visibility and Library Order, as JSON, since Plex
+  /// has nowhere to keep them. Empty until the user saves one.
+  static Preference<String> plexUserConfiguration(
+    String serverId,
+    String userId,
+  ) => Preference(
+    key: 'pref_plex_user_configuration_${serverId}_$userId',
+    defaultValue: '',
+  );
+
   static Preference<bool> pluginSyncInitializedForServer(String serverKey) =>
       Preference(
         key: 'pref_plugin_sync_initialized_$serverKey',

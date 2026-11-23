@@ -15,6 +15,14 @@ Future<Map<String, dynamic>> plexContainer(
   return response.data?['MediaContainer'] as Map<String, dynamic>? ?? const {};
 }
 
+/// Where a Plex user's [UserConfiguration] is kept, as its JSON, by user id.
+/// Plex has nowhere to store Library Visibility or Library Order, so the app
+/// keeps them on the device.
+typedef PlexUserConfigurationStore = ({
+  Map<String, dynamic>? Function(String userId) read,
+  Future<void> Function(String userId, Map<String, dynamic> json) write,
+});
+
 class PlexImageApi implements ImageApi {
   final String Function() _baseUrl;
   final String? Function() _accessToken;
@@ -139,8 +147,14 @@ class PlexUsersApi implements UsersApi {
   final Dio _dio;
   final String Function() _userId;
   final void Function(UserPolicy policy) _onPolicy;
+  final PlexUserConfigurationStore? _configStore;
 
-  PlexUsersApi(this._dio, this._userId, this._onPolicy);
+  PlexUsersApi(
+    this._dio,
+    this._userId,
+    this._onPolicy, {
+    PlexUserConfigurationStore? configStore,
+  }) : _configStore = configStore;
 
   /// Plex has no route for the signed in user, so this checks the token
   /// against the server and answers with the id the session already has.
@@ -182,17 +196,25 @@ class PlexUsersApi implements UsersApi {
   Future<AccessWindow?> getAccessWindow() async => null;
 
   @override
-  Future<UserConfiguration> getUserConfiguration() async =>
-      const UserConfiguration(hidePlayedInLatest: false);
+  Future<UserConfiguration> getUserConfiguration() async {
+    final json = _configStore?.read(_userId());
+    return json == null
+        ? const UserConfiguration(hidePlayedInLatest: false)
+        : UserConfiguration.fromJson(json);
+  }
 
   @override
-  Future<void> updateUserConfiguration(UserConfiguration config) async {}
+  Future<void> updateUserConfiguration(UserConfiguration config) async =>
+      _configStore?.write(_userId(), config.toJson());
 }
 
 class PlexUserViewsApi implements UserViewsApi {
   final Dio _dio;
 
-  PlexUserViewsApi(this._dio);
+  /// The saved order and the libraries hidden from My Media.
+  final Future<UserConfiguration> Function() _config;
+
+  PlexUserViewsApi(this._dio, this._config);
 
   @override
   Future<Map<String, dynamic>> getUserViews({
@@ -215,7 +237,17 @@ class PlexUserViewsApi implements UserViewsApi {
         'ImageTags': <String, dynamic>{},
       },
     ];
-    return plexItemsResult(views);
+    final config = await _config();
+    final order = config.orderedViews;
+    // Jellyfin leaves out what the user hid from My Media unless asked.
+    final shown = [
+      for (final view in views)
+        if (includeHidden || !config.myMediaExcludes.contains(view['Id'])) view,
+    ];
+    return plexItemsResult([
+      for (final id in order) ...shown.where((view) => view['Id'] == id),
+      ...shown.where((view) => !order.contains(view['Id'])),
+    ]);
   }
 }
 
