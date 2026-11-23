@@ -31780,6 +31780,887 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Swipe to turn it, tap the middle to go'**
   String get navReelSwipeHint;
+
+  /// Title and button for adding an IPTV playlist
+  ///
+  /// In en, this message translates to:
+  /// **'Add Playlist'**
+  String get iptvAddPlaylist;
+
+  /// Shown after an IPTV provider connection test passes
+  ///
+  /// In en, this message translates to:
+  /// **'Connection successful'**
+  String get iptvConnectionSuccessful;
+
+  /// File picker dialog title for choosing an M3U playlist file
+  ///
+  /// In en, this message translates to:
+  /// **'Select M3U playlist'**
+  String get iptvSelectM3uPlaylist;
+
+  /// Error when submitting an IPTV file playlist without choosing a file
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a file'**
+  String get iptvPleaseSelectFile;
+
+  /// Validation error for an empty URL field
+  ///
+  /// In en, this message translates to:
+  /// **'URL is required'**
+  String get iptvUrlRequired;
+
+  /// Validation error for a malformed URL
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid URL'**
+  String get iptvEnterValidUrl;
+
+  /// Button label for choosing an M3U playlist file
+  ///
+  /// In en, this message translates to:
+  /// **'Select M3U file'**
+  String get iptvSelectM3uFile;
+
+  /// Validation error for a required empty field, field is the field label
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is required'**
+  String iptvFieldRequired(String field);
+
+  /// Xtream Codes IPTV provider connection type
+  ///
+  /// In en, this message translates to:
+  /// **'Xtream'**
+  String get iptvXtream;
+
+  /// M3U playlist URL connection type and field label
+  ///
+  /// In en, this message translates to:
+  /// **'M3U URL'**
+  String get iptvM3uUrl;
+
+  /// Local file connection type tab on the IPTV setup screen
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get iptvFileTab;
+
+  /// Optional TV guide data URL field label
+  ///
+  /// In en, this message translates to:
+  /// **'EPG URL (optional)'**
+  String get iptvEpgUrlOptional;
+
+  /// TV guide data URL field label
+  ///
+  /// In en, this message translates to:
+  /// **'EPG URL'**
+  String get iptvEpgUrl;
+
+  /// Field label for the Xtream server address
+  ///
+  /// In en, this message translates to:
+  /// **'Server URL'**
+  String get iptvServerUrl;
+
+  /// Short button label that tests the provider connection
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get iptvTest;
+
+  /// Button label that tests the provider connection
+  ///
+  /// In en, this message translates to:
+  /// **'Test Connection'**
+  String get iptvTestConnection;
+
+  /// Progress label while importing a playlist, percent is 0 to 100
+  ///
+  /// In en, this message translates to:
+  /// **'Importing... {percent}%'**
+  String iptvImportingPercent(int percent);
+
+  /// Uppercase form section header for connection fields
+  ///
+  /// In en, this message translates to:
+  /// **'CONNECTION'**
+  String get iptvSectionConnection;
+
+  /// Uppercase form section header for username and password fields
+  ///
+  /// In en, this message translates to:
+  /// **'CREDENTIALS'**
+  String get iptvSectionCredentials;
+
+  /// Uppercase form section header for the optional TV guide URL
+  ///
+  /// In en, this message translates to:
+  /// **'EPG (OPTIONAL)'**
+  String get iptvSectionEpgOptional;
+
+  /// Uppercase form section header for playlist fields
+  ///
+  /// In en, this message translates to:
+  /// **'PLAYLIST'**
+  String get iptvSectionPlaylist;
+
+  /// Placeholder example name for an IPTV provider
+  ///
+  /// In en, this message translates to:
+  /// **'My Provider'**
+  String get iptvMyProvider;
+
+  /// Placeholder example name for an IPTV playlist
+  ///
+  /// In en, this message translates to:
+  /// **'My Playlist'**
+  String get iptvMyPlaylist;
+
+  /// Title of the channel group selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Channel groups'**
+  String get iptvChannelGroups;
+
+  /// Search field hint on the channel groups screen
+  ///
+  /// In en, this message translates to:
+  /// **'Search groups'**
+  String get iptvSearchGroups;
+
+  /// Summary of how many channel groups are enabled
+  ///
+  /// In en, this message translates to:
+  /// **'{selected} of {total} groups enabled'**
+  String iptvGroupsEnabledCount(int selected, int total);
+
+  /// Number of channels in a group or playlist
+  ///
+  /// In en, this message translates to:
+  /// **'{count} channels'**
+  String iptvChannelCount(int count);
+
+  /// Confirmation dialog title before deleting the named item
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}?'**
+  String iptvDeleteConfirmTitle(String name);
+
+  /// Warning shown before deleting an IPTV profile
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the profile along with its favorites, watch history, and channel group selection.'**
+  String get iptvDeleteProfileBody;
+
+  /// Title of the IPTV profiles management screen
+  ///
+  /// In en, this message translates to:
+  /// **'Profiles'**
+  String get iptvProfiles;
+
+  /// Button that creates a new IPTV profile
+  ///
+  /// In en, this message translates to:
+  /// **'Add Profile'**
+  String get iptvAddProfile;
+
+  /// Empty state on the profiles screen
+  ///
+  /// In en, this message translates to:
+  /// **'No profiles yet'**
+  String get iptvNoProfilesYet;
+
+  /// Subtitle marking the profile that is signed in
+  ///
+  /// In en, this message translates to:
+  /// **'Current profile'**
+  String get iptvCurrentProfile;
+
+  /// Tooltip explaining the active profile can't be deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Switch profiles before deleting this one'**
+  String get iptvSwitchBeforeDelete;
+
+  /// Dialog title when creating a profile
+  ///
+  /// In en, this message translates to:
+  /// **'New Profile'**
+  String get iptvNewProfile;
+
+  /// Dialog title when editing a profile
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get iptvEditProfile;
+
+  /// Button on the profile picker that opens profile management
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Profiles'**
+  String get iptvManageProfiles;
+
+  /// Playlist type label for a local M3U file
+  ///
+  /// In en, this message translates to:
+  /// **'M3U file'**
+  String get iptvM3uFileLabel;
+
+  /// Action that opens the playlist channel editor
+  ///
+  /// In en, this message translates to:
+  /// **'Channel Editor'**
+  String get iptvChannelEditor;
+
+  /// Action that opens the stream health check
+  ///
+  /// In en, this message translates to:
+  /// **'Health Check'**
+  String get iptvHealthCheck;
+
+  /// Action that opens the duplicate channel finder
+  ///
+  /// In en, this message translates to:
+  /// **'Find Duplicates'**
+  String get iptvFindDuplicates;
+
+  /// Snackbar when a playlist refresh fails
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh failed: {error}'**
+  String iptvRefreshFailed(String error);
+
+  /// Snackbar after a playlist refresh finishes
+  ///
+  /// In en, this message translates to:
+  /// **'{name} refreshed'**
+  String iptvPlaylistRefreshed(String name);
+
+  /// Snackbar after a playlist is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'{name} deleted'**
+  String iptvPlaylistDeleted(String name);
+
+  /// Dialog title for editing a playlist name and guide URL
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Playlist'**
+  String get iptvEditPlaylist;
+
+  /// Warning shown before deleting a playlist
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the playlist and its imported channels and library content from this device.'**
+  String get iptvDeletePlaylistBody;
+
+  /// Dialog title for entering the TMDB API key
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB API Key'**
+  String get iptvTmdbApiKeyTitle;
+
+  /// Explains what configuring a TMDB API key does
+  ///
+  /// In en, this message translates to:
+  /// **'A free key from themoviedb.org adds posters, backdrops, logos and descriptions to movies and shows. Leave empty to use only provider info.'**
+  String get iptvTmdbExplainer;
+
+  /// Field label for the TMDB API key
+  ///
+  /// In en, this message translates to:
+  /// **'API key'**
+  String get iptvApiKey;
+
+  /// File dialog title when exporting a backup
+  ///
+  /// In en, this message translates to:
+  /// **'Save IPTV backup'**
+  String get iptvSaveBackupTitle;
+
+  /// Snackbar after a backup file is written, warns it holds credentials
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved. It includes provider credentials, keep it safe.'**
+  String get iptvBackupSaved;
+
+  /// Snackbar when exporting a backup fails
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed: {error}'**
+  String iptvBackupFailed(String error);
+
+  /// File dialog title when choosing a backup to restore
+  ///
+  /// In en, this message translates to:
+  /// **'Select IPTV backup'**
+  String get iptvSelectBackupTitle;
+
+  /// Snackbar summarizing what a backup restore brought back
+  ///
+  /// In en, this message translates to:
+  /// **'Restored {playlists} playlists, {profiles} profiles, {favorites} favorites, {progress} progress entries'**
+  String iptvRestoredCounts(
+    int playlists,
+    int profiles,
+    int favorites,
+    int progress,
+  );
+
+  /// Restore summary followed by what was skipped
+  ///
+  /// In en, this message translates to:
+  /// **'{summary}. Skipped: {warnings}'**
+  String iptvRestoredSkipped(String summary, String warnings);
+
+  /// Snackbar when restoring a backup fails
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed: {error}'**
+  String iptvRestoreFailed(String error);
+
+  /// Empty state when no playlists have been added
+  ///
+  /// In en, this message translates to:
+  /// **'No playlists yet'**
+  String get iptvNoPlaylistsYet;
+
+  /// Section header for metadata settings
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata'**
+  String get iptvMetadataSection;
+
+  /// Settings tile that opens the TMDB API key dialog
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB artwork and details'**
+  String get iptvTmdbTileTitle;
+
+  /// State label when the TMDB key is set
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get iptvConfigured;
+
+  /// State label when the TMDB key is missing
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get iptvNotConfigured;
+
+  /// Section header for backup and restore
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get iptvBackupSection;
+
+  /// Tile that exports the IPTV setup to a file
+  ///
+  /// In en, this message translates to:
+  /// **'Export backup'**
+  String get iptvExportBackup;
+
+  /// Describes what the backup export contains
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists, profiles, favorites and progress'**
+  String get iptvExportBackupSubtitle;
+
+  /// Tile that restores an IPTV backup file
+  ///
+  /// In en, this message translates to:
+  /// **'Restore backup'**
+  String get iptvRestoreBackup;
+
+  /// Tab listing the channel groups in the editor
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get iptvGroupsTab;
+
+  /// Search field hint in the channel editor
+  ///
+  /// In en, this message translates to:
+  /// **'Search channels'**
+  String get iptvSearchChannels;
+
+  /// Empty search result in the channel editor
+  ///
+  /// In en, this message translates to:
+  /// **'No channels match'**
+  String get iptvNoChannelsMatch;
+
+  /// Empty state when a playlist has no channel groups
+  ///
+  /// In en, this message translates to:
+  /// **'No groups in this playlist'**
+  String get iptvNoGroupsInPlaylist;
+
+  /// Action that changes a channel number
+  ///
+  /// In en, this message translates to:
+  /// **'Change number'**
+  String get iptvChangeNumber;
+
+  /// Action that removes a channel from the device
+  ///
+  /// In en, this message translates to:
+  /// **'Remove channel'**
+  String get iptvRemoveChannel;
+
+  /// Dialog title for renaming a channel
+  ///
+  /// In en, this message translates to:
+  /// **'Rename channel'**
+  String get iptvRenameChannel;
+
+  /// Dialog title for changing a channel number
+  ///
+  /// In en, this message translates to:
+  /// **'Channel number'**
+  String get iptvChannelNumber;
+
+  /// Field label for a channel number
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get iptvNumber;
+
+  /// Confirmation dialog title before removing the named channel
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}?'**
+  String iptvRemoveConfirmTitle(String name);
+
+  /// Explains that removing a channel is local and undone by a refresh
+  ///
+  /// In en, this message translates to:
+  /// **'The channel disappears from this device until the playlist is refreshed from its source.'**
+  String get iptvRemoveChannelBody;
+
+  /// Dialog title for renaming a channel group
+  ///
+  /// In en, this message translates to:
+  /// **'Rename group'**
+  String get iptvRenameGroup;
+
+  /// Health check screen title with the playlist name
+  ///
+  /// In en, this message translates to:
+  /// **'Health Check: {name}'**
+  String iptvHealthCheckTitle(String name);
+
+  /// Explains the health check only tests the first channels of a large playlist
+  ///
+  /// In en, this message translates to:
+  /// **'{total} live channels. The first {cap} are tested to avoid hammering the provider.'**
+  String iptvLiveChannelsCapped(int total, int cap);
+
+  /// How many live channels the playlist has
+  ///
+  /// In en, this message translates to:
+  /// **'{total} live channels.'**
+  String iptvLiveChannelsCount(int total);
+
+  /// Button that starts the stream health check
+  ///
+  /// In en, this message translates to:
+  /// **'Start Check'**
+  String get iptvStartCheck;
+
+  /// Live progress of the health check
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{planned} tested, {online} online, {offline} offline'**
+  String iptvTestedProgress(int done, int planned, int online, int offline);
+
+  /// Shown while the health check is running with no results yet
+  ///
+  /// In en, this message translates to:
+  /// **'Testing streams'**
+  String get iptvTestingStreams;
+
+  /// Shown before the health check has run
+  ///
+  /// In en, this message translates to:
+  /// **'No results yet'**
+  String get iptvNoResultsYet;
+
+  /// Stream is reachable, status is the HTTP status code
+  ///
+  /// In en, this message translates to:
+  /// **'Online ({status})'**
+  String iptvOnlineWithStatus(int status);
+
+  /// Stream is reachable
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get iptvOnline;
+
+  /// Stream is not reachable, status is the HTTP status code
+  ///
+  /// In en, this message translates to:
+  /// **'Offline ({status})'**
+  String iptvOfflineWithStatus(int status);
+
+  /// Stream is not reachable
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get iptvOffline;
+
+  /// Tooltip that re-tests one stream
+  ///
+  /// In en, this message translates to:
+  /// **'Re-test'**
+  String get iptvRetest;
+
+  /// Duplicates screen title with the playlist name
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates: {name}'**
+  String iptvDuplicatesTitle(String name);
+
+  /// Snackbar after merging duplicate channels
+  ///
+  /// In en, this message translates to:
+  /// **'Kept {name}, removed {count} duplicates'**
+  String iptvKeptRemoved(String name, int count);
+
+  /// Dialog title asking which duplicate to keep
+  ///
+  /// In en, this message translates to:
+  /// **'Keep which channel?'**
+  String get iptvKeepWhichChannel;
+
+  /// Shows a channel number
+  ///
+  /// In en, this message translates to:
+  /// **'Channel {number}'**
+  String iptvChannelNumberValue(int number);
+
+  /// Duplicate matching criterion, same stream address
+  ///
+  /// In en, this message translates to:
+  /// **'Stream URL'**
+  String get iptvStreamUrl;
+
+  /// Button that starts the duplicate scan
+  ///
+  /// In en, this message translates to:
+  /// **'Scan for Duplicates'**
+  String get iptvScanForDuplicates;
+
+  /// Shown while the duplicate scan runs
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning'**
+  String get iptvScanning;
+
+  /// Prompt before running the duplicate scan
+  ///
+  /// In en, this message translates to:
+  /// **'Choose criteria and scan'**
+  String get iptvChooseCriteria;
+
+  /// Duplicate scan finished with nothing to merge
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicates found'**
+  String get iptvNoDuplicatesFound;
+
+  /// Duplicate group subtitle, how many copies and why they matched
+  ///
+  /// In en, this message translates to:
+  /// **'{count} copies, {reason}'**
+  String iptvCopiesReason(int count, String reason);
+
+  /// Plays the running program from its start over catchup
+  ///
+  /// In en, this message translates to:
+  /// **'Watch from Beginning'**
+  String get iptvWatchFromBeginning;
+
+  /// Sets a notification before the program starts
+  ///
+  /// In en, this message translates to:
+  /// **'Remind Me'**
+  String get iptvRemindMe;
+
+  /// Removes the reminder set for a program
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Reminder'**
+  String get iptvCancelReminder;
+
+  /// Snackbar after a program reminder is created
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder set'**
+  String get iptvReminderSet;
+
+  /// Snackbar after a program reminder is removed
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder canceled'**
+  String get iptvReminderCancelled;
+
+  /// Snackbar when creating a program reminder fails
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to set reminder'**
+  String get iptvReminderSetFailed;
+
+  /// Snackbar when removing a program reminder fails
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to cancel reminder'**
+  String get iptvReminderCancelFailed;
+
+  /// Banner when the guide lineup is capped
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {loaded} of {total} channels'**
+  String iptvShowingChannels(int loaded, int total);
+
+  /// Banner button that opens the channel group selection
+  ///
+  /// In en, this message translates to:
+  /// **'Manage groups'**
+  String get iptvManageGroups;
+
+  /// Name of the IPTV feature, used for the server select button, the settings category and the playlists screen title
+  ///
+  /// In en, this message translates to:
+  /// **'IPTV'**
+  String get iptvTitle;
+
+  /// Subtitle of the IPTV settings category and its entry
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists, metadata and tools'**
+  String get iptvSettingsSubtitle;
+
+  /// Subtitle of the IPTV card under Add Server on the server list
+  ///
+  /// In en, this message translates to:
+  /// **'From an Xtream Codes login or an M3U playlist'**
+  String get iptvButtonSubtitle;
+
+  /// Second line of the IPTV entry in the saved server list, in place of a server address
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists saved on this device'**
+  String get iptvSavedServerSubtitle;
+
+  /// Name of the profile created automatically when the first IPTV playlist is added
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get iptvDefaultProfileName;
+
+  /// Duplicate matching criterion, the channel's tvg-id attribute from the M3U playlist. Usually left as is
+  ///
+  /// In en, this message translates to:
+  /// **'tvg-id'**
+  String get iptvTvgId;
+
+  /// Name of the IPTV library that holds TV series
+  ///
+  /// In en, this message translates to:
+  /// **'Shows'**
+  String get iptvShows;
+
+  /// Fallback user name for the signed in IPTV profile
+  ///
+  /// In en, this message translates to:
+  /// **'IPTV Profile'**
+  String get iptvProfileUserName;
+
+  /// Android notification channel name for guide program reminders
+  ///
+  /// In en, this message translates to:
+  /// **'Program Reminders'**
+  String get iptvReminderChannelName;
+
+  /// Android notification channel description for guide program reminders
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming program reminders'**
+  String get iptvReminderChannelDescription;
+
+  /// Reminder notification body with the program start time
+  ///
+  /// In en, this message translates to:
+  /// **'Starts at {time}'**
+  String iptvReminderStartsAt(String time);
+
+  /// Restore warning for an Xtream playlist saved without its login
+  ///
+  /// In en, this message translates to:
+  /// **'{name} skipped, the backup has no Xtream credentials'**
+  String iptvRestoreNoCredentials(String name);
+
+  /// Restore warning for an M3U URL playlist with no address
+  ///
+  /// In en, this message translates to:
+  /// **'{name} skipped, no URL in the backup'**
+  String iptvRestoreNoUrl(String name);
+
+  /// Restore warning for an M3U file playlist with no file path
+  ///
+  /// In en, this message translates to:
+  /// **'{name} skipped, no file path in the backup'**
+  String iptvRestoreNoFilePath(String name);
+
+  /// Restore warning for a playlist whose source type isn't recognized
+  ///
+  /// In en, this message translates to:
+  /// **'{name} skipped, unknown type {type}'**
+  String iptvRestoreUnknownType(String name, String type);
+
+  /// Restore warning when a playlist couldn't be imported
+  ///
+  /// In en, this message translates to:
+  /// **'{name} failed to import'**
+  String iptvRestoreImportFailed(String name);
+
+  /// Restore warning when a playlist couldn't be imported, with the reason
+  ///
+  /// In en, this message translates to:
+  /// **'{name} failed to import: {error}'**
+  String iptvRestoreImportFailedWithError(String name, String error);
+
+  /// Error when the chosen file isn't an IPTV backup
+  ///
+  /// In en, this message translates to:
+  /// **'This file isn\'t an IPTV backup'**
+  String get iptvUnrecognizedBackup;
+
+  /// Why duplicate channels matched, they share this tvg-id
+  ///
+  /// In en, this message translates to:
+  /// **'Same tvg-id: {value}'**
+  String iptvSameTvgId(String value);
+
+  /// Why duplicate channels matched, they share a stream address
+  ///
+  /// In en, this message translates to:
+  /// **'Same stream URL'**
+  String get iptvSameStreamUrl;
+
+  /// Why duplicate channels matched, they share this name
+  ///
+  /// In en, this message translates to:
+  /// **'Same name: {value}'**
+  String iptvSameName(String value);
+
+  /// Playlist error when the provider rejects the login
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed'**
+  String get iptvErrorAuthenticationFailed;
+
+  /// Playlist error when connecting to the provider fails
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed: {error}'**
+  String iptvErrorConnectionFailed(String error);
+
+  /// Playlist error when the playlist has no channels
+  ///
+  /// In en, this message translates to:
+  /// **'No channels found in playlist'**
+  String get iptvErrorNoChannelsInPlaylist;
+
+  /// Playlist error when the M3U file has no channels
+  ///
+  /// In en, this message translates to:
+  /// **'No channels found in file'**
+  String get iptvErrorNoChannelsInFile;
+
+  /// Playlist error when importing from a URL fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import playlist: {error}'**
+  String iptvErrorImportFailed(String error);
+
+  /// Playlist error when importing from a file fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import file: {error}'**
+  String iptvErrorFileImportFailed(String error);
+
+  /// Playlist error when the chosen M3U file is missing
+  ///
+  /// In en, this message translates to:
+  /// **'File not found'**
+  String get iptvErrorFileNotFound;
+
+  /// Playlist error when a saved M3U file was moved or deleted
+  ///
+  /// In en, this message translates to:
+  /// **'File no longer exists'**
+  String get iptvErrorFileNoLongerExists;
+
+  /// Playlist error when the playlist was removed
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist not found'**
+  String get iptvErrorPlaylistNotFound;
+
+  /// Playlist error when an M3U URL playlist has no address
+  ///
+  /// In en, this message translates to:
+  /// **'No URL configured'**
+  String get iptvErrorNoUrl;
+
+  /// Playlist error when an M3U file playlist has no file path
+  ///
+  /// In en, this message translates to:
+  /// **'No file path configured'**
+  String get iptvErrorNoFilePath;
+
+  /// Playlist error when the saved Xtream login is missing
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials not found'**
+  String get iptvErrorCredentialsNotFound;
+
+  /// Playlist error when connecting to the provider times out
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timed out'**
+  String get iptvErrorConnectionTimeout;
+
+  /// Playlist error when the provider is too slow to answer
+  ///
+  /// In en, this message translates to:
+  /// **'Server took too long to respond'**
+  String get iptvErrorReceiveTimeout;
+
+  /// Playlist error when the provider can't be reached
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach server'**
+  String get iptvErrorUnreachable;
+
+  /// Playlist error with the HTTP status code the provider returned
+  ///
+  /// In en, this message translates to:
+  /// **'Server returned error {status}'**
+  String iptvErrorBadResponse(String status);
+
+  /// Playlist error for any other network failure
+  ///
+  /// In en, this message translates to:
+  /// **'Network error: {error}'**
+  String iptvErrorNetwork(String error);
 }
 
 class _AppLocalizationsDelegate

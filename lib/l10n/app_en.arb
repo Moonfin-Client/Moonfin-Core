@@ -17970,5 +17970,821 @@
   "navReelSwipeHint": "Swipe to turn it, tap the middle to go",
   "@navReelSwipeHint": {
     "description": "Hint at the bottom of the Reel sidebar on phones"
+  },
+  "iptvAddPlaylist": "Add Playlist",
+  "@iptvAddPlaylist": {
+    "description": "Title and button for adding an IPTV playlist"
+  },
+  "iptvConnectionSuccessful": "Connection successful",
+  "@iptvConnectionSuccessful": {
+    "description": "Shown after an IPTV provider connection test passes"
+  },
+  "iptvSelectM3uPlaylist": "Select M3U playlist",
+  "@iptvSelectM3uPlaylist": {
+    "description": "File picker dialog title for choosing an M3U playlist file"
+  },
+  "iptvPleaseSelectFile": "Please select a file",
+  "@iptvPleaseSelectFile": {
+    "description": "Error when submitting an IPTV file playlist without choosing a file"
+  },
+  "iptvUrlRequired": "URL is required",
+  "@iptvUrlRequired": {
+    "description": "Validation error for an empty URL field"
+  },
+  "iptvEnterValidUrl": "Enter a valid URL",
+  "@iptvEnterValidUrl": {
+    "description": "Validation error for a malformed URL"
+  },
+  "iptvSelectM3uFile": "Select M3U file",
+  "@iptvSelectM3uFile": {
+    "description": "Button label for choosing an M3U playlist file"
+  },
+  "iptvFieldRequired": "{field} is required",
+  "@iptvFieldRequired": {
+    "description": "Validation error for a required empty field, field is the field label",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvXtream": "Xtream",
+  "@iptvXtream": {
+    "description": "Xtream Codes IPTV provider connection type"
+  },
+  "iptvM3uUrl": "M3U URL",
+  "@iptvM3uUrl": {
+    "description": "M3U playlist URL connection type and field label"
+  },
+  "iptvFileTab": "File",
+  "@iptvFileTab": {
+    "description": "Local file connection type tab on the IPTV setup screen"
+  },
+  "iptvEpgUrlOptional": "EPG URL (optional)",
+  "@iptvEpgUrlOptional": {
+    "description": "Optional TV guide data URL field label"
+  },
+  "iptvEpgUrl": "EPG URL",
+  "@iptvEpgUrl": {
+    "description": "TV guide data URL field label"
+  },
+  "iptvServerUrl": "Server URL",
+  "@iptvServerUrl": {
+    "description": "Field label for the Xtream server address"
+  },
+  "iptvTest": "Test",
+  "@iptvTest": {
+    "description": "Short button label that tests the provider connection"
+  },
+  "iptvTestConnection": "Test Connection",
+  "@iptvTestConnection": {
+    "description": "Button label that tests the provider connection"
+  },
+  "iptvImportingPercent": "Importing... {percent}%",
+  "@iptvImportingPercent": {
+    "description": "Progress label while importing a playlist, percent is 0 to 100",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvSectionConnection": "CONNECTION",
+  "@iptvSectionConnection": {
+    "description": "Uppercase form section header for connection fields"
+  },
+  "iptvSectionCredentials": "CREDENTIALS",
+  "@iptvSectionCredentials": {
+    "description": "Uppercase form section header for username and password fields"
+  },
+  "iptvSectionEpgOptional": "EPG (OPTIONAL)",
+  "@iptvSectionEpgOptional": {
+    "description": "Uppercase form section header for the optional TV guide URL"
+  },
+  "iptvSectionPlaylist": "PLAYLIST",
+  "@iptvSectionPlaylist": {
+    "description": "Uppercase form section header for playlist fields"
+  },
+  "iptvMyProvider": "My Provider",
+  "@iptvMyProvider": {
+    "description": "Placeholder example name for an IPTV provider"
+  },
+  "iptvMyPlaylist": "My Playlist",
+  "@iptvMyPlaylist": {
+    "description": "Placeholder example name for an IPTV playlist"
+  },
+  "iptvChannelGroups": "Channel groups",
+  "@iptvChannelGroups": {
+    "description": "Title of the channel group selection screen"
+  },
+  "iptvSearchGroups": "Search groups",
+  "@iptvSearchGroups": {
+    "description": "Search field hint on the channel groups screen"
+  },
+  "iptvGroupsEnabledCount": "{selected} of {total} groups enabled",
+  "@iptvGroupsEnabledCount": {
+    "description": "Summary of how many channel groups are enabled",
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvChannelCount": "{count} channels",
+  "@iptvChannelCount": {
+    "description": "Number of channels in a group or playlist",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvDeleteConfirmTitle": "Delete {name}?",
+  "@iptvDeleteConfirmTitle": {
+    "description": "Confirmation dialog title before deleting the named item",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvDeleteProfileBody": "This removes the profile along with its favorites, watch history, and channel group selection.",
+  "@iptvDeleteProfileBody": {
+    "description": "Warning shown before deleting an IPTV profile"
+  },
+  "iptvProfiles": "Profiles",
+  "@iptvProfiles": {
+    "description": "Title of the IPTV profiles management screen"
+  },
+  "iptvAddProfile": "Add Profile",
+  "@iptvAddProfile": {
+    "description": "Button that creates a new IPTV profile"
+  },
+  "iptvNoProfilesYet": "No profiles yet",
+  "@iptvNoProfilesYet": {
+    "description": "Empty state on the profiles screen"
+  },
+  "iptvCurrentProfile": "Current profile",
+  "@iptvCurrentProfile": {
+    "description": "Subtitle marking the profile that is signed in"
+  },
+  "iptvSwitchBeforeDelete": "Switch profiles before deleting this one",
+  "@iptvSwitchBeforeDelete": {
+    "description": "Tooltip explaining the active profile can't be deleted"
+  },
+  "iptvNewProfile": "New Profile",
+  "@iptvNewProfile": {
+    "description": "Dialog title when creating a profile"
+  },
+  "iptvEditProfile": "Edit Profile",
+  "@iptvEditProfile": {
+    "description": "Dialog title when editing a profile"
+  },
+  "iptvManageProfiles": "Manage Profiles",
+  "@iptvManageProfiles": {
+    "description": "Button on the profile picker that opens profile management"
+  },
+  "iptvM3uFileLabel": "M3U file",
+  "@iptvM3uFileLabel": {
+    "description": "Playlist type label for a local M3U file"
+  },
+  "iptvChannelEditor": "Channel Editor",
+  "@iptvChannelEditor": {
+    "description": "Action that opens the playlist channel editor"
+  },
+  "iptvHealthCheck": "Health Check",
+  "@iptvHealthCheck": {
+    "description": "Action that opens the stream health check"
+  },
+  "iptvFindDuplicates": "Find Duplicates",
+  "@iptvFindDuplicates": {
+    "description": "Action that opens the duplicate channel finder"
+  },
+  "iptvRefreshFailed": "Refresh failed: {error}",
+  "@iptvRefreshFailed": {
+    "description": "Snackbar when a playlist refresh fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvPlaylistRefreshed": "{name} refreshed",
+  "@iptvPlaylistRefreshed": {
+    "description": "Snackbar after a playlist refresh finishes",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvPlaylistDeleted": "{name} deleted",
+  "@iptvPlaylistDeleted": {
+    "description": "Snackbar after a playlist is deleted",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvEditPlaylist": "Edit Playlist",
+  "@iptvEditPlaylist": {
+    "description": "Dialog title for editing a playlist name and guide URL"
+  },
+  "iptvDeletePlaylistBody": "This removes the playlist and its imported channels and library content from this device.",
+  "@iptvDeletePlaylistBody": {
+    "description": "Warning shown before deleting a playlist"
+  },
+  "iptvTmdbApiKeyTitle": "TMDB API Key",
+  "@iptvTmdbApiKeyTitle": {
+    "description": "Dialog title for entering the TMDB API key"
+  },
+  "iptvTmdbExplainer": "A free key from themoviedb.org adds posters, backdrops, logos and descriptions to movies and shows. Leave empty to use only provider info.",
+  "@iptvTmdbExplainer": {
+    "description": "Explains what configuring a TMDB API key does"
+  },
+  "iptvApiKey": "API key",
+  "@iptvApiKey": {
+    "description": "Field label for the TMDB API key"
+  },
+  "iptvSaveBackupTitle": "Save IPTV backup",
+  "@iptvSaveBackupTitle": {
+    "description": "File dialog title when exporting a backup"
+  },
+  "iptvBackupSaved": "Backup saved. It includes provider credentials, keep it safe.",
+  "@iptvBackupSaved": {
+    "description": "Snackbar after a backup file is written, warns it holds credentials"
+  },
+  "iptvBackupFailed": "Backup failed: {error}",
+  "@iptvBackupFailed": {
+    "description": "Snackbar when exporting a backup fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvSelectBackupTitle": "Select IPTV backup",
+  "@iptvSelectBackupTitle": {
+    "description": "File dialog title when choosing a backup to restore"
+  },
+  "iptvRestoredCounts": "Restored {playlists} playlists, {profiles} profiles, {favorites} favorites, {progress} progress entries",
+  "@iptvRestoredCounts": {
+    "description": "Snackbar summarizing what a backup restore brought back",
+    "placeholders": {
+      "playlists": {
+        "type": "int"
+      },
+      "profiles": {
+        "type": "int"
+      },
+      "favorites": {
+        "type": "int"
+      },
+      "progress": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvRestoredSkipped": "{summary}. Skipped: {warnings}",
+  "@iptvRestoredSkipped": {
+    "description": "Restore summary followed by what was skipped",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      },
+      "warnings": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreFailed": "Restore failed: {error}",
+  "@iptvRestoreFailed": {
+    "description": "Snackbar when restoring a backup fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvNoPlaylistsYet": "No playlists yet",
+  "@iptvNoPlaylistsYet": {
+    "description": "Empty state when no playlists have been added"
+  },
+  "iptvMetadataSection": "Metadata",
+  "@iptvMetadataSection": {
+    "description": "Section header for metadata settings"
+  },
+  "iptvTmdbTileTitle": "TMDB artwork and details",
+  "@iptvTmdbTileTitle": {
+    "description": "Settings tile that opens the TMDB API key dialog"
+  },
+  "iptvConfigured": "Configured",
+  "@iptvConfigured": {
+    "description": "State label when the TMDB key is set"
+  },
+  "iptvNotConfigured": "Not configured",
+  "@iptvNotConfigured": {
+    "description": "State label when the TMDB key is missing"
+  },
+  "iptvBackupSection": "Backup",
+  "@iptvBackupSection": {
+    "description": "Section header for backup and restore"
+  },
+  "iptvExportBackup": "Export backup",
+  "@iptvExportBackup": {
+    "description": "Tile that exports the IPTV setup to a file"
+  },
+  "iptvExportBackupSubtitle": "Playlists, profiles, favorites and progress",
+  "@iptvExportBackupSubtitle": {
+    "description": "Describes what the backup export contains"
+  },
+  "iptvRestoreBackup": "Restore backup",
+  "@iptvRestoreBackup": {
+    "description": "Tile that restores an IPTV backup file"
+  },
+  "iptvGroupsTab": "Groups",
+  "@iptvGroupsTab": {
+    "description": "Tab listing the channel groups in the editor"
+  },
+  "iptvSearchChannels": "Search channels",
+  "@iptvSearchChannels": {
+    "description": "Search field hint in the channel editor"
+  },
+  "iptvNoChannelsMatch": "No channels match",
+  "@iptvNoChannelsMatch": {
+    "description": "Empty search result in the channel editor"
+  },
+  "iptvNoGroupsInPlaylist": "No groups in this playlist",
+  "@iptvNoGroupsInPlaylist": {
+    "description": "Empty state when a playlist has no channel groups"
+  },
+  "iptvChangeNumber": "Change number",
+  "@iptvChangeNumber": {
+    "description": "Action that changes a channel number"
+  },
+  "iptvRemoveChannel": "Remove channel",
+  "@iptvRemoveChannel": {
+    "description": "Action that removes a channel from the device"
+  },
+  "iptvRenameChannel": "Rename channel",
+  "@iptvRenameChannel": {
+    "description": "Dialog title for renaming a channel"
+  },
+  "iptvChannelNumber": "Channel number",
+  "@iptvChannelNumber": {
+    "description": "Dialog title for changing a channel number"
+  },
+  "iptvNumber": "Number",
+  "@iptvNumber": {
+    "description": "Field label for a channel number"
+  },
+  "iptvRemoveConfirmTitle": "Remove {name}?",
+  "@iptvRemoveConfirmTitle": {
+    "description": "Confirmation dialog title before removing the named channel",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRemoveChannelBody": "The channel disappears from this device until the playlist is refreshed from its source.",
+  "@iptvRemoveChannelBody": {
+    "description": "Explains that removing a channel is local and undone by a refresh"
+  },
+  "iptvRenameGroup": "Rename group",
+  "@iptvRenameGroup": {
+    "description": "Dialog title for renaming a channel group"
+  },
+  "iptvHealthCheckTitle": "Health Check: {name}",
+  "@iptvHealthCheckTitle": {
+    "description": "Health check screen title with the playlist name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvLiveChannelsCapped": "{total} live channels. The first {cap} are tested to avoid hammering the provider.",
+  "@iptvLiveChannelsCapped": {
+    "description": "Explains the health check only tests the first channels of a large playlist",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvLiveChannelsCount": "{total} live channels.",
+  "@iptvLiveChannelsCount": {
+    "description": "How many live channels the playlist has",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvStartCheck": "Start Check",
+  "@iptvStartCheck": {
+    "description": "Button that starts the stream health check"
+  },
+  "iptvTestedProgress": "{done}/{planned} tested, {online} online, {offline} offline",
+  "@iptvTestedProgress": {
+    "description": "Live progress of the health check",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "planned": {
+        "type": "int"
+      },
+      "online": {
+        "type": "int"
+      },
+      "offline": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvTestingStreams": "Testing streams",
+  "@iptvTestingStreams": {
+    "description": "Shown while the health check is running with no results yet"
+  },
+  "iptvNoResultsYet": "No results yet",
+  "@iptvNoResultsYet": {
+    "description": "Shown before the health check has run"
+  },
+  "iptvOnlineWithStatus": "Online ({status})",
+  "@iptvOnlineWithStatus": {
+    "description": "Stream is reachable, status is the HTTP status code",
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvOnline": "Online",
+  "@iptvOnline": {
+    "description": "Stream is reachable"
+  },
+  "iptvOfflineWithStatus": "Offline ({status})",
+  "@iptvOfflineWithStatus": {
+    "description": "Stream is not reachable, status is the HTTP status code",
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvOffline": "Offline",
+  "@iptvOffline": {
+    "description": "Stream is not reachable"
+  },
+  "iptvRetest": "Re-test",
+  "@iptvRetest": {
+    "description": "Tooltip that re-tests one stream"
+  },
+  "iptvDuplicatesTitle": "Duplicates: {name}",
+  "@iptvDuplicatesTitle": {
+    "description": "Duplicates screen title with the playlist name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvKeptRemoved": "Kept {name}, removed {count} duplicates",
+  "@iptvKeptRemoved": {
+    "description": "Snackbar after merging duplicate channels",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvKeepWhichChannel": "Keep which channel?",
+  "@iptvKeepWhichChannel": {
+    "description": "Dialog title asking which duplicate to keep"
+  },
+  "iptvChannelNumberValue": "Channel {number}",
+  "@iptvChannelNumberValue": {
+    "description": "Shows a channel number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvStreamUrl": "Stream URL",
+  "@iptvStreamUrl": {
+    "description": "Duplicate matching criterion, same stream address"
+  },
+  "iptvScanForDuplicates": "Scan for Duplicates",
+  "@iptvScanForDuplicates": {
+    "description": "Button that starts the duplicate scan"
+  },
+  "iptvScanning": "Scanning",
+  "@iptvScanning": {
+    "description": "Shown while the duplicate scan runs"
+  },
+  "iptvChooseCriteria": "Choose criteria and scan",
+  "@iptvChooseCriteria": {
+    "description": "Prompt before running the duplicate scan"
+  },
+  "iptvNoDuplicatesFound": "No duplicates found",
+  "@iptvNoDuplicatesFound": {
+    "description": "Duplicate scan finished with nothing to merge"
+  },
+  "iptvCopiesReason": "{count} copies, {reason}",
+  "@iptvCopiesReason": {
+    "description": "Duplicate group subtitle, how many copies and why they matched",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvWatchFromBeginning": "Watch from Beginning",
+  "@iptvWatchFromBeginning": {
+    "description": "Plays the running program from its start over catchup"
+  },
+  "iptvRemindMe": "Remind Me",
+  "@iptvRemindMe": {
+    "description": "Sets a notification before the program starts"
+  },
+  "iptvCancelReminder": "Cancel Reminder",
+  "@iptvCancelReminder": {
+    "description": "Removes the reminder set for a program"
+  },
+  "iptvReminderSet": "Reminder set",
+  "@iptvReminderSet": {
+    "description": "Snackbar after a program reminder is created"
+  },
+  "iptvReminderCancelled": "Reminder canceled",
+  "@iptvReminderCancelled": {
+    "description": "Snackbar after a program reminder is removed"
+  },
+  "iptvReminderSetFailed": "Unable to set reminder",
+  "@iptvReminderSetFailed": {
+    "description": "Snackbar when creating a program reminder fails"
+  },
+  "iptvReminderCancelFailed": "Unable to cancel reminder",
+  "@iptvReminderCancelFailed": {
+    "description": "Snackbar when removing a program reminder fails"
+  },
+  "iptvShowingChannels": "Showing {loaded} of {total} channels",
+  "@iptvShowingChannels": {
+    "description": "Banner when the guide lineup is capped",
+    "placeholders": {
+      "loaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "iptvManageGroups": "Manage groups",
+  "@iptvManageGroups": {
+    "description": "Banner button that opens the channel group selection"
+  },
+  "iptvTitle": "IPTV",
+  "@iptvTitle": {
+    "description": "Name of the IPTV feature, used for the server select button, the settings category and the playlists screen title"
+  },
+  "iptvSettingsSubtitle": "Playlists, metadata and tools",
+  "@iptvSettingsSubtitle": {
+    "description": "Subtitle of the IPTV settings category and its entry"
+  },
+  "iptvButtonSubtitle": "From an Xtream Codes login or an M3U playlist",
+  "@iptvButtonSubtitle": {
+    "description": "Subtitle of the IPTV card under Add Server on the server list"
+  },
+  "iptvSavedServerSubtitle": "Playlists saved on this device",
+  "@iptvSavedServerSubtitle": {
+    "description": "Second line of the IPTV entry in the saved server list, in place of a server address"
+  },
+  "iptvDefaultProfileName": "Default",
+  "@iptvDefaultProfileName": {
+    "description": "Name of the profile created automatically when the first IPTV playlist is added"
+  },
+  "iptvTvgId": "tvg-id",
+  "@iptvTvgId": {
+    "description": "Duplicate matching criterion, the channel's tvg-id attribute from the M3U playlist. Usually left as is"
+  },
+  "iptvShows": "Shows",
+  "@iptvShows": {
+    "description": "Name of the IPTV library that holds TV series"
+  },
+  "iptvProfileUserName": "IPTV Profile",
+  "@iptvProfileUserName": {
+    "description": "Fallback user name for the signed in IPTV profile"
+  },
+  "iptvReminderChannelName": "Program Reminders",
+  "@iptvReminderChannelName": {
+    "description": "Android notification channel name for guide program reminders"
+  },
+  "iptvReminderChannelDescription": "Upcoming program reminders",
+  "@iptvReminderChannelDescription": {
+    "description": "Android notification channel description for guide program reminders"
+  },
+  "iptvReminderStartsAt": "Starts at {time}",
+  "@iptvReminderStartsAt": {
+    "description": "Reminder notification body with the program start time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreNoCredentials": "{name} skipped, the backup has no Xtream credentials",
+  "@iptvRestoreNoCredentials": {
+    "description": "Restore warning for an Xtream playlist saved without its login",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreNoUrl": "{name} skipped, no URL in the backup",
+  "@iptvRestoreNoUrl": {
+    "description": "Restore warning for an M3U URL playlist with no address",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreNoFilePath": "{name} skipped, no file path in the backup",
+  "@iptvRestoreNoFilePath": {
+    "description": "Restore warning for an M3U file playlist with no file path",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreUnknownType": "{name} skipped, unknown type {type}",
+  "@iptvRestoreUnknownType": {
+    "description": "Restore warning for a playlist whose source type isn't recognized",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreImportFailed": "{name} failed to import",
+  "@iptvRestoreImportFailed": {
+    "description": "Restore warning when a playlist couldn't be imported",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvRestoreImportFailedWithError": "{name} failed to import: {error}",
+  "@iptvRestoreImportFailedWithError": {
+    "description": "Restore warning when a playlist couldn't be imported, with the reason",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvUnrecognizedBackup": "This file isn't an IPTV backup",
+  "@iptvUnrecognizedBackup": {
+    "description": "Error when the chosen file isn't an IPTV backup"
+  },
+  "iptvSameTvgId": "Same tvg-id: {value}",
+  "@iptvSameTvgId": {
+    "description": "Why duplicate channels matched, they share this tvg-id",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvSameStreamUrl": "Same stream URL",
+  "@iptvSameStreamUrl": {
+    "description": "Why duplicate channels matched, they share a stream address"
+  },
+  "iptvSameName": "Same name: {value}",
+  "@iptvSameName": {
+    "description": "Why duplicate channels matched, they share this name",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvErrorAuthenticationFailed": "Authentication failed",
+  "@iptvErrorAuthenticationFailed": {
+    "description": "Playlist error when the provider rejects the login"
+  },
+  "iptvErrorConnectionFailed": "Connection failed: {error}",
+  "@iptvErrorConnectionFailed": {
+    "description": "Playlist error when connecting to the provider fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvErrorNoChannelsInPlaylist": "No channels found in playlist",
+  "@iptvErrorNoChannelsInPlaylist": {
+    "description": "Playlist error when the playlist has no channels"
+  },
+  "iptvErrorNoChannelsInFile": "No channels found in file",
+  "@iptvErrorNoChannelsInFile": {
+    "description": "Playlist error when the M3U file has no channels"
+  },
+  "iptvErrorImportFailed": "Failed to import playlist: {error}",
+  "@iptvErrorImportFailed": {
+    "description": "Playlist error when importing from a URL fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvErrorFileImportFailed": "Failed to import file: {error}",
+  "@iptvErrorFileImportFailed": {
+    "description": "Playlist error when importing from a file fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvErrorFileNotFound": "File not found",
+  "@iptvErrorFileNotFound": {
+    "description": "Playlist error when the chosen M3U file is missing"
+  },
+  "iptvErrorFileNoLongerExists": "File no longer exists",
+  "@iptvErrorFileNoLongerExists": {
+    "description": "Playlist error when a saved M3U file was moved or deleted"
+  },
+  "iptvErrorPlaylistNotFound": "Playlist not found",
+  "@iptvErrorPlaylistNotFound": {
+    "description": "Playlist error when the playlist was removed"
+  },
+  "iptvErrorNoUrl": "No URL configured",
+  "@iptvErrorNoUrl": {
+    "description": "Playlist error when an M3U URL playlist has no address"
+  },
+  "iptvErrorNoFilePath": "No file path configured",
+  "@iptvErrorNoFilePath": {
+    "description": "Playlist error when an M3U file playlist has no file path"
+  },
+  "iptvErrorCredentialsNotFound": "Credentials not found",
+  "@iptvErrorCredentialsNotFound": {
+    "description": "Playlist error when the saved Xtream login is missing"
+  },
+  "iptvErrorConnectionTimeout": "Connection timed out",
+  "@iptvErrorConnectionTimeout": {
+    "description": "Playlist error when connecting to the provider times out"
+  },
+  "iptvErrorReceiveTimeout": "Server took too long to respond",
+  "@iptvErrorReceiveTimeout": {
+    "description": "Playlist error when the provider is too slow to answer"
+  },
+  "iptvErrorUnreachable": "Couldn't reach server",
+  "@iptvErrorUnreachable": {
+    "description": "Playlist error when the provider can't be reached"
+  },
+  "iptvErrorBadResponse": "Server returned error {status}",
+  "@iptvErrorBadResponse": {
+    "description": "Playlist error with the HTTP status code the provider returned",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "iptvErrorNetwork": "Network error: {error}",
+  "@iptvErrorNetwork": {
+    "description": "Playlist error for any other network failure",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }

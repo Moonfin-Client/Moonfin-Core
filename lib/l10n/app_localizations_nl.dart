@@ -18471,4 +18471,531 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+
+  @override
+  String get iptvAddPlaylist => 'Add Playlist';
+
+  @override
+  String get iptvConnectionSuccessful => 'Connection successful';
+
+  @override
+  String get iptvSelectM3uPlaylist => 'Select M3U playlist';
+
+  @override
+  String get iptvPleaseSelectFile => 'Please select a file';
+
+  @override
+  String get iptvUrlRequired => 'URL is required';
+
+  @override
+  String get iptvEnterValidUrl => 'Enter a valid URL';
+
+  @override
+  String get iptvSelectM3uFile => 'Select M3U file';
+
+  @override
+  String iptvFieldRequired(String field) {
+    return '$field is required';
+  }
+
+  @override
+  String get iptvXtream => 'Xtream';
+
+  @override
+  String get iptvM3uUrl => 'M3U URL';
+
+  @override
+  String get iptvFileTab => 'File';
+
+  @override
+  String get iptvEpgUrlOptional => 'EPG URL (optional)';
+
+  @override
+  String get iptvEpgUrl => 'EPG URL';
+
+  @override
+  String get iptvServerUrl => 'Server URL';
+
+  @override
+  String get iptvTest => 'Test';
+
+  @override
+  String get iptvTestConnection => 'Test Connection';
+
+  @override
+  String iptvImportingPercent(int percent) {
+    return 'Importing... $percent%';
+  }
+
+  @override
+  String get iptvSectionConnection => 'CONNECTION';
+
+  @override
+  String get iptvSectionCredentials => 'CREDENTIALS';
+
+  @override
+  String get iptvSectionEpgOptional => 'EPG (OPTIONAL)';
+
+  @override
+  String get iptvSectionPlaylist => 'PLAYLIST';
+
+  @override
+  String get iptvMyProvider => 'My Provider';
+
+  @override
+  String get iptvMyPlaylist => 'My Playlist';
+
+  @override
+  String get iptvChannelGroups => 'Channel groups';
+
+  @override
+  String get iptvSearchGroups => 'Search groups';
+
+  @override
+  String iptvGroupsEnabledCount(int selected, int total) {
+    return '$selected of $total groups enabled';
+  }
+
+  @override
+  String iptvChannelCount(int count) {
+    return '$count channels';
+  }
+
+  @override
+  String iptvDeleteConfirmTitle(String name) {
+    return 'Delete $name?';
+  }
+
+  @override
+  String get iptvDeleteProfileBody =>
+      'This removes the profile along with its favorites, watch history, and channel group selection.';
+
+  @override
+  String get iptvProfiles => 'Profiles';
+
+  @override
+  String get iptvAddProfile => 'Add Profile';
+
+  @override
+  String get iptvNoProfilesYet => 'No profiles yet';
+
+  @override
+  String get iptvCurrentProfile => 'Current profile';
+
+  @override
+  String get iptvSwitchBeforeDelete =>
+      'Switch profiles before deleting this one';
+
+  @override
+  String get iptvNewProfile => 'New Profile';
+
+  @override
+  String get iptvEditProfile => 'Edit Profile';
+
+  @override
+  String get iptvManageProfiles => 'Manage Profiles';
+
+  @override
+  String get iptvM3uFileLabel => 'M3U file';
+
+  @override
+  String get iptvChannelEditor => 'Channel Editor';
+
+  @override
+  String get iptvHealthCheck => 'Health Check';
+
+  @override
+  String get iptvFindDuplicates => 'Find Duplicates';
+
+  @override
+  String iptvRefreshFailed(String error) {
+    return 'Refresh failed: $error';
+  }
+
+  @override
+  String iptvPlaylistRefreshed(String name) {
+    return '$name refreshed';
+  }
+
+  @override
+  String iptvPlaylistDeleted(String name) {
+    return '$name deleted';
+  }
+
+  @override
+  String get iptvEditPlaylist => 'Edit Playlist';
+
+  @override
+  String get iptvDeletePlaylistBody =>
+      'This removes the playlist and its imported channels and library content from this device.';
+
+  @override
+  String get iptvTmdbApiKeyTitle => 'TMDB API Key';
+
+  @override
+  String get iptvTmdbExplainer =>
+      'A free key from themoviedb.org adds posters, backdrops, logos and descriptions to movies and shows. Leave empty to use only provider info.';
+
+  @override
+  String get iptvApiKey => 'API key';
+
+  @override
+  String get iptvSaveBackupTitle => 'Save IPTV backup';
+
+  @override
+  String get iptvBackupSaved =>
+      'Backup saved. It includes provider credentials, keep it safe.';
+
+  @override
+  String iptvBackupFailed(String error) {
+    return 'Backup failed: $error';
+  }
+
+  @override
+  String get iptvSelectBackupTitle => 'Select IPTV backup';
+
+  @override
+  String iptvRestoredCounts(
+    int playlists,
+    int profiles,
+    int favorites,
+    int progress,
+  ) {
+    return 'Restored $playlists playlists, $profiles profiles, $favorites favorites, $progress progress entries';
+  }
+
+  @override
+  String iptvRestoredSkipped(String summary, String warnings) {
+    return '$summary. Skipped: $warnings';
+  }
+
+  @override
+  String iptvRestoreFailed(String error) {
+    return 'Restore failed: $error';
+  }
+
+  @override
+  String get iptvNoPlaylistsYet => 'No playlists yet';
+
+  @override
+  String get iptvMetadataSection => 'Metadata';
+
+  @override
+  String get iptvTmdbTileTitle => 'TMDB artwork and details';
+
+  @override
+  String get iptvConfigured => 'Configured';
+
+  @override
+  String get iptvNotConfigured => 'Not configured';
+
+  @override
+  String get iptvBackupSection => 'Backup';
+
+  @override
+  String get iptvExportBackup => 'Export backup';
+
+  @override
+  String get iptvExportBackupSubtitle =>
+      'Playlists, profiles, favorites and progress';
+
+  @override
+  String get iptvRestoreBackup => 'Restore backup';
+
+  @override
+  String get iptvGroupsTab => 'Groups';
+
+  @override
+  String get iptvSearchChannels => 'Search channels';
+
+  @override
+  String get iptvNoChannelsMatch => 'No channels match';
+
+  @override
+  String get iptvNoGroupsInPlaylist => 'No groups in this playlist';
+
+  @override
+  String get iptvChangeNumber => 'Change number';
+
+  @override
+  String get iptvRemoveChannel => 'Remove channel';
+
+  @override
+  String get iptvRenameChannel => 'Rename channel';
+
+  @override
+  String get iptvChannelNumber => 'Channel number';
+
+  @override
+  String get iptvNumber => 'Number';
+
+  @override
+  String iptvRemoveConfirmTitle(String name) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get iptvRemoveChannelBody =>
+      'The channel disappears from this device until the playlist is refreshed from its source.';
+
+  @override
+  String get iptvRenameGroup => 'Rename group';
+
+  @override
+  String iptvHealthCheckTitle(String name) {
+    return 'Health Check: $name';
+  }
+
+  @override
+  String iptvLiveChannelsCapped(int total, int cap) {
+    return '$total live channels. The first $cap are tested to avoid hammering the provider.';
+  }
+
+  @override
+  String iptvLiveChannelsCount(int total) {
+    return '$total live channels.';
+  }
+
+  @override
+  String get iptvStartCheck => 'Start Check';
+
+  @override
+  String iptvTestedProgress(int done, int planned, int online, int offline) {
+    return '$done/$planned tested, $online online, $offline offline';
+  }
+
+  @override
+  String get iptvTestingStreams => 'Testing streams';
+
+  @override
+  String get iptvNoResultsYet => 'No results yet';
+
+  @override
+  String iptvOnlineWithStatus(int status) {
+    return 'Online ($status)';
+  }
+
+  @override
+  String get iptvOnline => 'Online';
+
+  @override
+  String iptvOfflineWithStatus(int status) {
+    return 'Offline ($status)';
+  }
+
+  @override
+  String get iptvOffline => 'Offline';
+
+  @override
+  String get iptvRetest => 'Re-test';
+
+  @override
+  String iptvDuplicatesTitle(String name) {
+    return 'Duplicates: $name';
+  }
+
+  @override
+  String iptvKeptRemoved(String name, int count) {
+    return 'Kept $name, removed $count duplicates';
+  }
+
+  @override
+  String get iptvKeepWhichChannel => 'Keep which channel?';
+
+  @override
+  String iptvChannelNumberValue(int number) {
+    return 'Channel $number';
+  }
+
+  @override
+  String get iptvStreamUrl => 'Stream URL';
+
+  @override
+  String get iptvScanForDuplicates => 'Scan for Duplicates';
+
+  @override
+  String get iptvScanning => 'Scanning';
+
+  @override
+  String get iptvChooseCriteria => 'Choose criteria and scan';
+
+  @override
+  String get iptvNoDuplicatesFound => 'No duplicates found';
+
+  @override
+  String iptvCopiesReason(int count, String reason) {
+    return '$count copies, $reason';
+  }
+
+  @override
+  String get iptvWatchFromBeginning => 'Watch from Beginning';
+
+  @override
+  String get iptvRemindMe => 'Remind Me';
+
+  @override
+  String get iptvCancelReminder => 'Cancel Reminder';
+
+  @override
+  String get iptvReminderSet => 'Reminder set';
+
+  @override
+  String get iptvReminderCancelled => 'Reminder canceled';
+
+  @override
+  String get iptvReminderSetFailed => 'Unable to set reminder';
+
+  @override
+  String get iptvReminderCancelFailed => 'Unable to cancel reminder';
+
+  @override
+  String iptvShowingChannels(int loaded, int total) {
+    return 'Showing $loaded of $total channels';
+  }
+
+  @override
+  String get iptvManageGroups => 'Manage groups';
+
+  @override
+  String get iptvTitle => 'IPTV';
+
+  @override
+  String get iptvSettingsSubtitle => 'Playlists, metadata and tools';
+
+  @override
+  String get iptvButtonSubtitle =>
+      'From an Xtream Codes login or an M3U playlist';
+
+  @override
+  String get iptvSavedServerSubtitle => 'Playlists saved on this device';
+
+  @override
+  String get iptvDefaultProfileName => 'Default';
+
+  @override
+  String get iptvTvgId => 'tvg-id';
+
+  @override
+  String get iptvShows => 'Shows';
+
+  @override
+  String get iptvProfileUserName => 'IPTV Profile';
+
+  @override
+  String get iptvReminderChannelName => 'Program Reminders';
+
+  @override
+  String get iptvReminderChannelDescription => 'Upcoming program reminders';
+
+  @override
+  String iptvReminderStartsAt(String time) {
+    return 'Starts at $time';
+  }
+
+  @override
+  String iptvRestoreNoCredentials(String name) {
+    return '$name skipped, the backup has no Xtream credentials';
+  }
+
+  @override
+  String iptvRestoreNoUrl(String name) {
+    return '$name skipped, no URL in the backup';
+  }
+
+  @override
+  String iptvRestoreNoFilePath(String name) {
+    return '$name skipped, no file path in the backup';
+  }
+
+  @override
+  String iptvRestoreUnknownType(String name, String type) {
+    return '$name skipped, unknown type $type';
+  }
+
+  @override
+  String iptvRestoreImportFailed(String name) {
+    return '$name failed to import';
+  }
+
+  @override
+  String iptvRestoreImportFailedWithError(String name, String error) {
+    return '$name failed to import: $error';
+  }
+
+  @override
+  String get iptvUnrecognizedBackup => 'This file isn\'t an IPTV backup';
+
+  @override
+  String iptvSameTvgId(String value) {
+    return 'Same tvg-id: $value';
+  }
+
+  @override
+  String get iptvSameStreamUrl => 'Same stream URL';
+
+  @override
+  String iptvSameName(String value) {
+    return 'Same name: $value';
+  }
+
+  @override
+  String get iptvErrorAuthenticationFailed => 'Authentication failed';
+
+  @override
+  String iptvErrorConnectionFailed(String error) {
+    return 'Connection failed: $error';
+  }
+
+  @override
+  String get iptvErrorNoChannelsInPlaylist => 'No channels found in playlist';
+
+  @override
+  String get iptvErrorNoChannelsInFile => 'No channels found in file';
+
+  @override
+  String iptvErrorImportFailed(String error) {
+    return 'Failed to import playlist: $error';
+  }
+
+  @override
+  String iptvErrorFileImportFailed(String error) {
+    return 'Failed to import file: $error';
+  }
+
+  @override
+  String get iptvErrorFileNotFound => 'File not found';
+
+  @override
+  String get iptvErrorFileNoLongerExists => 'File no longer exists';
+
+  @override
+  String get iptvErrorPlaylistNotFound => 'Playlist not found';
+
+  @override
+  String get iptvErrorNoUrl => 'No URL configured';
+
+  @override
+  String get iptvErrorNoFilePath => 'No file path configured';
+
+  @override
+  String get iptvErrorCredentialsNotFound => 'Credentials not found';
+
+  @override
+  String get iptvErrorConnectionTimeout => 'Connection timed out';
+
+  @override
+  String get iptvErrorReceiveTimeout => 'Server took too long to respond';
+
+  @override
+  String get iptvErrorUnreachable => 'Couldn\'t reach server';
+
+  @override
+  String iptvErrorBadResponse(String status) {
+    return 'Server returned error $status';
+  }
+
+  @override
+  String iptvErrorNetwork(String error) {
+    return 'Network error: $error';
+  }
 }
