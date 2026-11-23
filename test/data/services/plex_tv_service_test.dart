@@ -72,7 +72,7 @@ void main() {
       final basement = server([
         connection('192.168.50.45', local: true),
       ]).withLanUris(['http://192.168.50.45:32400']);
-      expect(basement.connections.take(2).map((c) => c.uri), [
+      expect(basement.connections.map((c) => c.uri), [
         'https://192-168-50-45.hash.plex.direct:32400',
         'http://192.168.50.45:32400',
       ]);
