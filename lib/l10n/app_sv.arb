@@ -9249,7 +9249,7 @@
     "@detailSectionLyrics": {
         "description": "Details screen section: the lyrics panel for songs"
     },
-    "detailSectionCast": "Casta",
+    "detailSectionCast": "Rollista",
     "@detailSectionCast": {
         "description": "Details screen section: the cast row, tab or card"
     },
