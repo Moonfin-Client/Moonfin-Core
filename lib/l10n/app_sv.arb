@@ -2510,7 +2510,7 @@
             }
         }
     },
-    "settings": "Installningar",
+    "settings": "Inställningar",
     "@settings": {
         "description": "Settings screen title"
     },
