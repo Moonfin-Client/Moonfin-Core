@@ -6641,7 +6641,7 @@
             }
         }
     },
-    "latestLibraryName": "Latest {libraryName}",
+    "latestLibraryName": "Nyligen tillagt {libraryName}",
     "@latestLibraryName": {
         "description": "Row title for latest media in a specific library",
         "placeholders": {
