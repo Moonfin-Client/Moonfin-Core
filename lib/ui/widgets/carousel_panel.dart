@@ -47,19 +47,20 @@ class CarouselPanel extends StatelessWidget {
   final bool showOverview;
   final List<String> mediaBadges;
 
-  /// Home's ratings for [item], following the home row ratings settings, or
-  /// null when it has none.
+  /// The ratings for [item], following [settings] (Home's row ratings
+  /// settings unless given), or null when it has none.
   static Widget? homeRatings(
     AggregatedItem item,
     UserPreferences prefs, {
     Map<String, double> additionalRatings = const {},
+    RatingSettings? settings,
   }) {
     if (item.communityRating == null &&
         item.criticRating == null &&
         additionalRatings.isEmpty) {
       return null;
     }
-    final settings = UserPreferences.homeRowsRatings;
+    settings ??= UserPreferences.homeRowsRatings;
     return RatingsRow(
       ratings: additionalRatings,
       communityRating: item.communityRating,
