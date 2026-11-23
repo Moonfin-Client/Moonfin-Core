@@ -13032,5 +13032,13 @@
     "adminNetworkingExternalUri": "Extern URI",
     "adminNetworkingExternalUriHelp": "Publicerad server-URI för extern åtkomst.",
     "adminNetworkingOtherPublishedUris": "Andra publicerade URI:er",
-    "adminNetworkingOtherPublishedUrisHelp": "URI:er för ett subnät eller gränssnitt, skrivna i formatet subnät=URI."
+    "adminNetworkingOtherPublishedUrisHelp": "URI:er för ett subnät eller gränssnitt, skrivna i formatet subnät=URI.",
+    "reviews": "Omdömen",
+    "@reviews": {
+        "description": "Title of the row, tab and card on the details screen that lists TMDB user reviews"
+    },
+    "detailSectionReviews": "Omdömen",
+    "@detailSectionReviews": {
+        "description": "Details screen section: user reviews from TMDB"
+    }
 }
