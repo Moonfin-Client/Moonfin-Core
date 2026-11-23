@@ -13364,5 +13364,60 @@
     "laterShowingOnlyRequested": "La próxima proyección será grabada.",
     "@laterShowingOnlyRequested": {
         "description": "Snackbar after choosing to record only the future showing"
+    },
+    "unableToKeepAsComplete": "Incapaz de marcar como completo",
+    "@unableToKeepAsComplete": {
+        "description": "Snackbar shown when Keep as Complete fails"
+    },
+    "setupTvHint": "Arriba y abajo para previsualizar · OK para seleccionar · Retroceder dos veces para saltar",
+    "@setupTvHint": {
+        "description": "Remote control hint at the bottom of the setup wizard on TVs"
+    },
+    "calendarUpcoming": "Próximamente",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarSettingsColorByDescription": "El Tipo indica los episodios de las películas. El Estado muestra lo que hay en tu biblioteca, lo que está por venir o lo que falta.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "moonbaseFeatureCollections": "Tu propio pedido para cada colección",
+    "@moonbaseFeatureCollections": {
+        "description": "Moonbase dialog feature"
+    },
+    "watchPartyYours": "Tu grupo para ver el partido",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyWaitingFor": "Esperando al jugador {name}",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Eres el anfitrión ahora",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "settingsPreviewNeedsRowInRows": "Activa una fila en Filas, debajo de {disabled}",
+    "@settingsPreviewNeedsRowInRows": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on",
+        "placeholders": {
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "topNavbarStyleClassic": "Clásico",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clásico",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }
