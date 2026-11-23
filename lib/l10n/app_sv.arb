@@ -13056,5 +13056,9 @@
     "years": "Årtal",
     "@years": {
         "description": "Heading for the release year filters in the library filter picker."
+    },
+    "playlistSortPlayCount": "Antal uppspelningar",
+    "@playlistSortPlayCount": {
+        "description": "Label for sorting playlist items by play count"
     }
 }
