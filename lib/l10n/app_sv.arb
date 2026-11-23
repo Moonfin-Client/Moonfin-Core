@@ -12935,5 +12935,52 @@
     },
     "adminTimeLimitHours": "Tidsfrist (hours)",
     "adminTranscodingDecodingFor": "Aktivera hårdvaruavkodning för",
-    "adminTranscodingThreadCountHelp": "Det maximala antalet trådar som en omkodning kan använda. Färre trådar minskar CPU-användningen men kan göra uppspelningen för långsam för att fungera smidigt."
+    "adminTranscodingThreadCountHelp": "Det maximala antalet trådar som en omkodning kan använda. Färre trådar minskar CPU-användningen men kan göra uppspelningen för långsam för att fungera smidigt.",
+    "showHeader": "Visa",
+    "source": "Källa",
+    "@source": {
+        "description": "Heading for the disc source filters in the library filter picker."
+    },
+    "adminMetadataDisplayOrderDigital": "Digitalt",
+    "adminMetadataPersonKindArtist": "Konstnär",
+    "downloadNotificationFailedTitle": "Nedladdningen misslyckades",
+    "@downloadNotificationFailedTitle": {
+        "description": "System notification title for a failed download"
+    },
+    "achievementsStats": "Statistik",
+    "@achievementsStats": {
+        "description": "Screen of watch counters and server figures"
+    },
+    "playlistSortRandom": "Slumpmässigt",
+    "@playlistSortRandom": {
+        "description": "Label for sorting playlist items randomly"
+    },
+    "librarySortAlbumArtist": "Album Artist",
+    "@librarySortAlbumArtist": {
+        "description": "Sort option for music: by album artist"
+    },
+    "librarySortArtist": "Konstnär",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "rommUnlink": "Ta bort länken",
+    "@rommUnlink": {
+        "description": "Button that unlinks the user's RomM account"
+    },
+    "recordPromptTomorrow": "I morgon",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "calendarSettingsScope": "Visa",
+    "@calendarSettingsScope": {
+        "description": "Calendar setting that limits the calendar to the user's own series. The choices are Everything and My shows"
+    },
+    "topNavbarStyleClassic": "Klassisk",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klassisk",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
+    }
 }
