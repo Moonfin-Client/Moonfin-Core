@@ -78,7 +78,9 @@ import androidx.media3.exoplayer.analytics.PlaybackStatsListener
 import androidx.media3.exoplayer.upstream.DefaultAllocator
 import androidx.media3.exoplayer.audio.AudioRendererEventListener
 import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.AudioTrackAudioOutputProvider
 import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioTrackBufferSizeProvider
 import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -278,9 +280,24 @@ private class MoonfinRenderersFactory(
             .setEnableAudioOutputPlaybackParameters(enableAudioOutputPlaybackParams)
         if (iecOutputProvider != null) {
             // App-side IEC 61937 packing for eligible bitstreams. Everything
-            // else routes to the stock provider inside, and when the provider
-            // is absent (the default) the builder chain above is untouched.
+            // else routes to the stock provider inside.
             sinkBuilder.setAudioOutputProvider(iecOutputProvider)
+        } else {
+            // When a DTS-HD stream has no bitrate, as in MKV, Media3 sizes its
+            // track for a full second at the format's 18 Mbps peak, a 2.25 MB
+            // buffer meant for DTS Express streams. Android only starts a track
+            // once its buffer is full, and a high bitrate remux can't load that
+            // much DTS-HD MA ahead inside the byte budget, so the picture
+            // freezes on the first frame.
+            sinkBuilder.setAudioOutputProvider(
+                AudioTrackAudioOutputProvider.Builder(context)
+                    .setAudioTrackBufferSizeProvider(
+                        DefaultAudioTrackBufferSizeProvider.Builder()
+                            .setDtshdBufferMultiplicationFactor(1)
+                            .build(),
+                    )
+                    .build(),
+            )
         }
         val sink = sinkBuilder.build()
         // Some TV HALs never resume a paused bitstream track and hand back a
