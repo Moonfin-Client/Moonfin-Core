@@ -13064,5 +13064,9 @@
     "librarySortDateEpisodeAdded": "Datum avsnitt lades till",
     "@librarySortDateEpisodeAdded": {
         "description": "Sort option for series: when the newest episode was added"
+    },
+    "playlistSortCriticRating": "Kritikerbetyg",
+    "@playlistSortCriticRating": {
+        "description": "Label for sorting playlist items by critic rating"
     }
 }
