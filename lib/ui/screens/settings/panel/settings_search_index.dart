@@ -1430,6 +1430,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       ),
     mediaBar.leaf('mediaBarItemCount', l10n.itemCount),
     mediaBar.leaf(
+      'mediaBarSortOrder',
+      l10n.mediaBarSortOrder,
+      subtitle: l10n.mediaBarSortOrderDescription,
+      keywords: [
+        'sort',
+        'order',
+        'random',
+        'date added',
+        'release date',
+        'newest',
+        'oldest',
+      ],
+    ),
+    mediaBar.leaf(
       'mediaBarEnableAdditionalRatings',
       l10n.additionalRatings,
       subtitle: l10n.showMdbListAndTmdbRatings,

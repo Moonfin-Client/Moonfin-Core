@@ -153,6 +153,7 @@ class MediaBarViewModel extends ChangeNotifier {
   String _sources() => [
     ...[
       UserPreferences.mediaBarSourceType,
+      UserPreferences.mediaBarSortOrder,
       UserPreferences.mediaBarLibraryIds,
       UserPreferences.mediaBarCollectionIds,
       UserPreferences.mediaBarExcludedGenres,

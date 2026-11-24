@@ -50,6 +50,8 @@ class MediaBarSlideItem {
   /// How many seasons a series has, from the server's ChildCount.
   final int? childCount;
   final bool isFavorite;
+  final DateTime? dateAdded;
+  final DateTime? releaseDate;
 
   /// The id outside titles carry in place of a server, as on Home.
   static const externalServerId = 'seerr';
@@ -76,6 +78,8 @@ class MediaBarSlideItem {
     this.newRelease,
     this.childCount,
     this.isFavorite = false,
+    this.dateAdded,
+    this.releaseDate,
   });
 
   /// Whether this title came from an outside list rather than the server, so it
@@ -117,6 +121,8 @@ class MediaBarSlideItem {
         : newRelease as MediaBarNewReleaseInfo?,
     childCount: childCount,
     isFavorite: isFavorite,
+    dateAdded: dateAdded,
+    releaseDate: releaseDate,
   );
 
   static const _keep = Object();

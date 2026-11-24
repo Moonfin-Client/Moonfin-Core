@@ -31,7 +31,14 @@ class MediaBarRepository {
   static const _fields =
       'Type,Genres,OfficialRating,CommunityRating,CriticRating,'
       'RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
-      'Overview,ProviderIds,PremiereDate,Taglines,ChildCount';
+      'Overview,ProviderIds,PremiereDate,DateCreated,DateLastMediaAdded,'
+      'Taglines,ChildCount';
+
+  /// Synthetic keys attached to Series items resolved from child episodes or
+  /// seasons so post-selection sorting uses the latest episode air/added date
+  /// rather than the series' original premiere or creation date.
+  static const _effectivePremiereDateKey = '_moonfinEffectivePremiereDate';
+  static const _effectiveDateCreatedKey = '_moonfinEffectiveDateCreated';
 
   MediaBarRepository(this._client, this._prefs);
 
@@ -47,6 +54,9 @@ class MediaBarRepository {
     }
 
     final contentType = _prefs.get(UserPreferences.mediaBarContentType);
+    final sortOrder = UserPreferences.normalizeMediaBarSortOrder(
+      _prefs.get(UserPreferences.mediaBarSortOrder),
+    );
 
     final maxItems =
         int.tryParse(_prefs.get(UserPreferences.mediaBarItemCount)) ?? 10;
@@ -81,11 +91,14 @@ class MediaBarRepository {
     if (externalPool.isNotEmpty &&
         libraryIds.isEmpty &&
         collectionIds.isEmpty) {
-      final slides = await _mixInExternal(
-        const [],
-        externalPool,
-        maxItems,
-        excludedGenres,
+      final slides = _applySortOrderToSlides(
+        await _mixInExternal(
+          const [],
+          externalPool,
+          maxItems,
+          excludedGenres,
+        ),
+        sortOrder,
       );
       if (slides.isNotEmpty) return MediaBarReady(slides);
     }
@@ -255,14 +268,17 @@ class MediaBarRepository {
           ? _newMovies(selected)
           : const <String, MediaBarNewReleaseInfo>{};
 
-      final items = await _mixInExternal(
-        [
-          for (final item in selected)
-            _toSlideItem(item).withNewRelease(labels[item['Id']?.toString()]),
-        ],
-        externalPool,
-        maxItems,
-        excludedGenres,
+      final items = _applySortOrderToSlides(
+        await _mixInExternal(
+          [
+            for (final item in selected)
+              _toSlideItem(item).withNewRelease(labels[item['Id']?.toString()]),
+          ],
+          externalPool,
+          maxItems,
+          excludedGenres,
+        ),
+        sortOrder,
       );
       if (items.isEmpty) {
         return const MediaBarError('No items with backdrop images found');
@@ -280,7 +296,12 @@ class MediaBarRepository {
         excludedGenres,
       );
       if (selected.isNotEmpty) {
-        return MediaBarReady(selected.map(_toSlideItem).toList());
+        return MediaBarReady(
+          _applySortOrderToSlides(
+            selected.map(_toSlideItem).toList(),
+            sortOrder,
+          ),
+        );
       }
       return MediaBarError(e);
     }
@@ -300,6 +321,82 @@ class MediaBarRepository {
   bool get _isDatedSource =>
       _prefs.get(UserPreferences.mediaBarSourceType) !=
       UserPreferences.mediaBarSourceRandom;
+
+  List<MediaBarSlideItem> _applySortOrderToSlides(
+    List<MediaBarSlideItem> slides,
+    String sortOrder,
+  ) {
+    if (sortOrder == UserPreferences.mediaBarSortDefault || slides.length < 2) {
+      return slides;
+    }
+    final ordered = slides.toList();
+    if (sortOrder == UserPreferences.mediaBarSortRandom) {
+      ordered.shuffle(_random);
+      return ordered;
+    }
+
+    final descending =
+        sortOrder == UserPreferences.mediaBarSortDateAddedDesc ||
+        sortOrder == UserPreferences.mediaBarSortReleaseDateDesc;
+    final byDateAdded =
+        sortOrder == UserPreferences.mediaBarSortDateAddedDesc ||
+        sortOrder == UserPreferences.mediaBarSortDateAddedAsc;
+
+    ordered.sort((a, b) {
+      final primary = _compareNullableDates(
+        byDateAdded ? a.dateAdded : a.releaseDate,
+        byDateAdded ? b.dateAdded : b.releaseDate,
+        descending: descending,
+      );
+      if (primary != 0) return primary;
+      final secondary = _compareNullableDates(
+        byDateAdded ? a.releaseDate : a.dateAdded,
+        byDateAdded ? b.releaseDate : b.dateAdded,
+        descending: descending,
+      );
+      if (secondary != 0) return secondary;
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+    });
+    return ordered;
+  }
+
+  static int _compareNullableDates(
+    DateTime? a,
+    DateTime? b, {
+    required bool descending,
+  }) {
+    if (a == null && b == null) return 0;
+    if (a == null) return 1;
+    if (b == null) return -1;
+    return descending ? b.compareTo(a) : a.compareTo(b);
+  }
+
+  static DateTime? _dateAddedOf(Map<String, dynamic> item) {
+    final effective = DateTime.tryParse(
+      item[_effectiveDateCreatedKey] as String? ?? '',
+    )?.toUtc();
+    final lastMediaAdded = DateTime.tryParse(
+      item['DateLastMediaAdded'] as String? ?? '',
+    )?.toUtc();
+    if (effective != null &&
+        (lastMediaAdded == null || effective.isAfter(lastMediaAdded))) {
+      return effective;
+    }
+    if (lastMediaAdded != null) return lastMediaAdded;
+    return DateTime.tryParse(item['DateCreated'] as String? ?? '')?.toUtc();
+  }
+
+  static DateTime? _releaseDateOf(Map<String, dynamic> item) {
+    final effective = DateTime.tryParse(
+      item[_effectivePremiereDateKey] as String? ?? '',
+    );
+    if (effective != null) return effective.toUtc();
+    final premiere = DateTime.tryParse(item['PremiereDate'] as String? ?? '');
+    if (premiere != null) return premiere.toUtc();
+    final year = (item['ProductionYear'] as num?)?.toInt();
+    if (year != null && year > 0) return DateTime.utc(year);
+    return null;
+  }
 
   /// The check an item has to pass to go on the bar.
   bool Function(Map<String, dynamic>) _usableFor(Set<String> excludedGenres) {
@@ -501,15 +598,21 @@ class MediaBarRepository {
       // A collection lists its shows but not their seasons or episodes, so it
       // keeps its series.
       if (children.isEmpty) return released(const ['Series'], _poolSize);
-      var seriesIds = _seriesIdsOf(children);
+      var sourceChildren = children;
+      var seriesIds = _seriesIdsOf(sourceChildren);
       // One show can fill the whole first read, so a short answer is read
       // again at the home row's ceiling. A failed retry keeps the first one.
       if (seriesIds.length < limit && children.length >= firstLimit) {
         try {
-          seriesIds = _seriesIdsOf(await released([childType], 500));
+          sourceChildren = await released([childType], 500);
+          seriesIds = _seriesIdsOf(sourceChildren);
         } catch (_) {}
       }
-      return _fetchSeries(seriesIds);
+      return _fetchSeries(
+        seriesIds,
+        effectivePremiereDates: _latestChildDates(sourceChildren, 'PremiereDate'),
+        effectiveDateAdded: _latestChildDates(sourceChildren, 'DateCreated'),
+      );
     }
 
     final batches = await Future.wait([
@@ -644,7 +747,11 @@ class MediaBarRepository {
     if (itemTypes != null && !itemTypes.contains('Series')) return const [];
     try {
       final episodes = await _recentEpisodes(parentId: parentId, limit: 300);
-      return await _fetchSeries(_seriesIdsOf(episodes));
+      return await _fetchSeries(
+        _seriesIdsOf(episodes),
+        effectivePremiereDates: _latestChildDates(episodes, 'PremiereDate'),
+        effectiveDateAdded: _latestChildDates(episodes, 'DateCreated'),
+      );
     } catch (error) {
       // A server that fails falls back to random titles, so the bar doesn't
       // vanish as if nothing aired.
@@ -672,9 +779,33 @@ class MediaBarRepository {
     return ids;
   }
 
+  /// Latest [field] timestamp per series id from child episodes or seasons.
+  static Map<String, DateTime> _latestChildDates(
+    List<Map<String, dynamic>> children,
+    String field,
+  ) {
+    final latest = <String, DateTime>{};
+    for (final child in children) {
+      final id = (child['Type'] == 'Series' ? child['Id'] : child['SeriesId'])
+          ?.toString();
+      if (id == null) continue;
+      final date = DateTime.tryParse(child[field] as String? ?? '')?.toUtc();
+      if (date == null) continue;
+      final existing = latest[id];
+      if (existing == null || date.isAfter(existing)) {
+        latest[id] = date;
+      }
+    }
+    return latest;
+  }
+
   /// The series in [ids] order, since a server can answer an id lookup in its
   /// own order and the bar keeps the newest first.
-  Future<List<Map<String, dynamic>>> _fetchSeries(List<String> ids) async {
+  Future<List<Map<String, dynamic>>> _fetchSeries(
+    List<String> ids, {
+    Map<String, DateTime> effectivePremiereDates = const {},
+    Map<String, DateTime> effectiveDateAdded = const {},
+  }) async {
     if (ids.isEmpty) return const [];
     final response = await _client.itemsApi
         .getItems(
@@ -684,9 +815,27 @@ class MediaBarRepository {
           enableImageTypes: 'Backdrop,Logo,Banner',
         )
         .timeout(const Duration(seconds: 15));
-    final items = (response['Items'] as List? ?? [])
+    var items = (response['Items'] as List? ?? [])
         .cast<Map<String, dynamic>>()
         .toList();
+    if (effectivePremiereDates.isNotEmpty || effectiveDateAdded.isNotEmpty) {
+      items = [
+        for (final item in items)
+          () {
+            final id = item['Id']?.toString();
+            final aired = id == null ? null : effectivePremiereDates[id];
+            final added = id == null ? null : effectiveDateAdded[id];
+            if (aired == null && added == null) return item;
+            return {
+              ...item,
+              if (aired != null)
+                _effectivePremiereDateKey: aired.toIso8601String(),
+              if (added != null)
+                _effectiveDateCreatedKey: added.toIso8601String(),
+            };
+          }(),
+      ];
+    }
     final rank = {for (var i = 0; i < ids.length; i++) ids[i]: i};
     int rankOf(Map<String, dynamic> item) =>
         rank[item['Id']?.toString()] ?? ids.length;
@@ -700,7 +849,11 @@ class MediaBarRepository {
     List<String>? itemTypes,
   ) async {
     final series = {
-      for (final item in await _fetchSeries(_seriesIdsOf(items)))
+      for (final item in await _fetchSeries(
+        _seriesIdsOf(items),
+        effectivePremiereDates: _latestChildDates(items, 'PremiereDate'),
+        effectiveDateAdded: _latestChildDates(items, 'DateCreated'),
+      ))
         item['Id']: item,
     };
     final out = <Map<String, dynamic>>{};
@@ -789,6 +942,7 @@ class MediaBarRepository {
           sortOrder: 'Descending',
           minPremiereDate: DateTime.now().subtract(Duration(days: days)),
           limit: limit,
+          fields: 'DateCreated',
           enableTotalRecordCount: false,
         )
         .timeout(const Duration(seconds: 15));
@@ -1042,6 +1196,9 @@ class MediaBarRepository {
       remoteTrailers: [
         if (trailerUrl != null) {'Url': trailerUrl},
       ],
+      releaseDate: item.year != null && item.year! > 0
+          ? DateTime.utc(item.year!)
+          : null,
     );
   }
 
@@ -1158,6 +1315,8 @@ class MediaBarRepository {
           const [],
       childCount: (data['ChildCount'] as num?)?.toInt(),
       isFavorite: (data['UserData'] as Map?)?['IsFavorite'] == true,
+      dateAdded: _dateAddedOf(data),
+      releaseDate: _releaseDateOf(data),
     );
   }
 }
