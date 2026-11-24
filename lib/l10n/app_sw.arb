@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Mipangilio ya NFO",
     "adminActivitySeverityAll": "Viwango vyote vya ukali",
     "adminActivityDateRange": "Kipindi cha tarehe",
-    "adminRemoveDeviceConfirm": "Ondoa kifaa '{name}'? Mtumiaji atahitaji kuingia tena kwenye kifaa hiki.",
+    "adminRemoveDeviceConfirm": "Ondoa kifaa \"{name}\"? Mtumiaji atahitaji kuingia tena kwenye kifaa hiki.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Maktaba yako ya '{libraryName}' imesanidiwa kuhifadhi sanaa moja kwa moja katika folda za maudhui ('Hifadhi sanaa katika folda za maudhui' imewashwa). Hata hivyo, Jellyfin imejaribu ufikiaji wa kuandika na haina ruhusa ya kuandika faili katika saraka hii:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Maktaba yako ya \"{libraryName}\" imesanidiwa kuhifadhi sanaa moja kwa moja katika folda za maudhui ('Hifadhi sanaa katika folda za maudhui' imewashwa). Hata hivyo, Jellyfin imejaribu ufikiaji wa kuandika na haina ruhusa ya kuandika faili katika saraka hii:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
