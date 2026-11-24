@@ -138,7 +138,9 @@ class SiloPlayerTraits {
   /// the embedded text and bitmap subtitles it extracts (SubRip, SSA, WebVTT,
   /// PGS, VobSub), but draws ASS without its styling and loads no attached
   /// fonts. It sends HDR and Dolby Vision to the display as they are and
-  /// maps nothing to an SDR screen itself.
+  /// maps nothing to an SDR screen itself. Its Dolby Vision profile 7
+  /// conversion depends on the device and settings, so the app adds it
+  /// ([withDolbyVision7Transform]).
   static const media3 = SiloPlayerTraits(
     selectsAnyAudioTrack: true,
     rendersEmbeddedSubtitles: true,

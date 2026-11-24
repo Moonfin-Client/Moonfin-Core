@@ -69,9 +69,15 @@ class SiloMediaStreamResolver
     final file = await _file(mediaItem, itemId, mediaSourceId);
 
     final environment = _environment();
+    // Silo plans no differently for enableDirectPlay, but a profile 7
+    // conversion of the player's own would win it the original file, so a
+    // start that asks for a server stream (a Dolby Vision transcode the
+    // viewer picked) offers none.
     final capabilities = siloCapabilitiesFromDeviceProfile(
       deviceProfile ?? const {},
-      traits: environment.traits,
+      traits: enableDirectPlay
+          ? environment.traits
+          : environment.traits.withDolbyVision7Transform(null),
     );
     final context = siloPlaybackContext(
       environment: environment,

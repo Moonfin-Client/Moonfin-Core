@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/playback/display_hdr_probe.dart';
 import 'package:moonfin/playback/media3_player_backend.dart';
 import 'package:moonfin/playback/silo_playback_environment.dart';
@@ -66,6 +69,35 @@ void main() {
     expect(media3.loadsFontAttachments, isFalse);
     expect(media3.managesDynamicRange, isFalse);
     expect(SiloPlayerTraits.mpvAndroid.managesDynamicRange, isFalse);
+  });
+
+  test('a Dolby Vision transcode the viewer chose isn\'t offered as a strip', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    // Mapping profile 7 to HEVC makes Media3 strip it on any device.
+    await prefs.set(UserPreferences.media3MapDolbyVisionProfile7ToHevc, true);
+    Media3DoviCompatMode mode({bool isTv = true, bool dolbyVision = false}) =>
+        siloMedia3DoviMode(
+          prefs,
+          isTv: isTv,
+          displaySupportsDolbyVision: dolbyVision,
+        );
+    expect(mode(), Media3DoviCompatMode.strip);
+    await prefs.set(
+      UserPreferences.dolbyVisionFallbackBehavior,
+      DolbyVisionFallbackBehavior.transcode,
+    );
+    expect(mode(), Media3DoviCompatMode.off);
+    // The fallback setting only acts on an Android TV without Dolby Vision.
+    expect(mode(isTv: false), Media3DoviCompatMode.strip);
+    expect(mode(dolbyVision: true), Media3DoviCompatMode.strip);
+    await prefs.set(
+      UserPreferences.dolbyVisionFallbackBehavior,
+      DolbyVisionFallbackBehavior.hdr10Fallback,
+    );
+    expect(mode(), Media3DoviCompatMode.strip);
   });
 
   test('Media3 tells Silo what it does to Dolby Vision 7', () {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_silo/playback_silo.dart';
 
@@ -91,12 +92,14 @@ SiloPlayerTraits _traits() {
   }
   if (PlatformDetection.isAndroid) {
     final prefs = _prefs();
+    final engine =
+        prefs?.get(UserPreferences.playbackEnginePreference) ??
+        PlaybackEnginePreference.media3;
     return siloAndroidTraits(
-      prefs?.get(UserPreferences.playbackEnginePreference) ??
-          PlaybackEnginePreference.media3,
-      doviMode: prefs == null
+      engine,
+      doviMode: prefs == null || engine != PlaybackEnginePreference.media3
           ? Media3DoviCompatMode.off
-          : Media3PlayerBackend.doviCompatMode(prefs),
+          : siloMedia3DoviMode(prefs),
     );
   }
   return const SiloPlayerTraits();
@@ -115,12 +118,34 @@ SiloPlayerTraits siloAndroidTraits(
         .withDolbyVision7Transform(SiloDolbyVision7Transform.toProfile81),
     Media3DoviCompatMode.strip => SiloPlayerTraits.media3
         .withDolbyVision7Transform(SiloDolbyVision7Transform.toHdr10),
-    // A profile 7 decoder plays the file as it is, and off leaves it alone.
+    // No client transformation describes a player that decodes profile 7
+    // as it is, so Silo still converts it itself; off converts nothing.
     Media3DoviCompatMode.native ||
     Media3DoviCompatMode.off => SiloPlayerTraits.media3,
   },
   PlaybackEnginePreference.mpv => SiloPlayerTraits.mpvAndroid,
 };
+
+/// What Media3 does to a profile 7 file, as far as Silo should be told. An
+/// Android TV whose display has no Dolby Vision and whose viewer chose a
+/// transcode over the HDR10 fallback gets no strip offered, so Silo keeps
+/// serving it a stream of its own.
+@visibleForTesting
+Media3DoviCompatMode siloMedia3DoviMode(
+  UserPreferences prefs, {
+  bool? isTv,
+  bool? displaySupportsDolbyVision,
+}) {
+  final mode = Media3PlayerBackend.doviCompatMode(prefs);
+  final transcodeChosen =
+      (isTv ?? PlatformDetection.isTV) &&
+      !(displaySupportsDolbyVision ?? PlatformDetection.supportsDolbyVision) &&
+      prefs.get(UserPreferences.dolbyVisionFallbackBehavior) ==
+          DolbyVisionFallbackBehavior.transcode;
+  return mode == Media3DoviCompatMode.strip && transcodeChosen
+      ? Media3DoviCompatMode.off
+      : mode;
+}
 
 UserPreferences? _prefs() {
   final getIt = GetIt.instance;
