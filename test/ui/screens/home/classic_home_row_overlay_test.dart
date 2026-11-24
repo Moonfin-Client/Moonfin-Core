@@ -39,6 +39,18 @@ void main() {
       expect(clipTop, 80);
     });
 
+    test('clips only the part of a focused row behind the overlay', () {
+      final clipTop = classicHomeRowOverlayClipTop(
+        isFocused: true,
+        rowViewportTop: 240,
+        rowRestTop: 300,
+        rowExtent: 300,
+        overlayBottom: 260,
+      );
+
+      expect(clipTop, 20);
+    });
+
     test('leaves a focused row at rest below the overlay whole', () {
       final clipTop = classicHomeRowOverlayClipTop(
         isFocused: true,
