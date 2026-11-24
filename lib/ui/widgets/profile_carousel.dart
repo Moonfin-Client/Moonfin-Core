@@ -339,7 +339,24 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
   FocusNode? _ownNode;
   FocusNode get _node => widget.focusNode ?? (_ownNode ??= FocusNode());
   bool _focused = false;
-  bool _heroHovered = false;
+
+  /// The slot under the pointer. Kept per slot, not for "the middle one", so
+  /// moving the selection doesn't leave the camera button out.
+  int? _hovered;
+
+  /// Where the picture menu opens from the keyboard: the middle avatar.
+  Offset _heroCenter() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return Offset.zero;
+    return box.localToGlobal(
+      Offset(box.size.width / 2, _ringRoom + ProfileCarousel.heroSize / 2),
+    );
+  }
+
+  bool _canEdit(int index) =>
+      widget.onEditPicture != null &&
+      index < widget.entries.length &&
+      widget.entries[index].canEditPicture;
 
   @override
   void dispose() {
@@ -364,6 +381,15 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
         (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) &&
         widget.entries.isNotEmpty) {
       widget.onActivate(widget.selected);
+      return KeyEventResult.handled;
+    }
+    // The menu key, or Shift+F10, as for a right click.
+    final menuKey =
+        key == LogicalKeyboardKey.contextMenu ||
+        (key == LogicalKeyboardKey.f10 &&
+            HardwareKeyboard.instance.isShiftPressed);
+    if (event is KeyDownEvent && menuKey && _canEdit(widget.selected)) {
+      widget.onEditPicture!(widget.selected, _heroCenter());
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -484,10 +510,9 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
             1 => 0.55,
             _ => 0.3,
           };
-    final onEdit = widget.onEditPicture;
-    final editable =
-        distance == 0 && onEdit != null && widget.entries[index].canEditPicture;
-    void edit(Offset position) => onEdit?.call(index, position);
+    final editable = distance == 0 && _canEdit(index);
+    final shown = editable && _hovered == index;
+    void edit(Offset position) => widget.onEditPicture?.call(index, position);
     final avatar = ProfileAvatar(
       entry: widget.entries[index],
       ringColor: distance == 0
@@ -509,12 +534,10 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
           ignoring: !visible,
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            onEnter: editable
-                ? (_) => setState(() => _heroHovered = true)
-                : null,
-            onExit: editable
-                ? (_) => setState(() => _heroHovered = false)
-                : null,
+            onEnter: (_) => setState(() => _hovered = index),
+            onExit: (_) {
+              if (_hovered == index) setState(() => _hovered = null);
+            },
             child: GestureDetector(
               onTap: () {
                 _node.requestFocus();
@@ -533,16 +556,25 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Positioned.fill(child: avatar),
+                  Positioned.fill(
+                    child: editable
+                        // For screen readers, which can't hover.
+                        ? Semantics(
+                            onLongPressHint: _hint(widget.editPictureLabel),
+                            onLongPress: () => edit(_heroCenter()),
+                            child: avatar,
+                          )
+                        : avatar,
+                  ),
                   if (editable)
                     Positioned(
                       left: 0,
                       bottom: 0,
                       child: AnimatedOpacity(
                         duration: const Duration(milliseconds: 120),
-                        opacity: _heroHovered ? 1 : 0,
+                        opacity: shown ? 1 : 0,
                         child: IgnorePointer(
-                          ignoring: !_heroHovered,
+                          ignoring: !shown,
                           child: _EditPictureButton(
                             label: widget.editPictureLabel,
                             onPressed: edit,
@@ -692,7 +724,7 @@ class _ProfileHeroState extends State<ProfileHero> {
 
     return Builder(
       builder: (context) => Semantics(
-        onLongPressHint: widget.editPictureLabel,
+        onLongPressHint: _hint(widget.editPictureLabel),
         onLongPress: () {
           final box = context.findRenderObject() as RenderBox?;
           edit(
@@ -974,3 +1006,6 @@ class _ProfileStripState extends State<ProfileStrip> {
     );
   }
 }
+
+/// [label] as a semantics hint, which can't be empty.
+String? _hint(String label) => label.isEmpty ? null : label;

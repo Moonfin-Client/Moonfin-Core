@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/profile_carousel.dart';
 
@@ -92,6 +93,92 @@ void main() {
       await tester.tapAt(_hero(tester));
       await tester.pumpAndSettle();
       expect(activated, [0]);
+    });
+
+    testWidgets('moving the selection away hides the camera button', (
+      tester,
+    ) async {
+      final edits = <int>[];
+      var selected = 0;
+      late StateSetter setOuter;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 800,
+                child: StatefulBuilder(
+                  builder: (context, setState) {
+                    setOuter = setState;
+                    return ProfileCarousel(
+                      entries: const [_editable, _other],
+                      selected: selected,
+                      onSelected: (_) {},
+                      onActivate: (_) {},
+                      onEditPicture: (index, _) => edits.add(index),
+                      editPictureLabel: 'Change profile picture',
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final heroAt = _hero(tester);
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: heroAt);
+      addTearDown(mouse.removePointer);
+      await tester.pumpAndSettle();
+
+      setOuter(() => selected = 1);
+      await tester.pumpAndSettle();
+      await mouse.moveTo(Offset.zero);
+      await tester.pumpAndSettle();
+      setOuter(() => selected = 0);
+      await tester.pumpAndSettle();
+
+      final button = find.byIcon(Icons.photo_camera_outlined);
+      final opacity = tester
+          .widget<AnimatedOpacity>(
+            find
+                .ancestor(of: button, matching: find.byType(AnimatedOpacity))
+                .first,
+          )
+          .opacity;
+      expect(opacity, 0);
+    });
+
+    testWidgets('the menu key opens it from the keyboard', (tester) async {
+      final edits = <int>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 800,
+                child: ProfileCarousel(
+                  entries: const [_editable, _other],
+                  selected: 0,
+                  autofocus: true,
+                  onSelected: (_) {},
+                  onActivate: (_) {},
+                  onEditPicture: (index, _) => edits.add(index),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.contextMenu);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.f10);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.f10);
+      expect(edits, [0, 0]);
     });
 
     testWidgets('a profile that cannot change its picture has no menu', (

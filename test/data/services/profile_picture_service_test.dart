@@ -2,9 +2,34 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/auth/models/user.dart';
+import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/auth/store/authentication_store.dart';
 import 'package:moonfin/data/services/profile_picture_service.dart';
 import 'package:moonfin/util/image_mime.dart';
 import 'package:server_core/server_core.dart';
+
+class _MockClient extends Mock implements MediaServerClient {}
+
+class _MockUsersApi extends Mock implements UsersApi {}
+
+class _Store extends Fake implements AuthenticationStore {
+  _Store(this.user);
+
+  PrivateUser user;
+  int writes = 0;
+
+  @override
+  PrivateUser? getUser(String serverId, String userId) =>
+      userId == user.id ? user : null;
+
+  @override
+  Future<void> putUser(PrivateUser user) async {
+    writes++;
+    this.user = user;
+  }
+}
 
 const _silo = UserImageUpload(
   contentTypes: {'image/jpeg', 'image/png', 'image/webp'},
@@ -111,6 +136,67 @@ void main() {
         ),
         isNull,
       );
+    });
+  });
+
+  group('ProfilePictureService', () {
+    late _MockUsersApi users;
+    late _Store store;
+    late ProfilePictureService service;
+    final file = (bytes: Uint8List.fromList([1]), contentType: 'image/png');
+
+    setUp(() {
+      users = _MockUsersApi();
+      final client = _MockClient();
+      when(() => client.usersApi).thenReturn(users);
+      when(
+        () => users.uploadUserImage(
+          any(),
+          bytes: any(named: 'bytes'),
+          contentType: any(named: 'contentType'),
+        ),
+      ).thenAnswer((_) async {});
+      store = _Store(
+        PrivateUser(
+          id: 'a',
+          name: 'A',
+          serverId: 's',
+          accessToken: 't',
+          lastUsed: DateTime(2026),
+          imageTag: 'old',
+        ),
+      );
+      service = ProfilePictureService(
+        client,
+        store,
+        UserRepository(),
+        serverId: 's',
+        userId: 'a',
+      );
+    });
+
+    test('stores the new tag the server answers with', () async {
+      when(() => users.getCurrentUser()).thenAnswer(
+        (_) async => const ServerUser(id: 'a', primaryImageTag: 'new'),
+      );
+      await service.upload(file);
+      expect(store.user.imageTag, 'new');
+    });
+
+    test('a failed tag read after the upload is not a failed upload', () async {
+      when(() => users.getCurrentUser()).thenThrow(Exception('timeout'));
+      await service.upload(file);
+      expect(store.user.imageTag, 'old');
+    });
+
+    test('an answer for another user is not stored as this one', () async {
+      // The client is shared: a switch meanwhile makes it answer for B.
+      when(() => users.getCurrentUser()).thenAnswer(
+        (_) async => const ServerUser(id: 'b', primaryImageTag: 'b'),
+      );
+      await service.upload(file);
+      expect(store.writes, 0);
+      expect(store.user.imageTag, 'old');
     });
   });
 }

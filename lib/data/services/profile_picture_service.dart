@@ -35,19 +35,22 @@ Future<ProfilePictureFile?> prepareProfilePicture(
     return (bytes: bytes, contentType: type);
   }
   if (!rules.contentTypes.contains('image/png')) return null;
-  ui.ImmutableBuffer? buffer;
-  ui.ImageDescriptor? descriptor;
   ui.Codec? codec;
   try {
-    buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
-    descriptor = await ui.ImageDescriptor.encoded(buffer);
-    final scale = math.min(
-      1.0,
-      _convertedMaxSide / math.max(descriptor.width, descriptor.height),
-    );
-    codec = await descriptor.instantiateCodec(
-      targetWidth: math.max(1, (descriptor.width * scale).round()),
-      targetHeight: math.max(1, (descriptor.height * scale).round()),
+    // The size is picked inside the decode: an encoded image's size can't
+    // be read up front on the web.
+    codec = await ui.instantiateImageCodecWithSize(
+      await ui.ImmutableBuffer.fromUint8List(bytes),
+      getTargetSize: (width, height) {
+        final scale = math.min(
+          1.0,
+          _convertedMaxSide / math.max(width, height),
+        );
+        return ui.TargetImageSize(
+          width: math.max(1, (width * scale).round()),
+          height: math.max(1, (height * scale).round()),
+        );
+      },
     );
     final frame = await codec.getNextFrame();
     final data = await frame.image.toByteData(format: ui.ImageByteFormat.png);
@@ -60,8 +63,6 @@ Future<ProfilePictureFile?> prepareProfilePicture(
     return null;
   } finally {
     codec?.dispose();
-    descriptor?.dispose();
-    buffer?.dispose();
   }
 }
 
@@ -117,6 +118,8 @@ class ProfilePictureService {
     return prepared;
   }
 
+  /// Sends [file]. Throws only when the server didn't take it: once it has,
+  /// a failed refresh of the stored tag is logged, not reported.
   Future<void> upload(ProfilePictureFile file) async {
     await _client.usersApi.uploadUserImage(
       userId,
@@ -126,6 +129,7 @@ class ProfilePictureService {
     await _refreshImageTag();
   }
 
+  /// Removes the picture. Throws only when the server didn't.
   Future<void> remove() async {
     await _client.usersApi.deleteUserImage(userId);
     await _refreshImageTag();
@@ -134,7 +138,22 @@ class ProfilePictureService {
   /// Reads the user's new image tag and stores it. The avatar URLs carry the
   /// tag, so a new one loads the new picture instead of the cached one.
   Future<void> _refreshImageTag() async {
+    try {
+      await _storeImageTag();
+    } catch (e) {
+      ServerLog.network(
+        'Profile picture changed; its new tag is unreadable',
+        level: ServerLogLevel.warning,
+        error: e,
+      );
+    }
+  }
+
+  /// The client is shared by every user of the server, so the tag is
+  /// stored only when the server answered for this user.
+  Future<void> _storeImageTag() async {
     final serverUser = await _client.usersApi.getCurrentUser();
+    if (serverUser.id != userId) return;
     final stored = _store.getUser(serverId, userId);
     if (stored == null) return;
     final tag = serverUser.primaryImageTag;

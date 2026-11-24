@@ -351,9 +351,10 @@ void main() {
       });
 
       expect(
-        await _client(server, profile: _mainId).usersApi.userImageUpload(
-          _mainId,
-        ),
+        await _client(
+          server,
+          profile: _mainId,
+        ).usersApi.userImageUpload(_mainId),
         isNull,
       );
     });
@@ -412,6 +413,23 @@ void main() {
       // The signature the server checks is untouched.
       expect(Uri.parse(afterUrl).query, 'exp=1&sig=a');
       expect(Uri.parse(afterUrl).fragment, 'v=$updated');
+    });
+    test('only an uploaded avatar can be removed', () async {
+      final server = FixtureServer({
+        '/api/v2/profiles': _profiles([
+          {..._kid, 'avatar_source': 'preset', 'avatar': 'preset:fox'},
+          {
+            ..._kid,
+            'id': 'kid2',
+            'avatar_source': 'upload',
+            'avatar_url': '/api/v2/artwork/profile-avatars/1/kid2/w256.webp',
+          },
+        ]),
+      });
+      final users = _client(server, profile: 'kid').usersApi;
+
+      expect((await users.userImageUpload('kid'))?.removable, isFalse);
+      expect((await users.userImageUpload('kid2'))?.removable, isTrue);
     });
   });
 }

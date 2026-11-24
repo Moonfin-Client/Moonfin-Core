@@ -96,7 +96,14 @@ class _AccountDialogState extends State<_AccountDialog> {
   /// both null when it can't be changed here (TV, Plex, not allowed).
   ProfilePictureService? _picture;
   UserImageUpload? _pictureRules;
+
+  /// A picture change is under way, from the picker to the refresh: other
+  /// actions wait, so the change can't land on a profile switched to
+  /// meanwhile.
   bool _pictureBusy = false;
+
+  /// The picture is being sent: the avatar shows a spinner.
+  bool _pictureSending = false;
   String? _pictureError;
   int _selected = 0;
 
@@ -130,9 +137,9 @@ class _AccountDialogState extends State<_AccountDialog> {
       userId: userId,
     );
     final rules = await service.rules();
-    if (!mounted || rules == null) return;
+    if (!mounted) return;
     setState(() {
-      _picture = service;
+      _picture = rules == null ? null : service;
       _pictureRules = rules;
     });
   }
@@ -147,25 +154,25 @@ class _AccountDialogState extends State<_AccountDialog> {
     final action = await OverlaySheetController.show<_PictureAction>(
       context,
       anchor: PlatformDetection.useMobileUi ? null : position,
-      builder: (_) => _PictureMenu(hasPicture: hasPicture),
+      builder: (_) => _PictureMenu(canRemove: hasPicture && rules.removable),
     );
-    if (action == null || !mounted) return;
+    if (action == null || !mounted || _busy || _pictureBusy) return;
 
-    setState(() => _pictureError = null);
     final l10n = AppLocalizations.of(context);
+    setState(() {
+      _pictureError = null;
+      _pictureBusy = true;
+    });
     try {
-      ProfilePictureFile? file;
       if (action == _PictureAction.change) {
-        file = await service.pick(rules);
+        final file = await service.pick(rules);
         if (file == null || !mounted) return;
-      }
-      setState(() => _pictureBusy = true);
-      if (file != null) {
+        setState(() => _pictureSending = true);
         await service.upload(file);
       } else {
+        setState(() => _pictureSending = true);
         await service.remove();
       }
-      await _loadAccounts();
     } on ProfilePictureUnsupported {
       if (mounted) {
         setState(
@@ -174,6 +181,7 @@ class _AccountDialogState extends State<_AccountDialog> {
           ),
         );
       }
+      return;
     } catch (e) {
       ServerLog.network(
         'Profile picture change failed',
@@ -181,9 +189,20 @@ class _AccountDialogState extends State<_AccountDialog> {
         error: e,
       );
       if (mounted) setState(() => _pictureError = l10n.profilePictureFailed);
+      return;
     } finally {
-      if (mounted) setState(() => _pictureBusy = false);
+      if (mounted) {
+        setState(() {
+          _pictureBusy = false;
+          _pictureSending = false;
+        });
+      }
     }
+    // The server has it: show it, and what can be done with it now (Silo
+    // removes only an upload).
+    if (!mounted) return;
+    await _loadAccounts();
+    await _loadPictureRules();
   }
 
   Future<void> _loadAccounts() async {
@@ -246,7 +265,7 @@ class _AccountDialogState extends State<_AccountDialog> {
   }
 
   Future<void> _switchAccount(_StoredAccount account) async {
-    if (_busy) return;
+    if (_busy || _pictureBusy) return;
 
     if (_isActive(account)) {
       if (mounted) Navigator.of(context).pop();
@@ -380,7 +399,7 @@ class _AccountDialogState extends State<_AccountDialog> {
         ? ProfileBadge.pin
         : ProfileBadge.none,
     canEditPicture: _isActive(account) && _pictureRules != null,
-    pictureBusy: _isActive(account) && _pictureBusy,
+    pictureBusy: _isActive(account) && _pictureSending,
   );
 
   Widget _buildAccountSubtitle(_StoredAccount account) {
@@ -433,7 +452,7 @@ class _AccountDialogState extends State<_AccountDialog> {
       icon: icon,
       danger: danger,
       compact: compact,
-      onPressed: _busy ? null : onPressed,
+      onPressed: _busy || _pictureBusy ? null : onPressed,
       focusColor: danger ? _danger : focusColor,
     );
 
@@ -602,7 +621,7 @@ class _AccountDialogState extends State<_AccountDialog> {
               entries: entries,
               selected: _selected,
               onSelected: (index) => setState(() => _selected = index),
-              onAdd: _busy ? null : _addUser,
+              onAdd: _busy || _pictureBusy ? null : _addUser,
               addLabel: l10n.addUser,
             ),
             if (selected != null) ...[
@@ -611,7 +630,9 @@ class _AccountDialogState extends State<_AccountDialog> {
                 label: _isActive(selected)
                     ? l10n.continueAsUser(selected.user.name)
                     : l10n.switchToUser(selected.user.name),
-                onPressed: _busy ? null : () => _switchAccount(selected),
+                onPressed: _busy || _pictureBusy
+                    ? null
+                    : () => _switchAccount(selected),
               ),
             ],
             const SizedBox(height: 16),
@@ -1023,9 +1044,9 @@ class _ActionButtonState extends State<_ActionButton> {
 
 /// Change or remove the signed-in profile's picture.
 class _PictureMenu extends StatelessWidget {
-  const _PictureMenu({required this.hasPicture});
+  const _PictureMenu({required this.canRemove});
 
-  final bool hasPicture;
+  final bool canRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -1070,7 +1091,7 @@ class _PictureMenu extends StatelessWidget {
                 Icons.photo_camera_outlined,
                 l10n.profilePictureChange,
               ),
-              if (hasPicture)
+              if (canRemove)
                 row(
                   _PictureAction.remove,
                   Icons.delete_outline,

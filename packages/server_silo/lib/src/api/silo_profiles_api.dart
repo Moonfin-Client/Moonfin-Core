@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
+import '../silo_image_registry.dart';
 import '../silo_problem.dart';
 import '../silo_session.dart';
 
@@ -41,6 +42,30 @@ class SiloProfile {
 
   /// The profile exactly as Silo sent it.
   final Map<String, dynamic> json;
+
+  /// The avatar is a picture someone uploaded, which Silo can remove (it
+  /// leaves a preset in place).
+  bool get hasUploadedAvatar => json['avatar_source'] == 'upload';
+}
+
+/// Records [profile]'s avatar in [images] and returns its tag, or forgets the
+/// one it had when it has none now. An uploaded avatar is replaced at the
+/// same path, so the profile's last change tells one picture from the next.
+String? registerSiloProfileAvatar(
+  SiloImageRegistry images,
+  SiloProfile profile,
+) {
+  images.note(profile.id);
+  final tag = images.register(
+    profile.id,
+    SiloImageType.primary,
+    profile.json['avatar_url'] as String?,
+    version: profile.hasUploadedAvatar
+        ? profile.json['updated_at'] as String?
+        : null,
+  );
+  if (tag == null) images.forget(profile.id, SiloImageType.primary);
+  return tag;
 }
 
 /// The answer to a profile PIN check ([SiloProfilesApi.verifyPin]).
@@ -85,31 +110,32 @@ class SiloProfilesApi {
   /// Every profile on the signed-in account, in Silo's order. Asked as the
   /// account, without a profile ([siloNoProfileExtra]), so a profile that
   /// is selected but not (or no longer) unlocked doesn't get it refused.
-  Future<List<SiloProfile>> list() async {
+  Future<List<SiloProfile>> list() async => (await _read()).profiles;
+
+  /// The profiles, with whether Silo takes uploaded avatars
+  /// (`avatar_upload_enabled`: false when the server has no avatar store).
+  Future<({List<SiloProfile> profiles, bool avatarUploads})>
+  listWithAvatarUploads() => _read();
+
+  Future<({List<SiloProfile> profiles, bool avatarUploads})> _read() async {
     final response = await _dio.get<dynamic>(
       '/api/v2/profiles',
       options: Options(extra: const {siloNoProfileExtra: true}),
     );
-    final items = asJsonMap(response.data)?['items'];
+    final body = asJsonMap(response.data);
+    final items = body?['items'];
     if (items is! List) {
       throw FormatException(
         'Expected a profile list from Silo, got ${response.data.runtimeType}',
       );
     }
-    return [
-      for (final item in items)
-        if (asJsonMap(item) case final json?) SiloProfile.fromJson(json),
-    ].where((p) => p.id.isNotEmpty).toList();
-  }
-
-  /// Whether Silo takes uploaded avatars (`avatar_upload_enabled` on the
-  /// profile list: false when the server has no avatar store).
-  Future<bool> avatarUploadEnabled() async {
-    final response = await _dio.get<dynamic>(
-      '/api/v2/profiles',
-      options: Options(extra: const {siloNoProfileExtra: true}),
+    return (
+      profiles: [
+        for (final item in items)
+          if (asJsonMap(item) case final json?) SiloProfile.fromJson(json),
+      ].where((p) => p.id.isNotEmpty).toList(),
+      avatarUploads: body?['avatar_upload_enabled'] == true,
     );
-    return asJsonMap(response.data)?['avatar_upload_enabled'] == true;
   }
 
   /// Makes [bytes] the avatar of [profileId] (`PUT /profiles/{id}/avatar`,

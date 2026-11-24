@@ -514,17 +514,27 @@ class SessionRepository {
       final canManageLiveTv =
           serverUser.policy?.enableLiveTvManagement ?? false;
 
+      // The avatar URLs carry the tag, so a picture changed elsewhere (the
+      // server's web app, another device) shows. Plex reads no tag here.
+      final imageTag = client.serverType == ServerType.plex
+          ? user.imageTag
+          : serverUser.primaryImageTag;
+      final imageTagChanged = (imageTag ?? '') != (user.imageTag ?? '');
+
       if (isAdmin != user.isAdministrator ||
           canDownload != user.canDownload ||
           canManageSubtitles != user.canManageSubtitles ||
           canManageCollections != user.canManageCollections ||
-          canManageLiveTv != user.canManageLiveTv) {
+          canManageLiveTv != user.canManageLiveTv ||
+          imageTagChanged) {
         final updatedUser = user.copyWith(
           isAdministrator: isAdmin,
           canDownload: canDownload,
           canManageSubtitles: canManageSubtitles,
           canManageCollections: canManageCollections,
           canManageLiveTv: canManageLiveTv,
+          imageTag: imageTag,
+          clearImageTag: imageTag == null || imageTag.isEmpty,
         );
         await _authStore.putUser(updatedUser);
         _userRepository.setCurrentUser(updatedUser);

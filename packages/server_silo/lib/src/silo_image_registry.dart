@@ -134,7 +134,11 @@ class SiloImageRegistry {
     var tag = siloImageTag(url!.trim());
     if (version != null && version.isNotEmpty) {
       tag = siloImageTag('$tag@$version');
-      resolved = Uri.parse(resolved).replace(fragment: 'v=$version').toString();
+      // A URL Dart can't parse keeps its old form: the picture still loads,
+      // only without the version.
+      resolved =
+          Uri.tryParse(resolved)?.replace(fragment: 'v=$version').toString() ??
+          resolved;
     }
     _images[_key(itemId, type, index)] = _SiloImage(resolved, tag);
     _byTag[tag] = resolved;

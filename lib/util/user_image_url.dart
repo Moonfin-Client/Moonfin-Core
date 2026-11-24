@@ -2,10 +2,11 @@ import 'package:server_core/server_core.dart';
 
 import '../auth/models/user.dart';
 
-/// [user]'s avatar URL with their image tag on Jellyfin and Emby, whose URL
-/// is otherwise the same for every picture: a changed picture gets a new
-/// tag, so it loads instead of the cached old one. Silo's URL already changes
-/// with the picture (and may be signed, so nothing is added to it).
+/// [user]'s avatar URL with their image tag on servers with Jellyfin's user
+/// image path (Jellyfin and Emby; a Plex user has no tag), whose URL is
+/// otherwise the same for every picture: a changed picture gets a new tag, so
+/// it loads instead of the cached old one. Silo's URL already carries its
+/// version, and may be signed, so nothing is added to it.
 String taggedUserImageUrl(MediaServerClient client, User user) {
   final url = client.imageApi.getUserImageUrl(user.id);
   final tag = user.imageTag;
