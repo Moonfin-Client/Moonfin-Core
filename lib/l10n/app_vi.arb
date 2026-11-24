@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Cài đặt NFO",
     "adminActivitySeverityAll": "Mọi mức độ",
     "adminActivityDateRange": "Khoảng thời gian",
-    "adminRemoveDeviceConfirm": "Gỡ thiết bị '{name}'? Người dùng sẽ phải đăng nhập lại trên thiết bị này.",
+    "adminRemoveDeviceConfirm": "Gỡ thiết bị \"{name}\"? Người dùng sẽ phải đăng nhập lại trên thiết bị này.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Thư viện '{libraryName}' của bạn được cấu hình để lưu ảnh bìa trực tiếp vào thư mục phương tiện (tùy chọn 'Save artwork into media folders' đang bật). Tuy nhiên, Jellyfin đã kiểm tra quyền ghi và không có quyền ghi tệp vào thư mục này:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Thư viện \"{libraryName}\" của bạn được cấu hình để lưu ảnh bìa trực tiếp vào thư mục phương tiện (tùy chọn 'Save artwork into media folders' đang bật). Tuy nhiên, Jellyfin đã kiểm tra quyền ghi và không có quyền ghi tệp vào thư mục này:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
