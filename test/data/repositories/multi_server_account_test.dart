@@ -22,6 +22,10 @@ class _Session extends Mock implements SessionRepository {}
 
 class _Client extends Mock implements MediaServerClient {}
 
+class _Views extends Mock implements UserViewsApi {}
+
+class _Users extends Mock implements UsersApi {}
+
 void main() {
   late _AuthStore store;
   late _Credentials credentials;
@@ -131,6 +135,53 @@ void main() {
       verifyNever(() => foo.userId = 'john-foo');
     },
   );
+
+  test('a new account gets its own in-flight library lookup', () async {
+    when(store.getServers).thenReturn([
+      server('bar', ServerType.emby),
+      server('foo', ServerType.jellyfin),
+    ]);
+    when(() => store.getUsers('bar'))
+        .thenReturn([user('bar', 'alice-bar', 'Alice')]);
+    final readingToken = Completer<void>();
+    final token = Completer<String?>();
+    when(() => credentials.getToken('bar')).thenAnswer((_) {
+      readingToken.complete();
+      return token.future;
+    });
+
+    final views = _Views();
+    final users = _Users();
+    when(() => foo.userViewsApi).thenReturn(views);
+    when(() => foo.usersApi).thenReturn(users);
+    when(users.getUserConfiguration)
+        .thenAnswer((_) async => const UserConfiguration());
+    final readingViews = Completer<void>();
+    final viewsResponse = Completer<Map<String, dynamic>>();
+    when(() => views.getUserViews(includeHidden: true)).thenAnswer((_) {
+      readingViews.complete();
+      return viewsResponse.future;
+    });
+
+    final oldLookup = repository.getAggregatedLibraries();
+    await readingToken.future;
+    when(() => session.accountSelectionGeneration).thenReturn(1);
+    when(() => session.activeUserId).thenReturn('alice-foo');
+    when(store.getServers).thenReturn([server('foo', ServerType.jellyfin)]);
+    final newLookup = repository.getAggregatedLibraries();
+    expect(newLookup, isNot(same(oldLookup)));
+    await readingViews.future;
+
+    token.complete(null);
+    expect(await oldLookup, isEmpty);
+    expect(repository.getAggregatedLibraries(), same(newLookup));
+    viewsResponse.complete({
+      'Items': [
+        {'Id': 'alice-library', 'Name': 'Alice’s library'},
+      ],
+    });
+    expect((await newLookup).single.id, 'alice-library');
+  });
 
   test('uses the matching Bar user and that user’s token', () async {
     when(() => store.getUsers('bar')).thenReturn([

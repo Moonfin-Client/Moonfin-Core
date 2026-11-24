@@ -235,17 +235,31 @@ class MultiServerRepository {
     return sessions;
   }
 
-  // Concurrent callers share one in-flight aggregation instead of each
-  // fanning out to every server.
-  Future<List<AggregatedLibrary>>? _inFlightLibraries;
+  // Share an in-flight aggregation only within the same account generation.
+  ({int generation, Future<List<AggregatedLibrary>> result})? _inFlightLibraries;
 
-  Future<List<AggregatedLibrary>> getAggregatedLibraries() =>
-      _inFlightLibraries ??= _getAggregatedLibrariesNow().whenComplete(
-        () => _inFlightLibraries = null,
-      );
+  Future<List<AggregatedLibrary>> getAggregatedLibraries() {
+    final generation = _sessionRepo.accountSelectionGeneration;
+    if (generation == null) return Future.value(const []);
+    final pending = _inFlightLibraries;
+    if (pending != null && pending.generation == generation) {
+      return pending.result;
+    }
 
-  Future<List<AggregatedLibrary>> _getAggregatedLibrariesNow() async {
+    final result = _getAggregatedLibrariesNow(generation).whenComplete(() {
+      if (_inFlightLibraries?.generation == generation) {
+        _inFlightLibraries = null;
+      }
+    });
+    _inFlightLibraries = (generation: generation, result: result);
+    return result;
+  }
+
+  Future<List<AggregatedLibrary>> _getAggregatedLibrariesNow(
+    int generation,
+  ) async {
     final sessions = await getLoggedInServers();
+    if (_sessionRepo.accountSelectionGeneration != generation) return const [];
     final hasMultiple = sessions.length > 1;
 
     final results = await Future.wait(
@@ -278,6 +292,7 @@ class MultiServerRepository {
       ),
     );
 
+    if (_sessionRepo.accountSelectionGeneration != generation) return const [];
     final libraries = results.expand((e) => e).toList();
     if (!_mergesLibraries) return libraries;
     return mergeLibrariesByType(libraries, nameOf: _mergedLibraryName);
