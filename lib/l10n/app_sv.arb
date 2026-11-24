@@ -13068,5 +13068,600 @@
     "playlistSortCriticRating": "Kritikerbetyg",
     "@playlistSortCriticRating": {
         "description": "Label for sorting playlist items by critic rating"
-    }
+    },
+    "adminBackupsHelp": "Skapa och återställ ögonblicksbilder av din server. De kan omfatta databasen, metadata, undertexter och trickplay-bilder.",
+    "adminBackupDisclaimer": "Beroende på hur stort ditt bibliotek är kan säkerhetskopieringen ta en stund.",
+    "adminBackupTasksWarningTitle": "Schemalagda uppgifter körs",
+    "adminBackupTasksWarning": "Avbryt dessa uppgifter eller vänta tills de är klara innan du skapar en säkerhetskopia.",
+    "adminBackupArchiveNotFound": "Servern kunde inte hitta detta säkerhetskopieringsarkiv.",
+    "adminRestoreInProgress": "Återställning pågår",
+    "adminRestoreWaitingForServer": "Väntar på att servern ska komma igång igen.",
+    "adminRestoreSucceeded": "Återställningen är klar",
+    "adminLogStopWatching": "Sluta titta",
+    "adminPluginInstallConfirmTitle": "Bekräfta installationen av tillägget",
+    "adminPluginInstallDisclaimer": "Att installera ett plugin från tredje part medför risker. Det kan innehålla instabil eller skadlig kod och kan ändras när som helst. Installera endast plugins från utvecklare du litar på, och se till att du vet vad de kan göra, till exempel att göra förfrågningar till externa tjänster, bromsa bibliotekssökningar eller lägga till bakgrundsprocesser.",
+    "adminGroupSystem": "System",
+    "adminAreasLabel": "Administratörsområden",
+    "adminPagesLabel": "Sidor",
+    "adminPageDescDashboard": "Serverns status, sessioner och senaste aktivitet",
+    "adminPageDescAnalytics": "Bibliotekens storlek, kodekar och format",
+    "adminPageDescActivity": "Allt som hände på servern",
+    "adminPageDescTasks": "Skanningar, rensningar och vad som utlöser dem",
+    "adminPageDescLibraries": "Mappar, skannrar och verktyg för hämtning av metadata",
+    "adminPageDescDisplay": "Hur biblioteken visar sig för användarna",
+    "adminPageDescMetadata": "Standard språk, land och bilder",
+    "adminPageDescNfo": "Läsa och spara NFO-filer i Kodi",
+    "adminPageDescLiveTv": "Tuners, programinformation och inspelningar",
+    "adminPageDescTranscoding": "Hårdvaruacceleration, kodare, tonmappning",
+    "adminPageDescResume": "När objekt räknas som påbörjade eller spelade",
+    "adminPageDescStreaming": "Begränsning av bithastigheten vid fjärranslutning",
+    "adminPageDescTrickplay": "Sök efter förhandsgranskningsminiatyrer",
+    "adminPageDescUsers": "Konton, åtkomst och föräldrakontroll",
+    "adminPageDescDevices": "Inloggade enheter och deras namn",
+    "adminPageDescApiKeys": "Nycklar för appar och skript",
+    "adminPageDescSettings": "Servernamn, språk, sökvägar, prestanda",
+    "adminPageDescBranding": "Inloggningsmeddelande, anpassad CSS, startskärm",
+    "adminPageDescNetworking": "Portar, HTTPS, LAN och fjärråtkomst",
+    "adminPageDescPlugins": "Installerade tillägg och katalogen",
+    "adminPageDescRepositories": "Varifrån kommer tillägg?",
+    "adminPageDescBackups": "Skapa och återställa säkerhetskopior av servern",
+    "adminPageDescLogs": "Serverloggfiler",
+    "adminSearchSettingsHint": "Sök {count} inställningar",
+    "@adminSearchSettingsHint": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminSearchNoResults": "Inga inställningar stämmer överens",
+    "adminSearchClear": "Rensa sökningen",
+    "adminUnsavedChanges": "Osparade ändringar",
+    "adminDiscard": "Kasta",
+    "adminLeaveTitle": "Vill du avbryta de osparade ändringarna?",
+    "adminLeaveMessage": "Ändringarna på den här sidan har inte sparats än.",
+    "adminKeepEditing": "Fortsätt redigera",
+    "adminMetadataFieldCustomRating": "Anpassad betygsättning",
+    "adminMetadataFieldDisplayOrder": "Visningsordning",
+    "adminMetadataDisplayOrderAired": "Sändes",
+    "adminMetadataDisplayOrderOriginalAirDate": "Första sändningsdatum",
+    "adminMetadataDisplayOrderAbsolute": "Absolut",
+    "adminMetadataDisplayOrderDvd": "DVD",
+    "adminMetadataDisplayOrderStoryArc": "Handlingsbåge",
+    "adminMetadataDisplayOrderProduction": "Produktion",
+    "adminMetadataDisplayOrderAlternate": "Alternate",
+    "adminMetadataDisplayOrderRegional": "Regionalt",
+    "adminMetadataDisplayOrderAlternateDvd": "Alternativ DVD",
+    "adminMetadataDisplayOrderDateModified": "Ändringsdatum",
+    "adminMetadataDisplayOrderSortName": "Sorteringsnamn",
+    "adminMetadataDisplayOrderReleaseDate": "Utgivningsdatum",
+    "adminMetadataSettings": "Inställningar för metadata",
+    "adminMetadataDownloadLanguage": "Önskat språk för nedladdning",
+    "adminMetadataCountryRegion": "Land/Region",
+    "adminMetadataInheritHelp": "Låt detta stå på Standard för att ärva inställningen från ett överordnat objekt eller från serverns standardinställning.",
+    "adminMetadataField3DFormat": "3D-format",
+    "adminMetadataPersonKindActor": "Skådespelare",
+    "adminMetadataPersonKindComposer": "Kompositör",
+    "adminMetadataPersonKindWriter": "Författare",
+    "adminMetadataPersonKindGuestStar": "Gästskådespelare",
+    "adminMetadataPersonKindProducer": "Producent",
+    "adminMetadataPersonKindConductor": "Förare",
+    "adminMetadataPersonKindLyricist": "Textförfattare",
+    "adminMetadataPersonKindArranger": "Arrangör",
+    "adminMetadataPersonKindEngineer": "Ingenjör",
+    "adminMetadataPersonKindMixer": "Mixer",
+    "adminMetadataPersonKindRemixer": "Remixa",
+    "adminMetadataPersonKindCreator": "Skapare",
+    "adminMetadataPersonKindAlbumArtist": "Albumets artist",
+    "adminMetadataPersonKindIllustrator": "Illustratör",
+    "adminMetadataPersonKindPenciller": "Tecknare",
+    "adminMetadataPersonKindInker": "Tuschare",
+    "adminMetadataPersonKindColorist": "Färgläggare",
+    "adminMetadataPersonKindLetterer": "Brev",
+    "adminMetadataPersonKindCoverArtist": "Omslagsillustratör",
+    "adminMetadataPersonKindEditor": "Redaktör",
+    "adminMetadataPersonKindTranslator": "Översättare",
+    "adminMetadataPersonKindNarrator": "Berättare",
+    "adminMetadataAirDays": "Sändningsdagar",
+    "adminMetadataLockItem": "Lås den här posten för att förhindra framtida ändringar av metadata",
+    "adminMetadataEnabledFields": "Aktiverade fält",
+    "adminMetadataEnabledFieldsHelp": "Avmarkera ett fält för att låsa det och förhindra att uppgifterna i det ändras.",
+    "adminMetadataLockFieldOfficialRating": "Åldersgräns",
+    "adminMetadataLockFieldProductionLocations": "Produktionsanläggningar",
+    "adminMetadataLockFieldBirthLocation": "Födelseort",
+    "adminPluginsRestartRequired": "Omstart krävs",
+    "@adminPluginsRestartRequired": {
+        "description": "Label for the installed-plugin filter showing changes that require a server restart"
+    },
+    "adminPluginsNoneActive": "Inga aktiva tillägg",
+    "@adminPluginsNoneActive": {
+        "description": "Empty state for the active installed-plugin filter"
+    },
+    "adminPluginsNoneRequireRestart": "Inga tillägg kräver att servern startas om",
+    "@adminPluginsNoneRequireRestart": {
+        "description": "Empty state for the installed-plugin filter showing changes that require a server restart"
+    },
+    "syncPlayRepeatSubtitle": "Spela upp ett objekt eller hela kön",
+    "@syncPlayRepeatSubtitle": {
+        "description": "Subtitle of the Repeat tile on the SyncPlay screen"
+    },
+    "syncPlayShuffleSubtitle": "Spela låtarna i kö i ordning eller i slumpmässig ordning",
+    "@syncPlayShuffleSubtitle": {
+        "description": "Subtitle of the Shuffle tile on the SyncPlay screen"
+    },
+    "syncPlayParticipantYou": "Du",
+    "@syncPlayParticipantYou": {
+        "description": "Small label on the signed-in user's own chip in the SyncPlay participant list"
+    },
+    "syncPlayGroupSubtitle": "{participants} · {detail}",
+    "@syncPlayGroupSubtitle": {
+        "description": "Second line under the group name on the SyncPlay screen: the participant count, then what is playing or that nothing is queued",
+        "placeholders": {
+            "participants": {
+                "type": "String",
+                "example": "3 participants"
+            },
+            "detail": {
+                "type": "String",
+                "example": "nothing queued yet"
+            }
+        }
+    },
+    "syncPlayNothingQueued": "Inget i kön ännu",
+    "@syncPlayNothingQueued": {
+        "description": "Fills {detail} in syncPlayGroupSubtitle when the group queue is empty, e.g. '3 participants · nothing queued yet'"
+    },
+    "syncPlayOthersCanJoinHint": "Andra kan ansluta sig via sin SyncPlay-skärm så länge gruppen finns kvar.",
+    "@syncPlayOthersCanJoinHint": {
+        "description": "Hint next to the participant chips on the SyncPlay screen, telling the user how others join the group"
+    },
+    "syncPlayCreateGroupSubtitle": "Watch together tillsammans med alla som ansluter sig",
+    "@syncPlayCreateGroupSubtitle": {
+        "description": "Subtitle under 'Create a new group' on the SyncPlay screen"
+    },
+    "syncPlayAvailableGroupsCount": "Tillgängliga grupper · {count}",
+    "@syncPlayAvailableGroupsCount": {
+        "description": "Heading of the SyncPlay available groups list with how many there are",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "2"
+            }
+        }
+    },
+    "syncPlayNoGroupsAvailableHint": "Grupper som andra personer skapar på den här servern kommer att visas här.",
+    "@syncPlayNoGroupsAvailableHint": {
+        "description": "Second line of the empty state in the SyncPlay available groups list"
+    },
+    "syncPlayJoinReplacesQueueNote": "Om du går med i en grupp kan det hända att din nuvarande uppspelningskö ersätts.",
+    "@syncPlayJoinReplacesQueueNote": {
+        "description": "Note with an info icon under the list of available groups on the SyncPlay screen"
+    },
+    "kidsMode": "Barnläge",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "kidsModeSubtitle": "Förenkla appen och lås utgången med en PIN-kod",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "kidsModeExit": "Avsluta barnläget",
+    "@kidsModeExit": {
+        "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+    },
+    "kidsModeExitSubtitle": "Ange din PIN-kod för att återställa hela appen",
+    "@kidsModeExitSubtitle": {
+        "description": "Explanation under the Exit Kids Mode entry"
+    },
+    "kidsModePinToSwitchUser": "Ange PIN-koden för barnläget för att växla till {name}",
+    "@kidsModePinToSwitchUser": {
+        "description": "Shown in the PIN dialog when a link asks to switch to another user while Kids Mode is on. {name} is the user being switched to",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "pinTryAgainIn": "För många försök. Försök igen om {wait}.",
+    "@pinTryAgainIn": {
+        "description": "Shown when PIN entry is locked after repeated wrong guesses",
+        "placeholders": {
+            "wait": {
+                "type": "String",
+                "example": "30s"
+            }
+        }
+    },
+    "removeFromPlaylist": "Ta bort från spellistan",
+    "@removeFromPlaylist": {
+        "description": "Context menu action to remove an item from a playlist"
+    },
+    "removeFromPlaylistConfirm": "Ta bort {item} från {playlist}?",
+    "@removeFromPlaylistConfirm": {
+        "description": "Confirmation shown before removing an item from a playlist",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "playlist": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromPlaylistFailed": "Det gick inte att ta bort från spellistan",
+    "@removeFromPlaylistFailed": {
+        "description": "Error shown when removing an item from a playlist fails"
+    },
+    "playerTooltipPictureInPicture": "Bild-i-bild",
+    "@playerTooltipPictureInPicture": {
+        "description": "Tooltip label for the web player button that pops the video out into the browser's floating picture-in-picture window, and its name in the player button settings"
+    },
+    "playerTooltipExitPictureInPicture": "Avsluta bild-i-bild-läget",
+    "@playerTooltipExitPictureInPicture": {
+        "description": "Tooltip label for the web player button that brings the video back from the browser's floating picture-in-picture window"
+    },
+    "playerPlayingInPictureInPicture": "Spela upp i bild-i-bild-läge",
+    "@playerPlayingInPictureInPicture": {
+        "description": "Shown in the web player where the video was, while the video plays in the browser's floating picture-in-picture window"
+    },
+    "playerTooltipMinimize": "Minimera spelaren",
+    "@playerTooltipMinimize": {
+        "description": "Tooltip label for shrinking the video player into the mini player bar so the viewer can keep browsing"
+    },
+    "miniPlayerOpenPlayer": "Öppna spelaren",
+    "@miniPlayerOpenPlayer": {
+        "description": "Tooltip label for returning from the video mini player bar to the full player"
+    },
+    "contextMenuRemoveFromCollection": "Ta bort från samlingen",
+    "@contextMenuRemoveFromCollection": {
+        "description": "Context menu action to remove an item from the collection whose page it is shown on"
+    },
+    "removeFromCollectionConfirm": "Ta bort {item} från {collection}? Objektet finns kvar i ditt bibliotek.",
+    "@removeFromCollectionConfirm": {
+        "description": "Confirmation shown before removing an item from a collection",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "collection": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromCollectionFailed": "Det gick inte att ta bort från samlingen",
+    "@removeFromCollectionFailed": {
+        "description": "Error shown when removing an item from a collection fails"
+    },
+    "untrustedServerCertificate": "Den här serverns certifikat är inte betrott. Om det är din egen server och den använder ett självsignerat eller privat certifikat kan du godkänna det här.",
+    "@untrustedServerCertificate": {
+        "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
+    },
+    "clientCertTitle": "Klientcertifikat",
+    "@clientCertTitle": {
+        "description": "Title of the dialog that imports a TLS client certificate for a server"
+    },
+    "clientCertHost": "Intyg för {host}",
+    "@clientCertHost": {
+        "description": "Names the server host the client certificate will be presented to",
+        "placeholders": {
+            "host": {
+                "type": "String"
+            }
+        }
+    },
+    "clientCertChooseFile": "Välj fil",
+    "@clientCertChooseFile": {
+        "description": "Button that picks a .p12 or .pfx file"
+    },
+    "clientCertPassword": "Lösenord för certifikatet",
+    "@clientCertPassword": {
+        "description": "Label for the password that unlocks the .p12 or .pfx file"
+    },
+    "clientCertStartUpload": "Skicka från telefonen",
+    "@clientCertStartUpload": {
+        "description": "Button on a TV that opens a one-time page a phone on the same network can send the certificate to"
+    },
+    "clientCertUploadHint": "Skanna den här koden med din mobil, eller öppna adressen i webbläsaren, välj sedan filen och ange lösenordet.",
+    "@clientCertUploadHint": {
+        "description": "Shown under the QR code while the TV waits for the phone to send the certificate"
+    },
+    "clientCertStopUpload": "Sluta vänta",
+    "@clientCertStopUpload": {
+        "description": "Button that closes the phone upload page before a certificate arrives"
+    },
+    "clientCertNoFileData": "Det gick inte att läsa filen. Försök igen.",
+    "@clientCertNoFileData": {
+        "description": "Shown when the picked file has no contents"
+    },
+    "clientCertPickFailed": "Det gick inte att öppna filväljaren.",
+    "@clientCertPickFailed": {
+        "description": "Shown when the file picker fails to open"
+    },
+    "clientCertUploadFailed": "Det gick inte att öppna uppladdningssidan. Försök igen.",
+    "@clientCertUploadFailed": {
+        "description": "Shown when the TV can't open the page the phone sends the certificate to"
+    },
+    "clientCertNoSecureStorage": "Den här enheten har inget säkert lagringsutrymme, så certifikatet kan inte sparas. Under Linux ska du installera libsecret och försöka igen.",
+    "@clientCertNoSecureStorage": {
+        "description": "Shown when there is no keychain or secret store to keep the certificate in"
+    },
+    "clientCertDecodeFailed": "Det gick inte att läsa den filen som ett certifikat. Se till att den har filändelsen .p12 eller .pfx.",
+    "@clientCertDecodeFailed": {
+        "description": "Shown when the file isn't a usable .p12 or .pfx"
+    },
+    "clientCertWrongPassword": "Det lösenordet låser inte upp det här certifikatet.",
+    "@clientCertWrongPassword": {
+        "description": "Shown when the password for the .p12 or .pfx file is wrong"
+    },
+    "clientCertRequired": "Den här servern kräver ett klientcertifikat (mTLS). Lägg till ett för den här värden för att fortsätta.",
+    "@clientCertRequired": {
+        "description": "Shown on the sign-in screens when the server turned the connection away for lack of a client certificate"
+    },
+    "clientCertExpired": "Certifikatet för denna server löpte ut den {datum}. Byt ut det för att kunna fortsätta.",
+    "@clientCertExpired": {
+        "description": "Shown on the sign-in screen when the server turned the connection away and the stored certificate has expired",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "clientCertAddButton": "Lägg till klientcertifikat",
+    "@clientCertAddButton": {
+        "description": "Button that opens the certificate import from the add-server and sign-in screens"
+    },
+    "settingsClientCertificates": "Klientcertifikat",
+    "@settingsClientCertificates": {
+        "description": "Settings entry that lists the imported client certificates"
+    },
+    "settingsClientCertificatesSubtitle": "Certifikat som den här appen visar upp för servrar som kräver ett sådant (mTLS)",
+    "@settingsClientCertificatesSubtitle": {
+        "description": "Subtitle for the client certificates settings entry"
+    },
+    "clientCertSubject": "Ämne",
+    "@clientCertSubject": {
+        "description": "Label for the name on a client certificate"
+    },
+    "clientCertExpires": "Giltighetstid {date}",
+    "@clientCertExpires": {
+        "description": "When a client certificate stops being valid",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "clientCertReplace": "Ersätt",
+    "@clientCertReplace": {
+        "description": "Button that imports a new certificate in place of the stored one for a host"
+    },
+    "clientCertAdd": "Lägg till certifikat",
+    "@clientCertAdd": {
+        "description": "Button that starts importing a certificate for a new host"
+    },
+    "clientCertAddHostPrompt": "Vilken serverleverantör behöver ett certifikat?",
+    "@clientCertAddHostPrompt": {
+        "description": "Title of the prompt that asks which host a new certificate is for"
+    },
+    "itemBlockedByParentalControls": "Det här finns inte tillgängligt",
+    "@itemBlockedByParentalControls": {
+        "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
+    },
+    "blockedRatingsCeilingHint": "Om man blockerar ett betyg blockeras även alla betyg som är högre än det.",
+    "@blockedRatingsCeilingHint": {
+        "description": "Explains that the blocked ratings list works as a ceiling"
+    },
+    "blockedRatingsUnrankedSection": "Blockerar endast sig själv",
+    "@blockedRatingsUnrankedSection": {
+        "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+    },
+    "settingsDateFormat": "Datumformat",
+    "settingsDateFormatDescription": "Välj mellan månad-dag, dag-månad eller lokala standardinställningar för kalender- och utgivningsdatum",
+    "dateFormatSystem": "Standardinställning för språk",
+    "dateFormatMonthDay": "Månad / Dag (10 nov)",
+    "dateFormatDayMonth": "Dag / Månad (10 nov)",
+    "settingsShowLiveTvButtonInNavigation": "Visa knappen ”Live-TV” i navigeringsfältet när servern har ett Live-TV-bibliotek",
+    "useNativeEmulator": "Inbyggd emulering",
+    "@useNativeEmulator": {
+        "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
+    },
+    "useNativeEmulatorSubtitle": "Spela spel med inbyggda kärnor istället för webbspelaren EmulatorJS",
+    "@useNativeEmulatorSubtitle": {
+        "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
+    },
+    "emulatorCores": "Emulatorkärnor",
+    "emulatorCoresSubtitle": "Ladda ner system för att spela spel direkt",
+    "emulatorCoresDescription": "Välj vilka system du vill installera. Kärnorna tillhandahålls av Libretro-projektet och gör det möjligt att köra spel direkt istället för i en webbläsarvy.",
+    "emulatorCoreUnavailable": "Finns inte för den här enheten",
+    "emulatorCoreDownloadFailed": "Det gick inte att ladda ner kärnan. Kontrollera din anslutning och försök igen.",
+    "emulatorCoreResetSettings": "Återställ {system} återställa inställningarna till standardvärdena",
+    "@emulatorCoreResetSettings": {
+        "description": "Semantic label for the button that resets one core's saved emulator settings",
+        "placeholders": {
+            "system": {
+                "type": "String"
+            }
+        }
+    },
+    "emulatorCoreSettingsReset": "Inställningarna har återställts till standardvärdena.",
+    "@emulatorCoreSettingsReset": {
+        "description": "Snackbar shown after resetting a core's saved emulator settings"
+    },
+    "emulatorCoreResetSettingsFailed": "Det gick inte att återställa inställningarna. Kontrollera din anslutning och försök igen.",
+    "@emulatorCoreResetSettingsFailed": {
+        "description": "Snackbar shown when resetting a core's saved emulator settings fails"
+    },
+    "downloadedGames": "Nedladdade spel",
+    "@downloadedGames": {
+        "description": "Settings screen title for managing game files stored on the device"
+    },
+    "downloadedGamesSubtitle": "Frigör utrymme som upptas av spelfiler",
+    "@downloadedGamesSubtitle": {
+        "description": "Subtitle for the Downloaded Games settings entry"
+    },
+    "downloadedGamesDescription": "Spelen kopieras till den här enheten innan de spelas. Ta bort de spel du har spelat klart för att frigöra utrymme. Spelstatusen sparas på servern och raderas inte.",
+    "@downloadedGamesDescription": {
+        "description": "Explanation at the top of the Downloaded Games settings screen"
+    },
+    "downloadedGamesEmpty": "Inga spel har laddats ner till den här enheten än.",
+    "@downloadedGamesEmpty": {
+        "description": "Shown on the Downloaded Games screen when nothing is cached"
+    },
+    "downloadedGamesTotal": "{count} spel, {size}",
+    "@downloadedGamesTotal": {
+        "description": "Summary of how many games are stored and how much space they take, where size is a formatted amount such as 1.4 GB",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGames": "Ta bort alla",
+    "@removeAllDownloadedGames": {
+        "description": "Button that deletes every downloaded game from the device"
+    },
+    "removeDownloadedGameConfirm": "Ta bort {title} från den här enheten? Den kommer att laddas ner igen nästa gång du spelar den.",
+    "@removeDownloadedGameConfirm": {
+        "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGamesConfirm": "Vill du ta bort alla nedladdade spel från den här enheten? De kommer att laddas ner igen nästa gång du spelar dem.",
+    "@removeAllDownloadedGamesConfirm": {
+        "description": "Confirmation prompt before deleting every downloaded game"
+    },
+    "settingsMediaSegmentTypeAction": "{segment} Segment",
+    "@settingsMediaSegmentTypeAction": {
+        "description": "Setting label for what to do with one type of media segment",
+        "placeholders": {
+            "segment": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsSkipButtonAutoHide": "Dölj knappen ”Hoppa över” automatiskt",
+    "@settingsSkipButtonAutoHide": {
+        "description": "Setting label for automatically dismissing the skip intro and outro button after a delay"
+    },
+    "settingsSkipButtonAutoHideDescription": "Dölj automatiskt knappen för att hoppa över intro och outro efter några sekunder.",
+    "settingsRedetectDisplay": "Visning av återdetektering",
+    "settingsRedetectDisplayDescription": "Fråga TV:n igen vilka HDR-format den stöder. Använd detta om titlar i Dolby Vision eller HDR10 omkodas efter att TV:n eller mottagaren har slagits på sent.",
+    "settingsDisplayIsSdr": "Min TV har inte HDR",
+    "settingsDisplayIsSdrDescription": "Sluta marknadsföra HDR-stöd för den här skärmen. Använd den här funktionen endast om detekteringen hela tiden visar att det finns HDR som din TV egentligen inte kan återge.",
+    "settingsDisplayRedetected": "Skärmen har upptäckts på nytt: {formats}",
+    "@settingsDisplayRedetected": {
+        "placeholders": {
+            "formats": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsDisplayNoHdrDetected": "Inga HDR-format har upptäckts",
+    "settingsDisplayMarkedSdr": "Visas som SDR",
+    "settingsHideControlsAfter": "Dölj kontrollerna efter",
+    "@settingsHideControlsAfter": {
+        "description": "Playback setting for how long the player controls stay on screen after the last input"
+    },
+    "settingsHideControlsAfterDescription": "Hur länge spelkontrollerna visas på skärmen efter att du senast tryckt på en knapp, pekat eller rört musen.",
+    "@settingsHideControlsAfterDescription": {
+        "description": "Description under the Hide Controls After playback setting"
+    },
+    "settingsHdrControlsDimming": "Dimningsreglage i HDR",
+    "@settingsHdrControlsDimming": {
+        "description": "Playback setting for how much the player controls dim while HDR video plays"
+    },
+    "settingsHdrControlsDimmingDescription": "Vitt framstår som betydligt ljusare jämfört med HDR-video, så spelaren dämpar ljusstyrkan med just så mycket under uppspelningen.",
+    "@settingsHdrControlsDimmingDescription": {
+        "description": "Description under the Dim Controls in HDR playback setting"
+    },
+    "settingsCinemaModeEpisodes": "Biografläge för avsnitt",
+    "@settingsCinemaModeEpisodes": {
+        "description": "Settings toggle label. Extends Cinema Mode, which plays pre-roll videos before playback, to TV episodes as well as films. 'Cinema Mode' is the app's feature name."
+    },
+    "settingsCinemaModeEpisodesSubtitle": "Spela även prerolls innan TV-avsnitten",
+    "@settingsCinemaModeEpisodesSubtitle": {
+        "description": "Subtitle for the Cinema Mode for episodes toggle. A 'preroll' is a short video (trailer, bumper) played before the main video starts."
+    },
+    "stripDolbyVisionHdr10PlusTitle": "Spela upp Dolby Vision med HDR10+ som HDR10+",
+    "@stripDolbyVisionHdr10PlusTitle": {
+        "description": "Setting title: drop the Dolby Vision layer from videos that carry both Dolby Vision and HDR10+"
+    },
+    "stripDolbyVisionHdr10PlusSubtitle": "Ta bort Dolby Vision-lagret från videor som även har HDR10+. Aktivera den här inställningen om dessa videor spelas upp med ljud men med svart skärm.",
+    "@stripDolbyVisionHdr10PlusSubtitle": {
+        "description": "Setting subtitle for dropping Dolby Vision from Dolby Vision plus HDR10+ videos"
+    },
+    "libraryCardTitles": "Rubriker under affischer",
+    "@libraryCardTitles": {
+        "description": "Setting that shows or hides the title and details under each card in library grids"
+    },
+    "libraryCardTitlesDescription": "Visa varje objekts titel och information under dess omslagsbild i bibliotekets rutnät.",
+    "@libraryCardTitlesDescription": {
+        "description": "Description of the Titles Under Posters setting"
+    },
+    "homeRowsStyleCarousel": "Carousel",
+    "@homeRowsStyleCarousel": {
+        "description": "Name of the home row style that shows a large details panel under each row's posters"
+    },
+    "modernCardsOnMyMediaRow": "Moderna kort i raden ”Mina medier”",
+    "modernCardsOnMyMediaRowDescription": "Visa anpassningsbara affischer som fördjupar fokusområdet. Inaktivera för att alltid visa miniatyrbilder i liggande format.",
+    "favoritesRowSortOrderDescription": "Sortera raderna i Favoriter i stigande eller fallande ordning.",
+    "collectionsRowSortOrderDescription": "Sortera raderna i samlingarna i stigande eller fallande ordning.",
+    "collectionsRowShowEpisodes": "Visa enskilda avsnitt",
+    "collectionsRowShowEpisodesSubtitle": "Visa TV-serier i utökat läge för att visa varje avsnitt separat.",
+    "genresRowSortOrderDescription": "Sortera raderna efter genre i stigande eller fallande ordning.",
+    "displayStudiosRows": "Display Studio-rad",
+    "displayStudiosRowsSubtitle": "Visa raden ”Studio” under ”Hem”-avsnitten.",
+    "sinceYouWatched": "Eftersom du tittade på",
+    "@sinceYouWatched": {
+        "description": "Settings section header for the Since You Watched rows"
+    },
+    "sinceYouWatchedRowTitle": "Eftersom du tittade på",
+    "@sinceYouWatchedRowTitle": {
+        "description": "Home row title for a Since You Watched row before its source item is known"
+    },
+    "sinceYouWatchedItemRowTitle": "Eftersom du tittade på \"{title}\"",
+    "@sinceYouWatchedItemRowTitle": {
+        "description": "Home row title for recommendations based on an item the user watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "sinceYouWatchedRowNumber": "Sedan du tittade på raden {number}",
+    "@sinceYouWatchedRowNumber": {
+        "description": "Name of one of the Since You Watched rows in the home sections list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "displaySinceYouWatchedRows": "Visa antalet rader sedan du tittade",
+    "displaySinceYouWatchedRowsSubtitle": "Visa och anpassa raderna ”Sedan du tittade på” i avsnitten på startsidan.",
+    "sinceYouWatchedSource": "Källa till rekommendationen",
+    "sinceYouWatchedSourceDescription": "Välj rekommendationskälla (Moonfin Recommends – anpassad lokal algoritm, Server Recommends från din mediaserver eller TMDb:s likhetsmått. Obs! Online-rekommendationer kräver Seerr-integration).",
+    "sinceYouWatchedSourceType": "Källtyp",
+    "sinceYouWatchedSourceTypeDescription": "Välj vilken typ av artiklar som ska rekommenderas",
+    "sinceYouWatchedSourceItem": "Källobjekt",
+    "sinceYouWatchedSourceItemDescription": "Välj vilket källobjekt rekommendationerna ska baseras på",
+    "sinceYouWatchedRecentlyWatched": "Senast visade",
+    "sinceYouWatchedNumRows": "Antal rader som ska läggas till",
+    "sinceYouWatchedNumRowsDescription": "Välj hur många rader från ”Sedan du tittade på” som ska visas (1–5)",
+    "sinceYouWatchedIncludeWatched": "Inkludera tidigare visade",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Inkludera titlar som du har sett i rekommendationerna",
+    "studiosRowSorting": "Sortering av Studio Row",
+    "studiosRowSortingDescription": "Studio-raden efter namn, nyligen tillagda och mer.",
+    "studiosRowSortOrderDescription": "Välj sorteringsordning: stigande eller fallande.",
+    "selectStudiosToInclude": "Välj vilka studior som ska ingå",
+    "selectStudiosToIncludeDescription": "Välj vilka studior som ska visas på startsidan.",
+    "deselectAllStudios": "Avmarkera alla",
+    "tvStudiosFilter": "TV-studior",
+    "movieStudiosFilter": "Filmstudior"
 }
