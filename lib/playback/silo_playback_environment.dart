@@ -134,9 +134,16 @@ SiloPlayerTraits siloAndroidTraits(
 Media3DoviCompatMode siloMedia3DoviMode(
   UserPreferences prefs, {
   bool? isTv,
+  bool? supportsP7,
+  bool? supportsP8,
   bool? displaySupportsDolbyVision,
 }) {
-  final mode = Media3PlayerBackend.doviCompatMode(prefs);
+  final mode = Media3PlayerBackend.doviCompatMode(
+    prefs,
+    supportsP7: supportsP7,
+    supportsP8: supportsP8,
+    displaySupportsDolbyVision: displaySupportsDolbyVision,
+  );
   final transcodeChosen =
       (isTv ?? PlatformDetection.isTV) &&
       !(displaySupportsDolbyVision ?? PlatformDetection.supportsDolbyVision) &&

@@ -68,6 +68,7 @@ void main() {
       expect(transformations(direct).single['name'], 'client_dv7_to_hdr10');
 
       final server = await start(directPlay: false);
+      expect(siloSchemaErrors('PlaybackStartBody', server), isEmpty);
       expect(
         server['client_features'],
         isNot(contains('client_video_transformations_v1')),

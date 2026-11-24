@@ -76,15 +76,17 @@ void main() {
     final store = PreferenceStore();
     await store.init();
     final prefs = UserPreferences(store);
-    // Mapping profile 7 to HEVC makes Media3 strip it on any device.
-    await prefs.set(UserPreferences.media3MapDolbyVisionProfile7ToHevc, true);
+    // A Fire TV Cube: profile 8 but no profile 7 decoder.
     Media3DoviCompatMode mode({bool isTv = true, bool dolbyVision = false}) =>
         siloMedia3DoviMode(
           prefs,
           isTv: isTv,
+          supportsP7: false,
+          supportsP8: true,
           displaySupportsDolbyVision: dolbyVision,
         );
     expect(mode(), Media3DoviCompatMode.strip);
+    expect(mode(dolbyVision: true), Media3DoviCompatMode.convert);
     await prefs.set(
       UserPreferences.dolbyVisionFallbackBehavior,
       DolbyVisionFallbackBehavior.transcode,
@@ -92,7 +94,8 @@ void main() {
     expect(mode(), Media3DoviCompatMode.off);
     // The fallback setting only acts on an Android TV without Dolby Vision.
     expect(mode(isTv: false), Media3DoviCompatMode.strip);
-    expect(mode(dolbyVision: true), Media3DoviCompatMode.strip);
+    // A Dolby Vision display converts, which the setting doesn't touch.
+    expect(mode(dolbyVision: true), Media3DoviCompatMode.convert);
     await prefs.set(
       UserPreferences.dolbyVisionFallbackBehavior,
       DolbyVisionFallbackBehavior.hdr10Fallback,
@@ -114,7 +117,8 @@ void main() {
       transformFor(Media3DoviCompatMode.strip),
       SiloDolbyVision7Transform.toHdr10,
     );
-    // A profile 7 decoder needs nothing converted, and off converts nothing.
+    // No transformation fits a profile 7 decoder (Silo converts the file
+    // itself), and off converts nothing.
     expect(transformFor(Media3DoviCompatMode.native), isNull);
     expect(transformFor(Media3DoviCompatMode.off), isNull);
     final converting = siloAndroidTraits(
