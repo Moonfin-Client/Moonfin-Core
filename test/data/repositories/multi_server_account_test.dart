@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/auth/models/user.dart';
@@ -24,6 +25,11 @@ void main() {
   late _Credentials credentials;
   late _Client bar;
   late MultiServerRepository repository;
+  late List<LogEvent> warnings;
+
+  void captureWarning(LogEvent event) {
+    if (event.level == Level.warning) warnings.add(event);
+  }
 
   Server server(String id, ServerType type) => Server(
     id: id,
@@ -43,6 +49,9 @@ void main() {
   );
 
   setUp(() {
+    warnings = [];
+    Logger.addLogListener(captureWarning);
+    addTearDown(() => Logger.removeLogListener(captureWarning));
     store = _AuthStore();
     credentials = _Credentials();
     final session = _Session();
@@ -89,6 +98,7 @@ void main() {
     expect(sessions.map((session) => session.userId), ['john-foo', 'john-bar']);
     verify(() => bar.accessToken = 'token-john-bar').called(1);
     verify(() => bar.userId = 'john-bar').called(1);
+    expect(warnings, isEmpty);
   });
 
   test('uses the previous Bar selection when no saved name matches', () async {
@@ -104,6 +114,10 @@ void main() {
       'alice-bar',
     ]);
     verify(() => bar.accessToken = 'server-token').called(1);
+    expect(warnings.map((warning) => warning.message), [
+      'MultiServer: No usable username match on bar. '
+          'Using the default account selection.',
+    ]);
   });
 
   test(

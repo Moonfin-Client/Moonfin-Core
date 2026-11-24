@@ -83,6 +83,7 @@ class MultiServerRepository {
 
   List<ServerUserSession>? _cachedSessions;
   DateTime _cacheExpiry = DateTime(0);
+  final Set<String> _warnedFallbackServers = {};
   final Map<String, int> _rowOffsets = {};
   final Map<String, int> _rowTotals = {};
   // Playlists a server returned on the first page that didn't make the cut
@@ -182,6 +183,14 @@ class MultiServerRepository {
               chosenUser = user;
               break;
             }
+          }
+          if (matchSecondaryUser &&
+              chosenUser != null &&
+              _warnedFallbackServers.add(server.id)) {
+            _logger.w(
+              'MultiServer: No usable username match on ${server.name}. '
+              'Using the default account selection.',
+            );
           }
         }
 
