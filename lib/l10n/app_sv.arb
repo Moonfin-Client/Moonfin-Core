@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO-inställningar",
     "adminActivitySeverityAll": "Alla allvarlighetsgrader",
     "adminActivityDateRange": "Datumintervall",
-    "adminRemoveDeviceConfirm": "Ta bort enheten '{name}'? Användaren måste logga in igen på den här enheten.",
+    "adminRemoveDeviceConfirm": "Ta bort enheten \"{name}\"? Användaren måste logga in igen på den här enheten.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Ditt bibliotek '{libraryName}' är konfigurerat att spara omslagsbilder direkt i mediemapparna ('Save artwork into media folders' är aktiverat). Jellyfin har dock testat skrivåtkomsten och saknar behörighet att skriva filer till den här katalogen:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Ditt bibliotek \"{libraryName}\" är konfigurerat att spara omslagsbilder direkt i mediemapparna ('Save artwork into media folders' är aktiverat). Jellyfin har dock testat skrivåtkomsten och saknar behörighet att skriva filer till den här katalogen:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
