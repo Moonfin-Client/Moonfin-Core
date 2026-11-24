@@ -18739,5 +18739,79 @@
     "sidebarStyleClassic": "Clásico",
     "@sidebarStyleClassic": {
         "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "topNavbarStyle": "Estilo de barra superior",
+    "@topNavbarStyle": {
+        "description": "Settings title for choosing how the top navigation bar looks"
+    },
+    "topNavbarStyleTabline": "Tabline",
+    "@topNavbarStyleTabline": {
+        "description": "Top bar style: text tabs with an underline and no container"
+    },
+    "topNavbarStyleAtlas": "Atlas",
+    "@topNavbarStyleAtlas": {
+        "description": "Top bar style: a solid bar whose tabs open a panel of shortcuts and artwork"
+    },
+    "topNavbarStyleClassicHint": "La barra estándar",
+    "@topNavbarStyleClassicHint": {
+        "description": "Hint under the Classic top bar style option"
+    },
+    "topNavbarStyleTablineHint": "Pestañas de texto subrayadas, sin recuadro",
+    "@topNavbarStyleTablineHint": {
+        "description": "Hint under the Tabline top bar style option"
+    },
+    "topNavbarStyleAtlasHint": "Las pestañas abren un panel con accesos directos e imágenes",
+    "@topNavbarStyleAtlasHint": {
+        "description": "Hint under the Atlas top bar style option"
+    },
+    "sidebarStyle": "Estilo de barra lateral",
+    "@sidebarStyle": {
+        "description": "Settings title for choosing how the left sidebar looks"
+    },
+    "sidebarStyleReel": "Reel",
+    "@sidebarStyleReel": {
+        "description": "Sidebar style: a wheel of destinations that turns through a fixed focus window"
+    },
+    "sidebarStyleMosaic": "Mosaic",
+    "@sidebarStyleMosaic": {
+        "description": "Sidebar style: a panel of tiles with each library shown by its artwork"
+    },
+    "sidebarStyleClassicHint": "La barra lateral estándar",
+    "@sidebarStyleClassicHint": {
+        "description": "Hint under the Classic sidebar style option"
+    },
+    "sidebarStyleReelHint": "Una rueda que gira entre las secciones",
+    "@sidebarStyleReelHint": {
+        "description": "Hint under the Reel sidebar style option"
+    },
+    "sidebarStyleMosaicHint": "Un panel de mosaicos con el arte de cada biblioteca",
+    "@sidebarStyleMosaicHint": {
+        "description": "Hint under the Mosaic sidebar style option"
+    },
+    "navContinueIn": "Seguir viendo en {section}",
+    "@navContinueIn": {
+        "description": "Heading over the items to resume in one library, shown in the Atlas top bar panel",
+        "placeholders": {
+            "section": {
+                "type": "String"
+            }
+        }
+    },
+    "navFeatured": "Destacado: {title}",
+    "@navFeatured": {
+        "description": "Caption on the Home tile of the Mosaic sidebar naming what the home screen features",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "navOpenMenu": "Abrir menú",
+    "@navOpenMenu": {
+        "description": "Accessibility label of the button that opens the Reel or Mosaic sidebar"
+    },
+    "navReelSwipeHint": "Deslizá para girar y tocá en el centro para entrar",
+    "@navReelSwipeHint": {
+        "description": "Hint at the bottom of the Reel sidebar on phones"
     }
 }
