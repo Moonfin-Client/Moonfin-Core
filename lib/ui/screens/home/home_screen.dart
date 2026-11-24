@@ -3918,7 +3918,9 @@ class _ContentRowsState extends State<_ContentRows>
     final belowTopRow = _isMediaBarIncluded()
         ? !_mediaBarFocusNode.hasFocus && activeRow != null
         : activeRow != null && activeRow > 0;
-    final atStart = !scrolledPast && !belowTopRow;
+    // A Back still scrolling up to an unbuilt top row hasn't arrived yet.
+    final returning = _returnHoldFocusNode.canRequestFocus;
+    final atStart = !scrolledPast && !belowTopRow && !returning;
     if (atStart != _isScrolledToTop) {
       widget.onScrolledToTopChanged?.call(atStart);
     }
@@ -3937,8 +3939,7 @@ class _ContentRowsState extends State<_ContentRows>
     // Only carry focus back up if it was down in the rows to begin with. A
     // pointer user who clicked the button has none to carry. Back pressed
     // again while the list is still scrolling up carries on from the hold.
-    final hadRowFocus = _activeFocusedRowIndex != null ||
-        _mediaBarFocusNode.hasFocus ||
+    final hadRowFocus = _homeContentHasRealFocus() ||
         _returnHoldFocusNode.hasPrimaryFocus;
     _activeFocusedRowIndex = null;
     if (hadRowFocus && !_focusTopOfRows() && scroll != null) {
@@ -3964,6 +3965,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (!mounted || generation != _returnHoldGeneration) return;
     if (!_returnHoldFocusNode.hasPrimaryFocus) {
       _returnHoldFocusNode.canRequestFocus = false;
+      _updateIsScrolledToTop();
       return;
     }
     final focusTop = _topOfRowsFocuser();
@@ -3981,6 +3983,7 @@ class _ContentRowsState extends State<_ContentRows>
     } else {
       _requestFocusToNavbar();
     }
+    _updateIsScrolledToTop();
   }
 
   /// Focuses the media bar, or else the first row with something to focus.
@@ -3992,7 +3995,7 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   VoidCallback? _topOfRowsFocuser() {
-    if (_isMediaBarIncluded() && _mediaBarFocusNode.context != null) {
+    if (_isMediaBarIncluded() && _mediaBarFocusNode.context?.mounted == true) {
       return _mediaBarFocusNode.requestFocus;
     }
     for (var i = 0; i < widget.viewModel.rows.length; i++) {
