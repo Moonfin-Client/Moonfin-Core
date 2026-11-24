@@ -129,10 +129,7 @@ class MultiServerRepository {
     final activeUserId = _sessionRepo.activeUserId;
     final activeUser = activeServerId == null || activeUserId == null
         ? null
-        : _authStore
-              .getUsers(activeServerId)
-              .where((user) => user.id == activeUserId)
-              .firstOrNull;
+        : _authStore.getUser(activeServerId, activeUserId);
     final activeName = activeUser?.name.toLowerCase();
 
     final sessions = <ServerUserSession>[];
@@ -143,7 +140,6 @@ class MultiServerRepository {
         final users = _authStore.getUsers(server.id);
         if (users.isEmpty) continue;
 
-        String? userId;
         String? accessToken;
         PrivateUser? chosenUser;
 
@@ -155,23 +151,21 @@ class MultiServerRepository {
         if (server.id == activeServerId &&
             activeUser != null &&
             activeUser.accessToken.isNotEmpty) {
-          userId = activeUser.id;
           accessToken = activeUser.accessToken;
           chosenUser = activeUser;
         } else if (matchSecondaryUser &&
             activeName != null &&
             activeName.isNotEmpty) {
-          final matches = users
+          final match = users
               .where((user) => user.name.toLowerCase() == activeName)
-              .toList();
-          if (matches.length == 1 && matches.single.accessToken.isNotEmpty) {
-            chosenUser = matches.single;
-            userId = chosenUser.id;
-            accessToken = chosenUser.accessToken;
+              .singleOrNull;
+          if (match != null && match.accessToken.isNotEmpty) {
+            chosenUser = match;
+            accessToken = match.accessToken;
           }
         }
 
-        final useFallback = userId == null;
+        final useFallback = chosenUser == null;
         if (useFallback) {
           final token = await _credentialStore.getToken(server.id);
           // Another Silo server: its most recently used profile that needs
@@ -184,7 +178,6 @@ class MultiServerRepository {
           for (final user in candidates) {
             final userToken = token ?? user.accessToken;
             if (userToken.isNotEmpty) {
-              userId = user.id;
               accessToken = userToken;
               chosenUser = user;
               break;
@@ -197,10 +190,7 @@ class MultiServerRepository {
         if (_sessionRepo.accountSelectionGeneration != generation) {
           return const [];
         }
-        if (userId == null ||
-            chosenUser == null ||
-            accessToken == null ||
-            accessToken.isEmpty) {
+        if (chosenUser == null || accessToken == null) {
           continue;
         }
 
@@ -224,10 +214,14 @@ class MultiServerRepository {
           user: chosenUser,
           accessToken: accessToken,
         );
-        client.userId = userId;
+        client.userId = chosenUser.id;
 
         sessions.add(
-          ServerUserSession(server: server, userId: userId, client: client),
+          ServerUserSession(
+            server: server,
+            userId: chosenUser.id,
+            client: client,
+          ),
         );
       } catch (e) {
         _logger.w('MultiServer: Error checking server ${server.name}: $e');

@@ -119,15 +119,15 @@ void main() {
           dateAdded: DateTime(2026),
         ),
       );
-      when(() => authStore.getUsers(id)).thenReturn([
-        PrivateUser(
-          id: 'user-$id',
-          name: 'user',
-          serverId: id,
-          accessToken: 'token-$id',
-          lastUsed: DateTime(2026),
-        ),
-      ]);
+      final user = PrivateUser(
+        id: 'user-$id',
+        name: 'user',
+        serverId: id,
+        accessToken: 'token-$id',
+        lastUsed: DateTime(2026),
+      );
+      when(() => authStore.getUsers(id)).thenReturn([user]);
+      when(() => authStore.getUser(id, user.id)).thenReturn(user);
       when(() => credentials.getToken(id)).thenAnswer((_) async => null);
       when(
         () => factory.getClient(

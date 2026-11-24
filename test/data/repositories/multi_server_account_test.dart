@@ -66,10 +66,14 @@ void main() {
       server('foo', ServerType.jellyfin),
       server('bar', ServerType.emby),
     ]);
-    when(() => store.getUsers('foo')).thenReturn([
+    final viewers = [
       user('foo', 'alice-foo', 'Alice'),
       user('foo', 'john-foo', 'John'),
-    ]);
+    ];
+    when(() => store.getUsers('foo')).thenReturn(viewers);
+    for (final viewer in viewers) {
+      when(() => store.getUser('foo', viewer.id)).thenReturn(viewer);
+    }
     when(() => session.accountSelectionGeneration).thenReturn(0);
     when(() => session.activeServerId).thenReturn('foo');
     when(() => session.activeUserId).thenReturn('john-foo');

@@ -222,15 +222,15 @@ void main() {
         dateAdded: DateTime(2026),
       ),
     ]);
-    when(() => authStore.getUsers('srv')).thenReturn([
-      PrivateUser(
-        id: 'user',
-        name: 'user',
-        serverId: 'srv',
-        accessToken: 'token',
-        lastUsed: DateTime(2026),
-      ),
-    ]);
+    final user = PrivateUser(
+      id: 'user',
+      name: 'user',
+      serverId: 'srv',
+      accessToken: 'token',
+      lastUsed: DateTime(2026),
+    );
+    when(() => authStore.getUsers('srv')).thenReturn([user]);
+    when(() => authStore.getUser('srv', user.id)).thenReturn(user);
     when(() => sessionRepo.accountSelectionGeneration).thenReturn(0);
     when(() => sessionRepo.activeServerId).thenReturn('srv');
     when(() => sessionRepo.activeUserId).thenReturn('user');
