@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Configurações de NFO",
     "adminActivitySeverityAll": "Todas as severidades",
     "adminActivityDateRange": "Intervalo de datas",
-    "adminRemoveDeviceConfirm": "Remover o dispositivo '{name}'? O usuário precisará entrar novamente neste dispositivo.",
+    "adminRemoveDeviceConfirm": "Remover o dispositivo \"{name}\"? O usuário precisará entrar novamente neste dispositivo.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "A sua biblioteca '{libraryName}' está configurada para salvar as imagens diretamente nas pastas de mídia (a opção 'Salvar imagens nas pastas de mídia' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para gravar arquivos neste diretório:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "A sua biblioteca \"{libraryName}\" está configurada para salvar as imagens diretamente nas pastas de mídia (a opção 'Salvar imagens nas pastas de mídia' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para gravar arquivos neste diretório:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
