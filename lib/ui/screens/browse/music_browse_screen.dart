@@ -97,7 +97,10 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
               .backdropUrlsFor(featured)
               .firstOrNull;
         } else {
-          _backgroundService.setBackground(featured);
+          _backgroundService.setBackground(
+            featured,
+            context: BlurContext.browsing,
+          );
         }
       }
     }
@@ -115,7 +118,7 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
     _backdropDebounce?.cancel();
     _backdropDebounce = Timer(const Duration(milliseconds: 250), () {
       if (!mounted) return;
-      _backgroundService.setBackground(item);
+      _backgroundService.setBackground(item, context: BlurContext.browsing);
     });
   }
 
