@@ -17421,10 +17421,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Oynatma Silo sunucusunda sonlandırıldı.';
 
   @override
-  String get siloPlaybackStoppedOnServer =>
-      'Playback was stopped on the Silo server.';
-
-  @override
   String siloPinTitle(String name) {
     return '$name için PIN';
   }

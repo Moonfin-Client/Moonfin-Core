@@ -25,8 +25,7 @@ import 'package:go_router/go_router.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
-import 'package:playback_silo/playback_silo.dart'
-    show siloEndedOnServerMessage, siloStoppedOnServerMessage;
+import 'package:playback_silo/playback_silo.dart' show siloEndedOnServerMessage;
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
     show SiloUsersApi, siloAccessChangedEvent;
@@ -990,13 +989,19 @@ class SessionRepository {
               : '$siloEndedOnServerMessage\n$reason',
         );
       },
-      // An admin's stop with a reason: stopped the way a terminate is, so
-      // the reason shows on the screen the player closes to.
+      // An admin's stop with a reason: the remote Stop runs as usual (sheets
+      // closed, player dismissed, position reported), then the reason is
+      // shown the way a server message is, so it lands with no player
+      // screen left to show it. Showing it doesn't hold up or fail the stop.
       stopWithReason: (sessionId, reason) async {
-        if (!GetIt.instance.isRegistered<PlaybackManager>()) return;
-        await GetIt.instance<PlaybackManager>().endSessionByServer(
-          sessionId,
-          '$siloStoppedOnServerMessage\n$reason',
+        await _handleRemoteCommand(const PlaystateMessage(command: 'Stop'));
+        unawaited(
+          _showRemoteMessage(
+            reason,
+            currentAppLocalizations().siloPlaybackStoppedOnServer,
+          ).catchError((Object error) {
+            _logger.w('Showing a Silo stop reason failed: $error');
+          }),
         );
       },
       // A replan clears the resolution until the new one is up, but the

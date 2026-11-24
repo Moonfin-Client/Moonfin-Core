@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:playback_silo/playback_silo.dart'
-    show siloEndedOnServerMessage, siloStoppedOnServerMessage;
+import 'package:playback_silo/playback_silo.dart' show siloEndedOnServerMessage;
 
 import '../../../l10n/app_localizations.dart';
 
@@ -8,18 +7,11 @@ import '../../../l10n/app_localizations.dart';
 /// `PlaybackManager.endedByServerStream`: Silo's fixed English one is
 /// translated (an administrator's reason follows it on its own line),
 /// anything else is shown as the server put it.
-String playbackEndedByServerText(BuildContext context, String message) {
-  final l10n = AppLocalizations.of(context);
-  for (final (english, translated) in [
-    (siloEndedOnServerMessage, l10n.siloPlaybackEndedOnServer),
-    (siloStoppedOnServerMessage, l10n.siloPlaybackStoppedOnServer),
-  ]) {
-    if (message.startsWith(english)) {
-      return translated + message.substring(english.length);
-    }
-  }
-  return message;
-}
+String playbackEndedByServerText(BuildContext context, String message) =>
+    message.startsWith(siloEndedOnServerMessage)
+    ? AppLocalizations.of(context).siloPlaybackEndedOnServer +
+          message.substring(siloEndedOnServerMessage.length)
+    : message;
 
 /// Shows why the server ended playback. The snack bar stays up on the
 /// screen the player closes to.

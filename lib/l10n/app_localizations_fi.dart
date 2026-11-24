@@ -17501,10 +17501,6 @@ class AppLocalizationsFi extends AppLocalizations {
       'Toisto lopetettiin Silo-palvelimella.';
 
   @override
-  String get siloPlaybackStoppedOnServer =>
-      'Playback was stopped on the Silo server.';
-
-  @override
   String siloPinTitle(String name) {
     return '$name:n PIN-koodi';
   }
