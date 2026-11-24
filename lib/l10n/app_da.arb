@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO-indstillinger",
     "adminActivitySeverityAll": "Alle alvorsgrader",
     "adminActivityDateRange": "Datointerval",
-    "adminRemoveDeviceConfirm": "Fjern enheden '{name}'? Brugeren skal logge ind igen på denne enhed.",
+    "adminRemoveDeviceConfirm": "Fjern enheden \"{name}\"? Brugeren skal logge ind igen på denne enhed.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Dit bibliotek '{libraryName}' er indstillet til at gemme grafik direkte i mediemapperne ('Gem grafik i mediemapperne' er slået til). Jellyfin har dog testet skriveadgangen og har ikke tilladelse til at skrive filer til denne mappe:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Dit bibliotek \"{libraryName}\" er indstillet til at gemme grafik direkte i mediemapperne ('Gem grafik i mediemapperne' er slået til). Jellyfin har dog testet skriveadgangen og har ikke tilladelse til at skrive filer til denne mappe:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
