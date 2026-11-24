@@ -366,7 +366,7 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
   bool _browserMenuOff = false;
 
   void _syncBrowserMenu() {
-    final off = kIsWeb && widget.onEditPicture != null;
+    final off = kIsWeb && _canEdit(widget.selected);
     if (off == _browserMenuOff) return;
     _browserMenuOff = off;
     unawaited(
