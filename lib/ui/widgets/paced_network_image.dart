@@ -33,25 +33,55 @@ class PacedNetworkImage extends ImageProvider<PacedNetworkImage> {
     return PacedFrameCompleter(_loadCodec(key, decode), debugLabel: key.url);
   }
 
+  /// How images are downloaded; tests swap in a fake.
+  @visibleForTesting
+  static Future<http.Response> Function(
+    Uri url, {
+    Map<String, String>? headers,
+  })
+  httpGet = http.get;
+
+  /// Downloads in flight, by URL. One avatar is often drawn at several sizes
+  /// at once (the account switcher's big one, its row, the navigation bar),
+  /// each its own cache entry, and they share the download instead of asking
+  /// the server for the same picture several times at the same moment. Emby
+  /// answers one of several identical requests for a just-changed picture
+  /// with a 404.
+  static final _inFlight = <String, Future<Uint8List>>{};
+
+  static Future<Uint8List> _download(PacedNetworkImage key) {
+    final pending = _inFlight[key.url];
+    if (pending != null) return pending;
+    final download = _fetch(key);
+    _inFlight[key.url] = download;
+    // Dropped once it settles (never sooner: the callback runs later), so a
+    // later load asks again.
+    download.whenComplete(() => _inFlight.remove(key.url)).ignore();
+    return download;
+  }
+
+  static Future<Uint8List> _fetch(PacedNetworkImage key) async {
+    final uri = Uri.parse(key.url);
+    final response = await httpGet(uri, headers: key.headers);
+    if (response.statusCode != 200) {
+      throw NetworkImageLoadException(
+        statusCode: response.statusCode,
+        uri: uri,
+      );
+    }
+    if (response.bodyBytes.isEmpty) {
+      throw Exception('Empty image at $uri');
+    }
+    return response.bodyBytes;
+  }
+
   static Future<ui.Codec> _loadCodec(
     PacedNetworkImage key,
     ImageDecoderCallback decode,
   ) async {
-    final uri = Uri.parse(key.url);
     try {
-      final response = await http.get(uri, headers: key.headers);
-      if (response.statusCode != 200) {
-        throw NetworkImageLoadException(
-          statusCode: response.statusCode,
-          uri: uri,
-        );
-      }
-      if (response.bodyBytes.isEmpty) {
-        throw Exception('Empty image at $uri');
-      }
-      return await decode(
-        await ui.ImmutableBuffer.fromUint8List(response.bodyBytes),
-      );
+      final bytes = await _download(key);
+      return await decode(await ui.ImmutableBuffer.fromUint8List(bytes));
     } catch (_) {
       // ResizeImage drops a failed load from the cache itself, but used on
       // its own a failure would stay cached and never retry.

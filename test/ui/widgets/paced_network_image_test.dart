@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:moonfin/ui/widgets/paced_network_image.dart';
 
 class _Codec implements ui.Codec {
@@ -83,6 +85,54 @@ void main() {
     expect(tester.binding.hasScheduledFrame, isFalse);
 
     completer.removeListener(listener);
+    image.dispose();
+  });
+
+  testWidgets('one picture drawn at two sizes at once is downloaded once', (
+    tester,
+  ) async {
+    image = (await tester.runAsync(
+      () => createTestImage(width: 4, height: 4),
+    ))!;
+    final requests = <Uri>[];
+    final answer = Completer<http.Response>();
+    PacedNetworkImage.httpGet = (url, {headers}) {
+      requests.add(url);
+      return answer.future;
+    };
+    addTearDown(() => PacedNetworkImage.httpGet = http.get);
+    var decoded = 0;
+    Future<ui.Codec> decode(
+      ui.ImmutableBuffer buffer, {
+      ui.TargetImageSizeCallback? getTargetSize,
+    }) async {
+      decoded++;
+      buffer.dispose();
+      return _Codec(image, frameCount: 1);
+    }
+
+    const avatar = PacedNetworkImage(
+      'https://emby.example/Users/u1/Images/Primary?tag=a',
+    );
+    final big = avatar.loadImage(avatar, decode)..addListener(listener);
+    final small = avatar.loadImage(avatar, decode)..addListener(listener);
+    await tester.runAsync(() async {
+      answer.complete(http.Response.bytes([1, 2, 3], 200));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    });
+    await tester.pump();
+
+    expect(requests, hasLength(1));
+    expect(decoded, 2);
+    expect(shown, 2);
+
+    // Once it is done, a later load asks again.
+    final later = avatar.loadImage(avatar, decode)..addListener(listener);
+    expect(requests, hasLength(2));
+
+    for (final c in [big, small, later]) {
+      c.removeListener(listener);
+    }
     image.dispose();
   });
 }
