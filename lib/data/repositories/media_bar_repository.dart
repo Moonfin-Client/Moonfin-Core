@@ -177,6 +177,13 @@ class MediaBarRepository {
           )) {
             return null;
           }
+          // When mixing, a library of one kind adds nothing once that kind
+          // has enough.
+          final kinds = allParentItemTypes[parentId];
+          if (mix && kinds != null && kinds.length == 1) {
+            final have = kinds.single == 'Series' ? usableSeries : usableMovies;
+            if (have >= maxItems) return null;
+          }
           try {
             final batch = await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
@@ -223,20 +230,31 @@ class MediaBarRepository {
       if (selected.isEmpty && allParentIds.isNotEmpty) {
         // Asking again for new releases would find nothing again, so a quiet
         // window shows random titles from the first library that has some.
+        // When mixing, the next libraries are read too until both kinds are
+        // in, or a movie library read first would leave the bar movies only.
         final newReleases = _isNewReleaseSource;
         final retryParents = newReleases ? allParentIds : [allParentIds.first];
+        final retried = <Map<String, dynamic>>[];
         for (final parentId in retryParents) {
-          selected = _selectItemsWithBackdrops(
+          retried.addAll(
             await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
               fetchLimit,
               parentId: parentId,
               random: newReleases,
             ),
+          );
+          selected = _selectItemsWithBackdrops(
+            retried,
             maxItems,
             excludedGenres,
           );
-          if (selected.isNotEmpty) break;
+          if (selected.isNotEmpty &&
+              (!mix ||
+                  (selected.any((item) => item['Type'] == 'Series') &&
+                      selected.any((item) => item['Type'] == 'Movie')))) {
+            break;
+          }
         }
       }
 
@@ -963,9 +981,13 @@ class MediaBarRepository {
       mix: _mixesTypes,
       maxItems: maxItems,
     );
-    final chosen = order(
-      <Object>[...library, ...external.take(maxItems)]..shuffle(_random),
+    final candidates = mediaBarCandidates(
+      external,
+      typeOf: (item) => item.type,
+      maxItems: maxItems,
+      mix: _mixesTypes,
     );
+    final chosen = order(<Object>[...library, ...candidates]..shuffle(_random));
     final slides = <String, MediaBarSlideItem>{};
     await mapBounded(
       chosen.whereType<ImdbExternalListItem>().toList(),
@@ -1332,6 +1354,21 @@ List<T> mediaBarOrder<T>(
   if (mix) ordered = mediaBarAlternateTypes(ordered, typeOf);
   return ordered.take(maxItems).toList();
 }
+
+/// The first [maxItems] of [pool], or that many of each kind when mixing, so
+/// a list that opens with movies still offers its series.
+@visibleForTesting
+List<T> mediaBarCandidates<T>(
+  List<T> pool, {
+  required String? Function(T) typeOf,
+  required int maxItems,
+  required bool mix,
+}) => mix
+    ? [
+        ...pool.where((item) => typeOf(item) == 'Movie').take(maxItems),
+        ...pool.where((item) => typeOf(item) == 'Series').take(maxItems),
+      ]
+    : pool.take(maxItems).toList();
 
 /// Mixing only means something when the bar shows both kinds.
 @visibleForTesting

@@ -126,6 +126,17 @@ void main() {
       expect(mediaBarIsFollowedSeries(series()), isFalse);
     });
 
+    test('a missing unplayed count is not progress', () {
+      expect(
+        mediaBarIsFollowedSeries({
+          'Type': 'Series',
+          'RecursiveItemCount': 10,
+          'UserData': {'Played': false},
+        }),
+        isFalse,
+      );
+    });
+
     test('a movie is never followed', () {
       expect(
         mediaBarIsFollowedSeries({
@@ -245,6 +256,19 @@ void main() {
     test('an empty list stays empty', () {
       expect(order(const [], followedFirst: true, mix: true), isEmpty);
     });
+  });
+
+  test('an outside list offers both kinds when mixing', () {
+    final pool = ['m1', 'm2', 'm3', 's1'];
+    String typeOf(String id) => id.startsWith('s') ? 'Series' : 'Movie';
+    expect(
+      mediaBarCandidates(pool, typeOf: typeOf, maxItems: 2, mix: true),
+      ['m1', 'm2', 's1'],
+    );
+    expect(
+      mediaBarCandidates(pool, typeOf: typeOf, maxItems: 2, mix: false),
+      ['m1', 'm2'],
+    );
   });
 
   test('mixing only applies when the bar shows both kinds', () {

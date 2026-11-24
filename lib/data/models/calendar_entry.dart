@@ -135,15 +135,16 @@ class CalendarSeriesProgress {
   factory CalendarSeriesProgress.fromItem(Map item) {
     final data = item['UserData'];
     if (data is! Map) return const CalendarSeriesProgress();
-    final unplayed = (data['UnplayedItemCount'] as num?)?.toInt() ?? 0;
+    final unplayedCount = (data['UnplayedItemCount'] as num?)?.toInt();
     final total = (item['RecursiveItemCount'] as num?)?.toInt();
     return CalendarSeriesProgress(
       favorite: data['IsFavorite'] == true,
+      // Both counts, or a missing one would read as everything watched.
       started:
           data['Played'] == true ||
-          (total != null && unplayed < total) ||
+          (total != null && unplayedCount != null && unplayedCount < total) ||
           data['LastPlayedDate'] != null,
-      unplayed: unplayed,
+      unplayed: unplayedCount ?? 0,
     );
   }
 
