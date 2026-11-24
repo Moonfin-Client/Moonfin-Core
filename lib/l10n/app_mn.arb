@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO тохиргоо",
     "adminActivitySeverityAll": "Бүх түвшин",
     "adminActivityDateRange": "Огнооны хязгаар",
-    "adminRemoveDeviceConfirm": "'{name}' төхөөрөмжийг устгах уу? Хэрэглэгч энэ төхөөрөмж дээр дахин нэвтрэх шаардлагатай болно.",
+    "adminRemoveDeviceConfirm": "\"{name}\" төхөөрөмжийг устгах уу? Хэрэглэгч энэ төхөөрөмж дээр дахин нэвтрэх шаардлагатай болно.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Таны '{libraryName}' сан нь зургийг медиа хавтсанд шууд хадгалахаар тохируулагдсан байна ('Зургийг медиа хавтсанд хадгалах' идэвхтэй). Гэвч Jellyfin бичих эрхийг шалгасан бөгөөд энэ хавтсанд файл бичих зөвшөөрөлгүй байна:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Таны \"{libraryName}\" сан нь зургийг медиа хавтсанд шууд хадгалахаар тохируулагдсан байна ('Зургийг медиа хавтсанд хадгалах' идэвхтэй). Гэвч Jellyfin бичих эрхийг шалгасан бөгөөд энэ хавтсанд файл бичих зөвшөөрөлгүй байна:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
