@@ -318,6 +318,8 @@ class ConnectivityService extends ChangeNotifier {
     notifyListeners();
   }
 
+  static const _entryAskLimit = Duration(seconds: 2);
+
   /// Whether the server's entry address now redirects to a new address, which
   /// [client] then uses. A server added through a redirect to a dynamic
   /// `host:port` (VPN port forwarding behind a stable name) stops answering
@@ -329,9 +331,13 @@ class ConnectivityService extends ChangeNotifier {
       return false;
     }
     try {
-      final moved = await getIt<ServerRepository>().followEntryAddressOf(
-        serverId,
-      );
+      // Bounded: launch waits on this check before falling back to
+      // downloads. A later answer is still saved, so the next check uses it.
+      final moved = await getIt<ServerRepository>()
+          .followEntryAddressOf(serverId)
+          // A Future<String> underneath can't time out to null.
+          .then<String?>((address) => address)
+          .timeout(_entryAskLimit, onTimeout: () => null);
       if (moved == null) return false;
       if (client.baseUrl != moved) client.baseUrl = moved;
       ServerLog.network('Server moved, following its entry address');

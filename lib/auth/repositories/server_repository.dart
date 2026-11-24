@@ -31,13 +31,14 @@ class ServerRepository {
   final Set<String> _typedHosts = {};
 
   /// Whether [host] belongs to a saved server at any address it's reached on,
-  /// or to one the user typed. Self-signed certificates are only accepted for
-  /// these.
+  /// the entry address it was added through included, or to one the user
+  /// typed. Self-signed certificates are only accepted for these.
   bool _isOwnServerHost(String host) =>
       _typedHosts.contains(host) ||
       _servers.any(
         (s) => [
           s.address,
+          ?s.entryAddress,
           ...s.candidateAddresses,
         ].any((a) => Uri.tryParse(a)?.host == host),
       );
@@ -177,6 +178,9 @@ class ServerRepository {
             serverType: serverType,
             entryAddress: redirected ? candidate : null,
             entryServerId: entryServerId,
+            // Added at its target directly: the old entry address must not
+            // move it away from the address the user picked.
+            clearEntryAddress: !redirected,
             dateLastAccessed: DateTime.now(),
           );
           await _authStore.putServer(updated);
@@ -265,12 +269,21 @@ class ServerRepository {
   Future<Server> _checkedType(Server server) async {
     const switchable = {ServerType.jellyfin, ServerType.emby};
     if (!switchable.contains(server.serverType)) return server;
+    final wasSaved = getServer(server.id) != null;
     try {
       final (_, detected, _) = await _probeServer(server.address);
       if (!switchable.contains(detected) || detected == server.serverType) {
         return server;
       }
-      final corrected = server.copyWith(serverType: detected);
+      // The record as saved now: an entry address followed during the probe
+      // may have moved it, and a removed server must stay removed.
+      final current = getServer(server.id);
+      if (wasSaved && current == null) return server;
+      // What was detected belongs to the address that was probed.
+      if (current != null && current.address != server.address) {
+        return current;
+      }
+      final corrected = (current ?? server).copyWith(serverType: detected);
       await saveServer(corrected);
       return corrected;
     } catch (_) {
@@ -305,13 +318,32 @@ class ServerRepository {
     final entry = server.entryAddress;
     final entryServerId = server.entryServerId;
     if (entry == null || entryServerId == null) return server;
+    // A plain HTTP reply can be changed by anyone on the way, and a matching
+    // public `Id` proves nothing, so it never takes a server's token away
+    // from an HTTPS address. Only an HTTPS entry may move it there.
+    if (Uri.tryParse(entry)?.scheme != 'https' &&
+        Uri.tryParse(server.address)?.scheme == 'https') {
+      return server;
+    }
+    final wasSaved = getServer(server.id) != null;
     try {
       final (info, _, resolvedUrl) = await _probeServer(entry);
       if (resolvedUrl.isEmpty || resolvedUrl == server.address) return server;
       if (info['Id']?.toString() != entryServerId) return server;
-      final moved = server.copyWith(address: resolvedUrl);
+      // The answer only holds for the record the probe started from: one
+      // removed meanwhile stays removed, and one that moved or was added
+      // again meanwhile keeps what it has now.
+      final current = getServer(server.id);
+      if (wasSaved) {
+        if (current == null) return server;
+        if (current.address != server.address ||
+            current.entryAddress != entry ||
+            current.entryServerId != entryServerId) {
+          return current;
+        }
+      }
+      final moved = (current ?? server).copyWith(address: resolvedUrl);
       await updateServer(moved);
-      _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
       return moved;
     } catch (_) {
       return server;
@@ -348,13 +380,29 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
-  Future<void> updateServer(Server server) async {
-    final index = _servers.indexWhere((s) => s.id == server.id);
-    if (index >= 0) {
+  /// Saves [server] and then replaces the one with its id in the list and
+  /// points its cached client at its address, so a save that fails leaves
+  /// both as they were.
+  ///
+  /// Updates run one after another in the order they were made: a slow save
+  /// can't finish after a later one and put an older address back on disk,
+  /// in the list or on the client.
+  Future<void> updateServer(Server server) {
+    final done = _updating.then((_) async {
+      await _authStore.putServer(server);
+      final index = _servers.indexWhere((s) => s.id == server.id);
+      if (index < 0) return;
       _servers[index] = server;
-    }
-    await _authStore.putServer(server);
+      final client = _clientFactory.getClientIfExists(server.id);
+      if (client != null && client.baseUrl != server.address) {
+        client.baseUrl = server.address;
+      }
+    });
+    _updating = done.then((_) {}, onError: (_) {});
+    return done;
   }
+
+  Future<void> _updating = Future.value();
 
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);
