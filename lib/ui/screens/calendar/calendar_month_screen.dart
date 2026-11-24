@@ -501,6 +501,13 @@ int calendarCellTitleCount({
   return fit.clamp(0, entries);
 }
 
+/// A title's row with its gap in a month cell, which the count line fits in
+/// too. The bar and gap of a row don't shrink with the text, so neither does
+/// this.
+@visibleForTesting
+double calendarCellLineHeight(TextScaler scaler) =>
+    scaler.clamp(minScaleFactor: 1).scale(20);
+
 bool _hasPremiere(List<CalendarEntry> entries) =>
     calendarShowsBadges &&
     entries.any(
@@ -620,9 +627,6 @@ class _WideCell extends StatelessWidget {
   final VoidCallback onOpen;
   final FocusNode? focusNode;
 
-  /// A title's row with its gap, which the count line fits in too.
-  static const _lineHeight = 20.0;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -696,10 +700,9 @@ class _WideCell extends StatelessWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, box) {
-                    // The bar and gap of a row don't shrink with the text.
-                    final lineHeight = MediaQuery.textScalerOf(context)
-                        .clamp(minScaleFactor: 1)
-                        .scale(_lineHeight);
+                    final lineHeight = calendarCellLineHeight(
+                      MediaQuery.textScalerOf(context),
+                    );
                     final shown = entries
                         .take(
                           calendarCellTitleCount(
