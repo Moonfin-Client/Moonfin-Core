@@ -235,15 +235,24 @@ class MediaBarRepository {
         final newReleases = _isNewReleaseSource;
         final retryParents = newReleases ? allParentIds : [allParentIds.first];
         final retried = <Map<String, dynamic>>[];
+        final retriedIds = <String>{};
         for (final parentId in retryParents) {
-          retried.addAll(
-            await _fetchItems(
+          // A library and a collection can hold the same title, and a stale
+          // collection shouldn't throw away what the others found.
+          try {
+            for (final item in await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
               fetchLimit,
               parentId: parentId,
               random: newReleases,
-            ),
-          );
+            )) {
+              final id = item['Id']?.toString();
+              if (id != null && !retriedIds.add(id)) continue;
+              retried.add(item);
+            }
+          } catch (_) {
+            continue;
+          }
           selected = _selectItemsWithBackdrops(
             retried,
             maxItems,
