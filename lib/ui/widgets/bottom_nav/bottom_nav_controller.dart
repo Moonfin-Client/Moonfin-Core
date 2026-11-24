@@ -21,6 +21,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/game_library.dart';
 import '../../../util/live_tv_library.dart';
 import '../../../util/signed_in_server_features.dart';
+import '../../../util/user_image_url.dart';
 import '../downloads_nav_slot.dart';
 import '../friends_nav_slot.dart';
 import 'bottom_nav_model.dart';
@@ -238,9 +239,10 @@ class BottomNavController extends ChangeNotifier {
       return;
     }
     try {
-      _userImageUrl = GetIt.instance<MediaServerClient>()
-          .imageApi
-          .getUserImageUrl(user.id);
+      _userImageUrl = taggedUserImageUrl(
+        GetIt.instance<MediaServerClient>(),
+        user,
+      );
     } catch (_) {
       _userImageUrl = null;
     }

@@ -164,6 +164,22 @@ class PlexUsersApi implements UsersApi {
     return ServerUser(id: _userId(), policy: policy);
   }
 
+  /// Plex keeps profile pictures on plex.tv, which has no supported way to
+  /// change one.
+  @override
+  Future<UserImageUpload?> userImageUpload(String userId) async => null;
+
+  @override
+  Future<void> uploadUserImage(
+    String userId, {
+    required List<int> bytes,
+    required String contentType,
+  }) => throw UnsupportedError('Plex profile pictures are set on plex.tv');
+
+  @override
+  Future<void> deleteUserImage(String userId) =>
+      throw UnsupportedError('Plex profile pictures are set on plex.tv');
+
   Future<bool> _owner() async {
     try {
       await _dio.get<dynamic>('/myplex/account');

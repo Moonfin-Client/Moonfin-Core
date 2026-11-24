@@ -313,4 +313,105 @@ void main() {
       );
     });
   });
+
+  group('profile picture', () {
+    test('uploads go to the profile when Silo has an avatar store', () async {
+      final server = FixtureServer({
+        '/api/v2/profiles': _profiles(),
+        '/api/v2/profiles/kid/avatar': (_) => FixtureServer.json(200, '{}'),
+        '/api/v2/account/me': _account(),
+      });
+      final client = _client(server, profile: 'kid');
+
+      final rules = await client.usersApi.userImageUpload('kid');
+      expect(rules?.contentTypes, {'image/jpeg', 'image/png', 'image/webp'});
+      expect(rules?.maxBytes, 10 * 1024 * 1024);
+
+      await client.usersApi.uploadUserImage(
+        'kid',
+        bytes: const [1, 2, 3],
+        contentType: 'image/png',
+      );
+      final upload = server.requests.last;
+      expect(upload.method, 'PUT');
+      expect(upload.uri.path, '/api/v2/profiles/kid/avatar');
+      final form = upload.data as FormData;
+      expect(form.files.single.key, 'avatar');
+      expect(form.files.single.value.contentType?.mimeType, 'image/png');
+      expect(form.files.single.value.filename, 'avatar.png');
+    });
+
+    test('no avatar store, no picture changes', () async {
+      final server = FixtureServer({
+        '/api/v2/profiles': (_) {
+          final list = _fixture('profiles.json')
+            ..['avatar_upload_enabled'] = false;
+          return FixtureServer.json(200, jsonEncode(list));
+        },
+      });
+
+      expect(
+        await _client(server, profile: _mainId).usersApi.userImageUpload(
+          _mainId,
+        ),
+        isNull,
+      );
+    });
+
+    test('a removed avatar is no longer shown after the next read', () async {
+      var avatar = true;
+      final server = FixtureServer({
+        '/api/v2/account/me': _account(),
+        '/api/v2/profiles': (options) => _profiles([
+          {..._kid, if (avatar) 'avatar_url': '/avatars/uploads/kid-1.png'},
+        ])(options),
+        '/api/v2/profiles/kid/avatar': (_) {
+          avatar = false;
+          return FixtureServer.json(204, '');
+        },
+      });
+      final client = _client(server, profile: 'kid');
+      await client.usersApi.getCurrentUser();
+      expect(
+        client.imageApi.getUserImageUrl('kid'),
+        'https://silo.example/avatars/uploads/kid-1.png',
+      );
+
+      await client.usersApi.deleteUserImage('kid');
+      expect(server.requests.last.method, 'DELETE');
+      final user = await client.usersApi.getCurrentUser();
+
+      expect(user.primaryImageTag, isNull);
+      expect(client.imageApi.getUserImageUrl('kid'), '');
+    });
+    test('a replaced upload at the same path gets a new tag and URL', () async {
+      var updated = '2026-11-24T19:52:00.000Z';
+      final server = FixtureServer({
+        '/api/v2/account/me': _account(),
+        '/api/v2/profiles': (options) => _profiles([
+          {
+            ..._kid,
+            'avatar_source': 'upload',
+            'avatar_url':
+                '/api/v2/artwork/profile-avatars/1/kid/w256.webp?exp=1&sig=a',
+            'updated_at': updated,
+          },
+        ])(options),
+      });
+      final client = _client(server, profile: 'kid');
+      final before = await client.usersApi.getCurrentUser();
+      final beforeUrl = client.imageApi.getUserImageUrl('kid');
+
+      updated = '2026-11-24T19:54:29.000Z';
+      (client.usersApi as SiloUsersApi).forgetAccount();
+      final after = await client.usersApi.getCurrentUser();
+      final afterUrl = client.imageApi.getUserImageUrl('kid');
+
+      expect(after.primaryImageTag, isNot(before.primaryImageTag));
+      expect(afterUrl, isNot(beforeUrl));
+      // The signature the server checks is untouched.
+      expect(Uri.parse(afterUrl).query, 'exp=1&sig=a');
+      expect(Uri.parse(afterUrl).fragment, 'v=$updated');
+    });
+  });
 }

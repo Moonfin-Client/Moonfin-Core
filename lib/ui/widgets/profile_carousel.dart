@@ -12,12 +12,21 @@ class ProfileEntry {
     required this.name,
     this.avatarUrl,
     this.badge = ProfileBadge.none,
+    this.canEditPicture = false,
+    this.pictureBusy = false,
   });
 
   final String id;
   final String name;
   final String? avatarUrl;
   final ProfileBadge badge;
+
+  /// Whether the picture can be changed from here (the signed-in profile, on
+  /// a server that lets it).
+  final bool canEditPicture;
+
+  /// A new picture is being sent: the avatar shows a spinner.
+  final bool pictureBusy;
 }
 
 const _initialsColors = [
@@ -101,6 +110,23 @@ class ProfileAvatar extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (entry.pictureBusy)
+                  Positioned.fill(
+                    child: ClipOval(
+                      child: ColoredBox(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        child: Center(
+                          child: SizedBox.square(
+                            dimension: size * 0.3,
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 if (ringColor != null)
                   Positioned(
                     left: -2 * ring,
@@ -198,6 +224,46 @@ class ProfileStatusLine extends StatelessWidget {
   }
 }
 
+/// The round camera button shown on the signed-in profile's avatar while the
+/// pointer is over it. It reports where it was pressed, for the menu.
+class _EditPictureButton extends StatelessWidget {
+  const _EditPictureButton({required this.label, required this.onPressed});
+
+  final String label;
+  final ValueChanged<Offset> onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Tooltip(
+        message: label,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTapUp: (details) => onPressed(details.globalPosition),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF1C2238),
+                border: Border.all(color: _badgeCutout, width: 3),
+              ),
+              child: const Icon(
+                Icons.photo_camera_outlined,
+                size: 22,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The TV and desktop account picker: the selected profile big in the
 /// middle, a fainter neighbor either side, and as many small, faint ones past
 /// those as fit the width.
@@ -211,6 +277,8 @@ class ProfileCarousel extends StatefulWidget {
     required this.selected,
     required this.onSelected,
     required this.onActivate,
+    this.onEditPicture,
+    this.editPictureLabel = '',
     this.subtitle,
     this.focusNode,
     this.autofocus = false,
@@ -220,6 +288,14 @@ class ProfileCarousel extends StatefulWidget {
   final int selected;
   final ValueChanged<int> onSelected;
   final ValueChanged<int> onActivate;
+
+  /// Opens the picture menu for the middle profile when its entry
+  /// [ProfileEntry.canEditPicture]: from the camera button that shows while
+  /// the pointer is over it, a right click or a long press, at that point.
+  final void Function(int index, Offset position)? onEditPicture;
+
+  /// The camera button's label.
+  final String editPictureLabel;
 
   /// Lines under the selected profile's name.
   final Widget? subtitle;
@@ -263,6 +339,7 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
   FocusNode? _ownNode;
   FocusNode get _node => widget.focusNode ?? (_ownNode ??= FocusNode());
   bool _focused = false;
+  bool _heroHovered = false;
 
   @override
   void dispose() {
@@ -407,6 +484,16 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
             1 => 0.55,
             _ => 0.3,
           };
+    final onEdit = widget.onEditPicture;
+    final editable =
+        distance == 0 && onEdit != null && widget.entries[index].canEditPicture;
+    void edit(Offset position) => onEdit?.call(index, position);
+    final avatar = ProfileAvatar(
+      entry: widget.entries[index],
+      ringColor: distance == 0
+          ? (_focused ? accent : onSurface.withValues(alpha: 0.25))
+          : null,
+    );
     return AnimatedPositioned(
       key: ValueKey(index),
       duration: _slide,
@@ -422,6 +509,12 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
           ignoring: !visible,
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
+            onEnter: editable
+                ? (_) => setState(() => _heroHovered = true)
+                : null,
+            onExit: editable
+                ? (_) => setState(() => _heroHovered = false)
+                : null,
             child: GestureDetector(
               onTap: () {
                 _node.requestFocus();
@@ -431,11 +524,33 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
                   widget.onSelected(index);
                 }
               },
-              child: ProfileAvatar(
-                entry: widget.entries[index],
-                ringColor: distance == 0
-                    ? (_focused ? accent : onSurface.withValues(alpha: 0.25))
-                    : null,
+              onLongPressStart: editable
+                  ? (details) => edit(details.globalPosition)
+                  : null,
+              onSecondaryTapUp: editable
+                  ? (details) => edit(details.globalPosition)
+                  : null,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(child: avatar),
+                  if (editable)
+                    Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 120),
+                        opacity: _heroHovered ? 1 : 0,
+                        child: IgnorePointer(
+                          ignoring: !_heroHovered,
+                          child: _EditPictureButton(
+                            label: widget.editPictureLabel,
+                            onPressed: edit,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -531,12 +646,46 @@ class ProfileHero extends StatelessWidget {
     this.subtitle,
     this.onPrevious,
     this.onNext,
+    this.onEditPicture,
+    this.editPictureLabel = '',
   });
 
   final ProfileEntry entry;
   final Widget? subtitle;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+
+  /// Opens the picture menu, at the press, after a long press on the avatar
+  /// when the entry [ProfileEntry.canEditPicture].
+  final ValueChanged<Offset>? onEditPicture;
+
+  /// What a long press on the avatar does, for screen readers.
+  final String editPictureLabel;
+
+  Widget _editable(Widget avatar) {
+    final onEdit = onEditPicture;
+    if (onEdit == null || !entry.canEditPicture) return avatar;
+    return Builder(
+      builder: (context) => Semantics(
+        onLongPressHint: editPictureLabel,
+        onLongPress: () {
+          final box = context.findRenderObject() as RenderBox?;
+          onEdit(
+            box == null
+                ? Offset.zero
+                : box.localToGlobal(box.size.center(Offset.zero)),
+          );
+        },
+        child: GestureDetector(
+          onLongPressStart: (details) {
+            HapticFeedback.mediumImpact();
+            onEdit(details.globalPosition);
+          },
+          child: avatar,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -554,12 +703,14 @@ class ProfileHero extends StatelessWidget {
             key: ValueKey(entry.id),
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox.square(
-                dimension: 120,
-                child: ProfileAvatar(
-                  entry: entry,
-                  ringColor: Theme.of(context).colorScheme.primary,
-                  decodeSize: 120,
+              _editable(
+                SizedBox.square(
+                  dimension: 120,
+                  child: ProfileAvatar(
+                    entry: entry,
+                    ringColor: Theme.of(context).colorScheme.primary,
+                    decodeSize: 120,
+                  ),
                 ),
               ),
               const SizedBox(height: 22),

@@ -102,6 +102,43 @@ class SiloProfilesApi {
     ].where((p) => p.id.isNotEmpty).toList();
   }
 
+  /// Whether Silo takes uploaded avatars (`avatar_upload_enabled` on the
+  /// profile list: false when the server has no avatar store).
+  Future<bool> avatarUploadEnabled() async {
+    final response = await _dio.get<dynamic>(
+      '/api/v2/profiles',
+      options: Options(extra: const {siloNoProfileExtra: true}),
+    );
+    return asJsonMap(response.data)?['avatar_upload_enabled'] == true;
+  }
+
+  /// Makes [bytes] the avatar of [profileId] (`PUT /profiles/{id}/avatar`,
+  /// multipart part `avatar`). Silo takes JPEG, PNG and WebP up to 10 MiB.
+  Future<void> uploadAvatar(
+    String profileId, {
+    required List<int> bytes,
+    required String contentType,
+  }) async {
+    final subtype = contentType.split('/').last;
+    await _dio.put<dynamic>(
+      '/api/v2/profiles/${Uri.encodeComponent(profileId)}/avatar',
+      data: FormData.fromMap({
+        'avatar': MultipartFile.fromBytes(
+          bytes,
+          filename: 'avatar.${subtype == 'jpeg' ? 'jpg' : subtype}',
+          contentType: DioMediaType.parse(contentType),
+        ),
+      }),
+    );
+  }
+
+  /// Clears the avatar of [profileId] (`DELETE /profiles/{id}/avatar`).
+  Future<void> deleteAvatar(String profileId) async {
+    await _dio.delete<dynamic>(
+      '/api/v2/profiles/${Uri.encodeComponent(profileId)}/avatar',
+    );
+  }
+
   /// Checks [pin] for [profileId] (`POST /profiles/{id}/verify-pin`).
   ///
   /// Every check counts toward Silo's lockout (five wrong PINs lock the

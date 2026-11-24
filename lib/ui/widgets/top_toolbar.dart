@@ -26,6 +26,7 @@ import '../../util/game_library.dart';
 import '../../util/live_tv_library.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
+import '../../util/user_image_url.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
 import '../navigation/route_lifecycle_observer.dart';
@@ -375,7 +376,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     }
     try {
       final client = GetIt.instance<MediaServerClient>();
-      setState(() => _userImageUrl = client.imageApi.getUserImageUrl(user.id));
+      setState(() => _userImageUrl = taggedUserImageUrl(client, user));
     } catch (_) {
       setState(() => _userImageUrl = null);
     }

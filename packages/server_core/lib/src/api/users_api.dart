@@ -1,6 +1,7 @@
 import '../models/access_schedule.dart';
 import '../models/server_models.dart';
 import '../models/system_models.dart';
+import '../models/user_image_upload.dart';
 
 abstract class UsersApi {
   Future<ServerUser> getCurrentUser();
@@ -13,4 +14,20 @@ abstract class UsersApi {
   Future<List<AccessSchedule>?> getAccessSchedules(String userId);
   Future<UserConfiguration> getUserConfiguration();
   Future<void> updateUserConfiguration(UserConfiguration config);
+
+  /// What [uploadUserImage] takes for [userId], or null when the user can't
+  /// change their profile picture here (the server has no way to, or doesn't
+  /// let this user).
+  Future<UserImageUpload?> userImageUpload(String userId);
+
+  /// Makes [bytes], an image of [contentType] that [userImageUpload] accepts,
+  /// the profile picture of [userId].
+  Future<void> uploadUserImage(
+    String userId, {
+    required List<int> bytes,
+    required String contentType,
+  });
+
+  /// Removes the profile picture of [userId].
+  Future<void> deleteUserImage(String userId);
 }

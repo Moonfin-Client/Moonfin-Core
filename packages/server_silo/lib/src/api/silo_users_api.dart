@@ -156,13 +156,62 @@ class SiloUsersApi implements UsersApi {
     // The avatar, when the profile has one to fetch (`avatar_url`: a preset
     // or an upload), under the profile id, which is the Moonfin user id.
     images?.note(profile.id);
+    // An uploaded avatar keeps its path when it is replaced, so the
+    // profile's last change tells one picture from the next.
     final avatarTag = images?.register(
       profile.id,
       SiloImageType.primary,
       profile.json['avatar_url'] as String?,
+      version: profile.json['avatar_source'] == 'upload'
+          ? profile.json['updated_at'] as String?
+          : null,
     );
-    if (avatarTag != null) user['PrimaryImageTag'] = avatarTag;
+    if (avatarTag != null) {
+      user['PrimaryImageTag'] = avatarTag;
+    } else {
+      // Removed since it was last read: don't keep showing the old one.
+      images?.forget(profile.id, SiloImageType.primary);
+    }
     return user;
+  }
+
+  /// What Silo takes as a profile's avatar (`PUT /profiles/{id}/avatar`),
+  /// or null when the server has no avatar store.
+  @override
+  Future<UserImageUpload?> userImageUpload(String userId) async =>
+      await _profiles.avatarUploadEnabled()
+      ? const UserImageUpload(
+          contentTypes: {'image/jpeg', 'image/png', 'image/webp'},
+          maxBytes: 10 * 1024 * 1024,
+        )
+      : null;
+
+  /// The Moonfin user id is the profile id. The account read is dropped so
+  /// the next one records the new avatar.
+  @override
+  Future<void> uploadUserImage(
+    String userId, {
+    required List<int> bytes,
+    required String contentType,
+  }) async {
+    try {
+      await _profiles.uploadAvatar(
+        userId,
+        bytes: bytes,
+        contentType: contentType,
+      );
+    } finally {
+      forgetAccount();
+    }
+  }
+
+  @override
+  Future<void> deleteUserImage(String userId) async {
+    try {
+      await _profiles.deleteAvatar(userId);
+    } finally {
+      forgetAccount();
+    }
   }
 
   /// Silo has no access schedules (Jellyfin's allowed hours per user), so
