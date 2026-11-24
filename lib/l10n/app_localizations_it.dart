@@ -17547,6 +17547,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'La riproduzione è stata interrotta sul server Silo.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'PIN di $name';
   }

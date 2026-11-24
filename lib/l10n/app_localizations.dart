@@ -30069,6 +30069,12 @@ abstract class AppLocalizations {
   /// **'Playback was ended on the Silo server.'**
   String get siloPlaybackEndedOnServer;
 
+  /// Player message above the administrator's reason: an administrator stopped this playback on the Silo server
+  ///
+  /// In en, this message translates to:
+  /// **'Playback was stopped on the Silo server.'**
+  String get siloPlaybackStoppedOnServer;
+
   /// Title of the dialog asking for a Silo household profile's PIN; name is the profile's name
   ///
   /// In en, this message translates to:

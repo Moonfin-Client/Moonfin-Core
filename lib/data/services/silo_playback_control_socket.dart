@@ -26,6 +26,11 @@ typedef SiloControlCommandHandler = Future<void> Function(
 typedef SiloTerminateHandler =
     Future<void> Function(String sessionId, String? reason);
 
+/// Runs an administrator's stop of [sessionId] that came with a [reason]:
+/// the player stops and shows it.
+typedef SiloStopWithReasonHandler =
+    Future<void> Function(String sessionId, String reason);
+
 /// What the control socket needs from the server a session plays on.
 class SiloControlEndpoint {
   const SiloControlEndpoint({
@@ -93,6 +98,7 @@ class SiloPlaybackControlSocket {
     required this._endpointFor,
     required this._handle,
     this._terminate,
+    this._stopWithReason,
     bool Function(String sessionId)? playedHere,
     WebSocketChannel Function(Uri uri, List<String> protocols)? connect,
     @visibleForTesting this.connectTimeout = const Duration(seconds: 15),
@@ -120,6 +126,7 @@ class SiloPlaybackControlSocket {
   factory SiloPlaybackControlSocket.forApp({
     required SiloControlCommandHandler handle,
     required SiloTerminateHandler terminate,
+    required SiloStopWithReasonHandler stopWithReason,
     required bool Function(String sessionId) playedHere,
   }) => SiloPlaybackControlSocket(
     lifecycle: SiloPlaybackSessions.lifecycle,
@@ -130,6 +137,7 @@ class SiloPlaybackControlSocket {
     },
     handle: handle,
     terminate: terminate,
+    stopWithReason: stopWithReason,
     playedHere: playedHere,
   );
 
@@ -154,6 +162,7 @@ class SiloPlaybackControlSocket {
   final SiloControlEndpoint? Function(SiloPlaybackLifecycle) _endpointFor;
   final SiloControlCommandHandler _handle;
   final SiloTerminateHandler? _terminate;
+  final SiloStopWithReasonHandler? _stopWithReason;
   final bool Function(String) _playedHere;
   final DateTime Function() _clock;
   final WebSocketChannel Function(Uri, List<String>) _connect;
@@ -500,10 +509,18 @@ class SiloPlaybackControlSocket {
       return;
     }
     final terminate = _terminate;
-    if (name == 'terminate' && terminate != null) {
+    final stopWithReason = _stopWithReason;
+    // A stop without a reason goes the Jellyfin remote's way below; one with
+    // a reason must show it, which a Jellyfin Stop can't carry.
+    if ((name == 'terminate' && terminate != null) ||
+        (name == 'stop' && reason != null && stopWithReason != null)) {
       reply('ack', 'accepted');
       try {
-        await terminate(sessionId, reason);
+        if (name == 'terminate') {
+          await terminate!(sessionId, reason);
+        } else {
+          await stopWithReason!(sessionId, reason!);
+        }
         reply('result', 'completed');
       } catch (error) {
         _log('Silo playback command $name failed', error);

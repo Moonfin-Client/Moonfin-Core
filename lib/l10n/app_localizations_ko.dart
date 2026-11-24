@@ -16856,6 +16856,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get siloPlaybackEndedOnServer => 'Silo 서버에서 재생이 종료되었습니다.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return '$name의 PIN';
   }

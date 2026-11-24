@@ -689,6 +689,9 @@ PlaybackRefusedException siloRefusal(Map<String, dynamic> decision) {
 /// leaves playback and doesn't start it again by itself.
 const siloEndedOnServerMessage = 'Playback was ended on the Silo server.';
 
+/// Shown above an administrator's reason when they stopped the session.
+const siloStoppedOnServerMessage = 'Playback was stopped on the Silo server.';
+
 /// An administrator ended the session (`410 playback_session_ended`): the
 /// player stops and must not start it again.
 const siloEndedOnServerRefusal = PlaybackRefusedException(

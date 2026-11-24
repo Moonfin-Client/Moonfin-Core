@@ -25,7 +25,8 @@ import 'package:go_router/go_router.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
-import 'package:playback_silo/playback_silo.dart' show siloEndedOnServerMessage;
+import 'package:playback_silo/playback_silo.dart'
+    show siloEndedOnServerMessage, siloStoppedOnServerMessage;
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
     show SiloUsersApi, siloAccessChangedEvent;
@@ -987,6 +988,15 @@ class SessionRepository {
           reason == null
               ? siloEndedOnServerMessage
               : '$siloEndedOnServerMessage\n$reason',
+        );
+      },
+      // An admin's stop with a reason: stopped the way a terminate is, so
+      // the reason shows on the screen the player closes to.
+      stopWithReason: (sessionId, reason) async {
+        if (!GetIt.instance.isRegistered<PlaybackManager>()) return;
+        await GetIt.instance<PlaybackManager>().endSessionByServer(
+          sessionId,
+          '$siloStoppedOnServerMessage\n$reason',
         );
       },
       // A replan clears the resolution until the new one is up, but the

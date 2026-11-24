@@ -16592,6 +16592,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get siloPlaybackEndedOnServer => '播放已在 Silo 服务器上结束。';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return '$name 的 PIN 码';
   }

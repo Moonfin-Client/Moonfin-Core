@@ -16715,6 +16715,10 @@
   "@siloPlaybackEndedOnServer": {
     "description": "Player message: an administrator ended this playback session on the Silo server"
   },
+  "siloPlaybackStoppedOnServer": "Playback was stopped on the Silo server.",
+  "@siloPlaybackStoppedOnServer": {
+    "description": "Player message above the administrator's reason: an administrator stopped this playback on the Silo server"
+  },
   "siloPinTitle": "PIN for {name}",
   "@siloPinTitle": {
     "description": "Title of the dialog asking for a Silo household profile's PIN; name is the profile's name",

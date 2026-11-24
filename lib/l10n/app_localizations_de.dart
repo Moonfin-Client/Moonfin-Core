@@ -17649,6 +17649,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Wiedergabe wurde auf dem Silo-Server beendet.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'PIN für $name';
   }

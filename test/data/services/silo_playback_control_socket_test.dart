@@ -142,6 +142,7 @@ void main() {
   late SiloPlaybackControlSocket socket;
   late bool playedHere;
   late List<String> terminated;
+  late List<String> stoppedWithReason;
 
   SiloPlaybackControlSocket build({SiloPlaybackLifecycle? playingNow}) =>
       SiloPlaybackControlSocket(
@@ -169,6 +170,8 @@ void main() {
         handle: (message) => handler(message),
         terminate: (sessionId, reason) async =>
             terminated.add('$sessionId|$reason'),
+        stopWithReason: (sessionId, reason) async =>
+            stoppedWithReason.add('$sessionId|$reason'),
         playedHere: (_) => playedHere,
         closeGrace: const Duration(seconds: 2),
         retryDelay: (_) => const Duration(milliseconds: 20),
@@ -186,6 +189,7 @@ void main() {
     ticketError = null;
     playedHere = true;
     terminated = [];
+    stoppedWithReason = [];
     socket = build();
   });
 
@@ -304,6 +308,30 @@ void main() {
     expect(result['status'], 'completed');
     expect(terminated, ['s1|Bandwidth']);
     expect(handled, isEmpty);
+  });
+
+  test('a stop with a reason stops the session and keeps the reason', () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    lane.command('stop', reason: 'Maintenance');
+    final result = await lane.next((f) => f['type'] == 'result');
+
+    expect(result['status'], 'completed');
+    expect(stoppedWithReason, ['s1|Maintenance']);
+    expect(handled, isEmpty);
+  });
+
+  test('a stop without a reason goes the Jellyfin remote\'s way', () async {
+    lifecycle.add(_playing);
+    await lane.next((f) => f['type'] == 'hello');
+
+    lane.command('stop');
+    final result = await lane.next((f) => f['type'] == 'result');
+
+    expect(result['status'], 'completed');
+    expect(stoppedWithReason, isEmpty);
+    expect(handled.single, isA<PlaystateMessage>());
   });
 
   test(
