@@ -230,8 +230,9 @@ class MediaBarRepository {
       if (selected.isEmpty && allParentIds.isNotEmpty) {
         // Asking again for new releases would find nothing again, so a quiet
         // window shows random titles from the first library that has some.
-        // When mixing, the next libraries are read too until both kinds are
-        // in, or a movie library read first would leave the bar movies only.
+        // When mixing, the next libraries are read too until there's enough
+        // of both kinds, or a movie library read first would leave the bar
+        // mostly movies.
         final newReleases = _isNewReleaseSource;
         final retryParents = newReleases ? allParentIds : [allParentIds.first];
         final retried = <Map<String, dynamic>>[];
@@ -258,10 +259,19 @@ class MediaBarRepository {
             maxItems,
             excludedGenres,
           );
+          // The same rule as the first pass: enough of each kind to take turns.
           if (selected.isNotEmpty &&
               (!mix ||
-                  (selected.any((item) => item['Type'] == 'Series') &&
-                      selected.any((item) => item['Type'] == 'Movie')))) {
+                  mediaBarPoolIsFull(
+                    series: retried
+                        .where((i) => i['Type'] == 'Series' && usable(i))
+                        .length,
+                    movies: retried
+                        .where((i) => i['Type'] == 'Movie' && usable(i))
+                        .length,
+                    maxItems: maxItems,
+                    mix: true,
+                  ))) {
             break;
           }
         }
