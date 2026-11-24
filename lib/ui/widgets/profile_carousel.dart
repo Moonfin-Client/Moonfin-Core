@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -358,8 +361,36 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
       index < widget.entries.length &&
       widget.entries[index].canEditPicture;
 
+  /// Whether this carousel turned the browser's own menu off, so a right
+  /// click opens only the picture menu.
+  bool _browserMenuOff = false;
+
+  void _syncBrowserMenu() {
+    final off = kIsWeb && widget.onEditPicture != null;
+    if (off == _browserMenuOff) return;
+    _browserMenuOff = off;
+    unawaited(
+      off
+          ? BrowserContextMenu.disableContextMenu()
+          : BrowserContextMenu.enableContextMenu(),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _syncBrowserMenu();
+  }
+
+  @override
+  void didUpdateWidget(ProfileCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncBrowserMenu();
+  }
+
   @override
   void dispose() {
+    if (_browserMenuOff) unawaited(BrowserContextMenu.enableContextMenu());
     _ownNode?.dispose();
     super.dispose();
   }

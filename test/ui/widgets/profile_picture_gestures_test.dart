@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/profile_carousel.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 const _editable = ProfileEntry(
   id: 'a1',
@@ -39,6 +40,11 @@ Offset _hero(WidgetTester tester) => tester.getCenter(find.text('A'));
 
 void main() {
   group('desktop carousel', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
     testWidgets('hovering the signed-in avatar shows the camera button', (
       tester,
     ) async {

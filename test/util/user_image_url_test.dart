@@ -32,7 +32,11 @@ void main() {
       _client(ServerType.emby, 'http://e/Users/u1/Images/Primary?api_key=k'),
       _user('abc'),
     );
-    expect(Uri.parse(url).queryParameters, {'api_key': 'k', 'tag': 'abc'});
+    expect(Uri.parse(url).queryParameters, {
+      'quality': '90',
+      'api_key': 'k',
+      'tag': 'abc',
+    });
   });
 
   test('no tag, the URL as it was', () {

@@ -97,6 +97,37 @@ void main() {
       expect(client.accessToken, 'new-access');
     });
 
+    test(
+      'an avatar upload answered 401 is replayed with its picture',
+      () async {
+        const path = '/api/v2/profiles/p1/avatar';
+        final server = FixtureServer(
+          _routes(
+            routes: {
+              path: (o) => o.headers['Authorization'] == 'Bearer new-access'
+                  ? FixtureServer.json(204, '')
+                  : _expired(),
+            },
+          ),
+        );
+        final client = _client(server);
+
+        await client.profilesApi.uploadAvatar(
+          'p1',
+          bytes: [1, 2, 3],
+          contentType: 'image/png',
+        );
+
+        expect(_sent(server, path), ['Bearer old-access', 'Bearer new-access']);
+        final sent = [
+          for (final r in server.requests)
+            if (r.uri.path == path) r.data as FormData,
+        ];
+        expect(sent[1], isNot(same(sent[0])));
+        expect(sent[1].files.single.key, 'avatar');
+      },
+    );
+
     test('a token about to expire is refreshed before the request', () async {
       final server = FixtureServer(_routes());
       final client = _client(

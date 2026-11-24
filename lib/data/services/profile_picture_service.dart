@@ -151,7 +151,9 @@ class ProfilePictureService {
         : stored.copyWith(imageTag: tag);
     await _store.putUser(updated);
     final current = _users.currentUser;
-    if (current != null && current.id == userId) {
+    if (current != null &&
+        current.serverId == serverId &&
+        current.id == userId) {
       _users.setCurrentUser(updated);
     }
   }
