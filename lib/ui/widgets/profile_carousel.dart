@@ -512,7 +512,12 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
           };
     final editable = distance == 0 && _canEdit(index);
     final shown = editable && _hovered == index;
-    void edit(Offset position) => widget.onEditPicture?.call(index, position);
+    // A screen reader's long press comes with no position: the avatar's
+    // middle stands in.
+    void edit(Offset position) => widget.onEditPicture?.call(
+      index,
+      position == Offset.zero ? _heroCenter() : position,
+    );
     final avatar = ProfileAvatar(
       entry: widget.entries[index],
       ringColor: distance == 0
@@ -534,7 +539,11 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
           ignoring: !visible,
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            onEnter: (_) => setState(() => _hovered = index),
+            onEnter: (_) {
+              if (widget.onEditPicture != null && _hovered != index) {
+                setState(() => _hovered = index);
+              }
+            },
             onExit: (_) {
               if (_hovered == index) setState(() => _hovered = null);
             },
@@ -556,16 +565,7 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Positioned.fill(
-                    child: editable
-                        // For screen readers, which can't hover.
-                        ? Semantics(
-                            onLongPressHint: _hint(widget.editPictureLabel),
-                            onLongPress: () => edit(_heroCenter()),
-                            child: avatar,
-                          )
-                        : avatar,
-                  ),
+                  Positioned.fill(child: avatar),
                   if (editable)
                     Positioned(
                       left: 0,
@@ -692,8 +692,7 @@ class ProfileHero extends StatefulWidget {
   /// the camera button a tap on the avatar shows.
   final ValueChanged<Offset>? onEditPicture;
 
-  /// The camera button's label, and what a long press does, for screen
-  /// readers.
+  /// The camera button's label.
   final String editPictureLabel;
 
   @override
@@ -723,43 +722,40 @@ class _ProfileHeroState extends State<ProfileHero> {
     }
 
     return Builder(
-      builder: (context) => Semantics(
-        onLongPressHint: _hint(widget.editPictureLabel),
-        onLongPress: () {
-          final box = context.findRenderObject() as RenderBox?;
-          edit(
-            box == null
-                ? Offset.zero
-                : box.localToGlobal(box.size.center(Offset.zero)),
-          );
+      builder: (context) => GestureDetector(
+        onTap: () => setState(() => _editShown = !_editShown),
+        onLongPressStart: (details) {
+          HapticFeedback.mediumImpact();
+          var position = details.globalPosition;
+          // A screen reader's long press comes with no position.
+          if (position == Offset.zero) {
+            final box = context.findRenderObject() as RenderBox?;
+            if (box != null) {
+              position = box.localToGlobal(box.size.center(Offset.zero));
+            }
+          }
+          edit(position);
         },
-        child: GestureDetector(
-          onTap: () => setState(() => _editShown = !_editShown),
-          onLongPressStart: (details) {
-            HapticFeedback.mediumImpact();
-            edit(details.globalPosition);
-          },
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              avatar,
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 120),
-                  opacity: _editShown ? 1 : 0,
-                  child: IgnorePointer(
-                    ignoring: !_editShown,
-                    child: _EditPictureButton(
-                      label: widget.editPictureLabel,
-                      onPressed: edit,
-                    ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            avatar,
+            Positioned(
+              left: 0,
+              bottom: 0,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 120),
+                opacity: _editShown ? 1 : 0,
+                child: IgnorePointer(
+                  ignoring: !_editShown,
+                  child: _EditPictureButton(
+                    label: widget.editPictureLabel,
+                    onPressed: edit,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1006,6 +1002,3 @@ class _ProfileStripState extends State<ProfileStrip> {
     );
   }
 }
-
-/// [label] as a semantics hint, which can't be empty.
-String? _hint(String label) => label.isEmpty ? null : label;

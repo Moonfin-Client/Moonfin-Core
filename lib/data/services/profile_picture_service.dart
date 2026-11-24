@@ -84,19 +84,8 @@ class ProfilePictureService {
   final String userId;
 
   /// What the server takes, or null when this user can't change their
-  /// picture there. A failed read counts as can't.
-  Future<UserImageUpload?> rules() async {
-    try {
-      return await _client.usersApi.userImageUpload(userId);
-    } catch (e) {
-      ServerLog.network(
-        'Profile picture support unreadable',
-        level: ServerLogLevel.warning,
-        error: e,
-      );
-      return null;
-    }
-  }
+  /// picture there. Throws when it can't be read.
+  Future<UserImageUpload?> rules() => _client.usersApi.userImageUpload(userId);
 
   /// Asks for an image file and prepares it for [rules]. Null when nothing
   /// was picked. Throws [ProfilePictureUnsupported] for a file that can't be

@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -222,6 +223,22 @@ void main() {
       await tester.longPressAt(_hero(tester));
       await tester.pumpAndSettle();
       expect(edits, [_hero(tester)]);
+    });
+
+    testWidgets("a screen reader's long press opens it at the avatar", (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      final edits = <Offset>[];
+      await tester.pumpWidget(hero(_editable, edits));
+      final node = tester.getSemantics(find.byType(ProfileAvatar));
+      tester.binding.pipelineOwner.semanticsOwner!.performAction(
+        node.id,
+        SemanticsAction.longPress,
+      );
+      await tester.pumpAndSettle();
+      expect(edits, [tester.getCenter(find.byType(ProfileAvatar))]);
+      semantics.dispose();
     });
 
     testWidgets('not for a profile that cannot change its picture', (

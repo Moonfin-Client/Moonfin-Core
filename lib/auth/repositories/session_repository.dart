@@ -527,7 +527,10 @@ class SessionRepository {
           canManageCollections != user.canManageCollections ||
           canManageLiveTv != user.canManageLiveTv ||
           imageTagChanged) {
-        final updatedUser = user.copyWith(
+        // From the stored copy: a Silo profile's last-used time was set
+        // after [user] was read.
+        final stored = _authStore.getUser(serverId, user.id) ?? user;
+        final updatedUser = stored.copyWith(
           isAdministrator: isAdmin,
           canDownload: canDownload,
           canManageSubtitles: canManageSubtitles,

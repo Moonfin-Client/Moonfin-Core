@@ -136,7 +136,18 @@ class _AccountDialogState extends State<_AccountDialog> {
       serverId: serverId,
       userId: userId,
     );
-    final rules = await service.rules();
+    final UserImageUpload? rules;
+    try {
+      rules = await service.rules();
+    } catch (e) {
+      // Unreadable just now: what was read before (if anything) stands.
+      ServerLog.network(
+        'Profile picture support unreadable',
+        level: ServerLogLevel.warning,
+        error: e,
+      );
+      return;
+    }
     if (!mounted) return;
     setState(() {
       _picture = rules == null ? null : service;
@@ -158,21 +169,41 @@ class _AccountDialogState extends State<_AccountDialog> {
     );
     if (action == null || !mounted || _busy || _pictureBusy) return;
 
-    final l10n = AppLocalizations.of(context);
     setState(() {
       _pictureError = null;
       _pictureBusy = true;
     });
+    // Busy until the new picture and what it allows (Silo removes only an
+    // upload) are read back, so the menu offers what fits it.
+    try {
+      if (!await _sendPicture(service, rules, action, account)) return;
+      if (mounted) await _loadAccounts();
+      if (mounted) await _loadPictureRules();
+    } finally {
+      if (mounted) setState(() => _pictureBusy = false);
+    }
+  }
+
+  /// Sends the change. False when nothing was sent (no file picked) or it
+  /// failed, which is shown under the profile.
+  Future<bool> _sendPicture(
+    ProfilePictureService service,
+    UserImageUpload rules,
+    _PictureAction action,
+    _StoredAccount account,
+  ) async {
+    final l10n = AppLocalizations.of(context);
     try {
       if (action == _PictureAction.change) {
         final file = await service.pick(rules);
-        if (file == null || !mounted) return;
+        if (file == null || !mounted) return false;
         setState(() => _pictureSending = true);
         await service.upload(file);
       } else {
         setState(() => _pictureSending = true);
         await service.remove();
       }
+      return true;
     } on ProfilePictureUnsupported {
       if (mounted) {
         setState(
@@ -181,7 +212,7 @@ class _AccountDialogState extends State<_AccountDialog> {
           ),
         );
       }
-      return;
+      return false;
     } catch (e) {
       ServerLog.network(
         'Profile picture change failed',
@@ -189,20 +220,10 @@ class _AccountDialogState extends State<_AccountDialog> {
         error: e,
       );
       if (mounted) setState(() => _pictureError = l10n.profilePictureFailed);
-      return;
+      return false;
     } finally {
-      if (mounted) {
-        setState(() {
-          _pictureBusy = false;
-          _pictureSending = false;
-        });
-      }
+      if (mounted) setState(() => _pictureSending = false);
     }
-    // The server has it: show it, and what can be done with it now (Silo
-    // removes only an upload).
-    if (!mounted) return;
-    await _loadAccounts();
-    await _loadPictureRules();
   }
 
   Future<void> _loadAccounts() async {
