@@ -13397,7 +13397,7 @@
     "@clientCertRequired": {
         "description": "Shown on the sign-in screens when the server turned the connection away for lack of a client certificate"
     },
-    "clientCertExpired": "Certifikatet för denna server löpte ut den {datum}. Byt ut det för att kunna fortsätta.",
+    "clientCertExpired": "Certifikatet för denna server löpte ut den {date}. Byt ut det för att kunna fortsätta.",
     "@clientCertExpired": {
         "description": "Shown on the sign-in screen when the server turned the connection away and the stored certificate has expired",
         "placeholders": {
