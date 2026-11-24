@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "הגדרות NFO",
     "adminActivitySeverityAll": "כל רמות החומרה",
     "adminActivityDateRange": "טווח תאריכים",
-    "adminRemoveDeviceConfirm": "להסיר את המכשיר '{name}'? המשתמש יצטרך להתחבר שוב במכשיר זה.",
+    "adminRemoveDeviceConfirm": "להסיר את המכשיר \"{name}\"? המשתמש יצטרך להתחבר שוב במכשיר זה.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "הספרייה '{libraryName}' שלך מוגדרת לשמור גרפיקה ישירות בתיקיות המדיה (האפשרות 'שמירת גרפיקה בתיקיות המדיה' מופעלת). עם זאת, Jellyfin בדק את הרשאות הכתיבה ואין לו הרשאה לכתוב קבצים לתיקייה הזו:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "הספרייה \"{libraryName}\" שלך מוגדרת לשמור גרפיקה ישירות בתיקיות המדיה (האפשרות 'שמירת גרפיקה בתיקיות המדיה' מופעלת). עם זאת, Jellyfin בדק את הרשאות הכתיבה ואין לו הרשאה לכתוב קבצים לתיקייה הזו:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
