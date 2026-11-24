@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO அமைப்புகள்",
     "adminActivitySeverityAll": "எல்லா தீவிரநிலைகளும்",
     "adminActivityDateRange": "தேதி வரம்பு",
-    "adminRemoveDeviceConfirm": "'{name}' சாதனத்தை அகற்றவா? இந்தச் சாதனத்தில் பயனர் மீண்டும் உள்நுழைய வேண்டியிருக்கும்.",
+    "adminRemoveDeviceConfirm": "\"{name}\" சாதனத்தை அகற்றவா? இந்தச் சாதனத்தில் பயனர் மீண்டும் உள்நுழைய வேண்டியிருக்கும்.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "உங்கள் '{libraryName}' நூலகம் கலைப்படைப்பை நேரடியாக மீடியா கோப்புறைகளில் சேமிக்க உள்ளமைக்கப்பட்டுள்ளது ('Save artwork into media folders' இயக்கப்பட்டுள்ளது). இருப்பினும், Jellyfin எழுது அணுகலைச் சோதித்தபோது இந்த அடைவில் கோப்புகளை எழுத அனுமதி இல்லை:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "உங்கள் \"{libraryName}\" நூலகம் கலைப்படைப்பை நேரடியாக மீடியா கோப்புறைகளில் சேமிக்க உள்ளமைக்கப்பட்டுள்ளது ('Save artwork into media folders' இயக்கப்பட்டுள்ளது). இருப்பினும், Jellyfin எழுது அணுகலைச் சோதித்தபோது இந்த அடைவில் கோப்புகளை எழுத அனுமதி இல்லை:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
