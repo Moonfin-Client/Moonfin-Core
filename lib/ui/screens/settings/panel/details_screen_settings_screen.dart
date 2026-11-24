@@ -87,7 +87,9 @@ class _DetailsScreenSettingsScreenState
                     icon: Icons.photo,
                     onChanged: _pushPersonalizationSync,
                   ),
-                  if (prefs.get(UserPreferences.detailsBackdropEnabled)) ...[
+                  if (prefs.get(UserPreferences.detailsBackdropEnabled) &&
+                      GetIt.instance<MediaServerClient>().serverType !=
+                          ServerType.plex) ...[
                     SwitchPreferenceTile(
                       preference: UserPreferences.detailsBackdropShuffle,
                       title: l10n.shuffleBackdrops,
