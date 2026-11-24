@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/playback/display_hdr_probe.dart';
+import 'package:moonfin/playback/media3_player_backend.dart';
 import 'package:moonfin/playback/silo_playback_environment.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -65,6 +66,40 @@ void main() {
     expect(media3.loadsFontAttachments, isFalse);
     expect(media3.managesDynamicRange, isFalse);
     expect(SiloPlayerTraits.mpvAndroid.managesDynamicRange, isFalse);
+  });
+
+  test('Media3 tells Silo what it does to Dolby Vision 7', () {
+    SiloDolbyVision7Transform? transformFor(Media3DoviCompatMode mode) =>
+        siloAndroidTraits(
+          PlaybackEnginePreference.media3,
+          doviMode: mode,
+        ).dolbyVision7Transform;
+    expect(
+      transformFor(Media3DoviCompatMode.convert),
+      SiloDolbyVision7Transform.toProfile81,
+    );
+    expect(
+      transformFor(Media3DoviCompatMode.strip),
+      SiloDolbyVision7Transform.toHdr10,
+    );
+    // A profile 7 decoder needs nothing converted, and off converts nothing.
+    expect(transformFor(Media3DoviCompatMode.native), isNull);
+    expect(transformFor(Media3DoviCompatMode.off), isNull);
+    final converting = siloAndroidTraits(
+      PlaybackEnginePreference.media3,
+      doviMode: Media3DoviCompatMode.convert,
+    );
+    expect(converting.selectsAnyAudioTrack, isTrue);
+    expect(converting.drawsAssStyling, isFalse);
+    expect(converting.loadsFontAttachments, isFalse);
+    // libmpv has no compat chain.
+    expect(
+      siloAndroidTraits(
+        PlaybackEnginePreference.mpv,
+        doviMode: Media3DoviCompatMode.convert,
+      ).dolbyVision7Transform,
+      isNull,
+    );
   });
 
   test('an Android phone whose panel named HDR10 tells Silo so', () async {

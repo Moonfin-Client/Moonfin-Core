@@ -80,8 +80,8 @@ class Media3PlayerBackend extends PlayerBackend
     };
   }
 
-  /// How the native side should treat a Dolby Vision profile 7 stream.
-  @visibleForTesting
+  /// How the native side should treat a Dolby Vision profile 7 stream. Silo's
+  /// start says the same (`siloAndroidTraits`).
   static Media3DoviCompatMode doviCompatMode(
     UserPreferences prefs, {
     bool? supportsP7,

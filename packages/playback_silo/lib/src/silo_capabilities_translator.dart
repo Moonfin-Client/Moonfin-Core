@@ -32,6 +32,43 @@ const siloDeliveryHls = 'hls';
 /// burned in).
 const siloBaseClientFeatures = ['playback_plan_v3', 'embedded_subtitles_v1'];
 
+/// Client feature that lets `original_http` list what the player does to the
+/// video itself ([SiloDolbyVision7Transform]).
+const siloFeatureClientVideoTransforms = 'client_video_transformations_v1';
+
+/// What a player does on its own with a Dolby Vision profile 7 file it plays
+/// whole, as Silo's client transformation. Without one, Silo never sends a
+/// profile 7 original: it converts the file itself over HLS, which can't
+/// copy TrueHD or DTS, so their audio is re-encoded.
+enum SiloDolbyVision7Transform {
+  /// Rewrites the RPU to profile 8.1 and drops the enhancement layer.
+  toProfile81('client_dv7_to_dv81', [
+    'profile7_rpu_converted_to_profile81',
+    'hdr10_base_layer_preserved',
+    'enhancement_layer_discarded',
+  ]),
+
+  /// Drops Dolby Vision and the enhancement layer: the HDR10 base layer plays.
+  toHdr10('client_dv7_to_hdr10', [
+    'dolby_vision_metadata_removed',
+    'hdr10_base_layer_preserved',
+    'enhancement_layer_discarded',
+  ]);
+
+  const SiloDolbyVision7Transform(this.transformation, this.claims);
+
+  final String transformation;
+  final List<String> claims;
+
+  /// `TransformationV3` for a delivery's `transformations`.
+  Map<String, dynamic> toJson() => {
+    'name': transformation,
+    'executor': 'client',
+    'recipe_version': '1',
+    'validated_claims': claims,
+  };
+}
+
 /// `original_http` claim: the player picks any audio track of the whole
 /// file itself, so a non-default track doesn't force a remux.
 const siloClaimSelectedAudioTrack = 'client_selected_audio_track_v1';
@@ -56,7 +93,24 @@ class SiloPlayerTraits {
     this.loadsFontAttachments = true,
     this.sendsRequestHeaders = true,
     this.authorizesByStreamReference = false,
+    this.dolbyVision7Transform,
   });
+
+  /// These traits with [transform] as the player's profile 7 handling.
+  SiloPlayerTraits withDolbyVision7Transform(
+    SiloDolbyVision7Transform? transform,
+  ) => SiloPlayerTraits(
+    managesDynamicRange: managesDynamicRange,
+    selectsAnyAudioTrack: selectsAnyAudioTrack,
+    playsProgressive: playsProgressive,
+    playsHls: playsHls,
+    rendersEmbeddedSubtitles: rendersEmbeddedSubtitles,
+    drawsAssStyling: drawsAssStyling,
+    loadsFontAttachments: loadsFontAttachments,
+    sendsRequestHeaders: sendsRequestHeaders,
+    authorizesByStreamReference: authorizesByStreamReference,
+    dolbyVision7Transform: transform,
+  );
 
   /// The libmpv backend's traits (Windows, Linux): it decodes in software,
   /// picks any audio track, tone-maps HDR and Dolby Vision itself, draws
@@ -158,6 +212,10 @@ class SiloPlayerTraits {
   /// the account's token: a DLNA renderer, which may cut a long URL (an LG
   /// TV at about 1024 characters) and drop a token at the end of it.
   final bool authorizesByStreamReference;
+
+  /// What the player does with a Dolby Vision profile 7 file it plays whole
+  /// (Media3's compat chain), or null when it doesn't convert one itself.
+  final SiloDolbyVision7Transform? dolbyVision7Transform;
 }
 
 /// The capability half of a Silo playback start: `client_capabilities`, the
@@ -244,6 +302,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
       (hdr['dolby_vision_profiles'] as List).isNotEmpty;
   final maxResolution = _maxResolution(codecProfiles);
   final maxChannels = _maxChannels(codecProfiles);
+  final dolbyVision7 = traits.dolbyVision7Transform;
 
   Map<String, dynamic> delivery({
     required bool supported,
@@ -252,6 +311,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
     required List<String> audio,
     required Map<String, dynamic> subtitles,
     List<String> claims = const [],
+    List<Map<String, dynamic>> transformations = const [],
     String? failureReason,
   }) => {
     'enabled': true,
@@ -268,7 +328,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
     // A stream's URL and headers are fixed once the player opens it.
     'auth_header_refresh': false,
     'validated_claims': claims,
-    'transformations': const <Map<String, dynamic>>[],
+    'transformations': transformations,
   };
 
   // A remux or HLS stream carries its subtitles as sidecars Moonfin loads
@@ -309,6 +369,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
           if (traits.managesDynamicRange && anyHdr)
             siloClaimManagedDynamicRange,
         ],
+        transformations: [?dolbyVision7?.toJson()],
       ),
       siloDeliveryProgressive: delivery(
         supported: traits.playsProgressive,
@@ -332,6 +393,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
         if (feature != 'embedded_subtitles_v1' ||
             traits.rendersEmbeddedSubtitles)
           feature,
+      if (dolbyVision7 != null) siloFeatureClientVideoTransforms,
     ],
   );
 }

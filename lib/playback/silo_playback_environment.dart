@@ -4,6 +4,7 @@ import 'package:playback_silo/playback_silo.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
+import 'media3_player_backend.dart';
 
 /// This device as a Silo playback start describes it: form factor,
 /// platform, OS version and model, the display's HDR formats when they're
@@ -89,23 +90,43 @@ SiloPlayerTraits _traits() {
     return SiloPlayerTraits.mpv;
   }
   if (PlatformDetection.isAndroid) {
-    return siloAndroidTraits(_androidEngine());
+    final prefs = _prefs();
+    return siloAndroidTraits(
+      prefs?.get(UserPreferences.playbackEnginePreference) ??
+          PlaybackEnginePreference.media3,
+      doviMode: prefs == null
+          ? Media3DoviCompatMode.off
+          : Media3PlayerBackend.doviCompatMode(prefs),
+    );
   }
   return const SiloPlayerTraits();
 }
 
-SiloPlayerTraits siloAndroidTraits(PlaybackEnginePreference engine) =>
-    switch (engine) {
-      PlaybackEnginePreference.media3 => SiloPlayerTraits.media3,
-      PlaybackEnginePreference.mpv => SiloPlayerTraits.mpvAndroid,
-    };
+/// [engine]'s traits. Media3 also says what its compat chain does to a
+/// Dolby Vision profile 7 file ([doviMode]): converted to 8.1 or stripped to
+/// HDR10 on the device, Silo can send the original file instead of
+/// converting it over HLS, which re-encodes TrueHD and DTS audio.
+SiloPlayerTraits siloAndroidTraits(
+  PlaybackEnginePreference engine, {
+  Media3DoviCompatMode doviMode = Media3DoviCompatMode.off,
+}) => switch (engine) {
+  PlaybackEnginePreference.media3 => switch (doviMode) {
+    Media3DoviCompatMode.convert => SiloPlayerTraits.media3
+        .withDolbyVision7Transform(SiloDolbyVision7Transform.toProfile81),
+    Media3DoviCompatMode.strip => SiloPlayerTraits.media3
+        .withDolbyVision7Transform(SiloDolbyVision7Transform.toHdr10),
+    // A profile 7 decoder plays the file as it is, and off leaves it alone.
+    Media3DoviCompatMode.native ||
+    Media3DoviCompatMode.off => SiloPlayerTraits.media3,
+  },
+  PlaybackEnginePreference.mpv => SiloPlayerTraits.mpvAndroid,
+};
 
-PlaybackEnginePreference _androidEngine() {
+UserPreferences? _prefs() {
   final getIt = GetIt.instance;
-  if (!getIt.isRegistered<UserPreferences>()) {
-    return PlaybackEnginePreference.media3;
-  }
-  return getIt<UserPreferences>().get(UserPreferences.playbackEnginePreference);
+  return getIt.isRegistered<UserPreferences>()
+      ? getIt<UserPreferences>()
+      : null;
 }
 
 String _formFactor() {
