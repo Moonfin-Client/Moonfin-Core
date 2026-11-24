@@ -842,6 +842,28 @@ class MediaBarRepository {
     return items..sort((a, b) => rankOf(a).compareTo(rankOf(b)));
   }
 
+  /// Latest added timestamp per series id from child episodes, seasons, or
+  /// list entries (carrying forward both DateLastMediaAdded and DateCreated).
+  static Map<String, DateTime> _latestChildDateAdded(
+    List<Map<String, dynamic>> items,
+  ) {
+    final latest = <String, DateTime>{};
+    for (final item in items) {
+      final id = (item['Type'] == 'Series' ? item['Id'] : item['SeriesId'])
+          ?.toString();
+      if (id == null) continue;
+      for (final field in const ['DateLastMediaAdded', 'DateCreated']) {
+        final date = DateTime.tryParse(item[field] as String? ?? '')?.toUtc();
+        if (date == null) continue;
+        final existing = latest[id];
+        if (existing == null || date.isAfter(existing)) {
+          latest[id] = date;
+        }
+      }
+    }
+    return latest;
+  }
+
   /// [items] with each episode or season swapped for its series and anything
   /// outside [itemTypes] left out, in the server's order.
   Future<List<Map<String, dynamic>>> _withSeries(
@@ -852,7 +874,7 @@ class MediaBarRepository {
       for (final item in await _fetchSeries(
         _seriesIdsOf(items),
         effectivePremiereDates: _latestChildDates(items, 'PremiereDate'),
-        effectiveDateAdded: _latestChildDates(items, 'DateCreated'),
+        effectiveDateAdded: _latestChildDateAdded(items),
       ))
         item['Id']: item,
     };

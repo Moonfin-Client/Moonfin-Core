@@ -277,6 +277,115 @@ void main() {
       expect(desc, ['long_running_series', 'recent_movie']);
     });
 
+    test('Recently Added carries DateLastMediaAdded from list entry across _withSeries', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.pluginSyncEnabled, false);
+      await prefs.set(UserPreferences.mediaBarItemCount, '2');
+      await prefs.set(
+        UserPreferences.mediaBarSourceType,
+        UserPreferences.mediaBarSourceRecentlyAdded,
+      );
+      await prefs.set(
+        UserPreferences.mediaBarSortOrder,
+        UserPreferences.mediaBarSortDateAddedDesc,
+      );
+      await prefs.set(UserPreferences.mediaBarNewReleaseBanner, false);
+
+      final views = _UserViewsApi();
+      when(() => views.getUserViews()).thenAnswer(
+        (_) async => {
+          'Items': const [
+            {'Id': 'tv', 'Name': 'Shows', 'CollectionType': 'tvshows'},
+            {'Id': 'mov', 'Name': 'Movies', 'CollectionType': 'movies'},
+          ],
+        },
+      );
+      final items = _ItemsApi();
+      when(
+        () => items.getLatestItems(
+          includeItemTypes: any(named: 'includeItemTypes'),
+          parentId: any(named: 'parentId'),
+          limit: any(named: 'limit'),
+          fields: any(named: 'fields'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+        ),
+      ).thenAnswer((inv) async {
+        final parentId = inv.namedArguments[#parentId] as String;
+        if (parentId == 'tv') {
+          return {
+            'Items': [
+              {
+                'Id': 'silo_show',
+                'Name': 'Updated Show',
+                'Type': 'Series',
+                'BackdropImageTags': const ['b'],
+                'DateCreated': '2020-01-01T00:00:00Z',
+                'DateLastMediaAdded': '2026-11-24T12:00:00Z',
+              },
+            ],
+          };
+        }
+        return {
+          'Items': [
+            _movie(
+              'recent_movie',
+              dateCreated: '2026-11-20T12:00:00Z',
+              premiereDate: '2026-11-01T00:00:00Z',
+            ),
+          ],
+        };
+      });
+      // Detail lookup returns the series without DateLastMediaAdded (as Silo can).
+      when(
+        () => items.getItems(
+          ids: any(named: 'ids'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          enableImageTypes: any(named: 'enableImageTypes'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'Items': const [
+            {
+              'Id': 'silo_show',
+              'Name': 'Updated Show',
+              'Type': 'Series',
+              'BackdropImageTags': ['b'],
+              'DateCreated': '2020-01-01T00:00:00Z',
+            },
+          ],
+        },
+      );
+      final images = _ImageApi();
+      when(
+        () => images.getBackdropImageUrl(
+          any(),
+          tag: any(named: 'tag'),
+          maxWidth: any(named: 'maxWidth'),
+        ),
+      ).thenReturn('backdrop');
+      when(
+        () => images.getPrimaryImageUrl(
+          any(),
+          tag: any(named: 'tag'),
+          maxWidth: any(named: 'maxWidth'),
+        ),
+      ).thenReturn('primary');
+      final client = _Client();
+      when(() => client.userViewsApi).thenReturn(views);
+      when(() => client.itemsApi).thenReturn(items);
+      when(() => client.imageApi).thenReturn(images);
+
+      final repo = MediaBarRepository(client, prefs);
+      GetIt.instance.registerSingleton<MediaBarRepository>(repo);
+      final state = await repo.loadItems();
+      final ids = (state as MediaBarReady).items.map((i) => i.itemId).toList();
+      expect(ids, ['silo_show', 'recent_movie']);
+    });
+
     test('Items without dates sort to the end regardless of direction', () async {
       final undated = {
         'lib': [
