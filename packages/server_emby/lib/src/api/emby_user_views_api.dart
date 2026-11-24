@@ -7,6 +7,7 @@ class EmbyUserViewsApi implements UserViewsApi {
   final UsersApi Function() _usersApi;
   final Map<bool, ({Map<String, dynamic> views, DateTime at})> _cache = {};
   int _cacheRevision = 0;
+  int _accountRevision = 0;
   static const _cacheDuration = Duration(minutes: 5);
 
   EmbyUserViewsApi(this._dio, this._getUserId, this._usersApi);
@@ -21,24 +22,33 @@ class EmbyUserViewsApi implements UserViewsApi {
     bool includeHidden = false,
   }) async {
     final userId = _getUserId();
-    final revision = _cacheRevision;
+    final accountRevision = _accountRevision;
     final cached = _cache[includeHidden];
     if (cached != null &&
         DateTime.now().difference(cached.at) < _cacheDuration) {
       return cached.views;
     }
 
-    final response = await _dio.get('/Users/$userId/Views');
-    final views = response.data as Map<String, dynamic>;
-    if (revision != _cacheRevision) return views;
+    // The caller can cache a successful response for the entire session.
+    // Retry a concurrent configuration save once to avoid returning partial views.
+    for (var attempt = 0; attempt < 2; attempt++) {
+      final revision = _cacheRevision;
+      final response = await _dio.get('/Users/$userId/Views');
+      final views = response.data as Map<String, dynamic>;
+      final result = includeHidden && revision == _cacheRevision
+          ? await _withExcludedViews(userId, views, revision)
+          : views;
+      if (accountRevision != _accountRevision) {
+        throw StateError('Emby account changed while loading library views');
+      }
+      if (revision != _cacheRevision) continue;
 
-    final result = includeHidden
-        ? await _withExcludedViews(userId, views, revision)
-        : views;
-    if (revision != _cacheRevision) return views;
-
-    _cache[includeHidden] = (views: result, at: DateTime.now());
-    return result;
+      _cache[includeHidden] = (views: result, at: DateTime.now());
+      return result;
+    }
+    throw StateError(
+      'Emby configuration kept changing while loading library views',
+    );
   }
 
   Future<Map<String, dynamic>> _withExcludedViews(
@@ -129,6 +139,11 @@ class EmbyUserViewsApi implements UserViewsApi {
     } catch (_) {
       return const [];
     }
+  }
+
+  void accountChanged() {
+    _accountRevision++;
+    invalidateCache();
   }
 
   void invalidateCache() {

@@ -116,7 +116,7 @@ void main() {
   );
 
   test(
-    'an in-flight lookup cannot cache another user’s hidden views',
+    'an in-flight lookup fails when the account switches',
     () async {
       serve(views: ['john-visible'], myMediaExcludes: ['john-hidden']);
       final requested = Completer<void>();
@@ -128,12 +128,14 @@ void main() {
 
       final pendingViews = ids(includeHidden: true);
       await requested.future;
+      final failure = expectLater(pendingViews, throwsStateError);
       client.userId = 'user-2';
       server.config = {
         'MyMediaExcludes': ['alice-hidden'],
       };
       release.complete();
-      expect(await pendingViews, ['john-visible']);
+      await failure;
+      expect(server.viewsRequests, 1);
 
       client.userId = 'user-1';
       server.beforeViewsResponse = null;
@@ -143,6 +145,29 @@ void main() {
       expect(await ids(includeHidden: true), ['john-visible', 'john-hidden']);
     },
   );
+
+  test('a configuration save retries an in-flight hidden views lookup', () async {
+    serve(views: ['visible'], myMediaExcludes: ['hidden']);
+    final requested = Completer<void>();
+    final release = Completer<void>();
+    server.beforeViewsResponse = () {
+      server.beforeViewsResponse = null;
+      requested.complete();
+      return release.future;
+    };
+
+    final pendingViews = ids(includeHidden: true);
+    await requested.future;
+    final config = await client.usersApi.getUserConfiguration();
+    await client.usersApi.updateUserConfiguration(
+      config.copyWith(orderedViews: ['hidden', 'visible']),
+    );
+    release.complete();
+
+    expect(await pendingViews, ['hidden', 'visible']);
+    expect(await ids(includeHidden: true), ['hidden', 'visible']);
+    expect(server.viewsRequests, 2);
+  });
 
   test('a hidden library comes back in its saved slot', () async {
     serve(
