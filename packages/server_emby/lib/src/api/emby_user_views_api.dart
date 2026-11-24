@@ -5,8 +5,8 @@ class EmbyUserViewsApi implements UserViewsApi {
   final Dio _dio;
   final String Function() _getUserId;
   final UsersApi Function() _usersApi;
-  final Map<(String, bool), ({Map<String, dynamic> views, DateTime at})>
-  _cache = {};
+  final Map<bool, ({Map<String, dynamic> views, DateTime at})> _cache = {};
+  int _cacheRevision = 0;
   static const _cacheDuration = Duration(minutes: 5);
 
   EmbyUserViewsApi(this._dio, this._getUserId, this._usersApi);
@@ -21,26 +21,30 @@ class EmbyUserViewsApi implements UserViewsApi {
     bool includeHidden = false,
   }) async {
     final userId = _getUserId();
-    final cacheKey = (userId, includeHidden);
-    final cached = _cache[cacheKey];
+    final revision = _cacheRevision;
+    final cached = _cache[includeHidden];
     if (cached != null &&
         DateTime.now().difference(cached.at) < _cacheDuration) {
       return cached.views;
     }
 
     final response = await _dio.get('/Users/$userId/Views');
-    var views = response.data as Map<String, dynamic>;
-    if (includeHidden) {
-      views = await _withExcludedViews(userId, views);
-    }
+    final views = response.data as Map<String, dynamic>;
+    if (revision != _cacheRevision) return views;
 
-    _cache[cacheKey] = (views: views, at: DateTime.now());
-    return views;
+    final result = includeHidden
+        ? await _withExcludedViews(userId, views, revision)
+        : views;
+    if (revision != _cacheRevision) return views;
+
+    _cache[includeHidden] = (views: result, at: DateTime.now());
+    return result;
   }
 
   Future<Map<String, dynamic>> _withExcludedViews(
     String userId,
     Map<String, dynamic> views,
+    int revision,
   ) async {
     final items = (views['Items'] as List?) ?? const [];
     final present = items
@@ -50,7 +54,7 @@ class EmbyUserViewsApi implements UserViewsApi {
         .toSet();
 
     final config = await _userConfiguration();
-    if (config == null) return views;
+    if (config == null || revision != _cacheRevision) return views;
 
     final missing = config.myMediaExcludes
         .where((id) => id.isNotEmpty && !present.contains(id))
@@ -127,5 +131,8 @@ class EmbyUserViewsApi implements UserViewsApi {
     }
   }
 
-  void invalidateCache() => _cache.clear();
+  void invalidateCache() {
+    _cacheRevision++;
+    _cache.clear();
+  }
 }

@@ -134,7 +134,11 @@ class EmbyMediaServerClient extends MediaServerClient {
   String? get userId => _userId;
 
   @override
-  set userId(String? id) => _userId = id;
+  set userId(String? id) {
+    if (_userId == id) return;
+    _userId = id;
+    userViewsApi.invalidateCache();
+  }
 
   @override
   late final AuthApi authApi = EmbyAuthApi(_dio);

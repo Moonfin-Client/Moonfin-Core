@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
-import 'package:server_emby/src/api/emby_user_views_api.dart';
-import 'package:server_emby/src/api/emby_users_api.dart';
+import 'package:server_core/server_core.dart';
+import 'package:server_emby/server_emby.dart';
 import 'package:test/test.dart';
 
 /// Answers the handful of routes the views and user configuration calls use,
@@ -12,11 +14,15 @@ class _FakeEmby extends Interceptor {
   Map<String, dynamic> config;
   int viewsRequests = 0;
   List<Map<String, dynamic>>? itemsByIds;
+  Future<void> Function()? beforeViewsResponse;
 
   Map<String, dynamic> _item(String id) => {'Id': id, 'Name': 'Library $id'};
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     Object? data;
     switch ((options.method, options.path)) {
       case ('GET', '/Users/user-1/Views' || '/Users/user-2/Views'):
@@ -24,7 +30,8 @@ class _FakeEmby extends Interceptor {
         data = {
           'Items': [for (final id in views) _item(id)],
         };
-      case ('GET', '/Users/user-1'):
+        await beforeViewsResponse?.call();
+      case ('GET', '/Users/user-1' || '/Users/user-2'):
         data = {'Configuration': config};
       case ('GET', '/Users/user-1/Items'):
         final ids = (options.queryParameters['Ids'] as String).split(',');
@@ -42,9 +49,7 @@ class _FakeEmby extends Interceptor {
 
 void main() {
   late _FakeEmby server;
-  late EmbyUserViewsApi viewsApi;
-  late EmbyUsersApi usersApi;
-  late String userId;
+  late EmbyMediaServerClient client;
 
   void serve({
     required List<String> views,
@@ -58,19 +63,22 @@ void main() {
         'MyMediaExcludes': myMediaExcludes,
       },
     );
-    final dio = Dio()..interceptors.add(server);
-    // Wired the way EmbyMediaServerClient wires them.
-    userId = 'user-1';
-    viewsApi = EmbyUserViewsApi(dio, () => userId, () => usersApi);
-    usersApi = EmbyUsersApi(
-      dio,
-      () => userId,
-      onConfigurationUpdated: viewsApi.invalidateCache,
-    );
+    client = EmbyMediaServerClient(
+      baseUrl: 'https://emby.example',
+      deviceInfo: const DeviceInfo(
+        id: 'test',
+        name: 'Views test',
+        appName: 'Moonfin',
+        appVersion: 'test',
+      ),
+      interceptors: [server],
+    )..userId = 'user-1';
   }
 
   Future<List<String>> ids({bool includeHidden = false}) async {
-    final response = await viewsApi.getUserViews(includeHidden: includeHidden);
+    final response = await client.userViewsApi.getUserViews(
+      includeHidden: includeHidden,
+    );
     return [
       for (final item in response['Items'] as List)
         (item as Map)['Id'] as String,
@@ -83,9 +91,9 @@ void main() {
     await ids();
     expect(server.viewsRequests, 1);
 
-    final config = await usersApi.getUserConfiguration();
+    final config = await client.usersApi.getUserConfiguration();
     server.views = ['5', '3'];
-    await usersApi.updateUserConfiguration(
+    await client.usersApi.updateUserConfiguration(
       config.copyWith(orderedViews: ['5', '3']),
     );
 
@@ -99,11 +107,40 @@ void main() {
       serve(views: ['john-library']);
       expect(await ids(), ['john-library']);
 
-      userId = 'user-2';
+      client.userId = 'user-2';
       server.views = ['alice-library'];
 
       expect(await ids(), ['alice-library']);
       expect(server.viewsRequests, 2);
+    },
+  );
+
+  test(
+    'an in-flight lookup cannot cache another user’s hidden views',
+    () async {
+      serve(views: ['john-visible'], myMediaExcludes: ['john-hidden']);
+      final requested = Completer<void>();
+      final release = Completer<void>();
+      server.beforeViewsResponse = () {
+        requested.complete();
+        return release.future;
+      };
+
+      final pendingViews = ids(includeHidden: true);
+      await requested.future;
+      client.userId = 'user-2';
+      server.config = {
+        'MyMediaExcludes': ['alice-hidden'],
+      };
+      release.complete();
+      expect(await pendingViews, ['john-visible']);
+
+      client.userId = 'user-1';
+      server.beforeViewsResponse = null;
+      server.config = {
+        'MyMediaExcludes': ['john-hidden'],
+      };
+      expect(await ids(includeHidden: true), ['john-visible', 'john-hidden']);
     },
   );
 
