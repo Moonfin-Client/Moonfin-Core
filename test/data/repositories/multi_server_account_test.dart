@@ -91,23 +91,37 @@ void main() {
     verify(() => bar.userId = 'john-bar').called(1);
   });
 
-  test('omits Bar when John has no matching saved account', () async {
+  test('uses the previous Bar selection when no saved name matches', () async {
     when(() => store.getUsers('bar'))
         .thenReturn([user('bar', 'alice-bar', 'Alice')]);
+    when(() => credentials.getToken('bar'))
+        .thenAnswer((_) async => 'server-token');
 
     final sessions = await repository.getLoggedInServers();
 
-    expect(sessions.map((session) => session.userId), ['john-foo']);
-  });
-
-  test('omits Bar when more than one saved name matches', () async {
-    when(() => store.getUsers('bar')).thenReturn([
-      user('bar', 'john-bar', 'John'),
-      user('bar', 'another-john-bar', 'john'),
+    expect(sessions.map((session) => session.userId), [
+      'john-foo',
+      'alice-bar',
     ]);
-
-    final sessions = await repository.getLoggedInServers();
-
-    expect(sessions.map((session) => session.userId), ['john-foo']);
+    verify(() => bar.accessToken = 'server-token').called(1);
   });
+
+  test(
+    'uses the previous Bar selection when the saved name is ambiguous',
+    () async {
+      when(() => store.getUsers('bar')).thenReturn([
+        user('bar', 'alice-bar', 'Alice'),
+        user('bar', 'john-bar', 'John'),
+        user('bar', 'another-john-bar', 'john'),
+      ]);
+
+      final sessions = await repository.getLoggedInServers();
+
+      expect(sessions.map((session) => session.userId), [
+        'john-foo',
+        'alice-bar',
+      ]);
+      verify(() => bar.accessToken = 'token-alice-bar').called(1);
+    },
+  );
 }

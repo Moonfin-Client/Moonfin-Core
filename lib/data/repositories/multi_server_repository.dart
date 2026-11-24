@@ -152,17 +152,20 @@ class MultiServerRepository {
           userId = activeUser.id;
           accessToken = activeUser.accessToken;
           chosenUser = activeUser;
-        } else if (matchSecondaryUser) {
-          // A missing or ambiguous match must not select another viewer.
-          if (activeName == null || activeName.isEmpty) continue;
+        } else if (matchSecondaryUser &&
+            activeName != null &&
+            activeName.isNotEmpty) {
           final matches = users
               .where((user) => user.name.toLowerCase() == activeName)
               .toList();
-          if (matches.length != 1) continue;
-          chosenUser = matches.single;
-          userId = chosenUser.id;
-          accessToken = chosenUser.accessToken;
-        } else {
+          if (matches.length == 1 && matches.single.accessToken.isNotEmpty) {
+            chosenUser = matches.single;
+            userId = chosenUser.id;
+            accessToken = chosenUser.accessToken;
+          }
+        }
+
+        if (userId == null) {
           final token = await _credentialStore.getToken(server.id);
           // Another Silo server: its most recently used profile that needs
           // no PIN now, not whichever profile was stored first.
