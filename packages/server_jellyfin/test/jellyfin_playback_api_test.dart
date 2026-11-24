@@ -188,4 +188,33 @@ void main() {
       ]);
     });
   });
+
+  group('getStreamUrl', () {
+    test('follows a changed base URL without a new instance', () {
+      var base = 'http://old.example:8096';
+      final api = JellyfinPlaybackApi(Dio(), () => base);
+
+      final before = api.getStreamUrl(
+        'item-1',
+        mediaSourceId: 'src-1',
+        audioStreamIndex: '2',
+      );
+      base = 'https://new.example:41763';
+      final after = api.getStreamUrl(
+        'item-1',
+        mediaSourceId: 'src-1',
+        audioStreamIndex: '2',
+      );
+
+      expect(
+        before,
+        startsWith('http://old.example:8096/Videos/item-1/stream?'),
+      );
+      expect(
+        after,
+        'https://new.example:41763/Videos/item-1/stream?'
+        'MediaSourceId=src-1&AudioStreamIndex=2&Static=true',
+      );
+    });
+  });
 }
