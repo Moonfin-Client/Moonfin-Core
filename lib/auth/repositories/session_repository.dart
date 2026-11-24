@@ -982,6 +982,8 @@ class SessionRepository {
       },
       terminate: (sessionId, reason) async {
         if (!GetIt.instance.isRegistered<PlaybackManager>()) return;
+        // Like a remote Stop, it outdates any PlayNow still on its way.
+        _remoteNavigationGeneration++;
         await GetIt.instance<PlaybackManager>().endSessionByServer(
           sessionId,
           reason == null
@@ -992,13 +994,16 @@ class SessionRepository {
       // An admin's stop with a reason: the remote Stop runs as usual (sheets
       // closed, player dismissed, position reported), then the reason is
       // shown the way a server message is, so it lands with no player
-      // screen left to show it. Showing it doesn't hold up or fail the stop.
+      // screen left to show it. In the foreground it shows in the app, so it
+      // doesn't depend on notification permission. Showing it doesn't hold
+      // up or fail the stop.
       stopWithReason: (sessionId, reason) async {
         await _handleRemoteCommand(const PlaystateMessage(command: 'Stop'));
         unawaited(
           _showRemoteMessage(
             reason,
             currentAppLocalizations().siloPlaybackStoppedOnServer,
+            inAppInForeground: true,
           ).catchError((Object error) {
             _logger.w('Showing a Silo stop reason failed: $error');
           }),
@@ -1654,7 +1659,15 @@ class SessionRepository {
   /// Shows a message another client sent to this one. It takes the system
   /// notification where the device has them and an in-app banner where it
   /// doesn't, so a message the sender saw go through always lands somewhere.
-  Future<void> _showRemoteMessage(String text, String? header) async {
+  ///
+  /// [inAppInForeground] skips the notification while the app is in the
+  /// foreground, for a message that must be seen even where notifications
+  /// are turned off.
+  Future<void> _showRemoteMessage(
+    String text,
+    String? header, {
+    bool inAppInForeground = false,
+  }) async {
     // The Apple native player sits above every Flutter page, so while it is
     // on screen a message drawn by Flutter would be hidden behind the video:
     // the player's own alert shows it. In the background a notification is
@@ -1688,8 +1701,9 @@ class SessionRepository {
       await showOnPlayer(nativePlayer);
       return;
     }
-    final delivered = await GetIt.instance<DownloadNotificationService>()
-        .showRemoteMessage(text: text, header: header);
+    final delivered = !(inAppInForeground && !background) &&
+        await GetIt.instance<DownloadNotificationService>()
+            .showRemoteMessage(text: text, header: header);
     if (delivered) return;
     if (nativePlayer != null) {
       await showOnPlayer(nativePlayer);
