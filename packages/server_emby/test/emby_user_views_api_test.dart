@@ -19,7 +19,7 @@ class _FakeEmby extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     Object? data;
     switch ((options.method, options.path)) {
-      case ('GET', '/Users/user-1/Views'):
+      case ('GET', '/Users/user-1/Views' || '/Users/user-2/Views'):
         viewsRequests++;
         data = {
           'Items': [for (final id in views) _item(id)],
@@ -44,6 +44,7 @@ void main() {
   late _FakeEmby server;
   late EmbyUserViewsApi viewsApi;
   late EmbyUsersApi usersApi;
+  late String userId;
 
   void serve({
     required List<String> views,
@@ -59,10 +60,11 @@ void main() {
     );
     final dio = Dio()..interceptors.add(server);
     // Wired the way EmbyMediaServerClient wires them.
-    viewsApi = EmbyUserViewsApi(dio, () => 'user-1', () => usersApi);
+    userId = 'user-1';
+    viewsApi = EmbyUserViewsApi(dio, () => userId, () => usersApi);
     usersApi = EmbyUsersApi(
       dio,
-      () => 'user-1',
+      () => userId,
       onConfigurationUpdated: viewsApi.invalidateCache,
     );
   }
@@ -90,6 +92,20 @@ void main() {
     expect(await ids(), ['5', '3']);
     expect(server.viewsRequests, 2);
   });
+
+  test(
+    'the previous user’s cached libraries are not used after switching',
+    () async {
+      serve(views: ['john-library']);
+      expect(await ids(), ['john-library']);
+
+      userId = 'user-2';
+      server.views = ['alice-library'];
+
+      expect(await ids(), ['alice-library']);
+      expect(server.viewsRequests, 2);
+    },
+  );
 
   test('a hidden library comes back in its saved slot', () async {
     serve(

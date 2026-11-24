@@ -120,6 +120,14 @@ class MultiServerRepository {
 
     final servers = _authStore.getServers();
     final activeServerId = _sessionRepo.activeServerId;
+    final activeUserId = _sessionRepo.activeUserId;
+    final activeUser = activeServerId == null || activeUserId == null
+        ? null
+        : _authStore
+              .getUsers(activeServerId)
+              .where((user) => user.id == activeUserId)
+              .firstOrNull;
+    final activeName = activeUser?.name.toLowerCase();
 
     final sessions = <ServerUserSession>[];
     final siloTokens = SiloTokenStorage(_authStore);
@@ -133,18 +141,28 @@ class MultiServerRepository {
         String? accessToken;
         PrivateUser? chosenUser;
 
-        if (server.id == activeServerId && _sessionRepo.activeUserId != null) {
-          final activeUser = users
-              .where((u) => u.id == _sessionRepo.activeUserId)
-              .firstOrNull;
-          if (activeUser != null && activeUser.accessToken.isNotEmpty) {
-            userId = activeUser.id;
-            accessToken = activeUser.accessToken;
-            chosenUser = activeUser;
-          }
-        }
-
-        if (userId == null) {
+        final matchSecondaryUser =
+            activeServerId != null &&
+            server.id != activeServerId &&
+            (server.serverType == ServerType.jellyfin ||
+                server.serverType == ServerType.emby);
+        if (server.id == activeServerId &&
+            activeUser != null &&
+            activeUser.accessToken.isNotEmpty) {
+          userId = activeUser.id;
+          accessToken = activeUser.accessToken;
+          chosenUser = activeUser;
+        } else if (matchSecondaryUser) {
+          // A missing or ambiguous match must not select another viewer.
+          if (activeName == null || activeName.isEmpty) continue;
+          final matches = users
+              .where((user) => user.name.toLowerCase() == activeName)
+              .toList();
+          if (matches.length != 1) continue;
+          chosenUser = matches.single;
+          userId = chosenUser.id;
+          accessToken = chosenUser.accessToken;
+        } else {
           final token = await _credentialStore.getToken(server.id);
           // Another Silo server: its most recently used profile that needs
           // no PIN now, not whichever profile was stored first.

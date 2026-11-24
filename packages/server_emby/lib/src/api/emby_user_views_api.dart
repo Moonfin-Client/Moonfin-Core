@@ -5,7 +5,8 @@ class EmbyUserViewsApi implements UserViewsApi {
   final Dio _dio;
   final String Function() _getUserId;
   final UsersApi Function() _usersApi;
-  final Map<bool, ({Map<String, dynamic> views, DateTime at})> _cache = {};
+  final Map<(String, bool), ({Map<String, dynamic> views, DateTime at})>
+  _cache = {};
   static const _cacheDuration = Duration(minutes: 5);
 
   EmbyUserViewsApi(this._dio, this._getUserId, this._usersApi);
@@ -19,20 +20,21 @@ class EmbyUserViewsApi implements UserViewsApi {
   Future<Map<String, dynamic>> getUserViews({
     bool includeHidden = false,
   }) async {
-    final cached = _cache[includeHidden];
+    final userId = _getUserId();
+    final cacheKey = (userId, includeHidden);
+    final cached = _cache[cacheKey];
     if (cached != null &&
         DateTime.now().difference(cached.at) < _cacheDuration) {
       return cached.views;
     }
 
-    final userId = _getUserId();
     final response = await _dio.get('/Users/$userId/Views');
     var views = response.data as Map<String, dynamic>;
     if (includeHidden) {
       views = await _withExcludedViews(userId, views);
     }
 
-    _cache[includeHidden] = (views: views, at: DateTime.now());
+    _cache[cacheKey] = (views: views, at: DateTime.now());
     return views;
   }
 
