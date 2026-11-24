@@ -340,16 +340,19 @@ class SiloMediaStreamResolver
   };
 
   /// [context] with no client transformation on any delivery.
-  static Map<String, dynamic> _withoutClientTransforms(dynamic context) {
-    final copy = Map<String, dynamic>.from(context as Map);
+  static dynamic _withoutClientTransforms(dynamic context) {
+    if (context is! Map) return context;
+    final copy = Map<String, dynamic>.from(context);
     final deliveries = copy['deliveries'];
     if (deliveries is Map) {
       copy['deliveries'] = {
         for (final entry in deliveries.entries)
-          entry.key: {
-            ...(entry.value as Map).cast<String, dynamic>(),
-            'transformations': const <Map<String, dynamic>>[],
-          },
+          entry.key: entry.value is Map
+              ? {
+                  ...(entry.value as Map).cast<String, dynamic>(),
+                  'transformations': const <Map<String, dynamic>>[],
+                }
+              : entry.value,
       };
     }
     return copy;
