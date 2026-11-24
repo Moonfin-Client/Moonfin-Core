@@ -818,8 +818,6 @@ class Media3VideoView(
     private var videoView: View = newVideoView()
     private var lastSourceArguments: Map<*, *>? = null
     private var lastPlaybackPositionMs: Long = 0L
-    // Where this player's server moved while it plays its current source.
-    internal val serverRebase = ServerRebase.Scope()
     private var displayModeSwitchAtMs = 0L
     private var wasPlayingBeforeDisplayModeSwitch = false
     private var heldStartDisplayListener: DisplayManager.DisplayListener? = null
@@ -1895,10 +1893,6 @@ class Media3VideoView(
 
     fun isAudioPlayback(): Boolean = currentMediaType == "audio"
 
-    /** See [ServerRebase.Scope.rebase]; the moves belong to the source this view plays. */
-    fun rebaseServer(from: String, to: String): Int =
-        serverRebase.rebase(from, to, lastSourceArguments?.get("url")?.toString())
-
     fun forceReleasePlayer() {
         if (isPlayerReleased) return
         cancelRateStartup()
@@ -2879,11 +2873,7 @@ class Media3VideoView(
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(120_000)
             .setReadTimeoutMs(120_000)
-        bootDataSourceFactory = DefaultDataSource.Factory(
-            context,
-            // A server that moves behind its entry address keeps playing.
-            RebasingDataSourceFactory(httpDataSourceFactory, serverRebase),
-        )
+        bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
             .setTransferListener(Media3TransferLog)
         val assHandler = AssHandler(
             AssRenderType.OVERLAY_CANVAS,
@@ -3137,7 +3127,6 @@ class Media3VideoView(
         restorePreferredDisplayMode()
         detectedFrameRate = null
         Media3SessionController.releaseForPlayer(player)
-        serverRebase.clear()
         player.stop()
         player.clearMediaItems()
         disableCapabilityReselection()
@@ -3570,11 +3559,7 @@ class Media3VideoView(
         trackSelector.setSecondaryTrack(null)
         secondarySubtitleDelayMs = clampManualDelayMs((args["secondarySubtitleDelayMs"] as? Number)?.toLong() ?: 0L)
         lastSourceArguments = args
-        val url = args["url"]?.toString()
-        // The same source coming back (a resume or a handover) keeps the
-        // moves made for it; anything else is built from the current address.
-        serverRebase.sourceSet(url)
-        if (url == null) return
+        val url = args["url"]?.toString() ?: return
         cancelRateStartup()
         frameTiming.reset()
         startupCodecGate.block(frameTiming.generationToken)
@@ -4054,7 +4039,6 @@ class Media3VideoView(
         // and an immediately queued appResumed must not restore stale media.
         lastSourceArguments = null
         lastPlaybackPositionMs = 0L
-        serverRebase.clear()
         player.stop()
         player.clearMediaItems()
         disableCapabilityReselection()

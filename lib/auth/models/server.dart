@@ -56,7 +56,6 @@ class Server {
     bool clearDisplayAddress = false,
     String? entryAddress,
     String? entryServerId,
-    bool clearEntryAddress = false,
     String? version,
     ServerType? serverType,
     String? loginDisclaimer,
@@ -72,12 +71,8 @@ class Server {
           ? null
           : displayAddress ?? this.displayAddress,
       candidateAddresses: candidateAddresses,
-      entryAddress: clearEntryAddress
-          ? null
-          : entryAddress ?? this.entryAddress,
-      entryServerId: clearEntryAddress
-          ? null
-          : entryServerId ?? this.entryServerId,
+      entryAddress: entryAddress ?? this.entryAddress,
+      entryServerId: entryServerId ?? this.entryServerId,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,

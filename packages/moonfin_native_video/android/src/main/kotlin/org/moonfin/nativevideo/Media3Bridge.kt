@@ -172,8 +172,6 @@ object Media3Bridge {
         val flushedSource = flushPendingCalls(view)
         if (carriedSource != null && !flushedSource) {
             view.ensurePlayerAlive()
-            // The carried source keeps following its server's moves.
-            if (oldView != null) view.serverRebase.takeOver(oldView.serverRebase)
             view.handleQueuedCall("setSource", carriedSource)
         }
     }
@@ -282,17 +280,6 @@ object Media3Bridge {
     }
 
     fun handleMethodCall(call: MethodCall, result: MethodChannel.Result, caller: Any) {
-        if (call.method == "rebaseServer") {
-            val args = call.arguments as? Map<*, *>
-            val from = args?.get("from") as? String
-            val to = args?.get("to") as? String
-            // The moves belong to the view playing the stream, so they end
-            // with its source and never reach another server's playback.
-            val view = activeView
-            val cut = if (from != null && to != null && view != null) view.rebaseServer(from, to) else -1
-            result.success(cut)
-            return
-        }
         if (call.method == "activateView") {
             val id = ((call.arguments as? Map<*, *>)?.get("viewId") as? Number)?.toInt()
             val view = id?.let { viewRegistry[it] }

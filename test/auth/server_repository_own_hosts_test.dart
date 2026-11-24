@@ -44,27 +44,4 @@ void main() {
     gAllowSelfSignedCertificates = false;
     expect(acceptsUntrustedCertificate('media.home.lan'), isFalse);
   });
-
-  test('the entry address a saved server was added through counts too',
-      () async {
-    // As after a restart: nothing typed this session.
-    final repo = ServerRepository(_AuthStore(), _ClientFactory());
-    await repo.saveServer(
-      Server(
-        id: 'media',
-        name: 'Media',
-        address: 'https://203.0.113.7:51234',
-        entryAddress: 'https://media.home.lan',
-        entryServerId: 'abc',
-        version: '10.11.0',
-        serverType: ServerType.jellyfin,
-        dateAdded: DateTime(2026),
-      ),
-    );
-
-    gAllowSelfSignedCertificates = true;
-    expect(acceptsUntrustedCertificate('media.home.lan'), isTrue);
-    expect(acceptsUntrustedCertificate('203.0.113.7'), isTrue);
-    expect(acceptsUntrustedCertificate('other.home.lan'), isFalse);
-  });
 }

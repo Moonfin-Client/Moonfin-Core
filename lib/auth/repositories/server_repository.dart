@@ -14,15 +14,6 @@ import '../models/silo_native_offer.dart';
 import '../store/authentication_store.dart';
 import '../store/client_certificate_store.dart';
 
-/// A saved server that answers on a new address now: [from] is where it
-/// was, [server] is it as saved at its new address.
-class ServerMove {
-  const ServerMove({required this.from, required this.server});
-
-  final String from;
-  final Server server;
-}
-
 class ServerRepository {
   final AuthenticationStore _authStore;
   final MediaServerClientFactory _clientFactory;
@@ -40,14 +31,13 @@ class ServerRepository {
   final Set<String> _typedHosts = {};
 
   /// Whether [host] belongs to a saved server at any address it's reached on,
-  /// the entry address it was added through included, or to one the user
-  /// typed. Self-signed certificates are only accepted for these.
+  /// or to one the user typed. Self-signed certificates are only accepted for
+  /// these.
   bool _isOwnServerHost(String host) =>
       _typedHosts.contains(host) ||
       _servers.any(
         (s) => [
           s.address,
-          ?s.entryAddress,
           ...s.candidateAddresses,
         ].any((a) => Uri.tryParse(a)?.host == host),
       );
@@ -187,9 +177,6 @@ class ServerRepository {
             serverType: serverType,
             entryAddress: redirected ? candidate : null,
             entryServerId: entryServerId,
-            // Added at its target directly: the old entry address must not
-            // move it away from the address the user picked.
-            clearEntryAddress: !redirected,
             dateLastAccessed: DateTime.now(),
           );
           await _authStore.putServer(updated);
@@ -278,21 +265,12 @@ class ServerRepository {
   Future<Server> _checkedType(Server server) async {
     const switchable = {ServerType.jellyfin, ServerType.emby};
     if (!switchable.contains(server.serverType)) return server;
-    final wasSaved = getServer(server.id) != null;
     try {
       final (_, detected, _) = await _probeServer(server.address);
       if (!switchable.contains(detected) || detected == server.serverType) {
         return server;
       }
-      // The record as saved now: an entry address followed during the probe
-      // may have moved it, and a removed server must stay removed.
-      final current = getServer(server.id);
-      if (wasSaved && current == null) return server;
-      // What was detected belongs to the address that was probed.
-      if (current != null && current.address != server.address) {
-        return current;
-      }
-      final corrected = (current ?? server).copyWith(serverType: detected);
+      final corrected = server.copyWith(serverType: detected);
       await saveServer(corrected);
       return corrected;
     } catch (_) {
@@ -323,117 +301,17 @@ class ServerRepository {
     return followed.address == server.address ? null : followed.address;
   }
 
-  /// Saved servers whose entry address led somewhere new.
-  Stream<ServerMove> get serverMoved => _movedController.stream;
-  final _movedController = StreamController<ServerMove>.broadcast();
-
-  /// Asks the entry address of every saved server that has one, all at once,
-  /// so a list of servers shows where they answer now.
-  Future<void> followAllEntryAddresses() => Future.wait([
-    for (final server in List.of(_servers))
-      if (server.entryAddress != null) withFollowedEntryAddress(server),
-  ]);
-
-  /// For [ServerMoved.resolver]: the new address of the saved server
-  /// [serverId] that a request to [baseUrl] was for, when it couldn't connect. All requests
-  /// that fail together share one ask, and an ask that found nothing holds for
-  /// a few seconds, so a dead server isn't asked once per request.
-  ///
-  /// A request that started before its server moved and failed after it gets
-  /// the address that server is at now. It never goes to another server's
-  /// address, whatever server uses or used its own address.
-  Future<String?> followMovedAddress(String baseUrl, {String? serverId}) {
-    final wanted = _withoutTrailingSlash(baseUrl);
-    final server = serverId == null ? null : getServer(serverId);
-    if (server == null) return Future.value();
-    // Its server moved while the request was on the way: it goes where that
-    // server is now, never to where some other server went.
-    if (_withoutTrailingSlash(server.address) != wanted) {
-      return Future.value(server.address);
-    }
-    if (server.entryAddress == null) return Future.value();
-    final asked = _lastFruitlessAsk[server.id];
-    if (asked != null &&
-        DateTime.now().difference(asked) < _fruitlessAskHold) {
-      return Future.value();
-    }
-    return _movingAsks[server.id] ??= () async {
-      try {
-        final moved = await followEntryAddressOf(server.id);
-        if (moved == null) {
-          _lastFruitlessAsk[server.id] = DateTime.now();
-        } else {
-          _lastFruitlessAsk.remove(server.id);
-        }
-        return moved;
-      } finally {
-        _movingAsks.remove(server.id);
-      }
-    }();
-  }
-
-  /// For [ServerMoved.serverAt]: the saved server a request to [baseUrl] is
-  /// for, taken when it starts, so a move can only send it to that server.
-  ///
-  /// When more than one saved server is at [baseUrl], the address alone
-  /// can't tell whose request it is, so it gets none and is never sent
-  /// elsewhere: following it could hand one server's token to another.
-  String? serverIdAt(String baseUrl) {
-    final wanted = _withoutTrailingSlash(baseUrl);
-    final at = _servers
-        .where((s) => _withoutTrailingSlash(s.address) == wanted)
-        .toList();
-    return at.length == 1 ? at.single.id : null;
-  }
-
-  /// For [ServerMoved.canMove]: whether [baseUrl] is the address of a saved
-  /// server added through a redirect.
-  bool canMove(String baseUrl) {
-    final wanted = _withoutTrailingSlash(baseUrl);
-    return _servers.any(
-      (s) =>
-          s.entryAddress != null && _withoutTrailingSlash(s.address) == wanted,
-    );
-  }
-
-  final _movingAsks = <String, Future<String?>>{};
-  final _lastFruitlessAsk = <String, DateTime>{};
-  static const _fruitlessAskHold = Duration(seconds: 3);
-
-  static String _withoutTrailingSlash(String url) =>
-      url.endsWith('/') ? url.substring(0, url.length - 1) : url;
-
   Future<Server> _followedEntry(Server server) async {
     final entry = server.entryAddress;
     final entryServerId = server.entryServerId;
     if (entry == null || entryServerId == null) return server;
-    // A plain HTTP reply can be changed by anyone on the way, and a matching
-    // public `Id` proves nothing, so it never takes a server's token away
-    // from an HTTPS address. Only an HTTPS entry may move it there.
-    if (Uri.tryParse(entry)?.scheme != 'https' &&
-        Uri.tryParse(server.address)?.scheme == 'https') {
-      return server;
-    }
-    final wasSaved = getServer(server.id) != null;
     try {
       final (info, _, resolvedUrl) = await _probeServer(entry);
       if (resolvedUrl.isEmpty || resolvedUrl == server.address) return server;
       if (info['Id']?.toString() != entryServerId) return server;
-      // The answer only holds for the record the probe started from: one
-      // removed meanwhile stays removed, and one that moved or was added
-      // again meanwhile keeps what it has now.
-      final current = getServer(server.id);
-      if (wasSaved) {
-        if (current == null) return server;
-        if (current.address != server.address ||
-            current.entryAddress != entry ||
-            current.entryServerId != entryServerId) {
-          return current;
-        }
-      }
-      final moved = (current ?? server).copyWith(address: resolvedUrl);
+      final moved = server.copyWith(address: resolvedUrl);
       await updateServer(moved);
-      _movedController.add(ServerMove(from: server.address, server: moved));
+      _clientFactory.getClientIfExists(server.id)?.baseUrl = resolvedUrl;
       return moved;
     } catch (_) {
       return server;
@@ -470,29 +348,13 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
-  /// Saves [server] and then replaces the one with its id in the list and
-  /// points its cached client at its address, so a save that fails leaves
-  /// both as they were.
-  ///
-  /// Updates run one after another in the order they were made: a slow save
-  /// can't finish after a later one and put an older address back on disk,
-  /// in the list or on the client.
-  Future<void> updateServer(Server server) {
-    final done = _updating.then((_) async {
-      await _authStore.putServer(server);
-      final index = _servers.indexWhere((s) => s.id == server.id);
-      if (index < 0) return;
+  Future<void> updateServer(Server server) async {
+    final index = _servers.indexWhere((s) => s.id == server.id);
+    if (index >= 0) {
       _servers[index] = server;
-      final client = _clientFactory.getClientIfExists(server.id);
-      if (client != null && client.baseUrl != server.address) {
-        client.baseUrl = server.address;
-      }
-    });
-    _updating = done.then((_) {}, onError: (_) {});
-    return done;
+    }
+    await _authStore.putServer(server);
   }
-
-  Future<void> _updating = Future.value();
 
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);

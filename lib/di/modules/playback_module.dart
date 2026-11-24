@@ -711,28 +711,6 @@ void registerPlaybackModule() {
   };
 
   _getIt.registerSingleton<PlaybackManager>(manager);
-  // A lost stream may mean the server moved behind its entry address; the
-  // check then hands the client the new address before the next reconnect.
-  manager.reconnectingStream.where((reconnecting) => reconnecting).listen((_) {
-    if (_getIt.isRegistered<ConnectivityService>()) {
-      unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
-    }
-  });
-  // A stalled request finds a moved server while the buffer still plays. On
-  // a backend that can't watch its requests, a long buffering stands in,
-  // but only for a server added through a redirect: for any other, each
-  // ask would only ping a link that is slow already.
-  manager.canServerMove = () {
-    final canMove = ServerMoved.canMove;
-    return canMove != null &&
-        _getIt.isRegistered<MediaServerClient>() &&
-        canMove(_getIt<MediaServerClient>().baseUrl);
-  };
-  manager.serverStalledStream.listen((_) {
-    if (_getIt.isRegistered<ConnectivityService>()) {
-      unawaited(_getIt<ConnectivityService>().onStreamConnectionLost());
-    }
-  });
 
   _getIt.registerLazySingleton<OfflineStreamResolver>(
     () => OfflineStreamResolver(_getIt<OfflineRepository>()),

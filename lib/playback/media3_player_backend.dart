@@ -20,10 +20,7 @@ import 'subtitle_fonts.dart';
 
 class Media3PlayerBackend extends PlayerBackend
     with SubtitleDelayState
-    implements
-        SubtitleLoadingBackend,
-        SecondarySubtitleBackend,
-        ServerRebaseBackend {
+    implements SubtitleLoadingBackend, SecondarySubtitleBackend {
   @override
   bool get supportsSecondarySubtitleDelay => true;
   @override
@@ -234,23 +231,8 @@ class Media3PlayerBackend extends PlayerBackend
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
 
-  final _serverStall = StreamController<void>.broadcast();
-
-  @override
-  Stream<void> get serverStallStream => _serverStall.stream;
-
   @override
   bool? get playWhenReady => _playWhenReady;
-
-  /// The native side answers how many loads it cut once it redirected the
-  /// stream (0 is a success), -1 when it redirected nothing: no stream, an
-  /// address it can't read, no change, or a changed base path, and -2 when a
-  /// load was still connecting to the old address and only a reopen helps.
-  @override
-  Future<bool> rebaseServer(String from, String to) async {
-    final cut = await _invoke<int>('rebaseServer', {'from': from, 'to': to});
-    return cut != null && cut >= 0;
-  }
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -423,9 +405,6 @@ class Media3PlayerBackend extends PlayerBackend
         _bufferingStream.add(false);
       case 'activityAction':
         _activityActionController.add(map.cast<String, dynamic>());
-      case 'serverStalled':
-        _diag('Media3: server request stalled', level: LogLevel.warning);
-        _serverStall.add(null);
       case 'playerError':
         _setSubtitleLoading(false);
         final cause = map['cause']?.toString();
