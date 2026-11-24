@@ -39,9 +39,9 @@ void main() {
       lineHeight: 20,
     );
 
-    test('are two at most, however tall the cell', () {
-      expect(count(5, 200), 2);
-      expect(count(2, 200), 2);
+    test('are as many as fit in a tall cell', () {
+      expect(count(5, 200), 5);
+      expect(count(12, 200), 9);
       expect(count(1, 200), 1);
     });
 

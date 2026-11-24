@@ -488,8 +488,8 @@ enum _WideLayout {
   foldSplit,
 }
 
-/// How many of a day's titles a month cell of [height] shows, two at most. A
-/// cell too short for all of them gives a line to the count of the rest.
+/// How many of a day's titles a month cell of [height] shows. A cell too short
+/// for all of them gives a line to the count of the rest.
 @visibleForTesting
 int calendarCellTitleCount({
   required int entries,
@@ -498,7 +498,7 @@ int calendarCellTitleCount({
 }) {
   final lines = (height / lineHeight).floor();
   final fit = entries <= lines ? lines : lines - 1;
-  return fit.clamp(0, 2).clamp(0, entries);
+  return fit.clamp(0, entries);
 }
 
 bool _hasPremiere(List<CalendarEntry> entries) =>
@@ -696,7 +696,9 @@ class _WideCell extends StatelessWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, box) {
+                    // The bar and gap of a row don't shrink with the text.
                     final lineHeight = MediaQuery.textScalerOf(context)
+                        .clamp(minScaleFactor: 1)
                         .scale(_lineHeight);
                     final shown = entries
                         .take(
