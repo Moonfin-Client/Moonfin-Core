@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Ustawienia NFO",
     "adminActivitySeverityAll": "Wszystkie poziomy ważności",
     "adminActivityDateRange": "Zakres dat",
-    "adminRemoveDeviceConfirm": "Usunąć urządzenie '{name}'? Użytkownik będzie musiał ponownie zalogować się na tym urządzeniu.",
+    "adminRemoveDeviceConfirm": "Usunąć urządzenie \"{name}\"? Użytkownik będzie musiał ponownie zalogować się na tym urządzeniu.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Twoja biblioteka '{libraryName}' jest skonfigurowana tak, aby zapisywać grafiki bezpośrednio w folderach multimediów (opcja „Zapisuj grafiki w folderach multimediów” jest włączona). Jellyfin sprawdził jednak dostęp do zapisu i nie ma uprawnień do zapisywania plików w tym katalogu:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Twoja biblioteka \"{libraryName}\" jest skonfigurowana tak, aby zapisywać grafiki bezpośrednio w folderach multimediów (opcja „Zapisuj grafiki w folderach multimediów” jest włączona). Jellyfin sprawdził jednak dostęp do zapisu i nie ma uprawnień do zapisywania plików w tym katalogu:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
