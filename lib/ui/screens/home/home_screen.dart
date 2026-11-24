@@ -3995,8 +3995,10 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   VoidCallback? _topOfRowsFocuser() {
-    if (_isMediaBarIncluded() && _mediaBarFocusNode.context?.mounted == true) {
-      return _mediaBarFocusNode.requestFocus;
+    if (_isMediaBarIncluded()) {
+      return _mediaBarFocusNode.context?.mounted == true
+          ? _mediaBarFocusNode.requestFocus
+          : null;
     }
     for (var i = 0; i < widget.viewModel.rows.length; i++) {
       if (!_rowHasFocusableItems(widget.viewModel.rows[i])) continue;
