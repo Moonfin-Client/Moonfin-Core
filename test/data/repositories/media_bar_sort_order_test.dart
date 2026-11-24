@@ -40,6 +40,7 @@ void main() {
     required String sortOrder,
     required int itemCount,
     required Map<String, List<Map<String, dynamic>>> libraryItems,
+    Map<String, String> libraryTypes = const {},
   }) async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
@@ -51,12 +52,26 @@ void main() {
     await prefs.set(UserPreferences.mediaBarSortOrder, sortOrder);
     await prefs.set(UserPreferences.mediaBarNewReleaseBanner, false);
 
+    List<Map<String, dynamic>> filterByTypes(
+      List<Map<String, dynamic>> items,
+      List<String>? includeTypes,
+    ) {
+      if (includeTypes == null) return items;
+      return items
+          .where((item) => includeTypes.contains(item['Type']))
+          .toList();
+    }
+
     final views = _UserViewsApi();
     when(() => views.getUserViews()).thenAnswer(
       (_) async => {
         'Items': [
           for (final id in libraryItems.keys)
-            {'Id': id, 'Name': id, 'CollectionType': 'movies'},
+            {
+              'Id': id,
+              'Name': id,
+              'CollectionType': libraryTypes[id] ?? 'movies',
+            },
         ],
       },
     );
@@ -72,7 +87,8 @@ void main() {
       ),
     ).thenAnswer((inv) async {
       final parentId = inv.namedArguments[#parentId] as String;
-      return {'Items': libraryItems[parentId] ?? const []};
+      final types = inv.namedArguments[#includeItemTypes] as List<String>?;
+      return {'Items': filterByTypes(libraryItems[parentId] ?? const [], types)};
     });
 
     when(
@@ -87,7 +103,8 @@ void main() {
       ),
     ).thenAnswer((inv) async {
       final parentId = inv.namedArguments[#parentId] as String;
-      return {'Items': libraryItems[parentId] ?? const []};
+      final types = inv.namedArguments[#includeItemTypes] as List<String>?;
+      return {'Items': filterByTypes(libraryItems[parentId] ?? const [], types)};
     });
 
     when(
@@ -108,7 +125,8 @@ void main() {
       ),
     ).thenAnswer((inv) async {
       final parentId = inv.namedArguments[#parentId] as String?;
-      return {'Items': libraryItems[parentId] ?? const []};
+      final types = inv.namedArguments[#includeItemTypes] as List<String>?;
+      return {'Items': filterByTypes(libraryItems[parentId] ?? const [], types)};
     });
 
     final images = _ImageApi();
@@ -273,6 +291,7 @@ void main() {
         sortOrder: UserPreferences.mediaBarSortDateAddedDesc,
         itemCount: 2,
         libraryItems: mixed,
+        libraryTypes: const {'lib': 'mixed'},
       );
       expect(desc, ['long_running_series', 'recent_movie']);
     });

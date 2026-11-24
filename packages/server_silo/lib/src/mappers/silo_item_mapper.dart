@@ -210,8 +210,7 @@ String _jellyfinDate(DateTime utc) {
 String? _siloTimestamp(Object? value) {
   final text = jsonText(value);
   if (text == null) return null;
-  final parsed = DateTime.tryParse(text);
-  return parsed == null ? null : _jellyfinDate(parsed.toUtc());
+  return DateTime.tryParse(text)?.toUtc().toIso8601String();
 }
 
 String? _dateAdded(Object? versions) {
