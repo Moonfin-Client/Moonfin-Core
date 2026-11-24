@@ -639,7 +639,7 @@ class ProfileDots extends StatelessWidget {
 
 /// The phone picker's big avatar with the name under it. A horizontal swipe
 /// moves to the previous or next profile.
-class ProfileHero extends StatelessWidget {
+class ProfileHero extends StatefulWidget {
   const ProfileHero({
     super.key,
     required this.entry,
@@ -655,33 +655,79 @@ class ProfileHero extends StatelessWidget {
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
 
-  /// Opens the picture menu, at the press, after a long press on the avatar
-  /// when the entry [ProfileEntry.canEditPicture].
+  /// Opens the picture menu, at the press, when the entry
+  /// [ProfileEntry.canEditPicture]: from a long press on the avatar, or from
+  /// the camera button a tap on the avatar shows.
   final ValueChanged<Offset>? onEditPicture;
 
-  /// What a long press on the avatar does, for screen readers.
+  /// The camera button's label, and what a long press does, for screen
+  /// readers.
   final String editPictureLabel;
 
+  @override
+  State<ProfileHero> createState() => _ProfileHeroState();
+}
+
+class _ProfileHeroState extends State<ProfileHero> {
+  /// The camera button is out: a tap on the avatar shows it, another tap
+  /// hides it, as hovering does on desktop.
+  bool _editShown = false;
+
+  @override
+  void didUpdateWidget(covariant ProfileHero oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Another profile, or one that can no longer change its picture.
+    if (oldWidget.entry.id != widget.entry.id || !widget.entry.canEditPicture) {
+      _editShown = false;
+    }
+  }
+
   Widget _editable(Widget avatar) {
-    final onEdit = onEditPicture;
-    if (onEdit == null || !entry.canEditPicture) return avatar;
+    final onEdit = widget.onEditPicture;
+    if (onEdit == null || !widget.entry.canEditPicture) return avatar;
+    void edit(Offset position) {
+      setState(() => _editShown = false);
+      onEdit(position);
+    }
+
     return Builder(
       builder: (context) => Semantics(
-        onLongPressHint: editPictureLabel,
+        onLongPressHint: widget.editPictureLabel,
         onLongPress: () {
           final box = context.findRenderObject() as RenderBox?;
-          onEdit(
+          edit(
             box == null
                 ? Offset.zero
                 : box.localToGlobal(box.size.center(Offset.zero)),
           );
         },
         child: GestureDetector(
+          onTap: () => setState(() => _editShown = !_editShown),
           onLongPressStart: (details) {
             HapticFeedback.mediumImpact();
-            onEdit(details.globalPosition);
+            edit(details.globalPosition);
           },
-          child: avatar,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              avatar,
+              Positioned(
+                left: 0,
+                bottom: 0,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 120),
+                  opacity: _editShown ? 1 : 0,
+                  child: IgnorePointer(
+                    ignoring: !_editShown,
+                    child: _EditPictureButton(
+                      label: widget.editPictureLabel,
+                      onPressed: edit,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -689,11 +735,13 @@ class ProfileHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entry = widget.entry;
+    final subtitle = widget.subtitle;
     final onSurface = AppColorScheme.onSurface;
     return _SwipeDetector(
       behavior: HitTestBehavior.opaque,
-      onPrevious: onPrevious,
-      onNext: onNext,
+      onPrevious: widget.onPrevious,
+      onNext: widget.onNext,
       // Full width, so a swipe that starts beside the avatar still counts.
       child: SizedBox(
         width: double.infinity,
@@ -734,7 +782,7 @@ class ProfileHero extends StatelessWidget {
                     color: onSurface.withValues(alpha: 0.65),
                   ),
                   textAlign: TextAlign.center,
-                  child: subtitle!,
+                  child: subtitle,
                 ),
               ],
             ],

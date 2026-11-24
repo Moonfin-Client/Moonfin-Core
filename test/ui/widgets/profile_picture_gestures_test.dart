@@ -146,5 +146,49 @@ void main() {
       await tester.pumpAndSettle();
       expect(edits, isEmpty);
     });
+    testWidgets('a tap shows the camera button, which opens the menu', (
+      tester,
+    ) async {
+      final edits = <Offset>[];
+      await tester.pumpWidget(hero(_editable, edits));
+      final button = find.byIcon(Icons.photo_camera_outlined);
+      double opacity() => tester
+          .widget<AnimatedOpacity>(
+            find.ancestor(of: button, matching: find.byType(AnimatedOpacity)),
+          )
+          .opacity;
+      expect(opacity(), 0);
+
+      await tester.tapAt(_hero(tester));
+      await tester.pumpAndSettle();
+      expect(opacity(), 1);
+      expect(edits, isEmpty);
+
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(edits, hasLength(1));
+      // Used, it goes away again.
+      expect(opacity(), 0);
+
+      await tester.tapAt(_hero(tester));
+      await tester.pumpAndSettle();
+      await tester.tapAt(_hero(tester));
+      await tester.pumpAndSettle();
+      expect(opacity(), 0);
+    });
+
+    testWidgets('moving to another profile hides it', (tester) async {
+      final edits = <Offset>[];
+      await tester.pumpWidget(hero(_editable, edits));
+      await tester.tapAt(_hero(tester));
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(hero(_other, edits));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.photo_camera_outlined), findsNothing);
+      await tester.tapAt(tester.getCenter(find.text('J')));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.photo_camera_outlined), findsNothing);
+    });
   });
 }
