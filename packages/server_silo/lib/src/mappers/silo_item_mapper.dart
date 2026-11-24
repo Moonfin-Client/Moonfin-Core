@@ -322,14 +322,15 @@ Map<String, dynamic> _imageFields(
       ? backdropUrls
       : [?jsonText(item['backdrop_url'])];
   if (isEpisode && item['backdrop_is_episode_still'] != true) {
-    // The series' backdrop, sent along with the episode.
-    if (seriesId != null && backdrops.isNotEmpty) {
-      _registerIfMissing(
-        images,
-        seriesId,
-        SiloImageType.backdrop,
-        backdrops.first,
-      );
+    // The series' backdrops, sent along with the episode. Register the whole
+    // set when the series hasn't been seen yet so episode detail pages can
+    // cycle through all of them rather than only the first.
+    if (seriesId != null &&
+        backdrops.isNotEmpty &&
+        images.urlFor(seriesId, SiloImageType.backdrop) == null) {
+      for (var i = 0; i < backdrops.length; i++) {
+        images.register(seriesId, SiloImageType.backdrop, backdrops[i], index: i);
+      }
     }
     backdrops = const [];
   }

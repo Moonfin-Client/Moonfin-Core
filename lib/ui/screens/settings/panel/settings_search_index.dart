@@ -717,6 +717,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.detailsScreenBackdrop,
       keywords: ['background images'],
     ),
+    details.leaf(
+      'pref_details_backdrop_shuffle',
+      l10n.shuffleBackdrops,
+      keywords: ['random', 'randomize', 'order', 'cycle', 'background'],
+    ),
+    details.leaf(
+      'pref_details_backdrop_interval_ms',
+      l10n.backdropDuration,
+      keywords: ['interval', 'timer', 'cycle', 'slideshow', 'seconds', 'background'],
+    ),
     if (PlatformDetection.useMobileUi)
       details.leaf(
         'pref_details_backdrop_size',
