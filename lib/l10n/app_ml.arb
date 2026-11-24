@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO ക്രമീകരണങ്ങൾ",
     "adminActivitySeverityAll": "എല്ലാ തീവ്രതകളും",
     "adminActivityDateRange": "തീയതി ശ്രേണി",
-    "adminRemoveDeviceConfirm": "'{name}' ഉപകരണം നീക്കം ചെയ്യണോ? ഉപയോക്താവിന് ഈ ഉപകരണത്തിൽ വീണ്ടും സൈൻ ഇൻ ചെയ്യേണ്ടിവരും.",
+    "adminRemoveDeviceConfirm": "\"{name}\" ഉപകരണം നീക്കം ചെയ്യണോ? ഉപയോക്താവിന് ഈ ഉപകരണത്തിൽ വീണ്ടും സൈൻ ഇൻ ചെയ്യേണ്ടിവരും.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "നിങ്ങളുടെ '{libraryName}' ലൈബ്രറി ആർട്ട്‌വർക്ക് നേരിട്ട് മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കാൻ കോൺഫിഗർ ചെയ്തിരിക്കുന്നു ('Save artwork into media folders' പ്രവർത്തനക്ഷമമാണ്). എന്നിരുന്നാലും, Jellyfin റൈറ്റ് ആക്സസ് പരീക്ഷിച്ചു, ഈ ഡയറക്ടറിയിലേക്ക് ഫയലുകൾ എഴുതാൻ അനുമതിയില്ല:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "നിങ്ങളുടെ \"{libraryName}\" ലൈബ്രറി ആർട്ട്‌വർക്ക് നേരിട്ട് മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കാൻ കോൺഫിഗർ ചെയ്തിരിക്കുന്നു ('Save artwork into media folders' പ്രവർത്തനക്ഷമമാണ്). എന്നിരുന്നാലും, Jellyfin റൈറ്റ് ആക്സസ് പരീക്ഷിച്ചു, ഈ ഡയറക്ടറിയിലേക്ക് ഫയലുകൾ എഴുതാൻ അനുമതിയില്ല:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
