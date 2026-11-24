@@ -232,19 +232,8 @@ class CalendarRepository {
           enableTotalRecordCount: false,
         );
         for (final item in page['Items'] as List? ?? const []) {
-          if (item is! Map) continue;
-          final data = item['UserData'];
-          if (data is! Map) continue;
-          final unplayed = (data['UnplayedItemCount'] as num?)?.toInt() ?? 0;
-          final total = (item['RecursiveItemCount'] as num?)?.toInt();
-          out['${item['Id']}'] = CalendarSeriesProgress(
-            favorite: data['IsFavorite'] == true,
-            started:
-                data['Played'] == true ||
-                (total != null && unplayed < total) ||
-                data['LastPlayedDate'] != null,
-            unplayed: unplayed,
-          );
+          if (item is! Map || item['UserData'] is! Map) continue;
+          out['${item['Id']}'] = CalendarSeriesProgress.fromItem(item);
         }
       } catch (e) {
         debugPrint('[Calendar] series progress failed: $e');

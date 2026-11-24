@@ -1421,6 +1421,23 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.mediaBarNewMovieDetailDescription,
       keywords: ['tagline', 'slogan', 'new movie'],
     ),
+    // Shown only when the bar holds what they sort, as on the screen.
+    if (prefs.get(UserPreferences.mediaBarContentType) ==
+        UserPreferences.mediaBarContentTypeBoth)
+      mediaBar.leaf(
+        'mediaBarMixTypes',
+        l10n.mediaBarMixTypes,
+        subtitle: l10n.mediaBarMixTypesDescription,
+        keywords: ['alternate', 'movies', 'series'],
+      ),
+    if (prefs.get(UserPreferences.mediaBarContentType) !=
+        UserPreferences.mediaBarContentTypeMovies)
+      mediaBar.leaf(
+        'mediaBarFollowedFirst',
+        l10n.mediaBarFollowedFirst,
+        subtitle: l10n.mediaBarFollowedFirstDescription,
+        keywords: ['started', 'favorite', 'watching', 'series'],
+      ),
     if (!PlatformDetection.useMobileUi)
       mediaBar.leaf(
         'mediaBarRowPeek',

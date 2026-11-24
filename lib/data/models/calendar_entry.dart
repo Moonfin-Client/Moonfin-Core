@@ -129,6 +129,24 @@ class CalendarSeriesProgress {
     this.unplayed = 0,
   });
 
+  /// Read from a series as the server sends it. [started] needs the
+  /// RecursiveItemCount field, without which a partly watched series only
+  /// counts once it has a last played date.
+  factory CalendarSeriesProgress.fromItem(Map item) {
+    final data = item['UserData'];
+    if (data is! Map) return const CalendarSeriesProgress();
+    final unplayed = (data['UnplayedItemCount'] as num?)?.toInt() ?? 0;
+    final total = (item['RecursiveItemCount'] as num?)?.toInt();
+    return CalendarSeriesProgress(
+      favorite: data['IsFavorite'] == true,
+      started:
+          data['Played'] == true ||
+          (total != null && unplayed < total) ||
+          data['LastPlayedDate'] != null,
+      unplayed: unplayed,
+    );
+  }
+
   final bool favorite;
   final bool started;
   final int unplayed;

@@ -1973,13 +1973,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get carServerUnreachable => 'No es pot connectar amb el teu servidor';
 
   @override
-  String get carListenNow => 'Listen Now';
+  String get carListenNow => 'Escolta ara';
 
   @override
-  String get carRecentlyPlayed => 'Recently Played';
+  String get carRecentlyPlayed => 'Reproduït recentment';
 
   @override
-  String get carInstantMix => 'Instant Mix';
+  String get carInstantMix => 'Mescla instantània';
 
   @override
   String downloadsCount(int count) {
@@ -5215,6 +5215,20 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get mediaBarNewMovieDetailDescription =>
       'Mostra l\'eslogan de la pel·lícula sota «Nova pel·lícula». Si no en té, l\'etiqueta es mostra sola.';
+
+  @override
+  String get mediaBarMixTypes => 'Mix Movies and Series';
+
+  @override
+  String get mediaBarMixTypesDescription =>
+      'Movies and series take turns, as long as each has titles.';
+
+  @override
+  String get mediaBarFollowedFirst => 'Followed Series First';
+
+  @override
+  String get mediaBarFollowedFirstDescription =>
+      'Series you\'ve started or marked as favorite come first.';
 
   @override
   String get moviesAndTvShows => 'Pel·lícules i Sèries';
@@ -18667,7 +18681,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Classic';
+  String get topNavbarStyleClassic => 'Clàssic';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18690,7 +18704,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Classic';
+  String get sidebarStyleClassic => 'Clàssic';
 
   @override
   String get sidebarStyleReel => 'Reel';
