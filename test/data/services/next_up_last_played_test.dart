@@ -231,6 +231,7 @@ void main() {
         lastUsed: DateTime(2026),
       ),
     ]);
+    when(() => sessionRepo.accountSelectionGeneration).thenReturn(0);
     when(() => sessionRepo.activeServerId).thenReturn('srv');
     when(() => sessionRepo.activeUserId).thenReturn('user');
     when(

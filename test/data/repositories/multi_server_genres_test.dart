@@ -132,6 +132,7 @@ void main() {
       when(() => factory.getClientIfExists(id)).thenReturn(client);
     }
     when(authStore.getServers).thenReturn(servers);
+    when(() => session.accountSelectionGeneration).thenReturn(0);
     when(() => session.activeServerId).thenReturn('a');
     when(() => session.activeUserId).thenReturn('user-a');
     multiServer = MultiServerRepository(

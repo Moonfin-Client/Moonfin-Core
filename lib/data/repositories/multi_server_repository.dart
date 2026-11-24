@@ -82,6 +82,7 @@ class MultiServerRepository {
   static const _genreArtworkConcurrency = 6;
 
   List<ServerUserSession>? _cachedSessions;
+  int? _cachedSessionGeneration;
   DateTime _cacheExpiry = DateTime(0);
   final Set<String> _warnedFallbackServers = {};
   final Map<String, int> _rowOffsets = {};
@@ -115,7 +116,11 @@ class MultiServerRepository {
   }
 
   Future<List<ServerUserSession>> getLoggedInServers() async {
-    if (_cachedSessions != null && DateTime.now().isBefore(_cacheExpiry)) {
+    final generation = _sessionRepo.accountSelectionGeneration;
+    if (generation == null) return const [];
+    if (_cachedSessionGeneration == generation &&
+        _cachedSessions != null &&
+        DateTime.now().isBefore(_cacheExpiry)) {
       return _cachedSessions!;
     }
 
@@ -166,7 +171,8 @@ class MultiServerRepository {
           }
         }
 
-        if (userId == null) {
+        final useFallback = userId == null;
+        if (useFallback) {
           final token = await _credentialStore.getToken(server.id);
           // Another Silo server: its most recently used profile that needs
           // no PIN now, not whichever profile was stored first.
@@ -184,16 +190,13 @@ class MultiServerRepository {
               break;
             }
           }
-          if (matchSecondaryUser &&
-              chosenUser != null &&
-              _warnedFallbackServers.add(server.id)) {
-            _logger.w(
-              'MultiServer: No usable username match on ${server.name}. '
-              'Using the default account selection.',
-            );
-          }
         }
 
+        // Credentials are written on shared clients. A lookup that waited on
+        // secure storage must never replace the new viewer's login.
+        if (_sessionRepo.accountSelectionGeneration != generation) {
+          return const [];
+        }
         if (userId == null ||
             chosenUser == null ||
             accessToken == null ||
@@ -201,6 +204,14 @@ class MultiServerRepository {
           continue;
         }
 
+        if (useFallback &&
+            matchSecondaryUser &&
+            _warnedFallbackServers.add(server.id)) {
+          _logger.w(
+            'MultiServer: No usable username match on ${server.name}. '
+            'Using the default account selection.',
+          );
+        }
         final client = _clientFactory.getClient(
           serverId: server.id,
           serverType: server.serverType,
@@ -223,7 +234,9 @@ class MultiServerRepository {
       }
     }
 
+    if (_sessionRepo.accountSelectionGeneration != generation) return const [];
     _cachedSessions = sessions;
+    _cachedSessionGeneration = generation;
     _cacheExpiry = DateTime.now().add(_sessionCacheDuration);
     return sessions;
   }

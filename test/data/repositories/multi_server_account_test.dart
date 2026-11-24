@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,7 +25,9 @@ class _Client extends Mock implements MediaServerClient {}
 void main() {
   late _AuthStore store;
   late _Credentials credentials;
+  late _Client foo;
   late _Client bar;
+  late _Session session;
   late MultiServerRepository repository;
   late List<LogEvent> warnings;
 
@@ -54,7 +58,8 @@ void main() {
     addTearDown(() => Logger.removeLogListener(captureWarning));
     store = _AuthStore();
     credentials = _Credentials();
-    final session = _Session();
+    session = _Session();
+    foo = _Client();
     final factory = _ClientFactory();
     bar = _Client();
     when(store.getServers).thenReturn([
@@ -65,6 +70,7 @@ void main() {
       user('foo', 'alice-foo', 'Alice'),
       user('foo', 'john-foo', 'John'),
     ]);
+    when(() => session.accountSelectionGeneration).thenReturn(0);
     when(() => session.activeServerId).thenReturn('foo');
     when(() => session.activeUserId).thenReturn('john-foo');
     when(() => credentials.getToken('bar')).thenAnswer((_) async => null);
@@ -74,7 +80,7 @@ void main() {
         serverType: ServerType.jellyfin,
         baseUrl: 'http://foo',
       ),
-    ).thenReturn(_Client());
+    ).thenReturn(foo);
     when(
       () => factory.getClient(
         serverId: 'bar',
@@ -84,6 +90,43 @@ void main() {
     ).thenReturn(bar);
     repository = MultiServerRepository(store, credentials, factory, session);
   });
+
+  test(
+    'an older lookup cannot restore credentials after a profile switch',
+    () async {
+      when(store.getServers).thenReturn([
+        server('bar', ServerType.emby),
+        server('foo', ServerType.jellyfin),
+      ]);
+      when(() => store.getUsers('bar'))
+          .thenReturn([user('bar', 'alice-bar', 'Alice')]);
+      final readingToken = Completer<void>();
+      final token = Completer<String?>();
+      when(() => credentials.getToken('bar')).thenAnswer((_) {
+        readingToken.complete();
+        return token.future;
+      });
+
+      final staleLookup = repository.getLoggedInServers();
+      await readingToken.future;
+
+      when(() => session.accountSelectionGeneration).thenReturn(null);
+      expect(await repository.getLoggedInServers(), isEmpty);
+
+      when(() => session.accountSelectionGeneration).thenReturn(1);
+      when(() => session.activeUserId).thenReturn('alice-foo');
+      final currentSessions = await repository.getLoggedInServers();
+      token.complete(null);
+
+      expect(currentSessions.map((session) => session.userId), [
+        'alice-bar',
+        'alice-foo',
+      ]);
+      expect(await staleLookup, isEmpty);
+      verifyNever(() => foo.accessToken = 'token-john-foo');
+      verifyNever(() => foo.userId = 'john-foo');
+    },
+  );
 
   test('uses the matching Bar user and that user’s token', () async {
     when(() => store.getUsers('bar')).thenReturn([
