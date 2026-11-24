@@ -13663,5 +13663,264 @@
     "selectStudiosToIncludeDescription": "Välj vilka studior som ska visas på startsidan.",
     "deselectAllStudios": "Avmarkera alla",
     "tvStudiosFilter": "TV-studior",
-    "movieStudiosFilter": "Filmstudior"
+    "movieStudiosFilter": "Filmstudior",
+    "selectedStudiosFilter": "Utvalda studior",
+    "unselectedStudiosFilter": "Unselected Studios",
+    "playlistsRowSortOrderDescription": "Sortera raderna i spellistan i stigande eller fallande ordning.",
+    "playlistsRowShowEpisodes": "Visa enskilda avsnitt",
+    "playlistsRowShowEpisodesSubtitle": "Visa TV-serier i utvidgad vy för att visa varje avsnitt separat.",
+    "audioRowsSortOrderDescription": "Sortera ljudraderna i stigande eller fallande ordning.",
+    "sorting": "Sortering",
+    "imdbRowsSorting": "Sortering av rader på IMDb",
+    "imdbRowsSortingDescription": "Sortera raderna på IMDb efter namn, utgivningsdatum, betyg och annat.",
+    "imdbRowsSortOrderDescription": "Sortera IMDb-raderna i stigande eller fallande ordning.",
+    "tmdbRowsSorting": "Sortering av rader i TMDB",
+    "tmdbRowsSortingDescription": "Sortera TMDB-rader efter namn, utgivningsdatum, betyg och mer.",
+    "tmdbRowsSortOrderDescription": "Sortera TMDB-raderna i stigande eller fallande ordning.",
+    "seerrRowsSorting": "Seerr-radsortering",
+    "seerrRowsSortingDescription": "Sortera raderna i Seerr efter namn, utgivningsdatum, betyg och mer.",
+    "seerrRowsSortOrderDescription": "Sortera Seerr-raderna i stigande eller fallande ordning.",
+    "externalRowSortDefault": "Standard (lista)",
+    "externalRowSortRating": "Betyg",
+    "externalRowSortPopularity": "Popularitet",
+    "locallyDecodedCodecs": "Lokalt avkodade kodekar",
+    "transcodeTargetCodecs": "Målkodekar för omkodning",
+    "hevcSoftwareDirectPlay": "Direktuppspelning av HEVC (mjukvaruavkodning)",
+    "hevcSoftwareDirectPlaySubtitle": "Spela upp HEVC i upp till 1080p direkt från originalfilen istället för att be servern att omkoda den. Denna Apple TV avkodar filen programvarumässigt, vilket innebär att tunga 10-bitarsfiler eller filer med hög bithastighet kan hacka.",
+    "av1SoftwareUhdDirectPlay": "Direktuppspelning av 4K AV1 (programvaruavkodning)",
+    "av1SoftwareUhdDirectPlaySubtitle": "Spela upp AV1 i upplösning över 1080p, inklusive HDR10, direkt från originalfilen istället för att be servern att omkoda den. Den här enheten avkodar AV1 programvarumässigt, vilket innebär att tunga 4K-filer eller filer med hög bithastighet kan hacka.",
+    "cadenceSlowdown": "Jämn bild med 24 fps på en 60 Hz-TV",
+    "cadenceSlowdownSubtitle": "När funktionen ”Match Frame Rate” är avstängd spelas videon med 24 fps upp 0,1 % långsammare så att den passar TV:n utan att bildrutor går förlorade. Används inte när ljudet skickas vidare till en receiver.",
+    "cadenceTipTitle": "Aktivera anpassning till bildfrekvens",
+    "cadenceTipMessage": "Den här videon kan inte spelas upp smidigt med din TV:s nuvarande uppdateringsfrekvens. Öppna Inställningar > Video och ljud > Anpassa innehåll på din Apple TV och aktivera Anpassa bildfrekvens.",
+    "cadenceTipSlowdownHint": "Eller aktivera ”Smooth 24 fps” på en 60 Hz-TV i Moonfin under Uppspelning > Kvalitet och avkodning.",
+    "externalPlayerLiveTvOnly": "Endast direktsänd TV",
+    "@externalPlayerLiveTvOnly": {
+        "description": "Setting that limits the external player to Live TV channels"
+    },
+    "externalPlayerLiveTvOnlySubtitle": "Använd den externa spelaren för direktsänd TV och behåll allt annat i den inbyggda spelaren.",
+    "@externalPlayerLiveTvOnlySubtitle": {
+        "description": "Description for the Live TV Only external player setting"
+    },
+    "preferTextSubtitles": "Föredrar textundertexter",
+    "preferTextSubtitlesSubtitle": "Prioritera textbaserade undertexter (SRT, VTT) framför bildbaserade format (PGS, VobSub).",
+    "preferExternalSubtitles": "Föredrar externa undertexter",
+    "preferExternalSubtitlesSubtitle": "Prioritera externa undertextfiler framför inbäddade spår.",
+    "personWebsite": "Officiell webbplats",
+    "@personWebsite": {
+        "description": "Tooltip for the button on a person page that opens their own website"
+    },
+    "watchPartyGroupSubtitles": "Undertexter för alla",
+    "@watchPartyGroupSubtitles": {
+        "description": "The Watch Party host's subtitle choice for the whole group"
+    },
+    "watchPartyOwnSubtitles": "Varje persons val",
+    "@watchPartyOwnSubtitles": {
+        "description": "Watch Party subtitle option that leaves subtitles to each member"
+    },
+    "watchPartyLobby": "I foajén",
+    "@watchPartyLobby": {
+        "description": "Watch Party status while nothing plays"
+    },
+    "watchPartyUpNextLabel": "Nästa",
+    "@watchPartyUpNextLabel": {
+        "description": "Label over the title a Watch Party host has staged"
+    },
+    "watchPartyRoomSettings": "Rumsinställningar",
+    "@watchPartyRoomSettings": {
+        "description": "Heading over a Watch Party host's room switches"
+    },
+    "watchPartyCodeOrLink": "Rumskod eller inbjudningslänk",
+    "@watchPartyCodeOrLink": {
+        "description": "Join box on the Watch Party screen"
+    },
+    "watchPartyCopyInvite": "Kopiera inbjudningslänken",
+    "@watchPartyCopyInvite": {
+        "description": "Host button that copies a Watch Party invite link"
+    },
+    "watchPartyInviteCopied": "Inbjudningslänken har kopierats",
+    "@watchPartyInviteCopied": {
+        "description": "Snackbar after copying a Watch Party invite link"
+    },
+    "watchPartyLetEveryoneVote": "Låt alla rösta om filmer",
+    "@watchPartyLetEveryoneVote": {
+        "description": "Host switch that turns a Watch Party into a vote on movies"
+    },
+    "watchPartyVoteHelp": "Lägg till filmer som alla kan rösta på, och spela sedan upp den du vill se. TV-avsnitt väljer du fortfarande själv.",
+    "@watchPartyVoteHelp": {
+        "description": "Under the host's vote list in a Watch Party"
+    },
+    "watchPartyGuestVoteHelp": "Rösta på det du vill se. Programledaren spelar upp ett av dem.",
+    "@watchPartyGuestVoteHelp": {
+        "description": "Under a guest's vote list in a Watch Party"
+    },
+    "watchPartySearchMovies": "Sök efter filmer",
+    "@watchPartySearchMovies": {
+        "description": "Hint in the host's movie search in a Watch Party vote"
+    },
+    "watchPartyNoSuggestions": "Det finns inga filmer att rösta på än.",
+    "@watchPartyNoSuggestions": {
+        "description": "Shown when a Watch Party vote has no movies"
+    },
+    "watchPartySuggested": "Lagt till i omröstningen för Watch Party",
+    "@watchPartySuggested": {
+        "description": "Snackbar after the host adds a movie to the Watch Party vote"
+    },
+    "watchPartyVoteCount": "{count, plural, one {{count} vote} other {{count} votes}}",
+    "@watchPartyVoteCount": {
+        "description": "How many votes a movie has in a Watch Party vote",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchParty": "Watch Party",
+    "@watchParty": {
+        "description": "Title of Silo's Watch Party screen"
+    },
+    "watchPartyUnavailable": "Den här servern erbjuder inte Watch Party.",
+    "@watchPartyUnavailable": {
+        "description": "Shown when the Silo server has no Watch Party rooms"
+    },
+    "watchPartyRoomCode": "Rumskod",
+    "@watchPartyRoomCode": {
+        "description": "Label for a Watch Party room's join code"
+    },
+    "watchPartyStart": "Starta en watch party",
+    "@watchPartyStart": {
+        "description": "Button that opens a new Watch Party room"
+    },
+    "watchPartyPickTitle": "Öppna en titel och välj ”Titta tillsammans med gruppen” för att bestämma vad alla ska titta på.",
+    "@watchPartyPickTitle": {
+        "description": "How a Watch Party host picks what to watch"
+    },
+    "watchPartyWaitingForHost": "Väntar på att värden ska välja något.",
+    "@watchPartyWaitingForHost": {
+        "description": "Shown to Watch Party guests before anything is picked"
+    },
+    "watchPartyShareCode": "Andra ansluter sig med den här koden från sina Watch Party skärm.",
+    "@watchPartyShareCode": {
+        "description": "Under a Watch Party room's code"
+    },
+    "watchPartyReconnecting": "Återansluter...",
+    "@watchPartyReconnecting": {
+        "description": "Watch Party connection status while the room socket reconnects"
+    },
+    "watchPartyOffline": "offline",
+    "@watchPartyOffline": {
+        "description": "After a Watch Party member's name when they are not connected"
+    },
+    "watchPartyStartForEveryone": "Start för alla",
+    "@watchPartyStartForEveryone": {
+        "description": "Host button that starts the staged item for the whole Watch Party"
+    },
+    "watchPartyResumeAt": "CV på {time}",
+    "@watchPartyResumeAt": {
+        "description": "Host button that starts the staged item for the whole Watch Party part way through, at the earliest point any member reached. The time is a position like 42:10",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartFromBeginning": "Börja från början",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "watchPartyResumeWhere": "Var {name} där vi slutade, vilket är det tidigaste någon här har nått.",
+    "@watchPartyResumeWhere": {
+        "description": "Note under the Watch Party resume button naming the member whose position it resumes from",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyResumeEarliest": "Den tidigaste tidpunkten som någon här har nått.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "watchPartyResumeYours": "Där du slutade. Alla börjar där.",
+    "@watchPartyResumeYours": {
+        "description": "Note under the Watch Party resume button when it resumes from the host's own progress"
+    },
+    "watchPartyResumeNotStarted": "{count, plural, =1{1 person hasn't started it yet.} other{{count} people haven't started it yet.}}",
+    "@watchPartyResumeNotStarted": {
+        "description": "Added to the Watch Party resume note: how many members haven't begun the title, whom resuming takes past its start",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyBackToLobby": "Tillbaka till lobbyn",
+    "@watchPartyBackToLobby": {
+        "description": "Host button that stops Watch Party playback"
+    },
+    "watchPartyGuestsCanPause": "Gästerna kan spela upp och pausa",
+    "@watchPartyGuestsCanPause": {
+        "description": "Host switch for guest transport control in a Watch Party"
+    },
+    "watchPartyEnd": "Slut för alla",
+    "@watchPartyEnd": {
+        "description": "Host button that closes the Watch Party room for everyone"
+    },
+    "watchPartyEnded": "Watch Party har avslutats.",
+    "@watchPartyEnded": {
+        "description": "Shown when the Watch Party room was closed"
+    },
+    "watchPartyStaged": "Utvald till Watch Party",
+    "@watchPartyStaged": {
+        "description": "Snackbar after the host picks an item for the Watch Party"
+    },
+    "watchPartyUpNext": "Nästa: {title}",
+    "@watchPartyUpNext": {
+        "description": "The item a Watch Party host has staged",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchParties": "Watch Parties",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Inled festerna med",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyServiceMoonbaseHint": "Chatt, reaktioner och omröstningar. Drivs på Moonbase.",
+    "@watchPartyServiceMoonbaseHint": {
+        "description": "Line under the Watch Party choice of the Start parties with setting"
+    },
+    "watchPartyServiceSyncPlayHint": "Jellyfins egen. Vänner som använder andra Jellyfin-appar kan gå med.",
+    "@watchPartyServiceSyncPlayHint": {
+        "description": "Line under the SyncPlay choice of the Start parties with setting"
+    },
+    "watchPartyServiceNote": "Du kan gå med i båda typerna av rum. Det här avgör endast vilket du startar.",
+    "@watchPartyServiceNote": {
+        "description": "Note under the Start parties with setting"
+    },
+    "watchPartyDuringParty": "Under en fest",
+    "@watchPartyDuringParty": {
+        "description": "Section heading on the Watch Parties settings page"
+    },
+    "watchPartyChatOverlay": "Visa chatten över videon",
+    "@watchPartyChatOverlay": {
+        "description": "Watch Parties setting: show new chat messages over the video for a few seconds"
+    },
+    "watchPartyChatOverlaySubtitle": "Nya meddelanden visas i några sekunder",
+    "@watchPartyChatOverlaySubtitle": {
+        "description": "Line under the Show chat over the video setting"
+    },
+    "watchPartyAlerts": "Partivarningar",
+    "@watchPartyAlerts": {
+        "description": "Watch Parties setting: tell the user when someone on the server starts a party"
+    },
+    "watchPartyAlertsSubtitle": "Säg till när någon på den här servern startar en",
+    "@watchPartyAlertsSubtitle": {
+        "description": "Line under the Party alerts setting"
+    }
 }
