@@ -250,9 +250,18 @@ class SiloMediaStreamResolver
       session.bandwidthCapKbps = _kbps(request.maxStreamingBitrate);
     }
     final start = session.startBody;
+    // As at the start: a replan that asks for a server stream (a quality
+    // change, a Dolby Vision transcode) offers no profile 7 conversion of the
+    // player's own, which would win it the original file again.
+    final offersTransforms = request.enableDirectPlay;
     final body = <String, dynamic>{
       'protocol_version': 3,
-      'client_features': start['client_features'],
+      'client_features': offersTransforms
+          ? start['client_features']
+          : [
+              for (final feature in start['client_features'] as List)
+                if (feature != siloFeatureClientVideoTransforms) feature,
+            ],
       'operation': _operation(request.reason),
       'playback_attempt_id': session.attemptId,
       'replan_request_id': siloNewUuid(),
@@ -268,7 +277,9 @@ class SiloMediaStreamResolver
       'metered': start['metered'] ?? false,
       'selected_tracks': _replanTracks(session, request),
       'client_capabilities': start['client_capabilities'],
-      'client_playback_context': start['client_playback_context'],
+      'client_playback_context': offersTransforms
+          ? start['client_playback_context']
+          : _withoutClientTransforms(start['client_playback_context']),
       'installation_id': session.installationId,
       if (failure) 'failure': const {'classification': 'playback_error'},
       'bandwidth_cap_kbps': ?session.bandwidthCapKbps,
@@ -327,6 +338,22 @@ class SiloMediaStreamResolver
     ReplanReason.qualityChange => 'quality_change',
     ReplanReason.failure => 'failure_recovery',
   };
+
+  /// [context] with no client transformation on any delivery.
+  static Map<String, dynamic> _withoutClientTransforms(dynamic context) {
+    final copy = Map<String, dynamic>.from(context as Map);
+    final deliveries = copy['deliveries'];
+    if (deliveries is Map) {
+      copy['deliveries'] = {
+        for (final entry in deliveries.entries)
+          entry.key: {
+            ...(entry.value as Map).cast<String, dynamic>(),
+            'transformations': const <Map<String, dynamic>>[],
+          },
+      };
+    }
+    return copy;
+  }
 
   /// The tracks a replan asks for: the plan's, and for a track change the
   /// audio and subtitle Moonfin picked.

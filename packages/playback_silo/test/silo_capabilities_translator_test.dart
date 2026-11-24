@@ -266,7 +266,16 @@ void main() {
           'name': transform.transformation,
           'executor': 'client',
           'recipe_version': '1',
-          'validated_claims': transform.claims,
+          'validated_claims': [
+            switch (transform) {
+              SiloDolbyVision7Transform.toProfile81 =>
+                'profile7_rpu_converted_to_profile81',
+              SiloDolbyVision7Transform.toHdr10 =>
+                'dolby_vision_metadata_removed',
+            },
+            'hdr10_base_layer_preserved',
+            'enhancement_layer_discarded',
+          ],
         },
       ]);
       // A remux or HLS stream is Silo's to convert, never the player's.
