@@ -1244,6 +1244,9 @@ class _StagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The preview is laid out at the window's size, which it reads without a
+    // context, so this rebuilds it when a desktop window is resized.
+    MediaQuery.sizeOf(context);
     final onSurface = AppColorScheme.onSurface;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
