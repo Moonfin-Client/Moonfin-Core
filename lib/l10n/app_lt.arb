@@ -9465,5 +9465,254 @@
     "scrollDirectionVertical": "Vertikali",
     "@scrollDirectionVertical": {
         "description": "Library scroll direction option: vertical grid (default)"
+    },
+    "homeRowsPadding": "Eilučių paraštės",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "addToWatchlist": "Pridėti į peržiūrų sąrašą",
+    "@addToWatchlist": {
+        "description": "Button label to add media to the user's Seerr watchlist"
+    },
+    "detailButtons": "Veiksmų mygtukai",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "playlistTypeAudio": "Garsas (Muzika)",
+    "@playlistTypeAudio": {
+        "description": "Filter checkbox label for audio/music playlists"
+    },
+    "audiobookPlaylistsSection": "Garso knygų grojaraščiai",
+    "@audiobookPlaylistsSection": {
+        "description": "Section header above audiobook playlists when Group by Type is enabled"
+    },
+    "mixedPlaylistsSection": "Mišrūs grojaraščiai",
+    "@mixedPlaylistsSection": {
+        "description": "Section header above mixed playlists when Group by Type is enabled"
+    },
+    "playbackTimeVideoSection": "Vaizdo leistuvas",
+    "@playbackTimeVideoSection": {
+        "description": "Section header above the video progress bar time slots"
+    },
+    "playbackTimeAboveBarLeft": "Virš juostos, kairėje",
+    "@playbackTimeAboveBarLeft": {
+        "description": "Progress bar time slot above the bar on the left"
+    },
+    "playbackTimeAboveBarCenter": "Virš juostos, centre",
+    "@playbackTimeAboveBarCenter": {
+        "description": "Progress bar time slot above the bar in the center"
+    },
+    "playbackTimeAboveBarRight": "Virš juostos, dešinėje",
+    "@playbackTimeAboveBarRight": {
+        "description": "Progress bar time slot above the bar on the right"
+    },
+    "settingsSkipButtonAutoHideDescription": "Automatiškai paslėpti įžangos ir pabaigos praleidimo mygtuką po kelių sekundžių.",
+    "personalRatingStars": "5 žvaigždės",
+    "@personalRatingStars": {
+        "description": "Personal rating style using a five-star scale."
+    },
+    "ascending": "Didėjančia tvarka",
+    "audioLanguage": "Garso kalba",
+    "@audioLanguage": {
+        "description": "Heading for the audio language filters in the library filter picker."
+    },
+    "setupTourBulletMore": "Ir dar daugiau",
+    "@setupTourBulletMore": {
+        "description": "Closing bullet on the setup screen settings list"
+    },
+    "autoDetect": "Aptikti automatiškai",
+    "@autoDetect": {
+        "description": "Option: detect the value automatically"
+    },
+    "adminMetadataDisplayOrderAbsolute": "Absoliutus",
+    "adminMetadataPersonKindArtist": "Atlikėjas",
+    "aiTranslated": "DI vertimas",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "loadingAnimationSize": "Animacijos dydis",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationPosition": "Animacijos vieta",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationSpeed": "Animacijos greitis",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "screensaverBackdropAurora": "Aurora",
+    "@screensaverBackdropAurora": {
+        "description": "Screensaver backdrop: Aurora"
+    },
+    "screensaverAdditionalComponent": "Papildomas komponentas",
+    "@screensaverAdditionalComponent": {
+        "description": "Setting for screensaver additional component"
+    },
+    "comics": "Komiksai",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "spotlightRecommendationsSeerr": "Rekomendacijos (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "transcodeAudioCodecWithCodec": "Garso kodekas ({codec}) nepalaikomas tiesiogiai.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioChannelsExceeded": "Garso kanalų skaičius ({channels} kan.) viršija grotuvo limitą.",
+    "@transcodeAudioChannelsExceeded": {
+        "placeholders": {
+            "channels": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeSubtitleBurnInAssDisabled": "ASS/SSA subtitrams reikalingas perkodavimas, nes išjungtas tiesioginis atkūrimas.",
+    "transcodeAudioSampleRateNotSupported": "Garso diskretizavimo dažnis nepalaikomas.",
+    "transcodeAudioBitDepthNotSupported": "Garso bitų gylis nepalaikomas.",
+    "modernCardsTransitionSpeedSubtitle": "Reguliuoja animacijos greitį išplečiant pažymėtas šiuolaikines korteles",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "actionButtonsOnScreen": "Veiksmų mygtukai ekrane",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (tik paleidimas)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "achievementBadges": "Pasiekimų ženkliukai",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "achievementsAvatars": "Avatarai",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsStatLibraries": "Aplankytos bibliotekos",
+    "@achievementsStatLibraries": {
+        "description": "Counter label"
+    },
+    "friendsAdd": "Pridėti draugą",
+    "@friendsAdd": {
+        "description": "Entry that opens the people search"
+    },
+    "friendsAccept": "Priimti",
+    "@friendsAccept": {
+        "description": "Accept a friend request"
+    },
+    "friendsSendRequest": "Pridėti kaip draugą",
+    "@friendsSendRequest": {
+        "description": "Action that sends a friend request to someone"
+    },
+    "chatAddMember": "Pridėti žmonių",
+    "@chatAddMember": {
+        "description": "Action that adds friends to a group chat"
+    },
+    "achievementsUnlockedNotification": "Pasiekimas atrakintas",
+    "@achievementsUnlockedNotification": {
+        "description": "Title of the notification for one newly unlocked badge"
+    },
+    "spotlightFileDetails": "Failo išsamioji informacija",
+    "@spotlightFileDetails": {
+        "description": "Title of the spotlight summary card that opens the file details modal"
+    },
+    "profileAppliesEverywhere": "Taikoma visur",
+    "@profileAppliesEverywhere": {
+        "description": "Subtitle of the Global settings profile card"
+    },
+    "homeRows": "Eilutės",
+    "@homeRows": {
+        "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+    },
+    "rowOptions": "Eilučių parinktys",
+    "@rowOptions": {
+        "description": "Settings screen with sorting and content options for each Home row"
+    },
+    "settingsAudioAndSubtitlesSection": "Garsas ir subtitrai",
+    "@settingsAudioAndSubtitlesSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "additionalParts": "Papildomos dalys",
+    "@additionalParts": {
+        "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
+    },
+    "libraryAToZ": "Nuo A ik Ž",
+    "@libraryAToZ": {
+        "description": "Library bottom bar button that turns the alphabet on and off"
+    },
+    "adminExternalIdTypeArtist": "Atlikėjas",
+    "adminExternalIdTypeAlbumArtist": "Albumo atlikėjas",
+    "librarySortAlbumArtist": "Albumo atlikėjas",
+    "@librarySortAlbumArtist": {
+        "description": "Sort option for music: by album artist"
+    },
+    "librarySortArtist": "Atlikėjas",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "playbackInfoSurround51": "5.1 erdvinis garsas",
+    "@playbackInfoSurround51": {
+        "description": "Playback information value: six channel surround audio"
+    },
+    "playbackInfoSurround71": "7.1 erdvinis garsas",
+    "@playbackInfoSurround71": {
+        "description": "Playback information value: eight channel surround audio"
+    },
+    "recordPromptAlreadyScheduled": "Jau suplanuota įrašyti",
+    "@recordPromptAlreadyScheduled": {
+        "description": "Note in the future showing's card when a recording is already scheduled for it, by anyone"
+    },
+    "peekHomeRows": "Pradinio ekrano eilučių užuomina",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "allArtists": "Visi atlikėjai",
+    "@allArtists": {
+        "description": "Artists screen switch: every artist, not only those credited on albums"
+    },
+    "allSongsAToZ": "Visos dainos nuo A iki Ž",
+    "@allSongsAToZ": {
+        "description": "Songs screen button that opens the full list of songs by name"
+    },
+    "musicMixEverythingSubtitle": "300 atsitiktinių dainų",
+    "@musicMixEverythingSubtitle": {
+        "description": "Line under the Everything mix card"
+    },
+    "sinceYouWatchedSource": "Rekomendacijų šaltinis",
+    "sinceYouWatchedSourceTypeDescription": "Pasirinkite rekomenduojamų elementų tipą",
+    "sinceYouWatchedSourceItemDescription": "Pasirinkite šaltinio elementą, pagal kurį bus teikiamos rekomendacijos",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Įtraukti peržiūrėtus elementus į rekomendacijas",
+    "calendarAllDay": "Visą dieną",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "setupMoonbaseTitle": "Pridėti Moonbase prie jūsų serverį",
+    "@setupMoonbaseTitle": {
+        "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+    },
+    "moonbaseFeatureCalendar": "Kalendorius: kas pasirodys netrukus",
+    "@moonbaseFeatureCalendar": {
+        "description": "Moonbase dialog feature, upcoming episodes and movies"
+    },
+    "watchPartyReplyAgain": "Dar kartą!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "settingsAudioStreamSection": "Garso srautas",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Garso išvestis",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
     }
 }
