@@ -5174,20 +5174,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
-  String get mediaBarMixTypes => 'Mix Movies and Series';
-
-  @override
-  String get mediaBarMixTypesDescription =>
-      'Movies and series take turns, as long as each has titles.';
-
-  @override
-  String get mediaBarFollowedFirst => 'Followed Series First';
-
-  @override
-  String get mediaBarFollowedFirstDescription =>
-      'Series you\'ve started or marked as favorite come first.';
-
-  @override
   String get moviesAndTvShows => 'Filmes e Séries de TV';
 
   @override
@@ -18454,7 +18440,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Clássico';
+  String get topNavbarStyleClassic => 'Classic';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18477,7 +18463,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Clássico';
+  String get sidebarStyleClassic => 'Classic';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -33736,12 +33722,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get afterHoursCastStatic => 'Estático';
-
-  @override
-  String get topNavbarStyleClassic => 'Clássico';
-
-  @override
-  String get sidebarStyleClassic => 'Clássico';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -47372,10 +47352,4 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get afterHoursCastStatic => 'Estático';
-
-  @override
-  String get topNavbarStyleClassic => 'Clássico';
-
-  @override
-  String get sidebarStyleClassic => 'Clássico';
 }

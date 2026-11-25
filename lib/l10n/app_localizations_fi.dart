@@ -1968,13 +1968,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get carServerUnreachable => 'Palvelimeen ei saada yhteyttä';
 
   @override
-  String get carListenNow => 'Kuuntele nyt';
+  String get carListenNow => 'Listen Now';
 
   @override
-  String get carRecentlyPlayed => 'Äskettäin soitettu';
+  String get carRecentlyPlayed => 'Recently Played';
 
   @override
-  String get carInstantMix => 'Välitön Sekoitus';
+  String get carInstantMix => 'Instant Mix';
 
   @override
   String downloadsCount(int count) {
@@ -5185,20 +5185,6 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get mediaBarNewMovieDetailDescription =>
       'Uuden elokuvan alla näytetään elokuvan slogan. Jos sloganeita ei ole, otsikko näkyy yksinään.';
-
-  @override
-  String get mediaBarMixTypes => 'Mix Movies and Series';
-
-  @override
-  String get mediaBarMixTypesDescription =>
-      'Movies and series take turns, as long as each has titles.';
-
-  @override
-  String get mediaBarFollowedFirst => 'Followed Series First';
-
-  @override
-  String get mediaBarFollowedFirstDescription =>
-      'Series you\'ve started or marked as favorite come first.';
 
   @override
   String get moviesAndTvShows => 'Elokuvat ja TV ohjelmat';
@@ -13398,13 +13384,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get personWebsite => 'Virallinen verkkosivusto';
 
   @override
-  String get watchWithGroup => 'Katso ryhmässä';
+  String get watchWithGroup => 'Katso ryhmän kanssa';
 
   @override
-  String get watchPartyGroupSubtitles => 'Tekstitys kaikille';
+  String get watchPartyGroupSubtitles => 'Tekstitykset kaikille';
 
   @override
-  String get watchPartyOwnSubtitles => 'Vapaa valinta';
+  String get watchPartyOwnSubtitles => 'Jokaisen oma valinta';
 
   @override
   String get watchPartyLobby => 'Aulassa';
@@ -18502,33 +18488,33 @@ class AppLocalizationsFi extends AppLocalizations {
   String get clickpadSeekingPausedOnly => 'Vain tauolla';
 
   @override
-  String get topNavbarStyle => 'Yläpalkin tyyli';
+  String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Klassinen';
+  String get topNavbarStyleClassic => 'Classic';
 
   @override
-  String get topNavbarStyleTabline => 'Otsikkorivi';
+  String get topNavbarStyleTabline => 'Tabline';
 
   @override
   String get topNavbarStyleAtlas => 'Atlas';
 
   @override
-  String get topNavbarStyleClassicHint => 'Vakiopalkki';
+  String get topNavbarStyleClassicHint => 'The standard bar';
 
   @override
   String get topNavbarStyleTablineHint =>
-      'Alleviivatut tekstivälilehdet, ilman nappia';
+      'Text tabs with an underline, no pill';
 
   @override
   String get topNavbarStyleAtlasHint =>
-      'Välilehdet avaavat paneelin, jossa on pikakuvakkeita ja kuvamateriaalia';
+      'Tabs open a panel with shortcuts and artwork';
 
   @override
-  String get sidebarStyle => 'Sivupalkin tyyli';
+  String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Klassinen';
+  String get sidebarStyleClassic => 'Classic';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -18537,29 +18523,28 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sidebarStyleMosaic => 'Mosaic';
 
   @override
-  String get sidebarStyleClassicHint => 'Vakiomuotoinen sivupalkki';
+  String get sidebarStyleClassicHint => 'The standard sidebar';
 
   @override
-  String get sidebarStyleReelHint => 'Pyörä, joka pyörii määränpäiden läpi';
+  String get sidebarStyleReelHint =>
+      'A wheel that turns through the destinations';
 
   @override
-  String get sidebarStyleMosaicHint =>
-      'Laattapaneeli, jossa on kirjaston taideteoksia';
+  String get sidebarStyleMosaicHint => 'A panel of tiles with library artwork';
 
   @override
   String navContinueIn(String section) {
-    return 'Jatka $section';
+    return 'Continue in $section';
   }
 
   @override
   String navFeatured(String title) {
-    return 'Esittelyssä: $title';
+    return 'Featured: $title';
   }
 
   @override
-  String get navOpenMenu => 'Avaa valikko';
+  String get navOpenMenu => 'Open menu';
 
   @override
-  String get navReelSwipeHint =>
-      'Päivitä pyyhkäisemällä, napauta keskeltä siirtyäksesi eteenpäin';
+  String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
 }

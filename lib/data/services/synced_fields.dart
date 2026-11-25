@@ -187,7 +187,6 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('mediaBarNewMovieDays', UserPreferences.mediaBarNewMovieDays, SyncCodec.integer),
   SyncedField('mediaBarNewMovieDetail', UserPreferences.mediaBarNewMovieDetail, SyncCodec.boolean),
   SyncedField('mediaBarFollowedFirst', UserPreferences.mediaBarFollowedFirst, SyncCodec.boolean),
-  SyncedField('mediaBarMixTypes', UserPreferences.mediaBarMixTypes, SyncCodec.boolean),
   SyncedField('mediaBarOpacity', UserPreferences.mediaBarOverlayOpacity, SyncCodec.integer),
   SyncedField('mediaBarOverlayColor', UserPreferences.mediaBarOverlayColor, SyncCodec.text),
   SyncedField('navbarOpacity', UserPreferences.navbarOpacity, SyncCodec.integer),

@@ -9094,30 +9094,6 @@ abstract class AppLocalizations {
   /// **'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.'**
   String get mediaBarNewMovieDetailDescription;
 
-  /// Setting that makes movies and series take turns in the media bar
-  ///
-  /// In en, this message translates to:
-  /// **'Mix Movies and Series'**
-  String get mediaBarMixTypes;
-
-  /// Description of the Mix Movies and Series media bar setting
-  ///
-  /// In en, this message translates to:
-  /// **'Movies and series take turns, as long as each has titles.'**
-  String get mediaBarMixTypesDescription;
-
-  /// Setting that puts series the user has started at the front of the media bar
-  ///
-  /// In en, this message translates to:
-  /// **'Followed Series First'**
-  String get mediaBarFollowedFirst;
-
-  /// Description of the followed series first setting
-  ///
-  /// In en, this message translates to:
-  /// **'Series you\'ve started or marked as favorite come first.'**
-  String get mediaBarFollowedFirstDescription;
-
   /// Content type: movies and TV shows
   ///
   /// In en, this message translates to:

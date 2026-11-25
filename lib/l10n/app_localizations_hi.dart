@@ -5152,20 +5152,6 @@ class AppLocalizationsHi extends AppLocalizations {
       'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
-  String get mediaBarMixTypes => 'Mix Movies and Series';
-
-  @override
-  String get mediaBarMixTypesDescription =>
-      'Movies and series take turns, as long as each has titles.';
-
-  @override
-  String get mediaBarFollowedFirst => 'Followed Series First';
-
-  @override
-  String get mediaBarFollowedFirstDescription =>
-      'Series you\'ve started or marked as favorite come first.';
-
-  @override
   String get moviesAndTvShows => 'फ़िल्में और टीवी शो';
 
   @override
@@ -18350,7 +18336,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'क्लासिक';
+  String get topNavbarStyleClassic => 'Classic';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18373,7 +18359,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'क्लासिक';
+  String get sidebarStyleClassic => 'Classic';
 
   @override
   String get sidebarStyleReel => 'Reel';

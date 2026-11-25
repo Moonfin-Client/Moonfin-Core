@@ -197,7 +197,6 @@ void main() {
     'mediaBarNewMovieDays',
     'mediaBarNewMovieDetail',
     'mediaBarFollowedFirst',
-    'mediaBarMixTypes',
     'mediaBarOpacity',
     'mediaBarOverlayColor',
     'mediaBarRowPeek',

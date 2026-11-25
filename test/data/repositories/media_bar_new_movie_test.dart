@@ -161,75 +161,26 @@ void main() {
     List<Map<String, dynamic>> order(
       List<Map<String, dynamic>> items, {
       bool followedFirst = false,
-      bool mix = false,
       int maxItems = 10,
     }) => mediaBarOrder(
       items,
       isFollowed: mediaBarIsFollowedSeries,
-      typeOf: (item) => item['Type'] as String?,
       followedFirst: followedFirst,
-      mix: mix,
       maxItems: maxItems,
     );
 
-    test('movies and series take turns, starting with the first kind', () {
+    test('followed series lead, the rest keeps its order', () {
       expect(
         ids(
           order([
             movie('m1'),
+            series('s1'),
+            series('f1', followed: true),
             movie('m2'),
-            series('s1'),
-            series('s2'),
-          ], mix: true),
+            series('f2', followed: true),
+          ], followedFirst: true),
         ),
-        ['m1', 's1', 'm2', 's2'],
-      );
-    });
-
-    test('the other kind fills in when one runs out', () {
-      expect(
-        ids(
-          order([
-            series('s1'),
-            movie('m1'),
-            series('s2'),
-            series('s3'),
-          ], mix: true),
-        ),
-        ['s1', 'm1', 's2', 's3'],
-      );
-    });
-
-    test('the cut comes after the turns, so both kinds make it', () {
-      expect(
-        ids(
-          order([
-            movie('m1'),
-            movie('m2'),
-            movie('m3'),
-            series('s1'),
-          ], mix: true, maxItems: 2),
-        ),
-        ['m1', 's1'],
-      );
-    });
-
-    test('followed series lead, and still take turns with movies', () {
-      expect(
-        ids(
-          order(
-            [
-              movie('m1'),
-              series('s1'),
-              series('f1', followed: true),
-              movie('m2'),
-              series('f2', followed: true),
-            ],
-            followedFirst: true,
-            mix: true,
-          ),
-        ),
-        ['f1', 'm1', 'f2', 'm2', 's1'],
+        ['f1', 'f2', 'm1', 's1', 'm2'],
       );
     });
 
@@ -246,7 +197,7 @@ void main() {
       );
     });
 
-    test('with neither, the order stays as it came', () {
+    test('when off, the order stays as it came', () {
       expect(
         ids(order([movie('m1'), series('f1', followed: true), movie('m2')])),
         ['m1', 'f1', 'm2'],
@@ -254,60 +205,8 @@ void main() {
     });
 
     test('an empty list stays empty', () {
-      expect(order(const [], followedFirst: true, mix: true), isEmpty);
+      expect(order(const [], followedFirst: true), isEmpty);
     });
-  });
-
-  test('an outside list offers both kinds when mixing', () {
-    final pool = ['m1', 'm2', 'm3', 's1'];
-    String typeOf(String id) => id.startsWith('s') ? 'Series' : 'Movie';
-    expect(
-      mediaBarCandidates(pool, typeOf: typeOf, maxItems: 2, mix: true),
-      ['m1', 'm2', 's1'],
-    );
-    expect(
-      mediaBarCandidates(pool, typeOf: typeOf, maxItems: 2, mix: false),
-      ['m1', 'm2'],
-    );
-  });
-
-  test('mixing only applies when the bar shows both kinds', () {
-    expect(
-      mediaBarMixesTypes(
-        on: true,
-        contentType: UserPreferences.mediaBarContentTypeBoth,
-      ),
-      isTrue,
-    );
-    expect(
-      mediaBarMixesTypes(
-        on: true,
-        contentType: UserPreferences.mediaBarContentTypeMovies,
-      ),
-      isFalse,
-    );
-    expect(
-      mediaBarMixesTypes(
-        on: false,
-        contentType: UserPreferences.mediaBarContentTypeBoth,
-      ),
-      isFalse,
-    );
-  });
-
-  test('the pool stops early, and when mixing only with enough of each', () {
-    expect(
-      mediaBarPoolIsFull(series: 0, movies: 20, maxItems: 10, mix: false),
-      isTrue,
-    );
-    expect(
-      mediaBarPoolIsFull(series: 0, movies: 20, maxItems: 10, mix: true),
-      isFalse,
-    );
-    expect(
-      mediaBarPoolIsFull(series: 10, movies: 10, maxItems: 10, mix: true),
-      isTrue,
-    );
   });
 
   test('the stored kinds read back as names, each kind matching its name', () {

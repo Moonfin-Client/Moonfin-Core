@@ -6783,14 +6783,6 @@
   "@mediaBarNewMovieDetailDescription": {
     "description": "Description of the New Movie second line setting"
   },
-  "mediaBarMixTypes": "Mix Movies and Series",
-  "@mediaBarMixTypes": {
-    "description": "Setting that makes movies and series take turns in the media bar"
-  },
-  "mediaBarMixTypesDescription": "Movies and series take turns, as long as each has titles.",
-  "@mediaBarMixTypesDescription": {
-    "description": "Description of the Mix Movies and Series media bar setting"
-  },
   "mediaBarFollowedFirst": "Followed Series First",
   "@mediaBarFollowedFirst": {
     "description": "Setting that puts series the user has started at the front of the media bar"

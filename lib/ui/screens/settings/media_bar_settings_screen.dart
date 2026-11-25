@@ -435,15 +435,6 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                   icon: Icons.format_quote_outlined,
                   onChanged: _pushSync,
                 ),
-                if (_prefs.get(UserPreferences.mediaBarContentType) ==
-                    UserPreferences.mediaBarContentTypeBoth)
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.mediaBarMixTypes,
-                    title: l10n.mediaBarMixTypes,
-                    subtitle: l10n.mediaBarMixTypesDescription,
-                    icon: Icons.shuffle,
-                    onChanged: _pushSync,
-                  ),
                 // A movies only bar has no series to put first.
                 if (_prefs.get(UserPreferences.mediaBarContentType) !=
                     UserPreferences.mediaBarContentTypeMovies)

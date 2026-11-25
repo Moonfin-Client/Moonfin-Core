@@ -40,6 +40,8 @@ class MediaBarRepository {
       ? '$_baseFields,RecursiveItemCount'
       : _baseFields;
 
+  bool get _followedFirst => _prefs.get(UserPreferences.mediaBarFollowedFirst);
+
   MediaBarRepository(this._client, this._prefs);
 
   Future<MediaBarState> loadItems() async {
@@ -159,31 +161,16 @@ class MediaBarRepository {
           ? _prefs.get(UserPreferences.mediaBarNewMovieDays)
           : null;
       final now = DateTime.now();
-      var usableSeries = 0;
-      var usableMovies = 0;
-      final mix = _mixesTypes;
-      // A source still waiting for a slot is skipped once the pool holds
-      // enough to choose from. The order is shuffled so the skipped ones
-      // change from one load to the next.
+      var usableCount = 0;
+      // A source still waiting for a slot is skipped once the pool holds twice
+      // the item count to choose from. The order is shuffled so the skipped
+      // ones change from one load to the next.
+      final enough = maxItems * 2;
       await mapBounded(
         allParentIds.toList()..shuffle(_random),
         _sourceConcurrency,
         (parentId) async {
-          if (mediaBarPoolIsFull(
-            series: usableSeries,
-            movies: usableMovies,
-            maxItems: maxItems,
-            mix: mix,
-          )) {
-            return null;
-          }
-          // When mixing, a library of one kind adds nothing once that kind
-          // has enough.
-          final kinds = allParentItemTypes[parentId];
-          if (mix && kinds != null && kinds.length == 1) {
-            final have = kinds.single == 'Series' ? usableSeries : usableMovies;
-            if (have >= maxItems) return null;
-          }
+          if (usableCount >= enough) return null;
           try {
             final batch = await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
@@ -203,12 +190,7 @@ class MediaBarRepository {
                 continue;
               }
               allItems.add(item);
-              if (!usable(item)) continue;
-              if (item['Type'] == 'Series') {
-                usableSeries++;
-              } else {
-                usableMovies++;
-              }
+              if (usable(item)) usableCount++;
             }
           } catch (_) {
             // Keep fetching remaining libraries if one fails
@@ -230,50 +212,20 @@ class MediaBarRepository {
       if (selected.isEmpty && allParentIds.isNotEmpty) {
         // Asking again for new releases would find nothing again, so a quiet
         // window shows random titles from the first library that has some.
-        // When mixing, the next libraries are read too until there's enough
-        // of both kinds, or a movie library read first would leave the bar
-        // mostly movies.
         final newReleases = _isNewReleaseSource;
         final retryParents = newReleases ? allParentIds : [allParentIds.first];
-        final retried = <Map<String, dynamic>>[];
-        final retriedIds = <String>{};
         for (final parentId in retryParents) {
-          // A library and a collection can hold the same title, and a stale
-          // collection shouldn't throw away what the others found.
-          try {
-            for (final item in await _fetchItems(
+          selected = _selectItemsWithBackdrops(
+            await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
               fetchLimit,
               parentId: parentId,
               random: newReleases,
-            )) {
-              final id = item['Id']?.toString();
-              if (id != null && !retriedIds.add(id)) continue;
-              retried.add(item);
-            }
-          } catch (_) {
-            continue;
-          }
-          selected = _selectItemsWithBackdrops(
-            retried,
+            ),
             maxItems,
             excludedGenres,
           );
-          // The same rule as the first pass: enough of each kind to take turns.
-          if (selected.isNotEmpty &&
-              (!mix ||
-                  mediaBarPoolIsFull(
-                    series: retried
-                        .where((i) => i['Type'] == 'Series' && usable(i))
-                        .length,
-                    movies: retried
-                        .where((i) => i['Type'] == 'Movie' && usable(i))
-                        .length,
-                    maxItems: maxItems,
-                    mix: true,
-                  ))) {
-            break;
-          }
+          if (selected.isNotEmpty) break;
         }
       }
 
@@ -343,19 +295,10 @@ class MediaBarRepository {
     return mediaBarOrder(
       withBackdrops,
       isFollowed: mediaBarIsFollowedSeries,
-      typeOf: (item) => item['Type'] as String?,
       followedFirst: _followedFirst,
-      mix: _mixesTypes,
       maxItems: maxItems,
     );
   }
-
-  bool get _followedFirst => _prefs.get(UserPreferences.mediaBarFollowedFirst);
-
-  bool get _mixesTypes => mediaBarMixesTypes(
-    on: _prefs.get(UserPreferences.mediaBarMixTypes),
-    contentType: _prefs.get(UserPreferences.mediaBarContentType),
-  );
 
   /// The check an item has to pass to go on the bar.
   bool Function(Map<String, dynamic>) _usableFor(Set<String> excludedGenres) {
@@ -978,9 +921,8 @@ class MediaBarRepository {
   }
 
   /// [library] with titles from [external] shuffled in, [maxItems] in all,
-  /// then put back in the bar's order: the [followed] library series first,
-  /// movies and series taking turns. Only the outside titles that make the
-  /// cut are looked up on TMDB.
+  /// the [followed] library series first. Only the outside titles that make
+  /// the cut are looked up on TMDB.
   Future<List<MediaBarSlideItem>> _mixInExternal(
     List<MediaBarSlideItem> library,
     List<ImdbExternalListItem> external,
@@ -989,24 +931,13 @@ class MediaBarRepository {
     Set<String> followed = const {},
   }) async {
     if (external.isEmpty) return library;
-    List<T> order<T>(List<T> items) => mediaBarOrder(
-      items,
+    final chosen = mediaBarOrder(
+      <Object>[...library, ...external.take(maxItems)]..shuffle(_random),
       isFollowed: (pick) =>
           pick is MediaBarSlideItem && followed.contains(pick.itemId),
-      typeOf: (pick) => pick is MediaBarSlideItem
-          ? pick.itemType
-          : (pick as ImdbExternalListItem).type,
       followedFirst: _followedFirst,
-      mix: _mixesTypes,
       maxItems: maxItems,
     );
-    final candidates = mediaBarCandidates(
-      external,
-      typeOf: (item) => item.type,
-      maxItems: maxItems,
-      mix: _mixesTypes,
-    );
-    final chosen = order(<Object>[...library, ...candidates]..shuffle(_random));
     final slides = <String, MediaBarSlideItem>{};
     await mapBounded(
       chosen.whereType<ImdbExternalListItem>().toList(),
@@ -1020,14 +951,13 @@ class MediaBarRepository {
         return null;
       },
     );
-    // Again, since an outside title with no backdrop drops out.
-    return order([
+    return [
       for (final pick in chosen)
         if (pick is MediaBarSlideItem)
           pick
         else
           ?slides[_externalId(pick as ImdbExternalListItem)],
-    ]);
+    ];
   }
 
   static String _externalId(ImdbExternalListItem item) =>
@@ -1352,87 +1282,21 @@ MediaBarNewReleaseInfo? mediaBarNewMovieOf(
 }
 
 /// [items] in the bar's order, [maxItems] at most: the followed series first
-/// when [followedFirst], then movies and series taking turns when [mix]. The
-/// rest keeps its order.
+/// when [followedFirst]. The rest keeps its order.
 @visibleForTesting
 List<T> mediaBarOrder<T>(
   List<T> items, {
   required bool Function(T) isFollowed,
-  required String? Function(T) typeOf,
   required bool followedFirst,
-  required bool mix,
   required int maxItems,
-}) {
-  var ordered = items;
-  if (followedFirst) {
-    ordered = [
-      ...items.where(isFollowed),
-      ...items.where((item) => !isFollowed(item)),
-    ];
-  }
-  if (mix) ordered = mediaBarAlternateTypes(ordered, typeOf);
-  return ordered.take(maxItems).toList();
-}
-
-/// The first [maxItems] of [pool], or that many of each kind when mixing, so
-/// a list that opens with movies still offers its series.
-@visibleForTesting
-List<T> mediaBarCandidates<T>(
-  List<T> pool, {
-  required String? Function(T) typeOf,
-  required int maxItems,
-  required bool mix,
-}) => mix
-    ? [
-        ...pool.where((item) => typeOf(item) == 'Movie').take(maxItems),
-        ...pool.where((item) => typeOf(item) == 'Series').take(maxItems),
-      ]
-    : pool.take(maxItems).toList();
-
-/// Mixing only means something when the bar shows both kinds.
-@visibleForTesting
-bool mediaBarMixesTypes({required bool on, required String contentType}) =>
-    on && contentType == UserPreferences.mediaBarContentTypeBoth;
-
-/// Whether the pool holds enough to choose from: twice the slides, or, when
-/// mixing, that many of each kind, so the turns don't run out early.
-@visibleForTesting
-bool mediaBarPoolIsFull({
-  required int series,
-  required int movies,
-  required int maxItems,
-  required bool mix,
-}) => mix
-    ? series >= maxItems && movies >= maxItems
-    : series + movies >= maxItems * 2;
-
-/// [items] with series and movies taking turns, starting with whichever comes
-/// first. When one kind runs out, the other fills the rest, so the bar never
-/// shows fewer slides for it. Anything else goes after both.
-@visibleForTesting
-List<T> mediaBarAlternateTypes<T>(
-  List<T> items,
-  String? Function(T) typeOf,
-) {
-  final series = [for (final item in items) if (typeOf(item) == 'Series') item];
-  final movies = [for (final item in items) if (typeOf(item) == 'Movie') item];
-  final others = [
-    for (final item in items)
-      if (typeOf(item) != 'Series' && typeOf(item) != 'Movie') item,
-  ];
-  final result = <T>[];
-  var seriesTurn = items.isNotEmpty && typeOf(items.first) == 'Series';
-  var s = 0, m = 0;
-  while (s < series.length || m < movies.length) {
-    if ((seriesTurn && s < series.length) || m >= movies.length) {
-      result.add(series[s++]);
-    } else {
-      result.add(movies[m++]);
-    }
-    seriesTurn = !seriesTurn;
-  }
-  return [...result, ...others];
-}
+}) => (followedFirst
+        ? [
+            ...items.where(isFollowed),
+            ...items.where((item) => !isFollowed(item)),
+          ]
+        : items)
+    .take(maxItems)
+    .toList();
 
 /// A series the user has started or marked as a favorite, as the calendar's
 /// My shows reads it.

@@ -5073,20 +5073,6 @@ class AppLocalizationsYue extends AppLocalizations {
       'Under New Movie, show the movie\'s tagline. With none, the label stays on its own.';
 
   @override
-  String get mediaBarMixTypes => 'Mix Movies and Series';
-
-  @override
-  String get mediaBarMixTypesDescription =>
-      'Movies and series take turns, as long as each has titles.';
-
-  @override
-  String get mediaBarFollowedFirst => 'Followed Series First';
-
-  @override
-  String get mediaBarFollowedFirstDescription =>
-      'Series you\'ve started or marked as favorite come first.';
-
-  @override
   String get moviesAndTvShows => '電影和電視節目';
 
   @override
@@ -18012,7 +17998,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => '經典';
+  String get topNavbarStyleClassic => 'Classic';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18035,7 +18021,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => '經典';
+  String get sidebarStyleClassic => 'Classic';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -25473,12 +25459,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get afterHoursPlay => '玩';
-
-  @override
-  String get topNavbarStyleClassic => 'Classic';
-
-  @override
-  String get sidebarStyleClassic => 'Classic';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in Hong Kong (`yue_HK`).
@@ -32883,10 +32863,4 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get afterHoursPlay => '玩';
-
-  @override
-  String get topNavbarStyleClassic => 'Classic';
-
-  @override
-  String get sidebarStyleClassic => 'Classic';
 }

@@ -766,7 +766,6 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarNewMovieDays',
     'mediaBarNewMovieDetail',
     'mediaBarFollowedFirst',
-    'mediaBarMixTypes',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
     'navbarOpacity',
@@ -3318,13 +3317,6 @@ class UserPreferences extends ChangeNotifier {
   /// the bar.
   static final mediaBarFollowedFirst = Preference(
     key: 'mediaBarFollowedFirst',
-    defaultValue: false,
-  );
-
-  /// Movies and series take turns on the bar, as long as each has titles.
-  /// Only means something when the bar shows both.
-  static final mediaBarMixTypes = Preference(
-    key: 'mediaBarMixTypes',
     defaultValue: false,
   );
 

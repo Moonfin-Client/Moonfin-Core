@@ -5168,20 +5168,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Yeni Film etiketinin altında filmin sloganını göster. Slogan yoksa etiket tek başına kalır.';
 
   @override
-  String get mediaBarMixTypes => 'Mix Movies and Series';
-
-  @override
-  String get mediaBarMixTypesDescription =>
-      'Movies and series take turns, as long as each has titles.';
-
-  @override
-  String get mediaBarFollowedFirst => 'Followed Series First';
-
-  @override
-  String get mediaBarFollowedFirstDescription =>
-      'Series you\'ve started or marked as favorite come first.';
-
-  @override
   String get moviesAndTvShows => 'Filmler ve TV Programları';
 
   @override
@@ -18425,7 +18411,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Klasik';
+  String get topNavbarStyleClassic => 'Classic';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18448,7 +18434,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Klasik';
+  String get sidebarStyleClassic => 'Classic';
 
   @override
   String get sidebarStyleReel => 'Reel';

@@ -1421,15 +1421,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.mediaBarNewMovieDetailDescription,
       keywords: ['tagline', 'slogan', 'new movie'],
     ),
-    // Shown only when the bar holds what they sort, as on the screen.
-    if (prefs.get(UserPreferences.mediaBarContentType) ==
-        UserPreferences.mediaBarContentTypeBoth)
-      mediaBar.leaf(
-        'mediaBarMixTypes',
-        l10n.mediaBarMixTypes,
-        subtitle: l10n.mediaBarMixTypesDescription,
-        keywords: ['alternate', 'movies', 'series'],
-      ),
+    // Shown only when the bar can hold series, as on the screen.
     if (prefs.get(UserPreferences.mediaBarContentType) !=
         UserPreferences.mediaBarContentTypeMovies)
       mediaBar.leaf(
