@@ -601,8 +601,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         type == HomeSectionType.imdbTop250TvShows ||
         type == HomeSectionType.imdbMostPopularMovies ||
         type == HomeSectionType.imdbMostPopularTvShows ||
-        type == HomeSectionType.imdbLowestRatedMovies ||
-        type == HomeSectionType.imdbTopEnglishMovies;
+        type == HomeSectionType.imdbLowestRatedMovies;
   }
 
   bool _isTmdbSectionType(HomeSectionType type) =>
@@ -1529,8 +1528,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           UserPreferences.imdbMostPopularTvShowsEnabled,
         HomeSectionType.imdbLowestRatedMovies =>
           UserPreferences.imdbLowestRatedMoviesEnabled,
-        HomeSectionType.imdbTopEnglishMovies =>
-          UserPreferences.imdbTopEnglishMoviesEnabled,
         HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
         HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
         HomeSectionType.sinceYouWatched1 =>
@@ -3385,7 +3382,6 @@ String homeSectionTypeLabel(HomeSectionType type, AppLocalizations l10n) =>
       HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
       HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
       HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
-      HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
       HomeSectionType.tmdbPopularMovies => 'Popular Movies',
       HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
       HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',

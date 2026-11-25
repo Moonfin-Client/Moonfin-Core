@@ -158,7 +158,6 @@ void main() {
     'imdbMostPopularTvShowsEnabled',
     'imdbTop250MoviesEnabled',
     'imdbTop250TvShowsEnabled',
-    'imdbTopEnglishMoviesEnabled',
     'imdbRowsSortBy',
     'imdbRowsSortOrder',
     'interfaceStyle',

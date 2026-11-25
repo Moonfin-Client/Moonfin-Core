@@ -121,7 +121,6 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
         HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
         HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
-        HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
         HomeSectionType.tmdbPopularMovies => 'Popular Movies',
         HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
         HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',

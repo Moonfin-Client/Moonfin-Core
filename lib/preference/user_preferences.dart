@@ -503,7 +503,6 @@ class UserPreferences extends ChangeNotifier {
     'imdb_most_popular_tv_shows_enabled',
     'imdb_top_250_movies_enabled',
     'imdb_top_250_tv_shows_enabled',
-    'imdb_top_english_movies_enabled',
     'live_tv_channel_sort_by',
     'live_tv_last_channel_id',
     'music_playback_time_display',
@@ -3641,11 +3640,6 @@ class UserPreferences extends ChangeNotifier {
 
   static final imdbLowestRatedMoviesEnabled = Preference(
     key: 'imdb_lowest_rated_movies_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbTopEnglishMoviesEnabled = Preference(
-    key: 'imdb_top_english_movies_enabled',
     defaultValue: false,
   );
 

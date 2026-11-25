@@ -967,8 +967,6 @@ class HomeViewModel extends ChangeNotifier {
         return row.id == 'imdb_most_popular_tv_shows';
       case HomeSectionType.imdbLowestRatedMovies:
         return row.id == 'imdb_lowest_rated_movies';
-      case HomeSectionType.imdbTopEnglishMovies:
-        return row.id == 'imdb_top_english_movies';
       case HomeSectionType.tmdbPopularMovies:
         return row.id == 'tmdb_popular_movies';
       case HomeSectionType.tmdbTopRatedMovies:
@@ -1481,8 +1479,6 @@ class HomeViewModel extends ChangeNotifier {
         return const {'imdbMostPopularTvShows'};
       case HomeSectionType.imdbLowestRatedMovies:
         return const {'imdbLowestRatedMovies'};
-      case HomeSectionType.imdbTopEnglishMovies:
-        return const {'imdbTopEnglishMovies'};
       case HomeSectionType.tmdbPopularMovies:
         return const {'tmdbPopularMovies'};
       case HomeSectionType.tmdbTopRatedMovies:
@@ -1922,12 +1918,6 @@ class HomeViewModel extends ChangeNotifier {
           HomeSectionType.imdbLowestRatedMovies,
           l10n.imdbLowestRatedMovies,
           'imdb_lowest_rated_movies',
-        );
-      case HomeSectionType.imdbTopEnglishMovies:
-        return _loadImdbRow(
-          HomeSectionType.imdbTopEnglishMovies,
-          l10n.imdbTopEnglishMovies,
-          'imdb_top_english_movies',
         );
       case HomeSectionType.tmdbPopularMovies:
         return _loadTmdbChartRow(HomeSectionType.tmdbPopularMovies, 'Popular Movies', 'tmdb_popular_movies');
@@ -2431,13 +2421,6 @@ class HomeViewModel extends ChangeNotifier {
         return HomeRow(
           id: 'imdb_lowest_rated_movies',
           title: l10n.imdbLowestRatedMovies,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbTopEnglishMovies:
-        return HomeRow(
-          id: 'imdb_top_english_movies',
-          title: l10n.imdbTopEnglishMovies,
           rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );

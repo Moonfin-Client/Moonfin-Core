@@ -136,7 +136,6 @@ void main() {
       _row('imdb_most_popular_tv_shows'):
           HomeSectionType.imdbMostPopularTvShows,
       _row('imdb_lowest_rated_movies'): HomeSectionType.imdbLowestRatedMovies,
-      _row('imdb_top_english_movies'): HomeSectionType.imdbTopEnglishMovies,
       _row('tmdb_popular_movies'): HomeSectionType.tmdbPopularMovies,
       _row('tmdb_top_rated_movies'): HomeSectionType.tmdbTopRatedMovies,
       _row('tmdb_now_playing_movies'): HomeSectionType.tmdbNowPlayingMovies,

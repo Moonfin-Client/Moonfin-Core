@@ -595,7 +595,6 @@ enum HomeSectionType {
   imdbMostPopularMovies('imdb_most_popular_movies'),
   imdbMostPopularTvShows('imdb_most_popular_tv_shows'),
   imdbLowestRatedMovies('imdb_lowest_rated_movies'),
-  imdbTopEnglishMovies('imdb_top_english_movies'),
   tmdbPopularMovies('tmdb_popular_movies'),
   tmdbTopRatedMovies('tmdb_top_rated_movies'),
   tmdbNowPlayingMovies('tmdb_now_playing_movies'),
@@ -673,7 +672,6 @@ const imdbChartSections = [
   HomeSectionType.imdbMostPopularMovies,
   HomeSectionType.imdbMostPopularTvShows,
   HomeSectionType.imdbLowestRatedMovies,
-  HomeSectionType.imdbTopEnglishMovies,
 ];
 
 /// The TMDB chart behind each TMDB section, as the path Moonbase asks TMDB for.

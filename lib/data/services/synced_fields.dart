@@ -308,7 +308,6 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('imdbMostPopularTvShowsEnabled', UserPreferences.imdbMostPopularTvShowsEnabled, SyncCodec.boolean),
   SyncedField('imdbTop250MoviesEnabled', UserPreferences.imdbTop250MoviesEnabled, SyncCodec.boolean),
   SyncedField('imdbTop250TvShowsEnabled', UserPreferences.imdbTop250TvShowsEnabled, SyncCodec.boolean),
-  SyncedField('imdbTopEnglishMoviesEnabled', UserPreferences.imdbTopEnglishMoviesEnabled, SyncCodec.boolean),
   SyncedField('imdbRowsSortBy', UserPreferences.imdbRowsSortBy, SyncCodec.enumName, enumValues: prefs.ExternalRowSortBy.values),
   SyncedField('imdbRowsSortOrder', UserPreferences.imdbRowsSortOrder, SyncCodec.enumName, enumValues: prefs.SortDirection.values),
   SyncedField('interfaceStyle', UserPreferences.interfaceStyle, SyncCodec.enumName, enumValues: InterfaceStyle.values),
