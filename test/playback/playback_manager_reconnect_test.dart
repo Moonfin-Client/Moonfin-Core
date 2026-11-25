@@ -4,12 +4,16 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:playback_core/playback_core.dart';
 
+part 'playback_manager_reconnect_entry_redirect.dart'; // entry redirect
+
 /// A backend whose errors the test emits, and which records the credentials
 /// it is handed.
 class _TestBackend extends Fake implements PlayerBackend {
   final positions = StreamController<Duration>.broadcast(sync: true);
   final errors = StreamController<Map<String, dynamic>>.broadcast(sync: true);
   final playingChanges = StreamController<bool>.broadcast(sync: true);
+  // entry redirect
+  final bufferingChanges = StreamController<bool>.broadcast(sync: true);
   final List<Duration> playStarts = <Duration>[];
   final List<Duration> seeks = <Duration>[];
   final List<StreamCredentials> credentialUpdates = <StreamCredentials>[];
@@ -27,6 +31,8 @@ class _TestBackend extends Fake implements PlayerBackend {
     playing = value;
     playingChanges.add(value);
   }
+
+  void emitBuffering(bool value) => bufferingChanges.add(value); // entry redirect
 
   void emitPosition(Duration position) {
     currentPosition = position;
@@ -73,7 +79,7 @@ class _TestBackend extends Fake implements PlayerBackend {
   Stream<bool> get playingStream => playingChanges.stream;
 
   @override
-  Stream<bool> get bufferingStream => const Stream<bool>.empty();
+  Stream<bool> get bufferingStream => bufferingChanges.stream; // entry redirect
 
   @override
   Stream<bool> get completedStream => const Stream<bool>.empty();
@@ -301,9 +307,10 @@ void _withPlayback(
   )
   body, {
   Map<String, dynamic> item = _movie,
+  _TestBackend? player, // entry redirect
 }) {
   fakeAsync((async) {
-    final backend = _TestBackend();
+    final backend = player ?? _TestBackend(); // entry redirect
     final service = _TestService();
     final clock = async.getClock(DateTime(2026, 10, 30, 20));
     final manager = PlaybackManager()
@@ -1000,4 +1007,6 @@ void main() {
       });
     });
   });
+
+  _entryRedirectTests(); // entry redirect
 }

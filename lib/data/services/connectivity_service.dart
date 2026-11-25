@@ -83,6 +83,13 @@ class ConnectivityService extends ChangeNotifier {
   /// another server's client.
   String? _serverId;
 
+  // entry redirect: the server whose client is active, and a hook asked once
+  // it stops answering; true when it moved and the client already uses its
+  // new address (see lib/entry_redirect/).
+  String? get activeServerId => _serverId;
+  Future<bool> Function(MediaServerClient client, String? serverId)?
+  onServerUnreachable;
+
   /// The boot-time check, a sign-in and a network flip can all ask for the
   /// sync within a second of each other, and only the progress step guards
   /// itself, so a second chain would repeat the ratings push and the whole
@@ -279,6 +286,9 @@ class ConnectivityService extends ChangeNotifier {
   Future<void> _probeServer() async {
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final client = GetIt.instance<MediaServerClient>();
+    // entry redirect: the server this client is for, paired before the pings
+    // wait, so a switch meanwhile never asks another server's entry address.
+    final serverId = _serverId;
     final wasReachable = _serverReachable;
     var reachable = false;
     // A pooled connection the server already dropped fails exactly like a
@@ -293,6 +303,15 @@ class ConnectivityService extends ChangeNotifier {
       } catch (_) {
         // Ping shouldn't throw, but a client that does still means no answer.
       }
+    }
+    final follow = onServerUnreachable; // entry redirect
+    if (!reachable &&
+        _isOnline &&
+        follow != null &&
+        await follow(client, serverId)) {
+      try {
+        reachable = await client.systemApi.ping();
+      } catch (_) {}
     }
     _serverReachable = reachable;
     if (!_serverReachable && wasReachable) {

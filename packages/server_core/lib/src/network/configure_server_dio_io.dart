@@ -9,6 +9,7 @@ import 'package:dio/io.dart';
 import '../diagnostics/server_log_sink.dart';
 import 'client_certificates.dart';
 import 'insecure_certificates.dart';
+import 'server_moved_interceptor.dart'; // entry redirect
 import 'server_user_agent.dart';
 
 /// How many requests may be reaching the server at once.
@@ -66,6 +67,7 @@ void configureServerDio(
       : adapter;
 
   dio.interceptors.add(_retryDeadConnection(dio));
+  dio.interceptors.add(followMovedServer(dio)); // entry redirect
 }
 
 const _retriedKey = 'moonfin.connectionRetry';

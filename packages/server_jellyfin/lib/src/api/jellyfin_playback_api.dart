@@ -3,7 +3,10 @@ import 'package:server_core/server_core.dart';
 
 class JellyfinPlaybackApi implements PlaybackApi {
   final Dio _dio;
-  final String _baseUrl;
+  // entry redirect: [baseUrlOf] is read on every call, so URLs follow a
+  // client moved to a new address without it being recreated.
+  final String Function() _baseUrlOf;
+  String get _baseUrl => _baseUrlOf();
 
   /// A .strm pointing at an IPTV provider sends the server off to that provider
   /// before it can answer, which routinely outlasts the client's 30 second read
@@ -11,7 +14,8 @@ class JellyfinPlaybackApi implements PlaybackApi {
   /// play here. Three minutes is what the Emby client already reads for.
   static const _probeTimeout = Duration(minutes: 3);
 
-  JellyfinPlaybackApi(this._dio, this._baseUrl);
+  JellyfinPlaybackApi(this._dio, String baseUrl, {String Function()? baseUrlOf})
+    : _baseUrlOf = baseUrlOf ?? (() => baseUrl);
 
   @override
   Future<void> reportPlaybackStart(Map<String, dynamic> info) async {

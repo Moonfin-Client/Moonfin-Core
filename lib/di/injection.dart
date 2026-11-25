@@ -32,6 +32,7 @@ import 'modules/auth_module.dart';
 import 'modules/server_module.dart';
 import 'modules/playback_module.dart';
 import 'modules/preference_module.dart';
+import '../entry_redirect/entry_redirect_module.dart'; // entry redirect
 
 final getIt = GetIt.instance;
 
@@ -439,6 +440,7 @@ Future<void> configureBackgroundDependencies({bool offline = false}) async {
   registerServerModule();
   registerAuthModule();
   await getIt<AuthenticationStore>().init();
+  await registerEntryRedirect(); // entry redirect
   await installClientCertificates(
     getIt<ClientCertificateStore>(),
     syncNative: false,
@@ -493,6 +495,7 @@ Future<void> configureDependencies() async {
   await getIt<AuthenticationStore>().init();
   registerPlaybackModule();
   registerAppModule();
+  await registerEntryRedirect(); // entry redirect
   // Waits on the native player, so it goes after the modules a boot-time
   // connectivity check may already be reaching for.
   await installClientCertificates(getIt<ClientCertificateStore>());

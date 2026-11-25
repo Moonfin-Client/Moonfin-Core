@@ -17,9 +17,12 @@ import 'media3_letterbox_crop.dart';
 import 'media3_playback_status.dart';
 import 'server_transcode_capabilities.dart';
 import 'subtitle_fonts.dart';
+import 'media3_server_rebase.dart'; // entry redirect
 
 class Media3PlayerBackend extends PlayerBackend
-    with SubtitleDelayState
+    with
+        SubtitleDelayState,
+        Media3ServerRebase // entry redirect
     implements SubtitleLoadingBackend, SecondarySubtitleBackend {
   @override
   bool get supportsSecondarySubtitleDelay => true;
@@ -234,6 +237,10 @@ class Media3PlayerBackend extends PlayerBackend
   @override
   bool? get playWhenReady => _playWhenReady;
 
+  @override // entry redirect
+  Future<int?> invokeRebaseServer(String from, String to) =>
+      _invoke<int>('rebaseServer', {'from': from, 'to': to});
+
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
     try {
@@ -405,6 +412,9 @@ class Media3PlayerBackend extends PlayerBackend
         _bufferingStream.add(false);
       case 'activityAction':
         _activityActionController.add(map.cast<String, dynamic>());
+      case 'serverStalled': // entry redirect
+        _diag('Media3: server request stalled', level: LogLevel.debug);
+        onServerStalled();
       case 'playerError':
         _setSubtitleLoading(false);
         final cause = map['cause']?.toString();

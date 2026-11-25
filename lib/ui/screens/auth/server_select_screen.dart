@@ -57,6 +57,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   final _addServerFocus = FocusNode(debugLabel: 'serverSelectAddServer');
   StreamSubscription<ServerAdditionState>? _additionSub;
   StreamSubscription<DiscoveredServer>? _discoverySub;
+  StreamSubscription<void>? _movedSub; // entry redirect
 
   bool _isConnecting = false;
   String? _errorMessage;
@@ -142,6 +143,11 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   void initState() {
     super.initState();
     _additionSub = _serverRepo.additionState.listen(_onAdditionState);
+    // entry redirect: a server added through a redirect shows the address it
+    // answers on now.
+    _movedSub = _serverRepo.entryRedirect?.serverMoved.listen((_) {
+      if (mounted) setState(() {});
+    });
     _loadServers();
     _startDiscovery();
   }
@@ -167,11 +173,13 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     _addressController.dispose();
     _additionSub?.cancel();
     _discoverySub?.cancel();
+    _movedSub?.cancel(); // entry redirect
     super.dispose();
   }
 
   Future<void> _loadServers() async {
     await _serverRepo.loadStoredServers();
+    unawaited(_serverRepo.entryRedirect?.followAllEntryAddresses()); // entry redirect
     if (mounted) {
       setState(() {});
       // Waits for the saved servers so the first one can take focus

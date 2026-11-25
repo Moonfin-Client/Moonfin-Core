@@ -13,6 +13,8 @@ import 'stream_replanner.dart';
 import 'stream_resolution_result.dart';
 import 'track_ordinal_mapper.dart';
 
+part 'playback_manager_server_rebase.dart'; // entry redirect
+
 class _ProgressGeneration {
   _ProgressGeneration({
     required this.item,
@@ -119,6 +121,7 @@ void withholdExternalPgsSubtitles(Map<String, dynamic> profile) {
 }
 
 class PlaybackManager implements AudioOwnable {
+  final _serverRebase = _ServerRebaseState(); // entry redirect
   static const _mediaReadyPollInterval = Duration(milliseconds: 100);
   static const _defaultMediaReadyTimeout = Duration(seconds: 60);
   static const _onlineStartupReadyTimeout = Duration(seconds: 15);
@@ -1543,6 +1546,7 @@ class PlaybackManager implements AudioOwnable {
         // here as the playing listener does.
         _onProgressStreamsUpdated();
         _evaluateLiveStallWatchdog();
+        _serverRebaseBuffering(backend, buffering); // entry redirect
       }),
       backend.completedStream.listen(_onTrackCompleted),
     ]);
@@ -1553,9 +1557,11 @@ class PlaybackManager implements AudioOwnable {
         errorStream.listen(_onBackendErrorEvent, onError: (_) {}),
       );
     }
+    _serverRebaseAttach(backend); // entry redirect
   }
 
   void _disposeStreamSubs() {
+    _serverRebaseDetach(); // entry redirect
     for (final sub in _streamSubs) {
       sub.cancel();
     }
@@ -4517,6 +4523,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> seekTo(Duration position) async {
+    _serverRebaseSeek(position); // entry redirect
     if (await _maybeIntercept(TransportAction.seek, position: position)) return;
     _lastKnownPosition = position;
     // While one is being served the stream is being replaced, so a new seek
@@ -5938,6 +5945,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void dispose() {
+    _serverRebaseDispose(); // entry redirect
     _liveRecoveryRetry?.cancel();
     _cancelLiveRecoveryProven();
     _endLiveStallWatch();

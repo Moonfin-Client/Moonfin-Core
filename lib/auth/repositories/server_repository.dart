@@ -13,6 +13,7 @@ import '../models/server_addition_state.dart';
 import '../models/silo_native_offer.dart';
 import '../store/authentication_store.dart';
 import '../store/client_certificate_store.dart';
+import '../../entry_redirect/entry_redirect.dart'; // entry redirect
 
 class ServerRepository {
   final AuthenticationStore _authStore;
@@ -38,6 +39,7 @@ class ServerRepository {
       _servers.any(
         (s) => [
           s.address,
+          ?entryRedirect?.entryOf(s.id)?.address, // entry redirect
           ...s.candidateAddresses,
         ].any((a) => Uri.tryParse(a)?.host == host),
       );
@@ -125,6 +127,7 @@ class ServerRepository {
     for (final candidate in candidates) {
       try {
         var (info, serverType, resolvedUrl) = await _probeServer(candidate);
+        final probedUrl = resolvedUrl; // entry redirect
         if (serverType == ServerType.jellyfin && offerSiloNative != null) {
           final jellyfinAddress = resolvedUrl.isNotEmpty
               ? resolvedUrl
@@ -170,6 +173,12 @@ class ServerRepository {
           );
           await _authStore.putServer(updated);
           _servers[existingIndex] = updated;
+          await entryRedirect?.recordAdded( // entry redirect
+            updated,
+            entered: candidate,
+            probed: probedUrl,
+            info: info,
+          );
           _stateController.add(
             ServerConnected(id: updated.id, publicInfo: info),
           );
@@ -194,6 +203,12 @@ class ServerRepository {
 
         await _authStore.putServer(server);
         _servers.add(server);
+        await entryRedirect?.recordAdded( // entry redirect
+          server,
+          entered: candidate,
+          probed: probedUrl,
+          info: info,
+        );
         _stateController.add(ServerConnected(id: server.id, publicInfo: info));
         return server;
       } on SiloApiUnsupported catch (e) {
@@ -245,9 +260,14 @@ class ServerRepository {
   /// saved when it was stored as Jellyfin but is Emby or the other way round.
   /// It waits at most two seconds and otherwise hands [server] back as it was,
   /// though an answer that comes later is still saved for next time.
-  Future<Server> withCheckedType(Server server) => _checkedType(
-    server,
-  ).timeout(const Duration(seconds: 2), onTimeout: () => server);
+  Future<Server> withCheckedType(Server server) async {
+    // entry redirect: a server added through a redirect is first looked up
+    // where its entry address leads now.
+    server = await (entryRedirect?.withFollowedEntryAddress(server) ?? server);
+    return _checkedType(
+      server,
+    ).timeout(const Duration(seconds: 2), onTimeout: () => server);
+  }
 
   Future<Server> _checkedType(Server server) async {
     const switchable = {ServerType.jellyfin, ServerType.emby};
@@ -257,6 +277,10 @@ class ServerRepository {
       if (!switchable.contains(detected) || detected == server.serverType) {
         return server;
       }
+      // entry redirect: what was detected belongs to the address probed, not
+      // to one the server moved to meanwhile.
+      final current = getServer(server.id);
+      if (current != null && current.address != server.address) return current;
       final corrected = server.copyWith(serverType: detected);
       await saveServer(corrected);
       return corrected;
@@ -295,6 +319,15 @@ class ServerRepository {
     }
     await removeClientCertificate(certStore, host);
   }
+
+  /// Follows entry addresses of servers added through a redirect; set by
+  /// `registerEntryRedirect`.
+  EntryRedirect? entryRedirect; // entry redirect
+
+  // entry redirect: the probe, for [EntryRedirect].
+  Future<(Map<String, dynamic>, ServerType, String)> probeServer(
+    String address,
+  ) => _probeServer(address);
 
   Future<(Map<String, dynamic>, ServerType, String)> _probeServer(
     String baseUrl,
