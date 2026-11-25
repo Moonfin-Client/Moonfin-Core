@@ -9753,5 +9753,6 @@
     "sonarrCalendarShowEpisodeInfo": "Rodyti serijos informaciją",
     "@sonarrCalendarShowEpisodeInfo": {
         "description": "Shows the season and episode number in the Sonarr calendar row"
-    }
+    },
+    "settingsDateFormat": "Datos formatas"
 }
