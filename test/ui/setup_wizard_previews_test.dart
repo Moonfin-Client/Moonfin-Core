@@ -151,6 +151,32 @@ void main() {
       });
     }
 
+    testWidgets('the player previews the window web and desktop play in', (
+      tester,
+    ) async {
+      // The phone interface on a platform that doesn't lock playback
+      // sideways, as a phone browser or a narrow desktop window has it.
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      usePreviewScreen(const Size(844, 390));
+      // The other scenes stand the phone-sized window upright...
+      expect(setupPreviewSize(), const Size(390, 844));
+      // ...but playback fills it on its side.
+      expect(settingsPreviewAspect(SettingsPreviewScene.player), 844 / 390);
+
+      usePreviewScreen(const Size(390, 844));
+      expect(settingsPreviewAspect(SettingsPreviewScene.player), 390 / 844);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('a native phone previews the player on its side', (
+      tester,
+    ) async {
+      useDevice(const Size(390, 844));
+      expect(settingsPreviewAspect(SettingsPreviewScene.player), 844 / 390);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('Modern draws the layout the real page does', (tester) async {
       final l10n = lookupAppLocalizations(const Locale('en'));
       // Only the landscape layout has a More Like This tab beside the others.

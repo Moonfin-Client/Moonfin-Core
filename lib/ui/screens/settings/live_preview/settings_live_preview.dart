@@ -217,14 +217,18 @@ Widget _libraryScene(String? focusedKey) => Builder(
   },
 );
 
-/// The screen the player fills. On a phone or tablet playback turns the
-/// screen sideways, so it lays out landscape however the device is held now.
-/// A TV and a desktop window keep the other scenes' canvas.
+/// The screen the player fills. The native phone and tablet apps lock
+/// playback sideways, so it lays out landscape however the device is held
+/// now. Web and desktop play in the window as it is, even with the phone
+/// interface, so it starts from the window rather than the other scenes'
+/// canvas, which stands a phone-sized window upright. A TV keeps its canvas.
 Size get _playerDesignSize {
-  final screen = setupPreviewSize();
-  if (PlatformDetection.useLeanbackUi || !PlatformDetection.isMobile) {
-    return screen;
-  }
+  if (PlatformDetection.useLeanbackUi) return setupPreviewSize();
+  final window = PlatformDetection.screenLogicalSize;
+  final screen = window != null && !window.isEmpty
+      ? window
+      : setupPreviewSize();
+  if (!PlatformDetection.isMobile) return screen;
   return Size(screen.longestSide, screen.shortestSide);
 }
 
