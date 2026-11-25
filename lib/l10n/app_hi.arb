@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO सेटिंग्स",
     "adminActivitySeverityAll": "सभी गंभीरता स्तर",
     "adminActivityDateRange": "तारीख़ की सीमा",
-    "adminRemoveDeviceConfirm": "डिवाइस '{name}' हटाएँ? उपयोगकर्ता को इस डिवाइस पर फिर से साइन इन करना होगा।",
+    "adminRemoveDeviceConfirm": "डिवाइस \"{name}\" हटाएँ? उपयोगकर्ता को इस डिवाइस पर फिर से साइन इन करना होगा।",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "आपकी '{libraryName}' लाइब्रेरी आर्टवर्क को सीधे मीडिया फ़ोल्डर में सहेजने के लिए कॉन्फ़िगर है ('Save artwork into media folders' चालू है)। हालाँकि, Jellyfin ने राइट एक्सेस जाँचा और उसे इस डायरेक्टरी में फ़ाइलें लिखने की अनुमति नहीं है:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "आपकी \"{libraryName}\" लाइब्रेरी आर्टवर्क को सीधे मीडिया फ़ोल्डर में सहेजने के लिए कॉन्फ़िगर है ('Save artwork into media folders' चालू है)। हालाँकि, Jellyfin ने राइट एक्सेस जाँचा और उसे इस डायरेक्टरी में फ़ाइलें लिखने की अनुमति नहीं है:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

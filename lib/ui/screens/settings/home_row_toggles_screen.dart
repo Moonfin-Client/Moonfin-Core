@@ -14,6 +14,7 @@ import '../../../preference/user_preferences.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/local_search_field.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../detail/playlist_sort_filter_bar.dart';
 import '../../../util/signed_in_server_features.dart';
@@ -982,6 +983,9 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
   bool _showSelected = true;
   bool _showUnselected = true;
 
+  final _searchController = TextEditingController();
+  final _searchFocus = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -992,6 +996,13 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
           .where((s) => s.isNotEmpty),
     );
     _fetchStudios();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocus.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchStudios() async {
@@ -1077,7 +1088,9 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
   }
 
   List<Map<String, dynamic>> get _filteredStudios {
+    final query = _searchController.text.trim().toLowerCase();
     return _allStudios.where((s) {
+      if (!(s['name'] as String).toLowerCase().contains(query)) return false;
       final id = s['id'] as String;
       final isSelected = _selectedIds.contains(id);
       final hasMovie = s['hasMovie'] as bool;
@@ -1143,6 +1156,13 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  LocalSearchField(
+                                    controller: _searchController,
+                                    focusNode: _searchFocus,
+                                    hint: l10n.searchEllipsis,
+                                    onChanged: (_) => setState(() {}),
+                                  ),
+                                  const SizedBox(height: 8),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8),
                                     child: Text(

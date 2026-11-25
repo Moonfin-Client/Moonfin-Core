@@ -235,10 +235,12 @@ dependency_overrides:
       ref: d739f693073a816f7d13afef1e3261aee7c46d9f
   # Vendored 0.6.0 with a Windows texture_bridge.cc fix for scroll/resize and
   # tab-switch crashes (null-visual guard + WGC Recreate moved off the
-  # capture-thread mutex). Both changed sites carry their reasoning inline in
-  # packages/flutter_inappwebview_windows/windows/custom_platform_view/
-  # texture_bridge.cc. On upgrade, re-vendor the matching version and diff that
-  # file against the pub.dev release to carry the fix forward.
+  # capture-thread mutex), and an exit crash fix in in_app_webview_manager.cpp
+  # that releases the manager's WinRT statics in its destructor. Each changed
+  # site carries its reasoning inline under
+  # packages/flutter_inappwebview_windows/windows/. On upgrade, re-vendor the
+  # matching version and diff those files against the pub.dev release to carry
+  # the fixes forward.
   flutter_inappwebview_windows:
     path: packages/flutter_inappwebview_windows
   # Vendored 0.1.2 that degrades instead of throwing from its detached input

@@ -356,6 +356,10 @@ final class NativeApplePlayerViewController: UIViewController {
     private let topGradientLayer = CAGradientLayer()
     private let headerStack = UIStackView()
     private let logoImageView = UIImageView()
+    private lazy var logoWidthConstraint = logoImageView.widthAnchor.constraint(
+        equalToConstant: Self.logoMaxWidth)
+    private static let logoHeight: CGFloat = 82
+    private static let logoMaxWidth: CGFloat = 480
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
 
@@ -586,9 +590,9 @@ final class NativeApplePlayerViewController: UIViewController {
 
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.contentMode = .scaleAspectFit
-        logoImageView.setContentHuggingPriority(.required, for: .horizontal)
-        logoImageView.heightAnchor.constraint(equalToConstant: 82).isActive = true
-        logoImageView.widthAnchor.constraint(lessThanOrEqualToConstant: 480).isActive = true
+        logoImageView.heightAnchor.constraint(equalToConstant: Self.logoHeight).isActive = true
+        // Sized to the logo's own shape, so aspect fit has no spare width to center it in.
+        logoWidthConstraint.isActive = true
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .systemFont(ofSize: 42, weight: .bold)
@@ -1872,6 +1876,11 @@ final class NativeApplePlayerViewController: UIViewController {
             guard let self, self.logoUrlString == expected else { return }
             if let image {
                 self.logoImageView.image = image
+                if image.size.height > 0 {
+                    self.logoWidthConstraint.constant = min(
+                        Self.logoMaxWidth,
+                        Self.logoHeight * image.size.width / image.size.height)
+                }
                 self.hasLogo = true
             } else {
                 self.hasLogo = false

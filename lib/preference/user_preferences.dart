@@ -115,8 +115,8 @@ class UserPreferences extends ChangeNotifier {
   ];
 
   // Where the bar draws its titles from. Every source still passes through the
-  // library, collection, content type and genre filters, and still picks its
-  // slides at random out of what comes back.
+  // library, collection, content type and genre filters. Random shuffles what
+  // comes back, and the others take the newest from each library in turn.
   static const mediaBarSourceRandom = 'random';
   static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
   static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
@@ -2738,6 +2738,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_audio_passthrough_output',
     defaultValue: AudioPassthroughOutput.platform,
     values: AudioPassthroughOutput.values,
+  );
+
+  /// Linux only: decode a passthrough track when the output plays it silently.
+  static final passthroughSilentFallback = Preference(
+    key: 'pref_passthrough_silent_fallback',
+    defaultValue: true,
   );
 
   static final downmixToStereo = Preference(

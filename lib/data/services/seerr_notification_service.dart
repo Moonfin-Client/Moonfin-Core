@@ -1,19 +1,86 @@
 import 'dart:convert';
 
+import 'package:clock/clock.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../ui/navigation/app_router.dart';
+import '../../ui/navigation/destinations.dart';
 import '../../ui/widgets/floating_notification.dart';
 import '../../util/platform_detection.dart';
 import 'local_notification_bootstrap.dart';
 
 class SeerrNotificationService {
+  /// How long a push that arrives while the app is open waits for the stream's
+  /// copy of the same alert. The server sends the stream copy first.
+  static const pushWait = Duration(seconds: 3);
+
+  /// Either copy of an alert can arrive well after the other, so the one that
+  /// showed keeps the other quiet for this long.
+  static const copyWindow = Duration(minutes: 1);
+
+  final Map<String, DateTime> _streamShown = {};
+  final Map<String, DateTime> _pushShown = {};
+
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
     LocalNotificationBootstrap.instance.attachMainIsolateActionHandler();
   }
 
+  /// Shows an alert from the plugin's live event stream.
   void show(
+    String title,
+    String body,
+    String route, {
+    String? requestId,
+    bool isRequest = false,
+  }) {
+    final key = _alertKey(title, route);
+    _forgetOld();
+    // A push that showed while the stream lagged already covered this one.
+    if (_pushShown.remove(key) != null) return;
+    _streamShown[key] = clock.now();
+    present(title, body, route, requestId: requestId, isRequest: isRequest);
+  }
+
+  /// Shows a push that arrived while the app was open, which Android and iOS
+  /// leave undrawn. The stream usually brings the same alert, so the push only
+  /// shows when that copy never came, like when the stream is down.
+  Future<void> showPush(
+    String title,
+    String body,
+    String route, {
+    String? requestId,
+    bool isRequest = false,
+  }) async {
+    final target = route.trim();
+    // Watch parties raise their own alert in the app.
+    if (target.startsWith(Destinations.watchParty)) return;
+    if (title.isEmpty && body.isEmpty) return;
+
+    await Future<void>.delayed(pushWait);
+    final key = _alertKey(title, target);
+    _forgetOld();
+    if (_streamShown.containsKey(key)) return;
+    _pushShown[key] = clock.now();
+    present(title, body, target, requestId: requestId, isRequest: isRequest);
+  }
+
+  // A push can have a shorter body than its stream copy and no request id, so
+  // only the title and route match them.
+  static String _alertKey(String title, String route) =>
+      '$title\n${route.trim()}';
+
+  void _forgetOld() {
+    final now = clock.now();
+    bool old(String _, DateTime shownAt) =>
+        now.difference(shownAt) > copyWindow;
+    _streamShown.removeWhere(old);
+    _pushShown.removeWhere(old);
+  }
+
+  @visibleForTesting
+  void present(
     String title,
     String body,
     String route, {

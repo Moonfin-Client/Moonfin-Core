@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO-instellings",
     "adminActivitySeverityAll": "Alle ernsgrade",
     "adminActivityDateRange": "Datumreeks",
-    "adminRemoveDeviceConfirm": "Verwyder toestel '{name}'? Die gebruiker sal weer op hierdie toestel moet aanmeld.",
+    "adminRemoveDeviceConfirm": "Verwyder toestel \"{name}\"? Die gebruiker sal weer op hierdie toestel moet aanmeld.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Jou '{libraryName}'-biblioteek is opgestel om kunswerk direk in die mediavouers te stoor ('Stoor kunswerk in mediavouers' is geaktiveer). Jellyfin het egter skryftoegang getoets en het nie toestemming om lêers na hierdie gids te skryf nie:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Jou \"{libraryName}\"-biblioteek is opgestel om kunswerk direk in die mediavouers te stoor ('Stoor kunswerk in mediavouers' is geaktiveer). Jellyfin het egter skryftoegang getoets en het nie toestemming om lêers na hierdie gids te skryf nie:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

@@ -154,23 +154,27 @@ class MediaBarRepository {
         return const MediaBarDisabled();
       }
 
-      final allItems = <Map<String, dynamic>>[];
       final seenIds = <String>{};
       final usable = _usableFor(excludedGenres);
       final newMovieDays = _isNewReleaseSource
           ? _prefs.get(UserPreferences.mediaBarNewMovieDays)
           : null;
       final now = DateTime.now();
+      final dated = _isDatedSource;
       var usableCount = 0;
-      // A source still waiting for a slot is skipped once the pool holds twice
-      // the item count to choose from. The order is shuffled so the skipped
-      // ones change from one load to the next.
+      // A random source still waiting for a slot is skipped once the pool
+      // holds twice the item count to choose from. The order is shuffled so
+      // the skipped ones change from one load to the next. A dated source
+      // reads every library, since any of them can hold the newest titles.
       final enough = maxItems * 2;
-      await mapBounded(
-        allParentIds.toList()..shuffle(_random),
+      final parents = allParentIds.toList();
+      if (!dated) parents.shuffle(_random);
+      final batches = await mapBounded(
+        parents,
         _sourceConcurrency,
         (parentId) async {
-          if (usableCount >= enough) return null;
+          if (!dated && usableCount >= enough) return null;
+          final kept = <Map<String, dynamic>>[];
           try {
             final batch = await _fetchItems(
               allParentItemTypes[parentId] ?? includeTypes,
@@ -189,15 +193,25 @@ class MediaBarRepository {
                       null) {
                 continue;
               }
-              allItems.add(item);
-              if (usable(item)) usableCount++;
+              if (!usable(item)) continue;
+              kept.add(item);
+              usableCount++;
             }
           } catch (_) {
             // Keep fetching remaining libraries if one fails
           }
-          return null;
+          return kept;
         },
       );
+      // Each library comes back newest first, so a dated source takes one
+      // title from each in turn.
+      final allItems = dated
+          ? [
+              for (var i = 0; batches.any((b) => i < (b?.length ?? 0)); i++)
+                for (final batch in batches)
+                  if (batch != null && i < batch.length) batch[i],
+            ]
+          : [for (final batch in batches) ...?batch];
       if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
           GetIt.instance<MediaBarRepository>() != this) {
         return const MediaBarDisabled();
@@ -290,8 +304,8 @@ class MediaBarRepository {
     int maxItems,
     Set<String> excludedGenres,
   ) {
-    final withBackdrops = source.where(_usableFor(excludedGenres)).toList()
-      ..shuffle();
+    final withBackdrops = source.where(_usableFor(excludedGenres)).toList();
+    if (!_isDatedSource) withBackdrops.shuffle();
     return mediaBarOrder(
       withBackdrops,
       isFollowed: mediaBarIsFollowedSeries,
@@ -299,6 +313,11 @@ class MediaBarRepository {
       maxItems: maxItems,
     );
   }
+
+  /// Every source but Random keeps the server's newest first order.
+  bool get _isDatedSource =>
+      _prefs.get(UserPreferences.mediaBarSourceType) !=
+      UserPreferences.mediaBarSourceRandom;
 
   /// The check an item has to pass to go on the bar.
   bool Function(Map<String, dynamic>) _usableFor(Set<String> excludedGenres) {
@@ -537,8 +556,8 @@ class MediaBarRepository {
           )
           ? _prefs.get(UserPreferences.hideWatchedInRecentRows)
           : null;
-      if (sourceType == UserPreferences.mediaBarSourceRecentlyReleased &&
-          (itemTypes == null || itemTypes.contains('Series'))) {
+      final tv = itemTypes == null || itemTypes.contains('Series');
+      if (sourceType == UserPreferences.mediaBarSourceRecentlyReleased && tv) {
         final childType = recentlyReleasedItemTypesFor(
           'tvshows',
           seriesType: () =>
@@ -569,7 +588,9 @@ class MediaBarRepository {
                 .timeout(const Duration(seconds: 15))
           : await _client.itemsApi
                 .getLatestItems(
-                  includeItemTypes: itemTypes,
+                  // Jellyfin answers a Series filter here with nothing, so TV
+                  // is read the way the home row reads it.
+                  includeItemTypes: tv ? null : itemTypes,
                   parentId: parentId,
                   limit: _poolSize,
                   fields: _fields,
@@ -577,8 +598,11 @@ class MediaBarRepository {
                 )
                 .timeout(const Duration(seconds: 15));
 
-      final rawItems = (response['Items'] as List? ?? [])
+      var rawItems = (response['Items'] as List? ?? [])
           .cast<Map<String, dynamic>>();
+      if (tv && sourceType == UserPreferences.mediaBarSourceRecentlyAdded) {
+        rawItems = await _withSeries(rawItems, itemTypes);
+      }
       if (!(hideWatched ?? false)) return rawItems;
       return rawItems
           .where((item) => !isRawItemWatchedForRecentRow(item))
@@ -666,6 +690,8 @@ class MediaBarRepository {
     return ids;
   }
 
+  /// The series in [ids] order, since a server can answer an id lookup in its
+  /// own order and the bar keeps the newest first.
   Future<List<Map<String, dynamic>>> _fetchSeries(List<String> ids) async {
     if (ids.isEmpty) return const [];
     final response = await _client.itemsApi
@@ -676,7 +702,37 @@ class MediaBarRepository {
           enableImageTypes: 'Backdrop,Logo,Banner',
         )
         .timeout(const Duration(seconds: 15));
-    return (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+    final items = (response['Items'] as List? ?? [])
+        .cast<Map<String, dynamic>>()
+        .toList();
+    final rank = {for (var i = 0; i < ids.length; i++) ids[i]: i};
+    int rankOf(Map<String, dynamic> item) =>
+        rank[item['Id']?.toString()] ?? ids.length;
+    return items..sort((a, b) => rankOf(a).compareTo(rankOf(b)));
+  }
+
+  /// [items] with each episode or season swapped for its series and anything
+  /// outside [itemTypes] left out, in the server's order.
+  Future<List<Map<String, dynamic>>> _withSeries(
+    List<Map<String, dynamic>> items,
+    List<String>? itemTypes,
+  ) async {
+    final series = {
+      for (final item in await _fetchSeries(_seriesIdsOf(items)))
+        item['Id']: item,
+    };
+    final out = <Map<String, dynamic>>{};
+    for (final item in items) {
+      final entry = switch (item['Type']) {
+        'Series' => series[item['Id']],
+        'Season' || 'Episode' => series[item['SeriesId']],
+        _ => item,
+      };
+      if (entry != null && (itemTypes?.contains(entry['Type']) ?? true)) {
+        out.add(entry);
+      }
+    }
+    return out.toList();
   }
 
   /// The newest movies released within the window, newest first.

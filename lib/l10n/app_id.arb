@@ -8309,7 +8309,7 @@
     "adminDrawerNfo": "Pengaturan NFO",
     "adminActivitySeverityAll": "Semua tingkat keparahan",
     "adminActivityDateRange": "Rentang tanggal",
-    "adminRemoveDeviceConfirm": "Hapus perangkat '{name}'? Pengguna harus masuk kembali di perangkat ini.",
+    "adminRemoveDeviceConfirm": "Hapus perangkat \"{name}\"? Pengguna harus masuk kembali di perangkat ini.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Pustaka '{libraryName}' Anda dikonfigurasi untuk menyimpan artwork langsung ke dalam folder media (opsi 'Simpan artwork ke dalam folder media' aktif). Namun, Jellyfin telah menguji akses tulis dan tidak memiliki izin untuk menulis berkas ke direktori ini:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Pustaka \"{libraryName}\" Anda dikonfigurasi untuk menyimpan artwork langsung ke dalam folder media (opsi 'Simpan artwork ke dalam folder media' aktif). Namun, Jellyfin telah menguji akses tulis dan tidak memiliki izin untuk menulis berkas ke direktori ini:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

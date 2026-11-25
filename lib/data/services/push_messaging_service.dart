@@ -13,6 +13,8 @@ import '../../ui/navigation/deep_link_navigator.dart';
 import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'plugin_sync_service.dart';
+import 'seerr_notification_service.dart';
+import 'server_messages_service.dart';
 
 /// Every push carries a notification block, so the OS draws background and
 /// terminated notifications. Nothing to do here.
@@ -22,8 +24,8 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {}
 /// Client side of the push notification path. The plugin sends FCM messages
 /// carrying both a notification block (title/body) and a data route, so the OS
 /// renders background/terminated notifications and this service only handles
-/// token registration and taps. Foreground messages are ignored because the
-/// SSE settings stream already shows the in-app notification.
+/// token registration and taps. Foreground messages go to the in-app alerts,
+/// which drop them when the SSE settings stream already showed the same one.
 ///
 /// Firebase stays untouched until a signed-in server's plugin can deliver
 /// push, so a phone that never meets one never contacts Google.
@@ -92,9 +94,7 @@ class PushMessagingService extends ChangeNotifier {
       _registerToken(token);
     });
 
-    // Foreground is handled by the SSE stream, so FCM onMessage is a no-op here
-    // to avoid drawing the notification twice.
-    FirebaseMessaging.onMessage.listen((_) {});
+    FirebaseMessaging.onMessage.listen(_showForegroundMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _navigateFromMessage(message);
@@ -253,5 +253,34 @@ class PushMessagingService extends ChangeNotifier {
     }
 
     unawaited(openLinkedRoute(appRouter, trimmed));
+  }
+
+  static void _showForegroundMessage(RemoteMessage message) {
+    final getIt = GetIt.instance;
+    final rawRoute = message.data['route'];
+    final route = rawRoute is String ? rawRoute.trim() : '';
+    if (route == serverMessagesPushRoute) {
+      // The refresh only opens the window for messages the stream hasn't
+      // already opened it for.
+      if (getIt.isRegistered<ServerMessagesService>() &&
+          getIt.isRegistered<MediaServerClient>()) {
+        unawaited(
+          getIt<ServerMessagesService>().refresh(getIt<MediaServerClient>()),
+        );
+      }
+      return;
+    }
+
+    if (!getIt.isRegistered<SeerrNotificationService>()) return;
+    final requestId = message.data['requestId'];
+    unawaited(
+      getIt<SeerrNotificationService>().showPush(
+        message.notification?.title ?? '',
+        message.notification?.body ?? '',
+        route,
+        requestId: requestId is String ? requestId : null,
+        isRequest: message.data['kind'] == 'request',
+      ),
+    );
   }
 }
