@@ -41,6 +41,13 @@ Widget withBackClose(BuildContext dialogContext, Widget child) {
         skipTraversal: true,
         onKeyEvent: (_, event) {
           if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
+          // A focused text field owns backspace, so it deletes rather than closes.
+          if (event.logicalKey == LogicalKeyboardKey.backspace &&
+              FocusManager.instance.primaryFocus?.context
+                      ?.findAncestorWidgetOfExactType<EditableText>() !=
+                  null) {
+            return KeyEventResult.ignored;
+          }
           if (event is KeyDownEvent || event is KeyUpEvent) {
             closeDialog();
             return KeyEventResult.handled;
