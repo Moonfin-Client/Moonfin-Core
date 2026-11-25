@@ -19,6 +19,9 @@ class _AuthStore extends Fake implements AuthenticationStore {
   final removed = <String>[];
   var failPuts = false;
 
+  /// When set, the next save that gets this far fails.
+  var failNext = false;
+
   /// When set, the next save waits for it.
   Completer<void>? hold;
 
@@ -28,6 +31,10 @@ class _AuthStore extends Fake implements AuthenticationStore {
     hold = null;
     if (waitFor != null) await waitFor.future;
     if (failPuts) throw StateError('disk full');
+    if (failNext) {
+      failNext = false;
+      throw StateError('disk full');
+    }
     saved.add(server);
   }
 
@@ -358,6 +365,52 @@ void main() {
     expect(followed.address, 'http://127.0.0.1:3');
     expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:3');
     expect(store.saved.single.address, 'http://127.0.0.1:3');
+  });
+
+  test('a failed move never rolls back a newer update', () async {
+    await saveWithEntry();
+    store.saved.clear();
+
+    // The move is held while it saves, and a later update lands meanwhile...
+    final release = store.hold = Completer<void>();
+    final following = redirect.withFollowedEntryAddress(
+      repo.getServer('server-1')!,
+    );
+    while (store.hold != null) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    await repo.updateServer(
+      repo.getServer('server-1')!.copyWith(address: 'http://127.0.0.1:3'),
+    );
+    // ...then the move's own save fails.
+    store.failNext = true;
+    release.complete();
+
+    expect((await following).address, 'http://127.0.0.1:3');
+    expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:3');
+    expect(store.saved.last.address, 'http://127.0.0.1:3');
+  });
+
+  test('a server removed while its move saved stays removed', () async {
+    await saveWithEntry();
+    final moves = <ServerMove>[];
+    final sub = redirect.serverMoved.listen(moves.add);
+
+    final release = store.hold = Completer<void>();
+    final following = redirect.withFollowedEntryAddress(
+      repo.getServer('server-1')!,
+    );
+    while (store.hold != null) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    await repo.deleteServer('server-1');
+    release.complete();
+    await following;
+    await Future<void>.delayed(Duration.zero);
+    await sub.cancel();
+
+    expect(repo.getServer('server-1'), isNull);
+    expect(moves, isEmpty);
   });
 
   test('a move that could not be saved leaves the list as it was', () async {

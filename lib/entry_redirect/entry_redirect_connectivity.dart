@@ -107,11 +107,11 @@ class EntryRedirectConnectivity {
       final deadline = DateTime.now().add(followBudget);
       // Tells a stream that dropped on a server still at its address (it
       // answers) from one that moved, without holding up the first ask.
-      unawaited(_connectivity.recheckNow());
+      unawaited(_connectivity.recheckServer());
       while (true) {
         final serverId = _connectivity.activeServerId;
         if (await followFor(getIt<MediaServerClient>(), serverId)) {
-          if (!_stopped) await _connectivity.recheckNow();
+          if (!_stopped) await _connectivity.recheckServer();
           return;
         }
         if (_stopped) return;
@@ -121,7 +121,7 @@ class EntryRedirectConnectivity {
         if (!_playerReconnecting() && _connectivity.serverReachable) return;
         if (!getIt.isRegistered<MediaServerClient>()) return;
       }
-      await _connectivity.recheckNow();
+      await _connectivity.recheckServer();
     } finally {
       _followingLostStream = false;
     }
@@ -132,7 +132,7 @@ class EntryRedirectConnectivity {
   /// the reachability state clears and an open stream moves over to it.
   void _onServerMoved(ServerMove move) {
     if (_stopped || move.server.id != _connectivity.activeServerId) return;
-    unawaited(lastMoveCheck = _connectivity.recheckNow());
+    unawaited(lastMoveCheck = _connectivity.recheckServer());
     unawaited(_moveStream(move.from, move.server.address));
   }
 

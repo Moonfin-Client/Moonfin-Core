@@ -96,12 +96,16 @@ extension ServerRebasePlayback on PlaybackManager {
         );
         final s = _serverRebase;
         s.rebaseCheck?.cancel();
-        s.rebaseFrom = backend.position;
+        // On the media's timeline, like a seek's target below.
+        s.rebaseFrom = _mediaPosition(backend.position);
         s.rebaseCheck = Timer(_rebaseGrace, () {
           s.rebaseCheck = null;
           if (!sameStream() || _viewerPaused) return;
           if (!hasReconnectableStream || _reconnecting) return;
-          if (_isActuallyPlaying && backend.position > s.rebaseFrom) return;
+          if (_isActuallyPlaying &&
+              _mediaPosition(backend.position) > s.rebaseFrom) {
+            return;
+          }
           _reconnectAfterMove();
         });
         return;

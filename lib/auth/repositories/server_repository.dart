@@ -262,11 +262,13 @@ class ServerRepository {
   /// though an answer that comes later is still saved for next time.
   Future<Server> withCheckedType(Server server) async {
     // entry redirect: a server added through a redirect is first looked up
-    // where its entry address leads now.
-    server = await (entryRedirect?.withFollowedEntryAddress(server) ?? server);
-    return _checkedType(
-      server,
-    ).timeout(const Duration(seconds: 2), onTimeout: () => server);
+    // where its entry address leads now, within the same two seconds.
+    var latest = server;
+    final checked = () async {
+      latest = await (entryRedirect?.withFollowedEntryAddress(server) ?? server);
+      return _checkedType(latest);
+    }();
+    return checked.timeout(const Duration(seconds: 2), onTimeout: () => latest);
   }
 
   Future<Server> _checkedType(Server server) async {

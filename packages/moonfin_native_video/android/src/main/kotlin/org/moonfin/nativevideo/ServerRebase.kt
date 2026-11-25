@@ -307,10 +307,8 @@ class RebasingDataSource(
             spec
         }
         try {
-            val length = guarded { delegate.open(spec) }
             // Moved while connecting: what it opened is the old address.
-            if (aborted) throw IOException("Server moved, asking its new address")
-            return length
+            return guarded { delegate.open(spec) }
         } finally {
             connecting = false
         }
@@ -337,6 +335,9 @@ class RebasingDataSource(
         waitingSince = android.os.SystemClock.elapsedRealtime()
         try {
             val value = block()
+            // Aborted while it ran: an end of input or bytes it returned came
+            // from the closed old connection, not from the stream's end.
+            if (aborted) throw IOException("Server moved, asking its new address")
             stallReported = false
             return value
         } catch (t: Throwable) {

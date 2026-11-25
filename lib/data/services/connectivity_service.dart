@@ -280,6 +280,15 @@ class ConnectivityService extends ChangeNotifier {
         getIt<PlaybackManager>().state.isPlaying;
   }
 
+  // entry redirect: asks the server again after it moved, without the
+  // connectivity_plus call of [recheckNow] (Apple TV has none), and starts
+  // the sync when that brings it back.
+  Future<void> recheckServer() async {
+    final wasReachable = _serverReachable;
+    await _checkServerReachability();
+    if (_serverReachable && !wasReachable) _triggerSync();
+  }
+
   Future<void> _checkServerReachability() => _inFlightProbe ??= _probeServer()
       .whenComplete(() => _inFlightProbe = null);
 
@@ -305,13 +314,15 @@ class ConnectivityService extends ChangeNotifier {
       }
     }
     final follow = onServerUnreachable; // entry redirect
-    if (!reachable &&
-        _isOnline &&
-        follow != null &&
-        await follow(client, serverId)) {
-      try {
-        reachable = await client.systemApi.ping();
-      } catch (_) {}
+    if (!reachable && _isOnline && follow != null) {
+      if (await follow(client, serverId)) {
+        try {
+          reachable = await client.systemApi.ping();
+        } catch (_) {}
+      }
+      // entry redirect: a server switch while the entry address was asked
+      // gets a probe of its own rather than this server's verdict.
+      if (_serverId != serverId) return _probeServer();
     }
     _serverReachable = reachable;
     if (!_serverReachable && wasReachable) {

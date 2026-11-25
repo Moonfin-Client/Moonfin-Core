@@ -207,24 +207,44 @@ class EntryRedirect {
       try {
         await _repository.updateServer(moved);
       } catch (_) {
-        // The list already took it: put back what was there.
-        if (current != null) {
+        // The list already took it: put back what was there, unless another
+        // update or a removal replaced it meanwhile, which then stays.
+        final after = _repository.getServer(server.id);
+        if (after == null) return server;
+        if (current != null && after.address == moved.address) {
           try {
             await _repository.updateServer(current);
           } catch (_) {}
+          return _repository.getServer(server.id) ?? server;
         }
-        return current ?? server;
+        return after;
       }
+      // A removal that came in while this one saved stays a removal; a
+      // server not in the list yet (being signed in to) just moved.
+      final saved = _repository.getServer(server.id);
+      if (saved == null && wasSaved) return server;
+      if (saved == null || saved.address == moved.address) {
+        _pointClient(moved);
+        _moved.add(ServerMove(from: server.address, server: moved));
+        return moved;
+      }
+      var now = saved;
       // Another update that came in while this one saved wins, on disk too.
-      final now = _repository.getServer(server.id);
-      if (now != null && now.address != moved.address) {
-        await _repository.updateServer(now);
-        _pointClient(now);
-        return now;
+      // Its own write may have landed before this one, so write what the
+      // list holds now, and again while it keeps changing underneath.
+      for (var i = 0; i < 3; i++) {
+        try {
+          await _repository.updateServer(now);
+        } catch (_) {}
+        final again = _repository.getServer(server.id);
+        if (again == null) return server;
+        if (again.address == now.address) break;
+        now = again;
       }
-      _pointClient(moved);
-      _moved.add(ServerMove(from: server.address, server: moved));
-      return moved;
+      final latest = _repository.getServer(server.id);
+      if (latest == null) return server;
+      _pointClient(latest);
+      return latest;
     });
     _saving = done.then((_) {}, onError: (_) {});
     return done;
