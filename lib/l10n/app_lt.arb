@@ -9727,5 +9727,9 @@
                 "type": "int"
             }
         }
+    },
+    "autoDownloadDeleteAfterDay": "1 diena po žiūrėjimo",
+    "@autoDownloadDeleteAfterDay": {
+        "description": "Delete-after-watching option"
     }
 }
