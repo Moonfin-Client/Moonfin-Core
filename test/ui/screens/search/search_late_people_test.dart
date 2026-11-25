@@ -80,6 +80,9 @@ class _FakeSeerrRepository extends Fake implements SeerrRepository {
   bool get isAvailable => true;
 
   @override
+  int get minSearchQueryLength => 1;
+
+  @override
   Future<SeerrDiscoverPage> search(
     String query, {
     String? mediaType,

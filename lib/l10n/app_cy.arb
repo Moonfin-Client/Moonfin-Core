@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Gosodiadau NFO",
     "adminActivitySeverityAll": "Pob difrifoldeb",
     "adminActivityDateRange": "Ystod dyddiadau",
-    "adminRemoveDeviceConfirm": "Tynnu'r ddyfais '{name}'? Bydd angen i'r defnyddiwr fewngofnodi eto ar y ddyfais hon.",
+    "adminRemoveDeviceConfirm": "Tynnu'r ddyfais \"{name}\"? Bydd angen i'r defnyddiwr fewngofnodi eto ar y ddyfais hon.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Mae eich llyfrgell '{libraryName}' wedi'i ffurfweddu i gadw gwaith celf yn uniongyrchol yn y ffolderi cyfryngau (mae 'Cadw gwaith celf yn y ffolderi cyfryngau' wedi'i alluogi). Fodd bynnag, mae Jellyfin wedi profi mynediad ysgrifennu ac nid oes ganddo ganiatâd i ysgrifennu ffeiliau i'r cyfeiriadur hwn:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Mae eich llyfrgell \"{libraryName}\" wedi'i ffurfweddu i gadw gwaith celf yn uniongyrchol yn y ffolderi cyfryngau (mae 'Cadw gwaith celf yn y ffolderi cyfryngau' wedi'i alluogi). Fodd bynnag, mae Jellyfin wedi profi mynediad ysgrifennu ac nid oes ganddo ganiatâd i ysgrifennu ffeiliau i'r cyfeiriadur hwn:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9436,5 +9436,13 @@
     "afterHoursStart": "Dechrau",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "Clasurol",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clasurol",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

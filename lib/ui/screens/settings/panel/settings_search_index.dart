@@ -857,6 +857,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'left',
       'bottom',
     ]),
+    navigation.leaf(
+      'pref_top_navbar_style',
+      l10n.topNavbarStyle,
+      keywords: ['tabline', 'atlas', 'top bar', 'tabs'],
+    ),
+    navigation.leaf(
+      'pref_sidebar_style',
+      l10n.sidebarStyle,
+      keywords: ['reel', 'mosaic', 'sidebar', 'tiles', 'wheel'],
+    ),
     // Device gate only: the entries stay findable while another position is
     // picked, like every other setting here.
     if (NavigationLayout.allowBottomNavbar) ...[
@@ -1859,6 +1869,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
             'silent',
             'silence',
           ],
+        ),
+      if (PlatformDetection.isLinux)
+        audio.leaf(
+          'pref_passthrough_silent_fallback',
+          l10n.settingsAudioPassthroughFallback,
+          subtitle: l10n.settingsAudioPassthroughFallbackDescription,
+          keywords: ['bitstream', 'decode', 'no sound', 'silent', 'silence'],
         ),
       audio.leaf(
         'pref_downmix_to_stereo',

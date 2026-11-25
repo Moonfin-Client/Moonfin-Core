@@ -72,6 +72,9 @@ List<Shadow> get _textShadows => [
 ];
 
 class MediaBar extends StatefulWidget {
+  /// The slide on screen, for the Mosaic sidebar's Home tile.
+  static final featuredSlide = ValueNotifier<MediaBarSlideItem?>(null);
+
   /// The decode width of the backdrop layer, shared by the widget and every
   /// precache of a neighbouring slide. Built from the screen rather than the
   /// layer's own constraints so a precache issued before the layer exists
@@ -1901,6 +1904,9 @@ class _MediaBarState extends State<MediaBar>
     final useBookshelfStyle = mode == UserPreferences.mediaBarModeBookshelf;
     final useGalleryStyle = mode == UserPreferences.mediaBarModeGallery;
     final useAyaStyle = mode == UserPreferences.mediaBarModeAya;
+    _publishFeaturedSlide(
+      state is MediaBarReady ? state.items.elementAtOrNull(_currentIndex) : null,
+    );
 
     return switch (state) {
       MediaBarLoading() => _wrapStatusFocus(
@@ -1934,6 +1940,15 @@ class _MediaBarState extends State<MediaBar>
                                     ? _buildMakdSlideshow(context, items)
                                     : _buildSlideshow(context, items))))),
     };
+  }
+
+  /// Runs from build, so the write waits for the frame to end. The sidebar
+  /// can't rebuild in the middle of this one.
+  void _publishFeaturedSlide(MediaBarSlideItem? item) {
+    if (identical(MediaBar.featuredSlide.value, item)) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) MediaBar.featuredSlide.value = item;
+    });
   }
 
   Widget _wrapStatusFocus(Widget child, {VoidCallback? onSelect}) {
@@ -2036,6 +2051,13 @@ class _MediaBarState extends State<MediaBar>
             NavbarPosition.top);
     final chrome = mobileChromeInsets(context, widget.prefs, widget.height);
     final toolbarInset = navbarAtTop ? chrome.top : 0.0;
+    // Tabline's tabs start at the left edge and Atlas is a solid bar, so the
+    // logo moves below them instead of sharing the bar's row.
+    final logoBelowBar =
+        !isMobile &&
+        widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top &&
+        widget.prefs.get(UserPreferences.topNavbarStyle) !=
+            TopNavbarStyle.classic;
     final hasVisibleTrailerVideo =
         (_activeYouTubeVideoId != null ||
             _activeWebTrailerUrl != null ||
@@ -2085,7 +2107,9 @@ class _MediaBarState extends State<MediaBar>
                     ),
                   if (currentItem != null && (!isMobile || isTablet))
                     Positioned(
-                      top: MediaQuery.of(context).padding.top + 56,
+                      top:
+                          MediaQuery.of(context).padding.top +
+                          (logoBelowBar ? TopToolbar.heightFor(context) + 6 : 56),
                       left: logoLeftInset,
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),

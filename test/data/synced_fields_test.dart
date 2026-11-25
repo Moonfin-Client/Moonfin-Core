@@ -217,6 +217,8 @@ void main() {
     'navbarOpacity',
     'navbarPosition',
     'bottomNavbarStyle',
+    'topNavbarStyle',
+    'sidebarStyle',
     'bottomNavbarTabs',
     'nextUpBehavior',
     'nextUpMaxDays',

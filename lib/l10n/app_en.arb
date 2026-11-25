@@ -5617,6 +5617,14 @@
   "settingsAudioPassthroughOutputPlatform": "Automatic, system packer (AudioTrack RAW)",
   "settingsAudioPassthroughOutputIec": "App packer (AudioTrack IEC)",
   "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+  "settingsAudioPassthroughFallback": "Decode Silent Passthrough",
+  "@settingsAudioPassthroughFallback": {
+    "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+  },
+  "settingsAudioPassthroughFallbackDescription": "If the output can't play a passthrough track and stays silent, decode it on this device instead.",
+  "@settingsAudioPassthroughFallbackDescription": {
+    "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+  },
   "settingsDownmixToStereoDescription": "Mix all decoded audio down to two channels.",
   "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, including Dolby Atmos (JOC).",
   "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, including DTS:X.",
@@ -17888,6 +17896,88 @@
   "clickpadSeekingPausedOnly": "Only while paused",
   "@clickpadSeekingPausedOnly": {
     "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+  },
+  "topNavbarStyle": "Top Bar Style",
+  "@topNavbarStyle": {
+    "description": "Settings title for choosing how the top navigation bar looks"
+  },
+  "topNavbarStyleClassic": "Classic",
+  "@topNavbarStyleClassic": {
+    "description": "Top bar style: the standard centered pill of icon buttons"
+  },
+  "topNavbarStyleTabline": "Tabline",
+  "@topNavbarStyleTabline": {
+    "description": "Top bar style: text tabs with an underline and no container"
+  },
+  "topNavbarStyleAtlas": "Atlas",
+  "@topNavbarStyleAtlas": {
+    "description": "Top bar style: a solid bar whose tabs open a panel of shortcuts and artwork"
+  },
+  "topNavbarStyleClassicHint": "The standard bar",
+  "@topNavbarStyleClassicHint": {
+    "description": "Hint under the Classic top bar style option"
+  },
+  "topNavbarStyleTablineHint": "Text tabs with an underline, no pill",
+  "@topNavbarStyleTablineHint": {
+    "description": "Hint under the Tabline top bar style option"
+  },
+  "topNavbarStyleAtlasHint": "Tabs open a panel with shortcuts and artwork",
+  "@topNavbarStyleAtlasHint": {
+    "description": "Hint under the Atlas top bar style option"
+  },
+  "sidebarStyle": "Sidebar Style",
+  "@sidebarStyle": {
+    "description": "Settings title for choosing how the left sidebar looks"
+  },
+  "sidebarStyleClassic": "Classic",
+  "@sidebarStyleClassic": {
+    "description": "Sidebar style: the standard rail that grows into a labeled list"
+  },
+  "sidebarStyleReel": "Reel",
+  "@sidebarStyleReel": {
+    "description": "Sidebar style: a wheel of destinations that turns through a fixed focus window"
+  },
+  "sidebarStyleMosaic": "Mosaic",
+  "@sidebarStyleMosaic": {
+    "description": "Sidebar style: a panel of tiles with each library shown by its artwork"
+  },
+  "sidebarStyleClassicHint": "The standard sidebar",
+  "@sidebarStyleClassicHint": {
+    "description": "Hint under the Classic sidebar style option"
+  },
+  "sidebarStyleReelHint": "A wheel that turns through the destinations",
+  "@sidebarStyleReelHint": {
+    "description": "Hint under the Reel sidebar style option"
+  },
+  "sidebarStyleMosaicHint": "A panel of tiles with library artwork",
+  "@sidebarStyleMosaicHint": {
+    "description": "Hint under the Mosaic sidebar style option"
+  },
+  "navContinueIn": "Continue in {section}",
+  "@navContinueIn": {
+    "description": "Heading over the items to resume in one library, shown in the Atlas top bar panel",
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "navFeatured": "Featured: {title}",
+  "@navFeatured": {
+    "description": "Caption on the Home tile of the Mosaic sidebar naming what the home screen features",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "navOpenMenu": "Open menu",
+  "@navOpenMenu": {
+    "description": "Accessibility label of the button that opens the Reel or Mosaic sidebar"
+  },
+  "navReelSwipeHint": "Swipe to turn it, tap the middle to go",
+  "@navReelSwipeHint": {
+    "description": "Hint at the bottom of the Reel sidebar on phones"
   },
   "siloSectionBecauseYouEnjoy": "Because you enjoy {genres}",
   "@siloSectionBecauseYouEnjoy": {

@@ -7126,7 +7126,7 @@
     "watchAgain": "Katso uudelleen",
     "guestAppearances": "Vierasesityksiä",
     "appearancesSeerr": "Esiintymiset (Seerr)",
-    "watchWithGroup": "Katso ryhmän kanssa",
+    "watchWithGroup": "Katso ryhmässä",
     "errors": "Virheet",
     "warnings": "Varoitukset",
     "disk": "Levy",
@@ -9521,7 +9521,7 @@
     "adminMetadataPersonKindConductor": "Kapellimestari",
     "adminMetadataPersonKindLyricist": "Sanoittaja",
     "adminMetadataPersonKindArranger": "Järjestä",
-    "adminMetadataPersonKindMixer": "Sekoitin",
+    "adminMetadataPersonKindMixer": "Mixeri",
     "adminMetadataPersonKindRemixer": "Remixaaja",
     "adminMetadataPersonKindCreator": "Luoja",
     "adminMetadataPersonKindArtist": "Artisti",
@@ -16073,11 +16073,11 @@
     "@moonbaseAddress": {
         "description": "Settings Sync screen on a Plex server: where the Moonbase companion service runs, since Plex can't run plugins. Left empty, the app looks next to the Plex server."
     },
-    "watchPartyGroupSubtitles": "Tekstitykset kaikille",
+    "watchPartyGroupSubtitles": "Tekstitys kaikille",
     "@watchPartyGroupSubtitles": {
         "description": "The Watch Party host's subtitle choice for the whole group"
     },
-    "watchPartyOwnSubtitles": "Jokaisen oma valinta",
+    "watchPartyOwnSubtitles": "Vapaa valinta",
     "@watchPartyOwnSubtitles": {
         "description": "Watch Party subtitle option that leaves subtitles to each member"
     },
@@ -18951,5 +18951,99 @@
     "seerrPushDeviceNotRegistered": "Ei rekisteröity",
     "@seerrPushDeviceNotRegistered": {
         "description": "Status indicating this device is not registered for push"
+    },
+    "carListenNow": "Kuuntele nyt",
+    "@carListenNow": {
+        "description": "Car tab with quick starts, recently played and in-progress items"
+    },
+    "carRecentlyPlayed": "Äskettäin soitettu",
+    "@carRecentlyPlayed": {
+        "description": "Car shelf and tile listing the music played most recently"
+    },
+    "carInstantMix": "Välitön Sekoitus",
+    "@carInstantMix": {
+        "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
+    },
+    "topNavbarStyleClassic": "Klassinen",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klassinen",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "topNavbarStyle": "Yläpalkin tyyli",
+    "@topNavbarStyle": {
+        "description": "Settings title for choosing how the top navigation bar looks"
+    },
+    "topNavbarStyleTabline": "Otsikkorivi",
+    "@topNavbarStyleTabline": {
+        "description": "Top bar style: text tabs with an underline and no container"
+    },
+    "topNavbarStyleAtlas": "Atlas",
+    "@topNavbarStyleAtlas": {
+        "description": "Top bar style: a solid bar whose tabs open a panel of shortcuts and artwork"
+    },
+    "topNavbarStyleClassicHint": "Vakiopalkki",
+    "@topNavbarStyleClassicHint": {
+        "description": "Hint under the Classic top bar style option"
+    },
+    "topNavbarStyleTablineHint": "Alleviivatut tekstivälilehdet, ilman nappia",
+    "@topNavbarStyleTablineHint": {
+        "description": "Hint under the Tabline top bar style option"
+    },
+    "topNavbarStyleAtlasHint": "Välilehdet avaavat paneelin, jossa on pikakuvakkeita ja kuvamateriaalia",
+    "@topNavbarStyleAtlasHint": {
+        "description": "Hint under the Atlas top bar style option"
+    },
+    "sidebarStyle": "Sivupalkin tyyli",
+    "@sidebarStyle": {
+        "description": "Settings title for choosing how the left sidebar looks"
+    },
+    "sidebarStyleReel": "Reel",
+    "@sidebarStyleReel": {
+        "description": "Sidebar style: a wheel of destinations that turns through a fixed focus window"
+    },
+    "sidebarStyleMosaic": "Mosaic",
+    "@sidebarStyleMosaic": {
+        "description": "Sidebar style: a panel of tiles with each library shown by its artwork"
+    },
+    "sidebarStyleClassicHint": "Vakiomuotoinen sivupalkki",
+    "@sidebarStyleClassicHint": {
+        "description": "Hint under the Classic sidebar style option"
+    },
+    "sidebarStyleReelHint": "Pyörä, joka pyörii määränpäiden läpi",
+    "@sidebarStyleReelHint": {
+        "description": "Hint under the Reel sidebar style option"
+    },
+    "sidebarStyleMosaicHint": "Laattapaneeli, jossa on kirjaston taideteoksia",
+    "@sidebarStyleMosaicHint": {
+        "description": "Hint under the Mosaic sidebar style option"
+    },
+    "navContinueIn": "Jatka {section}",
+    "@navContinueIn": {
+        "description": "Heading over the items to resume in one library, shown in the Atlas top bar panel",
+        "placeholders": {
+            "section": {
+                "type": "String"
+            }
+        }
+    },
+    "navFeatured": "Esittelyssä: {title}",
+    "@navFeatured": {
+        "description": "Caption on the Home tile of the Mosaic sidebar naming what the home screen features",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "navOpenMenu": "Avaa valikko",
+    "@navOpenMenu": {
+        "description": "Accessibility label of the button that opens the Reel or Mosaic sidebar"
+    },
+    "navReelSwipeHint": "Päivitä pyyhkäisemällä, napauta keskeltä siirtyäksesi eteenpäin",
+    "@navReelSwipeHint": {
+        "description": "Hint at the bottom of the Reel sidebar on phones"
     }
 }

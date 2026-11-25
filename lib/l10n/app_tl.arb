@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Mga Setting ng NFO",
     "adminActivitySeverityAll": "Lahat ng severity",
     "adminActivityDateRange": "Saklaw ng petsa",
-    "adminRemoveDeviceConfirm": "Alisin ang device na '{name}'? Kakailanganin ng user na mag-sign in muli sa device na ito.",
+    "adminRemoveDeviceConfirm": "Alisin ang device na \"{name}\"? Kakailanganin ng user na mag-sign in muli sa device na ito.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Ang iyong '{libraryName}' library ay naka-configure na mag-save ng artwork diretso sa mga media folder (naka-enable ang 'Save artwork into media folders'). Ngunit, sinubukan ng Jellyfin ang write access at walang pahintulot na magsulat ng mga file sa directory na ito:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Ang iyong \"{libraryName}\" library ay naka-configure na mag-save ng artwork diretso sa mga media folder (naka-enable ang 'Save artwork into media folders'). Ngunit, sinubukan ng Jellyfin ang write access at walang pahintulot na magsulat ng mga file sa directory na ito:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9431,5 +9431,13 @@
     "afterHoursStart": "Simula",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "Classic",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Classic",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

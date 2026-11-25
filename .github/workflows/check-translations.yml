@@ -2,7 +2,9 @@ name: Check translations
 
 # Weblate pushes straight to main, and a translated ICU keyword like plural or
 # other breaks every build. gen-l10n fails on those, so run it on its own and
-# point at the broken string.
+# point at the broken string. A translated placeholder name like {datum} for
+# {date} breaks the build too, but gen-l10n accepts it, so a script checks
+# the names.
 on:
   workflow_dispatch:
   push:
@@ -11,12 +13,14 @@ on:
     paths:
       - 'lib/l10n/*.arb'
       - 'l10n.yaml'
+      - 'scripts/ci/arb_placeholders.py'
   pull_request:
     branches:
       - main
     paths:
       - 'lib/l10n/*.arb'
       - 'l10n.yaml'
+      - 'scripts/ci/arb_placeholders.py'
 
 permissions:
   contents: read
@@ -39,6 +43,11 @@ jobs:
         run: |
           set -o pipefail
           flutter gen-l10n 2>&1 | tee gen-l10n.log
+
+      # Runs even if gen-l10n failed, so one push reports every broken string.
+      - name: Check placeholder names
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/arb_placeholders.py
 
       - name: Annotate broken strings
         if: failure() && steps.gen.outcome == 'failure'

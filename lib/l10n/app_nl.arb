@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO-instellingen",
     "adminActivitySeverityAll": "Alle ernstniveaus",
     "adminActivityDateRange": "Datumbereik",
-    "adminRemoveDeviceConfirm": "Apparaat '{name}' verwijderen? De gebruiker moet zich op dit apparaat opnieuw aanmelden.",
+    "adminRemoveDeviceConfirm": "Apparaat \"{name}\" verwijderen? De gebruiker moet zich op dit apparaat opnieuw aanmelden.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Uw bibliotheek '{libraryName}' is ingesteld om afbeeldingen rechtstreeks in de mediamappen op te slaan ('Save artwork into media folders' staat aan). Jellyfin heeft de schrijftoegang echter getest en heeft geen toestemming om bestanden naar deze map te schrijven:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Uw bibliotheek \"{libraryName}\" is ingesteld om afbeeldingen rechtstreeks in de mediamappen op te slaan ('Save artwork into media folders' staat aan). Jellyfin heeft de schrijftoegang echter getest en heeft geen toestemming om bestanden naar deze map te schrijven:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -10595,5 +10595,13 @@
     "afterHoursStart": "Begin",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "Klassiek",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klassiek",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

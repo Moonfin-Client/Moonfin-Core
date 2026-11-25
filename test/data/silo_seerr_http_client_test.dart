@@ -184,6 +184,77 @@ void main() {
     expect(severance.mediaInfo!.requests!.single.requestedBy!.id, 7);
   });
 
+  test('search keeps what Silo\'s web app offers to request', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/search': (
+        200,
+        {
+          'page': 1,
+          'total_pages': 1,
+          'total_results': 3,
+          'results': [
+            _heat,
+            {
+              'media_type': 'series',
+              'tmdb_id': 456,
+              'title': 'The Simpsons',
+              'availability': 'partial',
+              'library_content_id': 'series-tvdb-71663',
+              'request': {'requestable': true, 'following': false},
+            },
+            {..._heat, 'tmdb_id': 950, 'availability': null},
+            {
+              'media_type': 'series',
+              'tmdb_id': 457,
+              'title': 'Futurama',
+              'availability': 'partial',
+              'library_content_id': 'series-tvdb-73871',
+              'request': {'state': 'available', 'request_id': '12'},
+            },
+            {
+              'media_type': 'movie',
+              'tmdb_id': 458,
+              'title': 'Gone Film',
+              'availability': 'missing',
+              'library_content_id': 'movie-tmdb-458',
+              'request': {'state': 'available', 'request_id': '13'},
+            },
+          ],
+        },
+      ),
+    });
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+    final page = SeerrDiscoverPage.fromJson(await client.search('the'));
+
+    expect(
+      page.results.map((r) => r.id),
+      [456, 457, 458],
+      reason: 'a partly available series stays for its missing seasons',
+    );
+    expect(
+      page.results.map((r) => r.mediaInfo!.status),
+      [4, 4, 1],
+      reason: 'partial after an earlier request was fulfilled, and a title '
+          'whose files are gone can be requested again',
+    );
+  });
+
+  test('the search screen sends Silo two letters or more, as its web app', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/search': (200, {'page': 1, 'results': <Object>[]}),
+    });
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+
+    expect(client.minSearchQueryLength, 2);
+    // A detail lookup by a one-letter title still asks Silo.
+    await client.search('M');
+    expect(silo.calls.where((c) => c.contains('/requests/search')), hasLength(1));
+  });
+
   test('an admin row on Silo is a slider that reads that row', () async {
     final silo = _Silo({
       ..._base(),

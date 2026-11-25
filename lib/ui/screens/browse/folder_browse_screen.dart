@@ -360,7 +360,12 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
       builder: (context, constraints) {
         const horizontalPadding = 24.0;
         const spacing = 12.0;
-        const targetCardWidth = 170.0;
+        final prefs = GetIt.instance<UserPreferences>();
+        // Folder art is 16:9, so cards size like the library's Thumb view.
+        final targetCardWidth =
+            prefs.resolveLibraryPosterSize().landscapeHeight *
+            (16 / 9) *
+            prefs.get(UserPreferences.desktopUiScale).scaleFactor;
 
         final crossAxisCount =
             ((constraints.maxWidth - horizontalPadding * 2 + spacing) /
@@ -382,7 +387,6 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
         final totalCount = _vm.items.length + (_vm.hasMore ? 1 : 0);
 
         // Read once for the whole grid rather than per card on every rebuild.
-        final prefs = GetIt.instance<UserPreferences>();
         final focusColor = Color(
           prefs.get(UserPreferences.focusColor).colorValue,
         );

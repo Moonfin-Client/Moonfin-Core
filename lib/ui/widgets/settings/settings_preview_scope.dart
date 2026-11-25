@@ -53,6 +53,8 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_use_24_hour_clock': SettingsPreviewScene.home,
     'pref_navbar_position': SettingsPreviewScene.home,
     'pref_bottom_navbar_style': SettingsPreviewScene.home,
+    'pref_top_navbar_style': SettingsPreviewScene.home,
+    'pref_sidebar_style': SettingsPreviewScene.home,
     'pref_navbar_always_expanded': SettingsPreviewScene.home,
     'pref_show_shuffle_button': SettingsPreviewScene.home,
     'pref_show_genres_button': SettingsPreviewScene.home,

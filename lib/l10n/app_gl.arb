@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Configuración NFO",
     "adminActivitySeverityAll": "Todas as gravidades",
     "adminActivityDateRange": "Intervalo de datas",
-    "adminRemoveDeviceConfirm": "Eliminar o dispositivo '{name}'? O usuario terá que iniciar sesión de novo neste dispositivo.",
+    "adminRemoveDeviceConfirm": "Eliminar o dispositivo \"{name}\"? O usuario terá que iniciar sesión de novo neste dispositivo.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "A túa biblioteca '{libraryName}' está configurada para gardar as ilustracións directamente nos cartafoles multimedia ('Gardar as ilustracións nos cartafoles multimedia' está activado). Non obstante, Jellyfin comprobou o acceso de escritura e non ten permiso para escribir ficheiros neste directorio:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "A túa biblioteca \"{libraryName}\" está configurada para gardar as ilustracións directamente nos cartafoles multimedia ('Gardar as ilustracións nos cartafoles multimedia' está activado). Non obstante, Jellyfin comprobou o acceso de escritura e non ten permiso para escribir ficheiros neste directorio:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9436,5 +9436,13 @@
     "afterHoursStart": "Inicio",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "Clásico",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clásico",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

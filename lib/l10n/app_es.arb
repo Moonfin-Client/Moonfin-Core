@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Ajustes de NFO",
     "adminActivitySeverityAll": "Todas las gravedades",
     "adminActivityDateRange": "Intervalo de fechas",
-    "adminRemoveDeviceConfirm": "¿Eliminar el dispositivo '{name}'? El usuario tendrá que volver a iniciar sesión en este dispositivo.",
+    "adminRemoveDeviceConfirm": "¿Eliminar el dispositivo \"{name}\"? El usuario tendrá que volver a iniciar sesión en este dispositivo.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Tu biblioteca '{libraryName}' está configurada para guardar las carátulas directamente en las carpetas multimedia (la opción 'Guardar las carátulas en las carpetas multimedia' está activada). Sin embargo, Jellyfin ha comprobado el acceso de escritura y no tiene permiso para escribir archivos en este directorio:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Tu biblioteca \"{libraryName}\" está configurada para guardar las carátulas directamente en las carpetas multimedia (la opción 'Guardar las carátulas en las carpetas multimedia' está activada). Sin embargo, Jellyfin ha comprobado el acceso de escritura y no tiene permiso para escribir archivos en este directorio:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -10232,7 +10232,7 @@
     "@sortByDateAdded": {
         "description": "Sort option: most recently downloaded first"
     },
-    "settingsSearchHint": "Configuración de búsqueda",
+    "settingsSearchHint": "Buscar",
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
     },
@@ -13182,5 +13182,302 @@
     "settingsMotionSection": "Movimiento",
     "@settingsMotionSection": {
         "description": "Section header on the Appearance settings screen for animation speeds"
+    },
+    "watchPartyStartFromBeginning": "Empezar desde el principio",
+    "@watchPartyStartFromBeginning": {
+        "description": "Host button beside Resume at that starts the staged item for the whole Watch Party from the start"
+    },
+    "watchPartyResumeEarliest": "El punto más temprano al que ha llegado cualquiera aquí.",
+    "@watchPartyResumeEarliest": {
+        "description": "Note under the Watch Party resume button when the member it resumes from isn't named"
+    },
+    "holidayThanksgiving": "Acción de gracias",
+    "@holidayThanksgiving": {
+        "description": "Seasonal row title for Thanksgiving"
+    },
+    "setupDetailStageHint": "El cartel de la parte delantera, con la obra de teatro debajo y los detalles al lado.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupDetailPremiereHint": "El título se ubicaba en el centro sobre un fondo que ocupaba toda la pantalla, con el resto de la página en la parte inferior.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
+    },
+    "setupMediaBarGalleryHint": "Se abrió el título destacado, con los siguientes alineados a su lado.",
+    "@setupMediaBarGalleryHint": {
+        "description": "What the Gallery media bar style looks like"
+    },
+    "settingsAudioPassthroughModeManual": "Manual (seleccione los formatos a continuación)",
+    "trickplayModeFull": "Pantalla Completa",
+    "@trickplayModeFull": {
+        "description": "Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing"
+    },
+    "detailSectionSeerrStreaming": "Servicios de transmisión",
+    "@detailSectionSeerrStreaming": {
+        "description": "Details screen Seerr section: logos of the services streaming the title in the user's region"
+    },
+    "seerrStreamingOn": "Transmitiendo en",
+    "@seerrStreamingOn": {
+        "description": "Heading over the logos of the services streaming a Seerr title"
+    },
+    "syncProfileDescription": "Este dispositivo se sincroniza con el perfil que elijas hasta que selecciones otro.",
+    "@syncProfileDescription": {
+        "description": "Caption above the settings profile cards on the Settings Sync screen"
+    },
+    "profileThisDevice": "Este dispositivo",
+    "@profileThisDevice": {
+        "description": "Marks the settings profile card that matches the current device"
+    },
+    "adminGroupSystem": "Sistema",
+    "watchPartyStartWith": "iniciar fiestas con",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyWrongPin": "Ese PIN no funcionó. Inténtalo de nuevo.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyRemoved": "El anfitrión te eliminó de la fiesta.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyStartingAnyway": "Comenzando de todos modos en {seconds} s",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Comenzando juntos",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "achievementsStatHours": "Horas de Visualización",
+    "@achievementsStatHours": {
+        "description": "Counter label"
+    },
+    "achievementsHours": "Horas",
+    "@achievementsHours": {
+        "description": "Leaderboard category: hours watched"
+    },
+    "friendsCancelRequestBody": "¿Desea retractarse de la solicitud que envió a {name}?",
+    "@friendsCancelRequestBody": {
+        "description": "Body of the dialog cancelling a sent friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeSubtitleNotSupportedWithCodec": "El formato de subtítulos ({codec}) no es compatible directamente y debe grabarse.",
+    "@transcodeSubtitleNotSupportedWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "setupMoonbaseRestarting": "El servidor se está reiniciando. Moonbase se activará una vez que vuelva a estar operativo.",
+    "@setupMoonbaseRestarting": {
+        "description": "Shown while the server restarts after Moonbase was installed"
+    },
+    "runSetupAgain": "Ejecutar la configuración otra vez",
+    "@runSetupAgain": {
+        "description": "Starts the first-run setup wizard again from settings"
+    },
+    "homeScreenBackdrop": "Fondo Pantalla de Inicio",
+    "@homeScreenBackdrop": {
+        "description": "Setting to show or hide the backdrop image behind the home screen"
+    },
+    "homeScreenBackdropFullScreen": "Pantalla Completa",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "homeScreenBackdropCorner": "Esquina",
+    "@homeScreenBackdropCorner": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen"
+    },
+    "detailsBackdropFullScreen": "Pantalla Completa",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "recordPromptDescriptionsDiffer": "Las descripciones difieren, por lo que podría tratarse de un programa diferente.",
+    "@recordPromptDescriptionsDiffer": {
+        "description": "Caution under the future showing when its description differs from the program airing now"
+    },
+    "musicMixFreshArrivalsSubtitle": "Las 100 canciones más nuevas",
+    "@musicMixFreshArrivalsSubtitle": {
+        "description": "Line under the Fresh Arrivals mix card"
+    },
+    "bookSurpriseMe": "Sorpréndeme",
+    "@bookSurpriseMe": {
+        "description": "Button on a book genre that opens a random unread title from it"
+    },
+    "bookStartReading": "Empezar a leer",
+    "@bookStartReading": {
+        "description": "Button on an author that opens their first unread book"
+    },
+    "settingsPreviewCollectionsOffInHomeRows": "La fila Colecciones está desactivada. Para mostrarla, vaya a Filas, abra {group} en {disabled} y actívela.",
+    "@settingsPreviewCollectionsOffInHomeRows": {
+        "description": "Notice over the dimmed Settings live preview while a Collections Row Options setting has focus, Display Collections Rows is on, and the Collections section is turned off in Settings > Appearance > Home Screen > Rows, so Home doesn't change. It says where on the Rows screen the turned-off row is",
+        "placeholders": {
+            "group": {
+                "type": "String",
+                "example": "Collections"
+            },
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "settingsPreviewAudioRowsEmpty": "No hay música que mostrar, así que la pagina de Inicio omite estas filas.",
+    "@settingsPreviewAudioRowsEmpty": {
+        "description": "Note over the Settings live preview while an audio Row Options setting has focus and there are no albums, artists or audio playlists to show, so Home shows no audio rows"
+    },
+    "calendarStartsIn": "Comienza en",
+    "@calendarStartsIn": {
+        "description": "Label over the countdown to the next episode or movie"
+    },
+    "calendarProblemAdminsOnly": "El calendario está restringido a los administradores de este servidor.",
+    "@calendarProblemAdminsOnly": {
+        "description": "Calendar message when the server admin keeps the calendar to admins"
+    },
+    "calendarSettingsSubtitle": "Estilo, filtros y acciones para el calendario",
+    "@calendarSettingsSubtitle": {
+        "description": "Subtitle of the Calendar entry under Integrations in settings"
+    },
+    "siloPasswordChangeTooLong": "Esa contraseña es demasiado larga",
+    "@siloPasswordChangeTooLong": {
+        "description": "Error in the Silo change-password dialog when the new password is longer than the server allows"
+    },
+    "settingsPreviewCollectionsEmpty": "No hay colecciones para mostrar, por lo que la página de Inicio omite esta fila.",
+    "@settingsPreviewCollectionsEmpty": {
+        "description": "Note over the Settings live preview while a Collections Row Options setting has focus and there are no collections to show, so Home shows no Collections row"
+    },
+    "friendsActionFailed": "Eso no funcionó. Inténtalo de nuevo en un momento.",
+    "@friendsActionFailed": {
+        "description": "Shown when a friends or chat action fails without a reason from the server"
+    },
+    "laterShowingOnlyRequested": "La próxima proyección será grabada.",
+    "@laterShowingOnlyRequested": {
+        "description": "Snackbar after choosing to record only the future showing"
+    },
+    "unableToKeepAsComplete": "Incapaz de marcar como completo",
+    "@unableToKeepAsComplete": {
+        "description": "Snackbar shown when Keep as Complete fails"
+    },
+    "setupTvHint": "Arriba y abajo para previsualizar · OK para seleccionar · Retroceder dos veces para saltar",
+    "@setupTvHint": {
+        "description": "Remote control hint at the bottom of the setup wizard on TVs"
+    },
+    "calendarUpcoming": "Próximamente",
+    "@calendarUpcoming": {
+        "description": "Calendar tab listing episodes and movies that haven't aired yet"
+    },
+    "calendarSettingsColorByDescription": "El Tipo indica los episodios de las películas. El Estado muestra lo que hay en tu biblioteca, lo que está por venir o lo que falta.",
+    "@calendarSettingsColorByDescription": {
+        "description": "Description of the Color by calendar setting"
+    },
+    "moonbaseFeatureCollections": "Tu propio pedido para cada colección",
+    "@moonbaseFeatureCollections": {
+        "description": "Moonbase dialog feature"
+    },
+    "watchPartyYours": "Tu grupo para ver el partido",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyWaitingFor": "Esperando al jugador {name}",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Eres el anfitrión ahora",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "settingsPreviewNeedsRowInRows": "Activa una fila en Filas, debajo de {disabled}",
+    "@settingsPreviewNeedsRowInRows": {
+        "description": "Status line under the Settings live preview, in place of 'Shows on the Home preview', for a Row Options setting whose rows are all turned off in Settings > Appearance > Home Screen > Rows while the setting's Display switch is on",
+        "placeholders": {
+            "disabled": {
+                "type": "String",
+                "example": "Disabled"
+            }
+        }
+    },
+    "topNavbarStyleClassic": "Clásico",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clásico",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "detailUseSeriesThumbnails": "Usar miniaturas de la serie",
+    "@detailUseSeriesThumbnails": {
+        "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
+    },
+    "transcodeVideoRangeNotSupported": "Este monitor no es compatible con el rango dinámico de vídeo (por ejemplo, Dolby Vision/HDR).",
+    "transcodeRefFramesNotSupported": "Los fotogramas de referencia del vídeo superan los límites del reproductor.",
+    "friendsUnblock": "Desbloquear",
+    "@friendsUnblock": {
+        "description": "Action that unblocks a user"
+    },
+    "friendsUnblockBody": "¿Desbloquear {name}?",
+    "@friendsUnblockBody": {
+        "description": "Body of the dialog unblocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "countryUnitedStates": "Estados Unidos",
+    "@countryUnitedStates": {
+        "description": "Country name"
+    },
+    "seasonalRowHolidaysHint": "Desmarca una fecha festiva para ocultar su fila.",
+    "@seasonalRowHolidaysHint": {
+        "description": "Hint under the holiday checklist"
+    },
+    "holidayValentines": "Día de San Valentín",
+    "@holidayValentines": {
+        "description": "Seasonal row title for Valentine's Day"
+    },
+    "homeRowsSubtitle": "Activar o desactivar filas y cambiar su orden",
+    "@homeRowsSubtitle": {
+        "description": "Subtitle for the Home rows entry"
+    },
+    "libraryStyle": "Estilo de Biblioteca de Vídeo",
+    "@libraryStyle": {
+        "description": "Label for the setting that picks the library page header layout"
+    },
+    "upcomingCalendarsDescription": "Elige qué muestran las filas de Radarr y Sonarr.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "seasonalRowAllYear": "Mostrar Todo el Año",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Mostrar una fila de días festivos fuera de las fechas de los días festivos, con un día festivo diferente marcado cada día.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "watchPartyCountOnServer": "{count} en este servidor",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }

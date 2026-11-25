@@ -115,8 +115,8 @@ class UserPreferences extends ChangeNotifier {
   ];
 
   // Where the bar draws its titles from. Every source still passes through the
-  // library, collection, content type and genre filters, and still picks its
-  // slides at random out of what comes back.
+  // library, collection, content type and genre filters. Random shuffles what
+  // comes back, and the others take the newest from each library in turn.
   static const mediaBarSourceRandom = 'random';
   static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
   static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
@@ -709,6 +709,8 @@ class UserPreferences extends ChangeNotifier {
     'blocked_series_ids',
     'pref_navbar_position',
     'pref_bottom_navbar_style',
+    'pref_top_navbar_style',
+    'pref_sidebar_style',
     'pref_bottom_navbar_tabs',
     'focus_color',
     'pref_watched_indicator_behavior',
@@ -2219,6 +2221,18 @@ class UserPreferences extends ChangeNotifier {
     values: BottomNavbarStyle.values,
   );
 
+  static final topNavbarStyle = EnumPreference(
+    key: 'pref_top_navbar_style',
+    defaultValue: TopNavbarStyle.classic,
+    values: TopNavbarStyle.values,
+  );
+
+  static final sidebarStyle = EnumPreference(
+    key: 'pref_sidebar_style',
+    defaultValue: SidebarStyle.classic,
+    values: SidebarStyle.values,
+  );
+
   /// Comma separated [BottomNavTab] names pinned between Home and You. Empty
   /// means automatic, resolved from the nav button toggles.
   static final bottomNavbarTabs = Preference(
@@ -2723,6 +2737,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_audio_passthrough_output',
     defaultValue: AudioPassthroughOutput.platform,
     values: AudioPassthroughOutput.values,
+  );
+
+  /// Linux only: decode a passthrough track when the output plays it silently.
+  static final passthroughSilentFallback = Preference(
+    key: 'pref_passthrough_silent_fallback',
+    defaultValue: true,
   );
 
   static final downmixToStereo = Preference(
