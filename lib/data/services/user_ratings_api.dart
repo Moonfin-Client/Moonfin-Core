@@ -54,8 +54,7 @@ Future<Map<String, double>?> fetchMyUserRatings(MediaServerClient client) async 
   }
 }
 
-/// The profile's star ratings (`GET /ratings`), 1 to 5 stars as Moonfin's
-/// score out of 10.
+/// The profile's ratings (`GET /ratings`), 1 to 10 like Moonfin's score.
 Future<Map<String, double>?> _siloRatings(SiloMediaServerClient client) async {
   final ratings = <String, double>{};
   String? cursor;
@@ -68,9 +67,9 @@ Future<Map<String, double>?> _siloRatings(SiloMediaServerClient client) async {
       final page = SiloPage.fromJson(response.data ?? const {});
       for (final entry in page.items) {
         final id = entry['item_id']?.toString();
-        final stars = entry['rating'];
-        if (id == null || id.isEmpty || stars is! num) continue;
-        ratings[id] = stars * 2.0;
+        final rating = entry['rating'];
+        if (id == null || id.isEmpty || rating is! num) continue;
+        ratings[id] = rating.toDouble();
       }
       cursor = page.nextCursor;
     } while (cursor != null);
