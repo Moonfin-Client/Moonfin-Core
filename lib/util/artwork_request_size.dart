@@ -35,6 +35,14 @@ double artworkDevicePixelRatioCap({bool? isTv}) =>
 double artworkDevicePixelRatio(double devicePixelRatio, {bool? isTv}) =>
     devicePixelRatio.clamp(1.0, artworkDevicePixelRatioCap(isTv: isTv));
 
+/// A pixel ceiling written for the 2x cap ([at2x]), scaled to this display.
+/// Stays at [at2x] up to 2x, so phones and 1080p TVs (about 1.67x) keep the
+/// old ceiling, and grows only past 2x, up to the TV cap on a 4K TV.
+int artworkCeiling(int at2x, double devicePixelRatio, {bool? isTv}) {
+  final dpr = artworkDevicePixelRatio(devicePixelRatio, isTv: isTv);
+  return (at2x / 2 * (dpr < 2.0 ? 2.0 : dpr)).round();
+}
+
 /// [logical] points as pixels on this display, rounded up so nothing painted
 /// at this size is ever stretched.
 int artworkPhysicalPixels(

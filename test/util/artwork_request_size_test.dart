@@ -44,19 +44,32 @@ void main() {
     );
   });
 
-  test('in TV layout the request and the decode both scale past 2x', () {
-    PlatformDetection.setTvMode(true);
-    addTearDown(() => PlatformDetection.setTvMode(false));
+  group('in TV layout', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.tv));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
     const appleTv4k = 2.0 * 1920 / 1150;
-    // A 150 point poster covers 501 pixels on a 4K TV.
-    expect(artworkRequestWidth(150, appleTv4k, ArtworkShape.poster), 560);
-    expect(ArtworkDecode.widthFor(150, appleTv4k), 520);
-    // Ceilings written for the 2x cap grow with the TV cap.
-    expect(MediaCard.decodeMaxWidthFor(16 / 9), 1603);
-    expect(MediaCard.decodeMaxWidthFor(2 / 3), 1069);
+    const appleTv1080p = 1.0 * 1920 / 1150;
+
+    test('the request and the decode both scale past 2x', () {
+      // A 150 point poster covers 501 pixels on a 4K TV.
+      expect(artworkRequestWidth(150, appleTv4k, ArtworkShape.poster), 560);
+      expect(ArtworkDecode.widthFor(150, appleTv4k), 520);
+      // Ceilings written for the 2x cap grow with the TV cap.
+      expect(MediaCard.decodeMaxWidthFor(16 / 9), 1603);
+      expect(MediaCard.decodeMaxWidthFor(2 / 3), 1069);
+    });
+
+    test('a 2x ceiling grows on a 4K TV but not on a 1080p one', () {
+      expect(artworkCeiling(720, appleTv1080p), 720);
+      expect(artworkCeiling(720, appleTv4k), 1202);
+    });
   });
 
   test('off TV the fixed ceilings stay where they were', () {
+    expect(artworkCeiling(720, 3.0), 720);
     expect(artworkDevicePixelRatioCap(), maxArtworkDevicePixelRatio);
     expect(MediaCard.decodeMaxWidthFor(16 / 9), 960);
     expect(MediaCard.decodeMaxWidthFor(2 / 3), 640);

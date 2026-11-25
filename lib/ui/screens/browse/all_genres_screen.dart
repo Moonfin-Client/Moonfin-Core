@@ -316,12 +316,11 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   int _genreCardRequestMaxWidth() {
-    final requestScale = artworkDevicePixelRatio(
-      MediaQuery.devicePixelRatioOf(context),
-    );
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final requestScale = artworkDevicePixelRatio(dpr);
     final widthPx = (_cardWidth() * requestScale).round();
-    // 720 at the 2x phone cap; grows with the TV cap.
-    final maxPx = (360 * artworkDevicePixelRatioCap()).round();
+    // 720 up to 2x; grows only on a display denser than that (a 4K TV).
+    final maxPx = artworkCeiling(720, dpr);
     if (widthPx < 160) return 160;
     if (widthPx > maxPx) return maxPx;
     return widthPx;
