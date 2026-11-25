@@ -28,6 +28,7 @@ void main() {
       OsdButton.syncPlay.id,
       OsdButton.favorite.id,
       OsdButton.speed.id,
+      OsdButton.sleepTimer.id,
       OsdButton.chapters.id,
       OsdButton.episodes.id,
       OsdButton.subtitles.id,
@@ -63,6 +64,7 @@ void main() {
       expect(visibleOsdButtonIds(prefs), [
         // Never placed and declared before anything that was, so they stay put.
         OsdButton.syncPlay.id,
+        OsdButton.sleepTimer.id,
         OsdButton.chapters.id,
         OsdButton.episodes.id,
         OsdButton.info.id,

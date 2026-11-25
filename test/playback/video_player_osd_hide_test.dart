@@ -22,6 +22,7 @@ import 'package:moonfin/data/services/theme_music_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
 import 'package:moonfin/playback/playback_lifecycle_handler.dart';
+import 'package:moonfin/playback/sleep_timer_controller.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
@@ -223,6 +224,9 @@ void main() {
     await store.init();
     manager = _Manager();
     GetIt.instance.registerSingleton<PlaybackManager>(manager);
+    GetIt.instance.registerSingleton<SleepTimerController>(
+      SleepTimerController(manager),
+    );
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
     client = _Client();
     GetIt.instance.registerSingleton<MediaServerClient>(client);
@@ -366,6 +370,58 @@ void main() {
     await tester.pump();
     expect(skip, findsNothing);
     await mouse.removePointer();
+    await tester.pumpWidget(const SizedBox());
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
+
+  testWidgets('a sleep timer running out closes the player', (tester) async {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('window_manager'),
+      (call) async {
+        if (call.method == 'isFullScreen' || call.method == 'isVisible') {
+          return true;
+        }
+        return call.method.startsWith('is') ? false : null;
+      },
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('window_manager'), null));
+    // Leaving playback resets the orientations, which waits on this channel.
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (_) async => null,
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, null));
+    manager.queueService.setQueue([
+      {'Id': 'episode', 'Type': 'Episode', 'RunTimeTicks': 900000000},
+    ]);
+    final router = GoRouter(
+      initialLocation: '/details',
+      routes: [
+        GoRoute(path: '/details', builder: (_, _) => const SizedBox()),
+        GoRoute(path: '/play', builder: (_, _) => const VideoPlayerScreen()),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+      ),
+    );
+    router.push('/play');
+    await tester.pumpAndSettle();
+
+    GetIt.instance<SleepTimerController>().startDuration(
+      const Duration(seconds: 1),
+    );
+    manager.state.setPlaying(true);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    expect(manager.stopCalls, 1);
+    expect(find.byType(VideoPlayerScreen), findsNothing);
     await tester.pumpWidget(const SizedBox());
   }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
 

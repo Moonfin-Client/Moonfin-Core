@@ -29,6 +29,7 @@ import '../../../data/utils/trickplay_headers.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
+import '../../../playback/sleep_timer_controller.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
 import '../../widgets/image_source.dart';
@@ -99,6 +100,7 @@ import '../../widgets/playback/skip_segment_overlay.dart';
 import '../../widgets/playback/next_up_overlay.dart';
 import '../../widgets/playback/still_watching_dialog.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
+import '../../widgets/playback/sleep_timer_menu.dart';
 import '../../widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import '../../../playback/player_key_bindings.dart';
 import '../../widgets/syncplay/syncplay_player_button.dart';
@@ -215,6 +217,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   final _lifecycleHandler = GetIt.instance<PlaybackLifecycleHandler>();
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
   final _screensaverController = GetIt.instance<ScreensaverController>();
+  final _sleep = GetIt.instance<SleepTimerController>();
+  StreamSubscription<void>? _sleepExpirySub;
+  late bool _sleepActive = _sleep.isActive;
   final SiloWatchPartyManager? _watchParty =
       GetIt.instance.isRegistered<SiloWatchPartyManager>()
       ? GetIt.instance<SiloWatchPartyManager>()
@@ -946,6 +951,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _watchParty?.addListener(_onWatchPartyChanged);
     _prefs.addListener(_onPlaybackPrefsChanged);
     _castChanges.addListener(_onCastChanged);
+    _sleep.addListener(_onSleepTimerChanged);
+    _sleepExpirySub = _sleep.onExpired.listen((_) => _onSleepTimerExpired());
     _syncMediaQueuingPreference();
     _applySubtitleStyle();
     _scheduleHide();
@@ -1174,6 +1181,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // awake from here.
     if (!_isMinimizing) _screensaverController.setPlaybackActive(false);
     _prefs.removeListener(_onPlaybackPrefsChanged);
+    _sleep.removeListener(_onSleepTimerChanged);
+    _sleepExpirySub?.cancel();
     _syncPlayManager?.removeListener(_onSyncPlayChanged);
     _watchParty?.removeListener(_onWatchPartyChanged);
     _castChanges.removeListener(_onCastChanged);
@@ -2452,6 +2461,40 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (mounted) setState(() {});
   }
 
+  /// Rebuilds only when the timer starts or stops, which is all the button
+  /// shows. The countdown ticks every second and the remaining time is read
+  /// when the menu opens.
+  void _onSleepTimerChanged() {
+    if (!mounted || _sleep.isActive == _sleepActive) return;
+    setState(() => _sleepActive = _sleep.isActive);
+  }
+
+  /// The timer has paused playback, so the player closes and leaves the
+  /// viewer on the item's details, where they can resume. A Next Up card
+  /// still on screen would count down and play the next item during the
+  /// exit, so it goes first.
+  void _onSleepTimerExpired() {
+    if (!mounted) return;
+    if (_showNextUp) {
+      setState(() {
+        _showNextUp = false;
+        _nextUpDismissed = true;
+      });
+    }
+    unawaited(_exitPlayback());
+  }
+
+  void _showSleepTimerMenu() {
+    unawaited(
+      showPlayerSleepTimerMenu(
+        context,
+        controller: _sleep,
+        position: _state.position,
+        duration: _state.duration > Duration.zero ? _state.duration : null,
+      ),
+    );
+  }
+
   bool _followingWatchParty = false;
 
   /// A Watch Party that leaves playing (the host went back to the lobby, the
@@ -2690,6 +2733,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _showNextUp) {
       return false;
     }
+
+    // The card counts down on its own clock and plays the next item, which
+    // would beat a timer set to stop at the end of this one.
+    if (_sleep.mode == SleepTimerMode.endOfItem) return false;
 
     if (_isPrerollQueueItem(_queue.currentItem)) {
       return false;
@@ -6311,6 +6358,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   : Colors.white,
             ),
           OsdButton.speed: ?speedButton,
+          if (shows(OsdButton.sleepTimer))
+            OsdButton.sleepTimer: _controlButton(
+              _sleepActive ? Icons.bedtime : Icons.bedtime_outlined,
+              onPressed: _showSleepTimerMenu,
+              size: secondaryIconSize,
+              extent: secondaryExtent,
+              tooltip: l10n.audiobookSleepTimer,
+              iconColor: _sleepActive ? AppColorScheme.accent : Colors.white,
+            ),
           if (hasChapters && shows(OsdButton.chapters))
             OsdButton.chapters: _controlButton(
               Icons.bookmark_outline_rounded,
