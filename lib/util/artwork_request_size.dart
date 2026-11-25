@@ -21,15 +21,19 @@ const maxArtworkDevicePixelRatio = 2.0;
 /// a 4K panel get the pixels it paints and stops there.
 const maxTvArtworkDevicePixelRatio = 3840 / kTvDesignWidth;
 
+/// The highest density artwork scales with on this device: the TV cap on a
+/// TV, the phone cap everywhere else. Fixed pixel ceilings that were written
+/// for the 2x cap scale with this, so they only grow on a TV.
+/// [isTv] defaults to [PlatformDetection.isTV].
+double artworkDevicePixelRatioCap({bool? isTv}) =>
+    (isTv ?? PlatformDetection.isTV)
+    ? maxTvArtworkDevicePixelRatio
+    : maxArtworkDevicePixelRatio;
+
 /// [devicePixelRatio] clamped to what artwork requests and decodes scale
 /// with on this device. [isTv] defaults to [PlatformDetection.isTV].
 double artworkDevicePixelRatio(double devicePixelRatio, {bool? isTv}) =>
-    devicePixelRatio.clamp(
-      1.0,
-      (isTv ?? PlatformDetection.isTV)
-          ? maxTvArtworkDevicePixelRatio
-          : maxArtworkDevicePixelRatio,
-    );
+    devicePixelRatio.clamp(1.0, artworkDevicePixelRatioCap(isTv: isTv));
 
 /// [logical] points as pixels on this display, rounded up so nothing painted
 /// at this size is ever stretched.

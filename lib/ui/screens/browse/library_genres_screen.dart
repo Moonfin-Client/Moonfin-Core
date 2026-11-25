@@ -349,8 +349,10 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
       MediaQuery.devicePixelRatioOf(context),
     );
     final widthPx = (_cardWidth() * requestScale).round();
+    // 720 at the 2x phone cap; grows with the TV cap.
+    final maxPx = (360 * artworkDevicePixelRatioCap()).round();
     if (widthPx < 160) return 160;
-    if (widthPx > 720) return 720;
+    if (widthPx > maxPx) return maxPx;
     return widthPx;
   }
 

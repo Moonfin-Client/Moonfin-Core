@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/image_source.dart';
 import 'package:moonfin/util/artwork_request_size.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:moonfin/ui/widgets/media_card.dart';
 
 void main() {
   test('poster and landscape ladders', () {
@@ -43,13 +44,22 @@ void main() {
     );
   });
 
-  test('in TV layout the request and the decode both use the TV cap', () {
+  test('in TV layout the request and the decode both scale past 2x', () {
     PlatformDetection.setTvMode(true);
     addTearDown(() => PlatformDetection.setTvMode(false));
     const appleTv4k = 2.0 * 1920 / 1150;
     // A 150 point poster covers 501 pixels on a 4K TV.
     expect(artworkRequestWidth(150, appleTv4k, ArtworkShape.poster), 560);
     expect(ArtworkDecode.widthFor(150, appleTv4k), 520);
+    // Ceilings written for the 2x cap grow with the TV cap.
+    expect(MediaCard.decodeMaxWidthFor(16 / 9), 1603);
+    expect(MediaCard.decodeMaxWidthFor(2 / 3), 1069);
+  });
+
+  test('off TV the fixed ceilings stay where they were', () {
+    expect(artworkDevicePixelRatioCap(), maxArtworkDevicePixelRatio);
+    expect(MediaCard.decodeMaxWidthFor(16 / 9), 960);
+    expect(MediaCard.decodeMaxWidthFor(2 / 3), 640);
   });
 
   test('a request is never narrower than the decode at any width', () {
