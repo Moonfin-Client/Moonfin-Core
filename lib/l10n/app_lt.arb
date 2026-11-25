@@ -9714,5 +9714,9 @@
     "settingsAudioOutputSection": "Garso išvestis",
     "@settingsAudioOutputSection": {
         "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "pluginConnected": "Prisijungta",
+    "@pluginConnected": {
+        "description": "Status line on the Settings Sync screen when the server plugin answers"
     }
 }
