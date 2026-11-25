@@ -502,11 +502,11 @@ int calendarCellTitleCount({
 }
 
 /// A title's row with its gap in a month cell, which the count line fits in
-/// too. The bar and gap of a row don't shrink with the text, so neither does
-/// this.
+/// too. A row's 14 px bar and 3 px gap don't shrink with the text, so this
+/// never drops below their 17 px.
 @visibleForTesting
 double calendarCellLineHeight(TextScaler scaler) =>
-    scaler.clamp(minScaleFactor: 1).scale(20);
+    scaler.scale(20).clamp(17, double.infinity);
 
 bool _hasPremiere(List<CalendarEntry> entries) =>
     calendarShowsBadges &&

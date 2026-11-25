@@ -57,7 +57,8 @@ void main() {
     });
 
     test('keep a full row for each line when the text is shrunk', () {
-      expect(calendarCellLineHeight(const TextScaler.linear(0.6)), 20);
+      expect(calendarCellLineHeight(const TextScaler.linear(0.6)), 17);
+      expect(calendarCellLineHeight(const TextScaler.linear(0.9)), 18);
       expect(calendarCellLineHeight(TextScaler.noScaling), 20);
       expect(calendarCellLineHeight(const TextScaler.linear(1.5)), 30);
     });
