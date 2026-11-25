@@ -12279,7 +12279,7 @@
     "@playbackVideoUnsupported": {
         "description": "Shown when the player can't show an item's video and no transcode is left to try, instead of playing the audio over a black screen"
     },
-    "liveReconnecting": "Verbinde erneut… ({attempt} von {total})",
+    "liveReconnecting": "Verbindung wird wiederhergestellt… ({attempt} von {total})",
     "@liveReconnecting": {
         "description": "Overlay shown while a live channel's bounded recovery is retrying",
         "placeholders": {
@@ -12603,7 +12603,7 @@
     "@detailSections": {
         "description": "Settings tile title for switching Details screen sections on and off"
     },
-    "detailSectionsDescription": "Wähle, welche Bereiche der Detailansicht angezeigt werden",
+    "detailSectionsDescription": "Angezeigte Bereiche der Detailansicht festlegen",
     "@detailSectionsDescription": {
         "description": "Settings tile subtitle for the Details screen sections list"
     },
@@ -12974,7 +12974,7 @@
     "@bookLibraryStyle": {
         "description": "Label for the setting that picks the book and audiobook library layout"
     },
-    "bookLibraryStyleDescription": "„Klassisch“ sind die ursprünglichen Regale unter einem hervorgehobenen Titel. „Lesesaal“ zeigt zuerst, was du gerade liest, auf großen Karten. „Buchhandlung“ zeigt die ganze Bibliothek in einem Raster.",
+    "bookLibraryStyleDescription": "Klassisch zeigt die ursprünglichen Regale unter einem hervorgehobenen Titel. Lesesaal zeigt zuerst auf großen Karten, was du gerade liest. Buchhandlung zeigt die ganze Bibliothek in einem Raster.",
     "@bookLibraryStyleDescription": {
         "description": "Explanation under the book library style setting"
     },
@@ -12982,7 +12982,7 @@
     "@bookLibraryStyleReadingRoom": {
         "description": "Book library style option: large Continue cards over a few shelves"
     },
-    "bookLibraryStyleBookstore": "Buchhandlung",
+    "bookLibraryStyleBookstore": "Buchladen",
     "@bookLibraryStyleBookstore": {
         "description": "Book library style option: browse entries over a title grid"
     },
@@ -12990,7 +12990,7 @@
     "@musicLibraryStyle": {
         "description": "Label for the setting that picks the music library layout"
     },
-    "musicLibraryStyleDescription": "„Klassisch“ sind die ursprünglichen Zeilen unter einer „Weiterhören“-Karte. „Schnellzugriff“ beginnt mit einem Raster deiner letzten Alben und Playlists. „Immersiv“ beginnt mit dem Album, das du gerade hörst.",
+    "musicLibraryStyleDescription": "Klassisch zeigt die ursprünglichen Zeilen unter einer Weiterhören-Karte. Schnellzugriff beginnt mit einem Raster deiner letzten Alben und Playlists. Immersiv beginnt mit dem Album, das du gerade hörst.",
     "@musicLibraryStyleDescription": {
         "description": "Explanation under the music library style setting"
     },
@@ -13060,7 +13060,7 @@
     "@libraryOrderTvHint": {
         "description": "Remote control hint on the Library Order settings screen"
     },
-    "libraryOrderSaveFailed": "Die Reihenfolge der Bibliotheken konnte nicht gespeichert werden",
+    "libraryOrderSaveFailed": "Reihenfolge der Bibliotheken konnte nicht gespeichert werden",
     "@libraryOrderSaveFailed": {
         "description": "Error shown when saving the library order to the server fails"
     },
@@ -14466,7 +14466,7 @@
     "@watchPartyShareCode": {
         "description": "Under a Watch Party room's code"
     },
-    "watchPartyReconnecting": "Verbinde erneut...",
+    "watchPartyReconnecting": "Verbindung wird wiederhergestellt...",
     "@watchPartyReconnecting": {
         "description": "Watch Party connection status while the room socket reconnects"
     },
@@ -14633,7 +14633,7 @@
             }
         }
     },
-    "watchPartyEveryoneControlsShort": "Alle steuern",
+    "watchPartyEveryoneControlsShort": "Alle können steuern",
     "@watchPartyEveryoneControlsShort": {
         "description": "Room card tag: every member can play, pause and skip"
     },
@@ -14697,7 +14697,7 @@
     "@watchPartyStatusInSync": {
         "description": "Member status in a watch party"
     },
-    "watchPartyStatusCatchingUp": "Holt auf",
+    "watchPartyStatusCatchingUp": "Synchronisiert",
     "@watchPartyStatusCatchingUp": {
         "description": "Member status in a watch party"
     },
@@ -14910,7 +14910,7 @@
     "@watchPartyMakeHost": {
         "description": "Host action on a member of the watch party"
     },
-    "watchPartyEveryoneControls": "Alle können die Wiedergabe steuern",
+    "watchPartyEveryoneControls": "Jeder kann die Wiedergabe steuern",
     "@watchPartyEveryoneControls": {
         "description": "Host setting of a watch party"
     },
@@ -15131,7 +15131,7 @@
     "@achievementsRerollConfirmBody": {
         "description": "Body of the dialog confirming a quest reroll"
     },
-    "achievementsRerollFailed": "Diese Quests konnten nicht neu ausgewürfelt werden.",
+    "achievementsRerollFailed": "Diese Quests konnten nicht neu gewürfelt werden.",
     "@achievementsRerollFailed": {
         "description": "Message shown when a quest reroll did not go through"
     },
@@ -15171,7 +15171,7 @@
     "@achievementsAppearanceEmpty": {
         "description": "Shown when the plugin carries no cosmetics this panel can draw"
     },
-    "achievementsAppearanceFailed": "Das Aussehen des Profils konnte nicht geändert werden.",
+    "achievementsAppearanceFailed": "Profil konnte nicht angepasst werden.",
     "@achievementsAppearanceFailed": {
         "description": "Shown when equipping or removing an avatar or title fails"
     },
@@ -15311,7 +15311,7 @@
     "@achievementsBuyConfirmBody": {
         "description": "Body of the dialog confirming a purchase"
     },
-    "achievementsBuyFailed": "Das konnte nicht gekauft werden.",
+    "achievementsBuyFailed": "Kauf fehlgeschlagen.",
     "@achievementsBuyFailed": {
         "description": "Message shown when a purchase did not go through"
     },
@@ -15481,7 +15481,7 @@
             }
         }
     },
-    "friendsLoadFailed": "Konnte nicht geladen werden. Überprüfe deine Verbindung und versuche es erneut.",
+    "friendsLoadFailed": "Laden fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
     "@friendsLoadFailed": {
         "description": "Shown when a friends or chat screen fails to load"
     },
@@ -15940,7 +15940,7 @@
     "@setupRowsCarouselHint": {
         "description": "What the carousel home row style gives you"
     },
-    "setupDetailSpotlightHint": "Titelbild im Vordergrund, mit Pop-up-Karten für Besetzung und Extras.",
+    "setupDetailSpotlightHint": "Großes Titelbild zuerst, mit Pop-up-Karten für Besetzung und Extras.",
     "@setupDetailSpotlightHint": {
         "description": "What the spotlight detail screen style gives you"
     },
@@ -16783,7 +16783,7 @@
     "@favoritesSwitchViewSection": {
         "description": "Section header in the Favorites display options for choosing between Home and Library view"
     },
-    "playerSettingsSubtitle": "Steuerelemente, Spulen, Player-Tasten und Trickplay",
+    "playerSettingsSubtitle": "Steuerelemente, Spulen, Player-Tasten und Vorschaubilder beim Spulen",
     "@playerSettingsSubtitle": {
         "description": "Subtitle for the Player entry on the Playback settings screen"
     },
@@ -16824,7 +16824,7 @@
     "@siloPasswordChangeMismatch": {
         "description": "Error in the Silo change-password dialog when the two new password fields differ"
     },
-    "siloPasswordChangeSameAsTemporary": "Wähle ein anderes Passwort als das temporäre",
+    "siloPasswordChangeSameAsTemporary": "Wähle ein neues Passwort, das sich vom temporären unterscheidet",
     "@siloPasswordChangeSameAsTemporary": {
         "description": "Error in the Silo change-password dialog when the new password equals the temporary one used to sign in"
     },
@@ -17498,7 +17498,7 @@
     "@laterShowingOnlyRequested": {
         "description": "Snackbar after choosing to record only the future showing"
     },
-    "unableToRequestLaterShowingOnly": "Die spätere Ausstrahlung konnte nicht angefordert werden, daher wird nichts aufgenommen.",
+    "unableToRequestLaterShowingOnly": "Die spätere Ausstrahlung konnte nicht geplant werden. Es wird nichts aufgenommen.",
     "@unableToRequestLaterShowingOnly": {
         "description": "Snackbar when only the future showing was chosen and asking for it failed"
     },
@@ -17832,7 +17832,7 @@
     "@addServerFound": {
         "description": "Add Server dialog: title once the address answered"
     },
-    "addServerFoundNote": "Weiter, um auszuwählen, wer sich anmeldet.",
+    "addServerFoundNote": "Fahre fort, um auszuwählen, wer sich anmeldet.",
     "@addServerFoundNote": {
         "description": "Add Server dialog: under the server that was found"
     },
