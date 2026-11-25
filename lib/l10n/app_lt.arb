@@ -461,7 +461,7 @@
     "@albums": {
         "description": "Music browse view button label"
     },
-    "albumArtists": "Albumo menininkai",
+    "albumArtists": "Albumo atlikėjai",
     "@albumArtists": {
         "description": "Music browse view button label"
     },
@@ -8652,7 +8652,7 @@
     "confirmItemBoxCover": "dėžutės viršelis",
     "confirmItemBoxRearCover": "dėžutės galinis viršelis",
     "confirmItemMenuArt": "meniu grafika",
-    "resolutionAll": "Visos",
+    "resolutionAll": "Visi",
     "resolutionHigh": "Aukšta (1080p+)",
     "resolutionMedium": "Vidutinė (720p)",
     "resolutionLow": "Žema (<720p)",
@@ -9738,5 +9738,7 @@
         "description": "Hint in the room PIN field"
     },
     "adminMetadataPersonKindActor": "Aktorius",
-    "adminAreasLabel": "Administratoriaus sritys"
+    "adminAreasLabel": "Administratoriaus sritys",
+    "adminMetadataPersonKindAlbumArtist": "Albumo atlikėjas",
+    "adminMetadataFieldAlbumArtists": "Albumo atlikėjai"
 }
