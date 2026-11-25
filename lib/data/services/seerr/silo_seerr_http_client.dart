@@ -285,14 +285,19 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     };
   }
 
+  /// A fulfilled request counts only while the title is still there: a
+  /// partly available one stays partial, and one whose files are gone
+  /// (`missing`) can be requested again.
   static int _mediaStatusOf(Object? availability, String? state) {
     if (availability == 'available') return _mediaAvailable;
     return switch (state) {
       'pending' => _mediaPending,
       'approved' || 'processing' => _mediaProcessing,
       'partially_available' => _mediaPartial,
+      'available' when availability == 'partial' => _mediaPartial,
+      'available' when availability == 'missing' => _mediaUnknown,
       'available' => _mediaAvailable,
-      _ => _mediaUnknown,
+      _ => availability == 'partial' ? _mediaPartial : _mediaUnknown,
     };
   }
 
@@ -423,8 +428,13 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   Future<Map<String, dynamic>> getUpcomingTv({int page = 1}) =>
       _section('on_air_series', page);
 
-  /// Titles already in the library are left out: search lists them under
-  /// the library's own results, and opening one here led back there anyway.
+  /// Silo's web app asks nothing for a single character.
+  @override
+  int get minSearchQueryLength => 2;
+
+  /// Titles fully in the library are left out, as Silo's web app does:
+  /// search lists them under the library's own results. A partly available
+  /// series stays, so its missing seasons can be requested.
   @override
   Future<Map<String, dynamic>> search(
     String query, {
@@ -443,7 +453,10 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       if (results is List)
         'results': [
           for (final r in results.whereType<Map>())
-            if (r['library_content_id'] == null) r,
+            if (r['availability'] == null
+                ? r['library_content_id'] == null
+                : r['availability'] != 'available')
+              r,
         ],
     });
   }
