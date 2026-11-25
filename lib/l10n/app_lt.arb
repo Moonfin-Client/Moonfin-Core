@@ -416,7 +416,7 @@
     "@sortBy": {
         "description": "Section header for sort options"
     },
-    "display": "Ekranas",
+    "display": "Rodymas",
     "@display": {
         "description": "Dialog title for display settings"
     },
@@ -2705,7 +2705,7 @@
     "@showTitleMetadataOnHomeRows": {
         "description": "Description for home row info overlay"
     },
-    "clockDisplay": "Laikrodžio ekranas",
+    "clockDisplay": "Laikrodžio rodymas",
     "@clockDisplay": {
         "description": "Setting for clock display"
     },
@@ -6358,7 +6358,7 @@
     "shuffleGenre": "Žanras",
     "shuffleNoLibraries": "Nėra suderinamų bibliotekų.",
     "shuffleNoGenres": "Šiam maišymo režimui nerasta jokių žanrų.",
-    "posterDisplayTitle": "Ekranas",
+    "posterDisplayTitle": "Rodymas",
     "posterImageType": "Vaizdo tipas",
     "imageTypePoster": "Plakatas",
     "imageTypeThumbnail": "Miniatiūra",
@@ -6493,7 +6493,7 @@
     "settingsHomePageSubtitle": "Skyriai, vaizdų tipai, perdangos ir medijos peržiūros",
     "settingsLibrariesSubtitle": "Bibliotekos matomumas, aplankų rodinys ir kelių serverių veikimas",
     "settingsTwentyFourHourClock": "24 valandų formatas",
-    "settingsTwentyFourHourClockSubtitle": "Visur, kur rodomas laikrodis, naudokite 24 valandų laiko formatavimą",
+    "settingsTwentyFourHourClockSubtitle": "Naudoti 24 valandų laiko formatą visur, kur rodomas laikrodis",
     "settingsShowShuffleButtonInNavigation": "Rodyti maišymo mygtuką naršymo juostoje",
     "settingsShowGenresButtonInNavigation": "Rodyti žanrų mygtuką naršymo juostoje",
     "settingsShowFavoritesButtonInNavigation": "Rodyti parankinių mygtuką naršymo juostoje",
@@ -9740,5 +9740,18 @@
     "adminMetadataPersonKindActor": "Aktorius",
     "adminAreasLabel": "Administratoriaus sritys",
     "adminMetadataPersonKindAlbumArtist": "Albumo atlikėjas",
-    "adminMetadataFieldAlbumArtists": "Albumo atlikėjai"
+    "adminMetadataFieldAlbumArtists": "Albumo atlikėjai",
+    "downloadAllEpisodes": "Visas serijas",
+    "@downloadAllEpisodes": {
+        "description": "Download scope option: every episode of a series or season"
+    },
+    "adminDeleteFromAllLibraries": "Visos bibliotekos",
+    "downloadAllMovies": "Visi filmai",
+    "@downloadAllMovies": {
+        "description": "Download scope option: every movie in a collection"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Rodyti serijos informaciją",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    }
 }
