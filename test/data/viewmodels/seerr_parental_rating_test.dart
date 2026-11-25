@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +17,6 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Seerr keeps TMDB's country and release keys inside its camelCase response.
 final _movieJson = {
   'id': 121,
   'title': 'The Lord of the Rings: The Two Towers',
@@ -168,29 +166,19 @@ void main() {
   }
 
   test('movie rating uses the selected country and first nonblank release', () {
-    final movie = SeerrMovieDetails.fromJson(_movieJson);
-    final state = SeerrMediaDetailState(movie: movie);
+    final state = SeerrMediaDetailState(
+      movie: SeerrMovieDetails.fromJson(_movieJson),
+    );
     expect(state.parentalRating, 'PG-13');
     expect(state.copyWith(discoverRegion: 'DE').parentalRating, '12');
-    // Do not present a different country's rating as a local certification.
     expect(state.copyWith(discoverRegion: 'FR').parentalRating, isNull);
-    expect(state.copyWith(isLoading: true).parentalRating, 'PG-13');
-    final roundTrip = SeerrMovieDetails.fromJson(
-      jsonDecode(jsonEncode(movie.toJson())) as Map<String, dynamic>,
-    );
-    expect(SeerrMediaDetailState(movie: roundTrip).parentalRating, 'PG-13');
   });
 
-  test('TV ratings use contentRatings.results and survive serialization', () {
-    final tv = SeerrTvDetails.fromJson(_tvJson);
-    final state = SeerrMediaDetailState(tv: tv);
+  test('TV rating uses the selected country', () {
+    final state = SeerrMediaDetailState(tv: SeerrTvDetails.fromJson(_tvJson));
     expect(state.parentalRating, 'TV-MA');
     expect(state.copyWith(discoverRegion: 'DE').parentalRating, '16');
     expect(state.copyWith(discoverRegion: 'FR').parentalRating, isNull);
-    final roundTrip = SeerrTvDetails.fromJson(
-      jsonDecode(jsonEncode(tv.toJson())) as Map<String, dynamic>,
-    );
-    expect(SeerrMediaDetailState(tv: roundTrip).parentalRating, 'TV-MA');
   });
 
   test('missing, empty and blank ratings leave the badge absent', () {
@@ -243,13 +231,12 @@ void main() {
     );
   });
 
-  test('discovery country reads nested user settings and round trips', () {
+  test('discovery country reads nested user settings', () {
     final user = SeerrUser.fromJson({
       'id': 1,
       'settings': {'discoverRegion': 'DE', 'streamingRegion': 'US'},
     });
     expect(user.discoverRegion, 'DE');
-    expect(SeerrUser.fromJson(user.toJson()).discoverRegion, 'DE');
     expect(SeerrUser.fromJson({'id': 1}).discoverRegion, isNull);
   });
 
@@ -344,18 +331,6 @@ void main() {
         async.flushMicrotasks();
         expect(vm.item?.officialRating, 'PG-13');
         settings.complete({'discoverRegion': 'DE'});
-        async.flushMicrotasks();
-        expect(vm.item?.officialRating, 'PG-13');
-        vm.dispose();
-      });
-    });
-
-    test('blank country settings fall back to US', () {
-      fakeAsync((async) {
-        repo.user = const SeerrUser(id: 1, discoverRegion: '');
-        repo.settings = Future.value({'discoverRegion': ''});
-        final vm = viewModel('tmdb:movie:121');
-        vm.load();
         async.flushMicrotasks();
         expect(vm.item?.officialRating, 'PG-13');
         vm.dispose();

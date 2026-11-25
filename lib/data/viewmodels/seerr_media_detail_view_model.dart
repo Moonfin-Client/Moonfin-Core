@@ -26,10 +26,10 @@ bool seerrPublicFlag(
   required bool fallback,
 }) => settings.containsKey(key) ? settings[key] == true : fallback;
 
-/// Where to look up a title's streaming services, in the order Seerr's own
-/// page uses: the user's region, then the server's, then the US.
+/// A region setting in the order Seerr's own pages read it: the user's, then
+/// the server's, then the US.
 @visibleForTesting
-String seerrStreamingRegion(String? user, String? server) {
+String seerrRegion(String? user, String? server) {
   if (user != null && user.isNotEmpty) return user;
   if (server != null && server.isNotEmpty) return server;
   return 'US';
@@ -692,14 +692,10 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   }
 
   String _streamingRegionFor(SeerrUser? user) =>
-      seerrStreamingRegion(user?.streamingRegion, _serverStreamingRegion);
+      seerrRegion(user?.streamingRegion, _serverStreamingRegion);
 
-  String _discoverRegionFor(SeerrUser? user) {
-    final region = user?.discoverRegion;
-    if (region != null && region.isNotEmpty) return region;
-    final server = _serverDiscoverRegion;
-    return server == null || server.isEmpty ? 'US' : server;
-  }
+  String _discoverRegionFor(SeerrUser? user) =>
+      seerrRegion(user?.discoverRegion, _serverDiscoverRegion);
 
   /// The search hit of the kind that was asked for.
   ///
