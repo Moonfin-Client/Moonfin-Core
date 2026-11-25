@@ -8024,7 +8024,7 @@
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Pateikti rinkinio užklausą",
+    "requestCollection": "Užklausti kolekciją",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
