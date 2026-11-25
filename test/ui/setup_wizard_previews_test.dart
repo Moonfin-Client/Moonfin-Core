@@ -7,9 +7,13 @@ import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
 import 'package:moonfin/ui/screens/setup/setup_wizard_previews.dart';
+import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../support/preview_screen.dart';
 
 /// Items with no artwork URLs, so every image resolves to the placeholder and
 /// nothing touches the network. The layout code runs exactly the same either
@@ -103,6 +107,28 @@ void main() {
     expect(ids(SetupPreviewData.keepDrawn(const [], reloaded)), ids(reloaded));
   });
 
+  testWidgets('an iPad previews at its own size, not a phone\'s', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    // An iPad uses the phone interface on its own wide screen.
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    expect(PlatformDetection.useMobileUi, isTrue);
+
+    usePreviewScreen(const Size(1024, 1366));
+    expect(setupPreviewSize(), const Size(1024, 1366));
+    // Playback turns the screen sideways, so the player previews landscape.
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 1366 / 1024);
+
+    usePreviewScreen(const Size(1366, 1024));
+    expect(setupPreviewSize(), const Size(1366, 1024));
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 1366 / 1024);
+
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    await pumpPreview(tester, homeRowsPreview(modern: true));
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   for (final layout in [
     InterfaceLayout.tv,
     InterfaceLayout.desktop,
@@ -116,6 +142,7 @@ void main() {
             ? TargetPlatform.linux
             : TargetPlatform.android;
         PlatformDetection.setInterfaceLayout(layout);
+        usePreviewScreenOf(layout);
       }
 
       testWidgets('live previews lay out with real items', (tester) async {
@@ -144,7 +171,7 @@ void main() {
         setPlatform();
         SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
         // A TV lays out on the canvas TvUiScale gives every panel. A phone and
-        // a desktop have no such canvas, so they stand in a typical screen.
+        // a desktop lay out at the window's own size.
         final canvas = switch (layout) {
           InterfaceLayout.tv => const Size(1150, 1150 * 1080 / 1920),
           InterfaceLayout.phone => const Size(390, 844),

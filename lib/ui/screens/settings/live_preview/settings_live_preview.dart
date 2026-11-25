@@ -217,12 +217,15 @@ Widget _libraryScene(String? focusedKey) => Builder(
   },
 );
 
-/// The player lays out landscape even on a phone, where playback rotates. A TV
-/// is landscape already, so it shares the other scenes' canvas.
+/// The screen the player fills. On a phone or tablet playback turns the
+/// screen sideways, so it lays out landscape however the device is held now.
+/// A TV and a desktop window keep the other scenes' canvas.
 Size get _playerDesignSize {
-  if (PlatformDetection.useLeanbackUi) return setupPreviewSize();
-  if (PlatformDetection.useMobileUi) return const Size(844, 390);
-  return const Size(1280, 800);
+  final screen = setupPreviewSize();
+  if (PlatformDetection.useLeanbackUi || !PlatformDetection.isMobile) {
+    return screen;
+  }
+  return Size(screen.longestSide, screen.shortestSide);
 }
 
 double settingsPreviewAspect(SettingsPreviewScene scene) =>

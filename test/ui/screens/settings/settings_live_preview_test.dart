@@ -88,6 +88,8 @@ import 'package:server_core/server_core.dart'
     show ImageApi, ItemsApi, MediaServerClient, ServerType;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../support/preview_screen.dart';
+
 class _Users extends Mock implements UserRepository {}
 
 class _Saved extends Mock implements SavedMediaPresence {}
@@ -652,6 +654,7 @@ void main() {
           ? TargetPlatform.linux
           : TargetPlatform.android;
       PlatformDetection.setInterfaceLayout(layout);
+      usePreviewScreenOf(layout);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
       final controller = SettingsPreviewController();
 
@@ -1043,6 +1046,7 @@ void main() {
     setUp(() {
       debugDefaultTargetPlatformOverride = TargetPlatform.linux;
       PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      usePreviewScreenOf(InterfaceLayout.desktop);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
       l10n = lookupAppLocalizations(const Locale('en'));
     });
@@ -2260,6 +2264,7 @@ void main() {
   ) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    usePreviewScreenOf(InterfaceLayout.phone);
     SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
     final controller = SettingsPreviewController()
       ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
@@ -3527,6 +3532,7 @@ void main() {
     }) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.linux;
       PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      usePreviewScreenOf(InterfaceLayout.desktop);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.calendarStyle,
@@ -4501,6 +4507,7 @@ void main() {
     ) async {
       tv();
       PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      usePreviewScreenOf(InterfaceLayout.phone);
       final prefs = GetIt.instance<UserPreferences>();
       await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
       await prefs.set(UserPreferences.posterSize, PosterSize.extraLarge);

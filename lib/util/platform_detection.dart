@@ -385,6 +385,9 @@ class PlatformDetection {
     return 0;
   }
 
+  /// The app window's size in logical pixels, or null before there is one.
+  static Size? get screenLogicalSize => _screenLogicalSize;
+
   static Size? get _screenLogicalSize {
     final view = WidgetsBinding.instance.platformDispatcher.implicitView;
     if (view == null) return null;
