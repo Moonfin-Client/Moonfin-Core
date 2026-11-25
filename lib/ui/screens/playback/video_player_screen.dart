@@ -26,6 +26,7 @@ import '../../../data/utils/chapter_markers.dart';
 import '../../../data/utils/episode_cast_utils.dart';
 import '../../../data/utils/server_trickplay.dart';
 import '../../../data/utils/trickplay_headers.dart';
+import '../../../playback/now_playing_artwork.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
@@ -5536,48 +5537,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     final imageApi = _clientForQueueItem(item).imageApi;
-    final imageTags = raw['ImageTags'] as Map?;
-    final primaryTag = (imageTags?['Primary'] as String?)?.trim();
-    final thumbTag = (imageTags?['Thumb'] as String?)?.trim();
-    final backdropTags = raw['BackdropImageTags'] as List?;
-    final backdropTag = backdropTags?.isNotEmpty == true
-        ? backdropTags!.first.toString().trim()
-        : null;
-
-    if (primaryTag != null && primaryTag.isNotEmpty) {
-      return imageApi.getPrimaryImageUrl(
-        itemId,
-        maxHeight: 420,
-        tag: primaryTag,
-      );
-    }
-
-    if (thumbTag != null && thumbTag.isNotEmpty) {
-      return imageApi.getThumbImageUrl(itemId, maxWidth: 960, tag: thumbTag);
-    }
-
-    if (backdropTag != null && backdropTag.isNotEmpty) {
-      return imageApi.getBackdropImageUrl(
-        itemId,
-        maxWidth: 1280,
-        tag: backdropTag,
-      );
-    }
-
-    final parentThumbItemId = raw['ParentThumbItemId']?.toString().trim();
-    final parentThumbTag = (raw['ParentThumbImageTag'] as String?)?.trim();
-    if (parentThumbItemId != null &&
-        parentThumbItemId.isNotEmpty &&
-        parentThumbTag != null &&
-        parentThumbTag.isNotEmpty) {
-      return imageApi.getThumbImageUrl(
-        parentThumbItemId,
-        maxWidth: 960,
-        tag: parentThumbTag,
-      );
-    }
-
-    return imageApi.getPrimaryImageUrl(itemId, maxHeight: 420);
+    return nowPlayingArtworkUrl(
+          imageApi,
+          raw,
+          itemId: itemId,
+          maxWidth: 960,
+          maxHeight: 420,
+        ) ??
+        imageApi.getPrimaryImageUrl(itemId, maxHeight: 420);
   }
 
   Widget _buildBottomOverlay(BuildContext context) {

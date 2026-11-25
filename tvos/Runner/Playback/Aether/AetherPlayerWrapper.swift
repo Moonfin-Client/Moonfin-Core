@@ -748,7 +748,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     func applyNowPlayingMetadata(_ args: [String: Any]) {
         let title = (args["topTitle"] as? String) ?? ""
         let subtitle = (args["topSubtitle"] as? String) ?? ""
-        let logo = args["logoUrl"] as? String
+        let artwork = args["artworkUrl"] as? String
         // The engine's music session only exists on iOS and tvOS.
         #if os(iOS) || os(tvOS)
             nowPlaying.setQueueCapabilities(
@@ -766,7 +766,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                     info[MPMediaItemPropertyPlaybackDuration] = duration
                 }
                 audioNowPlayingInfo = info
-                loadAudioArtwork(logo)
+                loadAudioArtwork(artwork)
                 publishAudioNowPlaying()
                 return
             }
@@ -783,7 +783,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             title: title,
             subtitle: subtitle,
             durationSeconds: duration,
-            artworkURL: (logo?.isEmpty ?? true) ? nil : logo)
+            artworkURL: (artwork?.isEmpty ?? true) ? nil : artwork)
         nowPlaying.updatePlaybackState(
             isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
     }

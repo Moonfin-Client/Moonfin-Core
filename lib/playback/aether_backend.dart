@@ -140,7 +140,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   }) => _invoke<void>('setUiMetadata', {
     'topTitle': title,
     'topSubtitle': artist,
-    'logoUrl': artworkUrl ?? '',
+    'artworkUrl': artworkUrl ?? '',
     'hasNext': hasNext,
     'hasPrevious': true,
   });

@@ -88,7 +88,7 @@ class AppleTvAudioNowPlayingFeeder {
       skipBackMs: 0,
       audioTracks: const [],
       subtitleTracks: const [],
-      logoUrl: _artUrl(raw) ?? '',
+      artworkUrl: _artUrl(raw) ?? '',
     ));
   }
 
