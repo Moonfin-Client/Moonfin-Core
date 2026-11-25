@@ -9756,5 +9756,5 @@
     },
     "settingsDateFormat": "Datos formatas",
     "dateFormatDayMonth": "Diena / Mėnuo (10 lapkr.)",
-    "dateFormatSystem": "Sistemos numatytoji"
+    "dateFormatSystem": "Numatytoji lokalė"
 }
