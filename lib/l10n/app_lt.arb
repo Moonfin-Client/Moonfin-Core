@@ -7017,7 +7017,7 @@
     "rowsType": "Eilučių tipas",
     "rowsTypeDescription": "„Classic“ išlaiko kiekvienos eilutės vaizdo tipą ir informacijos perdangą. Modernus naudoja portreto ir fono eilutes.",
     "displayFavoritesRows": "Rodyti mėgstamiausių eilutes",
-    "displayFavoritesRowsSubtitle": "Rodyti mėgstamiausius filmus, serialus ir kitas mėgstamiausias eilutes pagrindinio puslapio skiltyse.",
+    "displayFavoritesRowsSubtitle": "Rodyti mėgstamus filmus, serialus ir kitas mėgstamų įrašų eilutes pagrindinio ekrano skiltyse.",
     "favoritesRowSorting": "Parankinių eilučių rūšiavimas",
     "favoritesRowSortingDescription": "Rūšiuoti mėgstamiausių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kt.",
     "displayCollectionsRows": "Rodyti kolekcijų eilutes",
