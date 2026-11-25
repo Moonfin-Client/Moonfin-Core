@@ -6,11 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/preference/user_preferences.dart';
-import 'package:moonfin/ui/widgets/bounded_network_image.dart';
 import 'package:moonfin/ui/widgets/genre_grid_card.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../support/artwork_fixture.dart';
+
+/// The density TvUiScale hands down on an Apple TV at each output.
+const _tv4k = 2.0 * 1920 / 1150;
+const _tv1080p = 1.0 * 1920 / 1150;
 
 void main() {
   late Directory dir;
@@ -25,51 +29,62 @@ void main() {
   });
 
   tearDown(() async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
     await GetIt.instance.reset();
     dir.deleteSync(recursive: true);
   });
 
-  Future<void> pumpCard(WidgetTester tester, {int? decodeMaxWidth}) async {
+  /// The decode width of a 700 point wide genre card, wide enough that the
+  /// ceiling binds at every density here, on a display of [dpr].
+  Future<int?> decodeWidth(WidgetTester tester, double dpr) async {
+    tester.view.devicePixelRatio = dpr;
+    tester.view.physicalSize = Size(1150 * dpr, 647 * dpr);
+    addTearDown(tester.view.reset);
     final png = (await tester.runAsync(() => writeTestPng(dir)))!;
     CachedNetworkImageProvider.defaultCacheManager = FakeArtworkCacheManager(png);
-    final genre = GenreCardData(
-      id: 'g',
-      name: 'Drama',
-      itemCount: 3,
-      imageUrl: 'http://jellyfin.test/Items/g/Images/Primary',
-    );
     await tester.pumpWidget(
       MaterialApp(
-        home: SizedBox(
-          width: 300,
-          height: 200,
-          child: decodeMaxWidth == null
-              ? GenreGridCard(genre: genre, onTap: () {})
-              : GenreGridCard(
-                  genre: genre,
-                  onTap: () {},
-                  decodeMaxWidth: decodeMaxWidth,
-                ),
+        home: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: 700,
+            height: 111,
+            child: GenreGridCard(
+              genre: GenreCardData(
+                id: 'g',
+                name: 'Drama',
+                itemCount: 3,
+                imageUrl: 'http://jellyfin.test/Items/g/Images/Primary',
+              ),
+              onTap: () {},
+            ),
+          ),
         ),
       ),
     );
+    return tester
+        .widget<CachedNetworkImage>(find.byType(CachedNetworkImage))
+        .memCacheWidth;
   }
 
-  testWidgets('the artwork decode keeps the 1024 default', (tester) async {
-    await pumpCard(tester);
-    final image = tester.widget<BoundedNetworkImage>(
-      find.byType(BoundedNetworkImage),
-    );
-    expect(image.maxWidth, 1024);
-  });
-
-  testWidgets('a screen can raise the decode ceiling to its request ceiling', (
+  testWidgets('a wide genre card on a 4K TV decodes up to the request ceiling', (
     tester,
   ) async {
-    await pumpCard(tester, decodeMaxWidth: 1202);
-    final image = tester.widget<BoundedNetworkImage>(
-      find.byType(BoundedNetworkImage),
-    );
-    expect(image.maxWidth, 1202);
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    expect(genreCardDecodeMaxWidth(_tv4k), 1202);
+    expect(await decodeWidth(tester, _tv4k), 1202);
+  });
+
+  testWidgets('a 1080p TV keeps the 1024 decode ceiling', (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    expect(genreCardDecodeMaxWidth(_tv1080p), 1024);
+    expect(await decodeWidth(tester, _tv1080p), 1024);
+  });
+
+  testWidgets('off TV a dense phone keeps the 1024 decode ceiling', (
+    tester,
+  ) async {
+    expect(genreCardDecodeMaxWidth(3.0), 1024);
+    expect(await decodeWidth(tester, 3.0), 1024);
   });
 }
