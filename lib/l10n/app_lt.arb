@@ -3148,7 +3148,7 @@
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "ASS/SSA tiesioginis paleidimas",
+    "assSsaDirectPlay": "Tiesioginis ASS/SSA atkūrimas",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
@@ -4611,7 +4611,7 @@
     },
     "adminServerRebootInProgress": "Vyksta serverio perkrovimas",
     "adminServerRebootMessage": "Serveris perkraunamas, iš naujo paleiskite „Moonfin“.",
-    "adminActiveSessions": "Aktyvūs užsiėmimai",
+    "adminActiveSessions": "Aktyvios sesijos",
     "adminSessionsLoadFailed": "Nepavyko įkelti seansų",
     "adminNoActiveSessions": "Nėra aktyvių seansų",
     "adminRecentActivity": "Naujausia veikla",
@@ -4864,7 +4864,7 @@
     "adminSaveProfile": "Išsaugoti profilį",
     "adminDeleteUser": "Ištrinti vartotoją",
     "admin": "Administratorius",
-    "adminFullAccessWarning": "Administratoriai turi visišką prieigą prie serverio. Suteikite atsargiai.",
+    "adminFullAccessWarning": "Administratoriai turi visišką prieigą prie serverio. Suteikite ją atsargiai.",
     "administrator": "Administratorius",
     "adminHiddenUser": "Paslėptas vartotojas",
     "adminAllowMediaPlayback": "Leisti medijos atkūrimą",
@@ -7747,19 +7747,19 @@
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 erdvinis garsas",
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Erdvinis",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 erdvinis garsas",
+    "settingsMaxAudioChannels5_1": "5.1 Erdvinis",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
-    "settingsMaxAudioChannels6_1": "6.1 erdvinis garsas",
+    "settingsMaxAudioChannels6_1": "6.1 erdvinis",
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 erdvinis garsas",
+    "settingsMaxAudioChannels7_1": "7.1 erdvinis",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
@@ -8473,7 +8473,7 @@
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Pridėti į rinkinį",
+    "contextMenuAddToCollection": "Pridėti į kolekciją",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
@@ -9374,7 +9374,7 @@
     "@bottomNavbarTabsAutomatic": {
         "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
     },
-    "chatAdmin": "Administravimas",
+    "chatAdmin": "Administratorius",
     "@chatAdmin": {
         "description": "Marks a group chat admin"
     },
@@ -9645,7 +9645,7 @@
     "@additionalParts": {
         "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
     },
-    "libraryAToZ": "Nuo A ik Ž",
+    "libraryAToZ": "Nuo A iki Ž",
     "@libraryAToZ": {
         "description": "Library bottom bar button that turns the alphabet on and off"
     },
@@ -9659,11 +9659,11 @@
     "@librarySortArtist": {
         "description": "Sort option for music: by track artist"
     },
-    "playbackInfoSurround51": "5.1 erdvinis garsas",
+    "playbackInfoSurround51": "5.1 erdvinis",
     "@playbackInfoSurround51": {
         "description": "Playback information value: six channel surround audio"
     },
-    "playbackInfoSurround71": "7.1 erdvinis garsas",
+    "playbackInfoSurround71": "7.1 erdvinis",
     "@playbackInfoSurround71": {
         "description": "Playback information value: eight channel surround audio"
     },
@@ -9736,5 +9736,7 @@
     "watchPartyPinDigits": "nuo 4 iki 8 skaičių",
     "@watchPartyPinDigits": {
         "description": "Hint in the room PIN field"
-    }
+    },
+    "adminMetadataPersonKindActor": "Aktorius",
+    "adminAreasLabel": "Administratoriaus sritys"
 }
