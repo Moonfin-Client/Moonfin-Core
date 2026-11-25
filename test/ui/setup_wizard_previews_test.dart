@@ -129,6 +129,46 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  group('a phone or tablet on its side', () {
+    // iOS in the automatic layout, as an iPad or iPhone runs the app.
+    void useDevice(Size screen) {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+      usePreviewScreen(screen);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    }
+
+    for (final (device, screen) in [
+      ('an iPad', const Size(1194, 834)),
+      ('a phone', const Size(844, 390)),
+    ]) {
+      testWidgets('$device lays out every detail style', (tester) async {
+        useDevice(screen);
+        for (final style in DetailScreenStyle.values) {
+          await pumpPreview(tester, detailStylePreview(style));
+        }
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+
+    testWidgets('Modern draws the layout the real page does', (tester) async {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      // Only the landscape layout has a More Like This tab beside the others.
+      Future<Finder> moreLikeThis(Size screen) async {
+        useDevice(screen);
+        await pumpPreview(tester, detailStylePreview(DetailScreenStyle.modern));
+        return find.text(l10n.moreLikeThis);
+      }
+
+      expect(await moreLikeThis(const Size(1194, 834)), findsOneWidget);
+      expect(await moreLikeThis(const Size(834, 1194)), findsNothing);
+      // A phone on its side keeps its upright canvas and portrait mock.
+      expect(await moreLikeThis(const Size(844, 390)), findsNothing);
+      expect(setupPreviewSize(), const Size(390, 844));
+      debugDefaultTargetPlatformOverride = null;
+    });
+  });
+
   for (final layout in [
     InterfaceLayout.tv,
     InterfaceLayout.desktop,
