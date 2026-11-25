@@ -8,14 +8,37 @@
 /// points under a different layout still hits the file already on disk.
 library;
 
+import 'platform_detection.dart';
+import 'tv_ui_scale.dart';
+
 /// Server requests and decodes both stop scaling here, so a phone that
 /// reports 3 asks for and decodes the same 2x image.
 const maxArtworkDevicePixelRatio = 2.0;
 
+/// The cap on a TV. TvUiScale lays every TV out on a [kTvDesignWidth] canvas
+/// and raises the density to match, so a 4K panel reports about 3.34 and the
+/// phone cap would ask for artwork at 60% of the pixels it covers. This lets
+/// a 4K panel get the pixels it paints and stops there.
+const maxTvArtworkDevicePixelRatio = 3840 / kTvDesignWidth;
+
+/// [devicePixelRatio] clamped to what artwork requests and decodes scale
+/// with on this device. [isTv] defaults to [PlatformDetection.isTV].
+double artworkDevicePixelRatio(double devicePixelRatio, {bool? isTv}) =>
+    devicePixelRatio.clamp(
+      1.0,
+      (isTv ?? PlatformDetection.isTV)
+          ? maxTvArtworkDevicePixelRatio
+          : maxArtworkDevicePixelRatio,
+    );
+
 /// [logical] points as pixels on this display, rounded up so nothing painted
 /// at this size is ever stretched.
-int artworkPhysicalPixels(double logical, double devicePixelRatio) {
-  final dpr = devicePixelRatio.clamp(1.0, maxArtworkDevicePixelRatio);
+int artworkPhysicalPixels(
+  double logical,
+  double devicePixelRatio, {
+  bool? isTv,
+}) {
+  final dpr = artworkDevicePixelRatio(devicePixelRatio, isTv: isTv);
   return (logical * dpr).ceil();
 }
 
@@ -46,9 +69,14 @@ enum ArtworkShape {
 int artworkRequestWidth(
   double logicalWidth,
   double devicePixelRatio,
-  ArtworkShape shape,
-) {
-  final pixels = artworkPhysicalPixels(logicalWidth, devicePixelRatio);
+  ArtworkShape shape, {
+  bool? isTv,
+}) {
+  final pixels = artworkPhysicalPixels(
+    logicalWidth,
+    devicePixelRatio,
+    isTv: isTv,
+  );
   if (pixels <= 0) return shape.step;
   return ((pixels + shape.step - 1) ~/ shape.step) * shape.step;
 }

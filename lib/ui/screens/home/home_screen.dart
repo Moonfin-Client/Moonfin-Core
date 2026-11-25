@@ -2482,7 +2482,9 @@ class _ContentRowsState extends State<_ContentRows>
       _v2FocusPrefetchedUrls.clear();
     }
 
-    final requestScale = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
+    final requestScale = artworkDevicePixelRatio(
+      MediaQuery.devicePixelRatioOf(context),
+    );
     final imageApi = widget.viewModel.imageApiForServer(item.serverId);
     final url = _resolveV2FocusedImageUrl(
       item,
@@ -5990,9 +5992,9 @@ class _ContentRowsState extends State<_ContentRows>
               suppressFocusGlow: suppressFocusGlow,
             );
           }
-          final requestScale = MediaQuery.devicePixelRatioOf(
-            context,
-          ).clamp(1.0, 2.0);
+          final requestScale = artworkDevicePixelRatio(
+            MediaQuery.devicePixelRatioOf(context),
+          );
           final imageApi = widget.viewModel.imageApiForServer(item.serverId);
           final previewKey = _previewKeyFor(item, rowIndex);
           final isV2MobileTouch = isRowsV2 && PlatformDetection.useMobileUi &&
@@ -7168,7 +7170,9 @@ class _ContentRowsState extends State<_ContentRows>
     if (rows.isEmpty) return;
     final posterSize = _homePosterSize();
     final useSeriesThumbs = prefs.get(UserPreferences.seriesThumbnailsEnabled);
-    final requestScale = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
+    final requestScale = artworkDevicePixelRatio(
+      MediaQuery.devicePixelRatioOf(context),
+    );
     final viewportWidth = MediaQuery.sizeOf(context).width;
 
     bool isMediaRow(HomeRow row) =>

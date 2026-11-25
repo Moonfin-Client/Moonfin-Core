@@ -13,6 +13,7 @@ import '../../../data/services/log_service.dart';
 import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
@@ -315,7 +316,9 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   int _genreCardRequestMaxWidth() {
-    final requestScale = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
+    final requestScale = artworkDevicePixelRatio(
+      MediaQuery.devicePixelRatioOf(context),
+    );
     final widthPx = (_cardWidth() * requestScale).round();
     if (widthPx < 160) return 160;
     if (widthPx > 720) return 720;

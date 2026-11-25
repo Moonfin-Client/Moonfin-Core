@@ -20,6 +20,28 @@ void main() {
     expect(artworkRequestWidth(100, 3.0, ArtworkShape.poster), 280);
   });
 
+  test('a TV scales artwork up to a 4K panel on the design canvas', () {
+    // A 4K Apple TV reports 2 over 1920 points; TvUiScale lays it out on the
+    // 1150 point canvas, so the density it hands down is about 3.34.
+    const appleTv4k = 2.0 * 1920 / 1150;
+    expect(artworkDevicePixelRatio(appleTv4k, isTv: true), appleTv4k);
+    expect(artworkDevicePixelRatio(appleTv4k, isTv: false), 2.0);
+    expect(
+      artworkDevicePixelRatio(8.0, isTv: true),
+      maxTvArtworkDevicePixelRatio,
+    );
+    expect(artworkDevicePixelRatio(0.5, isTv: true), 1.0);
+    // A 150 point poster row card covers 501 pixels on that panel.
+    expect(
+      artworkRequestWidth(150, appleTv4k, ArtworkShape.poster, isTv: true),
+      560,
+    );
+    expect(
+      artworkRequestWidth(150, appleTv4k, ArtworkShape.poster, isTv: false),
+      420,
+    );
+  });
+
   test('a request is never narrower than the decode at any width', () {
     for (var width = 1.0; width <= 1000; width += 0.5) {
       for (final dpr in [1.0, 1.25, 1.5, 2.0, 3.0]) {
