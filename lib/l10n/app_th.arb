@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "การตั้งค่า NFO",
     "adminActivitySeverityAll": "ทุกระดับความรุนแรง",
     "adminActivityDateRange": "ช่วงวันที่",
-    "adminRemoveDeviceConfirm": "นำอุปกรณ์ '{name}' ออกหรือไม่? ผู้ใช้จะต้องลงชื่อเข้าใช้บนอุปกรณ์นี้อีกครั้ง",
+    "adminRemoveDeviceConfirm": "นำอุปกรณ์ \"{name}\" ออกหรือไม่? ผู้ใช้จะต้องลงชื่อเข้าใช้บนอุปกรณ์นี้อีกครั้ง",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "คลังสื่อ '{libraryName}' ของคุณถูกตั้งค่าให้บันทึกภาพปกลงในโฟลเดอร์สื่อโดยตรง (เปิด 'Save artwork into media folders' ไว้) แต่ Jellyfin ได้ทดสอบสิทธิ์การเขียนแล้วและไม่มีสิทธิ์เขียนไฟล์ลงในไดเรกทอรีนี้:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "คลังสื่อ \"{libraryName}\" ของคุณถูกตั้งค่าให้บันทึกภาพปกลงในโฟลเดอร์สื่อโดยตรง (เปิด 'Save artwork into media folders' ไว้) แต่ Jellyfin ได้ทดสอบสิทธิ์การเขียนแล้วและไม่มีสิทธิ์เขียนไฟล์ลงในไดเรกทอรีนี้:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9436,5 +9436,13 @@
     "afterHoursStart": "เริ่ม",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "คลาสสิก",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "คลาสสิก",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

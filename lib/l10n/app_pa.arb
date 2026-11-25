@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO ਸੈਟਿੰਗਾਂ",
     "adminActivitySeverityAll": "ਸਾਰੀਆਂ ਗੰਭੀਰਤਾਵਾਂ",
     "adminActivityDateRange": "ਮਿਤੀ ਰੇਂਜ",
-    "adminRemoveDeviceConfirm": "ਡਿਵਾਈਸ '{name}' ਹਟਾਉਣਾ ਹੈ? ਯੂਜ਼ਰ ਨੂੰ ਇਸ ਡਿਵਾਈਸ 'ਤੇ ਮੁੜ ਸਾਈਨ ਇਨ ਕਰਨਾ ਪਵੇਗਾ।",
+    "adminRemoveDeviceConfirm": "ਡਿਵਾਈਸ \"{name}\" ਹਟਾਉਣਾ ਹੈ? ਯੂਜ਼ਰ ਨੂੰ ਇਸ ਡਿਵਾਈਸ 'ਤੇ ਮੁੜ ਸਾਈਨ ਇਨ ਕਰਨਾ ਪਵੇਗਾ।",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "ਤੁਹਾਡੀ '{libraryName}' ਲਾਇਬ੍ਰੇਰੀ ਆਰਟਵਰਕ ਨੂੰ ਸਿੱਧਾ ਮੀਡੀਆ ਫੋਲਡਰਾਂ ਵਿੱਚ ਸੇਵ ਕਰਨ ਲਈ ਸੰਰਚਿਤ ਹੈ ('Save artwork into media folders' ਸਮਰੱਥ ਹੈ)। ਹਾਲਾਂਕਿ, Jellyfin ਨੇ ਲਿਖਣ ਪਹੁੰਚ ਦੀ ਜਾਂਚ ਕੀਤੀ ਹੈ ਅਤੇ ਇਸ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਫਾਈਲਾਂ ਲਿਖਣ ਦੀ ਅਨੁਮਤੀ ਨਹੀਂ ਹੈ:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "ਤੁਹਾਡੀ \"{libraryName}\" ਲਾਇਬ੍ਰੇਰੀ ਆਰਟਵਰਕ ਨੂੰ ਸਿੱਧਾ ਮੀਡੀਆ ਫੋਲਡਰਾਂ ਵਿੱਚ ਸੇਵ ਕਰਨ ਲਈ ਸੰਰਚਿਤ ਹੈ ('Save artwork into media folders' ਸਮਰੱਥ ਹੈ)। ਹਾਲਾਂਕਿ, Jellyfin ਨੇ ਲਿਖਣ ਪਹੁੰਚ ਦੀ ਜਾਂਚ ਕੀਤੀ ਹੈ ਅਤੇ ਇਸ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਫਾਈਲਾਂ ਲਿਖਣ ਦੀ ਅਨੁਮਤੀ ਨਹੀਂ ਹੈ:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9436,5 +9436,13 @@
     "afterHoursStart": "ਸ਼ੁਰੂ",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "ਕਲਾਸਿਕ",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "ਕਲਾਸਿਕ",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

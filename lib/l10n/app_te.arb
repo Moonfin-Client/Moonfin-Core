@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO సెట్టింగ్‌లు",
     "adminActivitySeverityAll": "అన్ని తీవ్రతలు",
     "adminActivityDateRange": "తేదీ పరిధి",
-    "adminRemoveDeviceConfirm": "'{name}' పరికరాన్ని తీసివేయాలా? ఈ పరికరంలో వినియోగదారు మళ్లీ సైన్ ఇన్ చేయాల్సి ఉంటుంది.",
+    "adminRemoveDeviceConfirm": "\"{name}\" పరికరాన్ని తీసివేయాలా? ఈ పరికరంలో వినియోగదారు మళ్లీ సైన్ ఇన్ చేయాల్సి ఉంటుంది.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "మీ '{libraryName}' లైబ్రరీ ఆర్ట్‌వర్క్‌ను నేరుగా మీడియా ఫోల్డర్‌లలో సేవ్ చేయడానికి కాన్ఫిగర్ చేయబడింది ('Save artwork into media folders' ప్రారంభించబడింది). అయితే, Jellyfin రైట్ యాక్సెస్‌ను పరీక్షించింది మరియు ఈ డైరెక్టరీలో ఫైల్‌లను రాయడానికి అనుమతి లేదు:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "మీ \"{libraryName}\" లైబ్రరీ ఆర్ట్‌వర్క్‌ను నేరుగా మీడియా ఫోల్డర్‌లలో సేవ్ చేయడానికి కాన్ఫిగర్ చేయబడింది ('Save artwork into media folders' ప్రారంభించబడింది). అయితే, Jellyfin రైట్ యాక్సెస్‌ను పరీక్షించింది మరియు ఈ డైరెక్టరీలో ఫైల్‌లను రాయడానికి అనుమతి లేదు:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9460,5 +9460,13 @@
     "afterHoursStart": "ప్రారంభం",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "క్లాసిక్",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "క్లాసిక్",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

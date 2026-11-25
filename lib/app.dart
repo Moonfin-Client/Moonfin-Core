@@ -1088,7 +1088,10 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     try {
       await windowManager.hide();
     } catch (_) {}
-    await AppExit.prepareForExit();
+    // A stuck teardown shouldn't keep the hidden window and its process alive.
+    try {
+      await AppExit.prepareForExit().timeout(const Duration(seconds: 5));
+    } catch (_) {}
     await windowManager.destroy();
   }
 
