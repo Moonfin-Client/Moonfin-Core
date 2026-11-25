@@ -604,6 +604,11 @@ class UserPreferences extends ChangeNotifier {
     'pref_detail_show_full_date',
     'pref_detail_trailers_external',
     'pref_hide_details_media_description',
+    'pref_hide_details_media_description_movie',
+    'pref_hide_details_media_description_show',
+    'pref_hide_details_media_description_season',
+    'pref_hide_details_media_description_episode',
+    'pref_hide_details_media_description_box_set',
     'pref_detail_use_series_thumbnails',
     'pref_hide_home_media_description',
     'pref_hide_home_watch_progress',
@@ -1975,6 +1980,36 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  /// When on, media description paragraph on movie details pages is hidden.
+  static final hideDetailsMediaDescriptionMovie = Preference(
+    key: 'pref_hide_details_media_description_movie',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on TV show details pages is hidden.
+  static final hideDetailsMediaDescriptionShow = Preference(
+    key: 'pref_hide_details_media_description_show',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on season details pages is hidden.
+  static final hideDetailsMediaDescriptionSeason = Preference(
+    key: 'pref_hide_details_media_description_season',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on episode details pages and episode lists is hidden.
+  static final hideDetailsMediaDescriptionEpisode = Preference(
+    key: 'pref_hide_details_media_description_episode',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on collection / box set details pages is hidden.
+  static final hideDetailsMediaDescriptionBoxSet = Preference(
+    key: 'pref_hide_details_media_description_box_set',
+    defaultValue: false,
+  );
+
   /// When on, thumbnails on Classic details page are replaced with series thumbnail.
   static final detailUseSeriesThumbnails = Preference(
     key: 'pref_detail_use_series_thumbnails',
@@ -2036,9 +2071,13 @@ class UserPreferences extends ChangeNotifier {
       get(kidsModeEnabled) ? false : get(detailTrailersExternal);
 
   /// True means hidden. The preference is named for hiding, so Kids Mode
-  /// forces it on rather than off to leave the description out.
-  bool get effectiveHideDetailsMediaDescription =>
-      get(kidsModeEnabled) ? true : get(hideDetailsMediaDescription);
+  /// forces it on rather than off to leave the description out. Otherwise,
+  /// true if either [hideDetailsMediaDescriptionEpisode] or the legacy
+  /// [hideDetailsMediaDescription] toggle is enabled.
+  bool get effectiveHideDetailsMediaDescription => get(kidsModeEnabled)
+      ? true
+      : (get(hideDetailsMediaDescriptionEpisode) ||
+            get(hideDetailsMediaDescription));
 
   bool get effectiveDetailUseSeriesThumbnails =>
       get(kidsModeEnabled) ? false : get(detailUseSeriesThumbnails);

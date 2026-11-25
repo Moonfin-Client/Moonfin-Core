@@ -1309,9 +1309,8 @@ class _DetailContentState extends State<_DetailContent> {
   FocusNode? _headerOverviewFocusNode(AggregatedItem item) {
     if (hidesMediaDescription(
       itemType: item.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: viewModel.isSeerrOnly,
     )) {
       return null;
     }
@@ -4229,9 +4228,8 @@ class _HeaderSection extends StatelessWidget {
             item.overview!.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: prefs,
+              isSeerr: viewModel.isSeerrOnly,
             )) ...[
           const SizedBox(height: 8),
           _OverviewText(
@@ -11890,9 +11888,8 @@ bool _showsEpisodeOverview(AggregatedItem episode, UserPreferences prefs) =>
     episode.overview != null &&
     !hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
 
 bool _isReadableBookItem(AggregatedItem item) {

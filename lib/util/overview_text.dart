@@ -1,4 +1,6 @@
 
+import '../preference/user_preferences.dart';
+
 final _htmlTag = RegExp(r'<\/?[a-z0-9]*\b[^>]*>', caseSensitive: false);
 final _htmlEntity = RegExp(
   r'&(#x?[0-9a-f]+|[a-z][a-z0-9]*);',
@@ -34,11 +36,38 @@ String cleanOverview(String? input) {
   });
 }
 
-/// Whether the plot summary is being held back from someone avoiding spoilers.
-/// Only a film or an episode gives the story away, so a series or a season
-/// keeps its description whatever the setting says.
+/// Whether the plot summary is being held back from someone avoiding spoilers
+/// or opting out of descriptions on video detail pages.
 bool hidesMediaDescription({
   required String? itemType,
-  required bool hideMediaDescription,
-}) =>
-    hideMediaDescription && (itemType == 'Movie' || itemType == 'Episode');
+  UserPreferences? prefs,
+  bool? hideMediaDescription,
+  bool isSeerr = false,
+}) {
+  if (prefs != null) {
+    if (prefs.get(UserPreferences.kidsModeEnabled)) {
+      return true;
+    }
+    if (isSeerr) {
+      return false;
+    }
+    return switch (itemType) {
+      'Movie' => prefs.get(UserPreferences.hideDetailsMediaDescriptionMovie) ||
+          prefs.get(UserPreferences.hideDetailsMediaDescription),
+      'Series' || 'Show' || 'Tv' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionShow),
+      'Season' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionSeason),
+      'Episode' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionEpisode) ||
+            prefs.get(UserPreferences.hideDetailsMediaDescription),
+      'BoxSet' || 'Collection' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionBoxSet),
+      _ => false,
+    };
+  }
+
+  return !isSeerr &&
+      (hideMediaDescription ?? false) &&
+      (itemType == 'Movie' || itemType == 'Episode');
+}
