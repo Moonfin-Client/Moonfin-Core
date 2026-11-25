@@ -64,6 +64,14 @@ object ServerRebase {
         @Volatile private var owner: String? = null
 
         /**
+         * Whether the source playing now is on a server that can move (added
+         * through a redirect). Only then are its loads wrapped and watched;
+         * any other source plays on the plain data sources, as upstream.
+         */
+        @Volatile var enabled: Boolean = false
+            private set
+
+        /**
          * Sends this player's requests for the server at [from] to [to] and
          * cuts its loads still on [from]. [source] is the URL of the source
          * it plays. Returns how many loads it cut, or -1 when it installed no
@@ -108,29 +116,35 @@ object ServerRebase {
             return "${to.scheme}://${to.authority}${address.rest}"
         }
 
-        /** The player loads [url]: moves made for another source end here. */
+        /**
+         * The player loads [url], whose server can move when [canMove]: moves
+         * made for another source end here.
+         */
         @Synchronized
-        fun sourceSet(url: String?) {
+        fun sourceSet(url: String?, canMove: Boolean) {
             if (url != owner) clear()
+            enabled = canMove && url != null
         }
 
         @Synchronized
         fun clear() {
             moves = emptyList()
             owner = null
+            enabled = false
         }
 
         /** Takes over the moves of [other], whose source this player carries on. */
         fun takeOver(other: Scope) {
             if (other === this) return
-            val (taken, takenOwner) = synchronized(other) {
-                val pair = other.moves to other.owner
+            val (taken, takenOwner, takenEnabled) = synchronized(other) {
+                val state = Triple(other.moves, other.owner, other.enabled)
                 other.clear()
-                pair
+                state
             }
             synchronized(this) {
                 moves = taken
                 owner = takenOwner
+                enabled = takenEnabled
             }
         }
     }
@@ -225,13 +239,18 @@ object ServerRebase {
     }
 }
 
-/** The data sources of [inner], with their requests following the moves of [scope]. */
+/**
+ * The data sources of [inner], with their requests following the moves of
+ * [scope] when its source is on a server that can move; the plain ones of
+ * [inner] for any other source, so nothing of this runs for it.
+ */
 @OptIn(UnstableApi::class)
 class RebasingDataSourceFactory(
     private val inner: DataSource.Factory,
     private val scope: ServerRebase.Scope,
 ) : DataSource.Factory {
-    override fun createDataSource(): DataSource = RebasingDataSource(inner.createDataSource(), scope)
+    override fun createDataSource(): DataSource =
+        if (scope.enabled) RebasingDataSource(inner.createDataSource(), scope) else inner.createDataSource()
 }
 
 @OptIn(UnstableApi::class)

@@ -12,6 +12,7 @@ import 'package:server_core/server_core.dart';
 import '../auth/repositories/server_repository.dart';
 import '../data/services/connectivity_service.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../playback/media3_server_rebase.dart';
 import 'entry_address_store.dart';
 import 'entry_redirect.dart';
 import 'entry_redirect_connectivity.dart';
@@ -50,6 +51,9 @@ Future<void> registerEntryRedirect() async {
     manager.canServerMove = () =>
         getIt.isRegistered<MediaServerClient>() &&
         redirect.canMove(getIt<MediaServerClient>().baseUrl);
+    // Android: the native data source and its stall watchdog only run for
+    // such a server.
+    Media3ServerRebase.serverCanMove = manager.canServerMove;
     void lost() {
       if (watcher != null && (manager.canServerMove?.call() ?? false)) {
         unawaited(watcher.onStreamConnectionLost());

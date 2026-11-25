@@ -8,7 +8,18 @@ import 'dart:async';
 import 'package:playback_core/playback_core.dart';
 
 mixin Media3ServerRebase implements ServerRebaseBackend {
+  /// Set by `registerEntryRedirect`: whether the server of the stream about
+  /// to open can move (it was added through a redirect).
+  static bool Function()? serverCanMove;
+
   final _serverStall = StreamController<void>.broadcast();
+
+  /// Added to the native `setSource` arguments. Only for a server that can
+  /// move does the native side wrap and watch the stream's loads; any other
+  /// plays on Media3's own data sources, exactly as upstream.
+  Map<String, Object> serverRebaseSourceArgs() => {
+    'serverCanMove': serverCanMove?.call() ?? false,
+  };
 
   /// Calls the native `rebaseServer` and hands back what it answered.
   Future<int?> invokeRebaseServer(String from, String to);

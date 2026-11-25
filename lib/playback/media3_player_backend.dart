@@ -1394,6 +1394,7 @@ class Media3PlayerBackend extends PlayerBackend
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
     await _invoke<void>('setSource', {
       'url': url,
+      ...serverRebaseSourceArgs(), // entry redirect
       'headers': headers,
       'autoPlay': autoPlay,
       'startPositionMs': startPosition.inMilliseconds,

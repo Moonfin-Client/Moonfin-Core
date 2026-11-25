@@ -8,6 +8,7 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -102,9 +103,9 @@ class ServerRebaseTest {
     fun `the moves end with the source they were made for`() {
         val scope = ServerRebase.Scope()
         scope.rebase("http://h:1000", "http://h:2000", source)
-        scope.sourceSet(source)
+        scope.sourceSet(source, true)
         assertEquals("http://h:2000/x", scope.rewrite("http://h:1000/x"))
-        scope.sourceSet("http://h:2000/other")
+        scope.sourceSet("http://h:2000/other", true)
         assertNull(scope.rewrite("http://h:1000/x"))
 
         scope.rebase("http://h:1000", "http://h:2000", source)
@@ -118,7 +119,7 @@ class ServerRebaseTest {
         val to = ServerRebase.Scope()
         from.rebase("http://h:1000", "http://h:2000", source)
         to.takeOver(from)
-        to.sourceSet(source)
+        to.sourceSet(source, true)
         assertEquals("http://h:2000/x", to.rewrite("http://h:1000/x"))
         assertNull(from.rewrite("http://h:1000/x"))
     }
@@ -189,5 +190,27 @@ class ServerRebaseTest {
             delegate.release.countDown()
             load.close()
         }
+    }
+
+    @Test
+    fun onlyASourceOnAServerThatCanMoveIsWrapped() {
+        val scope = ServerRebase.Scope()
+        assertFalse(scope.enabled)
+        scope.sourceSet("http://h:1000/Videos/1/stream", false)
+        assertFalse(scope.enabled)
+        scope.sourceSet("http://h:1000/Videos/1/stream", true)
+        assertTrue(scope.enabled)
+        scope.clear()
+        assertFalse(scope.enabled)
+    }
+
+    @Test
+    fun aCarriedSourceKeepsWhetherItCanMove() {
+        val from = ServerRebase.Scope()
+        val to = ServerRebase.Scope()
+        from.sourceSet("http://h:1000/Videos/1/stream", true)
+        to.takeOver(from)
+        assertTrue(to.enabled)
+        assertFalse(from.enabled)
     }
 }

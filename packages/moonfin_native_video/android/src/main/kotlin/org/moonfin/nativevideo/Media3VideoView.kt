@@ -3574,7 +3574,7 @@ class Media3VideoView(
         val url = args["url"]?.toString()
         // entry redirect: The same source coming back (a resume or a handover) keeps the
         // moves made for it; anything else is built from the current address.
-        serverRebase.sourceSet(url) // entry redirect
+        serverRebase.sourceSet(url, args["serverCanMove"] == true) // entry redirect
         if (url == null) return
         cancelRateStartup()
         frameTiming.reset()
