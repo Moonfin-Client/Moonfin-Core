@@ -5866,7 +5866,7 @@
     },
     "adminReposEmpty": "Nėra sukonfigūruotų saugyklų",
     "adminReposEmptySubtitle": "Pridėkite saugyklą, kad galėtumėte naršyti galimus papildinius",
-    "adminReposUnnamed": "(be vardo)",
+    "adminReposUnnamed": "(be pavadinimo)",
     "adminReposEditTitle": "Redaguoti saugyklą",
     "adminReposAddTitle": "Pridėti saugyklą",
     "adminReposUrl": "Saugyklos URL",
@@ -9718,5 +9718,14 @@
     "pluginConnected": "Prisijungta",
     "@pluginConnected": {
         "description": "Status line on the Settings Sync screen when the server plugin answers"
+    },
+    "achievementsQuestReward": "+{points}",
+    "@achievementsQuestReward": {
+        "description": "Points a quest pays out",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
     }
 }
