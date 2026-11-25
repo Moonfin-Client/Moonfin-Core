@@ -3668,11 +3668,11 @@
     "@configureImageTypeForEachRow": {
         "description": "Description for per-row image type selection"
     },
-    "mergeContinueWatchingAndNextUp": "Sujunkite Tęsti žiūrėjimą ir Kitas",
+    "mergeContinueWatchingAndNextUp": "Sujungti Tęsti žiūrėjimą ir Kitas",
     "@mergeContinueWatchingAndNextUp": {
         "description": "Setting for merging continue watching and next up"
     },
-    "combineBothRows": "Sujunkite abi eilutes į vieną namų skyrių",
+    "combineBothRows": "Sujungti abi eilutes į vieną pagrindinio ekrano skiltį",
     "@combineBothRows": {
         "description": "Description for merge continue watching and next up"
     },
