@@ -526,10 +526,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       return;
     }
     if (item != null) {
+      final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
       bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
-      if (item.type == 'Playlist' &&
-          _viewModel.tracks.isNotEmpty &&
-          _lastFocusedBackdropItemId == null) {
+      if (useTrackBackdrop && _lastFocusedBackdropItemId == null) {
         needInitialBackdrop = true;
       }
 
@@ -537,9 +536,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _lastDetailBackdropItemId = item.id;
         _focusedPrimaryBackdropUrlCache.clear();
 
-        final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
-            ? _viewModel.tracks.first
-            : item;
+        final target = useTrackBackdrop ? _viewModel.tracks.first : item;
         if (!widget.quickLook) {
           _backgroundService.setBackground(
             target,
@@ -548,7 +545,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _backdropUrl.value = _backgroundService.currentUrl;
         }
 
-        if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {
+        if (useTrackBackdrop) {
           _onBackdropItemFocused(_viewModel.tracks.first);
         }
 
@@ -11564,6 +11561,14 @@ Future<bool> _anyItemHasCompletedDownload(
   }
   return false;
 }
+
+/// Only a playlist with no backdrop of its own borrows its first track's art,
+/// so one set through Change Artwork wins.
+@visibleForTesting
+bool usesFirstTrackBackdrop(AggregatedItem item, List<AggregatedItem> tracks) =>
+    item.type == 'Playlist' &&
+    tracks.isNotEmpty &&
+    item.backdropImageTags.isEmpty;
 
 /// [queue] with [parts] playing right after [target], or unchanged when the
 /// target isn't the item at [startIndex]. Public for its tests. Every
