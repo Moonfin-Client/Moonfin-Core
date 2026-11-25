@@ -3052,7 +3052,7 @@
     "@unpauseRewind": {
         "description": "Setting for rewinding a little when resuming from pause"
     },
-    "fiveSeconds": "5 sekundes",
+    "fiveSeconds": "5 sekundės",
     "@fiveSeconds": {
         "description": "Duration: 5 seconds"
     },
@@ -6571,7 +6571,7 @@
     "settingsUnpauseRewindDescription": "Kiek sekundžių reikia atsukti atkūrimą paspaudus pauzės mygtuką?",
     "settingsSkipBackLengthDescription": "Kiek sekundžių reikia grįžti atgal paspaudus atsukimo mygtuką.",
     "settingsOneSecond": "1 sekundė",
-    "settingsThreeSeconds": "3 sekundes",
+    "settingsThreeSeconds": "3 sekundės",
     "settingsFortyFiveSeconds": "45 sekundės",
     "settingsSixtySeconds": "60 sekundžių",
     "settingsSkipForwardLengthDescription": "Kiek sekundžių reikia šokti pirmyn paspaudus greito pirmyn mygtuką.",
