@@ -26,7 +26,6 @@ class EmbyUsersApi implements UsersApi {
   Future<List<AccessSchedule>?> getAccessSchedules(String userId) async =>
       const [];
 
-  // Emby has no schedule to judge.
   @override
   Future<AccessWindow?> getAccessWindow() async => null;
 

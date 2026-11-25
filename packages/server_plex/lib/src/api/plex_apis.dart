@@ -178,7 +178,6 @@ class PlexUsersApi implements UsersApi {
   Future<List<AccessSchedule>?> getAccessSchedules(String userId) async =>
       const [];
 
-  // Plex has no schedule to judge.
   @override
   Future<AccessWindow?> getAccessWindow() async => null;
 

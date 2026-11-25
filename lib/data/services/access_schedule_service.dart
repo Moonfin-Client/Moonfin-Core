@@ -99,7 +99,7 @@ class AccessScheduleService extends ChangeNotifier {
 
   /// When the allowed window the plugin last reported closes, on this
   /// device's clock. A look that gets no answer keeps the last decision,
-  /// but an allowed one only until this moment; see [_keepLastAnswer].
+  /// but an allowed one only until this moment.
   DateTime? _windowCloses;
 
   /// The next time the last known closed window opens. This lets a blocked
