@@ -344,12 +344,24 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
     } catch (_) {}
   }
 
+  static const _genreRequestCeilingAt2x = 720;
+
+  /// The card's decode ceiling: the 1024 default, or the request ceiling
+  /// where that is higher (a 4K TV), so the decode keeps what was fetched.
+  int _genreCardDecodeMaxWidth() {
+    final ceiling = artworkCeiling(
+      _genreRequestCeilingAt2x,
+      MediaQuery.devicePixelRatioOf(context),
+    );
+    return ceiling > 1024 ? ceiling : 1024;
+  }
+
   int _genreCardRequestMaxWidth() {
     final dpr = MediaQuery.devicePixelRatioOf(context);
     final requestScale = artworkDevicePixelRatio(dpr);
     final widthPx = (_cardWidth() * requestScale).round();
     // 720 up to 2x; grows only on a display denser than that (a 4K TV).
-    final maxPx = artworkCeiling(720, dpr);
+    final maxPx = artworkCeiling(_genreRequestCeilingAt2x, dpr);
     if (widthPx < 160) return 160;
     if (widthPx > maxPx) return maxPx;
     return widthPx;
@@ -496,6 +508,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
               cardFocusExpansion: _prefs.get(
                 UserPreferences.cardFocusExpansion,
               ),
+              decodeMaxWidth: _genreCardDecodeMaxWidth(),
               centerTitle: isMusic,
               onTap: () {
                 context.push(

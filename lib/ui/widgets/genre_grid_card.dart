@@ -36,6 +36,11 @@ class GenreGridCard extends StatefulWidget {
   final Color? focusColor;
   final bool cardFocusExpansion;
 
+  /// The widest decode the artwork may use, in physical pixels. A screen
+  /// that requests wider artwork than the default passes its request
+  /// ceiling, so the decode doesn't throw the extra pixels away.
+  final int decodeMaxWidth;
+
   const GenreGridCard({
     super.key,
     required this.genre,
@@ -45,6 +50,7 @@ class GenreGridCard extends StatefulWidget {
     this.centerTitle = false,
     this.focusColor,
     this.cardFocusExpansion = true,
+    this.decodeMaxWidth = 1024,
   });
 
   @override
@@ -168,6 +174,7 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                         BoundedNetworkImage(
                           imageUrl: imageUrl,
                           fadeInDuration: Duration.zero,
+                          maxWidth: widget.decodeMaxWidth,
                           errorBuilder: (_, _, _) => Container(
                             color: AppColorScheme.surface.withValues(alpha: 0.35),
                           ),
