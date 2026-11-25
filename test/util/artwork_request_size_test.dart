@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/image_source.dart';
 import 'package:moonfin/util/artwork_request_size.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 void main() {
   test('poster and landscape ladders', () {
@@ -40,6 +41,15 @@ void main() {
       artworkRequestWidth(150, appleTv4k, ArtworkShape.poster, isTv: false),
       420,
     );
+  });
+
+  test('in TV layout the request and the decode both use the TV cap', () {
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    const appleTv4k = 2.0 * 1920 / 1150;
+    // A 150 point poster covers 501 pixels on a 4K TV.
+    expect(artworkRequestWidth(150, appleTv4k, ArtworkShape.poster), 560);
+    expect(ArtworkDecode.widthFor(150, appleTv4k), 520);
   });
 
   test('a request is never narrower than the decode at any width', () {
