@@ -9731,5 +9731,10 @@
     "autoDownloadDeleteAfterDay": "1 diena po žiūrėjimo",
     "@autoDownloadDeleteAfterDay": {
         "description": "Delete-after-watching option"
+    },
+    "adminMetadataField3DFormat": "3D formatas",
+    "watchPartyPinDigits": "nuo 4 iki 8 skaičių",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
     }
 }
