@@ -120,6 +120,21 @@ extension ServerRebasePlayback on PlaybackManager {
     _reconnectRetry = null;
     _reconnectStartedAt = null;
     _beginReconnect('server-moved');
+    // The server answers at its new address already, so the first attempt
+    // goes now instead of after the backoff a lost connection waits.
+    final retry = _reconnectRetry;
+    if (retry == null || !retry.isActive || _reconnectAttempts != 0) return;
+    retry.cancel();
+    _reconnectRetry = null;
+    unawaited(
+      _runReconnect(
+        'server-moved',
+        1,
+        _viewerIntentGeneration,
+        queueService.currentItem,
+        _reconnectGeneration,
+      ),
+    );
   }
 
   /// Hook: a new backend's streams are wired up.

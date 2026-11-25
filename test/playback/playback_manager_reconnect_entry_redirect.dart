@@ -24,20 +24,17 @@ void _entryRedirectTests() {
     const to = 'http://h:2000';
     const movie2 = <String, dynamic>{'Id': 'movie-2', 'Type': 'Movie'};
 
-    test('reopens the stream when the backend follows nothing', () {
+    test('reopens at once when the backend follows nothing, without the '
+        'backoff of a lost connection', () {
       final resolver = _Resolver();
       final backend = _RebaseBackend();
       _withPlayback(resolver, player: backend, (async, manager, _, service) {
-        // Made in fake time, so its answer arrives there.
         backend.rebaseGate = Completer<bool>();
         unawaited(manager.onServerMoved(from: from, to: to));
         async.flushMicrotasks();
-        expect(backend.rebases, ['$from -> $to']);
         backend.rebaseGate.complete(false);
         async.flushMicrotasks();
-        expect(manager.isReconnecting, isTrue);
 
-        async.elapse(const Duration(seconds: 1));
         expect(resolver.requests.single.position, const Duration(minutes: 20));
       });
     });

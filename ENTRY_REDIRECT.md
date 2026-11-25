@@ -18,6 +18,7 @@ short hooks, each marked with `entry redirect` in a comment, so
 | Reachability check and player: follow while a stream is lost | `lib/entry_redirect/entry_redirect_connectivity.dart` |
 | Wiring into the app | `lib/entry_redirect/entry_redirect_module.dart` |
 | Media3 backend: rebase calls and stall events | `lib/playback/media3_server_rebase.dart` |
+| AetherEngine backend (Apple): reports a dropped source at once | `lib/playback/aether_server_rebase.dart` |
 | Player: keep playing or reopen after a move | `packages/playback_core/lib/src/playback_manager_server_rebase.dart` |
 | HTTP: retry a request that couldn't connect at the new address | `packages/server_core/lib/src/network/server_moved_interceptor.dart` |
 | HTTP: hooks the app sets | `packages/server_core/lib/src/network/server_moved.dart` |
@@ -40,6 +41,7 @@ Tests:
 | `lib/data/services/connectivity_service.dart` | `onServerUnreachable` asked after failed pings, `activeServerId` |
 | `lib/ui/screens/auth/server_select_screen.dart` | follow all entry addresses, refresh on a move |
 | `lib/playback/media3_player_backend.dart` | `with Media3ServerRebase`, `serverStalled` event |
+| `lib/playback/aether_backend.dart` | `with AetherServerRebase`, engine log line |
 | `packages/playback_core/lib/src/playback_manager.dart` | `part` file, buffering, attach, seek, dispose |
 | `packages/server_core/lib/src/network/configure_server_dio_io.dart` | adds the interceptor |
 | `packages/server_core/lib/server_core.dart` | exports `server_moved.dart` |

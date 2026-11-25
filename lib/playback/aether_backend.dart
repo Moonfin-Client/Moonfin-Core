@@ -12,6 +12,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'aether_server_rebase.dart'; // entry redirect
 import 'apple_display_cadence.dart';
 import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
@@ -28,7 +29,11 @@ import 'subtitle_fonts.dart';
 /// music, audiobooks and offline playback. Unlike the tvOS sibling there is
 /// no native player UI: Flutter owns the OSD and the video arrives through
 /// the `moonfin/aether_video` platform view.
-class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
+class AetherBackend
+    with
+        SubtitleDelayState,
+        AppleSecondarySubtitleControls,
+        AetherServerRebase // entry redirect
     implements PlayerBackend, SubtitleLoadingBackend, SecondarySubtitleBackend {
   AetherBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
@@ -194,6 +199,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
         _completedStream.add(_completed);
       case 'engineLog':
         _logEngineLine(map['line']);
+        onEngineLine(map['line']); // entry redirect
       case 'play':
       case 'pause':
       case 'seek':
