@@ -63,7 +63,7 @@ class AuthRepository {
           password: password,
         );
       }
-      return _handleAuthResult(
+      return await _handleAuthResult(
         result: result,
         client: client,
         serverId: serverId,
@@ -98,7 +98,7 @@ class AuthRepository {
           serverId: serverId,
         );
       }
-      return _handleAuthResult(
+      return await _handleAuthResult(
         result: result,
         client: client,
         serverId: serverId,

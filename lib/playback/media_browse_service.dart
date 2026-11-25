@@ -1663,14 +1663,14 @@ class MediaBrowseService {
           matches.where((i) => i.type == type).firstOrNull;
 
       final album = pick('MusicAlbum');
-      if (album != null) return resolvePlayRequest('album|$serverId|${album.id}');
+      if (album != null) return await resolvePlayRequest('album|$serverId|${album.id}');
       final artist = pick('MusicArtist') ?? pick('AlbumArtist');
       if (artist != null) {
-        return resolvePlayRequest('artist|$serverId|${artist.id}');
+        return await resolvePlayRequest('artist|$serverId|${artist.id}');
       }
       final playlist = pick('Playlist');
       if (playlist != null) {
-        return resolvePlayRequest('playlist|$serverId|${playlist.id}');
+        return await resolvePlayRequest('playlist|$serverId|${playlist.id}');
       }
       final book = matches.where((i) => i.isAudiobook).firstOrNull;
       final track =
@@ -1678,7 +1678,7 @@ class MediaBrowseService {
       if (track != null && book == null) {
         return PlayRequest(items: [track]);
       }
-      if (book != null) return resolvePlayRequest('book|$serverId|${book.id}');
+      if (book != null) return await resolvePlayRequest('book|$serverId|${book.id}');
     } catch (_) {}
     return null;
   }
