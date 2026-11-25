@@ -7829,7 +7829,7 @@
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Naršant bibliotekas slėpti su rinkiniais susietus bibliotekos elementus",
+    "hideCollectionAssociatedItems": "Slėpti kolekcijoms priskirtus bibliotekos elementus naršant bibliotekas",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
