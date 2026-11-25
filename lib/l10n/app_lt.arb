@@ -8011,7 +8011,7 @@
             }
         }
     },
-    "partOfCollectionName": "Priklauso rinkiniui {name}",
+    "partOfCollectionName": "Iš „{name}“",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
