@@ -13419,5 +13419,65 @@
     "sidebarStyleClassic": "Clásico",
     "@sidebarStyleClassic": {
         "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "detailUseSeriesThumbnails": "Usar miniaturas de la serie",
+    "@detailUseSeriesThumbnails": {
+        "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
+    },
+    "transcodeVideoRangeNotSupported": "Este monitor no es compatible con el rango dinámico de vídeo (por ejemplo, Dolby Vision/HDR).",
+    "transcodeRefFramesNotSupported": "Los fotogramas de referencia del vídeo superan los límites del reproductor.",
+    "friendsUnblock": "Desbloquear",
+    "@friendsUnblock": {
+        "description": "Action that unblocks a user"
+    },
+    "friendsUnblockBody": "¿Desbloquear {name}?",
+    "@friendsUnblockBody": {
+        "description": "Body of the dialog unblocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "countryUnitedStates": "Estados Unidos",
+    "@countryUnitedStates": {
+        "description": "Country name"
+    },
+    "seasonalRowHolidaysHint": "Desmarca una fecha festiva para ocultar su fila.",
+    "@seasonalRowHolidaysHint": {
+        "description": "Hint under the holiday checklist"
+    },
+    "holidayValentines": "Día de San Valentín",
+    "@holidayValentines": {
+        "description": "Seasonal row title for Valentine's Day"
+    },
+    "homeRowsSubtitle": "Activar o desactivar filas y cambiar su orden",
+    "@homeRowsSubtitle": {
+        "description": "Subtitle for the Home rows entry"
+    },
+    "libraryStyle": "Estilo de Biblioteca de Vídeo",
+    "@libraryStyle": {
+        "description": "Label for the setting that picks the library page header layout"
+    },
+    "upcomingCalendarsDescription": "Elige qué muestran las filas de Radarr y Sonarr.",
+    "@upcomingCalendarsDescription": {
+        "description": "Subtitle of the Upcoming Calendars settings entry"
+    },
+    "seasonalRowAllYear": "Mostrar Todo el Año",
+    "@seasonalRowAllYear": {
+        "description": "Setting that shows the seasonal row outside the holiday dates"
+    },
+    "seasonalRowAllYearDescription": "Mostrar una fila de días festivos fuera de las fechas de los días festivos, con un día festivo diferente marcado cada día.",
+    "@seasonalRowAllYearDescription": {
+        "description": "Explains the Show All Year setting for the seasonal row"
+    },
+    "watchPartyCountOnServer": "{count} en este servidor",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }
