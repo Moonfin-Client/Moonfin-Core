@@ -829,7 +829,7 @@
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
-    "sectionCountLabel": "Skyrių: {count}",
+    "sectionCountLabel": "Skiltys: {count}",
     "@sectionCountLabel": {
         "description": "Detail chip showing number of sections in audiobook",
         "placeholders": {
