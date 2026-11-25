@@ -8020,7 +8020,7 @@
             }
         }
     },
-    "viewCollection": "Peržiūrėti rinkinį",
+    "viewCollection": "Peržiūrėti kolekciją",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
