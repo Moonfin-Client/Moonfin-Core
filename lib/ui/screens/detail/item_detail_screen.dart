@@ -6554,7 +6554,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   void _focusUpTarget() {
     final upTarget = widget.upTarget;
     if (upTarget != null &&
-        upTarget.context != null &&
+        upTarget.context?.mounted == true &&
         upTarget.canRequestFocus) {
       upTarget.requestFocus();
     } else if (NavigationLayout.focusNavbarNotifier.value != null) {

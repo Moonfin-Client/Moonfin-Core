@@ -118,6 +118,20 @@ void main() {
       expect(hidesMediaDescription(itemType: 'BoxSet', prefs: prefs), isFalse);
     });
 
+    test('explicit false overrides legacy hideDetailsMediaDescription', () async {
+      final prefs = await makePrefs();
+      await prefs.set(UserPreferences.hideDetailsMediaDescription, true);
+      await prefs.set(UserPreferences.hideDetailsMediaDescriptionMovie, false);
+
+      expect(hidesMediaDescription(itemType: 'Movie', prefs: prefs), isFalse);
+      expect(hidesMediaDescription(itemType: 'Episode', prefs: prefs), isTrue);
+      expect(prefs.effectiveHideDetailsMediaDescription, isTrue);
+
+      await prefs.set(UserPreferences.hideDetailsMediaDescriptionEpisode, false);
+      expect(hidesMediaDescription(itemType: 'Episode', prefs: prefs), isFalse);
+      expect(prefs.effectiveHideDetailsMediaDescription, isFalse);
+    });
+
     test('Seerr pages stay visible even when all hide toggles are enabled', () async {
       final prefs = await makePrefs();
       await prefs.set(UserPreferences.hideDetailsMediaDescription, true);

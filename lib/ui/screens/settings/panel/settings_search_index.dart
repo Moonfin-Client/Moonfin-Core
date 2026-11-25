@@ -888,6 +888,36 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'season description',
       'collection description',
     ]),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionMovie.key,
+      l10n.hideMediaDescriptionMovie,
+      subtitle: l10n.hideMediaDescriptionMovieSubtitle,
+      keywords: ['spoiler', 'movie', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionShow.key,
+      l10n.hideMediaDescriptionShow,
+      subtitle: l10n.hideMediaDescriptionShowSubtitle,
+      keywords: ['spoiler', 'show', 'series', 'tv', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionSeason.key,
+      l10n.hideMediaDescriptionSeason,
+      subtitle: l10n.hideMediaDescriptionSeasonSubtitle,
+      keywords: ['spoiler', 'season', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionEpisode.key,
+      l10n.hideMediaDescriptionEpisode,
+      subtitle: l10n.hideMediaDescriptionEpisodeSubtitle,
+      keywords: ['spoiler', 'episode', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionBoxSet.key,
+      l10n.hideMediaDescriptionBoxSet,
+      subtitle: l10n.hideMediaDescriptionBoxSetSubtitle,
+      keywords: ['spoiler', 'collection', 'boxset', 'description', 'overview'],
+    ),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),
     navigation.leaf('pref_navbar_position', l10n.navigationStyle, keywords: [

@@ -26,6 +26,9 @@ class NouveauLandscapeMediaCard extends StatefulWidget {
   /// Compact touch-first presentation used on phones in both orientations.
   final bool compactLayout;
 
+  /// When true, omits the overview text below the title.
+  final bool hideOverview;
+
   final VoidCallback? onArtworkSelect;
   final VoidCallback? onContextAction;
   final VoidCallback? onDetailsSelect;
@@ -48,6 +51,7 @@ class NouveauLandscapeMediaCard extends StatefulWidget {
     required this.isNextUp,
     required this.suppressArtworkFocus,
     this.compactLayout = false,
+    this.hideOverview = false,
     this.onArtworkSelect,
     this.onContextAction,
     this.onDetailsSelect,
@@ -653,7 +657,7 @@ class NouveauLandscapeMediaCardState
     final textTheme = theme.textTheme;
     final foreground = AppColorScheme.onSurface;
 
-    final overview = (item.overview ?? '').trim();
+    final overview = widget.hideOverview ? '' : (item.overview ?? '').trim();
 
     if (widget.compactLayout) {
       return MouseRegion(

@@ -2076,8 +2076,9 @@ class UserPreferences extends ChangeNotifier {
   /// [hideDetailsMediaDescription] toggle is enabled.
   bool get effectiveHideDetailsMediaDescription => get(kidsModeEnabled)
       ? true
-      : (get(hideDetailsMediaDescriptionEpisode) ||
-            get(hideDetailsMediaDescription));
+      : (containsPreference(hideDetailsMediaDescriptionEpisode)
+            ? get(hideDetailsMediaDescriptionEpisode)
+            : get(hideDetailsMediaDescription));
 
   bool get effectiveDetailUseSeriesThumbnails =>
       get(kidsModeEnabled) ? false : get(detailUseSeriesThumbnails);

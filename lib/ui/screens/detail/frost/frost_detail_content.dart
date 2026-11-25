@@ -36,6 +36,7 @@ import '../../../widgets/seerr/seerr_status_pill.dart';
 import '../../../widgets/seerr_icons.dart';
 import '../../../widgets/top_toolbar.dart';
 import '../detail_layout_metrics.dart';
+import 'package:moonfin/util/overview_text.dart';
 import '../detail_page.dart';
 import '../item_detail_screen.dart';
 import '../play_item_on_screen.dart';
@@ -1901,7 +1902,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     ),
                   ),
                   if (episode.overview case final text?
-                      when text.isNotEmpty) ...[
+                      when text.isNotEmpty &&
+                          !hidesMediaDescription(
+                            itemType: episode.type,
+                            prefs: widget.prefs,
+                            isSeerr: episode.serverId == 'seerr',
+                          )) ...[
                     const SizedBox(height: 3),
                     Text(
                       text,

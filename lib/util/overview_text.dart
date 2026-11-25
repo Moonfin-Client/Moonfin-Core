@@ -1,4 +1,5 @@
 
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import '../preference/user_preferences.dart';
 
 final _htmlTag = RegExp(r'<\/?[a-z0-9]*\b[^>]*>', caseSensitive: false);
@@ -52,15 +53,18 @@ bool hidesMediaDescription({
       return false;
     }
     return switch (itemType) {
-      'Movie' => prefs.get(UserPreferences.hideDetailsMediaDescriptionMovie) ||
-          prefs.get(UserPreferences.hideDetailsMediaDescription),
+      'Movie' => _resolvedHideFlag(
+        prefs,
+        UserPreferences.hideDetailsMediaDescriptionMovie,
+      ),
       'Series' || 'Show' || 'Tv' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionShow),
       'Season' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionSeason),
-      'Episode' =>
-        prefs.get(UserPreferences.hideDetailsMediaDescriptionEpisode) ||
-            prefs.get(UserPreferences.hideDetailsMediaDescription),
+      'Episode' => _resolvedHideFlag(
+        prefs,
+        UserPreferences.hideDetailsMediaDescriptionEpisode,
+      ),
       'BoxSet' || 'Collection' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionBoxSet),
       _ => false,
@@ -71,3 +75,8 @@ bool hidesMediaDescription({
       (hideMediaDescription ?? false) &&
       (itemType == 'Movie' || itemType == 'Episode');
 }
+
+bool _resolvedHideFlag(UserPreferences prefs, Preference<bool> pref) =>
+    prefs.containsPreference(pref)
+        ? prefs.get(pref)
+        : prefs.get(UserPreferences.hideDetailsMediaDescription);

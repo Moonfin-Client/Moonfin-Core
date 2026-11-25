@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:moonfin/util/overview_text.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -1056,6 +1057,11 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
                       width: layout.cardWidth,
                       imageHeight: layout.imageHeight,
                       compactLayout: layout.compact,
+                      hideOverview: hidesMediaDescription(
+                        itemType: episode.type,
+                        prefs: widget.prefs,
+                        isSeerr: episode.serverId == 'seerr',
+                      ),
                       isNextUp: episode.id == nextUpEpisode?.id,
                       isFocused: isFocused,
                       suppressArtworkFocus:
