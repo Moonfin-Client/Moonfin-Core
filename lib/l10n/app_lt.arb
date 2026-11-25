@@ -481,7 +481,7 @@
     "@openBook": {
         "description": "Button to open a book for reading"
     },
-    "chapter": "skyrius",
+    "chapter": "Skyrius",
     "@chapter": {
         "description": "Bookmark mode label for epub format"
     },
