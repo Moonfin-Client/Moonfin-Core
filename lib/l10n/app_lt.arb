@@ -7747,7 +7747,7 @@
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 erdvinis",
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 erdvinis garsas",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
