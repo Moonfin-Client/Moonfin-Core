@@ -7751,15 +7751,15 @@
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 erdvinis",
+    "settingsMaxAudioChannels5_1": "5.1 erdvinis garsas",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
-    "settingsMaxAudioChannels6_1": "6.1 erdvinis",
+    "settingsMaxAudioChannels6_1": "6.1 erdvinis garsas",
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 erdvinis",
+    "settingsMaxAudioChannels7_1": "7.1 erdvinis garsas",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
