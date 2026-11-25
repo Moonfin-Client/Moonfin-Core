@@ -9756,5 +9756,13 @@
     },
     "settingsDateFormat": "Datos formatas",
     "dateFormatDayMonth": "Diena / Mėnuo (10 lapkr.)",
-    "dateFormatSystem": "Numatytoji lokalė"
+    "dateFormatSystem": "Numatytoji lokalė",
+    "dateFormatMonthDay": "Mėnuo / Diena (Lapkr. 10)",
+    "settingsDateFormatDescription": "Pasirinkite kalendoriaus ir išleidimo datų formatą: mėnuo–diena, diena–mėnuo arba numatytasis pagal lokalę",
+    "dateCreatedFormat": "Pridėjimo data:{date}",
+    "@dateCreatedFormat": {
+        "placeholders": {
+            "date": {}
+        }
+    }
 }
