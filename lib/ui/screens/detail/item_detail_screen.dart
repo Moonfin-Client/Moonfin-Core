@@ -11,7 +11,6 @@ import '../../widgets/identify_dialog.dart';
 import '../../widgets/media_badge.dart';
 import '../admin/admin_nav.dart' show adminServerSupported;
 import 'detail_admin_actions.dart';
-import 'detail_backdrop_target.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -537,7 +536,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _lastDetailBackdropItemId = item.id;
         _focusedPrimaryBackdropUrlCache.clear();
 
-        final target = backdropTargetFor(item, _viewModel.tracks);
+        final target = useTrackBackdrop ? _viewModel.tracks.first : item;
         if (!widget.quickLook) {
           _backgroundService.setBackground(
             target,
@@ -11562,6 +11561,14 @@ Future<bool> _anyItemHasCompletedDownload(
   }
   return false;
 }
+
+/// Only a playlist with no backdrop of its own borrows its first track's art,
+/// so one set through Change Artwork wins.
+@visibleForTesting
+bool usesFirstTrackBackdrop(AggregatedItem item, List<AggregatedItem> tracks) =>
+    item.type == 'Playlist' &&
+    tracks.isNotEmpty &&
+    item.backdropImageTags.isEmpty;
 
 /// [queue] with [parts] playing right after [target], or unchanged when the
 /// target isn't the item at [startIndex]. Public for its tests. Every
