@@ -365,8 +365,15 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
   /// click opens only the picture menu.
   bool _browserMenuOff = false;
 
+  /// The browser menu is off only over the editable avatar, so a right click
+  /// on another profile still gets it. With the pointer on no avatar it
+  /// follows focus, so the menu key opens only the picture menu.
   void _syncBrowserMenu() {
-    final off = kIsWeb && _canEdit(widget.selected);
+    final selected = widget.selected;
+    final off =
+        kIsWeb &&
+        _canEdit(selected) &&
+        (_hovered == selected || (_hovered == null && _focused));
     if (off == _browserMenuOff) return;
     _browserMenuOff = off;
     unawaited(
@@ -438,7 +445,10 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
     return Focus(
       focusNode: _node,
       autofocus: widget.autofocus,
-      onFocusChange: (focused) => setState(() => _focused = focused),
+      onFocusChange: (focused) {
+        setState(() => _focused = focused);
+        _syncBrowserMenu();
+      },
       onKeyEvent: _onKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -573,10 +583,14 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
             onEnter: (_) {
               if (widget.onEditPicture != null && _hovered != index) {
                 setState(() => _hovered = index);
+                _syncBrowserMenu();
               }
             },
             onExit: (_) {
-              if (_hovered == index) setState(() => _hovered = null);
+              if (_hovered == index) {
+                setState(() => _hovered = null);
+                _syncBrowserMenu();
+              }
             },
             child: GestureDetector(
               onTap: () {
