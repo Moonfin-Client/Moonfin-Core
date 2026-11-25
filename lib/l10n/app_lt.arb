@@ -9755,5 +9755,6 @@
         "description": "Shows the season and episode number in the Sonarr calendar row"
     },
     "settingsDateFormat": "Datos formatas",
-    "dateFormatDayMonth": "Diena / Mėnuo (10 lapkr.)"
+    "dateFormatDayMonth": "Diena / Mėnuo (10 lapkr.)",
+    "dateFormatSystem": "Sistemos numatytoji"
 }
