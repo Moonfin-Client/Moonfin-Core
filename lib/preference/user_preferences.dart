@@ -163,6 +163,7 @@ class UserPreferences extends ChangeNotifier {
     _seedClockFormatFromSystem();
     _migrateScreensaverPreferences();
     _migrateSystemImePreference();
+    _migrateHideDetailsMediaDescription();
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -345,6 +346,15 @@ class UserPreferences extends ChangeNotifier {
       return;
     }
     if (_store.get(legacy)) _store.set(style, KeyboardStyle.native);
+  }
+
+  void _migrateHideDetailsMediaDescription() {
+    final legacy = getEffectivePreference(hideDetailsMediaDescription);
+    if (!_store.containsKey(legacy.key) || !_store.get(legacy)) return;
+    final movie = getEffectivePreference(hideDetailsMediaDescriptionMovie);
+    final episode = getEffectivePreference(hideDetailsMediaDescriptionEpisode);
+    if (!_store.containsKey(movie.key)) _store.set(movie, true);
+    if (!_store.containsKey(episode.key)) _store.set(episode, true);
   }
 
   // On first run, default the 12h/24h clock to the device's locale so users in
