@@ -7825,7 +7825,7 @@
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "groupItemsIntoCollections": "Grupuoti elementus į rinkinius",
+    "groupItemsIntoCollections": "Grupuoti elementus į kolekcijas",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
