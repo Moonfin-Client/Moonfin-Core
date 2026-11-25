@@ -6609,7 +6609,7 @@
     "settingsLiveTvDirectSubtitle": "Aktivera direktuppspelning för live-tv",
     "settingsOpenGroups": "Öppna grupper",
     "settingsOpenGroupsSubtitle": "Skapa, gå med i eller hantera SyncPlay grupper",
-    "settingsSyncplayEnabled": "SyncPlay Aktiverad",
+    "settingsSyncplayEnabled": "Watch Parties",
     "settingsSyncplayEnabledSubtitle": "Aktivera funktioner för gruppvisning",
     "settingsSyncplayButton": "SyncPlay-knapp",
     "settingsSyncplayButtonSubtitle": "Visa knappen SyncPlay i navigeringsfältet",
@@ -13922,5 +13922,26 @@
     "watchPartyAlertsSubtitle": "Säg till när någon på den här servern startar en",
     "@watchPartyAlertsSubtitle": {
         "description": "Line under the Party alerts setting"
+    },
+    "navYou": "Du",
+    "@navYou": {
+        "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
+    },
+    "chatYou": "Du",
+    "@chatYou": {
+        "description": "Stands for the signed-in user in chats and member lists"
+    },
+    "settingsWatchTogetherSection": "Watch Parties",
+    "@settingsWatchTogetherSection": {
+        "description": "Section header on the Playback settings screen for SyncPlay"
+    },
+    "siloTooManyAttemptsWait": "För många försök. Försök igen om {wait}.",
+    "@siloTooManyAttemptsWait": {
+        "description": "Shown when Silo refuses a request because of too many attempts (HTTP 429); wait is siloWaitSeconds or siloWaitMinutes",
+        "placeholders": {
+            "wait": {
+                "type": "String"
+            }
+        }
     }
 }
