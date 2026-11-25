@@ -176,4 +176,51 @@ void main() {
       expect(server.requests.single.path, '/Users/u1/Images/Primary');
     });
   });
+
+  group('getAccessWindow', () {
+    test('reads the plugin window', () async {
+      final server = _FakeServer(200, {
+        'allowed': false,
+        'secondsUntilOpen': 3601,
+      });
+
+      final window = await JellyfinUsersApi(_dio(server)).getAccessWindow();
+
+      expect(server.requests.single.path, '/Moonfin/AccessWindow');
+      expect(
+        window,
+        const AccessWindow(allowed: false, untilOpen: Duration(seconds: 3601)),
+      );
+    });
+
+    test('is null for a server without the endpoint', () async {
+      final server = _FakeServer(404, 'Not Found');
+
+      expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
+    });
+
+    test('is null for a plugin that can\'t read the schedule', () async {
+      final server = _FakeServer(501, 'Not Implemented');
+
+      expect(await JellyfinUsersApi(_dio(server)).getAccessWindow(), isNull);
+    });
+
+    test('fails on a 200 that isn\'t a window, so it is asked again', () async {
+      final server = _FakeServer(200, '<html>Proxy error</html>');
+
+      expect(
+        JellyfinUsersApi(_dio(server)).getAccessWindow(),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('lets any other failure through', () async {
+      final server = _FakeServer(500, 'Error processing request.');
+
+      expect(
+        JellyfinUsersApi(_dio(server)).getAccessWindow(),
+        throwsA(isA<DioException>()),
+      );
+    });
+  });
 }

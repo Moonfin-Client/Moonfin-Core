@@ -331,6 +331,13 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                         l10n.settingsAudioPassthroughOutputIec,
                     },
                   ),
+                if (PlatformDetection.isLinux)
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.passthroughSilentFallback,
+                    title: l10n.settingsAudioPassthroughFallback,
+                    subtitle: l10n.settingsAudioPassthroughFallbackDescription,
+                    icon: Icons.volume_up,
+                  ),
                 SwitchPreferenceTile(
                   preference: UserPreferences.downmixToStereo,
                   title: l10n.downmixToStereo,

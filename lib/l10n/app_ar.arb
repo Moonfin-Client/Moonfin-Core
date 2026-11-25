@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "إعدادات NFO",
     "adminActivitySeverityAll": "كل مستويات الخطورة",
     "adminActivityDateRange": "النطاق الزمني",
-    "adminRemoveDeviceConfirm": "إزالة الجهاز '{name}'؟ سيحتاج المستخدم إلى تسجيل الدخول مرة أخرى على هذا الجهاز.",
+    "adminRemoveDeviceConfirm": "إزالة الجهاز \"{name}\"؟ سيحتاج المستخدم إلى تسجيل الدخول مرة أخرى على هذا الجهاز.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "مكتبة '{libraryName}' مضبوطة على حفظ الصور الفنية مباشرة في مجلدات الوسائط (خيار 'حفظ الصور الفنية في مجلدات الوسائط' مُفعّل). لكن Jellyfin اختبر صلاحية الكتابة ولا يملك إذنًا بكتابة الملفات في هذا المجلد:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "مكتبة \"{libraryName}\" مضبوطة على حفظ الصور الفنية مباشرة في مجلدات الوسائط (خيار 'حفظ الصور الفنية في مجلدات الوسائط' مُفعّل). لكن Jellyfin اختبر صلاحية الكتابة ولا يملك إذنًا بكتابة الملفات في هذا المجلد:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

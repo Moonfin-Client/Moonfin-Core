@@ -284,4 +284,34 @@ void main() {
       expect(UserPolicy.fromJson(json).toJson(), json);
     });
   });
+
+  group('AccessWindow.tryParse', () {
+    test('reads the plugin answer', () {
+      expect(
+        AccessWindow.tryParse({'allowed': true, 'secondsUntilClose': 3601}),
+        const AccessWindow(allowed: true, untilClose: Duration(seconds: 3601)),
+      );
+      expect(
+        AccessWindow.tryParse({'allowed': false, 'secondsUntilOpen': 60}),
+        const AccessWindow(allowed: false, untilOpen: Duration(seconds: 60)),
+      );
+    });
+
+    test('leaves out a missing or unusable duration', () {
+      expect(
+        AccessWindow.tryParse({'allowed': false, 'secondsUntilOpen': 'soon'}),
+        const AccessWindow(allowed: false),
+      );
+      expect(
+        AccessWindow.tryParse({'allowed': true, 'secondsUntilClose': -5}),
+        const AccessWindow(allowed: true),
+      );
+    });
+
+    test('is null without allowed', () {
+      expect(AccessWindow.tryParse({'secondsUntilOpen': 60}), isNull);
+      expect(AccessWindow.tryParse('Not Found'), isNull);
+      expect(AccessWindow.tryParse(null), isNull);
+    });
+  });
 }

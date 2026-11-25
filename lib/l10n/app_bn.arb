@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO সেটিংস",
     "adminActivitySeverityAll": "সব তীব্রতা",
     "adminActivityDateRange": "তারিখের পরিসর",
-    "adminRemoveDeviceConfirm": "'{name}' ডিভাইসটি সরাবেন? ব্যবহারকারীকে এই ডিভাইসে আবার সাইন ইন করতে হবে।",
+    "adminRemoveDeviceConfirm": "\"{name}\" ডিভাইসটি সরাবেন? ব্যবহারকারীকে এই ডিভাইসে আবার সাইন ইন করতে হবে।",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "আপনার '{libraryName}' লাইব্রেরিটি আর্টওয়ার্ক সরাসরি মিডিয়া ফোল্ডারে সংরক্ষণ করার জন্য কনফিগার করা আছে ('Save artwork into media folders' চালু রয়েছে)। কিন্তু Jellyfin রাইট অ্যাক্সেস পরীক্ষা করে দেখেছে যে এই ডিরেক্টরিতে ফাইল লেখার অনুমতি নেই:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "আপনার \"{libraryName}\" লাইব্রেরিটি আর্টওয়ার্ক সরাসরি মিডিয়া ফোল্ডারে সংরক্ষণ করার জন্য কনফিগার করা আছে ('Save artwork into media folders' চালু রয়েছে)। কিন্তু Jellyfin রাইট অ্যাক্সেস পরীক্ষা করে দেখেছে যে এই ডিরেক্টরিতে ফাইল লেখার অনুমতি নেই:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

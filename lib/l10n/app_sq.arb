@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Cilësimet NFO",
     "adminActivitySeverityAll": "Të gjitha nivelet",
     "adminActivityDateRange": "Intervali i datave",
-    "adminRemoveDeviceConfirm": "Të hiqet pajisja '{name}'? Përdoruesi do të duhet të hyjë sërish në këtë pajisje.",
+    "adminRemoveDeviceConfirm": "Të hiqet pajisja \"{name}\"? Përdoruesi do të duhet të hyjë sërish në këtë pajisje.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Biblioteka juaj '{libraryName}' është konfiguruar t'i ruajë grafikat drejtpërdrejt në dosjet e medias ('Ruaj grafikat në dosjet e medias' është aktiv). Megjithatë, Jellyfin testoi aksesin e shkrimit dhe nuk ka leje të shkruajë skedarë në këtë direktori:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Biblioteka juaj \"{libraryName}\" është konfiguruar t'i ruajë grafikat drejtpërdrejt në dosjet e medias ('Ruaj grafikat në dosjet e medias' është aktiv). Megjithatë, Jellyfin testoi aksesin e shkrimit dhe nuk ka leje të shkruajë skedarë në këtë direktori:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO-agordoj",
     "adminActivitySeverityAll": "Ĉiuj gravecoj",
     "adminActivityDateRange": "Datintervalo",
-    "adminRemoveDeviceConfirm": "Ĉu forigi aparaton '{name}'? La uzanto devos denove ensaluti sur ĉi tiu aparato.",
+    "adminRemoveDeviceConfirm": "Ĉu forigi aparaton \"{name}\"? La uzanto devos denove ensaluti sur ĉi tiu aparato.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Via biblioteko '{libraryName}' estas agordita por konservi bildaĵojn rekte en la aŭdvidajn dosierujojn ('Konservi bildojn en aŭdvidajn dosierujojn' estas ebligita). Tamen Jellyfin testis skribaliron kaj ne havas permeson skribi dosierojn en ĉi tiun dosierujon:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Via biblioteko \"{libraryName}\" estas agordita por konservi bildaĵojn rekte en la aŭdvidajn dosierujojn ('Konservi bildojn en aŭdvidajn dosierujojn' estas ebligita). Tamen Jellyfin testis skribaliron kaj ne havas permeson skribi dosierojn en ĉi tiun dosierujon:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {

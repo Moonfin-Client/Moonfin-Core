@@ -5629,6 +5629,14 @@
   "settingsAudioPassthroughOutputPlatform": "Automatic, system packer (AudioTrack RAW)",
   "settingsAudioPassthroughOutputIec": "App packer (AudioTrack IEC)",
   "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+  "settingsAudioPassthroughFallback": "Decode Silent Passthrough",
+  "@settingsAudioPassthroughFallback": {
+    "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+  },
+  "settingsAudioPassthroughFallbackDescription": "If the output can't play a passthrough track and stays silent, decode it on this device instead.",
+  "@settingsAudioPassthroughFallbackDescription": {
+    "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+  },
   "settingsDownmixToStereoDescription": "Mix all decoded audio down to two channels.",
   "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, including Dolby Atmos (JOC).",
   "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, including DTS:X.",

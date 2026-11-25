@@ -2739,6 +2739,12 @@ class UserPreferences extends ChangeNotifier {
     values: AudioPassthroughOutput.values,
   );
 
+  /// Linux only: decode a passthrough track when the output plays it silently.
+  static final passthroughSilentFallback = Preference(
+    key: 'pref_passthrough_silent_fallback',
+    defaultValue: true,
+  );
+
   static final downmixToStereo = Preference(
     key: 'pref_downmix_to_stereo',
     defaultValue: false,

@@ -62,6 +62,13 @@ class OfflineUsersApi implements UsersApi {
     throw offlineUnavailable('/Users/$userId/Images/Primary');
   }
 
+  // Answering null would read as a server that can't say, and lose the
+  // window for the session. Failing keeps the last answer.
+  @override
+  Future<AccessWindow?> getAccessWindow() async {
+    throw offlineUnavailable('/Moonfin/AccessWindow');
+  }
+
   // Answering with an empty configuration reads as a user who excludes
   // nothing, and a caller that caches the answer keeps that long after the
   // server is back. Failing lets them ask again.

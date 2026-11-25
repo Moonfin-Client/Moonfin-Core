@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Configuración NFO",
     "adminActivitySeverityAll": "Todas as gravidades",
     "adminActivityDateRange": "Intervalo de datas",
-    "adminRemoveDeviceConfirm": "Eliminar o dispositivo '{name}'? O usuario terá que iniciar sesión de novo neste dispositivo.",
+    "adminRemoveDeviceConfirm": "Eliminar o dispositivo \"{name}\"? O usuario terá que iniciar sesión de novo neste dispositivo.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "A túa biblioteca '{libraryName}' está configurada para gardar as ilustracións directamente nos cartafoles multimedia ('Gardar as ilustracións nos cartafoles multimedia' está activado). Non obstante, Jellyfin comprobou o acceso de escritura e non ten permiso para escribir ficheiros neste directorio:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "A túa biblioteca \"{libraryName}\" está configurada para gardar as ilustracións directamente nos cartafoles multimedia ('Gardar as ilustracións nos cartafoles multimedia' está activado). Non obstante, Jellyfin comprobou o acceso de escritura e non ten permiso para escribir ficheiros neste directorio:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
