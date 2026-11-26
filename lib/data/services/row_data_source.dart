@@ -344,12 +344,20 @@ class RowDataSource {
         return (
           response: retryResponse,
           raw: retryRaw,
-          items: normalize(retryRaw, wanted > _maxItems ? _maxItems : wanted),
+          items: await withSeriesUserData(
+            normalize(retryRaw, wanted > _maxItems ? _maxItems : wanted),
+            (_) => _client.itemsApi,
+          ),
           fetchLimit: _fullRowFetchLimit,
         );
       } catch (_) {}
     }
-    return (response: response, raw: raw, items: items, fetchLimit: fetchLimit);
+    return (
+      response: response,
+      raw: raw,
+      items: await withSeriesUserData(items, (_) => _client.itemsApi),
+      fetchLimit: fetchLimit,
+    );
   }
 
   /// The server may hold more while it filled the page it was asked for, until
