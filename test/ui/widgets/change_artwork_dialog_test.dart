@@ -58,6 +58,12 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
   final downloads = <ImageType>[];
   List<Map<String, dynamic>> remoteBackdrops = const [];
 
+  /// Every delete sent, as "itemId Type index".
+  final deletes = <String>[];
+
+  /// Holds back the next delete until it completes.
+  Completer<void>? deleteHold;
+
   @override
   Future<Map<String, dynamic>> getRemoteImages(
     String itemId, {
@@ -97,6 +103,10 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     required ImageType imageType,
     int? imageIndex,
   }) async {
+    deletes.add('$itemId ${imageType.toServerString()} $imageIndex');
+    final held = deleteHold;
+    deleteHold = null;
+    if (held != null) await held.future;
     final item = items.library[itemId]!;
     if (imageType == ImageType.backdrop) {
       final backdrops = List<String>.from(item['BackdropImageTags'] as List);
@@ -429,6 +439,49 @@ void main() {
         'Logo': 'logo',
       });
       expect(items.library['s1']!['BackdropImageTags'], ['blue', 'green']);
+    },
+  );
+
+  testWidgets(
+    'Clear All stops when the series link is followed between deletes',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Season',
+        'Name': 'Season 1',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'cover'},
+        'BackdropImageTags': ['red'],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster'},
+        'BackdropImageTags': ['blue', 'green', 'yellow'],
+      };
+      await open(tester);
+
+      final primaryDelete = Completer<void>();
+      admin.deleteHold = primaryDelete;
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      primaryDelete.complete();
+      await settle(tester);
+
+      expect(admin.deletes, ['a1 Primary null']);
+      expect(items.item['BackdropImageTags'], ['red']);
+      expect(items.library['s1']!['ImageTags'], {'Primary': 'poster'});
+      expect(items.library['s1']!['BackdropImageTags'], [
+        'blue',
+        'green',
+        'yellow',
+      ]);
     },
   );
 

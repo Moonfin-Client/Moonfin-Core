@@ -861,25 +861,35 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     setState(() {
       _actionInProgress.addAll(_supportedCategories);
     });
+    // The dialog may close, or move to another item, while Clear All waits.
+    bool stopped() {
+      if (mounted && _item.id == itemId) return false;
+      if (mounted) {
+        setState(() {
+          _actionInProgress.clear();
+        });
+      }
+      return true;
+    }
+
     // Without the full item, Clear All would skip images the card leaves out.
     if (itemId == widget.item.id) await _openingRefresh;
-    // The dialog may have closed, or moved to another item, while it waited.
-    if (!mounted) return;
-    if (_item.id != itemId) {
-      setState(() {
-        _actionInProgress.clear();
-      });
-      return;
-    }
+    if (stopped()) return;
+
+    // Read the item's images once, before a link can move the dialog on.
+    final counts = {
+      for (final category in _supportedCategories)
+        category: _getCurrentTags(category).length,
+    };
 
     try {
       final client = GetIt.instance<MediaServerClient>();
-      for (final category in _supportedCategories) {
-        final tags = _getCurrentTags(category);
-        if (tags.isEmpty) continue;
+      for (final MapEntry(key: category, value: count) in counts.entries) {
+        if (count == 0) continue;
 
         if (category == 'Backdrop') {
-          for (int i = tags.length - 1; i >= 0; i--) {
+          for (int i = count - 1; i >= 0; i--) {
+            if (stopped()) return;
             await client.adminItemsApi.deleteItemImage(
               itemId,
               imageType: ImageType.backdrop,
@@ -888,6 +898,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             _markChanged();
           }
         } else {
+          if (stopped()) return;
           await client.adminItemsApi.deleteItemImage(
             itemId,
             imageType: ImageType.fromServerString(category),
@@ -896,6 +907,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           _markChanged();
         }
       }
+      if (stopped()) return;
 
       final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
