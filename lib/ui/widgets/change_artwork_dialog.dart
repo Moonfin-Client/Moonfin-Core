@@ -851,6 +851,14 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     });
     // Without the full item, Clear All would skip images the card leaves out.
     if (itemId == widget.item.id) await _openingRefresh;
+    // The dialog may have closed, or moved to another item, while it waited.
+    if (!mounted) return;
+    if (_item.id != itemId) {
+      setState(() {
+        _actionInProgress.clear();
+      });
+      return;
+    }
 
     try {
       final client = GetIt.instance<MediaServerClient>();
