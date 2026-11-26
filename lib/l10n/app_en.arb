@@ -14363,30 +14363,6 @@
   "@personalRatingIntervalQuarter": {
     "description": "Short label for quarter-step (0.25) personal rating intervals."
   },
-  "personalRatingIntervalStarsWhole": "Whole stars (0–5)",
-  "@personalRatingIntervalStarsWhole": {
-    "description": "Picker option for rating in whole-star steps from 0 to 5."
-  },
-  "personalRatingIntervalStarsHalf": "Half stars (0.5 steps)",
-  "@personalRatingIntervalStarsHalf": {
-    "description": "Picker option for rating in half-star steps from 0 to 5."
-  },
-  "personalRatingIntervalStarsQuarter": "Quarter stars (0.25 steps)",
-  "@personalRatingIntervalStarsQuarter": {
-    "description": "Picker option for rating in quarter-star steps from 0 to 5."
-  },
-  "personalRatingIntervalNumericWhole": "Whole numbers (0–10)",
-  "@personalRatingIntervalNumericWhole": {
-    "description": "Picker option for rating in whole-number steps from 0 to 10."
-  },
-  "personalRatingIntervalNumericHalf": "Half points (0.5 steps)",
-  "@personalRatingIntervalNumericHalf": {
-    "description": "Picker option for rating in 0.5-point steps from 0 to 10."
-  },
-  "personalRatingIntervalNumericQuarter": "Quarter points (0.25 steps)",
-  "@personalRatingIntervalNumericQuarter": {
-    "description": "Picker option for rating in 0.25-point steps from 0 to 10."
-  },
   "rate": "Rate",
   "@rate": {
     "description": "Action that opens the personal rating control."

@@ -158,10 +158,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
             if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
                 _draftRating > 0) {
               setState(() {
-                _draftRating = stepPersonalRatingDown(
+                _draftRating = stepPersonalRating(
                   _draftRating,
                   PersonalRatingStyle.stars,
                   widget.intervals,
+                  up: false,
                 );
                 _ratingChanged = true;
               });
@@ -170,10 +171,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
             if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
                 _draftRating < 10) {
               setState(() {
-                _draftRating = stepPersonalRatingUp(
+                _draftRating = stepPersonalRating(
                   _draftRating,
                   PersonalRatingStyle.stars,
                   widget.intervals,
+                  up: true,
                 );
                 _ratingChanged = true;
               });
@@ -235,10 +237,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
           onPressed: _saving || _draftRating <= 0
               ? null
               : () => setState(() {
-                  _draftRating = stepPersonalRatingDown(
+                  _draftRating = stepPersonalRating(
                     _draftRating,
                     PersonalRatingStyle.numeric,
                     widget.intervals,
+                    up: false,
                   );
                   _ratingChanged = true;
                 }),
@@ -257,10 +260,11 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
           onPressed: _saving || _draftRating >= 10
               ? null
               : () => setState(() {
-                  _draftRating = stepPersonalRatingUp(
+                  _draftRating = stepPersonalRating(
                     _draftRating,
                     PersonalRatingStyle.numeric,
                     widget.intervals,
+                    up: true,
                   );
                   _ratingChanged = true;
                 }),

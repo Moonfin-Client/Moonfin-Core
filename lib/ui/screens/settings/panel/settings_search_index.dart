@@ -713,9 +713,9 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'frost',
     ]),
     if (GetIt.instance.isRegistered<MediaServerClient>() &&
-        GetIt.instance<MediaServerClient>()
-            .userLibraryApi
-            .supportsNumericUserRatings)
+        GetIt.instance<MediaServerClient>().features.supportsFractionalRatings &&
+        prefs.get(UserPreferences.personalRatingStyle) !=
+            PersonalRatingStyle.thumbs)
       details.leaf(
         'pref_personal_rating_intervals',
         l10n.personalRatingIntervals,

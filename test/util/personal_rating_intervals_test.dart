@@ -36,6 +36,7 @@ void main() {
     test('trims trailing zeros to configured precision for numeric', () {
       expect(formatPersonalRatingBadge(8.0, PersonalRatingStyle.numeric, 11), '8');
       expect(formatPersonalRatingBadge(8.5, PersonalRatingStyle.numeric, 11), '9');
+      expect(formatPersonalRatingBadge(10.0, PersonalRatingStyle.numeric, 11), '10');
       expect(formatPersonalRatingBadge(8.0, PersonalRatingStyle.numeric, 21), '8');
       expect(formatPersonalRatingBadge(8.5, PersonalRatingStyle.numeric, 21), '8.5');
       expect(formatPersonalRatingBadge(8.25, PersonalRatingStyle.numeric, 41), '8.25');
@@ -46,19 +47,23 @@ void main() {
 
   group('stepping and star taps', () {
     test('steps match configured intervals', () {
-      expect(stepPersonalRatingUp(6.0, PersonalRatingStyle.stars, 6), 8.0);
-      expect(stepPersonalRatingDown(6.0, PersonalRatingStyle.stars, 6), 4.0);
+      expect(stepPersonalRating(6.0, PersonalRatingStyle.stars, 6, up: true), 8.0);
+      expect(stepPersonalRating(6.0, PersonalRatingStyle.stars, 6, up: false), 4.0);
 
-      expect(stepPersonalRatingUp(6.0, PersonalRatingStyle.stars, 11), 7.0);
-      expect(stepPersonalRatingDown(6.0, PersonalRatingStyle.stars, 11), 5.0);
+      expect(stepPersonalRating(6.0, PersonalRatingStyle.stars, 11, up: true), 7.0);
+      expect(stepPersonalRating(6.0, PersonalRatingStyle.stars, 11, up: false), 5.0);
 
-      expect(stepPersonalRatingUp(6.0, PersonalRatingStyle.stars, 21), 6.5);
-      expect(stepPersonalRatingDown(6.0, PersonalRatingStyle.stars, 21), 5.5);
+      expect(stepPersonalRating(6.0, PersonalRatingStyle.stars, 21, up: true), 6.5);
+      expect(stepPersonalRating(6.0, PersonalRatingStyle.stars, 21, up: false), 5.5);
 
-      expect(stepPersonalRatingUp(8.0, PersonalRatingStyle.numeric, 11), 9.0);
-      expect(stepPersonalRatingUp(8.0, PersonalRatingStyle.numeric, 21), 8.5);
-      expect(stepPersonalRatingUp(8.0, PersonalRatingStyle.numeric, 41), 8.25);
-      expect(stepPersonalRatingDown(8.0, PersonalRatingStyle.numeric, 41), 7.75);
+      expect(stepPersonalRating(8.0, PersonalRatingStyle.numeric, 11, up: true), 9.0);
+      expect(stepPersonalRating(8.0, PersonalRatingStyle.numeric, 21, up: true), 8.5);
+      expect(stepPersonalRating(8.0, PersonalRatingStyle.numeric, 41, up: true), 8.25);
+      expect(stepPersonalRating(8.0, PersonalRatingStyle.numeric, 41, up: false), 7.75);
+
+      expect(stepPersonalRating(8.3, PersonalRatingStyle.numeric, 41, up: true), 8.5);
+      expect(stepPersonalRating(8.3, PersonalRatingStyle.numeric, 41, up: false), 8.25);
+      expect(stepPersonalRating(10.0, PersonalRatingStyle.numeric, 11, up: true), 10.0);
     });
 
     test('starTapRating maps fractions to whole, half, or quarter stars', () {

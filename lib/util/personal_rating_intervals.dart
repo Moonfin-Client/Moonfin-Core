@@ -1,179 +1,110 @@
-import 'dart:math' as math;
-
 import 'package:intl/intl.dart';
 
 import '../preference/preference_constants.dart';
 
-/// Default interval count on the shared 0–10 rating scale:
-/// 11 steps = 0.5-star increments (0–5) or whole-number increments (0–10).
+/// How many points the 0 to 10 rating scale is split into. The default of 11
+/// rates in half stars or whole numbers.
 const int defaultPersonalRatingIntervals = 11;
 
-const List<int> starsRatingIntervals = [6, 11, 21];
-const List<int> numericRatingIntervals = [11, 21, 41];
-
-/// Clamps [configured] to a valid interval count for [style].
+/// [configured] as one of the counts [style] offers: 6, 11 or 21 for stars and
+/// 11, 21 or 41 for numbers.
 int effectivePersonalRatingIntervals(
   PersonalRatingStyle style,
   int configured,
-) {
-  return switch (style) {
-    PersonalRatingStyle.thumbs => defaultPersonalRatingIntervals,
-    PersonalRatingStyle.stars => switch (configured) {
-      6 => 6,
-      21 || 41 => 21,
-      _ => 11,
-    },
-    PersonalRatingStyle.numeric => switch (configured) {
-      21 => 21,
-      41 => 41,
-      _ => 11,
-    },
-  };
-}
+) => switch (style) {
+  PersonalRatingStyle.thumbs => defaultPersonalRatingIntervals,
+  PersonalRatingStyle.stars => switch (configured) {
+    6 => 6,
+    21 || 41 => 21,
+    _ => 11,
+  },
+  PersonalRatingStyle.numeric => switch (configured) {
+    21 || 41 => configured,
+    _ => 11,
+  },
+};
 
-/// Step size on the 0–10 server scale for [style] and [intervals].
-double personalRatingServerStep(PersonalRatingStyle style, int intervals) {
-  final effective = effectivePersonalRatingIntervals(style, intervals);
-  return 10.0 / (effective - 1);
-}
+double _step(PersonalRatingStyle style, int intervals) =>
+    10 / (effectivePersonalRatingIntervals(style, intervals) - 1);
 
-/// Maximum decimal places shown for [style] and [intervals].
+/// How many decimals one step needs on the scale the rating shows in, which is
+/// out of five for stars.
 int personalRatingMaxDecimals(PersonalRatingStyle style, int intervals) {
-  final effective = effectivePersonalRatingIntervals(style, intervals);
-  return switch (style) {
-    PersonalRatingStyle.stars => switch (effective) {
-      6 => 0,
-      11 => 1,
-      _ => 2,
-    },
-    PersonalRatingStyle.numeric => switch (effective) {
-      11 => 0,
-      21 => 1,
-      _ => 2,
-    },
-    PersonalRatingStyle.thumbs => 0,
-  };
+  final step =
+      _step(style, intervals) / (style == PersonalRatingStyle.stars ? 2 : 1);
+  return step >= 1
+      ? 0
+      : step >= 0.5
+      ? 1
+      : 2;
 }
 
-/// Rounds [value] to [maxDecimals] decimal places and trims trailing zeros.
+/// [value] with at most [maxDecimals] decimals and no trailing zeros.
 String formatPersonalRatingNumber(
   double value,
   int maxDecimals, {
   String? locale,
-}) {
-  final factor = math.pow(10, maxDecimals).toDouble();
-  final rounded = (value * factor).round() / factor;
-  if (locale != null) {
-    final formatter = NumberFormat.decimalPattern(locale)
-      ..minimumFractionDigits = 0
-      ..maximumFractionDigits = maxDecimals;
-    return formatter.format(rounded);
-  }
-  if (maxDecimals == 0) return rounded.round().toString();
-  final fixed = rounded.toStringAsFixed(maxDecimals);
-  return fixed.replaceFirst(RegExp(r'\.?0+$'), '');
-}
+}) => (NumberFormat.decimalPattern(
+  locale,
+)..maximumFractionDigits = maxDecimals).format(value);
 
-/// Snaps a 0–10 [serverRating] to the nearest grid point for [style] and
-/// [intervals] so badges, action labels, and dialogs agree on off-grid values.
+/// [serverRating] moved to the nearest step, so the badge, the button and the
+/// dialog agree on a rating saved with finer steps.
 double snapPersonalRatingToGrid(
   double serverRating,
   PersonalRatingStyle style,
   int intervals,
 ) {
-  final step = personalRatingServerStep(style, intervals);
-  final clamped = serverRating.clamp(0.0, 10.0).toDouble();
-  final snapped = ((clamped / step).round() * step).clamp(0.0, 10.0).toDouble();
-  return (snapped * 100).round() / 100;
+  final step = _step(style, intervals);
+  return (serverRating.clamp(0.0, 10.0) / step).round() * step;
 }
 
-/// Formats a 0–10 server rating for badges/rows according to [style] and
-/// [intervals], snapping off-grid values to the active interval grid and
-/// trimming trailing zeros.
+/// A rating out of ten as its badge reads it, out of five for stars.
 String formatPersonalRatingBadge(
   double serverRating,
   PersonalRatingStyle style,
   int intervals,
 ) {
   final snapped = snapPersonalRatingToGrid(serverRating, style, intervals);
-  final maxDecimals = personalRatingMaxDecimals(style, intervals);
-  if (style == PersonalRatingStyle.stars) {
-    return '${formatPersonalRatingNumber(snapped / 2, maxDecimals)}/5';
-  }
-  return formatPersonalRatingNumber(snapped, maxDecimals);
+  final decimals = personalRatingMaxDecimals(style, intervals);
+  return style == PersonalRatingStyle.stars
+      ? '${formatPersonalRatingNumber(snapped / 2, decimals)}/5'
+      : formatPersonalRatingNumber(snapped, decimals);
 }
 
-/// Formats the compact star action button label (`★★★★`, `★★★★½`, `★★★★¼`, etc.)
-/// according to [intervals].
+/// The stars button label, such as ★★★★½, or [zeroLabel] for no stars.
 String formatPersonalStarActionLabel(
   double serverRating,
   int intervals,
   String zeroLabel,
 ) {
-  final effective = effectivePersonalRatingIntervals(
+  final snapped = snapPersonalRatingToGrid(
+    serverRating,
     PersonalRatingStyle.stars,
     intervals,
   );
-  final snappedStars =
-      snapPersonalRatingToGrid(
-        serverRating,
-        PersonalRatingStyle.stars,
-        effective,
-      ) /
-      2;
-  final subdivisions = switch (effective) {
-    6 => 1,
-    11 => 2,
-    _ => 4,
-  };
-  final snappedUnits = (snappedStars * subdivisions).round();
-  if (snappedUnits <= 0) return zeroLabel;
-  final full = snappedUnits ~/ subdivisions;
-  final remainder = snappedUnits % subdivisions;
-  final fractionGlyph = switch ((subdivisions, remainder)) {
-    (2, 1) => '½',
-    (4, 1) => '¼',
-    (4, 2) => '½',
-    (4, 3) => '¾',
-    _ => '',
-  };
-  return '${'★' * full}$fractionGlyph';
+  final quarters = (snapped * 2).round();
+  if (quarters <= 0) return zeroLabel;
+  return '${'★' * (quarters ~/ 4)}${const ['', '¼', '½', '¾'][quarters % 4]}';
 }
 
-/// Steps [current] (0–10 server scale) down to the previous grid point.
-double stepPersonalRatingDown(
+/// The step above [current] on the 0 to 10 scale, or below it when [up] is
+/// false.
+double stepPersonalRating(
   double current,
   PersonalRatingStyle style,
-  int intervals,
-) {
-  final step = personalRatingServerStep(style, intervals);
-  final next = ((current / step).ceil() - 1) * step;
-  return ((next.clamp(0.0, 10.0)) * 100).round() / 100;
+  int intervals, {
+  required bool up,
+}) {
+  final step = _step(style, intervals);
+  final index = up ? (current / step).floor() + 1 : (current / step).ceil() - 1;
+  return (index * step).clamp(0.0, 10.0);
 }
 
-/// Steps [current] (0–10 server scale) up to the next grid point.
-double stepPersonalRatingUp(
-  double current,
-  PersonalRatingStyle style,
-  int intervals,
-) {
-  final step = personalRatingServerStep(style, intervals);
-  final next = ((current / step).floor() + 1) * step;
-  return ((next.clamp(0.0, 10.0)) * 100).round() / 100;
-}
-
-/// Maps a tap at [fractionInStar] (0.0–1.0 across star [starIndex], 0..4) to
-/// a 0–10 server rating matching [intervals].
+/// The rating out of ten for a tap [fractionInStar] of the way across star
+/// [starIndex], rounded up to the next whole, half or quarter star.
 double starTapRating(int starIndex, double fractionInStar, int intervals) {
-  final effective = effectivePersonalRatingIntervals(
-    PersonalRatingStyle.stars,
-    intervals,
-  );
-  final clampedFraction = fractionInStar.clamp(0.0, 0.999999);
-  final starFraction = switch (effective) {
-    6 => 1.0,
-    11 => clampedFraction < 0.5 ? 0.5 : 1.0,
-    _ => ((clampedFraction * 4).floor() + 1) * 0.25,
-  };
-  return ((starIndex + starFraction) * 2.0).clamp(0.0, 10.0).toDouble();
+  final parts = (2 / _step(PersonalRatingStyle.stars, intervals)).round();
+  final part = (fractionInStar.clamp(0.0, 0.999) * parts).floor() + 1;
+  return (starIndex + part / parts) * 2;
 }

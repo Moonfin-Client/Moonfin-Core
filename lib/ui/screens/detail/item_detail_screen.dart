@@ -6891,12 +6891,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         : PersonalRatingStyle.thumbs;
   }
 
-  int _personalRatingIntervals() => effectivePersonalRatingIntervals(
-    _personalRatingStyle(),
-    GetIt.instance<UserPreferences>().get(
-      UserPreferences.personalRatingIntervals,
-    ),
-  );
+  int _personalRatingIntervals() =>
+      _personalRatingStyle() != PersonalRatingStyle.thumbs &&
+          viewModel.supportsFractionalRatings
+      ? GetIt.instance<UserPreferences>().get(
+          UserPreferences.personalRatingIntervals,
+        )
+      : defaultPersonalRatingIntervals;
 
   bool? _displayRatingLikes(AggregatedItem item) =>
       item.personalRatingLikes ??
@@ -13050,16 +13051,10 @@ class _PersonalRatingActionIcon extends StatelessWidget {
           Text(
             rating == null
                 ? '–'
-                : formatPersonalRatingNumber(
-                    snapPersonalRatingToGrid(
-                      rating!,
-                      PersonalRatingStyle.numeric,
-                      intervals,
-                    ),
-                    personalRatingMaxDecimals(
-                      PersonalRatingStyle.numeric,
-                      intervals,
-                    ),
+                : formatPersonalRatingBadge(
+                    rating!,
+                    PersonalRatingStyle.numeric,
+                    intervals,
                   ),
             style: TextStyle(
               color: color,
