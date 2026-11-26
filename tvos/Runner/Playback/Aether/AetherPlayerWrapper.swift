@@ -41,7 +41,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// Where a live stream can be rewound within, on the same clock as
     /// `currentTime`. Nil when it keeps nothing to go back to.
     @Published var seekableLiveRange: ClosedRange<Double>?
-    @Published internal(set) var zoomMode: ZoomMode = .fit
+    @Published var zoomMode: ZoomMode = .fit
 
     private(set) var videoView: PlatformView?
 
@@ -2244,7 +2244,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 assDisplayLink = link
             #elseif canImport(AppKit)
                 let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-                    self?.handleAssDisplayLinkTick()
+                    MainActor.assumeIsolated { self?.handleAssDisplayLinkTick() }
                 }
                 RunLoop.main.add(timer, forMode: .common)
                 assDisplayLink = timer
