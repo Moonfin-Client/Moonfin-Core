@@ -102,6 +102,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   String? _radioSeededItemId;
   bool _castOwnsTransport = false;
   double? _castDragPositionMs;
+  String? _castDragTargetId;
+  String? _castDragItemId;
   late final Listenable _castChanges = Listenable.merge([
     _castService.activeKindNotifier,
     _castService.castItemNotifier,
@@ -1540,6 +1542,14 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       _manager.setTransportInterceptor(null);
       _castOwnsTransport = false;
       _castDragPositionMs = null;
+      _castDragTargetId = null;
+      _castDragItemId = null;
+    } else if (_castDragPositionMs != null &&
+        (_castService.activeTargetNotifier.value?.id != _castDragTargetId ||
+            _castService.castItemNotifier.value?.id != _castDragItemId)) {
+      _castDragPositionMs = null;
+      _castDragTargetId = null;
+      _castDragItemId = null;
     }
     if (mounted) {
       setState(() {});
@@ -1925,8 +1935,17 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                   ? pos.inMilliseconds.toDouble().clamp(0, maxMs)
                   : 0,
               max: maxMs > 0 ? maxMs : 1,
+              onChangeStart: _castOwnsTransport
+                  ? (v) {
+                      _castDragTargetId =
+                          _castService.activeTargetNotifier.value?.id;
+                      _castDragItemId = _castService.castItemNotifier.value?.id;
+                      setState(() => _castDragPositionMs = v);
+                    }
+                  : null,
               onChanged: (v) {
                 if (_castOwnsTransport) {
+                  if (_castDragPositionMs == null) return;
                   setState(() => _castDragPositionMs = v);
                 } else {
                   _manager.seekTo(Duration(milliseconds: v.toInt()));
@@ -1934,8 +1953,21 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               },
               onChangeEnd: _castOwnsTransport
                   ? (v) {
-                      setState(() => _castDragPositionMs = null);
-                      unawaited(_manager.seekTo(Duration(milliseconds: v.toInt())));
+                      final valid = _castDragPositionMs != null &&
+                          _castService.activeTargetNotifier.value?.id ==
+                              _castDragTargetId &&
+                          _castService.castItemNotifier.value?.id ==
+                              _castDragItemId;
+                      setState(() {
+                        _castDragPositionMs = null;
+                        _castDragTargetId = null;
+                        _castDragItemId = null;
+                      });
+                      if (valid) {
+                        unawaited(
+                          _manager.seekTo(Duration(milliseconds: v.toInt())),
+                        );
+                      }
                     }
                   : null,
             ),

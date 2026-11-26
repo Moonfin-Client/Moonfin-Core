@@ -27,6 +27,7 @@ class CastService {
   final ValueNotifier<int> remotePositionNotifier = ValueNotifier(0);
   final ValueNotifier<double?> remoteVolumeNotifier = ValueNotifier(null);
   Timer? _remotePollTimer;
+  int _castGeneration = 0;
 
   /// Reports a cast to its server session where the server needs it (Silo).
   late final CastSessionReporter sessionReporter = CastSessionReporter(
@@ -97,6 +98,7 @@ class CastService {
         }
       case 'disconnected':
         if (activeKindNotifier.value == castKind) {
+          _castGeneration++;
           activeKindNotifier.value = null;
           activeTargetNotifier.value = null;
           castItemNotifier.value = null;
@@ -158,14 +160,34 @@ class CastService {
     PollableRemoteState pollable,
   ) async {
     if (activeKindNotifier.value != kind) return;
+    final generation = _castGeneration;
     try {
       final snapshot = await pollable.fetchRemoteSnapshot(kind);
-      // The target can be dropped while the request is out, and writing then
-      // would light the mini player back up for a session nobody is on.
-      if (snapshot == null || activeKindNotifier.value != kind) return;
-      if (snapshot.item != null &&
-          snapshot.item!.id != castItemNotifier.value?.id) {
-        castItemNotifier.value = snapshot.item;
+      // The target can be dropped or switched while the request is out; writing
+      // then would overwrite the new cast or revive a stopped session.
+      if (snapshot == null ||
+          generation != _castGeneration ||
+          activeKindNotifier.value != kind) {
+        return;
+      }
+      if (snapshot.item != null) {
+        final current = castItemNotifier.value;
+        if (current == null || snapshot.item!.id != current.id) {
+          castItemNotifier.value = snapshot.item;
+        } else {
+          final additions = <String, dynamic>{
+            for (final e in snapshot.item!.rawData.entries)
+              if (e.value != null && current.rawData[e.key] == null)
+                e.key: e.value,
+          };
+          if (additions.isNotEmpty) {
+            castItemNotifier.value = AggregatedItem(
+              id: current.id,
+              serverId: current.serverId,
+              rawData: {...current.rawData, ...additions},
+            );
+          }
+        }
       }
       remoteStateNotifier.value = snapshot.state;
       remotePositionNotifier.value = snapshot.positionTicks;
@@ -276,6 +298,7 @@ class CastService {
       subtitleStreamIndex: subtitleStreamIndex,
     );
 
+    _castGeneration++;
     activeTargetNotifier.value = target;
     castItemNotifier.value = item;
     activeKindNotifier.value = target.kind;
@@ -348,6 +371,7 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.stop(kind);
     if (activeKindNotifier.value == kind) {
+      _castGeneration++;
       unawaited(sessionReporter.end());
       _stopRemotePolling();
       activeKindNotifier.value = null;

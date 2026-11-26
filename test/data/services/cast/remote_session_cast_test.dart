@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/services/cast/cast_provider.dart';
@@ -64,6 +66,7 @@ class _FakeRemoteProvider
         PollableRemoteState {
   final commands = <String>[];
   RemotePlaybackSnapshot? snapshot;
+  Future<RemotePlaybackSnapshot?> Function()? onFetchSnapshot;
 
   @override
   Set<CastTargetKind> get supportedKinds => {CastTargetKind.jellyfinSession};
@@ -117,7 +120,7 @@ class _FakeRemoteProvider
   @override
   Future<RemotePlaybackSnapshot?> fetchRemoteSnapshot(
     CastTargetKind kind,
-  ) async => snapshot;
+  ) async => onFetchSnapshot != null ? onFetchSnapshot!() : snapshot;
 }
 
 class _NoSkipProvider implements CastProvider, CastTransportControls {
@@ -328,5 +331,91 @@ void main() {
     expect(snap.item?.id, 'track-2');
     expect(snap.item?.name, 'Us and Them');
     expect(snap.item?.serverId, 'srv-1');
+  });
+
+  test('polling merges missing RunTimeTicks into same-ID item without losing metadata',
+      () async {
+    final provider = _FakeRemoteProvider();
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+
+    final partial = AggregatedItem(
+      id: 'track-1',
+      serverId: 'srv-1',
+      rawData: const {
+        'Id': 'track-1',
+        'Name': 'Money',
+        'Type': 'Audio',
+        'MediaStreams': [
+          {'Type': 'Audio', 'Codec': 'flac'},
+        ],
+      },
+    );
+    provider.snapshot = RemotePlaybackSnapshot(
+      state: 'playing',
+      positionTicks: 100000000,
+      item: AggregatedItem(
+        id: 'track-1',
+        serverId: 'srv-1',
+        rawData: const {
+          'Id': 'track-1',
+          'Name': 'Money',
+          'Type': 'Audio',
+          'RunTimeTicks': 3890000000,
+        },
+      ),
+    );
+
+    await service.playToTarget(target, item: partial);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.castItemNotifier.value?.runTimeTicks, 3890000000);
+    expect(service.castItemNotifier.value?.mediaStreams, hasLength(1));
+  });
+
+  test('stale in-flight poll from previous cast target is ignored after switch',
+      () async {
+    final completerA = Completer<RemotePlaybackSnapshot?>();
+    var calls = 0;
+    final provider = _FakeRemoteProvider();
+    provider.onFetchSnapshot = () {
+      calls++;
+      if (calls == 1) return completerA.future;
+      return Future.value(
+        RemotePlaybackSnapshot(
+          state: 'playing',
+          positionTicks: 200000000,
+          item: track2,
+        ),
+      );
+    };
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+
+    const targetB = CastTarget(
+      id: 'tv-session-2',
+      kind: CastTargetKind.jellyfinSession,
+      title: 'Bedroom TV',
+      subtitle: 'Moonfin for Android TV',
+    );
+
+    await service.playToTarget(target, item: track1);
+    await service.playToTarget(targetB, item: track2);
+    await Future<void>.delayed(Duration.zero);
+
+    // Now resolve the stale poll from target A; it must not overwrite target B.
+    completerA.complete(
+      RemotePlaybackSnapshot(
+        state: 'paused',
+        positionTicks: 999000000,
+        item: track1,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.activeTargetNotifier.value?.id, 'tv-session-2');
+    expect(service.castItemNotifier.value?.id, 'track-2');
+    expect(service.remoteStateNotifier.value, 'playing');
+    expect(service.remotePositionNotifier.value, 200000000);
   });
 }
