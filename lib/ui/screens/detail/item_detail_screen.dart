@@ -1041,15 +1041,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   }
 }
 
-/// What the page last picked its backdrop for: the artwork [backgrounds] would
-/// show behind [item], whether that is the item's own backdrop, its parent's or
-/// its cover. A reload after Change Artwork brings new tags for that artwork,
-/// so it picks again; a favourite or other user data change keeps them, so it
-/// doesn't.
-@visibleForTesting
-String detailBackdropKey(BackgroundService backgrounds, AggregatedItem item) =>
-    backgrounds.backdropUrlsFor(item).join('|');
-
 /// The Classic layout on its own, so a test can drive its focus without
 /// standing up everything the full screen reaches for.
 @visibleForTesting
@@ -11590,6 +11581,12 @@ bool usesFirstTrackBackdrop(AggregatedItem item, List<AggregatedItem> tracks) =>
     item.type == 'Playlist' &&
     tracks.isNotEmpty &&
     item.backdropImageTags.isEmpty;
+
+/// A reload after Change Artwork keeps the item's id but brings new image tags,
+/// so the page picks its backdrop again when either changes.
+@visibleForTesting
+String detailBackdropKey(BackgroundService backgrounds, AggregatedItem item) =>
+    '${item.id}|${backgrounds.backdropUrlsFor(item).join('|')}';
 
 /// [queue] with [parts] playing right after [target], or unchanged when the
 /// target isn't the item at [startIndex]. Public for its tests. Every

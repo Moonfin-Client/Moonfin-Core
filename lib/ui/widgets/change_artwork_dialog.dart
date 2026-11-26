@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +15,7 @@ import '../../util/image_mime.dart';
 import '../../util/platform_detection.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../auth/repositories/session_repository.dart';
-
 import 'package:dio/dio.dart';
-
 import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_wrapper.dart';
 import 'overlay_sheet.dart';
@@ -33,20 +30,17 @@ class ImageDimensions {
 
 class ChangeArtworkDialog extends StatefulWidget {
   final AggregatedItem item;
-
-  /// Called each time the dialog saves or removes artwork.
   final VoidCallback? onChanged;
 
   const ChangeArtworkDialog({super.key, required this.item, this.onChanged});
 
-  /// Resolves to true when any artwork was changed, whether the dialog was
-  /// shut with its close button, back, Escape or a tap outside it.
-  static Future<bool?> show(
+  /// True when any artwork changed, however the dialog was closed.
+  static Future<bool> show(
     BuildContext context, {
     required AggregatedItem item,
   }) async {
     var changed = false;
-    await showFocusRestoringDialog<bool>(
+    await showFocusRestoringDialog<void>(
       context: context,
       builder: (_) =>
           ChangeArtworkDialog(item: item, onChanged: () => changed = true),
@@ -188,7 +182,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     for (final category in _supportedCategories) {
       _fetchRemoteImages(category);
     }
-    _refreshItemMetadata(_item);
+    _refreshItemMetadata();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusFirstItem();
       _checkLibrariesWriteAccess();
@@ -227,46 +221,21 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     widget.onChanged?.call();
   }
 
-  /// The latest fetch started for each item, so an older answer that comes back
-  /// last does not undo a newer one.
-  final Map<String, int> _refreshGenerations = {};
-
-  int _startRefresh(String itemId) =>
-      _refreshGenerations[itemId] = (_refreshGenerations[itemId] ?? 0) + 1;
-
-  /// [item] as the dialog last saw it, which a refresh may have replaced.
-  AggregatedItem _latestOf(AggregatedItem item) {
-    if (_item.id == item.id) return _item;
-    for (final entry in _history) {
-      if (entry.id == item.id) return entry;
-    }
-    return item;
-  }
-
-  void _applyRefreshedItem(
-    AggregatedItem item,
-    Map<String, dynamic> rawData,
-    int generation,
-  ) {
-    if (_refreshGenerations[item.id] != generation) return;
-    final refreshed = AggregatedItem(
-      id: item.id,
-      serverId: item.serverId,
-      rawData: rawData,
-    );
-    for (var i = 0; i < _history.length; i++) {
-      if (_history[i].id == item.id) _history[i] = refreshed;
-    }
-    if (_item.id == item.id) _item = refreshed;
-  }
-
-  Future<void> _refreshItemMetadata(AggregatedItem item) async {
+  Future<void> _refreshItemMetadata() async {
     try {
       final client = GetIt.instance<MediaServerClient>();
-      final generation = _startRefresh(item.id);
-      final updatedRaw = await client.itemsApi.getItem(item.id);
+      final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
-        setState(() => _applyRefreshedItem(item, updatedRaw, generation));
+        setState(() {
+          _item = AggregatedItem(
+            id: _item.id,
+            serverId: _item.serverId,
+            rawData: updatedRaw,
+          );
+          if (_historyIndex >= 0 && _historyIndex < _history.length) {
+            _history[_historyIndex] = _item;
+          }
+        });
       }
     } catch (e) {
       debugPrint('Failed to refresh item metadata: $e');
@@ -518,13 +487,11 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     }
   }
 
-  List<String> _getCurrentTags(String category) => _tagsOf(_item, category);
-
-  static List<String> _tagsOf(AggregatedItem item, String category) {
+  List<String> _getCurrentTags(String category) {
     if (category == 'Backdrop') {
-      return item.backdropImageTags;
+      return _item.backdropImageTags;
     }
-    final tag = (item.rawData['ImageTags'] as Map?)?[category] as String?;
+    final tag = (_item.rawData['ImageTags'] as Map?)?[category] as String?;
     return tag != null ? [tag] : [];
   }
 
@@ -550,8 +517,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _checkLibrariesWriteAccess() async {
-    final isAdmin =
-        GetIt.instance<UserRepository>().currentUser?.isAdministrator ?? false;
+    final isAdmin = GetIt.instance<UserRepository>().currentUser?.isAdministrator ?? false;
     if (!isAdmin) return;
 
     final sessionRepo = GetIt.instance<SessionRepository>();
@@ -566,9 +532,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final response = await dio.get(
         '${client.baseUrl}/Moonfin/Libraries/CheckWriteAccess',
-        options: Options(
-          headers: {'Authorization': 'MediaBrowser Token="$token"'},
-        ),
+        options: Options(headers: {
+          'Authorization': 'MediaBrowser Token="$token"',
+        }),
       );
       sessionRepo.hasCheckedWriteAccess = true;
 
@@ -595,14 +561,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           }
 
           if (matchingFailedReport != null && mounted) {
-            final libraryName =
-                matchingFailedReport['LibraryName'] ?? 'Library';
+            final libraryName = matchingFailedReport['LibraryName'] ?? 'Library';
             final l10n = AppLocalizations.of(context);
             await _showWriteAccessWarningDialog(
-              l10n.libraryWriteAccessProactiveBody(
-                libraryName.toString(),
-                matchingFailedPath ?? '',
-              ),
+              l10n.libraryWriteAccessProactiveBody(libraryName.toString(), matchingFailedPath ?? ''),
             );
           }
         }
@@ -648,8 +610,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         'upload' => l10n.imageUploadFailed(detail),
         _ => detail,
       };
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
     }
   }
 
@@ -700,8 +663,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   Future<void> _fetchRemoteImages(String category) async {
     if (!mounted) return;
-    final isGenre =
-        _item.type?.toLowerCase() == 'genre' ||
+    final isGenre = _item.type?.toLowerCase() == 'genre' ||
         _item.type?.toLowerCase() == 'musicgenre';
     if (isGenre) {
       setState(() {
@@ -745,7 +707,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   ) async {
     final url = remoteImage['Url'] as String?;
     if (url == null || url.isEmpty) return;
-    final item = _item;
 
     setState(() {
       _actionInProgress.add(category);
@@ -754,17 +715,23 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       await client.adminItemsApi.downloadRemoteImage(
-        item.id,
+        _item.id,
         imageType: ImageType.fromServerString(category),
         imageUrl: url,
       );
       _markChanged();
 
-      final generation = _startRefresh(item.id);
-      final updatedRaw = await client.itemsApi.getItem(item.id);
+      final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
         setState(() {
-          _applyRefreshedItem(item, updatedRaw, generation);
+          _item = AggregatedItem(
+            id: _item.id,
+            serverId: _item.serverId,
+            rawData: updatedRaw,
+          );
+          if (_historyIndex >= 0 && _historyIndex < _history.length) {
+            _history[_historyIndex] = _item;
+          }
           _actionInProgress.remove(category);
         });
       }
@@ -808,7 +775,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _deleteImage(String category, {int? imageIndex}) async {
-    final item = _item;
     final confirm = await _showConfirmClear(category);
     if (!confirm) return;
 
@@ -819,17 +785,23 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       await client.adminItemsApi.deleteItemImage(
-        item.id,
+        _item.id,
         imageType: ImageType.fromServerString(category),
         imageIndex: imageIndex,
       );
       _markChanged();
 
-      final generation = _startRefresh(item.id);
-      final updatedRaw = await client.itemsApi.getItem(item.id);
+      final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
         setState(() {
-          _applyRefreshedItem(item, updatedRaw, generation);
+          _item = AggregatedItem(
+            id: _item.id,
+            serverId: _item.serverId,
+            rawData: updatedRaw,
+          );
+          if (_historyIndex >= 0 && _historyIndex < _history.length) {
+            _history[_historyIndex] = _item;
+          }
           _actionInProgress.remove(category);
         });
       }
@@ -845,8 +817,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   Future<void> _clearAllArtwork() async {
     final l10n = AppLocalizations.of(context);
-    final item = _item;
-    final categories = _supportedCategories;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog.adaptive(
@@ -869,23 +839,22 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       ),
     );
 
-    if (confirm != true || _actionInProgress.isNotEmpty) return;
+    if (confirm != true) return;
 
     setState(() {
-      _actionInProgress.addAll(categories);
+      _actionInProgress.addAll(_supportedCategories);
     });
 
     try {
       final client = GetIt.instance<MediaServerClient>();
-      for (final category in categories) {
-        // The opening fetch may land at any point before or during the loop.
-        final tags = _tagsOf(_latestOf(item), category);
+      for (final category in _supportedCategories) {
+        final tags = _getCurrentTags(category);
         if (tags.isEmpty) continue;
 
         if (category == 'Backdrop') {
           for (int i = tags.length - 1; i >= 0; i--) {
             await client.adminItemsApi.deleteItemImage(
-              item.id,
+              _item.id,
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
@@ -893,7 +862,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           }
         } else {
           await client.adminItemsApi.deleteItemImage(
-            item.id,
+            _item.id,
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
@@ -901,18 +870,24 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         }
       }
 
-      final generation = _startRefresh(item.id);
-      final updatedRaw = await client.itemsApi.getItem(item.id);
+      final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
         setState(() {
-          _applyRefreshedItem(item, updatedRaw, generation);
-          _actionInProgress.removeAll(categories);
+          _item = AggregatedItem(
+            id: _item.id,
+            serverId: _item.serverId,
+            rawData: updatedRaw,
+          );
+          if (_historyIndex >= 0 && _historyIndex < _history.length) {
+            _history[_historyIndex] = _item;
+          }
+          _actionInProgress.clear();
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _actionInProgress.removeAll(categories);
+          _actionInProgress.clear();
         });
         await _handleActionError(e, 'clear');
       }
@@ -920,11 +895,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _uploadLocalImage(String category) async {
-    // One write per row at a time, so the row's in-progress entry, which keeps
-    // the dialog open, lasts until the last save into it finishes.
-    if (_actionInProgress.contains(category)) return;
     final l10n = AppLocalizations.of(context);
-    final item = _item;
     try {
       final result = await FilePicker.pickFiles(
         type: FileType.image,
@@ -953,8 +924,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       if (fileBytes == null) {
         throw 'Could not read file bytes';
       }
-      // Another upload into this row may have started while the picker was open.
-      if (_actionInProgress.contains(category)) return;
 
       setState(() {
         _actionInProgress.add(category);
@@ -962,22 +931,23 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
       final client = GetIt.instance<MediaServerClient>();
       await client.adminItemsApi.uploadItemImage(
-        item.id,
+        _item.id,
         imageType: ImageType.fromServerString(category),
         bytes: fileBytes,
         contentType: mimeType,
       );
       _markChanged();
-      // Picks up the new tag, so the row shows the upload, not "Missing".
-      await _refreshItemMetadata(item);
+      // The row keeps saying Missing until the item brings the new tag.
+      await _refreshItemMetadata();
 
       if (mounted) {
         _fetchRemoteImages(category);
         setState(() {
           _actionInProgress.remove(category);
         });
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.imageUploadSuccess)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.imageUploadSuccess)));
       }
     } catch (e) {
       if (mounted) {
@@ -1274,31 +1244,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final saving = _actionInProgress.isNotEmpty;
 
-    // The dialog stays open while a save runs, so show() can still report it
-    // and the caller reloads once the server has the new artwork. PopScope
-    // stops back and tap-outside; showFocusRestoringDialog pops on back keys
-    // itself, bypassing PopScope, so this Focus swallows them first.
-    return PopScope(
-      canPop: !saving,
-      child: Focus(
-        canRequestFocus: false,
-        skipTraversal: true,
-        onKeyEvent: (_, event) => _actionInProgress.isNotEmpty
-            ? handleBackKeyAction(event, () {})
-            : KeyEventResult.ignored,
-        child: _buildDialog(context, l10n, theme, saving),
-      ),
-    );
-  }
-
-  Widget _buildDialog(
-    BuildContext context,
-    AppLocalizations l10n,
-    ThemeData theme,
-    bool saving,
-  ) {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -1415,9 +1361,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                       disableScale: true,
                       borderRadius: 8,
                       suppressFocusGlow: true,
-                      onSelect: saving
-                          ? null
-                          : () => Navigator.pop(context, _hasChanged),
+                      onSelect: () => Navigator.pop(context),
                       onNavigateDown: () =>
                           _getFirstFilterFocusNode().requestFocus(),
                       onNavigateLeft: () =>
@@ -1426,12 +1370,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                           () {}, // Block focus leaving to the right
                       child: Padding(
                         padding: const EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.close,
-                          color: saving
-                              ? Theme.of(context).disabledColor
-                              : null,
-                        ),
+                        child: const Icon(Icons.close),
                       ),
                     ),
                   ],
@@ -1549,7 +1488,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     return FocusableWrapper(
       key: const ValueKey('clear_all_artwork_button'),
       focusNode: _clearAllFocusNode,
-      onSelect: _actionInProgress.isNotEmpty ? null : _clearAllArtwork,
+      onSelect: _clearAllArtwork,
       borderRadius: 8,
       suppressFocusGlow: true,
       onNavigateLeft: () {
@@ -1629,8 +1568,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     final remoteList = _remoteImages[category] ?? [];
     final error = _categoryErrors[category];
     final dims = _getImageDimensions(category);
-    final interfaceLang = Localizations.localeOf(context).languageCode
-        .toLowerCase();
+    final interfaceLang = Localizations.localeOf(
+      context,
+    ).languageCode.toLowerCase();
 
     final filteredRemoteList = remoteList.where((img) {
       if (!_shouldShowImageByLanguage(img, interfaceLang)) {
@@ -1818,9 +1758,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             itemCount: totalCount,
             itemBuilder: (context, i) {
               final isFirst = (i == 0);
-              final cardNode = isFirst
-                  ? _getFirstCardFocusNode(category)
-                  : null;
+              final cardNode = isFirst ? _getFirstCardFocusNode(category) : null;
 
               if (i < currentCount) {
                 if (currentTags.isEmpty) {
@@ -1879,8 +1817,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     final remoteList = _remoteImages[category] ?? [];
     final error = _categoryErrors[category];
     final dims = _getImageDimensions(category);
-    final interfaceLang = Localizations.localeOf(context).languageCode
-        .toLowerCase();
+    final interfaceLang = Localizations.localeOf(
+      context,
+    ).languageCode.toLowerCase();
 
     final filteredRemoteList = remoteList.where((img) {
       if (!_shouldShowImageByLanguage(img, interfaceLang)) {
