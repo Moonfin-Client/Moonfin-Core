@@ -51,21 +51,6 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
     await _syncService.refreshAvailability(client);
   }
 
-  Future<void> _toggleSync() async {
-    await _prefs.set(
-      UserPreferences.pluginSyncEnabled,
-      !_prefs.get(UserPreferences.pluginSyncEnabled),
-    );
-    if (!mounted) return;
-    setState(() {});
-    if (_syncService.pluginAvailable) {
-      _syncService.pushSettings(
-        GetIt.instance<MediaServerClient>(),
-        force: true,
-      );
-    }
-  }
-
   Future<void> _selectProfile(String profile) async {
     if (_profileSyncBusy) return;
     await _syncService.setSyncProfile(profile);
@@ -132,7 +117,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
     setState(() => _profileSyncBusy = true);
     final client = GetIt.instance<MediaServerClient>();
     final profile = _syncService.syncProfile;
-    await _syncService.pushSettingsForProfile(
+    final result = await _syncService.pushSettingsForProfile(
       client,
       profile: profile,
       force: true,
@@ -143,9 +128,11 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          l10n.syncedSettingsToProfile(_profileLabel(profile, l10n)),
-        ),
+        content: Text(switch (result) {
+          ProfilePushResult.saved => l10n.syncedSettingsToProfile(_profileLabel(profile, l10n)),
+          ProfilePushResult.savedWithPinErrors => l10n.profileSavedWithPinErrors,
+          ProfilePushResult.failed => l10n.friendsSaveFailed,
+        }),
       ),
     );
   }
@@ -255,7 +242,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
 
     return _SyncCard(
       autofocus: true,
-      onTap: _toggleSync,
+      onTap: () => _syncService.setSyncEnabled(!syncEnabled),
       builder: (context, focused) {
         final theme = Theme.of(context);
         final inverted = _inverts(focused);
@@ -321,7 +308,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                     ExcludeFocus(
                       child: Switch.adaptive(
                         value: syncEnabled,
-                        onChanged: (_) => _toggleSync(),
+                        onChanged: _syncService.setSyncEnabled,
                       ),
                     ),
                     Text(

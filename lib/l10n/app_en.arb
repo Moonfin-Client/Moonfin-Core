@@ -6084,6 +6084,7 @@
       }
     }
   },
+  "profileSavedWithPinErrors": "Profile saved. Some guide pins could not be synced.",
   "syncing": "Syncing...",
   "@syncing": {
     "description": "Label while syncing"
