@@ -47,6 +47,9 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   bool? _admin;
   int? _userId;
 
+  /// Older Silo servers leave this out of the request status.
+  bool _removeFailedSupported = false;
+
   final Random _random = Random();
 
   /// Pages skipped at the start of a row on this visit, by row key, so the
@@ -141,6 +144,16 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
 
   int get _me => _userId ?? 0;
 
+  /// Silo removes a request only when it failed with nothing delivered. It also
+  /// needs the owner or an admin, and these lists only hold the viewer's own
+  /// requests unless they're an admin.
+  bool _removable(Map r) {
+    if (!_removeFailedSupported || r['outcome'] != 'failed') return false;
+    final targets = r['targets'];
+    return !(targets is List &&
+        targets.any((t) => t is Map && t['status'] == 'completed'));
+  }
+
   // Silo's requests name their requester by account id only.
   String? _myName;
   final Map<int, String> _accountNames = {};
@@ -197,6 +210,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   @override
   Future<MoonfinStatusResponse> getMoonfinStatus() async {
     final status = await _get('/requests/status');
+    _removeFailedSupported = status['remove_failed_supported'] == true;
     final enabled = status['requests_enabled'] == true;
     final allowed = status['allowed'] != false;
     final user = enabled ? await getCurrentUser() : null;
@@ -946,6 +960,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       'updatedAt': updatedAt,
       'type': type,
       'is4k': false,
+      'canRemove': _removable(r),
       'media': {
         'id': r['tmdb_id'],
         'mediaType': type,
@@ -1127,6 +1142,17 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   Future<void> deleteRequest(int requestId) async {
     final id = Uri.encodeComponent(_requestId(requestId));
     await _mutate(() => _dio.post<dynamic>('$_api/requests/$id/cancel', data: {}));
+  }
+
+  /// A 404 means the request is already gone, which is what was asked for.
+  @override
+  Future<void> removeFailedRequest(int requestId) async {
+    final id = Uri.encodeComponent(_requestId(requestId));
+    try {
+      await _mutate(() => _dio.delete<dynamic>('$_api/requests/$id'));
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 404) rethrow;
+    }
   }
 
   Future<void> _adminAction(int requestId, String action) async {

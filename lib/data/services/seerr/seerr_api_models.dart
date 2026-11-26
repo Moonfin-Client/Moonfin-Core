@@ -50,6 +50,9 @@ class SeerrRequest {
   final bool is4k;
   final List<SeerrSeasonRequest>? seasons;
 
+  /// A failed Silo request with nothing delivered, which the viewer may delete.
+  final bool canRemove;
+
   const SeerrRequest({
     required this.id,
     required this.status,
@@ -63,6 +66,7 @@ class SeerrRequest {
     this.externalId,
     this.is4k = false,
     this.seasons,
+    this.canRemove = false,
   });
 
   factory SeerrRequest.fromJson(Map<String, dynamic> json) =>

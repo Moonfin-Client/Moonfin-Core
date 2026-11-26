@@ -346,6 +346,11 @@ class SeerrHttpClient {
     _requireSuccess(response, 'deleteRequest');
   }
 
+  /// Only Silo can delete a failed request.
+  Future<void> removeFailedRequest(int requestId) async {
+    throw UnsupportedError('removeFailedRequest');
+  }
+
   Future<void> approveRequest(int requestId) async {
     await _postRequestAction(
       requestId,

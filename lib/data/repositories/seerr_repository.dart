@@ -815,6 +815,9 @@ class SeerrRepository {
   Future<void> retryRequest(int requestId) =>
       _withClient((c) => c.retryRequest(requestId));
 
+  Future<void> removeFailedRequest(int requestId) =>
+      _withClient((c) => c.removeFailedRequest(requestId));
+
   Future<SeerrRequestCounts> getRequestCount() => _withClient(
     (c) async => SeerrRequestCounts.fromJson(await c.getRequestCount()),
   );
