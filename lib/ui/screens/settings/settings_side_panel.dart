@@ -90,6 +90,7 @@ import 'live_preview/settings_live_preview.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/nav_styles/nav_style_labels.dart';
 import '../../widgets/downloads_nav_slot.dart';
 import '../../widgets/support_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';

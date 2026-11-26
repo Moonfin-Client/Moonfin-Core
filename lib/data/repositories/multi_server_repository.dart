@@ -1059,6 +1059,14 @@ class MultiServerRepository {
     var uniqueCombined = combined
         .where((item) => seen.add('${item.serverId}_${item.id}'))
         .toList();
+    // Looked up once the servers have answered, so a slow lookup can't push a
+    // server past its time limit and lose its page.
+    if (row.rowType == HomeRowType.latestMedia) {
+      uniqueCombined = await withSeriesUserData(
+        uniqueCombined,
+        _itemsApiAmong(sessions),
+      );
+    }
 
     final List<AggregatedItem> sortedCombined;
     if (row.rowType == HomeRowType.playlists ||
@@ -1346,11 +1354,14 @@ class MultiServerRepository {
               continue;
             }
 
-            var items = normalizeLatestMediaItems(
-              parsed,
-              collectionType: collectionType,
-              limit: _defaultLimit,
-              hideWatched: hideWatched,
+            final items = await withSeriesUserData(
+              normalizeLatestMediaItems(
+                parsed,
+                collectionType: collectionType,
+                limit: _defaultLimit,
+                hideWatched: hideWatched,
+              ),
+              (_) => session.client.itemsApi,
             );
             if (items.isEmpty) continue;
 
@@ -1412,9 +1423,12 @@ class MultiServerRepository {
         hideWatched: hideWatched,
       );
       // A title several servers hold shows once, carrying the rest as copies.
-      final items = foldsCopies
-          ? foldCopies(normalized).take(_defaultLimit).toList()
-          : normalized;
+      final items = await withSeriesUserData(
+        foldsCopies
+            ? foldCopies(normalized).take(_defaultLimit).toList()
+            : normalized,
+        _itemsApiAmong(sessions),
+      );
       if (items.isEmpty) continue;
 
       final rowId = '${mergedTypeRowIdPrefix}latest_$collectionType';
@@ -1436,6 +1450,14 @@ class MultiServerRepository {
 
     return rows;
   }
+
+  static ItemsApi? Function(String serverId) _itemsApiAmong(
+    List<ServerUserSession> sessions,
+  ) => (serverId) => sessions
+      .where((s) => s.server.id == serverId)
+      .firstOrNull
+      ?.client
+      .itemsApi;
 
   Future<T> _withTimeout<T>(
     Future<T> Function() fn, {

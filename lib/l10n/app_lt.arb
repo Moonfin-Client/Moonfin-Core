@@ -4,7 +4,7 @@
     "@appTitle": {
         "description": "The application title"
     },
-    "signIn": "Prisijunkite",
+    "signIn": "Prisijungti",
     "@signIn": {
         "description": "Sign in heading and button label"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Greitasis prisijungimas",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -29,11 +29,11 @@
     "@username": {
         "description": "Username field label"
     },
-    "quickConnectInstruction": "Įveskite šį kodą savo serverio žiniatinklio informacijos suvestinėje:",
+    "quickConnectInstruction": "Įveskite šį kodą savo serverio žiniatinklio valdymo skydelyje:",
     "@quickConnectInstruction": {
         "description": "Instruction text for Quick Connect code entry"
     },
-    "waitingForAuthorization": "Laukiama įgaliojimo...",
+    "waitingForAuthorization": "Laukiama patvirtinimo...",
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect nepasiekiamas: {detail}",
+    "quickConnectUnavailable": "Greitasis prisijungimas nepasiekiamas: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect nepasiekiamas ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "Greitasis prisijungimas nepasiekiamas ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -95,7 +95,7 @@
     "@savedServers": {
         "description": "Section heading for previously saved servers"
     },
-    "discoveredServers": "Atrasti serveriai",
+    "discoveredServers": "Aptikti serveriai",
     "@discoveredServers": {
         "description": "Section heading for auto-discovered local servers"
     },
@@ -111,7 +111,7 @@
     "@addServer": {
         "description": "Button to manually add a server address"
     },
-    "embyConnect": "Emby Prisijunkite",
+    "embyConnect": "Emby Connect",
     "@embyConnect": {
         "description": "Emby Connect sign-in option label"
     },
@@ -144,11 +144,11 @@
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://your-server.example.com",
+    "serverAddressHint": "https://jusu-serveris.pavizdys.lt",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
-    "connect": "Prisijunkite",
+    "connect": "Prisijungti",
     "@connect": {
         "description": "Button to initiate connection to a server"
     },
@@ -164,11 +164,11 @@
     "@ok": {
         "description": "Generic OK button label"
     },
-    "settingsAppearanceTheme": "Programos tema",
+    "settingsAppearanceTheme": "Programėlės tema",
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Perjunkite „Moonfin“ ir „Neon Pulse“ iš naujo nepaleidę programos",
+    "settingsAppearanceThemeSubtitle": "Pritaikykite visiškai individualizuotą apipavidalinimą ir perjunkite Apple arba Material stiliumi įkvėptą vartotojo sąsają.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -176,7 +176,7 @@
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "Dabartinė Moonfin išvaizda, kurią jūs visi pamėgote",
+    "themeMoonfinSubtitle": "Originalus švarus Moonfin numatytasis.",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
@@ -208,11 +208,11 @@
     "@noLinkedServers": {
         "description": "Error when Emby Connect account has no linked servers"
     },
-    "invalidEmbyConnectCredentials": "Netinkami „Emby Connect“ kredencialai",
+    "invalidEmbyConnectCredentials": "Neteisingi Emby Connect prisijungimo duomenys",
     "@invalidEmbyConnectCredentials": {
         "description": "Error when Emby Connect auth response is invalid"
     },
-    "invalidEmbyConnectLogin": "Neteisingas Emby Connect vartotojo vardas arba slaptažodis",
+    "invalidEmbyConnectLogin": "Neteisingas Emby Connect naudotojo vardas arba slaptažodis",
     "@invalidEmbyConnectLogin": {
         "description": "Error for wrong Emby Connect credentials"
     },
@@ -261,7 +261,7 @@
     "@exit": {
         "description": "Exit button label"
     },
-    "noHomeRowsLoaded": "Nepavyko įkelti jokių pradinių eilučių",
+    "noHomeRowsLoaded": "Nepavyko įkelti pagrindinio ekrano eilučių",
     "@noHomeRowsLoaded": {
         "description": "Heading when home screen has no rows to display"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Pradžia",
+    "home": "Pagrindinis",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -404,7 +404,7 @@
     "@ended": {
         "description": "Series status badge for ended series"
     },
-    "sortAndFilter": "Rūšiuoti ir filtruoti",
+    "sortAndFilter": "Rikiavimas ir filtravimas",
     "@sortAndFilter": {
         "description": "Dialog title for sort and filter options"
     },
@@ -412,11 +412,11 @@
     "@type": {
         "description": "Stream info label for subtitle type"
     },
-    "sortBy": "Rūšiuoti pagal",
+    "sortBy": "Rikiuoti pagal",
     "@sortBy": {
         "description": "Section header for sort options"
     },
-    "display": "Ekranas",
+    "display": "Rodymas",
     "@display": {
         "description": "Dialog title for display settings"
     },
@@ -461,7 +461,7 @@
     "@albums": {
         "description": "Music browse view button label"
     },
-    "albumArtists": "Albumo menininkai",
+    "albumArtists": "Albumo atlikėjai",
     "@albumArtists": {
         "description": "Music browse view button label"
     },
@@ -481,7 +481,7 @@
     "@openBook": {
         "description": "Button to open a book for reading"
     },
-    "chapter": "skyrius",
+    "chapter": "Skyrius",
     "@chapter": {
         "description": "Bookmark mode label for epub format"
     },
@@ -700,7 +700,7 @@
     "@titles": {
         "description": "Stat card label for total titles"
     },
-    "allTitles": "Visi titulai",
+    "allTitles": "Visi pavadinimai",
     "@allTitles": {
         "description": "Collection picker dialog title for all titles"
     },
@@ -728,7 +728,7 @@
     "@nothingMatchesSection": {
         "description": "Empty state for book experience when no items match"
     },
-    "audiobooks": "Garsinės knygos",
+    "audiobooks": "Garso knygos",
     "@audiobooks": {
         "description": "Audiobooks navigation and tab label"
     },
@@ -753,7 +753,7 @@
     "@readingStatus": {
         "description": "Section header for book reading status filter"
     },
-    "playedStatus": "Žaidžiama būsena",
+    "playedStatus": "Atkūrimo būsena",
     "@playedStatus": {
         "description": "Section header for played status filter"
     },
@@ -829,7 +829,7 @@
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
-    "sectionCountLabel": "Skyrių: {count}",
+    "sectionCountLabel": "Skiltys: {count}",
     "@sectionCountLabel": {
         "description": "Detail chip showing number of sections in audiobook",
         "placeholders": {
@@ -986,7 +986,7 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "Nerasta šio autoriaus knygų.",
+    "noBooksFound": "Knygų nerasta",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
@@ -1062,7 +1062,7 @@
     "@readOffline": {
         "description": "Action button label to read offline"
     },
-    "playOffline": "Žaisti neprisijungus",
+    "playOffline": "Leisti neprisijungus",
     "@playOffline": {
         "description": "Action button label to play offline"
     },
@@ -1225,7 +1225,7 @@
     "@itemDeleted": {
         "description": "Success message after deleting an item"
     },
-    "noPlayableTrailerFound": "Nerastas leistinas anonsas.",
+    "noPlayableTrailerFound": "Nerasta jokio paleidžiamo anonso.",
     "@noPlayableTrailerFound": {
         "description": "Error message when no trailer can be played"
     },
@@ -1254,7 +1254,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "Ieškokite naudodami „OpenSubtitles“ papildinį",
+    "searchOpenSubtitlesPlugin": "Ieškoti naudojant OpenSubtitles",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -1454,7 +1454,7 @@
             }
         }
     },
-    "age": "Amžius: {age}",
+    "age": "Amžius {age}",
     "@age": {
         "description": "Person age label",
         "placeholders": {
@@ -1581,7 +1581,7 @@
     "@trailerTimedOut": {
         "description": "Error when trailer loading times out"
     },
-    "playbackFailedForTrailer": "Nepavyko atkurti šio anonso.",
+    "playbackFailedForTrailer": "Nepavyko paleisti šio anonso.",
     "@playbackFailedForTrailer": {
         "description": "Error when trailer playback fails"
     },
@@ -1673,7 +1673,7 @@
     "@remotePlayback": {
         "description": "Label for Jellyfin session remote playback"
     },
-    "castingToGoogleCast": "Perduodama į „Google Cast“.",
+    "castingToGoogleCast": "Perduodama į „Google Cast“",
     "@castingToGoogleCast": {
         "description": "Cast mini bar label for Google Cast"
     },
@@ -1685,7 +1685,7 @@
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
-    "secondsCount": "{seconds} sek.",
+    "secondsCount": "{seconds} sekundžių",
     "@secondsCount": {
         "description": "Double-tap skip overlay duration label",
         "placeholders": {
@@ -1714,7 +1714,7 @@
             }
         }
     },
-    "auto": "Automatinis",
+    "auto": "Auto",
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },
@@ -1773,11 +1773,11 @@
     "@playback": {
         "description": "Section header in stream info"
     },
-    "playMethod": "Žaidimo metodas",
+    "playMethod": "Atkūrimo būdas",
     "@playMethod": {
         "description": "Stream info label for play method"
     },
-    "directPlay": "Tiesioginis žaidimas",
+    "directPlay": "Tiesioginis atkūrimas",
     "@directPlay": {
         "description": "Play method label"
     },
@@ -1793,7 +1793,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Grotuvas",
+    "player": "Leistuvas",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -2283,7 +2283,7 @@
     "@seerr": {
         "description": "Seerr brand name"
     },
-    "savedMedia": "Išsaugota laikmena",
+    "savedMedia": "Atsisiuntimai",
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
@@ -2580,7 +2580,7 @@
     "@serverSyncAndPluginStatus": {
         "description": "Plugin settings description"
     },
-    "mediaRequestIntegration": "Žiniasklaidos užklausų integravimas",
+    "mediaRequestIntegration": "Medijos užklausų integravimas",
     "@mediaRequestIntegration": {
         "description": "Seerr settings description"
     },
@@ -2596,7 +2596,7 @@
     "@versionLicenses": {
         "description": "About settings description"
     },
-    "account": "sąskaita",
+    "account": "Paskyra",
     "@account": {
         "description": "Account section title"
     },
@@ -2693,7 +2693,7 @@
     "@seriesThumbnails": {
         "description": "Setting for series thumbnails"
     },
-    "seriesThumbnailsDescription": "Tik serijos: naudokite serijos iliustraciją, atitinkančią kiekvienos eilutės vaizdo tipą",
+    "seriesThumbnailsDescription": "Televizijos serijoms naudokite pagrindę serialo iliustraciją, o ne serijos miniatiūrą.",
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
@@ -2705,7 +2705,7 @@
     "@showTitleMetadataOnHomeRows": {
         "description": "Description for home row info overlay"
     },
-    "clockDisplay": "Laikrodžio ekranas",
+    "clockDisplay": "Laikrodžio rodymas",
     "@clockDisplay": {
         "description": "Setting for clock display"
     },
@@ -2758,7 +2758,7 @@
             }
         }
     },
-    "themeMusicOnHomeRows": "Teminė muzika „Home Rows“.",
+    "themeMusicOnHomeRows": "Teminė muzika pagrindinio ekrano eilutėse",
     "@themeMusicOnHomeRows": {
         "description": "Setting for theme music on home rows"
     },
@@ -2795,11 +2795,11 @@
     "@playerZoomMode": {
         "description": "Setting for player zoom mode"
     },
-    "fit": "Tinka",
+    "fit": "Talpinti",
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Automatinis apkarpymas",
+    "autoCrop": "Užpildyti ekraną",
     "@autoCrop": {
         "description": "Zoom mode: auto crop"
     },
@@ -2823,7 +2823,7 @@
     "@scaleOnDevice": {
         "description": "Refresh rate option: scale on device"
     },
-    "trickPlay": "Triukų žaidimas",
+    "trickPlay": "Trick Play",
     "@trickPlay": {
         "description": "Setting for trick play thumbnails"
     },
@@ -2903,7 +2903,7 @@
     "@russian": {
         "description": "Language: Russian"
     },
-    "arabic": "arabų",
+    "arabic": "Arabų",
     "@arabic": {
         "description": "Language: Arabic"
     },
@@ -2983,7 +2983,7 @@
     "@unsafeMpvOptionsDescription": {
         "description": "Description for unsafe mpv options"
     },
-    "hardwareDecoding": "Aparatinės įrangos dekodavimas",
+    "hardwareDecoding": "Aparatinis dekodavimas",
     "@hardwareDecoding": {
         "description": "Label for hardware decoding toggle"
     },
@@ -3052,7 +3052,7 @@
     "@unpauseRewind": {
         "description": "Setting for rewinding a little when resuming from pause"
     },
-    "fiveSeconds": "5 sekundes",
+    "fiveSeconds": "5 sekundės",
     "@fiveSeconds": {
         "description": "Duration: 5 seconds"
     },
@@ -3140,19 +3140,19 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "PGS tiesioginis žaidimas",
+    "pgsDirectPlay": "PGS tiesioginis atkūrimas",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
-    "directPlayPgsSubtitles": "Tiesioginis PGS subtitrai",
+    "directPlayPgsSubtitles": "Tiesioginis PGS subtitrų atkūrimas",
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "ASS/SSA tiesioginis paleidimas",
+    "assSsaDirectPlay": "Tiesioginis ASS/SSA atkūrimas",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
-    "directPlayAssSsaSubtitles": "Tiesioginis ASS/SSA subtitrų paleidimas",
+    "directPlayAssSsaSubtitles": "Tiesioginis ASS/SSA subtitrų atkūrimas",
     "@directPlayAssSsaSubtitles": {
         "description": "Description for ASS/SSA direct play"
     },
@@ -3275,7 +3275,7 @@
     "@wifiOnlyDownloads": {
         "description": "Setting for wifi-only downloads"
     },
-    "onlyDownloadOnWifi": "Atsisiųskite tik prisijungę prie „WiFi“.",
+    "onlyDownloadOnWifi": "Atsisiųsti tik prisijungus prie Wi-Fi tinklo",
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
@@ -3363,11 +3363,11 @@
     "@navigationStyle": {
         "description": "Setting for navigation style"
     },
-    "topBar": "Viršutinė juosta",
+    "topBar": "Juosta viršuje",
     "@topBar": {
         "description": "Navigation style: top bar"
     },
-    "leftSidebar": "Kairioji šoninė juosta",
+    "leftSidebar": "Šoninė juosta kairėje",
     "@leftSidebar": {
         "description": "Navigation style: left sidebar"
     },
@@ -3483,7 +3483,7 @@
     "@showInNavigation": {
         "description": "Toggle for showing library in navigation"
     },
-    "showInLatestMedia": "Rodyti naujausioje žiniasklaidoje",
+    "showInLatestMedia": "Rodyti tarp neseniai pridėtų / išleistų medijos failų",
     "@showInLatestMedia": {
         "description": "Toggle for showing library in latest media"
     },
@@ -3491,7 +3491,7 @@
     "@sourceLibraries": {
         "description": "Setting for source libraries"
     },
-    "sourceCollections": "Šaltinių rinkiniai",
+    "sourceCollections": "Šaltinių kolekcijos",
     "@sourceCollections": {
         "description": "Setting for source collections"
     },
@@ -3604,11 +3604,11 @@
     "@previewAudio": {
         "description": "Setting for preview audio"
     },
-    "enablePreviewAudio": "Įgalinti anonso ir serijos peržiūrų garsą",
+    "enablePreviewAudio": "Įjungti garsą medijos peržiūroms",
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
-    "latestMedia": "Naujausia žiniasklaida",
+    "latestMedia": "Neseniai pridėta medija",
     "@latestMedia": {
         "description": "Home section: latest media"
     },
@@ -3616,7 +3616,7 @@
     "@recentlyReleased": {
         "description": "Home section: recently released"
     },
-    "myMedia": "Mano žiniasklaida",
+    "myMedia": "Mano medija",
     "@myMedia": {
         "description": "Home section: my media"
     },
@@ -3668,11 +3668,11 @@
     "@configureImageTypeForEachRow": {
         "description": "Description for per-row image type selection"
     },
-    "mergeContinueWatchingAndNextUp": "Sujunkite Tęsti žiūrėjimą ir Kitas",
+    "mergeContinueWatchingAndNextUp": "Sujungti Tęsti žiūrėjimą ir Kitas",
     "@mergeContinueWatchingAndNextUp": {
         "description": "Setting for merging continue watching and next up"
     },
-    "combineBothRows": "Sujunkite abi eilutes į vieną namų skyrių",
+    "combineBothRows": "Sujungti abi eilutes į vieną pagrindinio ekrano skiltį",
     "@combineBothRows": {
         "description": "Description for merge continue watching and next up"
     },
@@ -3692,7 +3692,7 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "alwaysAuthenticate": "Visada autentifikuoti",
+    "alwaysAuthenticate": "Visada patvirtinti tapatybę",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
     },
@@ -4252,7 +4252,7 @@
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
-    "playInMoonfin": "Žaisk „Moonfin“.",
+    "playInMoonfin": "Leisti per Moonfin",
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
@@ -4385,7 +4385,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Filmografija",
+    "appearances": "Vaidmenys",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4548,7 +4548,7 @@
     "adminDrawerLiveTv": "Tiesioginė televizija",
     "adminExitTooltip": "Išeiti iš administratoriaus",
     "adminDashboardLoadFailed": "Nepavyko įkelti prietaisų skydelio",
-    "adminMediaOverview": "Žiniasklaidos apžvalga",
+    "adminMediaOverview": "Medijos apžvalga",
     "adminMediaTotalsError": "Nepavyko įkelti serverio medijos sumų.",
     "adminMediaOverviewSubtitle": "Greitai perskaitykite, kiek turinio yra šiame serveryje.",
     "adminPluginUpdatesAvailable": "Galimi papildinio atnaujinimai: {count}",
@@ -4583,7 +4583,7 @@
             }
         }
     },
-    "analyticsMediaDistribution": "Žiniasklaidos platinimas",
+    "analyticsMediaDistribution": "Medijos platinimas",
     "analyticsVideoCodecs": "Vaizdo kodekai",
     "analyticsAudioCodecs": "Garso kodekai",
     "analyticsContainers": "Konteineriai",
@@ -4610,8 +4610,8 @@
         }
     },
     "adminServerRebootInProgress": "Vyksta serverio perkrovimas",
-    "adminServerRebootMessage": "Serveris perkraunamas, iš naujo paleiskite „Moonfin“.",
-    "adminActiveSessions": "Aktyvūs užsiėmimai",
+    "adminServerRebootMessage": "Serveris perkraunamas, paleiskite Moonfin iš naujo",
+    "adminActiveSessions": "Aktyvios sesijos",
     "adminSessionsLoadFailed": "Nepavyko įkelti seansų",
     "adminNoActiveSessions": "Nėra aktyvių seansų",
     "adminRecentActivity": "Naujausia veikla",
@@ -4634,7 +4634,7 @@
     "sessionVolumeDown": "tomas –",
     "sessionVolumeUp": "Gars. +",
     "uhd4k": "4K",
-    "nowPlaying": "Dabar žaidžiama",
+    "nowPlaying": "Dabar leidžiama",
     "volume": "Garsumas",
     "actions": "Veiksmai",
     "videoCodec": "Vaizdo įrašų kodekas",
@@ -4863,8 +4863,8 @@
     "adminBackToUsers": "Grįžti į Vartotojus",
     "adminSaveProfile": "Išsaugoti profilį",
     "adminDeleteUser": "Ištrinti vartotoją",
-    "admin": "Administravimas",
-    "adminFullAccessWarning": "Administratoriai turi visišką prieigą prie serverio. Suteikite atsargiai.",
+    "admin": "Administratorius",
+    "adminFullAccessWarning": "Administratoriai turi visišką prieigą prie serverio. Suteikite ją atsargiai.",
     "administrator": "Administratorius",
     "adminHiddenUser": "Paslėptas vartotojas",
     "adminAllowMediaPlayback": "Leisti medijos atkūrimą",
@@ -5365,7 +5365,7 @@
     "adminEnableHttps": "Įgalinti HTTPS",
     "adminLocalNetwork": "Vietinis tinklas",
     "adminLocalNetworkAddresses": "Vietinio tinklo adresai",
-    "adminKnownProxies": "Žinomi įgaliotieji serveriai",
+    "adminKnownProxies": "Žinomi tarpiniai serveriai",
     "adminRemoteIpFilter": "Nuotolinis IP filtras",
     "adminRemoteIpFilterEntries": "Nuotolinis IP filtras",
     "adminCertificatePath": "Sertifikato kelias",
@@ -5635,7 +5635,7 @@
     "adminLogsNewestFirst": "Naujausi pirmiausia",
     "adminLogsOldestFirst": "Seniausi Pirma",
     "adminLogsJustNow": "Tik dabar",
-    "adminLogsMinutesAgo": "{minutes}@min",
+    "adminLogsMinutesAgo": "prieš {minutes} min.",
     "@adminLogsMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -5643,7 +5643,7 @@
             }
         }
     },
-    "adminLogsHoursAgo": "{hours}@h",
+    "adminLogsHoursAgo": "prieš {hours} val.",
     "@adminLogsHoursAgo": {
         "placeholders": {
             "hours": {
@@ -5651,7 +5651,7 @@
             }
         }
     },
-    "adminLogsDaysAgo": "{days}d prieš",
+    "adminLogsDaysAgo": "prieš {days} d.",
     "@adminLogsDaysAgo": {
         "placeholders": {
             "days": {
@@ -5682,7 +5682,7 @@
     "adminMetadataExternalIds": "Išoriniai ID",
     "adminMetadataImages": "Vaizdai",
     "adminMetadataFieldTitle": "Pavadinimas",
-    "adminMetadataFieldSortTitle": "Rūšiuoti pavadinimą",
+    "adminMetadataFieldSortTitle": "Rikiavimo pavadinimas",
     "adminMetadataFieldOriginalTitle": "Originalus pavadinimas",
     "adminMetadataFieldPremiereDate": "Premjeros data (MMMM-MM-DD)",
     "adminMetadataFieldEndDate": "Pabaigos data (MMMM-MM-DD)",
@@ -5866,7 +5866,7 @@
     },
     "adminReposEmpty": "Nėra sukonfigūruotų saugyklų",
     "adminReposEmptySubtitle": "Pridėkite saugyklą, kad galėtumėte naršyti galimus papildinius",
-    "adminReposUnnamed": "(be vardo)",
+    "adminReposUnnamed": "(be pavadinimo)",
     "adminReposEditTitle": "Redaguoti saugyklą",
     "adminReposAddTitle": "Pridėti saugyklą",
     "adminReposUrl": "Saugyklos URL",
@@ -5892,7 +5892,7 @@
     "adminNetworkingLocalNetwork": "Vietinis tinklas",
     "adminNetworkingLocalAddresses": "Vietinio tinklo adresai",
     "adminNetworkingAddressHint": "pvz. 192.168.1.0/24",
-    "adminNetworkingKnownProxies": "Žinomi įgaliotieji serveriai",
+    "adminNetworkingKnownProxies": "Žinomi tarpiniai serveriai",
     "adminNetworkingProxyHint": "pvz. 10.0.0.1",
     "adminNetworkingWhitelist": "Baltasis sąrašas",
     "adminNetworkingBlacklist": "Juodasis sąrašas",
@@ -5913,7 +5913,7 @@
     "adminPlaybackFallbackFontPath": "Atsarginis šrifto kelias",
     "adminPlaybackStreaming": "Srautinis perdavimas",
     "adminResumeVideo": "Vaizdo įrašas",
-    "adminResumeAudiobooks": "Garsinės knygos",
+    "adminResumeAudiobooks": "Garso knygos",
     "adminResumeMinAudiobookPct": "Minimalus garso knygos atnaujinimo procentas",
     "adminResumeMaxAudiobookPct": "Didžiausias garso knygos atnaujinimo procentas",
     "adminStreamingBitrateLimit": "Nuotolinio kliento pralaidumo riba (Mbps)",
@@ -6002,7 +6002,7 @@
     "adminActivityToday": "Šiandien",
     "adminActivityYesterday": "vakar",
     "adminActivityOlder": "Vyresni",
-    "adminActivityDaysAgo": "{days}d prieš",
+    "adminActivityDaysAgo": "prieš {days} d.",
     "@adminActivityDaysAgo": {
         "placeholders": {
             "days": {
@@ -6010,7 +6010,7 @@
             }
         }
     },
-    "adminActivityHoursAgo": "{hours}@h",
+    "adminActivityHoursAgo": "prieš {hours} val.",
     "@adminActivityHoursAgo": {
         "placeholders": {
             "hours": {
@@ -6018,7 +6018,7 @@
             }
         }
     },
-    "adminActivityMinutesAgo": "{minutes}@min",
+    "adminActivityMinutesAgo": "prieš {minutes} min.",
     "@adminActivityMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -6129,7 +6129,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay reikalingas Jellyfin serveris. Dabartinis serveris jo nepalaiko.",
     "syncPlayGroupFallbackName": "„SyncPlay“ grupė",
     "syncPlayGroupTooltip": "„SyncPlay“ grupė",
-    "syncPlayParticipantCount": "{count, plural, one {# dalyvis} few {# dalyviai} many {# dalyvio} other {# dalyvių}}",
+    "syncPlayParticipantCount": "{count, plural, one {{count} dalyvis} few {{count} dalyviai} other {{count} dalyvių}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6144,7 +6144,7 @@
     "syncPlayRepeat": "Pakartokite",
     "syncPlayRepeatOne": "Vienas",
     "syncPlayShuffleModeShuffled": "Sumaišytas",
-    "syncPlayShuffleModeSorted": "Surūšiuota",
+    "syncPlayShuffleModeSorted": "Išrikiuota",
     "syncPlaySyncCurrentQueue": "Sinchronizuoti dabartinę atkūrimo eilę",
     "syncPlaySyncCurrentQueueSubtitle": "Pakeiskite grupės eilę tuo, kas leidžiama vietoje",
     "syncPlayLeaveGroup": "Išeiti iš grupės",
@@ -6158,7 +6158,7 @@
             }
         }
     },
-    "syncPlayPlayNow": "Žaisti dabar",
+    "syncPlayPlayNow": "Leisti dabar",
     "syncPlayCreateNewGroup": "Sukurti naują grupę",
     "syncPlayGroupName": "Grupės pavadinimas",
     "syncPlayDefaultGroupName": "Mano „SyncPlay“ grupė",
@@ -6171,7 +6171,7 @@
     "syncPlayStateIdle": "Tuščia eiga",
     "syncPlayStateWaiting": "Laukia",
     "syncPlayStatePaused": "Pristabdyta",
-    "syncPlayStatePlaying": "Žaidžia",
+    "syncPlayStatePlaying": "Leidžiama",
     "syncPlayUserJoinedGroup": "{userName} prisijungė prie SyncPlay grupės",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
@@ -6229,7 +6229,7 @@
     "offlineNoInternet": "Esate neprisijungęs. Galimas tik atsisiųstas turinys.",
     "offlineFileNotAvailable": "Failas nepasiekiamas",
     "offlineSwitchServer": "Perjungti serverį",
-    "offlineSavedMedia": "Išsaugota laikmena",
+    "offlineSavedMedia": "Atsisiuntimai",
     "castGoogleCast": "Google Cast",
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
@@ -6287,14 +6287,14 @@
     "pinForgot": "Pamiršote PIN kodą?",
     "pinClear": "Išvalyti",
     "pinBackspace": "Naikinti",
-    "quickConnectAuthorized": "Quick Connect užklausa patvirtinta.",
-    "quickConnectInvalidOrExpired": "Quick Connect kodas neteisingas arba nebegalioja.",
-    "quickConnectNotSupported": "Šis serveris nepalaiko Quick Connect.",
-    "quickConnectAuthorizeFailed": "Nepavyko patvirtinti Quick Connect kodo.",
-    "quickConnectDisabled": "Šiame serveryje Quick Connect išjungtas.",
-    "quickConnectForbidden": "Jūsų paskyra negali patvirtinti šios Quick Connect užklausos.",
-    "quickConnectNotFound": "Quick Connect kodas nerastas. Pabandykite naują kodą.",
-    "quickConnectFailedWithMessage": "Quick Connect nepavyko: {message}",
+    "quickConnectAuthorized": "Greitojo prisijungimo užklausa patvirtinta.",
+    "quickConnectInvalidOrExpired": "Greitojo prisijungimo kodas neteisingas arba nebegalioja.",
+    "quickConnectNotSupported": "Šis serveris nepalaiko greitojo prisijungimo.",
+    "quickConnectAuthorizeFailed": "Nepavyko patvirtinti greitojo prisijungimo kodo.",
+    "quickConnectDisabled": "Greitasis prisijungimas šiame serveryje išjungtas.",
+    "quickConnectForbidden": "Jūsų paskyra negali patvirtinti šios greitojo prisijungimo užklausos.",
+    "quickConnectNotFound": "Greitojo prisijungimo kodas nerastas. Pabandykite naują kodą.",
+    "quickConnectFailedWithMessage": "Greitasis prisijungimas nepavyko: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6303,7 +6303,7 @@
         }
     },
     "quickConnectEnterCode": "Įveskite kodą",
-    "quickConnectAuthorize": "Įgalioti",
+    "quickConnectAuthorize": "Patvirtinti",
     "remoteCommandFailed": "Komanda nepavyko: {error}",
     "@remoteCommandFailed": {
         "placeholders": {
@@ -6330,9 +6330,9 @@
     },
     "noRemoteDevices": "Nėra pasiekiamų nuotolinio atkūrimo įrenginių.",
     "noRemoteDevicesIos": "Nėra pasiekiamų nuotolinio atkūrimo įrenginių.\n\nJei naudojate „iOS“, „AirPlay“ taikiniai simuliatoriuje gali būti nepasiekiami.",
-    "trackActionPlayNext": "Žaisti toliau",
+    "trackActionPlayNext": "Leisti toliau",
     "trackActionAddToQueue": "Pridėti į eilę",
-    "trackActionAddToPlaylist": "Pridėti prie grojaraščio",
+    "trackActionAddToPlaylist": "Pridėti į grojaraštį",
     "trackActionCancelDownload": "Atšaukti atsisiuntimą",
     "trackActionDeleteFromPlaylist": "Ištrinti iš grojaraščio",
     "trackActionMoveUp": "Judėti aukštyn",
@@ -6358,7 +6358,7 @@
     "shuffleGenre": "Žanras",
     "shuffleNoLibraries": "Nėra suderinamų bibliotekų.",
     "shuffleNoGenres": "Šiam maišymo režimui nerasta jokių žanrų.",
-    "posterDisplayTitle": "Ekranas",
+    "posterDisplayTitle": "Rodymas",
     "posterImageType": "Vaizdo tipas",
     "imageTypePoster": "Plakatas",
     "imageTypeThumbnail": "Miniatiūra",
@@ -6369,10 +6369,10 @@
     "playlistCreate": "Sukurti",
     "playlistCreateNew": "Sukurti naują grojaraštį",
     "playlistNoneFound": "Nerasta jokių grojaraščių",
-    "addToPlaylist": "Pridėti prie grojaraščio",
+    "addToPlaylist": "Pridėti į grojaraštį",
     "lyricsNotAvailable": "Dainų žodžių nėra",
     "upNext": "Aukštyn Kitas",
-    "playNext": "Žaisti toliau",
+    "playNext": "Leisti toliau",
     "stillWatchingContent": "Atkūrimas buvo pristabdytas. Ar vis dar žiūrite?",
     "stillWatchingStop": "Stabdyti",
     "stillWatchingContinue": "Tęsti",
@@ -6482,9 +6482,9 @@
     "settingsIntegrationsSubtitle": "Papildinio sinchronizavimas, „Seerr“, įvertinimai ir kt",
     "settingsAboutSubtitle": "Programos versija, teisinė informacija ir kreditai",
     "settingsAuthenticationSection": "AUTENTIKAVIMAS",
-    "settingsSortServersBy": "Rūšiuoti serverius pagal",
+    "settingsSortServersBy": "Rikiuoti serverius pagal",
     "settingsLastUsed": "Paskutinį kartą naudotas",
-    "settingsAlphabetical": "Abėcėlinis",
+    "settingsAlphabetical": "Pagal abėcėlę",
     "settingsPrivacyAndSafetySection": "PRIVATUMAS IR SAUGA",
     "settingsBlockedRatings": "Užblokuoti įvertinimai",
     "settingsGeneralStyle": "Bendras stilius",
@@ -6492,8 +6492,8 @@
     "settingsHomePage": "Pagrindinis puslapis",
     "settingsHomePageSubtitle": "Skyriai, vaizdų tipai, perdangos ir medijos peržiūros",
     "settingsLibrariesSubtitle": "Bibliotekos matomumas, aplankų rodinys ir kelių serverių veikimas",
-    "settingsTwentyFourHourClock": "24 valandų laikrodis",
-    "settingsTwentyFourHourClockSubtitle": "Visur, kur rodomas laikrodis, naudokite 24 valandų laiko formatavimą",
+    "settingsTwentyFourHourClock": "24 valandų formatas",
+    "settingsTwentyFourHourClockSubtitle": "Naudoti 24 valandų laiko formatą visur, kur rodomas laikrodis",
     "settingsShowShuffleButtonInNavigation": "Rodyti maišymo mygtuką naršymo juostoje",
     "settingsShowGenresButtonInNavigation": "Rodyti žanrų mygtuką naršymo juostoje",
     "settingsShowFavoritesButtonInNavigation": "Rodyti parankinių mygtuką naršymo juostoje",
@@ -6511,10 +6511,10 @@
     "settingsEnterDownloadFolderPath": "Įveskite atsisiuntimo aplanko kelią",
     "settingsConcurrentDownloads": "Vienu metu vykstantys atsisiuntimai",
     "settingsConcurrentDownloadsDescription": "Didžiausias vienu metu atsisiunčiamų elementų skaičius.",
-    "settingsAppInfo": "PROGRAMOS INFORMACIJA",
+    "settingsAppInfo": "PROGRAMĖLĖS INFORMACIJA",
     "settingsReportAnIssue": "Pranešti apie problemą",
-    "settingsReportAnIssueSubtitle": "Atidarykite problemų stebėjimo priemonę „GitHub“.",
-    "settingsJoinDiscord": "Prisijunkite prie „Discord“.",
+    "settingsReportAnIssueSubtitle": "Atidaryti klaidų sekiklį GitHub platformoje",
+    "settingsJoinDiscord": "Prisijunkite prie Discord",
     "settingsJoinDiscordSubtitle": "Kalbėkitės su bendruomene",
     "settingsJoinTheDiscord": "Prisijunkite prie Discord",
     "settingsSupportMoonfin": "Palaikykite Moonfin",
@@ -6540,19 +6540,19 @@
     "settingsVideoPlaybackPreferences": "Vaizdo įrašų atkūrimo nuostatos",
     "settingsVideoPlaybackPreferencesSubtitle": "Pagrindiniai vaizdo įrašų variklio ir srautinio perdavimo kokybės nustatymai",
     "settingsAudioPreferences": "Garso nuostatos",
-    "settingsAudioPreferencesSubtitle": "Garso takeliai, apdorojimas ir perdavimo parinktys",
+    "settingsAudioPreferencesSubtitle": "Garso takelių, apdorojimo ir tiesioginio perdavimo parinktys",
     "settingsAutomationAndQueue": "Automatika ir eilė",
     "settingsAutomationAndQueueSubtitle": "Automatizuotas atkūrimas ir seka",
     "settingsOfflineDownloadsSubtitle": "Atsisiuntimo kokybė, saugyklos apribojimai ir eilės dydis",
-    "settingsSyncplaySubtitle": "Grupinių užsiėmimų sinchronizavimo logika",
+    "settingsSyncplaySubtitle": "Žiūrėkite su draugais šiame serveryje, visi vienu metu",
     "settingsAdvancedOptionsSubtitle": "Specializuotos grotuvo savybės. Naudokite atsargiai, nes kai kurios parinktys gali sukelti atkūrimo problemų",
     "settingsSkipIntrosAndOutros": "Praleisti įžangas ir pabaigas?",
     "settingsPromptUser": "Raginti vartotoją",
     "settingsSkip": "Praleisti",
     "settingsDoNothing": "Nieko nedaryti",
     "settingsMaxBitrateDescription": "Apribokite srautinio perdavimo pralaidumą. Turinys, viršijantis šį slenkstį, bus perkoduotas, kad tilptų.",
-    "settingsMaxResolutionDescription": "Apribokite maksimalią raišką, kurios žaidėjas paprašys. Didesnės raiškos turinys bus perkoduotas žemyn.",
-    "settingsPlayerZoomDescription": "Kaip vaizdo įrašas turėtų būti pakeistas, kad tilptų ekrane.",
+    "settingsMaxResolutionDescription": "Apribokite didžiausią raišką, kurios prašys leistuvas. Didesnės raiškos turinys bus perkoduotas į mažesnę raišką.",
+    "settingsPlayerZoomDescription": "Kaip vaizdo įrašas pritaikomas ekranui. „Užpildyti ekraną“ padidina vaizdą, kol jis užpildo visą ekraną, ir nukerpa kraštus. Juodų juostų neaptinka.",
     "settingsPlaybackEngineAndroidTv": "Atkūrimo variklis („Android TV“)",
     "settingsPlaybackEngineAndroidTvDescription": "Pasirinkite numatytąjį atkūrimo variklį „Android TV“ įrenginiuose. Pakeitimai taikomi kitai atkūrimo sesijai.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (rekomenduojama)",
@@ -6571,13 +6571,13 @@
     "settingsUnpauseRewindDescription": "Kiek sekundžių reikia atsukti atkūrimą paspaudus pauzės mygtuką?",
     "settingsSkipBackLengthDescription": "Kiek sekundžių reikia grįžti atgal paspaudus atsukimo mygtuką.",
     "settingsOneSecond": "1 sekundė",
-    "settingsThreeSeconds": "3 sekundes",
-    "settingsFortyFiveSeconds": "45 sekundes",
+    "settingsThreeSeconds": "3 sekundės",
+    "settingsFortyFiveSeconds": "45 sekundės",
     "settingsSixtySeconds": "60 sekundžių",
     "settingsSkipForwardLengthDescription": "Kiek sekundžių reikia šokti pirmyn paspaudus greito pirmyn mygtuką.",
     "settingsBitstreamAc3ToExternalDecoder": "Bitų srautas AC3 į išorinį dekoderį",
     "settingsCinemaMode": "Kino režimas",
-    "settingsCinemaModeSubtitle": "Žaiskite anonsus / išankstinius įrašus prieš pagrindinę funkciją",
+    "settingsCinemaModeSubtitle": "Prieš pagrindinį turinį paleisti anonsus/reklaminius įrašus",
     "settingsShort": "Trumpas",
     "settingsLong": "Ilgas",
     "settingsVeryLong": "Labai Ilgas",
@@ -6591,14 +6591,14 @@
             }
         }
     },
-    "settingsLiveTvDirect": "Tiesioginė TV tiesioginė",
-    "settingsLiveTvDirectSubtitle": "Įgalinti tiesioginį tiesioginės televizijos atkūrimą",
-    "settingsOpenGroups": "Atidarykite grupes",
-    "settingsOpenGroupsSubtitle": "Kurkite, prisijunkite arba tvarkykite „SyncPlay“ grupes",
-    "settingsSyncplayEnabled": "„SyncPlay“ įjungta",
+    "settingsLiveTvDirect": "Tiesioginės TV atkūrimas be perkodavimo",
+    "settingsLiveTvDirectSubtitle": "Įjungti betarpišką atkūrimą tiesioginei TV",
+    "settingsOpenGroups": "Atidaryti bendrą žiūrėjimą",
+    "settingsOpenGroupsSubtitle": "Pradėkite arba prisijunkite prie vykstančio žiūrėjimo",
+    "settingsSyncplayEnabled": "Bendras žiūrėjimas",
     "settingsSyncplayEnabledSubtitle": "Įgalinti grupės stebėjimo funkcijas",
-    "settingsSyncplayButton": "SyncPlay mygtukas",
-    "settingsSyncplayButtonSubtitle": "Naršymo juostoje parodykite mygtuką SyncPlay",
+    "settingsSyncplayButton": "Bendro žiūrėjimo mygtukas",
+    "settingsSyncplayButtonSubtitle": "Rodyti bendro žiūrėjimo mygtuką naršymo juostoje",
     "settingsSyncplayAdvancedCorrection": "Išplėstinė korekcija",
     "settingsSyncplayAdvancedCorrectionSubtitle": "Įgalinti tikslią sinchronizavimo logiką",
     "settingsSyncplaySyncCorrection": "Sinchronizavimo taisymas",
@@ -6614,7 +6614,7 @@
     "settingsSyncplayExtraOffset": "SyncPlay Papildomas poslinkis",
     "onNow": "Dabar",
     "collections": "Kolekcijos",
-    "lastPlayed": "Paskutinį kartą žaidė",
+    "lastPlayed": "Paskutinį kartą leista",
     "libraryNameWithServer": "{libraryName} ({serverName})",
     "@libraryNameWithServer": {
         "description": "Library name display with server suffix for multi-server views",
@@ -6682,7 +6682,7 @@
     "@seasonalEffectsDescription": {
         "description": "Description for seasonal effects settings"
     },
-    "mediaSources": "Žiniasklaidos šaltiniai",
+    "mediaSources": "Medijos šaltiniai",
     "@mediaSources": {
         "description": "Section heading for media source options"
     },
@@ -7017,17 +7017,17 @@
     "rowsType": "Eilučių tipas",
     "rowsTypeDescription": "„Classic“ išlaiko kiekvienos eilutės vaizdo tipą ir informacijos perdangą. Modernus naudoja portreto ir fono eilutes.",
     "displayFavoritesRows": "Rodyti mėgstamiausių eilutes",
-    "displayFavoritesRowsSubtitle": "Rodyti mėgstamiausius filmus, serialus ir kitas mėgstamiausias eilutes pagrindinio puslapio skiltyse.",
-    "favoritesRowSorting": "Parankinių eilučių rūšiavimas",
-    "favoritesRowSortingDescription": "Rūšiuoti parankinių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.",
+    "displayFavoritesRowsSubtitle": "Rodyti mėgstamus filmus, serialus ir kitas mėgstamų įrašų eilutes pagrindinio ekrano skiltyse.",
+    "favoritesRowSorting": "Mėgstamiausių eilutės rikiavimas",
+    "favoritesRowSortingDescription": "Rikiuoti mėgstamiausių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kt.",
     "displayCollectionsRows": "Rodyti kolekcijų eilutes",
-    "displayCollectionsRowsSubtitle": "Rodyti kolekcijų eilutes pagrindinio puslapio skiltyse.",
-    "collectionsRowSorting": "Rinkinių eilučių rūšiavimas",
-    "collectionsRowSortingDescription": "Rūšiuoti kolekcijų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.",
+    "displayCollectionsRowsSubtitle": "Rodyti kolekcijų eilutes pagrindinio ekrano skiltyse.",
+    "collectionsRowSorting": "Kolekcijų eilučių rikiavimas",
+    "collectionsRowSortingDescription": "Rikiuoti kolekcijų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kt.",
     "displayGenresRows": "Rodyti žanrų eilutes",
-    "displayGenresRowsSubtitle": "Rodyti žanrų eilutes pagrindiniuose skyriuose.",
-    "genresRowSorting": "Žanrai Eilučių rūšiavimas",
-    "genresRowSortingDescription": "Rūšiuoti žanrų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.",
+    "displayGenresRowsSubtitle": "Rodyti žanrų eilutes pagrindinio ekrano skiltyse.",
+    "genresRowSorting": "Žanrų eilutės rikiavimas",
+    "genresRowSortingDescription": "Rikiuoti žanrų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kt.",
     "genresRowItems": "Žanrai Eilutės elementai",
     "genresRowItemsDescription": "Rodyti filmus, serialus arba abu žanrų eilutėse.",
     "appearance": "Išvaizda",
@@ -7048,7 +7048,7 @@
     "alwaysOn": "Visada įjungta.",
     "replaceSkipOutroWithNextUpDisplay": "Pakeiskite Skip Outro į kitą ekraną",
     "replaceSkipOutroWithNextUpDisplaySubtitle": "Vietoj mygtuko Skip Outro rodyti perdangą Next Up.",
-    "playerRouting": "Žaidėjų maršrutas",
+    "playerRouting": "Leistuvo parinkimas",
     "preferSoftwareDecoders": "Pirmenybę teikite programiniams dekoderiams",
     "preferSoftwareDecodersSubtitle": "Prieš aparatūros dekoderius naudokite FFmpeg (garso) ir libgav1 (AV1). Išjungti, jei nutrūksta HDMI garso perdavimas.",
     "useExternalPlayer": "Naudokite išorinį grotuvą",
@@ -7056,9 +7056,9 @@
     "automaticQueuing": "Automatinis eilių sudarymas",
     "preferSdhSubtitles": "Pirmenybė teikiama SDH subtitrams",
     "preferSdhSubtitlesSubtitle": "Automatinio pasirinkimo metu pirmenybę teikite SDH/CC subtitrų takeliams.",
-    "webDiagnostics": "Interneto diagnostika",
-    "webDiagnosticsTitle": "Moonfin Žiniatinklio diagnostika",
-    "webDiagnosticsIntro": "Naudokite šį puslapį norėdami diagnozuoti naršyklės ryšio problemas (CORS, mišraus turinio ir atradimo nustatymus).",
+    "webDiagnostics": "Žiniatinklio diagnostika",
+    "webDiagnosticsTitle": "Moonfin žiniatinklio diagnostika",
+    "webDiagnosticsIntro": "Naudokite šį puslapį norėdami diagnozuoti naršyklės ryšio problemas (CORS, mišraus turinio ir aptikimo nustatymus).",
     "webDiagnosticsDetectedMixedContentFailure": "Aptiktas mišraus turinio gedimas",
     "webDiagnosticsDetectedCorsPreflightFailure": "Aptiktas CORS / išankstinio skrydžio gedimas",
     "webDiagnosticsMixedContentFailureBody": "Moonfin aptiko HTTPS puslapį, bandantį iškviesti HTTP serverio URL. Naršyklės blokuoja šią užklausą, kol ji pasiekia jūsų serverį.",
@@ -7096,13 +7096,13 @@
     "webDiagnosticsNoMixedContentDetected": "Iš dabartinių vykdymo laiko nustatymų neaptikta jokios akivaizdžios mišraus turinio konfigūracijos.",
     "webDiagnosticsCorsChecklist": "CORS kontrolinis sąrašas",
     "webDiagnosticsCorsChecklistItem1": "• Leisti naršyklės kilmę Access-Control-Allow-Origin.",
-    "webDiagnosticsCorsChecklistItem2": "• Įtraukite įgaliojimą, X-Emby-Authorization ir X-Emby-Token į Access-Control-Allow-Headers.",
+    "webDiagnosticsCorsChecklistItem2": "• Įtraukite Authorization, X-Emby-Authorization ir X-Emby-Token į Access-Control-Allow-Headers.",
     "webDiagnosticsCorsChecklistItem3": "• Atskleisti turinio diapazoną ir priimti diapazoną, kad galėtumėte perduoti srautą ir ieškoti elgsenos.",
     "webDiagnosticsCorsChecklistItem4": "• Grąžinkite 204 į OPTIONS išankstinio patikrinimo užklausas.",
     "webDiagnosticsHeaderSnippetTitle": "Antraštės fragmento pavyzdys (nginx stiliaus)",
     "note": "Pastaba",
     "webDiagnosticsNonWebNote": "Šis diagnostikos maršrutas skirtas žiniatinklio kūrimui. Jei tai matote kitoje platformoje, šie patikrinimai gali būti netaikomi.",
-    "backToServerSelect": "Atgal į serverį Pasirinkite",
+    "backToServerSelect": "Atgal į serverio pasirinkimą",
     "signOutAllUsers": "Atsijungti nuo visų vartotojų",
     "voiceSearchPermissionPermanentlyDenied": "Mikrofono leidimas visam laikui atmestas. Įjunkite jį sistemos nustatymuose.",
     "voiceSearchPermissionRequired": "Norint atlikti paiešką balsu, reikalingas mikrofono leidimas.",
@@ -7264,7 +7264,7 @@
     "randomShuffleLabel": "ATSITIKTINIS MAIŠYMAS",
     "genresShuffleLabel": "ŽANRŲ MAIŠYMAS",
     "autoHdrSwitching": "Automatinis HDR perjungimas",
-    "autoHdrSwitchingDescription": "Automatiškai įgalinkite HDR HDR vaizdo įrašams atkurti ir atkurkite rodymo režimą išėjus.",
+    "autoHdrSwitchingDescription": "Automatiškai įjungti HDR leidžiant HDR vaizdo įrašus ir išėjus atkurti ankstesnį vaizdo režimą.",
     "whenFullscreen": "Kai per visą ekraną",
     "transcodingLimits": "Perkodavimo ribos",
     "settingsSupportMoonfinSubtitle": "Pavaišinkite kūrėją kava",
@@ -7284,11 +7284,11 @@
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "detailScreenStyle": "Detalių ekrano stilius",
+    "detailScreenStyle": "Išsamios informacijos ekrano stilius",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klasikinis – originalus centruotas Moonfin išdėstymas. Modernus – prisitaikantis kinematografinis išdėstymas.",
+    "detailScreenStyleSubtitle": "Kaip filmas ar serialas atrodo, kai jį atidarote.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7308,7 +7308,7 @@
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Rodyti techninę informaciją?",
+    "showTechnicalDetails": "Rodyti išsamią techninę informaciją",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -7320,11 +7320,11 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Naudokite Moonfin Recommends vietinės bibliotekos algoritmą arba internetinius TMDB panašumo rodiklius. Pastaba: internetinėms rekomendacijoms reikia Seerr integracijos.",
+    "recommendationSystemSubtitle": "Naudokite „Moonfin rekomenduoja“ vietinės bibliotekos algoritmą, „Serverio rekomendacijas“ iš savo medijos serverio arba internetinius TMDb panašumo rodiklius. Pastaba: internetinėms rekomendacijoms reikalinga Seerr integracija.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "recommendationSystemMoonfin": "Moonfin rekomenduoja",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
@@ -7332,7 +7332,7 @@
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Taikyti amžiaus cenzo ribą?",
+    "recommendationsApplyParentalRatingCap": "Taikyti amžiaus cenzo ribą rekomendacijose",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -7368,7 +7368,7 @@
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
-    "glassQualityAuto": "Automatinis",
+    "glassQualityAuto": "Auto",
     "@glassQualityAuto": {
         "description": "Glass quality option: per-device default"
     },
@@ -7440,7 +7440,7 @@
     "@gameHoldToOpenMenu": {
         "description": "Hint shown while holding the gamepad combo to open the in-game menu"
     },
-    "gamePlaybackUnsupported": "Žaidimai šiame įrenginyje kol kas nepalaikomi.",
+    "gamePlaybackUnsupported": "Šiame įrenginyje žaidimai kol kas nepalaikomas.",
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
@@ -7619,7 +7619,7 @@
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "settingsScrollWheelAction": "Pelės slinkties ratukas",
+    "settingsScrollWheelAction": "Pelės ratukas",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
@@ -7747,11 +7747,11 @@
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 erdvinis",
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Erdvinis",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 erdvinis",
+    "settingsMaxAudioChannels5_1": "5.1 Erdvinis",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
@@ -7791,7 +7791,7 @@
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "Automatiškai įkelia ir rodo subtitrus kaskart, kai pradedamas vaizdo įrašas.",
+    "subtitleModeAlwaysDescription": "Automatiškai įkelia ir rodo subtitrus kiekvieną kartą paleidus vaizdo įrašą.",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
@@ -7817,7 +7817,7 @@
     },
     "reportDownloadsActivity": "Rodyti atsisiuntimus serveryje",
     "reportDownloadsActivitySubtitle": "Leisti serverio administratoriui matyti jūsų perkoduotus atsisiuntimus valdymo skydelyje",
-    "navbarAlwaysExpanded": "Visada rodyti naršymo juostos pavadinimus",
+    "navbarAlwaysExpanded": "Visada rodyti naršymo juostos užrašus",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
@@ -7825,11 +7825,11 @@
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "groupItemsIntoCollections": "Grupuoti elementus į rinkinius",
+    "groupItemsIntoCollections": "Grupuoti elementus į kolekcijas",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Naršant bibliotekas slėpti su rinkiniais susietus bibliotekos elementus",
+    "hideCollectionAssociatedItems": "Slėpti kolekcijoms priskirtus bibliotekos elementus naršant bibliotekas",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
@@ -7837,7 +7837,7 @@
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "Kad galėtumėte naudoti šį nustatymą, savo Jellyfin arba Emby serveryje, bibliotekos rodymo nustatymuose, įjunkite bibliotekos parinktį „Grupuoti filmus į rinkinius“ ir (arba) „Grupuoti serialus į rinkinius“.",
+    "groupItemsIntoCollectionsDialogMessage": "Norėdami naudoti šį nustatymą, įsitikinkite, kad Jellyfin ar Emby serverio bibliotekos rodymo nustatymuose įjungti bibliotekos nustatymai Grupuoti filmus į kolekcijas ir (arba) Grupuoti serialus į kolekcijas.",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
@@ -7877,7 +7877,7 @@
     "@seerrNotificationsSection": {
         "description": "Header for the Seerr notifications settings section"
     },
-    "seerrNotifyNewRequestsTitle": "Pranešimai apie naujas užklausas",
+    "seerrNotifyNewRequestsTitle": "Naujų užklausų pranešimai",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
@@ -7885,7 +7885,7 @@
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Užklausų naujienos",
+    "seerrNotifyLibraryAddedTitle": "Užklausų atnaujinimai",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
@@ -7893,7 +7893,7 @@
     "@seerrNotifyLibraryAddedSubtitle": {
         "description": "Subtitle for the library-added notifications toggle"
     },
-    "seerrNotifyIssuesTitle": "Problemų naujienos",
+    "seerrNotifyIssuesTitle": "Problemų atnaujinimai",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
@@ -7910,7 +7910,7 @@
             }
         }
     },
-    "imageCacheLimit": "Vaizdų talpyklos limitas",
+    "imageCacheLimit": "Vaizdų talpyklos riba",
     "clearImageCache": "Išvalyti vaizdų talpyklą",
     "imageCacheCleared": "Vaizdų talpykla išvalyta",
     "seerrDownloadingPercent": "Atsisiunčiama · {percent}%",
@@ -8011,7 +8011,7 @@
             }
         }
     },
-    "partOfCollectionName": "Priklauso rinkiniui {name}",
+    "partOfCollectionName": "Iš „{name}“",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8020,11 +8020,11 @@
             }
         }
     },
-    "viewCollection": "Peržiūrėti rinkinį",
+    "viewCollection": "Peržiūrėti kolekciją",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Pateikti rinkinio užklausą",
+    "requestCollection": "Užklausti kolekciją",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
@@ -8049,7 +8049,7 @@
             }
         }
     },
-    "requestingProgress": "Pateikiama {current} iš {total}...",
+    "requestingProgress": "Prašoma {current} iš {total}...",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8250,7 +8250,7 @@
     "adminLibPathSubstitution": "Įjungti NFO vaizdų kelių pakeitimą",
     "adminLibExtraThumbs": "Kopijuoti extrafanart vaizdus į extrathumbs aplanką",
     "adminLibNone": "Nėra",
-    "adminLibRefreshDays": "{days} d.",
+    "adminLibRefreshDays": "{days} dienų",
     "@adminLibRefreshDays": {
         "placeholders": {
             "days": {
@@ -8369,7 +8369,7 @@
     "adminTunerResetNotSupported": "Šio tipo imtuvas nepalaiko atstatymo.",
     "adminMovieRecordingPath": "Filmų įrašymo kelias",
     "adminGuideDays": "Gido duomenų dienos",
-    "adminGuideDaysAuto": "Automatiškai",
+    "adminGuideDaysAuto": "Automatinis",
     "adminGuideDaysValue": "{days} d.",
     "@adminGuideDaysValue": {
         "placeholders": {
@@ -8438,7 +8438,7 @@
     "adminPlaybackDownmixBoost": "Garso sumaišymo stiprinimas",
     "adminPlaybackDownmixAlgorithm": "Stereo sumaišymo algoritmas",
     "adminPlaybackMaxMuxingQueue": "Didžiausias multipleksavimo eilės dydis",
-    "adminPlaybackAutoOption": "Automatiškai",
+    "adminPlaybackAutoOption": "Auto",
     "adminRunningTasks": "Vykdomos užduotys",
     "adminNetworkingPublicHttpPort": "Viešasis HTTP prievadas",
     "adminNetworkingRequireHttps": "Reikalauti HTTPS",
@@ -8455,7 +8455,7 @@
     "adminPlaybackThrottleDelay": "Ribojimo delsa (sekundėmis)",
     "adminPlaybackEnableSubtitleExtraction": "Leisti išgauti subtitrus realiuoju laiku",
     "adminGeneralEnableSlowResponse": "Įjungti įspėjimus apie lėtą atsaką",
-    "adminGeneralQuickConnect": "Įjungti Quick Connect",
+    "adminGeneralQuickConnect": "Įjungti greitąjį prisijungimą",
     "adminGeneralSectionServer": "Serveris",
     "adminGeneralSectionMetadata": "Metaduomenys",
     "adminGeneralSectionPaths": "Keliai",
@@ -8473,7 +8473,7 @@
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Pridėti į rinkinį",
+    "contextMenuAddToCollection": "Pridėti į kolekciją",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
@@ -8562,13 +8562,13 @@
     "homeRowTogglesSubtitle": "Įjunkite arba išjunkite bibliotekomis pagrįstas pradžios ekrano eilučių kategorijas",
     "homeRowTogglesDescription": "Įjunkite toliau esančius jungiklius, kad eilutės būtų rodomos pradžios ekrano skiltyse.",
     "displayPlaylistsRows": "Rodyti grojaraščių eilutes",
-    "displayPlaylistsRowsSubtitle": "Rodyti grojaraščių eilutes pradžios ekrano skiltyse.",
+    "displayPlaylistsRowsSubtitle": "Rodyti grojaraščių eilutes pagrindinio ekrano skiltyse.",
     "playlistsRowSorting": "Grojaraščių eilučių rikiavimas",
-    "playlistsRowSortingDescription": "Rikiuokite grojaraščių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kitus kriterijus.",
+    "playlistsRowSortingDescription": "Rikiuoti grojaraščių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kt.",
     "displayAudioRows": "Rodyti garso eilutes",
-    "displayAudioRowsSubtitle": "Rodyti garso eilutes pradžios ekrano skiltyse.",
+    "displayAudioRowsSubtitle": "Rodyti garso įrašų eilutes pagrindiniame ekrane.",
     "audioRowsSorting": "Garso eilučių rikiavimas",
-    "audioRowsSortingDescription": "Rikiuokite garso eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kitus kriterijus.",
+    "audioRowsSortingDescription": "Rikiuoti garso įrašų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kt.",
     "audioPlaylists": "Garso grojaraščiai",
     "layout": "Išdėstymas",
     "theme": "Tema",
@@ -8635,7 +8635,7 @@
     "bannerCategory": "Reklamjuostė",
     "logoCategory": "Logotipas",
     "thumbnailCategory": "Miniatiūra",
-    "artCategory": "Grafika",
+    "artCategory": "Iliustracija",
     "discArtCategory": "Disko grafika",
     "screenshotCategory": "Ekrano kopija",
     "boxCoverCategory": "Dėžutės viršelis",
@@ -8652,7 +8652,7 @@
     "confirmItemBoxCover": "dėžutės viršelis",
     "confirmItemBoxRearCover": "dėžutės galinis viršelis",
     "confirmItemMenuArt": "meniu grafika",
-    "resolutionAll": "Visos",
+    "resolutionAll": "Visi",
     "resolutionHigh": "Aukšta (1080p+)",
     "resolutionMedium": "Vidutinė (720p)",
     "resolutionLow": "Žema (<720p)",
@@ -9033,7 +9033,7 @@
     "@performanceMode": {
         "description": "Label for the device performance setting"
     },
-    "performanceModeAuto": "Automatinis",
+    "performanceModeAuto": "Auto",
     "@performanceModeAuto": {
         "description": "Performance option: measure the device"
     },
@@ -9085,7 +9085,7 @@
     "@spotlightCollectionsCard": {
         "description": "Title of the spotlight summary card that opens the parent collections modal"
     },
-    "keyNameHome": "Pradžia",
+    "keyNameHome": "Pagrindinis",
     "@keyNameHome": {
         "description": "Key cap label for the Home key"
     },
@@ -9197,7 +9197,7 @@
     "@detailSectionSeerrRecommendations": {
         "description": "Details screen Seerr section: recommended titles"
     },
-    "detailSectionSeerrPersonAppearances": "Filmografija",
+    "detailSectionSeerrPersonAppearances": "Vaidmenys",
     "@detailSectionSeerrPersonAppearances": {
         "description": "Details screen Seerr section: a person's appearances"
     },
@@ -9221,11 +9221,11 @@
     "@playlistSortRuntime": {
         "description": "Label for sorting playlist items by runtime"
     },
-    "playlistSortLastPlayed": "Paskutinį kartą žaidė",
+    "playlistSortLastPlayed": "Paskutiniai paleisti",
     "@playlistSortLastPlayed": {
         "description": "Label for sorting playlist items by last played date"
     },
-    "rendererModeAuto": "Automatinis",
+    "rendererModeAuto": "Auto",
     "@rendererModeAuto": {
         "description": "Renderer option: let the app choose per device"
     },
@@ -9263,8 +9263,8 @@
     "@homeRowsExternalLists": {
         "description": "Home Rows editor: heading of the group of disabled rows from IMDb, TMDB, Letterboxd and MDBList lists"
     },
-    "adminEmbyConnect": "Emby Prisijunkite",
-    "adminTranscodingHwaAdvanced": "Išplėstinė",
+    "adminEmbyConnect": "Emby Connect",
+    "adminTranscodingHwaAdvanced": "Išplėstiniai",
     "musicLibraryStyleClassic": "Klasikinis",
     "@musicLibraryStyleClassic": {
         "description": "Music library style option: the original rows"
@@ -9374,7 +9374,7 @@
     "@bottomNavbarTabsAutomatic": {
         "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
     },
-    "chatAdmin": "Administravimas",
+    "chatAdmin": "Administratorius",
     "@chatAdmin": {
         "description": "Marks a group chat admin"
     },
@@ -9419,7 +9419,7 @@
     "@keyboardStyleGlass": {
         "description": "Keyboard style option: a frosted glass panel with larger keys"
     },
-    "sinceYouWatchedSourceLocal": "Moonfin Recommends",
+    "sinceYouWatchedSourceLocal": "Moonfin rekomenduoja",
     "sinceYouWatchedSourceOnline": "TMDb panašumas",
     "calendarSettingsView": "Žiūrėti",
     "@calendarSettingsView": {
@@ -9436,5 +9436,464 @@
     "afterHoursStart": "Pradžia",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "Klasikinis",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Klasikinis",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "carRecentlyPlayed": "Neseniai leista",
+    "@carRecentlyPlayed": {
+        "description": "Car shelf and tile listing the music played most recently"
+    },
+    "quickConnectScanHint": "Arba nuskaitykite tai telefonu, kuriame esate prisijungę prie savo serverio",
+    "@quickConnectScanHint": {
+        "description": "Caption under the Quick Connect QR code that opens the server's web page with the code filled in"
+    },
+    "quickConnectTapOrScanHint": "Bakstelėkite naršyklėje, kad patvirtintumėte, arba nuskaitykite tai kitu įrenginiu",
+    "@quickConnectTapOrScanHint": {
+        "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
+    },
+    "sinceYouWatchedSourceServer": "Serveris rekomenduoja",
+    "recommendationSystemJellyfin": "Serveris rekomenduoja",
+    "@recommendationSystemJellyfin": {
+        "description": "Recommendation system option: Server Recommends"
+    },
+    "scrollDirectionVertical": "Vertikali",
+    "@scrollDirectionVertical": {
+        "description": "Library scroll direction option: vertical grid (default)"
+    },
+    "homeRowsPadding": "Eilučių paraštės",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "addToWatchlist": "Pridėti į peržiūrų sąrašą",
+    "@addToWatchlist": {
+        "description": "Button label to add media to the user's Seerr watchlist"
+    },
+    "detailButtons": "Veiksmų mygtukai",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "playlistTypeAudio": "Garsas (Muzika)",
+    "@playlistTypeAudio": {
+        "description": "Filter checkbox label for audio/music playlists"
+    },
+    "audiobookPlaylistsSection": "Garso knygų grojaraščiai",
+    "@audiobookPlaylistsSection": {
+        "description": "Section header above audiobook playlists when Group by Type is enabled"
+    },
+    "mixedPlaylistsSection": "Mišrūs grojaraščiai",
+    "@mixedPlaylistsSection": {
+        "description": "Section header above mixed playlists when Group by Type is enabled"
+    },
+    "playbackTimeVideoSection": "Vaizdo leistuvas",
+    "@playbackTimeVideoSection": {
+        "description": "Section header above the video progress bar time slots"
+    },
+    "playbackTimeAboveBarLeft": "Virš juostos, kairėje",
+    "@playbackTimeAboveBarLeft": {
+        "description": "Progress bar time slot above the bar on the left"
+    },
+    "playbackTimeAboveBarCenter": "Virš juostos, centre",
+    "@playbackTimeAboveBarCenter": {
+        "description": "Progress bar time slot above the bar in the center"
+    },
+    "playbackTimeAboveBarRight": "Virš juostos, dešinėje",
+    "@playbackTimeAboveBarRight": {
+        "description": "Progress bar time slot above the bar on the right"
+    },
+    "settingsSkipButtonAutoHideDescription": "Automatiškai paslėpti įžangos ir pabaigos praleidimo mygtuką po kelių sekundžių.",
+    "personalRatingStars": "5 žvaigždės",
+    "@personalRatingStars": {
+        "description": "Personal rating style using a five-star scale."
+    },
+    "ascending": "Didėjančia tvarka",
+    "audioLanguage": "Garso kalba",
+    "@audioLanguage": {
+        "description": "Heading for the audio language filters in the library filter picker."
+    },
+    "setupTourBulletMore": "Ir dar daugiau",
+    "@setupTourBulletMore": {
+        "description": "Closing bullet on the setup screen settings list"
+    },
+    "autoDetect": "Aptikti automatiškai",
+    "@autoDetect": {
+        "description": "Option: detect the value automatically"
+    },
+    "adminMetadataDisplayOrderAbsolute": "Absoliutus",
+    "adminMetadataPersonKindArtist": "Atlikėjas",
+    "aiTranslated": "DI vertimas",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "loadingAnimationSize": "Animacijos dydis",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationPosition": "Animacijos vieta",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationSpeed": "Animacijos greitis",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "screensaverBackdropAurora": "Aurora",
+    "@screensaverBackdropAurora": {
+        "description": "Screensaver backdrop: Aurora"
+    },
+    "screensaverAdditionalComponent": "Papildomas komponentas",
+    "@screensaverAdditionalComponent": {
+        "description": "Setting for screensaver additional component"
+    },
+    "comics": "Komiksai",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "spotlightRecommendationsSeerr": "Rekomendacijos (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "transcodeAudioCodecWithCodec": "Garso kodekas ({codec}) nepalaikomas tiesiogiai.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioChannelsExceeded": "Garso kanalų skaičius ({channels} kan.) viršija grotuvo limitą.",
+    "@transcodeAudioChannelsExceeded": {
+        "placeholders": {
+            "channels": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeSubtitleBurnInAssDisabled": "ASS/SSA subtitrams reikalingas perkodavimas, nes išjungtas tiesioginis atkūrimas.",
+    "transcodeAudioSampleRateNotSupported": "Garso diskretizavimo dažnis nepalaikomas.",
+    "transcodeAudioBitDepthNotSupported": "Garso bitų gylis nepalaikomas.",
+    "modernCardsTransitionSpeedSubtitle": "Reguliuoja animacijos greitį išplečiant pažymėtas šiuolaikines korteles",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "actionButtonsOnScreen": "Veiksmų mygtukai ekrane",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (tik paleidimas)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "achievementBadges": "Pasiekimų ženkliukai",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "achievementsAvatars": "Avatarai",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsStatLibraries": "Aplankytos bibliotekos",
+    "@achievementsStatLibraries": {
+        "description": "Counter label"
+    },
+    "friendsAdd": "Pridėti draugą",
+    "@friendsAdd": {
+        "description": "Entry that opens the people search"
+    },
+    "friendsAccept": "Priimti",
+    "@friendsAccept": {
+        "description": "Accept a friend request"
+    },
+    "friendsSendRequest": "Pridėti kaip draugą",
+    "@friendsSendRequest": {
+        "description": "Action that sends a friend request to someone"
+    },
+    "chatAddMember": "Pridėti žmonių",
+    "@chatAddMember": {
+        "description": "Action that adds friends to a group chat"
+    },
+    "achievementsUnlockedNotification": "Pasiekimas atrakintas",
+    "@achievementsUnlockedNotification": {
+        "description": "Title of the notification for one newly unlocked badge"
+    },
+    "spotlightFileDetails": "Failo išsamioji informacija",
+    "@spotlightFileDetails": {
+        "description": "Title of the spotlight summary card that opens the file details modal"
+    },
+    "profileAppliesEverywhere": "Taikoma visur",
+    "@profileAppliesEverywhere": {
+        "description": "Subtitle of the Global settings profile card"
+    },
+    "homeRows": "Eilutės",
+    "@homeRows": {
+        "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+    },
+    "rowOptions": "Eilučių parinktys",
+    "@rowOptions": {
+        "description": "Settings screen with sorting and content options for each Home row"
+    },
+    "settingsAudioAndSubtitlesSection": "Garsas ir subtitrai",
+    "@settingsAudioAndSubtitlesSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "additionalParts": "Papildomos dalys",
+    "@additionalParts": {
+        "description": "Heading for the other files of a movie split across several files, like DVD1 and DVD2"
+    },
+    "libraryAToZ": "Nuo A iki Ž",
+    "@libraryAToZ": {
+        "description": "Library bottom bar button that turns the alphabet on and off"
+    },
+    "adminExternalIdTypeArtist": "Atlikėjas",
+    "adminExternalIdTypeAlbumArtist": "Albumo atlikėjas",
+    "librarySortAlbumArtist": "Albumo atlikėjas",
+    "@librarySortAlbumArtist": {
+        "description": "Sort option for music: by album artist"
+    },
+    "librarySortArtist": "Atlikėjas",
+    "@librarySortArtist": {
+        "description": "Sort option for music: by track artist"
+    },
+    "playbackInfoSurround51": "5.1 erdvinis",
+    "@playbackInfoSurround51": {
+        "description": "Playback information value: six channel surround audio"
+    },
+    "playbackInfoSurround71": "7.1 erdvinis",
+    "@playbackInfoSurround71": {
+        "description": "Playback information value: eight channel surround audio"
+    },
+    "recordPromptAlreadyScheduled": "Jau suplanuota įrašyti",
+    "@recordPromptAlreadyScheduled": {
+        "description": "Note in the future showing's card when a recording is already scheduled for it, by anyone"
+    },
+    "peekHomeRows": "Pradinio ekrano eilučių užuomina",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "allArtists": "Visi atlikėjai",
+    "@allArtists": {
+        "description": "Artists screen switch: every artist, not only those credited on albums"
+    },
+    "allSongsAToZ": "Visos dainos nuo A iki Ž",
+    "@allSongsAToZ": {
+        "description": "Songs screen button that opens the full list of songs by name"
+    },
+    "musicMixEverythingSubtitle": "300 atsitiktinių dainų",
+    "@musicMixEverythingSubtitle": {
+        "description": "Line under the Everything mix card"
+    },
+    "sinceYouWatchedSource": "Rekomendacijų šaltinis",
+    "sinceYouWatchedSourceTypeDescription": "Pasirinkite rekomenduojamų elementų tipą",
+    "sinceYouWatchedSourceItemDescription": "Pasirinkite šaltinio elementą, pagal kurį bus teikiamos rekomendacijos",
+    "sinceYouWatchedIncludeWatchedSubtitle": "Įtraukti peržiūrėtus elementus į rekomendacijas",
+    "calendarAllDay": "Visą dieną",
+    "@calendarAllDay": {
+        "description": "Time column of a calendar entry with no time of day, like a movie release"
+    },
+    "setupMoonbaseTitle": "Pridėti Moonbase prie jūsų serverį",
+    "@setupMoonbaseTitle": {
+        "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+    },
+    "moonbaseFeatureCalendar": "Kalendorius: kas pasirodys netrukus",
+    "@moonbaseFeatureCalendar": {
+        "description": "Moonbase dialog feature, upcoming episodes and movies"
+    },
+    "watchPartyReplyAgain": "Dar kartą!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "settingsAudioStreamSection": "Garso srautas",
+    "@settingsAudioStreamSection": {
+        "description": "Section header on the Audio settings screen for the default audio track choices"
+    },
+    "settingsAudioOutputSection": "Garso išvestis",
+    "@settingsAudioOutputSection": {
+        "description": "Section header on the Audio settings screen for the passthrough mode"
+    },
+    "pluginConnected": "Prisijungta",
+    "@pluginConnected": {
+        "description": "Status line on the Settings Sync screen when the server plugin answers"
+    },
+    "achievementsQuestReward": "+{points}",
+    "@achievementsQuestReward": {
+        "description": "Points a quest pays out",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "autoDownloadDeleteAfterDay": "1 diena po žiūrėjimo",
+    "@autoDownloadDeleteAfterDay": {
+        "description": "Delete-after-watching option"
+    },
+    "adminMetadataField3DFormat": "3D formatas",
+    "watchPartyPinDigits": "nuo 4 iki 8 skaičių",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "adminMetadataPersonKindActor": "Aktorius",
+    "adminAreasLabel": "Administratoriaus sritys",
+    "adminMetadataPersonKindAlbumArtist": "Albumo atlikėjas",
+    "adminMetadataFieldAlbumArtists": "Albumo atlikėjai",
+    "downloadAllEpisodes": "Visas serijas",
+    "@downloadAllEpisodes": {
+        "description": "Download scope option: every episode of a series or season"
+    },
+    "adminDeleteFromAllLibraries": "Visos bibliotekos",
+    "downloadAllMovies": "Visi filmai",
+    "@downloadAllMovies": {
+        "description": "Download scope option: every movie in a collection"
+    },
+    "sonarrCalendarShowEpisodeInfo": "Rodyti serijos informaciją",
+    "@sonarrCalendarShowEpisodeInfo": {
+        "description": "Shows the season and episode number in the Sonarr calendar row"
+    },
+    "settingsDateFormat": "Datos formatas",
+    "dateFormatDayMonth": "Diena / Mėnuo (10 lapkr.)",
+    "dateFormatSystem": "Numatytoji lokalė",
+    "dateFormatMonthDay": "Mėnuo / Diena (Lapkr. 10)",
+    "settingsDateFormatDescription": "Pasirinkite kalendoriaus ir išleidimo datų formatą: mėnuo–diena, diena–mėnuo arba numatytasis pagal lokalę",
+    "dateCreatedFormat": "Pridėjimo data:{date}",
+    "@dateCreatedFormat": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "groupByTitle": "Grupuoti pagal",
+    "@groupByTitle": {
+        "description": "Dialog title and button label for library group by options"
+    },
+    "groupByType": "Grupuoti pagal tipą",
+    "@groupByType": {
+        "description": "Checkbox label to group playlists by their media type category"
+    },
+    "groupByParentalRating": "Amžiaus cenzas",
+    "@groupByParentalRating": {
+        "description": "Option to group library items by parental rating"
+    },
+    "groupByStudio": "Studija",
+    "@groupByStudio": {
+        "description": "Option to group library items by production studio"
+    },
+    "groupByDecade": "Dešimtmetis (metai)",
+    "@groupByDecade": {
+        "description": "Option to group library items by release decade"
+    },
+    "detailMetadataParentalRating": "Amžiaus cenzas",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "adminMetadataLockFieldOfficialRating": "Amžiaus cenzas",
+    "librarySortParentalRating": "Amžiaus cenzas",
+    "@librarySortParentalRating": {
+        "description": "Sort option: by parental (age) rating such as PG-13"
+    },
+    "adminPlayMethodDirectStream": "Tiesioginis srautinis perdavimas",
+    "adminPlayMethodDirectPlay": "Atkuriama tiesiogiai",
+    "watchParties": "Bendras žiūrėjimas",
+    "@watchParties": {
+        "description": "Name of the feature: the settings page, the screen with the room list and the Home row"
+    },
+    "watchPartyStartWith": "Pradėti bendrą žiūrėjimą su",
+    "@watchPartyStartWith": {
+        "description": "Setting on Jellyfin that picks what kind of party the user starts: a Moonbase Watch Party or a SyncPlay group"
+    },
+    "watchPartyRoomsEmpty": "Čia rodomi bendri žiūrėjimai, prie kurių galite prisijungti. Turite kodą? Pasirinkite „Prisijungti su kodu“.",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyJoinWithCode": "Prisijungti su kodu",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "addServerButtonSubtitle": "Pagal adresą arba naudojant Plex ar Emby Connect paskyrą",
+    "@addServerButtonSubtitle": {
+        "description": "Second line of the Add Server button on the server screen"
+    },
+    "addServerChooseHow": "Pasirinkite, kaip norite prisijungti.",
+    "@addServerChooseHow": {
+        "description": "Subtitle of the first step of the Add Server dialog"
+    },
+    "signInWithPlex": "Prisijungti su Plex",
+    "@signInWithPlex": {
+        "description": "Plex sign-in option label and title of the Plex sign-in screen"
+    },
+    "plexSignInWithPassword": "Prisijungti su slaptažodžiu",
+    "@plexSignInWithPassword": {
+        "description": "Button on the Plex sign-in screen that swaps the code for an email or username and password form"
+    },
+    "signingIn": "Prisijungiama...",
+    "@signingIn": {
+        "description": "Shown under the user list while a tapped user is being signed in"
+    },
+    "addServerPlexChoice": "Raskite savo Plex serverius prisijungę prie paskyros",
+    "@addServerPlexChoice": {
+        "description": "Add Server dialog: what the Sign in with Plex option does"
+    },
+    "addServerAddressHelp": "Tas pats adresas, kurį atvertumėte naršyklėje, kartu su prievadu.",
+    "@addServerAddressHelp": {
+        "description": "Add Server dialog: help under the Connect to Server title"
+    },
+    "addServerDetectNote": "Veikia su Jellyfin, Emby ir Silo. Įvedus Plex adresą, atsidarys Plex prisijungimas.",
+    "@addServerDetectNote": {
+        "description": "Add Server dialog: note under the address field"
+    },
+    "addServerFoundNote": "Tęskite ir pasirinkite, kas prisijungia.",
+    "@addServerFoundNote": {
+        "description": "Add Server dialog: under the server that was found"
+    },
+    "addServerUseDifferentAddress": "Naudoti kitą adresą",
+    "@addServerUseDifferentAddress": {
+        "description": "Add Server dialog: goes back to the address field instead of keeping the server that was found"
+    },
+    "setupStepOf": "Žingsnis {current} iš {total}",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupSkip": "Praleisti sąranką",
+    "@setupSkip": {
+        "description": "Leaves the first-run setup wizard without answering anything"
+    },
+    "setupNavbarQuestion": "Kur turėtų būti naršymo juosta?",
+    "@setupNavbarQuestion": {
+        "description": "Setup question asking where the navigation bar should sit"
+    },
+    "setupCurrent": "Dabar",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "setupHomeRowsQuestion": "Kaip turėtų atrodyti jūsų eilutės?",
+    "@setupHomeRowsQuestion": {
+        "description": "Setup wizard question for the home row style"
+    },
+    "homeRowsStyleCarousel": "Karuselė",
+    "@homeRowsStyleCarousel": {
+        "description": "Name of the home row style that shows a large details panel under each row's posters"
+    },
+    "setupRowsCarouselHint": "Plakatai su dideliu informacijos skydeliu apačioje.",
+    "@setupRowsCarouselHint": {
+        "description": "What the carousel home row style gives you"
+    },
+    "setupMediaBarQuestion": "Kaip turėtų atrodyti jūsų pagrindinio ekrano viršus?",
+    "@setupMediaBarQuestion": {
+        "description": "Setup wizard question for the media bar style"
+    },
+    "setupDetailQuestion": "Kaip turėtų atrodyti filmas ar serialas, kai jį atidarote?",
+    "@setupDetailQuestion": {
+        "description": "Setup wizard question for the detail screen style"
     }
 }

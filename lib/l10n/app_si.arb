@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "NFO සැකසීම්",
     "adminActivitySeverityAll": "සියලු බරපතළකම්",
     "adminActivityDateRange": "දින පරාසය",
-    "adminRemoveDeviceConfirm": "'{name}' උපාංගය ඉවත් කරන්නද? පරිශීලකයාට මෙම උපාංගයේ නැවත පුරන්නට සිදුවේ.",
+    "adminRemoveDeviceConfirm": "\"{name}\" උපාංගය ඉවත් කරන්නද? පරිශීලකයාට මෙම උපාංගයේ නැවත පුරන්නට සිදුවේ.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "ඔබේ '{libraryName}' පුස්තකාලය කලා නිර්මාණ කෙලින්ම මාධ්‍ය ෆෝල්ඩරවලට සුරැකීමට වින්‍යාස කර ඇත ('Save artwork into media folders' සබලයි). කෙසේ වෙතත්, Jellyfin ලිවීමේ ප්‍රවේශය පරීක්ෂා කර ඇති අතර මෙම නාමාවලියට ගොනු ලිවීමට අවසරයක් නැත:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "ඔබේ \"{libraryName}\" පුස්තකාලය කලා නිර්මාණ කෙලින්ම මාධ්‍ය ෆෝල්ඩරවලට සුරැකීමට වින්‍යාස කර ඇත ('Save artwork into media folders' සබලයි). කෙසේ වෙතත්, Jellyfin ලිවීමේ ප්‍රවේශය පරීක්ෂා කර ඇති අතර මෙම නාමාවලියට ගොනු ලිවීමට අවසරයක් නැත:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -9436,5 +9436,13 @@
     "afterHoursStart": "ආරම්භය",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "සම්භාව්‍ය",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "සම්භාව්‍ය",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

@@ -599,6 +599,14 @@
   "@showTechnicalDetailsSubtitle": {
     "description": "Explanation under the show technical details setting"
   },
+  "detailShowFullDate": "Show Full Date",
+  "@detailShowFullDate": {
+    "description": "Label for the detail screen setting to show full release or air dates instead of only the year"
+  },
+  "detailShowFullDateSubtitle": "Show the full release or air date instead of only the year on details pages",
+  "@detailShowFullDateSubtitle": {
+    "description": "Explanation under the show full date setting"
+  },
   "recommendationSystem": "Recommendation System",
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"
@@ -2599,6 +2607,18 @@
   "carServerUnreachable": "Can't reach your server",
   "@carServerUnreachable": {
     "description": "Shown in the car when the media server can't be reached"
+  },
+  "carListenNow": "Listen Now",
+  "@carListenNow": {
+    "description": "Car tab with quick starts, recently played and in-progress items"
+  },
+  "carRecentlyPlayed": "Recently Played",
+  "@carRecentlyPlayed": {
+    "description": "Car shelf and tile listing the music played most recently"
+  },
+  "carInstantMix": "Instant Mix",
+  "@carInstantMix": {
+    "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
   },
   "downloadsCount": "{count} downloads",
   "@downloadsCount": {
@@ -5622,6 +5642,14 @@
   "settingsAudioPassthroughOutputPlatform": "Automatic, system packer (AudioTrack RAW)",
   "settingsAudioPassthroughOutputIec": "App packer (AudioTrack IEC)",
   "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+  "settingsAudioPassthroughFallback": "Decode Silent Passthrough",
+  "@settingsAudioPassthroughFallback": {
+    "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+  },
+  "settingsAudioPassthroughFallbackDescription": "If the output can't play a passthrough track and stays silent, decode it on this device instead.",
+  "@settingsAudioPassthroughFallbackDescription": {
+    "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+  },
   "settingsDownmixToStereoDescription": "Mix all decoded audio down to two channels.",
   "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, including Dolby Atmos (JOC).",
   "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, including DTS:X.",
@@ -17963,5 +17991,369 @@
   "clickpadSeekingPausedOnly": "Only while paused",
   "@clickpadSeekingPausedOnly": {
     "description": "Option of the Apple TV clickpad seeking setting: the remote seeks only while playback is paused and the controls are on screen"
+  },
+  "topNavbarStyle": "Top Bar Style",
+  "@topNavbarStyle": {
+    "description": "Settings title for choosing how the top navigation bar looks"
+  },
+  "topNavbarStyleClassic": "Classic",
+  "@topNavbarStyleClassic": {
+    "description": "Top bar style: the standard centered pill of icon buttons"
+  },
+  "topNavbarStyleTabline": "Tabline",
+  "@topNavbarStyleTabline": {
+    "description": "Top bar style: text tabs with an underline and no container"
+  },
+  "topNavbarStyleAtlas": "Atlas",
+  "@topNavbarStyleAtlas": {
+    "description": "Top bar style: a solid bar whose tabs open a panel of shortcuts and artwork"
+  },
+  "topNavbarStyleClassicHint": "The standard bar",
+  "@topNavbarStyleClassicHint": {
+    "description": "Hint under the Classic top bar style option"
+  },
+  "topNavbarStyleTablineHint": "Text tabs with an underline, no pill",
+  "@topNavbarStyleTablineHint": {
+    "description": "Hint under the Tabline top bar style option"
+  },
+  "topNavbarStyleAtlasHint": "Tabs open a panel with shortcuts and artwork",
+  "@topNavbarStyleAtlasHint": {
+    "description": "Hint under the Atlas top bar style option"
+  },
+  "sidebarStyle": "Sidebar Style",
+  "@sidebarStyle": {
+    "description": "Settings title for choosing how the left sidebar looks"
+  },
+  "sidebarStyleClassic": "Classic",
+  "@sidebarStyleClassic": {
+    "description": "Sidebar style: the standard rail that grows into a labeled list"
+  },
+  "sidebarStyleReel": "Reel",
+  "@sidebarStyleReel": {
+    "description": "Sidebar style: a wheel of destinations that turns through a fixed focus window"
+  },
+  "sidebarStyleMosaic": "Mosaic",
+  "@sidebarStyleMosaic": {
+    "description": "Sidebar style: a panel of tiles with each library shown by its artwork"
+  },
+  "sidebarStyleClassicHint": "The standard sidebar",
+  "@sidebarStyleClassicHint": {
+    "description": "Hint under the Classic sidebar style option"
+  },
+  "sidebarStyleReelHint": "A wheel that turns through the destinations",
+  "@sidebarStyleReelHint": {
+    "description": "Hint under the Reel sidebar style option"
+  },
+  "sidebarStyleMosaicHint": "A panel of tiles with library artwork",
+  "@sidebarStyleMosaicHint": {
+    "description": "Hint under the Mosaic sidebar style option"
+  },
+  "navContinueIn": "Continue in {section}",
+  "@navContinueIn": {
+    "description": "Heading over the items to resume in one library, shown in the Atlas top bar panel",
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "navFeatured": "Featured: {title}",
+  "@navFeatured": {
+    "description": "Caption on the Home tile of the Mosaic sidebar naming what the home screen features",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "navOpenMenu": "Open menu",
+  "@navOpenMenu": {
+    "description": "Accessibility label of the button that opens the Reel or Mosaic sidebar"
+  },
+  "navReelSwipeHint": "Swipe to turn it, tap the middle to go",
+  "@navReelSwipeHint": {
+    "description": "Hint at the bottom of the Reel sidebar on phones"
+  },
+  "siloSectionBecauseYouEnjoy": "Because you enjoy {genres}",
+  "@siloSectionBecauseYouEnjoy": {
+    "description": "Title of a row a Silo server offers for Home. {genres}: one or more genre names joined by the server, not translated",
+    "placeholders": {
+      "genres": {
+        "type": "String"
+      }
+    }
+  },
+  "siloSectionBecauseYouWatched": "Because You Watched",
+  "@siloSectionBecauseYouWatched": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionBecauseYouWatchedTitle": "Because You Watched {title}",
+  "@siloSectionBecauseYouWatchedTitle": {
+    "description": "Title of a row a Silo server offers for Home. {title}: the title of a movie or show the profile watched",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "siloSectionForYou": "For You",
+  "@siloSectionForYou": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionHiddenGems": "Hidden Gems",
+  "@siloSectionHiddenGems": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionHighlyRatedInLibrary": "Highly Rated in Your Library",
+  "@siloSectionHighlyRatedInLibrary": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionNextInYourSeries": "Next in Your Series",
+  "@siloSectionNextInYourSeries": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionPickedFromYourHistory": "Picked from your history",
+  "@siloSectionPickedFromYourHistory": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionPopularOnServer": "Popular on This Server",
+  "@siloSectionPopularOnServer": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionProfilesLikeYouEnjoyed": "Profiles Like You Enjoyed",
+  "@siloSectionProfilesLikeYouEnjoyed": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRandomPicks": "Random Picks",
+  "@siloSectionRandomPicks": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyAddedAudiobooks": "Recently Added Audiobooks",
+  "@siloSectionRecentlyAddedAudiobooks": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyAddedEbooks": "Recently Added Ebooks",
+  "@siloSectionRecentlyAddedEbooks": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyAddedIn": "Recently Added in {library}",
+  "@siloSectionRecentlyAddedIn": {
+    "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+    "placeholders": {
+      "library": {
+        "type": "String"
+      }
+    }
+  },
+  "siloSectionRecentlyAddedManga": "Recently Added Manga",
+  "@siloSectionRecentlyAddedManga": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyAddedMovies": "Recently Added Movies",
+  "@siloSectionRecentlyAddedMovies": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyAddedTv": "Recently Added TV",
+  "@siloSectionRecentlyAddedTv": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyReleasedAudiobooks": "Recently Released Audiobooks",
+  "@siloSectionRecentlyReleasedAudiobooks": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyReleasedEbooks": "Recently Released Ebooks",
+  "@siloSectionRecentlyReleasedEbooks": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyReleasedEpisodesIn": "Recently Released Episodes in {library}",
+  "@siloSectionRecentlyReleasedEpisodesIn": {
+    "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+    "placeholders": {
+      "library": {
+        "type": "String"
+      }
+    }
+  },
+  "siloSectionRecentlyReleasedIn": "Recently Released in {library}",
+  "@siloSectionRecentlyReleasedIn": {
+    "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+    "placeholders": {
+      "library": {
+        "type": "String"
+      }
+    }
+  },
+  "siloSectionRecentlyReleasedManga": "Recently Released Manga",
+  "@siloSectionRecentlyReleasedManga": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecentlyReleasedMovies": "Recently Released Movies",
+  "@siloSectionRecentlyReleasedMovies": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionRecommendedForYou": "Recommended for You",
+  "@siloSectionRecommendedForYou": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionReturningShows": "Returning Shows",
+  "@siloSectionReturningShows": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionSeasonalChristmasClassics": "Christmas Classics",
+  "@siloSectionSeasonalChristmasClassics": {
+    "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+  },
+  "siloSectionSeasonalChristmasComedies": "Christmas Comedies",
+  "@siloSectionSeasonalChristmasComedies": {
+    "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+  },
+  "siloSectionSeasonalChristmasFamily": "Family Christmas",
+  "@siloSectionSeasonalChristmasFamily": {
+    "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+  },
+  "siloSectionSeasonalChristmasFavorites": "Christmas Favorites",
+  "@siloSectionSeasonalChristmasFavorites": {
+    "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+  },
+  "siloSectionSeasonalChristmasHallmark": "Hallmark Christmas",
+  "@siloSectionSeasonalChristmasHallmark": {
+    "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+  },
+  "siloSectionSeasonalChristmasRomcoms": "Christmas Rom-Coms",
+  "@siloSectionSeasonalChristmasRomcoms": {
+    "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+  },
+  "siloSectionSeasonalEasterFaith": "Easter Stories",
+  "@siloSectionSeasonalEasterFaith": {
+    "description": "Title of a seasonal row on a Silo server's Home (easter)"
+  },
+  "siloSectionSeasonalEasterFamily": "Easter Movies",
+  "@siloSectionSeasonalEasterFamily": {
+    "description": "Title of a seasonal row on a Silo server's Home (easter)"
+  },
+  "siloSectionSeasonalFamilyMovieNightFavorites": "Family Favorites",
+  "@siloSectionSeasonalFamilyMovieNightFavorites": {
+    "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+  },
+  "siloSectionSeasonalFamilyMovieNight": "Family Movie Night",
+  "@siloSectionSeasonalFamilyMovieNight": {
+    "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+  },
+  "siloSectionSeasonalHalloweenAnimated": "Animated Halloween",
+  "@siloSectionSeasonalHalloweenAnimated": {
+    "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+  },
+  "siloSectionSeasonalHalloweenFamily": "Family Halloween",
+  "@siloSectionSeasonalHalloweenFamily": {
+    "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+  },
+  "siloSectionSeasonalHalloweenFavorites": "Halloween Favorites",
+  "@siloSectionSeasonalHalloweenFavorites": {
+    "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+  },
+  "siloSectionSeasonalHalloweenHorror": "Halloween Horror",
+  "@siloSectionSeasonalHalloweenHorror": {
+    "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+  },
+  "siloSectionSeasonalHalloweenTv": "Halloween TV",
+  "@siloSectionSeasonalHalloweenTv": {
+    "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+  },
+  "siloSectionSeasonalNewYearFavorites": "New Year's Movies",
+  "@siloSectionSeasonalNewYearFavorites": {
+    "description": "Title of a seasonal row on a Silo server's Home (newYear)"
+  },
+  "siloSectionSeasonalSaturdayMorningCartoons": "Saturday Morning Cartoons",
+  "@siloSectionSeasonalSaturdayMorningCartoons": {
+    "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+  },
+  "siloSectionSeasonalSaturdayMorningModern": "Saturday Morning Favorites",
+  "@siloSectionSeasonalSaturdayMorningModern": {
+    "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+  },
+  "siloSectionSeasonalSaturdayMorningNineties": "90s Saturday Mornings",
+  "@siloSectionSeasonalSaturdayMorningNineties": {
+    "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+  },
+  "siloSectionSeasonalStPatricksIrishFilm": "Irish Film",
+  "@siloSectionSeasonalStPatricksIrishFilm": {
+    "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+  },
+  "siloSectionSeasonalStPatricksIrishTv": "Irish TV",
+  "@siloSectionSeasonalStPatricksIrishTv": {
+    "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+  },
+  "siloSectionSeasonalSummerBlockbusters": "Summer Blockbusters",
+  "@siloSectionSeasonalSummerBlockbusters": {
+    "description": "Title of a seasonal row on a Silo server's Home (summer)"
+  },
+  "siloSectionSeasonalSummerClassicSummer": "Classic Summer Movies",
+  "@siloSectionSeasonalSummerClassicSummer": {
+    "description": "Title of a seasonal row on a Silo server's Home (summer)"
+  },
+  "siloSectionSeasonalSummerNostalgia": "Summer Nostalgia",
+  "@siloSectionSeasonalSummerNostalgia": {
+    "description": "Title of a seasonal row on a Silo server's Home (summer)"
+  },
+  "siloSectionSeasonalThanksgivingFavorites": "Thanksgiving Movies",
+  "@siloSectionSeasonalThanksgivingFavorites": {
+    "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+  },
+  "siloSectionSeasonalThanksgivingFeelGood": "Feel-Good Favorites",
+  "@siloSectionSeasonalThanksgivingFeelGood": {
+    "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+  },
+  "siloSectionSeasonalValentinesFavorites": "Valentine's Favorites",
+  "@siloSectionSeasonalValentinesFavorites": {
+    "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+  },
+  "siloSectionSeasonalValentinesLoveStories": "Classic Love Stories",
+  "@siloSectionSeasonalValentinesLoveStories": {
+    "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+  },
+  "siloSectionSeasonalValentinesRomanticDramas": "Romantic Dramas",
+  "@siloSectionSeasonalValentinesRomanticDramas": {
+    "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+  },
+  "siloSectionSeasonalValentinesRomcoms": "Valentine's Rom-Coms",
+  "@siloSectionSeasonalValentinesRomcoms": {
+    "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+  },
+  "siloSectionSeasonalPicks": "Seasonal Picks",
+  "@siloSectionSeasonalPicks": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionTopGenre": "Top {genre}",
+  "@siloSectionTopGenre": {
+    "description": "Title of a row a Silo server offers for Home. {genre}: a genre name as the server sends it, not translated",
+    "placeholders": {
+      "genre": {
+        "type": "String"
+      }
+    }
+  },
+  "siloSectionTopPicksToday": "Top Picks Today",
+  "@siloSectionTopPicksToday": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionTopRated": "Top Rated",
+  "@siloSectionTopRated": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionTopRatedMovies": "Top Rated Movies",
+  "@siloSectionTopRatedMovies": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionTopRatedTv": "Top Rated TV",
+  "@siloSectionTopRatedTv": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionTrendingOnServer": "Trending on Server",
+  "@siloSectionTrendingOnServer": {
+    "description": "Title of a row a Silo server offers for Home"
+  },
+  "siloSectionTrendingThisWeek": "Trending This Week",
+  "@siloSectionTrendingThisWeek": {
+    "description": "Title of a row a Silo server offers for Home"
   }
 }

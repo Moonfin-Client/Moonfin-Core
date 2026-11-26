@@ -27,6 +27,8 @@ class ServerHomeSection {
     required this.id,
     required this.title,
     required this.kind,
+    this.titleKey,
+    this.titleArgs = const {},
   });
 
   /// The row's id on the server, stable while the row exists.
@@ -39,4 +41,11 @@ class ServerHomeSection {
   /// admin defaults name a row by it (`type:<kind>`), so it has to stay the
   /// server's own value, never a translated one.
   final String kind;
+
+  /// A key the app can translate [title] by (Silo's `home.section.*`), or
+  /// null when the title is the user's own or has no translation.
+  final String? titleKey;
+
+  /// Values for [titleKey]'s placeholders by name.
+  final Map<String, String> titleArgs;
 }

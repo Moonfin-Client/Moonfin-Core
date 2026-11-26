@@ -1968,6 +1968,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get carServerUnreachable => 'Palvelimeen ei saada yhteyttä';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '$count lataukset';
   }
@@ -5827,11 +5836,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Onko palvelimen kirjastoon lisätty mitään uutta';
 
   @override
-  String get seerrTestNotification => 'Send Test Notification';
+  String get seerrTestNotification => 'Lähetä testiviesti';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Verify in-app and background push delivery';
+      'Tarkista sovelluksen sisäisten ja taustalla tapahtuvien push-ilmoitusten toimitus';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5844,29 +5853,30 @@ class AppLocalizationsFi extends AppLocalizations {
       count,
       locale: localeName,
       other: '$countString devices',
-      one: '1 device',
+      one: '1 laite',
     );
-    return 'Dispatched to $_temp0.';
+    return 'Toimitettu $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'In-app notification sent. Server push is not enabled.';
+      'Sovelluksen sisäinen ilmoitus lähetetty. Palvelimen push-ilmoitukset eivät ole käytössä.';
 
   @override
-  String get seerrTestNotificationFailed => 'Failed to send test notification';
+  String get seerrTestNotificationFailed =>
+      'Testiviestin lähettäminen epäonnistui';
 
   @override
-  String get seerrPushServerStatus => 'Server Push';
+  String get seerrPushServerStatus => 'Palvelimen lähetys';
 
   @override
-  String get seerrPushDeviceStatus => 'Device Push';
+  String get seerrPushDeviceStatus => 'Laitteen push-ilmoitus';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registered';
+  String get seerrPushDeviceRegistered => 'Rekisteröity';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Not registered';
+  String get seerrPushDeviceNotRegistered => 'Ei rekisteröity';
 
   @override
   String loggedInAs(String username) {
@@ -18476,4 +18486,65 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get clickpadSeekingPausedOnly => 'Vain tauolla';
+
+  @override
+  String get topNavbarStyle => 'Top Bar Style';
+
+  @override
+  String get topNavbarStyleClassic => 'Classic';
+
+  @override
+  String get topNavbarStyleTabline => 'Tabline';
+
+  @override
+  String get topNavbarStyleAtlas => 'Atlas';
+
+  @override
+  String get topNavbarStyleClassicHint => 'The standard bar';
+
+  @override
+  String get topNavbarStyleTablineHint =>
+      'Text tabs with an underline, no pill';
+
+  @override
+  String get topNavbarStyleAtlasHint =>
+      'Tabs open a panel with shortcuts and artwork';
+
+  @override
+  String get sidebarStyle => 'Sidebar Style';
+
+  @override
+  String get sidebarStyleClassic => 'Classic';
+
+  @override
+  String get sidebarStyleReel => 'Reel';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'The standard sidebar';
+
+  @override
+  String get sidebarStyleReelHint =>
+      'A wheel that turns through the destinations';
+
+  @override
+  String get sidebarStyleMosaicHint => 'A panel of tiles with library artwork';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Continue in $section';
+  }
+
+  @override
+  String navFeatured(String title) {
+    return 'Featured: $title';
+  }
+
+  @override
+  String get navOpenMenu => 'Open menu';
+
+  @override
+  String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
 }

@@ -45,6 +45,7 @@ class CarArtwork {
   };
 
   String? _authority;
+  String? _package;
   Future<void>? _init;
   final Set<String> _hosts = {};
   final Map<String, String> _tokens = {};
@@ -64,6 +65,7 @@ class CarArtwork {
     try {
       final info =
           await PackageInfo.fromPlatform().timeout(const Duration(seconds: 5));
+      _package = info.packageName;
       _authority = '${info.packageName}.artwork';
     } catch (_) {
       // Do not memoize the failure: with a null authority every wrap() degrades
@@ -89,6 +91,30 @@ class CarArtwork {
       host: authority,
       path: '/img',
       queryParameters: {'u': _withoutToken(url, parsed)},
+    );
+  }
+
+  /// One of the app's own vector drawables, for the category icons Android
+  /// Auto tints. Null elsewhere since CarPlay draws its own symbols.
+  Uri? icon(String drawable) {
+    final package = _package;
+    if (!_isAndroid || package == null) return null;
+    return Uri(
+      scheme: 'android.resource',
+      host: package,
+      path: '/drawable/$drawable',
+    );
+  }
+
+  /// A browse-by-letter tile drawn by MoonfinArtProvider.
+  Uri? letter(String letter) {
+    final authority = _authority;
+    if (!_isAndroid || authority == null) return null;
+    return Uri(
+      scheme: 'content',
+      host: authority,
+      path: '/letter',
+      queryParameters: {'c': letter},
     );
   }
 

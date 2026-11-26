@@ -55,6 +55,29 @@ void main() {
     expect(target?.isCollection, isTrue);
   });
 
+  test('a Silo collection keeps the colons in its id', () {
+    for (final id in ['silo-libcollection:1:42', 'silo-collection:42']) {
+      final target = homeRowSeeAllTarget(
+        _row('pluginDynamic:collections:server:collection:$id'),
+      );
+      expect(target?.id, id);
+      expect(target?.isCollection, isTrue);
+    }
+  });
+
+  test('a row saved under another address of the server keeps the Silo id', () {
+    // The row's items carry 'server', not the address the layout was saved
+    // with.
+    final target = homeRowSeeAllTarget(
+      _row(
+        'pluginDynamic:collections:http://192.168.1.5:8090:collection:'
+        'silo-libcollection:1:42',
+      ),
+    );
+    expect(target?.id, 'silo-libcollection:1:42');
+  });
+
+
   test('rows from several places or no single source lead nowhere', () {
     for (final id in [
       'mergedtype_latest_movies',
@@ -119,6 +142,18 @@ void main() {
           _row('pluginDynamic:collections:server:home:box-7'),
         ),
         Destinations.item('box-7', serverId: 'server'),
+      );
+    });
+
+    test('a pinned Silo collection opens its page', () async {
+      expect(
+        await HomeScreen.seeAllRoute(
+          _row(
+            'pluginDynamic:collections:server:collection:'
+            'silo-libcollection:1:42',
+          ),
+        ),
+        Destinations.item('silo-libcollection:1:42', serverId: 'server'),
       );
     });
 

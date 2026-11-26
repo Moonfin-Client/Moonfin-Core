@@ -33,16 +33,14 @@ void main() {
   Future<(List<String>, List<List<String>?>)> load(
     RecentlyReleasedSeriesType mode, {
     List<Map<String, dynamic>> Function(int limit)? children,
+    String source = UserPreferences.mediaBarSourceRecentlyReleased,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
     final prefs = UserPreferences(store);
     await prefs.set(UserPreferences.pluginSyncEnabled, false);
-    await prefs.set(
-      UserPreferences.mediaBarSourceType,
-      UserPreferences.mediaBarSourceRecentlyReleased,
-    );
+    await prefs.set(UserPreferences.mediaBarSourceType, source);
     await prefs.set(UserPreferences.recentlyReleasedSeriesType, mode);
 
     final views = _UserViewsApi();
@@ -82,6 +80,26 @@ void main() {
         },
       };
     });
+    // Jellyfin answers a Series filter here with nothing.
+    when(
+      () => items.getLatestItems(
+        includeItemTypes: any(named: 'includeItemTypes'),
+        parentId: any(named: 'parentId'),
+        limit: any(named: 'limit'),
+        fields: any(named: 'fields'),
+        enableImageTypes: any(named: 'enableImageTypes'),
+      ),
+    ).thenAnswer(
+      (invocation) async => {
+        'Items': invocation.namedArguments[#includeItemTypes] == null
+            ? [
+                _item('e1', 'Episode', seriesId: 'late'),
+                _item('s1', 'Season', seriesId: 'early'),
+                _item('e3', 'Episode', seriesId: 'late'),
+              ]
+            : const [],
+      },
+    );
     when(
       () => items.getItems(
         ids: any(named: 'ids'),
@@ -92,7 +110,9 @@ void main() {
     ).thenAnswer(
       (invocation) async => {
         'Items': [
-          for (final id in invocation.namedArguments[#ids] as List<String>)
+          // A server can answer in its own order.
+          for (final id
+              in (invocation.namedArguments[#ids] as List<String>).reversed)
             _item(id, 'Series'),
         ],
       },
@@ -171,6 +191,16 @@ void main() {
 
     expect(asked, hasLength(2));
     expect(shown, hasLength(5));
+  });
+
+  test('recently added brings each series back by its newest episode',
+      () async {
+    final (shown, _) = await load(
+      RecentlyReleasedSeriesType.series,
+      source: UserPreferences.mediaBarSourceRecentlyAdded,
+    );
+
+    expect(shown, ['late', 'early']);
   });
 
   test('series mode still asks for series', () async {

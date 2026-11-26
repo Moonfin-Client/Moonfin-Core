@@ -200,6 +200,9 @@ class PlexUsersApi implements UsersApi {
       const [];
 
   @override
+  Future<AccessWindow?> getAccessWindow() async => null;
+
+  @override
   Future<UserConfiguration> getUserConfiguration() async =>
       const UserConfiguration(hidePlayedInLatest: false);
 

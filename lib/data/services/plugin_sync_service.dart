@@ -2922,8 +2922,6 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.imdbMostPopularTvShowsEnabled,
       prefs.HomeSectionType.imdbLowestRatedMovies =>
         UserPreferences.imdbLowestRatedMoviesEnabled,
-      prefs.HomeSectionType.imdbTopEnglishMovies =>
-        UserPreferences.imdbTopEnglishMoviesEnabled,
       prefs.HomeSectionType.radarrCalendar =>
         UserPreferences.enableRadarrCalendar,
       prefs.HomeSectionType.sonarrCalendar =>

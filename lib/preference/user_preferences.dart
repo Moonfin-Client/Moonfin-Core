@@ -115,8 +115,8 @@ class UserPreferences extends ChangeNotifier {
   ];
 
   // Where the bar draws its titles from. Every source still passes through the
-  // library, collection, content type and genre filters, and still picks its
-  // slides at random out of what comes back.
+  // library, collection, content type and genre filters. Random shuffles what
+  // comes back, and the others take the newest from each library in turn.
   static const mediaBarSourceRandom = 'random';
   static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
   static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
@@ -503,7 +503,6 @@ class UserPreferences extends ChangeNotifier {
     'imdb_most_popular_tv_shows_enabled',
     'imdb_top_250_movies_enabled',
     'imdb_top_250_tv_shows_enabled',
-    'imdb_top_english_movies_enabled',
     'live_tv_category_display',
     'live_tv_channel_sort_by',
     'live_tv_last_channel_id',
@@ -605,6 +604,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_music_library_style',
     'pref_detail_expanded_tabs',
     'pref_detail_show_technical_details',
+    'pref_detail_show_full_date',
     'pref_detail_trailers_external',
     'pref_hide_details_media_description',
     'pref_detail_use_series_thumbnails',
@@ -712,6 +712,8 @@ class UserPreferences extends ChangeNotifier {
     'blocked_series_ids',
     'pref_navbar_position',
     'pref_bottom_navbar_style',
+    'pref_top_navbar_style',
+    'pref_sidebar_style',
     'pref_bottom_navbar_tabs',
     'focus_color',
     'pref_watched_indicator_behavior',
@@ -1953,6 +1955,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  /// When on, details pages display the full release or air date instead of
+  /// only the production year. Stored per server like [detailScreenStyle].
+  static final detailShowFullDate = Preference(
+    key: 'pref_detail_show_full_date',
+    defaultValue: false,
+  );
+
   /// When on, the details screen hands remote trailers to the system, the
   /// YouTube app on TV or the browser elsewhere, instead of the in-app
   /// player. Local trailers are server files only this app can stream, so
@@ -2220,6 +2229,18 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_bottom_navbar_style',
     defaultValue: BottomNavbarStyle.dock,
     values: BottomNavbarStyle.values,
+  );
+
+  static final topNavbarStyle = EnumPreference(
+    key: 'pref_top_navbar_style',
+    defaultValue: TopNavbarStyle.classic,
+    values: TopNavbarStyle.values,
+  );
+
+  static final sidebarStyle = EnumPreference(
+    key: 'pref_sidebar_style',
+    defaultValue: SidebarStyle.classic,
+    values: SidebarStyle.values,
   );
 
   /// Comma separated [BottomNavTab] names pinned between Home and You. Empty
@@ -2728,6 +2749,12 @@ class UserPreferences extends ChangeNotifier {
     values: AudioPassthroughOutput.values,
   );
 
+  /// Linux only: decode a passthrough track when the output plays it silently.
+  static final passthroughSilentFallback = Preference(
+    key: 'pref_passthrough_silent_fallback',
+    defaultValue: true,
+  );
+
   static final downmixToStereo = Preference(
     key: 'pref_downmix_to_stereo',
     defaultValue: false,
@@ -2793,7 +2820,10 @@ class UserPreferences extends ChangeNotifier {
 
   static final hardwareDecoding = Preference(
     key: 'hardware_decoding',
-    defaultValue: PlatformDetection.isAndroid || PlatformDetection.isIOS,
+    defaultValue:
+        PlatformDetection.isAndroid ||
+        PlatformDetection.isIOS ||
+        PlatformDetection.isWindows,
   );
 
   static final playbackEnginePreference = EnumPreference(
@@ -3621,11 +3651,6 @@ class UserPreferences extends ChangeNotifier {
 
   static final imdbLowestRatedMoviesEnabled = Preference(
     key: 'imdb_lowest_rated_movies_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbTopEnglishMoviesEnabled = Preference(
-    key: 'imdb_top_english_movies_enabled',
     defaultValue: false,
   );
 

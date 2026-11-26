@@ -3418,6 +3418,24 @@ abstract class AppLocalizations {
   /// **'Can\'t reach your server'**
   String get carServerUnreachable;
 
+  /// Car tab with quick starts, recently played and in-progress items
+  ///
+  /// In en, this message translates to:
+  /// **'Listen Now'**
+  String get carListenNow;
+
+  /// Car shelf and tile listing the music played most recently
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Played'**
+  String get carRecentlyPlayed;
+
+  /// Car tile that plays a mix of similar songs, seeded from the last song played
+  ///
+  /// In en, this message translates to:
+  /// **'Instant Mix'**
+  String get carInstantMix;
+
   /// Subtitle showing number of downloads for a remote subtitle
   ///
   /// In en, this message translates to:
@@ -31654,6 +31672,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only while paused'**
   String get clickpadSeekingPausedOnly;
+
+  /// Settings title for choosing how the top navigation bar looks
+  ///
+  /// In en, this message translates to:
+  /// **'Top Bar Style'**
+  String get topNavbarStyle;
+
+  /// Top bar style: the standard centered pill of icon buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get topNavbarStyleClassic;
+
+  /// Top bar style: text tabs with an underline and no container
+  ///
+  /// In en, this message translates to:
+  /// **'Tabline'**
+  String get topNavbarStyleTabline;
+
+  /// Top bar style: a solid bar whose tabs open a panel of shortcuts and artwork
+  ///
+  /// In en, this message translates to:
+  /// **'Atlas'**
+  String get topNavbarStyleAtlas;
+
+  /// Hint under the Classic top bar style option
+  ///
+  /// In en, this message translates to:
+  /// **'The standard bar'**
+  String get topNavbarStyleClassicHint;
+
+  /// Hint under the Tabline top bar style option
+  ///
+  /// In en, this message translates to:
+  /// **'Text tabs with an underline, no pill'**
+  String get topNavbarStyleTablineHint;
+
+  /// Hint under the Atlas top bar style option
+  ///
+  /// In en, this message translates to:
+  /// **'Tabs open a panel with shortcuts and artwork'**
+  String get topNavbarStyleAtlasHint;
+
+  /// Settings title for choosing how the left sidebar looks
+  ///
+  /// In en, this message translates to:
+  /// **'Sidebar Style'**
+  String get sidebarStyle;
+
+  /// Sidebar style: the standard rail that grows into a labeled list
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get sidebarStyleClassic;
+
+  /// Sidebar style: a wheel of destinations that turns through a fixed focus window
+  ///
+  /// In en, this message translates to:
+  /// **'Reel'**
+  String get sidebarStyleReel;
+
+  /// Sidebar style: a panel of tiles with each library shown by its artwork
+  ///
+  /// In en, this message translates to:
+  /// **'Mosaic'**
+  String get sidebarStyleMosaic;
+
+  /// Hint under the Classic sidebar style option
+  ///
+  /// In en, this message translates to:
+  /// **'The standard sidebar'**
+  String get sidebarStyleClassicHint;
+
+  /// Hint under the Reel sidebar style option
+  ///
+  /// In en, this message translates to:
+  /// **'A wheel that turns through the destinations'**
+  String get sidebarStyleReelHint;
+
+  /// Hint under the Mosaic sidebar style option
+  ///
+  /// In en, this message translates to:
+  /// **'A panel of tiles with library artwork'**
+  String get sidebarStyleMosaicHint;
+
+  /// Heading over the items to resume in one library, shown in the Atlas top bar panel
+  ///
+  /// In en, this message translates to:
+  /// **'Continue in {section}'**
+  String navContinueIn(String section);
+
+  /// Caption on the Home tile of the Mosaic sidebar naming what the home screen features
+  ///
+  /// In en, this message translates to:
+  /// **'Featured: {title}'**
+  String navFeatured(String title);
+
+  /// Accessibility label of the button that opens the Reel or Mosaic sidebar
+  ///
+  /// In en, this message translates to:
+  /// **'Open menu'**
+  String get navOpenMenu;
+
+  /// Hint at the bottom of the Reel sidebar on phones
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to turn it, tap the middle to go'**
+  String get navReelSwipeHint;
 }
 
 class _AppLocalizationsDelegate

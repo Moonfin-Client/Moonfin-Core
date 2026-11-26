@@ -966,6 +966,30 @@ jobs:
             ${{ matrix.artifact_prefix }}_v*.flatpak
           if-no-files-found: error
 
+      # A snap can pack without errors and still fail to start.
+      - name: Launch the snap
+        env:
+          PREFIX: ${{ matrix.artifact_prefix }}
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y xvfb dbus-user-session
+          sudo snap install --dangerous "${PREFIX}"_v*.snap
+          # snap run needs the user's session bus for the app's systemd scope,
+          # and a runner only has one once its user lingers. The address has to
+          # be spelled out, since snapd moves XDG_RUNTIME_DIR inside the snap.
+          sudo loginctl enable-linger "$(id -un)"
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+          export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+          timeout 30 sh -c 'until [ -S "$XDG_RUNTIME_DIR/bus" ]; do sleep 1; done'
+          status=0
+          xvfb-run -a -s '-screen 0 1280x720x24' \
+            timeout 30 snap run moonfin > snap-launch.log 2>&1 || status=$?
+          if [ "$status" -ne 124 ]; then
+            cat snap-launch.log
+            echo "The snap quit with status $status before 30 seconds were up."
+            exit 1
+          fi
+
   # Web, built at the root base href so the artifact runs from any static server
   web:
     needs: plan

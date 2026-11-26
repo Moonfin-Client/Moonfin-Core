@@ -25,6 +25,7 @@ import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/server_section_title.dart';
 import '../../../util/server_url.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -602,8 +603,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         type == HomeSectionType.imdbTop250TvShows ||
         type == HomeSectionType.imdbMostPopularMovies ||
         type == HomeSectionType.imdbMostPopularTvShows ||
-        type == HomeSectionType.imdbLowestRatedMovies ||
-        type == HomeSectionType.imdbTopEnglishMovies;
+        type == HomeSectionType.imdbLowestRatedMovies;
   }
 
   bool _isTmdbSectionType(HomeSectionType type) =>
@@ -1342,6 +1342,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   bool _mergeServerSections(List<ServerHomeSection> discovered) {
     final serverId = GetIt.instance<MediaServerClient>().baseUrl;
     var changed = false;
+    _serverSections.clear();
 
     bool isOwn(HomeSectionConfig s) =>
         s.isPluginDynamic &&
@@ -1365,6 +1366,20 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     var nextOrder = _sections.length;
     for (final section in discovered) {
       final standsIn = byType.remove('type:${section.kind}');
+      // A "type:<kind>" row from Moonbase's defaults shows this section. It
+      // takes the section's label while its name is the section's own title,
+      // ignoring case as Home does, not a name the admin gave it.
+      if (standsIn) {
+        for (final s in _sections) {
+          if (isType(s) &&
+              s.pluginSection == 'type:${section.kind}' &&
+              ((s.serverId ?? '').isEmpty || s.serverId == serverId) &&
+              (s.pluginDisplayText ?? '').toLowerCase() ==
+                  section.title.toLowerCase()) {
+            _serverSections[s.stableId] = section;
+          }
+        }
+      }
       final cfg = HomeSectionConfig.pluginDynamic(
         serverId: serverId,
         pluginSection: section.id,
@@ -1374,6 +1389,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         order: nextOrder++,
       );
       freshIds.add(cfg.stableId);
+      _serverSections[cfg.stableId] = section;
       final idx = _sections.indexWhere((s) => s.stableId == cfg.stableId);
       if (idx >= 0) {
         if (_sections[idx].pluginDisplayText != section.title) {
@@ -1531,8 +1547,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           UserPreferences.imdbMostPopularTvShowsEnabled,
         HomeSectionType.imdbLowestRatedMovies =>
           UserPreferences.imdbLowestRatedMoviesEnabled,
-        HomeSectionType.imdbTopEnglishMovies =>
-          UserPreferences.imdbTopEnglishMoviesEnabled,
         HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
         HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
         HomeSectionType.sinceYouWatched1 =>
@@ -1808,7 +1822,15 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     });
   }
 
+  /// The server's own rows as last read, by their entry's stable id, so their
+  /// labels show in the app's language while the entry keeps the server's
+  /// English title.
+  final Map<String, ServerHomeSection> _serverSections = {};
+
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
+    if (_serverSections[cfg.stableId] case final section?) {
+      return localizeServerSectionTitle(section, l10n);
+    }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true
           ? cfg.pluginDisplayText!
@@ -3387,7 +3409,6 @@ String homeSectionTypeLabel(HomeSectionType type, AppLocalizations l10n) =>
       HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
       HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
       HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
-      HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
       HomeSectionType.tmdbPopularMovies => 'Popular Movies',
       HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
       HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',

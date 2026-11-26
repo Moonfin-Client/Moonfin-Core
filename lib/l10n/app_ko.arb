@@ -16538,5 +16538,13 @@
     "seerrDownloadFailed": "다운로드 실패",
     "@seerrDownloadFailed": {
         "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "topNavbarStyleClassic": "클래식",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "클래식",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

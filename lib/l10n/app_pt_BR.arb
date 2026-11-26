@@ -8161,7 +8161,7 @@
     "adminDrawerNfo": "Configurações de NFO",
     "adminActivitySeverityAll": "Todas as severidades",
     "adminActivityDateRange": "Período",
-    "adminRemoveDeviceConfirm": "Remover o dispositivo '{name}'? O usuário precisará entrar novamente neste dispositivo.",
+    "adminRemoveDeviceConfirm": "Remover o dispositivo \"{name}\"? O usuário precisará entrar novamente neste dispositivo.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8814,7 +8814,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Sua biblioteca '{libraryName}' está configurada para salvar as imagens diretamente nas pastas de mídia (a opção 'Salvar imagens nas pastas de mídia' está ativada). No entanto, o Jellyfin testou o acesso de gravação e não tem permissão para gravar arquivos neste diretório:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Sua biblioteca \"{libraryName}\" está configurada para salvar as imagens diretamente nas pastas de mídia (a opção 'Salvar imagens nas pastas de mídia' está ativada). No entanto, o Jellyfin testou o acesso de gravação e não tem permissão para gravar arquivos neste diretório:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -10844,7 +10844,7 @@
     "@removeAllDownloadedGames": {
         "description": "Button that deletes every downloaded game from the device"
     },
-    "removeDownloadedGameConfirm": "Remover este jogo baixado?",
+    "removeDownloadedGameConfirm": "Remover {title} deste dispositivo? Ele será baixado novamente na próxima vez que você jogar.",
     "@removeDownloadedGameConfirm": {
         "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
         "placeholders": {
@@ -10857,7 +10857,7 @@
     "@removeAllDownloadedGamesConfirm": {
         "description": "Confirmation prompt before deleting every downloaded game"
     },
-    "settingsMediaSegmentTypeAction": "Ação para tipo de segmento de mídia",
+    "settingsMediaSegmentTypeAction": "Segmentos de {segment}",
     "@settingsMediaSegmentTypeAction": {
         "description": "Setting label for what to do with one type of media segment",
         "placeholders": {
@@ -10875,7 +10875,7 @@
     "settingsRedetectDisplayDescription": "Executa novamente a detecção dos recursos HDR da tela",
     "settingsDisplayIsSdr": "Tela SDR",
     "settingsDisplayIsSdrDescription": "Este dispositivo está usando uma tela SDR",
-    "settingsDisplayRedetected": "Tela detectada novamente",
+    "settingsDisplayRedetected": "Tela detectada novamente: {formats}",
     "@settingsDisplayRedetected": {
         "placeholders": {
             "formats": {
@@ -10960,7 +10960,7 @@
     "@achievementsUnlockedNotification": {
         "description": "Title of the notification for one newly unlocked badge"
     },
-    "achievementsUnlockedCount": "Conquistas desbloqueadas",
+    "achievementsUnlockedCount": "{count, plural, =1{1 conquista desbloqueada} other{{count} conquistas desbloqueadas}}",
     "@achievementsUnlockedCount": {
         "description": "Title of the notification for several badges unlocked at once",
         "placeholders": {
@@ -11435,7 +11435,7 @@
     "@achievementsStreakFreezeBody": {
         "description": "What the Streak Freeze power-up does"
     },
-    "achievementsPowerUpHeld": "Power-up disponível",
+    "achievementsPowerUpHeld": "{count, plural, =0{Nenhum disponível} =1{1 disponível} other{{count} disponíveis}}",
     "@achievementsPowerUpHeld": {
         "description": "How many of a power-up the user owns",
         "placeholders": {
@@ -11530,7 +11530,7 @@
     "@friendsMessages": {
         "description": "Entry that opens the list of chats"
     },
-    "friendsUnreadCount": "Mensagens não lidas",
+    "friendsUnreadCount": "{count, plural, =0{Nenhuma mensagem não lida} =1{1 mensagem não lida} other{{count} mensagens não lidas}}",
     "@friendsUnreadCount": {
         "description": "How many chat messages are unread",
         "placeholders": {
@@ -11543,7 +11543,7 @@
     "@friendsRequests": {
         "description": "Entry that opens pending friend requests"
     },
-    "friendsRequestCount": "Solicitações pendentes",
+    "friendsRequestCount": "{count, plural, =0{Nada pendente} =1{1 aguardando você} other{{count} aguardando você}}",
     "@friendsRequestCount": {
         "description": "How many friend requests wait for an answer",
         "placeholders": {
@@ -11888,7 +11888,7 @@
     "@chatGroupName": {
         "description": "Label of the group chat name field"
     },
-    "chatMemberCount": "Membros",
+    "chatMemberCount": "{count, plural, =1{1 membro} other{{count} membros}}",
     "@chatMemberCount": {
         "description": "How many people are in a group chat",
         "placeholders": {
@@ -11973,7 +11973,7 @@
             }
         }
     },
-    "transcodeAudioCodecHintPassthrough": "Este codec pode ser enviado diretamente sem transcodificação",
+    "transcodeAudioCodecHintPassthrough": "Dica: se o seu receptor de áudio ou soundbar for compatível com {codec}, ative o Passthrough de áudio nas configurações de Áudio.",
     "@transcodeAudioCodecHintPassthrough": {
         "placeholders": {
             "codec": {
@@ -12599,7 +12599,7 @@
     "@autoDownloadStop": {
         "description": "Row in the download sheet of a series that is already subscribed; tapping removes the subscription"
     },
-    "autoDownloadKeepUnwatchedSubtitle": "Mantém episódios não assistidos baixados",
+    "autoDownloadKeepUnwatchedSubtitle": "{count, plural, =0{Baixa todos os novos episódios} =1{Baixa novos episódios, até 1 não assistido por vez} other{Baixa novos episódios, até {count} não assistidos por vez}}",
     "@autoDownloadKeepUnwatchedSubtitle": {
         "description": "Subtitle under the auto-download row explaining the keep-unwatched rule",
         "placeholders": {
@@ -12608,7 +12608,7 @@
             }
         }
     },
-    "autoDownloadStopSubtitle": "Interrompe novos downloads automáticos para esta série",
+    "autoDownloadStopSubtitle": "Ativado • {quality}",
     "@autoDownloadStopSubtitle": {
         "description": "Subtitle under the stop auto-download row showing the subscription's quality",
         "placeholders": {
@@ -12633,7 +12633,7 @@
     "@autoDownloadQualityTitle": {
         "description": "Title of the quality sheet when it is opened to create an auto-download subscription"
     },
-    "autoDownloadEnabledFor": "Download automático ativado para",
+    "autoDownloadEnabledFor": "Download automático ativado para {title}",
     "@autoDownloadEnabledFor": {
         "description": "Snackbar after subscribing a series",
         "placeholders": {
@@ -12642,7 +12642,7 @@
             }
         }
     },
-    "autoDownloadStoppedFor": "Download automático interrompido para",
+    "autoDownloadStoppedFor": "Download automático interrompido para {title}",
     "@autoDownloadStoppedFor": {
         "description": "Snackbar after unsubscribing a series",
         "placeholders": {
@@ -12719,7 +12719,7 @@
     "@autoDownloadNeverChecked": {
         "description": "Subtitle when no subscription check has run"
     },
-    "autoDownloadLastCheck": "Última verificação",
+    "autoDownloadLastCheck": "Última verificação {when}: {queued, plural, =0{nada novo} =1{1 episódio na fila} other{{queued} episódios na fila}}",
     "@autoDownloadLastCheck": {
         "description": "Subtitle summarising the last subscription check",
         "placeholders": {
@@ -12731,7 +12731,7 @@
             }
         }
     },
-    "autoDownloadLastCheckFailed": "Falha na última verificação",
+    "autoDownloadLastCheckFailed": "A última verificação {when} falhou: {error}",
     "@autoDownloadLastCheckFailed": {
         "description": "Subtitle when the last subscription check hit an error",
         "placeholders": {
@@ -12767,7 +12767,7 @@
     "@downloadNotificationRunning": {
         "description": "System notification title while a download transfers"
     },
-    "downloadNotificationRunningBatch": "Downloads em andamento",
+    "downloadNotificationRunningBatch": "Baixando ({done}/{total})",
     "@downloadNotificationRunningBatch": {
         "description": "System notification title while a batch transfers; done is the 1-based position of the current item",
         "placeholders": {
@@ -12779,7 +12779,7 @@
             }
         }
     },
-    "downloadNotificationProgress": "Progresso do download",
+    "downloadNotificationProgress": "{name} — {percent}%",
     "@downloadNotificationProgress": {
         "description": "System notification body with the item label (for example Series S1E1) and its percentage",
         "placeholders": {
@@ -12791,7 +12791,7 @@
             }
         }
     },
-    "downloadNotificationTransfer": "Transferindo",
+    "downloadNotificationTransfer": "{name} — {progress} · {timeRemaining}",
     "@downloadNotificationTransfer": {
         "description": "System notification body for a transfer the native engine reports on. The engine fills in progress (a percentage such as 42%) and timeRemaining (mm:ss) itself.",
         "placeholders": {
@@ -12806,7 +12806,7 @@
             }
         }
     },
-    "downloadNotificationStarting": "Iniciando download",
+    "downloadNotificationStarting": "{name}...",
     "@downloadNotificationStarting": {
         "description": "System notification body before the size of a download is known",
         "placeholders": {
@@ -12815,7 +12815,7 @@
             }
         }
     },
-    "downloadNotificationCompleteTitle": "Download concluído",
+    "downloadNotificationCompleteTitle": "{count, plural, =1{Download concluído} other{Downloads concluídos}}",
     "@downloadNotificationCompleteTitle": {
         "description": "System notification title once a download or a batch has finished",
         "placeholders": {
@@ -12824,7 +12824,7 @@
             }
         }
     },
-    "downloadNotificationSaved": "Salvo para uso offline",
+    "downloadNotificationSaved": "{name} salvo para uso offline",
     "@downloadNotificationSaved": {
         "description": "System notification body for one finished download; name is the item label (for example Series S1E1)",
         "placeholders": {
@@ -12833,7 +12833,7 @@
             }
         }
     },
-    "downloadNotificationSavedCount": "Itens salvos",
+    "downloadNotificationSavedCount": "{count, plural, =1{1 item salvo para uso offline} other{{count} itens salvos para uso offline}}",
     "@downloadNotificationSavedCount": {
         "description": "System notification body for a finished batch of mixed items",
         "placeholders": {
@@ -12842,7 +12842,7 @@
             }
         }
     },
-    "downloadNotificationSeriesEpisodes": "Episódios da série baixados",
+    "downloadNotificationSeriesEpisodes": "{series}: {count, plural, =1{1 episódio} other{{count} episódios}}",
     "@downloadNotificationSeriesEpisodes": {
         "description": "System notification body for a finished batch that all belongs to one series",
         "placeholders": {
@@ -12858,7 +12858,7 @@
     "@downloadNotificationFailedTitle": {
         "description": "System notification title for a failed download"
     },
-    "downloadNotificationFailedBody": "Não foi possível concluir o download",
+    "downloadNotificationFailedBody": "{name}: {error}",
     "@downloadNotificationFailedBody": {
         "description": "System notification body for a failed download",
         "placeholders": {
@@ -12882,7 +12882,7 @@
     "@downloadStorageLimitReached": {
         "description": "Error shown when a download would exceed the storage limit set in the download settings"
     },
-    "downloadNotEnoughStorage": "Espaço de armazenamento insuficiente",
+    "downloadNotEnoughStorage": "Espaço insuficiente: {needed} necessários, {free} livres",
     "@downloadNotEnoughStorage": {
         "description": "Error shown when a download would not fit on the device; needed and free are formatted sizes",
         "placeholders": {
@@ -12898,7 +12898,7 @@
     "@autoDownloadStorageFullTitle": {
         "description": "System notification title when the automatic check has to hold new episodes back"
     },
-    "autoDownloadStorageFullBody": "Não há espaço suficiente para continuar os downloads automáticos",
+    "autoDownloadStorageFullBody": "{count, plural, =1{{name} precisa de {size}.} other{{count} episódios estão aguardando espaço.}} Libere espaço ou aumente o limite de downloads.",
     "@autoDownloadStorageFullBody": {
         "description": "System notification body when the automatic check has to hold new episodes back; name is the label of the first one (for example Series S1E1) and size its formatted size",
         "placeholders": {
@@ -13471,7 +13471,7 @@
     "@secondarySubtitleTrack": {
         "description": "Title of the picker for the secondary subtitle track"
     },
-    "decreaseValue": "Diminuir valor",
+    "decreaseValue": "Diminuir {setting}",
     "@decreaseValue": {
         "description": "Tooltip for the button that lowers a setting's value",
         "placeholders": {
@@ -13480,7 +13480,7 @@
             }
         }
     },
-    "increaseValue": "Aumentar valor",
+    "increaseValue": "Aumentar {setting}",
     "@increaseValue": {
         "description": "Tooltip for the button that raises a setting's value",
         "placeholders": {
@@ -13569,7 +13569,7 @@
     "@searchMusic": {
         "description": "Placeholder and label for the search control in a music library"
     },
-    "bookSeriesCount": "Quantidade de séries de livros",
+    "bookSeriesCount": "{count, plural, =1{1 série} other{{count} séries}}",
     "@bookSeriesCount": {
         "description": "How many series a book library holds",
         "placeholders": {
@@ -13578,7 +13578,7 @@
             }
         }
     },
-    "bookInProgressCount": "Livros em andamento",
+    "bookInProgressCount": "{count} em andamento",
     "@bookInProgressCount": {
         "description": "How many books or audiobooks are started but not finished",
         "placeholders": {
@@ -13587,7 +13587,7 @@
             }
         }
     },
-    "bookBrowseAllTitles": "Explorar todos os títulos",
+    "bookBrowseAllTitles": "{count, plural, =1{Explorar 1 título} other{Explorar todos os {count} títulos}}",
     "@bookBrowseAllTitles": {
         "description": "Link from the book library to the full title grid",
         "placeholders": {
@@ -13717,7 +13717,7 @@
     "adminGeneralAutoUpdate": "Atualização automática",
     "adminGeneralAutoRestart": "Reinicialização automática",
     "adminGeneralAutoRestartHelp": "Reiniciar automaticamente quando necessário",
-    "adminTaskTriggerSystemEvent": "Evento do sistema",
+    "adminTaskTriggerSystemEvent": "Após um evento do sistema ({event})",
     "@adminTaskTriggerSystemEvent": {
         "placeholders": {
             "event": {
@@ -13731,7 +13731,7 @@
     "adminEmbyBackupNow": "Fazer backup agora",
     "adminEmbyFullBackup": "Backup completo",
     "adminEmbyLightBackups": "Backups leves",
-    "adminEmbyBackupServerVersion": "Versão do servidor no backup",
+    "adminEmbyBackupServerVersion": "Emby {version}",
     "@adminEmbyBackupServerVersion": {
         "placeholders": {
             "version": {
@@ -13739,7 +13739,7 @@
             }
         }
     },
-    "adminEmbyRestoreConfirm": "Confirmar restauração do backup",
+    "adminEmbyRestoreConfirm": "Restaurar {name}? Isso substitui as bibliotecas, configurações, usuários e senhas deste servidor, e o servidor é desligado ao terminar. Talvez seja necessário iniciá-lo novamente por conta própria.",
     "@adminEmbyRestoreConfirm": {
         "placeholders": {
             "name": {
@@ -13777,7 +13777,7 @@
     "adminLibForcedSubtitlesOnly": "Apenas legendas forçadas",
     "adminLibImportCollections": "Importar coleções",
     "adminLibThumbnailInterval": "Intervalo de geração de miniaturas",
-    "adminLibThumbnailEverySeconds": "Gerar miniaturas a cada intervalo de segundos",
+    "adminLibThumbnailEverySeconds": "A cada {count} segundos",
     "@adminLibThumbnailEverySeconds": {
         "placeholders": {
             "count": {
@@ -13828,7 +13828,7 @@
     "adminSyncJobsDownloads": "Downloads",
     "adminSyncJobsEmpty": "Nenhuma tarefa de sincronização encontrada",
     "adminSyncJobCancel": "Cancelar tarefa",
-    "adminSyncJobCancelConfirm": "Tem certeza de que deseja cancelar esta tarefa?",
+    "adminSyncJobCancelConfirm": "Cancelar {name} e removê-lo da lista?",
     "@adminSyncJobCancelConfirm": {
         "placeholders": {
             "name": {
@@ -13840,7 +13840,7 @@
     "adminSyncJobReady": "Pronto",
     "adminSyncJobTransferring": "Transferindo...",
     "adminSyncJobCompletedWithError": "Concluído com erro",
-    "adminSyncJobItemCount": "Quantidade de itens",
+    "adminSyncJobItemCount": "{count, plural, =1{1 item} other{{count} itens}}",
     "@adminSyncJobItemCount": {
         "placeholders": {
             "count": {
@@ -13917,7 +13917,7 @@
     "embyPremiereSaveAnyway": "Salvar mesmo assim",
     "embyPremiereEnterKey": "Inserir chave do Emby Premiere",
     "adminPremiereNote": "Alguns recursos exigem uma licença ativa do Emby Premiere",
-    "adminExternalIdLabel": "Identificador externo",
+    "adminExternalIdLabel": "ID de {name}",
     "@adminExternalIdLabel": {
         "placeholders": {
             "name": {
@@ -13934,7 +13934,7 @@
     "adminPlaybackHwAccelWarning": "A aceleração por hardware pode exigir drivers e dispositivos compatíveis",
     "adminLibMetadataChangeHelp": "Configure como as alterações nos metadados serão aplicadas",
     "adminLibFetcherSettings": "Configurações dos provedores de metadados",
-    "adminLibImageOptionsTitle": "Opções de imagens",
+    "adminLibImageOptionsTitle": "Opções de imagem para {type}",
     "@adminLibImageOptionsTitle": {
         "placeholders": {
             "type": {
@@ -13977,7 +13977,7 @@
     "adminMetadataItemLocked": "Metadados bloqueados",
     "adminMetadataNameOrIdRequired": "Informe um nome ou identificador",
     "adminLibMetadataReaders": "Leitores de metadados",
-    "adminLibSimilarProvidersFor": "Provedores de conteúdos semelhantes para",
+    "adminLibSimilarProvidersFor": "Provedores de itens semelhantes: {type}",
     "@adminLibSimilarProvidersFor": {
         "placeholders": {
             "type": {
@@ -13997,7 +13997,7 @@
     "adminLibDownloadLanguages": "Idiomas para download",
     "adminLibraryFolderRequired": "É necessário selecionar uma pasta para a biblioteca",
     "adminRenameLibraryWarning": "Renomear a biblioteca pode afetar configurações e referências existentes",
-    "adminDeleteLibraryConfirm": "Tem certeza de que deseja excluir esta biblioteca?",
+    "adminDeleteLibraryConfirm": "Remover a biblioteca \"{name}\"? Os arquivos no disco não são excluídos.",
     "@adminDeleteLibraryConfirm": {
         "placeholders": {
             "name": {
@@ -14011,7 +14011,7 @@
     "adminRefreshModeMissing": "Buscar metadados ausentes",
     "adminReplaceTrickplayImages": "Substituir imagens de pré-visualização da reprodução",
     "adminRefreshDialogHelp": "Escolha como os metadados e imagens da biblioteca serão atualizados",
-    "adminActivityCount": "Quantidade de atividades",
+    "adminActivityCount": "{shown} de {total}",
     "@adminActivityCount": {
         "placeholders": {
             "shown": {
@@ -14041,7 +14041,7 @@
     "adminLiveTvMapChannels": "Mapear canais",
     "adminLiveTvNoTunerChannels": "Nenhum canal encontrado no sintonizador",
     "adminLiveTvXmltvPathHelp": "Informe o caminho ou endereço do arquivo XMLTV",
-    "adminLiveTvSdCreateAccount": "Criar conta no Schedules Direct",
+    "adminLiveTvSdCreateAccount": "Crie uma conta em {url}",
     "@adminLiveTvSdCreateAccount": {
         "placeholders": {
             "url": {
@@ -14063,7 +14063,7 @@
     "adminLiveTvSectionGuide": "Guia de programação",
     "adminLiveTvSectionDefaultRecording": "Configurações padrão de gravação",
     "adminLiveTvSectionMetadata": "Metadados",
-    "adminUserLastActivity": "Última atividade do usuário",
+    "adminUserLastActivity": "Última atividade: {time}",
     "@adminUserLastActivity": {
         "placeholders": {
             "time": {
@@ -14091,7 +14091,7 @@
     "adminLogLevelCritical": "Crítico",
     "adminLogLevelNone": "Nenhum",
     "adminActivityAllUsers": "Todos os usuários",
-    "adminTaskLastRan": "Última execução",
+    "adminTaskLastRan": "Última execução: {time}, com duração de {duration}.",
     "@adminTaskLastRan": {
         "placeholders": {
             "time": {
@@ -14105,7 +14105,7 @@
     "adminTaskResultFailed": "Falhou",
     "adminTaskResultCancelled": "Cancelada",
     "adminTaskResultAborted": "Interrompida",
-    "adminDurationSecondsShort": "s",
+    "adminDurationSecondsShort": "{seconds}s",
     "@adminDurationSecondsShort": {
         "placeholders": {
             "seconds": {
@@ -14115,7 +14115,7 @@
     },
     "adminDeleteTaskTrigger": "Excluir acionador da tarefa",
     "adminDeleteTaskTriggerConfirm": "Tem certeza de que deseja excluir este acionador?",
-    "adminTaskTriggerEveryMinutes": "A cada intervalo de minutos",
+    "adminTaskTriggerEveryMinutes": "A cada {minutes} minutos",
     "@adminTaskTriggerEveryMinutes": {
         "placeholders": {
             "minutes": {
@@ -14123,7 +14123,7 @@
             }
         }
     },
-    "adminTaskTriggerEveryHours": "A cada intervalo de horas",
+    "adminTaskTriggerEveryHours": "A cada {hours} horas",
     "@adminTaskTriggerEveryHours": {
         "placeholders": {
             "hours": {
@@ -14131,7 +14131,7 @@
             }
         }
     },
-    "adminTaskMinutesValue": "Valor em minutos",
+    "adminTaskMinutesValue": "{minutes} minutos",
     "@adminTaskMinutesValue": {
         "placeholders": {
             "minutes": {
@@ -14139,7 +14139,7 @@
             }
         }
     },
-    "adminTaskHoursValue": "Valor em horas",
+    "adminTaskHoursValue": "{hours} horas",
     "@adminTaskHoursValue": {
         "placeholders": {
             "hours": {
@@ -14242,7 +14242,7 @@
     "adminPageDescRepositories": "Gerencie os repositórios de plugins",
     "adminPageDescBackups": "Crie e restaure backups do servidor",
     "adminPageDescLogs": "Consulte os registros de eventos e diagnósticos do servidor",
-    "adminSearchSettingsHint": "Pesquisar configurações...",
+    "adminSearchSettingsHint": "Pesquisar {count} configurações",
     "@adminSearchSettingsHint": {
         "placeholders": {
             "count": {
@@ -14273,7 +14273,7 @@
     "@clientCertTitle": {
         "description": "Title of the dialog that imports a TLS client certificate for a server"
     },
-    "clientCertHost": "Servidor",
+    "clientCertHost": "Certificado para {host}",
     "@clientCertHost": {
         "description": "Names the server host the client certificate will be presented to",
         "placeholders": {
@@ -14330,7 +14330,7 @@
     "@clientCertRequired": {
         "description": "Shown on the sign-in screens when the server turned the connection away for lack of a client certificate"
     },
-    "clientCertExpired": "Certificado expirado",
+    "clientCertExpired": "O certificado deste servidor expirou em {date}. Substitua-o para continuar.",
     "@clientCertExpired": {
         "description": "Shown on the sign-in screen when the server turned the connection away and the stored certificate has expired",
         "placeholders": {
@@ -14355,7 +14355,7 @@
     "@clientCertSubject": {
         "description": "Label for the name on a client certificate"
     },
-    "clientCertExpires": "Data de expiração",
+    "clientCertExpires": "Expira em {date}",
     "@clientCertExpires": {
         "description": "When a client certificate stops being valid",
         "placeholders": {
@@ -14383,7 +14383,7 @@
     "analyticsLibraryShare": "Participação na biblioteca",
     "analyticsTopRating": "Maior avaliação",
     "analyticsTypicalRuntime": "Duração média",
-    "analyticsShareOfItems": "Proporção de itens",
+    "analyticsShareOfItems": "{percent}% dos itens",
     "@analyticsShareOfItems": {
         "placeholders": {
             "percent": {
@@ -14407,7 +14407,7 @@
     "@smartDownloadsKeepReady": {
         "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
     },
-    "smartDownloadsKeepReadySubtitle": "Mantenha conteúdos baixados e disponíveis para assistir offline",
+    "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Mantém o próximo episódio baixado} other{Mantém os próximos {count} episódios baixados}}",
     "@smartDownloadsKeepReadySubtitle": {
         "description": "Subtitle under the episodes to keep ready setting",
         "placeholders": {
@@ -14636,7 +14636,7 @@
     "@playlistSortRandom": {
         "description": "Label for sorting playlist items randomly"
     },
-    "playlistFilterActiveCount": "Quantidade de filtros ativos",
+    "playlistFilterActiveCount": "{count, plural, =1{1 ativo} other{{count} ativos}}",
     "@playlistFilterActiveCount": {
         "description": "Indicator of how many filters are currently active on a playlist",
         "placeholders": {
@@ -14925,5 +14925,13 @@
     "afterHoursStart": "Início",
     "@afterHoursStart": {
         "description": "Button on the How to play card that starts the game. Start as in begin playing"
+    },
+    "topNavbarStyleClassic": "Clássico",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Clássico",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
     }
 }

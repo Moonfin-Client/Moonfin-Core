@@ -376,9 +376,13 @@ class _MprisPlayer extends DBusObject {
       case 'Identity':
         return const DBusString('Moonfin');
       case 'DesktopEntry':
-        // Flatpak names the desktop entry after the ID it was installed under.
+        // Flatpak names the desktop entry after the ID it was installed under,
+        // and snapd names it after the snap and app.
         return DBusString(
-          PlatformDetection.flatpakAppId ?? 'org.moonfin.linux',
+          PlatformDetection.flatpakAppId ??
+              (PlatformDetection.isSnap
+                  ? 'moonfin_moonfin'
+                  : 'org.moonfin.linux'),
         );
       case 'SupportedUriSchemes':
         return DBusArray.string(const []);

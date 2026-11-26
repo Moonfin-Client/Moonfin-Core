@@ -143,8 +143,12 @@ Future<String> _resolveDeviceName() async {
 
     if (PlatformDetection.isLinux) {
       final info = await deviceInfo.linuxInfo;
+      final host = await PlatformDetection.hostOsRelease();
       return _fallbackIfEmpty(
-        _joinNonEmpty([info.name, info.prettyName], ' '),
+        _joinNonEmpty([
+          host?['NAME'] ?? info.name,
+          host?['PRETTY_NAME'] ?? info.prettyName,
+        ], ' '),
         'Linux Device',
       );
     }

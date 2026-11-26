@@ -63,6 +63,8 @@ import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/modern_row.dart';
+import 'package:moonfin/ui/widgets/nav_styles/nav_button_style.dart';
+import 'package:moonfin/ui/widgets/nav_styles/reel_nav.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
@@ -290,6 +292,16 @@ void main() {
         SettingsPreviewController.sceneForKey(pref.key),
         SettingsPreviewScene.home,
         reason: pref.key,
+      );
+    }
+    for (final key in [
+      UserPreferences.topNavbarStyle.key,
+      UserPreferences.sidebarStyle.key,
+    ]) {
+      expect(
+        SettingsPreviewController.sceneForKey(key),
+        SettingsPreviewScene.home,
+        reason: key,
       );
     }
     for (final key in [
@@ -676,6 +688,40 @@ void main() {
         controller.showScene(SettingsPreviewScene.home);
         await pump();
       }
+      controller.tryValue('pref_navbar_position', NavbarPosition.top);
+      for (final style in TopNavbarStyle.values) {
+        controller.tryValue('pref_top_navbar_style', style);
+        await pump();
+        expect(
+          find.byType(TablineTabLabel),
+          style == TopNavbarStyle.tabline ? findsWidgets : findsNothing,
+          reason: '$style',
+        );
+        expect(
+          find.byIcon(Icons.keyboard_arrow_down_rounded),
+          style == TopNavbarStyle.atlas ? findsWidgets : findsNothing,
+          reason: '$style',
+        );
+      }
+      controller.tryValue('pref_navbar_position', NavbarPosition.left);
+      for (final style in SidebarStyle.values) {
+        controller.tryValue('pref_sidebar_style', style);
+        await pump();
+        expect(
+          find.byType(ReelNav),
+          style == SidebarStyle.reel ? findsOneWidget : findsNothing,
+          reason: '$style',
+        );
+        expect(
+          find.byIcon(Icons.apps_rounded),
+          style == SidebarStyle.mosaic ? findsOneWidget : findsNothing,
+          reason: '$style',
+        );
+      }
+      controller
+        ..clearTry('pref_top_navbar_style')
+        ..clearTry('pref_sidebar_style')
+        ..tryValue('pref_navbar_position', NavbarPosition.values.last);
       for (final size in PosterSize.values) {
         controller.tryValue('poster_size', size);
         await pump();

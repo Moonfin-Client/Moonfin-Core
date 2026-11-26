@@ -202,7 +202,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   final VideoController? _videoController;
   final UserPreferences _prefs;
   final Future<void> Function(int handle)? _onNativeHandleReady;
-  final bool _hwDecodingEnabled;
+  bool _hwDecodingEnabled;
 
   /// Owns the decision about native HDR output and the window it needs.
   /// Public so the playback info sheet can report what actually happened.
@@ -547,6 +547,27 @@ class MediaKitPlayerBackend extends PlayerBackend
     return Uri.decodeFull(a.path) == Uri.decodeFull(b.path);
   }
 
+  /// Null lets media_kit pick, which is `auto` on desktop and `auto-safe` on
+  /// Android, or `no` in an emulator.
+  static String? _controllerHwdec(bool enabled) => enabled
+      ? (PlatformDetection.isAndroid && PlatformDetection.isTV
+            ? 'auto-copy'
+            : (PlatformDetection.isLinux ? 'auto-safe' : null))
+      : 'no';
+
+  /// The backend lives as long as the app, so a toggle change has to reach mpv
+  /// when the next title opens. Null while the toggle hasn't moved, so a
+  /// fallback that turned hwdec off for the session isn't undone.
+  @visibleForTesting
+  static String? hwdecForToggle({
+    required bool applied,
+    required bool enabled,
+  }) {
+    if (enabled == applied) return null;
+    return _controllerHwdec(enabled) ??
+        (PlatformDetection.isAndroid ? 'auto-safe' : 'auto');
+  }
+
   static Future<void> _nativeSetProperty(
     Object native,
     String key,
@@ -680,11 +701,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     Future<void> Function(int handle)? onNativeHandleReady,
   }) {
     final hwDecodingEnabled = prefs.get(UserPreferences.hardwareDecoding);
-    final String? hwdec = hwDecodingEnabled
-        ? (PlatformDetection.isAndroid && PlatformDetection.isTV
-              ? 'auto-copy'
-              : (PlatformDetection.isLinux ? 'auto-safe' : null))
-        : 'no';
+    final hwdec = _controllerHwdec(hwDecodingEnabled);
 
     final player = MpvPlayerRegistry.instance.create(
       configuration: PlayerConfiguration(
@@ -987,7 +1004,21 @@ class MediaKitPlayerBackend extends PlayerBackend
         } catch (_) {}
       }
     }
-    await _applyCustomMpvConfIfEnabled();
+    final hwDecodingEnabled = _prefs.get(UserPreferences.hardwareDecoding);
+    final hwdec = hwdecForToggle(
+      applied: _hwDecodingEnabled,
+      enabled: hwDecodingEnabled,
+    );
+    if (hwdec != null) {
+      _hwDecodingEnabled = hwDecodingEnabled;
+      // The native surface sets hwdec itself each time it attaches.
+      final native = _player.platform;
+      if (!_useNativeSurface && native is NativePlayer) {
+        await _nativeSetProperty(native, 'hwdec', hwdec);
+      }
+    }
+    // A hwdec line in the user's mpv.conf still wins over this one.
+    await _applyCustomMpvConfIfEnabled(force: hwdec != null);
     await _applyAssOverrideMode();
 
     if (_player.platform is NativePlayer) {
@@ -1901,30 +1932,69 @@ class MediaKitPlayerBackend extends PlayerBackend
     } catch (_) {}
   }
 
-  /// A PipeWire output that can't take a bitstream can leave mpv stuck at the
-  /// start: the bundled mpv 0.37 has no SPDIF in its PipeWire driver and
-  /// never starts after its own PCM fallback, and 0.41 keeps reopening an
-  /// output that refuses the format. Decoding the track gets it playing.
+  /// A PipeWire output that can't take a bitstream leaves the audio silent:
+  /// the bundled mpv 0.37 has no SPDIF in its PipeWire driver and can stall
+  /// at the start, and 0.41 keeps reopening an output that refuses the format
+  /// while the video plays on. Decoding the track brings the sound back.
   /// audio-spdif then stays empty until the passthrough settings change, so
-  /// the next file doesn't stall the same way.
+  /// the next file doesn't go silent the same way.
   Future<void> _applyLinuxPassthroughFallbackIfNeeded(int generation) async {
-    if (!PlatformDetection.isLinux) return;
-    final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
-    if (spdif.isEmpty) return;
-    await Future<void>.delayed(_linuxPassthroughStartTimeout);
-    final native = _player.platform;
-    if (native is! NativePlayer || !_ownsPlayback(generation)) return;
-    final format = await _tryNativeGetProperty(native, 'audio-params/format');
-    if (format == null || !format.startsWith('spdif')) return;
-    // A slow restart also leaves the core idle, but its output is open.
-    if (await _tryNativeGetProperty(native, 'core-idle') != 'yes' ||
-        await _tryNativeGetProperty(native, 'pause') != 'no' ||
-        await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
-        await _tryNativeGetProperty(native, 'current-ao') != null) {
+    if (!PlatformDetection.isLinux ||
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
       return;
     }
-    if (!_ownsPlayback(generation)) return;
-    debugPrint('[audio] $format output never started, decoding instead');
+    final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
+    if (spdif.isEmpty) return;
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    // Only the latest check counts, so a quick second track switch isn't
+    // judged by the first switch's timer.
+    final check = ++_linuxPassthroughCheck;
+    String? format;
+    // mpv has no audio position while no output plays the bitstream. A seek
+    // or a reopened output only clears it for a moment, so check twice.
+    for (final wait in const [
+      _linuxPassthroughStartTimeout,
+      Duration(milliseconds: 500),
+    ]) {
+      await Future<void>.delayed(wait);
+      if (!_ownsPlayback(generation) || check != _linuxPassthroughCheck) {
+        return;
+      }
+      format = await _tryNativeGetProperty(native, 'audio-params/format');
+      if (format == null || !format.startsWith('spdif')) return;
+      if (_player.state.buffering) {
+        // mpv leaves a cache pause by itself, with no resume or track switch
+        // to start another check, so check again once it has.
+        try {
+          await _player.stream.buffering.firstWhere((b) => !b);
+        } catch (_) {
+          return;
+        }
+        if (check == _linuxPassthroughCheck) {
+          unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
+        }
+        return;
+      }
+      if (await _tryNativeGetProperty(native, 'pause') != 'no' ||
+          await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
+          await _tryNativeGetProperty(native, 'audio-pts') != null) {
+        return;
+      }
+      // A slow start also has no audio position yet, but its output is open
+      // and the video waits for it. Silent output either plays the video on
+      // (0.41) or stalls with no output at all (0.37).
+      if (await _tryNativeGetProperty(native, 'core-idle') != 'no' &&
+          await _tryNativeGetProperty(native, 'current-ao') != null) {
+        return;
+      }
+    }
+    if (!_ownsPlayback(generation) ||
+        check != _linuxPassthroughCheck ||
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
+      return;
+    }
+    debugPrint('[audio] $format output never played, decoding instead');
     await _nativeSetProperty(native, 'audio-spdif', '');
     // Before mpv 0.41, audio-spdif only takes effect once the audio decoder
     // is recreated, which selecting the track again does. Queued with
@@ -1936,6 +2006,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       await _nativeSetProperty(native, 'aid', aid);
     });
   }
+
+  int _linuxPassthroughCheck = 0;
 
   Future<void> _audioTrackChanges = Future<void>.value();
 
@@ -2009,6 +2081,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       if (mapEquals(_appliedAudioPassthroughProperties, properties)) {
         return;
       }
+      // A check still sampling would judge, and clear, the old setting.
+      ++_linuxPassthroughCheck;
 
       var allApplied = true;
 
@@ -2038,6 +2112,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       } else {
         _appliedAudioPassthroughProperties = null;
       }
+      // The new setting can be just as silent, so check it again.
+      unawaited(_applyLinuxPassthroughFallbackIfNeeded(_playbackGeneration));
     } catch (_) {}
   }
 
@@ -2821,9 +2897,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     final generation = _playbackGeneration;
     // A change still queued when another source opens was meant for the old
     // one, and its ordinal would pick a track in the new one.
-    return _queueAudioTrackChange(() async {
+    final change = _queueAudioTrackChange(() async {
       if (_ownsPlayback(generation)) await _setAudioTrack(mpvTrackId);
     });
+    unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
+    return change;
   }
 
   Future<void> _setAudioTrack(int mpvTrackId) async {
