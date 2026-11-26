@@ -36,12 +36,16 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   /// Holds back the next fetch until it completes.
   Completer<void>? hold;
 
+  /// The ids fetched, in order.
+  final fetched = <String>[];
+
   @override
   Future<Map<String, dynamic>> getItem(
     String itemId, {
     String? mediaSourceId,
     String? fields,
   }) async {
+    fetched.add(itemId);
     final held = hold;
     hold = null;
     if (held != null) await held.future;
@@ -607,12 +611,14 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pump();
     expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+    items.fetched.clear();
     firstDelete.complete();
     await tester.pump();
     await settle(tester);
 
     expect(find.byType(ChangeArtworkDialog), findsNothing);
     expect(admin.deletes, ['a1 Primary null']);
+    expect(items.fetched, isEmpty);
   });
 
   testWidgets("a stopped Clear All's refresh leaves a newer Clear All locked", (

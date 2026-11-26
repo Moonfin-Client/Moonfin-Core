@@ -860,11 +860,12 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     setState(() {
       _actionInProgress.addAll(_supportedCategories);
     });
+    // A closed dialog stays mounted until its exit animation ends.
+    bool closed() => !mounted || !(ModalRoute.of(context)?.isActive ?? true);
+
     // The dialog may close, or move to another item, while Clear All waits.
     bool stopped() {
-      // A closed dialog stays mounted until its exit animation ends.
-      final open = mounted && (ModalRoute.of(context)?.isActive ?? true);
-      if (open && _item.id == itemId) return false;
+      if (!closed() && _item.id == itemId) return false;
       if (mounted) {
         setState(() {
           _actionInProgress.clear();
@@ -913,7 +914,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           _markChanged();
         }
       }
-      if (!mounted) return;
+      if (closed()) return;
       // A stopped clear still refreshes the item if it deleted anything, so
       // going Back does not show the deleted images again.
       wasStopped = stopped();
