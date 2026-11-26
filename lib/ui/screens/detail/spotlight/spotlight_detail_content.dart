@@ -30,6 +30,7 @@ import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/focus/can_claim_initial_focus.dart';
 import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
+import '../../../widgets/separated_wrap.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/quick_return_wrapper.dart';
@@ -968,16 +969,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
 
     if (pieces.isEmpty) return const SizedBox.shrink();
 
-    final separated = <Widget>[];
-    for (var i = 0; i < pieces.length; i++) {
-      if (i > 0) separated.add(Text('·', style: style));
-      separated.add(pieces[i]);
-    }
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return SeparatedWrap(
+      separator: Text('·', style: style),
       spacing: 8,
       runSpacing: 6,
-      children: separated,
+      children: pieces,
     );
   }
 

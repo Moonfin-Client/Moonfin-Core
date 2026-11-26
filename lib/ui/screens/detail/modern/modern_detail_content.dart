@@ -4,6 +4,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:collection/collection.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/anime_marker_badge.dart';
+import '../../../widgets/separated_wrap.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -4841,18 +4842,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     if (pieces.isEmpty) return const SizedBox.shrink();
 
-    final separated = <Widget>[];
-    for (var i = 0; i < pieces.length; i++) {
-      if (i > 0) {
-        separated.add(Text('·', style: style));
-      }
-      separated.add(pieces[i]);
-    }
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return SeparatedWrap(
+      separator: Text('·', style: style),
       spacing: 8,
       runSpacing: 6,
-      children: separated,
+      children: pieces,
     );
   }
 
