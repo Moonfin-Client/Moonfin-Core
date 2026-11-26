@@ -885,32 +885,39 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         category: _getCurrentTags(category).length,
     };
 
+    var deleted = false;
     try {
       final client = GetIt.instance<MediaServerClient>();
+      deleting:
       for (final MapEntry(key: category, value: count) in counts.entries) {
         if (count == 0) continue;
 
         if (category == 'Backdrop') {
           for (int i = count - 1; i >= 0; i--) {
-            if (stopped()) return;
+            if (stopped()) break deleting;
             await client.adminItemsApi.deleteItemImage(
               itemId,
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
+            deleted = true;
             _markChanged();
           }
         } else {
-          if (stopped()) return;
+          if (stopped()) break deleting;
           await client.adminItemsApi.deleteItemImage(
             itemId,
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
+          deleted = true;
           _markChanged();
         }
       }
-      if (stopped()) return;
+      if (!mounted) return;
+      // A stopped clear still refreshes the item if it deleted anything, so
+      // going Back does not show the deleted images again.
+      if (stopped() && !deleted) return;
 
       final updatedRaw = await client.itemsApi.getItem(itemId);
       if (mounted) {

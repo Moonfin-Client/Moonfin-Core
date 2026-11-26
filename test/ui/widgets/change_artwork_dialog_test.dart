@@ -482,6 +482,13 @@ void main() {
         'green',
         'yellow',
       ]);
+
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+
+      expect(find.text('Season 1'), findsOneWidget);
+      // The deleted Primary and the Banner the season never had.
+      expect(find.text(l10n.missing), findsNWidgets(2));
     },
   );
 
