@@ -50,8 +50,7 @@ class SeerrRequest {
   final bool is4k;
   final List<SeerrSeasonRequest>? seasons;
 
-  /// Silo only: a failed request that delivered nothing, which the viewer may
-  /// delete for good. Seerr has no such action.
+  /// A failed Silo request with nothing delivered, which the viewer may delete.
   final bool canRemove;
 
   const SeerrRequest({

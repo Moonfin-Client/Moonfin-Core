@@ -116,13 +116,12 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   // the selected tab header automatically grabs focus at that time
   final _initialFocusNode = FocusNode(debugLabel: 'seerrInitialContent');
   final _animatedRequestIds = <int>{};
+  final _animatedIssueIds = <int>{};
 
-  /// The card that takes focus after a removal, so the remote lands on the
-  /// request now in the removed one's place rather than back up the screen.
+  /// The card that takes focus after a removal, so the remote doesn't lose it.
   int? _refocusRequestId;
   int _refocusTick = 0;
   bool _removeConfirmOpen = false;
-  final _animatedIssueIds = <int>{};
 
   @override
   void initState() {
@@ -174,8 +173,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
 
   @override
   void didPopNext() {
-    // The Remove confirm closing is not a return from another screen, and a
-    // reload then would race the removal it starts.
+    // A reload when the Remove confirm closes would race the removal.
     if (_removeConfirmOpen) {
       _removeConfirmOpen = false;
       return;
@@ -547,10 +545,8 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     );
   }
 
-  /// Confirms deleting a failed Silo request, then deletes it. Silo refuses
-  /// one that was retried or got a copy meanwhile; the card then shows where
-  /// it stands and a snackbar says why it stayed. With a remote, focus goes
-  /// to the card now in the removed one's place, or back to a refused one.
+  /// With a remote, focus goes to the card that takes the removed one's place,
+  /// or back to the card when the removal didn't happen.
   Future<void> _confirmRemove(
     SeerrRequestsViewModel vm,
     SeerrRequest request,
@@ -625,8 +621,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     }
   }
 
-  /// Hands focus to one card on the next build, once. The tick makes a
-  /// second hand-off to the same card count as new.
+  /// The tick lets the same card take focus a second time.
   void _refocus(int requestId) {
     setState(() {
       _refocusRequestId = requestId;
@@ -1570,12 +1565,9 @@ class _RequestCard extends StatefulWidget {
   final VoidCallback? onApprove;
   final VoidCallback? onDecline;
   final VoidCallback? onRetry;
-
-  /// Deletes a failed Silo request; offered when [SeerrRequest.canRemove].
   final VoidCallback? onRemove;
 
-  /// Non-zero, and new, on the card that should take focus: the one now in
-  /// a removed card's place, or a card whose removal was refused.
+  /// The card takes focus whenever this changes to a value other than zero.
   final int focusToken;
 
   /// Fired when this card takes focus, so the grid can slide its row to a
@@ -1615,26 +1607,25 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
 
   SeerrRequest get request => widget.request;
 
+  // A card shifted up by a removal can be built anew, so this runs from
+  // initState as well as didUpdateWidget.
+  void _takeFocus(int previousToken) {
+    if (widget.focusToken == 0 || widget.focusToken == previousToken) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _cardFocus.requestFocus();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    // A card shifted up by a removal can be built anew, and then gets its
-    // focus hand-off here rather than in didUpdateWidget.
-    if (widget.focusToken != 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _cardFocus.requestFocus();
-      });
-    }
+    _takeFocus(0);
   }
 
   @override
   void didUpdateWidget(_RequestCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.focusToken != 0 && widget.focusToken != oldWidget.focusToken) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _cardFocus.requestFocus();
-      });
-    }
+    _takeFocus(oldWidget.focusToken);
   }
 
   @override
@@ -1923,8 +1914,8 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
 
   /// The phone card's action row: approve and decline side by side, each half
   /// the width with its label, or retry and remove the same way, or the
-  /// spinner. Empty when there is
-  /// nothing to do, so those cards keep the provenance at the foot.
+  /// spinner. Empty when there is nothing to do, so those cards keep the
+  /// provenance at the foot.
   List<Widget> _phoneActions(
     AppLocalizations l10n,
     double scale,
@@ -2005,8 +1996,8 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   }
 
   /// The buttons over the poster's foot: approve and decline, retry and
-  /// remove, or the spinner. Icon only, since a TV tile is too narrow for two labelled
-  /// buttons. The stacked card builds its own labelled pair inline.
+  /// remove, or the spinner. Icon only, since a TV tile is too narrow for two
+  /// labeled buttons. The stacked card builds its own labeled pair inline.
   List<Widget> _actions(AppLocalizations l10n) {
     if (widget.isActioning) {
       final scale = _uiScale();

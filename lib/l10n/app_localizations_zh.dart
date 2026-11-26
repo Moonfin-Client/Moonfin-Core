@@ -5647,11 +5647,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get seerrNotifyNewMediaSubtitle => '服务器媒体库新增内容提醒';
 
   @override
-  String get seerrTestNotification => 'Send Test Notification';
+  String get seerrTestNotification => '发送测试通知';
 
   @override
-  String get seerrTestNotificationDesc =>
-      'Verify in-app and background push delivery';
+  String get seerrTestNotificationDesc => '验证应用内与后台推送送达';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5660,33 +5659,26 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     final String countString = countNumberFormat.format(count);
 
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$countString devices',
-      one: '1 device',
-    );
-    return 'Dispatched to $_temp0.';
+    return '已下发至 $countString 台设备。';
   }
 
   @override
-  String get seerrTestNotificationPushDisabled =>
-      'In-app notification sent. Server push is not enabled.';
+  String get seerrTestNotificationPushDisabled => '已发送应用内通知，服务器推送未开启。';
 
   @override
-  String get seerrTestNotificationFailed => 'Failed to send test notification';
+  String get seerrTestNotificationFailed => '发送测试通知失败';
 
   @override
-  String get seerrPushServerStatus => 'Server Push';
+  String get seerrPushServerStatus => '服务器推送';
 
   @override
-  String get seerrPushDeviceStatus => 'Device Push';
+  String get seerrPushDeviceStatus => '设备推送';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registered';
+  String get seerrPushDeviceRegistered => '已注册';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Not registered';
+  String get seerrPushDeviceNotRegistered => '未注册';
 
   @override
   String loggedInAs(String username) {

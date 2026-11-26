@@ -21,7 +21,6 @@ extension SeerrRequestFilterApi on SeerrRequestFilter {
 
 const _pageSize = 20;
 
-/// How removing a failed Silo request went.
 enum SeerrRemoveResult { removed, refused, failed }
 
 class SeerrRequestsState {
@@ -354,35 +353,10 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         : SeerrRequestFilter.all;
   }
 
-  // Requests removed since the last full load started. A list read that was
-  // out during a removal can still hold one, and must not bring its card
-  // back. Cleared on each load: a read sent after a removal finished no
-  // longer lists it, and on the web the ids can be renumbered meanwhile.
-  final Set<int> _removedIds = {};
-  // Counts removals, so a page read that was out during one starts again
-  // from where the server's list now is.
-  int _removals = 0;
-  // Removals still waiting on Silo. Silo may already have dropped the
-  // request from its list, so a page read waits for them before trusting
-  // its offset.
-  int _removalsInFlight = 0;
-  Completer<void>? _removalsIdle;
-  // Bumped by each full load, so a read from an older one is dropped.
-  int _listGen = 0;
-
-  Future<void> _removalsSettled() async {
-    while (_removalsInFlight > 0) {
-      await (_removalsIdle ??= Completer<void>()).future;
-    }
-  }
-
   Future<void> load({bool isRefresh = false}) async {
-    final gen = ++_listGen;
-    _removedIds.clear();
     _state = _state.copyWith(
       isLoading: !isRefresh,
       isRefreshing: isRefresh,
-      isLoadingMore: false,
       requests: isRefresh ? _state.requests : const [],
       error: null,
     );
@@ -402,7 +376,6 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         limit: _pageSize,
         offset: 0,
       );
-      if (gen != _listGen) return;
 
       _state = SeerrRequestsState(
         requests: _visibleRequests(response.results, filter),
@@ -427,7 +400,6 @@ class SeerrRequestsViewModel extends ChangeNotifier {
 
       await _loadCounts(user);
     } catch (e) {
-      if (gen != _listGen) return;
       _state = _state.copyWith(
         isLoading: false,
         isRefreshing: false,
@@ -439,10 +411,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   }
 
   Future<void> loadMore() async {
-    // A refresh keeps the old cards up, so a page read from their count would
-    // land past the refreshed first page.
     if (_state.isLoading ||
-        _state.isRefreshing ||
         _state.isLoadingMore ||
         !_state.hasMore ||
         _state.currentUser == null) {
@@ -452,41 +421,15 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     _state = _state.copyWith(isLoadingMore: true);
     notifyListeners();
 
-    final gen = _listGen;
     try {
       final user = _state.currentUser!;
-      await _removalsSettled();
-      if (gen != _listGen) return;
-      final offset = _state.requests.length;
-      final removalsAtStart = _removals;
-      Future<SeerrRequestListResponse> page(int at) => _repo.getRequests(
+      final response = await _repo.getRequests(
         filter: _state.filter.apiValue,
         sort: _state.sort,
         requestedBy: user.canViewAllRequests ? null : user.id,
         limit: _pageSize,
-        offset: at,
+        offset: _state.requests.length,
       );
-      // Each removal that finishes meanwhile moves the server's list up by
-      // one, past the page that was asked for. Read again from where the
-      // page now starts until no removal moved it during the read. If
-      // removals keep moving it, the page is dropped and the next scroll
-      // asks again.
-      var at = offset;
-      var response = await page(at);
-      for (var reads = 1; ; reads++) {
-        await _removalsSettled();
-        if (gen != _listGen) return;
-        final removed = _removals - removalsAtStart;
-        final next = offset > removed ? offset - removed : 0;
-        if (next == at) break;
-        if (reads >= 6) {
-          _state = _state.copyWith(isLoadingMore: false);
-          notifyListeners();
-          return;
-        }
-        at = next;
-        response = await page(at);
-      }
 
       final merged = [
         ..._state.requests,
@@ -504,7 +447,6 @@ class SeerrRequestsViewModel extends ChangeNotifier {
         _loadArrQueues(response.results).whenComplete(_syncDownloadPolling),
       );
     } catch (_) {
-      if (gen != _listGen) return;
       _state = _state.copyWith(isLoadingMore: false, hasMore: false);
     }
     notifyListeners();
@@ -566,9 +508,6 @@ class SeerrRequestsViewModel extends ChangeNotifier {
     List<SeerrRequest> requests,
     SeerrRequestFilter filter,
   ) {
-    if (_removedIds.isNotEmpty) {
-      requests = requests.where((r) => !_removedIds.contains(r.id)).toList();
-    }
     if (filter != SeerrRequestFilter.all) return requests;
     final now = DateTime.now();
     return requests.where((r) {
@@ -604,70 +543,29 @@ class SeerrRequestsViewModel extends ChangeNotifier {
   Future<void> retryRequest(int requestId) =>
       _runAction(requestId, () => _repo.retryRequest(requestId));
 
-  /// Deletes a failed Silo request and drops its card. Silo refuses one that
-  /// was retried or got a copy meanwhile; the card is then read again so it
-  /// shows where the request stands. Any other error leaves the card as it
-  /// was. Removing a failed request changes no count the badge shows.
+  /// Silo refuses with a 409 once the request was retried or part of it
+  /// arrived, and the card is read again to show where it stands.
   Future<SeerrRemoveResult> removeFailedRequest(int requestId) async {
-    _removalsInFlight++;
-    try {
-      return await _removeFailedRequest(requestId);
-    } finally {
-      if (--_removalsInFlight == 0) {
-        _removalsIdle?.complete();
-        _removalsIdle = null;
-      }
-    }
-  }
-
-  Future<SeerrRemoveResult> _removeFailedRequest(int requestId) async {
     _state = _state.copyWith(actioningRequestId: requestId);
     notifyListeners();
     try {
       await _repo.removeFailedRequest(requestId);
-    } on SeerrRequestException catch (e) {
-      if (e.kind == SeerrRequestErrorKind.duplicate) {
-        // Read on its own rather than through _patchRequest, whose fallback
-        // reloads the whole list and can swap it for an error screen.
-        try {
-          final updated = await _repo.getRequest(requestId);
-          _state = _state.copyWith(
-            requests: _state.requests
-                .map((r) => r.id == requestId ? updated : r)
-                .toList(),
-          );
-          _endAction(requestId);
-          // A retry may have it downloading now.
-          unawaited(
-            _loadArrQueues([updated]).whenComplete(_syncDownloadPolling),
-          );
-        } catch (_) {
-          _endAction(requestId);
-          return SeerrRemoveResult.failed;
-        }
+    } catch (e) {
+      if (e is SeerrRequestException &&
+          e.kind == SeerrRequestErrorKind.duplicate) {
+        await _patchRequest(requestId);
         return SeerrRemoveResult.refused;
       }
-      _endAction(requestId);
-      return SeerrRemoveResult.failed;
-    } catch (_) {
-      _endAction(requestId);
+      _state = _state.copyWith(actioningRequestId: null);
+      notifyListeners();
       return SeerrRemoveResult.failed;
     }
-    _removedIds.add(requestId);
-    _removals++;
     _state = _state.copyWith(
+      actioningRequestId: null,
       requests: _state.requests.where((r) => r.id != requestId).toList(),
     );
-    _endAction(requestId);
-    return SeerrRemoveResult.removed;
-  }
-
-  /// Clears the spinner, unless another card's action has taken it since.
-  void _endAction(int requestId) {
-    if (_state.actioningRequestId == requestId) {
-      _state = _state.copyWith(actioningRequestId: null);
-    }
     notifyListeners();
+    return SeerrRemoveResult.removed;
   }
 
   Future<void> _runAction(int requestId, Future<void> Function() action) async {

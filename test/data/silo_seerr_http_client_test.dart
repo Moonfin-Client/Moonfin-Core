@@ -542,6 +542,7 @@ void main() {
       'DELETE /api/v2/requests/r-partial': _problem(409, 'conflict'),
     });
     final client = _client(silo);
+    await client.getMoonfinStatus();
 
     final list = SeerrRequestListResponse.fromJson(await client.getRequests());
     expect(list.results.map((r) => r.canRemove), [true, false, false]);
@@ -559,6 +560,7 @@ void main() {
 
     // An older Silo doesn't say it has the route, so nothing offers it.
     final old = _client(_Silo({..._base(), 'GET /api/v2/requests/mine': mine}));
+    await old.getMoonfinStatus();
     final oldList = SeerrRequestListResponse.fromJson(await old.getRequests());
     expect(oldList.results.any((r) => r.canRemove), isFalse);
   });

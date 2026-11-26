@@ -47,8 +47,8 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   bool? _admin;
   int? _userId;
 
-  /// Whether this Silo offers removeFailedRequest, from its request status.
-  bool? _removeFailed;
+  /// Older Silo servers leave this out of the request status.
+  bool _removeFailedSupported = false;
 
   final Random _random = Random();
 
@@ -144,22 +144,11 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
 
   int get _me => _userId ?? 0;
 
-  /// Reads the request status once, for [_removeFailed], when nothing has
-  /// read it yet. An older Silo leaves the flag out and gets no Remove.
-  Future<void> _readRemoveFailed() async {
-    if (_removeFailed != null) return;
-    // Left unknown on a failed read, so the next list read asks again.
-    try {
-      final status = await _get('/requests/status');
-      _removeFailed = status['remove_failed_supported'] == true;
-    } catch (_) {}
-  }
-
-  /// The server's rule for removeFailedRequest: failed, and no quality was
-  /// delivered. It also lets the owner or an admin do it, and the lists here
-  /// only hold the viewer's own requests unless the viewer is an admin.
+  /// Silo removes a request only when it failed with nothing delivered. It also
+  /// needs the owner or an admin, and these lists only hold the viewer's own
+  /// requests unless they're an admin.
   bool _removable(Map r) {
-    if (_removeFailed != true || r['outcome'] != 'failed') return false;
+    if (!_removeFailedSupported || r['outcome'] != 'failed') return false;
     final targets = r['targets'];
     return !(targets is List &&
         targets.any((t) => t is Map && t['status'] == 'completed'));
@@ -221,7 +210,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   @override
   Future<MoonfinStatusResponse> getMoonfinStatus() async {
     final status = await _get('/requests/status');
-    _removeFailed = status['remove_failed_supported'] == true;
+    _removeFailedSupported = status['remove_failed_supported'] == true;
     final enabled = status['requests_enabled'] == true;
     final allowed = status['allowed'] != false;
     final user = enabled ? await getCurrentUser() : null;
@@ -1060,7 +1049,6 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     int offset = 0,
   }) async {
     final admin = await _isAdmin();
-    await _readRemoveFailed();
     final mine = !admin || requestedBy == _me;
     final (requests, more) = mine
         ? await _readRequests(
@@ -1095,7 +1083,6 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   @override
   Future<Map<String, dynamic>> getRequest(int requestId) async {
     final id = Uri.encodeComponent(_requestId(requestId));
-    await _readRemoveFailed();
     final request = _request(await _get('/requests/$id'));
     await _addRequesterNames([request]);
     return request;
@@ -1157,9 +1144,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     await _mutate(() => _dio.post<dynamic>('$_api/requests/$id/cancel', data: {}));
   }
 
-  /// Silo deletes a failed request that delivered nothing, with its history.
-  /// It answers 409 once the request is no longer failed or got a copy. A
-  /// 404 means it is already gone, which is what was asked for.
+  /// A 404 means the request is already gone, which is what was asked for.
   @override
   Future<void> removeFailedRequest(int requestId) async {
     final id = Uri.encodeComponent(_requestId(requestId));

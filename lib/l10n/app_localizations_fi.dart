@@ -5868,11 +5868,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Onko palvelimen kirjastoon lisätty mitään uutta';
 
   @override
-  String get seerrTestNotification => 'Send Test Notification';
+  String get seerrTestNotification => 'Lähetä testiviesti';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Verify in-app and background push delivery';
+      'Tarkista sovelluksen sisäisten ja taustalla tapahtuvien push-ilmoitusten toimitus';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5885,29 +5885,30 @@ class AppLocalizationsFi extends AppLocalizations {
       count,
       locale: localeName,
       other: '$countString devices',
-      one: '1 device',
+      one: '1 laite',
     );
-    return 'Dispatched to $_temp0.';
+    return 'Toimitettu $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'In-app notification sent. Server push is not enabled.';
+      'Sovelluksen sisäinen ilmoitus lähetetty. Palvelimen push-ilmoitukset eivät ole käytössä.';
 
   @override
-  String get seerrTestNotificationFailed => 'Failed to send test notification';
+  String get seerrTestNotificationFailed =>
+      'Testiviestin lähettäminen epäonnistui';
 
   @override
-  String get seerrPushServerStatus => 'Server Push';
+  String get seerrPushServerStatus => 'Palvelimen lähetys';
 
   @override
-  String get seerrPushDeviceStatus => 'Device Push';
+  String get seerrPushDeviceStatus => 'Laitteen push-ilmoitus';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registered';
+  String get seerrPushDeviceRegistered => 'Rekisteröity';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Not registered';
+  String get seerrPushDeviceNotRegistered => 'Ei rekisteröity';
 
   @override
   String loggedInAs(String username) {
