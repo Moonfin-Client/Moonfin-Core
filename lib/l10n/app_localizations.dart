@@ -10900,6 +10900,36 @@ abstract class AppLocalizations {
   /// **'Keep'**
   String get keep;
 
+  /// Button and dialog title for deleting a failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Request'**
+  String get removeRequest;
+
+  /// Confirmation message before deleting a failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'Your failed request for \"{title}\" will be deleted. You can request it again later.'**
+  String removeFailedRequestForTitle(String title);
+
+  /// Snackbar when Silo refuses to delete a failed request because it changed
+  ///
+  /// In en, this message translates to:
+  /// **'The request wasn\'t removed. It was retried, or part of it arrived.'**
+  String get removeFailedRequestRefused;
+
+  /// Confirmation message before an admin deletes another user's failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'The failed request for \"{title}\" by {name} will be deleted. They can request it again later.'**
+  String removeOthersFailedRequestForTitle(String title, String name);
+
+  /// Snackbar when deleting a failed Silo request fails for a reason other than the request changing
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t remove the request. Try again.'**
+  String get removeFailedRequestError;
+
   /// Snackbar when Seerr item cannot be found in Jellyfin
   ///
   /// In en, this message translates to:
@@ -27192,6 +27222,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Numeric score out of 10'**
   String get personalRatingNumeric;
+
+  /// Selects the step granularity for personal ratings and their display precision.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating Intervals'**
+  String get personalRatingIntervals;
+
+  /// Short label for whole-number personal rating steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole (1)'**
+  String get personalRatingIntervalWhole;
+
+  /// Short label for half-step (0.5) personal rating intervals.
+  ///
+  /// In en, this message translates to:
+  /// **'Half (0.5)'**
+  String get personalRatingIntervalHalf;
+
+  /// Short label for quarter-step (0.25) personal rating intervals.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter (0.25)'**
+  String get personalRatingIntervalQuarter;
 
   /// Action that opens the personal rating control.
   ///

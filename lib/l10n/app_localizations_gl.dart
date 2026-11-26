@@ -6230,6 +6230,27 @@ class AppLocalizationsGl extends AppLocalizations {
   String get keep => 'Manteña';
 
   @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
+
+  @override
   String get itemNotFoundInLibrary =>
       'Non se atopou o elemento na túa biblioteca de Moonfin';
 
@@ -15726,6 +15747,18 @@ class AppLocalizationsGl extends AppLocalizations {
 
   @override
   String get personalRatingNumeric => 'Numeric score out of 10';
+
+  @override
+  String get personalRatingIntervals => 'Rating Intervals';
+
+  @override
+  String get personalRatingIntervalWhole => 'Whole (1)';
+
+  @override
+  String get personalRatingIntervalHalf => 'Half (0.5)';
+
+  @override
+  String get personalRatingIntervalQuarter => 'Quarter (0.25)';
 
   @override
   String get rate => 'Rate';

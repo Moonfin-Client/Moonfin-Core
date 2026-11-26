@@ -5979,6 +5979,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get keep => '保留';
 
   @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
+
+  @override
   String get itemNotFoundInLibrary => '在你的 Moonfin 媒体库中未找到此媒体项';
 
   @override
@@ -14911,6 +14932,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get personalRatingNumeric => '10 分制数字评分';
+
+  @override
+  String get personalRatingIntervals => 'Rating Intervals';
+
+  @override
+  String get personalRatingIntervalWhole => 'Whole (1)';
+
+  @override
+  String get personalRatingIntervalHalf => 'Half (0.5)';
+
+  @override
+  String get personalRatingIntervalQuarter => 'Quarter (0.25)';
 
   @override
   String get rate => '评分';
