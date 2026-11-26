@@ -19053,5 +19053,287 @@
     "settingsAudioPassthroughFallbackDescription": "Jos ulostulolaite ei pysty toistamaan passthrough-raitaa ja ääni pysyy mykkänä, dekoodaa se sen sijaan tällä laitteella.",
     "@settingsAudioPassthroughFallbackDescription": {
         "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "siloSectionBecauseYouEnjoy": "Koska sinä nautit siitä {genres}",
+    "@siloSectionBecauseYouEnjoy": {
+        "description": "Title of a row a Silo server offers for Home. {genres}: one or more genre names joined by the server, not translated",
+        "placeholders": {
+            "genres": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionBecauseYouWatched": "Koska katsoit",
+    "@siloSectionBecauseYouWatched": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionBecauseYouWatchedTitle": "Koska katsoit {title}",
+    "@siloSectionBecauseYouWatchedTitle": {
+        "description": "Title of a row a Silo server offers for Home. {title}: the title of a movie or show the profile watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionForYou": "Sinulle",
+    "@siloSectionForYou": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionHiddenGems": "Piilotetut aarteet",
+    "@siloSectionHiddenGems": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionHighlyRatedInLibrary": "Korkeasti arvioitu kirjastossasi",
+    "@siloSectionHighlyRatedInLibrary": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionNextInYourSeries": "Sarjan seuraava osa",
+    "@siloSectionNextInYourSeries": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionPickedFromYourHistory": "Valittu selaushistoriastasi",
+    "@siloSectionPickedFromYourHistory": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionPopularOnServer": "Suosittuja tällä palvelimella",
+    "@siloSectionPopularOnServer": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionProfilesLikeYouEnjoyed": "Profiilit, joista olet pitänyt",
+    "@siloSectionProfilesLikeYouEnjoyed": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRandomPicks": "Satunnaiset valinnat",
+    "@siloSectionRandomPicks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedAudiobooks": "Äskettäin lisätyt äänikirjat",
+    "@siloSectionRecentlyAddedAudiobooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedEbooks": "Äskettäin lisätyt e-kirjat",
+    "@siloSectionRecentlyAddedEbooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedIn": "Viime aikoina lisätty {library}",
+    "@siloSectionRecentlyAddedIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyAddedManga": "Äskettäin lisätyt mangat",
+    "@siloSectionRecentlyAddedManga": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedMovies": "Äskettäin lisätyt elokuvat",
+    "@siloSectionRecentlyAddedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedTv": "Äskettäin lisätyt TV-ohjelmat",
+    "@siloSectionRecentlyAddedTv": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedAudiobooks": "Äskettäin julkaistut äänikirjat",
+    "@siloSectionRecentlyReleasedAudiobooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedEbooks": "Äskettäin julkaistut e-kirjat",
+    "@siloSectionRecentlyReleasedEbooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedEpisodesIn": "Äskettäin julkaistut jaksot sarjassa {library}",
+    "@siloSectionRecentlyReleasedEpisodesIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyReleasedIn": "Julkaistu äskettäin {library}",
+    "@siloSectionRecentlyReleasedIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyReleasedManga": "Äskettäin julkaistut mangat",
+    "@siloSectionRecentlyReleasedManga": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedMovies": "Äskettäin julkaistut elokuvat",
+    "@siloSectionRecentlyReleasedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecommendedForYou": "Suosituksia sinulle",
+    "@siloSectionRecommendedForYou": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionReturningShows": "Palaavat sarjat",
+    "@siloSectionReturningShows": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionSeasonalChristmasClassics": "Joulun klassikot",
+    "@siloSectionSeasonalChristmasClassics": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasComedies": "Joulukomediat",
+    "@siloSectionSeasonalChristmasComedies": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasFamily": "Perheen joulu",
+    "@siloSectionSeasonalChristmasFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasFavorites": "Joulun suosikit",
+    "@siloSectionSeasonalChristmasFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasHallmark": "Hallmarkin joulu",
+    "@siloSectionSeasonalChristmasHallmark": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasRomcoms": "Joulun romanttiset komediat",
+    "@siloSectionSeasonalChristmasRomcoms": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalEasterFaith": "Pääsiäistarinat",
+    "@siloSectionSeasonalEasterFaith": {
+        "description": "Title of a seasonal row on a Silo server's Home (easter)"
+    },
+    "siloSectionSeasonalEasterFamily": "Pääsiäiselokuvat",
+    "@siloSectionSeasonalEasterFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (easter)"
+    },
+    "siloSectionSeasonalFamilyMovieNightFavorites": "Perheen suosikit",
+    "@siloSectionSeasonalFamilyMovieNightFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalFamilyMovieNight": "Perheen elokuvailta",
+    "@siloSectionSeasonalFamilyMovieNight": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalHalloweenAnimated": "Animoitu Halloween",
+    "@siloSectionSeasonalHalloweenAnimated": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenFamily": "Perheen halloween",
+    "@siloSectionSeasonalHalloweenFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenFavorites": "Halloweenin suosikit",
+    "@siloSectionSeasonalHalloweenFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenHorror": "Halloween kauhu",
+    "@siloSectionSeasonalHalloweenHorror": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenTv": "Halloween TV",
+    "@siloSectionSeasonalHalloweenTv": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalNewYearFavorites": "Uudenvuoden elokuvat",
+    "@siloSectionSeasonalNewYearFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (newYear)"
+    },
+    "siloSectionSeasonalSaturdayMorningCartoons": "Lauantaiaamun piirretyt",
+    "@siloSectionSeasonalSaturdayMorningCartoons": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalSaturdayMorningModern": "Lauantaiaamun suosikit",
+    "@siloSectionSeasonalSaturdayMorningModern": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalSaturdayMorningNineties": "90-luvun lauantaiaamut",
+    "@siloSectionSeasonalSaturdayMorningNineties": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalStPatricksIrishFilm": "Irlantilainen elokuva",
+    "@siloSectionSeasonalStPatricksIrishFilm": {
+        "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+    },
+    "siloSectionSeasonalStPatricksIrishTv": "Irlantilainen televisio",
+    "@siloSectionSeasonalStPatricksIrishTv": {
+        "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+    },
+    "siloSectionSeasonalSummerBlockbusters": "Kesän suurhittielokuvat",
+    "@siloSectionSeasonalSummerBlockbusters": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalSummerClassicSummer": "Klassisia kesäelokuvia",
+    "@siloSectionSeasonalSummerClassicSummer": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalSummerNostalgia": "Kesän nostalgia",
+    "@siloSectionSeasonalSummerNostalgia": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalThanksgivingFavorites": "Kiitospäivän elokuvat",
+    "@siloSectionSeasonalThanksgivingFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalThanksgivingFeelGood": "Hyvää oloa tuovat suosikit",
+    "@siloSectionSeasonalThanksgivingFeelGood": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalValentinesFavorites": "Ystävänpäivän suosikit",
+    "@siloSectionSeasonalValentinesFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesLoveStories": "Klassisia rakkaustarinoita",
+    "@siloSectionSeasonalValentinesLoveStories": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesRomanticDramas": "Romanttiset draamat",
+    "@siloSectionSeasonalValentinesRomanticDramas": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesRomcoms": "Ystävänpäivän romanttiset komediat",
+    "@siloSectionSeasonalValentinesRomcoms": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalPicks": "Kausisuositukset",
+    "@siloSectionSeasonalPicks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopGenre": "Top {genre}",
+    "@siloSectionTopGenre": {
+        "description": "Title of a row a Silo server offers for Home. {genre}: a genre name as the server sends it, not translated",
+        "placeholders": {
+            "genre": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionTopPicksToday": "Päivän suosituimmat valinnat",
+    "@siloSectionTopPicksToday": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRated": "Parhaiten arvioidut",
+    "@siloSectionTopRated": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedMovies": "Parhaiten arvioidut elokuvat",
+    "@siloSectionTopRatedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedTv": "Parhaiten arvioidut televisiot",
+    "@siloSectionTopRatedTv": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTrendingOnServer": "Trendit palvelimella",
+    "@siloSectionTrendingOnServer": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTrendingThisWeek": "Tämän viikon trendit",
+    "@siloSectionTrendingThisWeek": {
+        "description": "Title of a row a Silo server offers for Home"
     }
 }
