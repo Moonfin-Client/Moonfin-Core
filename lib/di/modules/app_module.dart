@@ -41,7 +41,6 @@ import '../../data/services/cast/google_cast_provider.dart';
 import '../../data/services/cast/native_cast_channel.dart';
 import '../../data/services/cast/remote_session_cast_provider.dart';
 import '../../data/services/achievements_service.dart';
-import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/incomplete_recordings_service.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/server_pin_service.dart';
@@ -167,7 +166,6 @@ void registerAppModule() {
     () => openDefaultRetroArtworkDiskCache(),
     dispose: (cache) => cache.dispose(),
   );
-  _getIt.registerLazySingleton(() => SocketHandler());
   _getIt.registerLazySingleton(() => CustomExternalListsService());
   _getIt.registerLazySingleton(
     () => BackgroundService(),
@@ -238,9 +236,6 @@ void registerAppModule() {
       nativeAirPlay: _getIt<NativeAirPlayChannel>(),
     ),
     dispose: (service) => service.dispose(),
-  );
-  _getIt.registerLazySingleton(
-    () => PluginSyncService(_getIt<UserPreferences>(), _getIt()),
   );
   _getIt.registerLazySingleton(
     () => AchievementsService(),

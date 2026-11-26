@@ -14,6 +14,7 @@ import '../../data/services/plex_tv_service.dart';
 import '../../auth/store/credential_store.dart';
 import '../../auth/store/client_certificate_store.dart';
 import '../../data/services/plugin_sync_service.dart';
+import '../../data/services/socket_handler.dart';
 
 final _getIt = GetIt.instance;
 
@@ -31,6 +32,10 @@ void registerAuthModule() {
   _getIt.registerLazySingleton(
     () => ServerUserRepository(_getIt()),
   );
+  // SessionRepository can be looked up before the app module registers, so
+  // everything it takes is registered here.
+  _getIt.registerLazySingleton(() => SocketHandler());
+  _getIt.registerLazySingleton(() => PluginSyncService(_getIt(), _getIt()));
   _getIt.registerLazySingleton(
     () => SessionRepository(
       _getIt(),
