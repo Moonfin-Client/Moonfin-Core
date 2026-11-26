@@ -501,6 +501,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Mostrar informações de codec, resolução e stream no resumo do banner';
 
   @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
+
+  @override
   String get recommendationSystem => 'Sistema de Recomendações';
 
   @override
@@ -4233,6 +4240,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -8303,7 +8317,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remover o dispositivo \'$name\'? O usuário precisará entrar novamente neste dispositivo.';
+    return 'Remover o dispositivo \"$name\"? O usuário precisará entrar novamente neste dispositivo.';
   }
 
   @override
@@ -15157,7 +15171,7 @@ class AppLocalizationsPt extends AppLocalizations {
     String libraryName,
     String failedPath,
   ) {
-    return 'A sua biblioteca \'$libraryName\' está configurada para salvar as imagens diretamente nas pastas de mídia (a opção \'Salvar imagens nas pastas de mídia\' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para gravar arquivos neste diretório:\n\n$failedPath';
+    return 'A sua biblioteca \"$libraryName\" está configurada para salvar as imagens diretamente nas pastas de mídia (a opção \'Salvar imagens nas pastas de mídia\' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para gravar arquivos neste diretório:\n\n$failedPath';
   }
 
   @override
@@ -18440,7 +18454,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Classic';
+  String get topNavbarStyleClassic => 'Clássico';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18463,7 +18477,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Classic';
+  String get sidebarStyleClassic => 'Clássico';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -18496,6 +18510,211 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Because you enjoy $genres';
+  }
+
+  @override
+  String get siloSectionBecauseYouWatched => 'Because You Watched';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Because You Watched $title';
+  }
+
+  @override
+  String get siloSectionForYou => 'For You';
+
+  @override
+  String get siloSectionHiddenGems => 'Hidden Gems';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Next in Your Series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular on This Server';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+
+  @override
+  String get siloSectionRandomPicks => 'Random Picks';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Recently Added in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Recently Released Audiobooks';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Recently Released Episodes in $library';
+  }
+
+  @override
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Recently Released in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recommended for You';
+
+  @override
+  String get siloSectionReturningShows => 'Returning Shows';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Saturday Morning Cartoons';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favorites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90s Saturday Mornings';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
+  }
+
+  @override
+  String get siloSectionTopPicksToday => 'Top Picks Today';
+
+  @override
+  String get siloSectionTopRated => 'Top Rated';
+
+  @override
+  String get siloSectionTopRatedMovies => 'Top Rated Movies';
+
+  @override
+  String get siloSectionTopRatedTv => 'Top Rated TV';
+
+  @override
+  String get siloSectionTrendingOnServer => 'Trending on Server';
+
+  @override
+  String get siloSectionTrendingThisWeek => 'Trending This Week';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -22592,12 +22811,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String decreaseValue(String setting) {
-    return 'Diminuir valor';
+    return 'Diminuir $setting';
   }
 
   @override
   String increaseValue(String setting) {
-    return 'Aumentar valor';
+    return 'Aumentar $setting';
   }
 
   @override
@@ -23069,17 +23288,29 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String bookSeriesCount(int count) {
-    return 'Quantidade de séries de livros';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count séries',
+      one: '1 série',
+    );
+    return '$_temp0';
   }
 
   @override
   String bookInProgressCount(int count) {
-    return 'Livros em andamento';
+    return '$count em andamento';
   }
 
   @override
   String bookBrowseAllTitles(int count) {
-    return 'Explorar todos os títulos';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Explorar todos os $count títulos',
+      one: 'Explorar 1 título',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -24589,7 +24820,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminTaskTriggerSystemEvent(String event) {
-    return 'Evento do sistema';
+    return 'Após um evento do sistema ($event)';
   }
 
   @override
@@ -24612,12 +24843,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminEmbyBackupServerVersion(String version) {
-    return 'Versão do servidor no backup';
+    return 'Emby $version';
   }
 
   @override
   String adminEmbyRestoreConfirm(String name) {
-    return 'Confirmar restauração do backup';
+    return 'Restaurar $name? Isso substitui as bibliotecas, configurações, usuários e senhas deste servidor, e o servidor é desligado ao terminar. Talvez seja necessário iniciá-lo novamente por conta própria.';
   }
 
   @override
@@ -24720,7 +24951,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminLibThumbnailEverySeconds(int count) {
-    return 'Gerar miniaturas a cada intervalo de segundos';
+    return 'A cada $count segundos';
   }
 
   @override
@@ -24876,7 +25107,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminSyncJobCancelConfirm(String name) {
-    return 'Tem certeza de que deseja cancelar esta tarefa?';
+    return 'Cancelar $name e removê-lo da lista?';
   }
 
   @override
@@ -24893,7 +25124,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminSyncJobItemCount(int count) {
-    return 'Quantidade de itens';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens',
+      one: '1 item',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -25134,7 +25371,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminExternalIdLabel(String name) {
-    return 'Identificador externo';
+    return 'ID de $name';
   }
 
   @override
@@ -25169,7 +25406,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminLibImageOptionsTitle(String type) {
-    return 'Opções de imagens';
+    return 'Opções de imagem para $type';
   }
 
   @override
@@ -25282,7 +25519,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminLibSimilarProvidersFor(String type) {
-    return 'Provedores de conteúdos semelhantes para';
+    return 'Provedores de itens semelhantes: $type';
   }
 
   @override
@@ -25332,7 +25569,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminDeleteLibraryConfirm(String name) {
-    return 'Tem certeza de que deseja excluir esta biblioteca?';
+    return 'Remover a biblioteca \"$name\"? Os arquivos no disco não são excluídos.';
   }
 
   @override
@@ -25358,7 +25595,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminActivityCount(String shown, String total) {
-    return 'Quantidade de atividades';
+    return '$shown de $total';
   }
 
   @override
@@ -25425,7 +25662,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminLiveTvSdCreateAccount(String url) {
-    return 'Criar conta no Schedules Direct';
+    return 'Crie uma conta em $url';
   }
 
   @override
@@ -25477,7 +25714,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminUserLastActivity(String time) {
-    return 'Última atividade do usuário';
+    return 'Última atividade: $time';
   }
 
   @override
@@ -25544,7 +25781,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminTaskLastRan(String time, String duration) {
-    return 'Última execução';
+    return 'Última execução: $time, com duração de $duration.';
   }
 
   @override
@@ -25558,7 +25795,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminDurationSecondsShort(String seconds) {
-    return 's';
+    return '${seconds}s';
   }
 
   @override
@@ -25570,22 +25807,22 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminTaskTriggerEveryMinutes(String minutes) {
-    return 'A cada intervalo de minutos';
+    return 'A cada $minutes minutos';
   }
 
   @override
   String adminTaskTriggerEveryHours(String hours) {
-    return 'A cada intervalo de horas';
+    return 'A cada $hours horas';
   }
 
   @override
   String adminTaskMinutesValue(String minutes) {
-    return 'Valor em minutos';
+    return '$minutes minutos';
   }
 
   @override
   String adminTaskHoursValue(String hours) {
-    return 'Valor em horas';
+    return '$hours horas';
   }
 
   @override
@@ -25925,7 +26162,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminSearchSettingsHint(int count) {
-    return 'Pesquisar configurações...';
+    return 'Pesquisar $count configurações';
   }
 
   @override
@@ -26158,7 +26395,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remover o dispositivo \'$name\'? O usuário precisará entrar novamente neste dispositivo.';
+    return 'Remover o dispositivo \"$name\"? O usuário precisará entrar novamente neste dispositivo.';
   }
 
   @override
@@ -29697,7 +29934,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String clientCertHost(String host) {
-    return 'Servidor';
+    return 'Certificado para $host';
   }
 
   @override
@@ -29740,7 +29977,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String clientCertExpired(String date) {
-    return 'Certificado expirado';
+    return 'O certificado deste servidor expirou em $date. Substitua-o para continuar.';
   }
 
   @override
@@ -29758,7 +29995,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String clientCertExpires(String date) {
-    return 'Data de expiração';
+    return 'Expira em $date';
   }
 
   @override
@@ -29896,7 +30133,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String removeDownloadedGameConfirm(String title) {
-    return 'Remover este jogo baixado?';
+    return 'Remover $title deste dispositivo? Ele será baixado novamente na próxima vez que você jogar.';
   }
 
   @override
@@ -29996,7 +30233,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String settingsMediaSegmentTypeAction(String segment) {
-    return 'Ação para tipo de segmento de mídia';
+    return 'Segmentos de $segment';
   }
 
   @override
@@ -30071,7 +30308,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String settingsDisplayRedetected(String formats) {
-    return 'Tela detectada novamente';
+    return 'Tela detectada novamente: $formats';
   }
 
   @override
@@ -31035,7 +31272,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String achievementsUnlockedCount(int count) {
-    return 'Conquistas desbloqueadas';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conquistas desbloqueadas',
+      one: '1 conquista desbloqueada',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -31373,7 +31616,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String achievementsPowerUpHeld(int count) {
-    return 'Power-up disponível';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count disponíveis',
+      one: '1 disponível',
+      zero: 'Nenhum disponível',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -31440,7 +31690,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String friendsUnreadCount(int count) {
-    return 'Mensagens não lidas';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensagens não lidas',
+      one: '1 mensagem não lida',
+      zero: 'Nenhuma mensagem não lida',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -31448,7 +31705,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String friendsRequestCount(int count) {
-    return 'Solicitações pendentes';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count aguardando você',
+      one: '1 aguardando você',
+      zero: 'Nada pendente',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -31690,7 +31954,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String chatMemberCount(int count) {
-    return 'Membros';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count membros',
+      one: '1 membro',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -31830,7 +32100,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String analyticsShareOfItems(String percent) {
-    return 'Proporção de itens';
+    return '$percent% dos itens';
   }
 
   @override
@@ -32293,7 +32563,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
     String libraryName,
     String failedPath,
   ) {
-    return 'Sua biblioteca \'$libraryName\' está configurada para salvar as imagens diretamente nas pastas de mídia (a opção \'Salvar imagens nas pastas de mídia\' está ativada). No entanto, o Jellyfin testou o acesso de gravação e não tem permissão para gravar arquivos neste diretório:\n\n$failedPath';
+    return 'Sua biblioteca \"$libraryName\" está configurada para salvar as imagens diretamente nas pastas de mídia (a opção \'Salvar imagens nas pastas de mídia\' está ativada). No entanto, o Jellyfin testou o acesso de gravação e não tem permissão para gravar arquivos neste diretório:\n\n$failedPath';
   }
 
   @override
@@ -32400,7 +32670,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String transcodeAudioCodecHintPassthrough(String codec) {
-    return 'Este codec pode ser enviado diretamente sem transcodificação';
+    return 'Dica: se o seu receptor de áudio ou soundbar for compatível com $codec, ative o Passthrough de áudio nas configurações de Áudio.';
   }
 
   @override
@@ -33061,12 +33331,19 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String autoDownloadKeepUnwatchedSubtitle(int count) {
-    return 'Mantém episódios não assistidos baixados';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Baixa novos episódios, até $count não assistidos por vez',
+      one: 'Baixa novos episódios, até 1 não assistido por vez',
+      zero: 'Baixa todos os novos episódios',
+    );
+    return '$_temp0';
   }
 
   @override
   String autoDownloadStopSubtitle(String quality) {
-    return 'Interrompe novos downloads automáticos para esta série';
+    return 'Ativado • $quality';
   }
 
   @override
@@ -33085,12 +33362,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String autoDownloadEnabledFor(String title) {
-    return 'Download automático ativado para';
+    return 'Download automático ativado para $title';
   }
 
   @override
   String autoDownloadStoppedFor(String title) {
-    return 'Download automático interrompido para';
+    return 'Download automático interrompido para $title';
   }
 
   @override
@@ -33108,7 +33385,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String smartDownloadsKeepReadySubtitle(int count) {
-    return 'Mantenha conteúdos baixados e disponíveis para assistir offline';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Mantém os próximos $count episódios baixados',
+      one: 'Mantém o próximo episódio baixado',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -33190,12 +33473,19 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String autoDownloadLastCheck(String when, int queued) {
-    return 'Última verificação';
+    String _temp0 = intl.Intl.pluralLogic(
+      queued,
+      locale: localeName,
+      other: '$queued episódios na fila',
+      one: '1 episódio na fila',
+      zero: 'nada novo',
+    );
+    return 'Última verificação $when: $_temp0';
   }
 
   @override
   String autoDownloadLastCheckFailed(String when, String error) {
-    return 'Falha na última verificação';
+    return 'A última verificação $when falhou: $error';
   }
 
   @override
@@ -33219,12 +33509,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
-    return 'Downloads em andamento';
+    return 'Baixando ($done/$total)';
   }
 
   @override
   String downloadNotificationProgress(String name, int percent) {
-    return 'Progresso do download';
+    return '$name — $percent%';
   }
 
   @override
@@ -33233,32 +33523,50 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
     String progress,
     String timeRemaining,
   ) {
-    return 'Transferindo';
+    return '$name — $progress · $timeRemaining';
   }
 
   @override
   String downloadNotificationStarting(String name) {
-    return 'Iniciando download';
+    return '$name...';
   }
 
   @override
   String downloadNotificationCompleteTitle(int count) {
-    return 'Download concluído';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Downloads concluídos',
+      one: 'Download concluído',
+    );
+    return '$_temp0';
   }
 
   @override
   String downloadNotificationSaved(String name) {
-    return 'Salvo para uso offline';
+    return '$name salvo para uso offline';
   }
 
   @override
   String downloadNotificationSavedCount(int count) {
-    return 'Itens salvos';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens salvos para uso offline',
+      one: '1 item salvo para uso offline',
+    );
+    return '$_temp0';
   }
 
   @override
   String downloadNotificationSeriesEpisodes(String series, int count) {
-    return 'Episódios da série baixados';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count episódios',
+      one: '1 episódio',
+    );
+    return '$series: $_temp0';
   }
 
   @override
@@ -33266,7 +33574,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String downloadNotificationFailedBody(String name, String error) {
-    return 'Não foi possível concluir o download';
+    return '$name: $error';
   }
 
   @override
@@ -33282,7 +33590,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String downloadNotEnoughStorage(String needed, String free) {
-    return 'Espaço de armazenamento insuficiente';
+    return 'Espaço insuficiente: $needed necessários, $free livres';
   }
 
   @override
@@ -33290,7 +33598,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String autoDownloadStorageFullBody(int count, String name, String size) {
-    return 'Não há espaço suficiente para continuar os downloads automáticos';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count episódios estão aguardando espaço.',
+      one: '$name precisa de $size.',
+    );
+    return '$_temp0 Libere espaço ou aumente o limite de downloads.';
   }
 
   @override
@@ -33600,7 +33914,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String playlistFilterActiveCount(int count) {
-    return 'Quantidade de filtros ativos';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ativos',
+      one: '1 ativo',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -33722,6 +34042,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get afterHoursCastStatic => 'Estático';
+
+  @override
+  String get topNavbarStyleClassic => 'Clássico';
+
+  @override
+  String get sidebarStyleClassic => 'Clássico';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -39857,7 +40183,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remover o dispositivo \'$name\'? O utilizador terá de iniciar sessão novamente neste dispositivo.';
+    return 'Remover o dispositivo \"$name\"? O utilizador terá de iniciar sessão novamente neste dispositivo.';
   }
 
   @override
@@ -45949,7 +46275,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
     String libraryName,
     String failedPath,
   ) {
-    return 'A tua biblioteca \'$libraryName\' está configurada para guardar as imagens diretamente nas pastas de conteúdo (a opção \'Guardar imagens nas pastas de conteúdo\' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para escrever ficheiros neste diretório:\n\n$failedPath';
+    return 'A tua biblioteca \"$libraryName\" está configurada para guardar as imagens diretamente nas pastas de conteúdo (a opção \'Guardar imagens nas pastas de conteúdo\' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para escrever ficheiros neste diretório:\n\n$failedPath';
   }
 
   @override
@@ -47352,4 +47678,10 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get afterHoursCastStatic => 'Estático';
+
+  @override
+  String get topNavbarStyleClassic => 'Clássico';
+
+  @override
+  String get sidebarStyleClassic => 'Clássico';
 }

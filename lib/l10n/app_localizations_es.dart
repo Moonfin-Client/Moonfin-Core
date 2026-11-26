@@ -505,6 +505,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Muestra el códec, la resolución y la información del stream en el resumen del banner';
 
   @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
+
+  @override
   String get recommendationSystem => 'Sistema de recomendaciones';
 
   @override
@@ -3443,7 +3450,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get seasonalRowCountryAuto => 'Automático';
 
   @override
-  String get countryUnitedStates => 'United States';
+  String get countryUnitedStates => 'Estados Unidos';
 
   @override
   String get countryCanada => 'Canada';
@@ -3455,20 +3462,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get seasonalRowHolidays => 'Vacaciones';
 
   @override
-  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+  String get seasonalRowHolidaysHint =>
+      'Desmarca una fecha festiva para ocultar su fila.';
 
   @override
-  String get seasonalRowAllYear => 'Show All Year';
+  String get seasonalRowAllYear => 'Mostrar Todo el Año';
 
   @override
   String get seasonalRowAllYearDescription =>
-      'Show a holiday row outside the holiday dates too, a different ticked holiday each day.';
+      'Mostrar una fila de días festivos fuera de las fechas de los días festivos, con un día festivo diferente marcado cada día.';
 
   @override
   String get holidayNewYear => 'Año Nuevo';
 
   @override
-  String get holidayValentines => 'Valentine\'s Day';
+  String get holidayValentines => 'Día de San Valentín';
 
   @override
   String get holidayEaster => 'Pascua de Resurrección';
@@ -3987,7 +3995,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get upcomingCalendarsDescription =>
-      'Choose what the Radarr and Sonarr rows show.';
+      'Elige qué muestran las filas de Radarr y Sonarr.';
 
   @override
   String get radarrCalendarShowCinema => 'Mostrar próximos estrenos de Cine';
@@ -4259,6 +4267,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -4923,7 +4938,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get libraryView => 'Library View';
 
   @override
-  String get libraryStyle => 'Video Library Style';
+  String get libraryStyle => 'Estilo de Biblioteca de Vídeo';
 
   @override
   String get libraryStyleDescription =>
@@ -8338,7 +8353,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return '¿Eliminar el dispositivo \'$name\'? El usuario tendrá que volver a iniciar sesión en este dispositivo.';
+    return '¿Eliminar el dispositivo \"$name\"? El usuario tendrá que volver a iniciar sesión en este dispositivo.';
   }
 
   @override
@@ -13602,7 +13617,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String watchPartyCountOnServer(int count) {
-    return '$count on this server';
+    return '$count en este servidor';
   }
 
   @override
@@ -13667,7 +13682,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get watchPartyRemoved => 'El anfitrión te eliminó de la fiesta.';
 
   @override
-  String get watchPartyYours => 'Your watch party';
+  String get watchPartyYours => 'Tu grupo para ver el partido';
 
   @override
   String get watchPartyInviteHint =>
@@ -13707,7 +13722,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String watchPartyWaitingFor(String name) {
-    return 'Waiting for $name\'s player';
+    return 'Esperando al jugador $name';
   }
 
   @override
@@ -13760,7 +13775,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get watchPartyToastYouAreHost => 'You\'re the host now';
+  String get watchPartyToastYouAreHost => 'Eres el anfitrión ahora';
 
   @override
   String watchPartyToastNewHost(String name) {
@@ -14475,7 +14490,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsBlock => 'Bloquear';
 
   @override
-  String get friendsUnblock => 'Unblock';
+  String get friendsUnblock => 'Desbloquear';
 
   @override
   String friendsBlockBody(String name) {
@@ -14484,7 +14499,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String friendsUnblockBody(String name) {
-    return 'Unblock $name?';
+    return '¿Desbloquear $name?';
   }
 
   @override
@@ -15221,7 +15236,7 @@ class AppLocalizationsEs extends AppLocalizations {
     String libraryName,
     String failedPath,
   ) {
-    return 'Tu biblioteca \'$libraryName\' está configurada para guardar las carátulas directamente en las carpetas multimedia (la opción \'Guardar las carátulas en las carpetas multimedia\' está activada). Sin embargo, Jellyfin ha comprobado el acceso de escritura y no tiene permiso para escribir archivos en este directorio:\n\n$failedPath';
+    return 'Tu biblioteca \"$libraryName\" está configurada para guardar las carátulas directamente en las carpetas multimedia (la opción \'Guardar las carátulas en las carpetas multimedia\' está activada). Sin embargo, Jellyfin ha comprobado el acceso de escritura y no tiene permiso para escribir archivos en este directorio:\n\n$failedPath';
   }
 
   @override
@@ -15379,7 +15394,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get transcodeVideoRangeNotSupported =>
-      'Video dynamic range (e.g. Dolby Vision / HDR) is not supported by this display.';
+      'Este monitor no es compatible con el rango dinámico de vídeo (por ejemplo, Dolby Vision/HDR).';
 
   @override
   String get transcodeDolbyVisionProfile7ElDisabled =>
@@ -15415,7 +15430,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get transcodeRefFramesNotSupported =>
-      'Video reference frames exceed player limits.';
+      'Los fotogramas de referencia del vídeo superan los límites del reproductor.';
 
   @override
   String get transcodeAnamorphicVideoNotSupported =>
@@ -15857,7 +15872,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Hide the movie or episode descriptive text.';
 
   @override
-  String get detailUseSeriesThumbnails => 'Use Series Thumbnails';
+  String get detailUseSeriesThumbnails => 'Usar miniaturas de la serie';
 
   @override
   String get detailUseSeriesThumbnailsSubtitle =>
@@ -16080,7 +16095,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get moonbaseFeatureCalendar => 'Un calendario de los próximos eventos';
 
   @override
-  String get moonbaseFeatureCollections => 'Your own order for each collection';
+  String get moonbaseFeatureCollections =>
+      'Tu propio pedido para cada colección';
 
   @override
   String get moonbaseFeatureMessages =>
@@ -16093,7 +16109,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get setupTvHint =>
-      'Up and down to preview · OK to choose · Back twice to skip';
+      'Arriba y abajo para previsualizar · OK para seleccionar · Retroceder dos veces para saltar';
 
   @override
   String get setupNavbarTopHint =>
@@ -16635,7 +16651,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeRows => 'Filas';
 
   @override
-  String get homeRowsSubtitle => 'Turn rows on or off and change their order';
+  String get homeRowsSubtitle =>
+      'Activar o desactivar filas y cambiar su orden';
 
   @override
   String get rowOptions => 'Opciones de Fila';
@@ -17249,7 +17266,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get keptAsComplete => 'Marcado como completo';
 
   @override
-  String get unableToKeepAsComplete => 'Unable to mark as complete';
+  String get unableToKeepAsComplete => 'Incapaz de marcar como completo';
 
   @override
   String recordPromptTitle(String name) {
@@ -17830,7 +17847,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String settingsPreviewNeedsRowInRows(String disabled) {
-    return 'Turn on a row in Rows, under $disabled';
+    return 'Activa una fila en Filas, debajo de $disabled';
   }
 
   @override
@@ -17883,7 +17900,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get calendarFullCalendar => 'Calendario completo';
 
   @override
-  String get calendarUpcoming => 'Upcoming';
+  String get calendarUpcoming => 'Próximamente';
 
   @override
   String get calendarRecentlyAired => 'Emitido recientemente';
@@ -18039,7 +18056,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get calendarSettingsColorByDescription =>
-      'Type tells episodes from movies. Status shows what\'s in your library, coming up or missing.';
+      'El Tipo indica los episodios de las películas. El Estado muestra lo que hay en tu biblioteca, lo que está por venir o lo que falta.';
 
   @override
   String get calendarSettingsColorByType => 'Tipo';
@@ -18519,7 +18536,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Classic';
+  String get topNavbarStyleClassic => 'Clásico';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18542,7 +18559,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Classic';
+  String get sidebarStyleClassic => 'Clásico';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -18575,6 +18592,211 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Because you enjoy $genres';
+  }
+
+  @override
+  String get siloSectionBecauseYouWatched => 'Because You Watched';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Because You Watched $title';
+  }
+
+  @override
+  String get siloSectionForYou => 'For You';
+
+  @override
+  String get siloSectionHiddenGems => 'Hidden Gems';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Next in Your Series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular on This Server';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+
+  @override
+  String get siloSectionRandomPicks => 'Random Picks';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Recently Added in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Recently Released Audiobooks';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Recently Released Episodes in $library';
+  }
+
+  @override
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Recently Released in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recommended for You';
+
+  @override
+  String get siloSectionReturningShows => 'Returning Shows';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Saturday Morning Cartoons';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favorites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90s Saturday Mornings';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
+  }
+
+  @override
+  String get siloSectionTopPicksToday => 'Top Picks Today';
+
+  @override
+  String get siloSectionTopRated => 'Top Rated';
+
+  @override
+  String get siloSectionTopRatedMovies => 'Top Rated Movies';
+
+  @override
+  String get siloSectionTopRatedTv => 'Top Rated TV';
+
+  @override
+  String get siloSectionTrendingOnServer => 'Trending on Server';
+
+  @override
+  String get siloSectionTrendingThisWeek => 'Trending This Week';
 }
 
 /// The translations for Spanish Castilian, as used in Latin America and the Caribbean (`es_419`).
@@ -26485,6 +26707,12 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get afterHoursCastStatic => 'Estático';
+
+  @override
+  String get topNavbarStyleClassic => 'Clásico';
+
+  @override
+  String get sidebarStyleClassic => 'Clásico';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -28454,6 +28682,15 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get carServerUnreachable => 'No se puede conectar con tu servidor';
+
+  @override
+  String get carListenNow => 'Escuchar Ahora';
+
+  @override
+  String get carRecentlyPlayed => 'Reproducido Recientemente';
+
+  @override
+  String get carInstantMix => 'Mezcla Instantánea';
 
   @override
   String downloadsCount(int count) {
@@ -45068,6 +45305,68 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get clickpadSeekingPausedOnly => 'Solo en pausa';
+
+  @override
+  String get topNavbarStyle => 'Estilo de barra superior';
+
+  @override
+  String get topNavbarStyleClassic => 'Clásico';
+
+  @override
+  String get topNavbarStyleTabline => 'Tabline';
+
+  @override
+  String get topNavbarStyleAtlas => 'Atlas';
+
+  @override
+  String get topNavbarStyleClassicHint => 'La barra estándar';
+
+  @override
+  String get topNavbarStyleTablineHint =>
+      'Pestañas de texto subrayadas, sin recuadro';
+
+  @override
+  String get topNavbarStyleAtlasHint =>
+      'Las pestañas abren un panel con accesos directos e imágenes';
+
+  @override
+  String get sidebarStyle => 'Estilo de barra lateral';
+
+  @override
+  String get sidebarStyleClassic => 'Clásico';
+
+  @override
+  String get sidebarStyleReel => 'Reel';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'La barra lateral estándar';
+
+  @override
+  String get sidebarStyleReelHint => 'Una rueda que gira entre las secciones';
+
+  @override
+  String get sidebarStyleMosaicHint =>
+      'Un panel de mosaicos con el arte de cada biblioteca';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Seguir viendo en $section';
+  }
+
+  @override
+  String navFeatured(String title) {
+    return 'Destacado: $title';
+  }
+
+  @override
+  String get navOpenMenu => 'Abrir menú';
+
+  @override
+  String get navReelSwipeHint =>
+      'Deslizá para girar y tocá en el centro para entrar';
 }
 
 /// The translations for Spanish Castilian, as used in the Dominican Republic (`es_DO`).
@@ -52775,6 +53074,12 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
 
   @override
   String get afterHoursPlay => 'Jugar';
+
+  @override
+  String get topNavbarStyleClassic => 'Clásico';
+
+  @override
+  String get sidebarStyleClassic => 'Clásico';
 }
 
 /// The translations for Spanish Castilian, as used in Mexico (`es_MX`).
@@ -60550,4 +60855,10 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
 
   @override
   String get afterHoursPlay => 'Jugar';
+
+  @override
+  String get topNavbarStyleClassic => 'Clásico';
+
+  @override
+  String get sidebarStyleClassic => 'Clásico';
 }

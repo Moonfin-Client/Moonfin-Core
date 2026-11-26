@@ -505,6 +505,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Näytä kodekki , tarkkuus ja streamin tiedot bannerissa yhteenvetona';
 
   @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
+
+  @override
   String get recommendationSystem => 'Suositusjärjestelmä';
 
   @override
@@ -1968,13 +1975,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get carServerUnreachable => 'Palvelimeen ei saada yhteyttä';
 
   @override
-  String get carListenNow => 'Listen Now';
+  String get carListenNow => 'Kuuntele nyt';
 
   @override
-  String get carRecentlyPlayed => 'Recently Played';
+  String get carRecentlyPlayed => 'Äskettäin soitettu';
 
   @override
-  String get carInstantMix => 'Instant Mix';
+  String get carInstantMix => 'Välitön Sekoitus';
 
   @override
   String downloadsCount(int count) {
@@ -4245,6 +4252,13 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -10200,7 +10214,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataPersonKindEngineer => 'Insinööri';
 
   @override
-  String get adminMetadataPersonKindMixer => 'Sekoitin';
+  String get adminMetadataPersonKindMixer => 'Mixeri';
 
   @override
   String get adminMetadataPersonKindRemixer => 'Remixaaja';
@@ -13384,13 +13398,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get personWebsite => 'Virallinen verkkosivusto';
 
   @override
-  String get watchWithGroup => 'Katso ryhmän kanssa';
+  String get watchWithGroup => 'Katso ryhmässä';
 
   @override
-  String get watchPartyGroupSubtitles => 'Tekstitykset kaikille';
+  String get watchPartyGroupSubtitles => 'Tekstitys kaikille';
 
   @override
-  String get watchPartyOwnSubtitles => 'Jokaisen oma valinta';
+  String get watchPartyOwnSubtitles => 'Vapaa valinta';
 
   @override
   String get watchPartyLobby => 'Aulassa';
@@ -18488,33 +18502,33 @@ class AppLocalizationsFi extends AppLocalizations {
   String get clickpadSeekingPausedOnly => 'Vain tauolla';
 
   @override
-  String get topNavbarStyle => 'Top Bar Style';
+  String get topNavbarStyle => 'Yläpalkin tyyli';
 
   @override
-  String get topNavbarStyleClassic => 'Classic';
+  String get topNavbarStyleClassic => 'Klassinen';
 
   @override
-  String get topNavbarStyleTabline => 'Tabline';
+  String get topNavbarStyleTabline => 'Otsikkorivi';
 
   @override
   String get topNavbarStyleAtlas => 'Atlas';
 
   @override
-  String get topNavbarStyleClassicHint => 'The standard bar';
+  String get topNavbarStyleClassicHint => 'Vakiopalkki';
 
   @override
   String get topNavbarStyleTablineHint =>
-      'Text tabs with an underline, no pill';
+      'Alleviivatut tekstivälilehdet, ilman nappia';
 
   @override
   String get topNavbarStyleAtlasHint =>
-      'Tabs open a panel with shortcuts and artwork';
+      'Välilehdet avaavat paneelin, jossa on pikakuvakkeita ja kuvamateriaalia';
 
   @override
-  String get sidebarStyle => 'Sidebar Style';
+  String get sidebarStyle => 'Sivupalkin tyyli';
 
   @override
-  String get sidebarStyleClassic => 'Classic';
+  String get sidebarStyleClassic => 'Klassinen';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -18523,28 +18537,234 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sidebarStyleMosaic => 'Mosaic';
 
   @override
-  String get sidebarStyleClassicHint => 'The standard sidebar';
+  String get sidebarStyleClassicHint => 'Vakiomuotoinen sivupalkki';
 
   @override
-  String get sidebarStyleReelHint =>
-      'A wheel that turns through the destinations';
+  String get sidebarStyleReelHint => 'Pyörä, joka pyörii määränpäiden läpi';
 
   @override
-  String get sidebarStyleMosaicHint => 'A panel of tiles with library artwork';
+  String get sidebarStyleMosaicHint =>
+      'Laattapaneeli, jossa on kirjaston taideteoksia';
 
   @override
   String navContinueIn(String section) {
-    return 'Continue in $section';
+    return 'Jatka $section';
   }
 
   @override
   String navFeatured(String title) {
-    return 'Featured: $title';
+    return 'Esittelyssä: $title';
   }
 
   @override
-  String get navOpenMenu => 'Open menu';
+  String get navOpenMenu => 'Avaa valikko';
 
   @override
-  String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+  String get navReelSwipeHint =>
+      'Päivitä pyyhkäisemällä, napauta keskeltä siirtyäksesi eteenpäin';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Because you enjoy $genres';
+  }
+
+  @override
+  String get siloSectionBecauseYouWatched => 'Because You Watched';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Because You Watched $title';
+  }
+
+  @override
+  String get siloSectionForYou => 'For You';
+
+  @override
+  String get siloSectionHiddenGems => 'Hidden Gems';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Next in Your Series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular on This Server';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+
+  @override
+  String get siloSectionRandomPicks => 'Random Picks';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Recently Added in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Recently Released Audiobooks';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Recently Released Episodes in $library';
+  }
+
+  @override
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Recently Released in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recommended for You';
+
+  @override
+  String get siloSectionReturningShows => 'Returning Shows';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Saturday Morning Cartoons';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favorites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90s Saturday Mornings';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
+  }
+
+  @override
+  String get siloSectionTopPicksToday => 'Top Picks Today';
+
+  @override
+  String get siloSectionTopRated => 'Top Rated';
+
+  @override
+  String get siloSectionTopRatedMovies => 'Top Rated Movies';
+
+  @override
+  String get siloSectionTopRatedTv => 'Top Rated TV';
+
+  @override
+  String get siloSectionTrendingOnServer => 'Trending on Server';
+
+  @override
+  String get siloSectionTrendingThisWeek => 'Trending This Week';
 }

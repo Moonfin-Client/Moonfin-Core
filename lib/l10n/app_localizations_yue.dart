@@ -498,6 +498,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showTechnicalDetailsSubtitle => '喺橫幅摘要度顯示編解碼器、解析度同串流資訊';
 
   @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
+
+  @override
   String get recommendationSystem => '推薦系統';
 
   @override
@@ -4161,6 +4168,13 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -17998,7 +18012,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Classic';
+  String get topNavbarStyleClassic => '經典';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18021,7 +18035,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Classic';
+  String get sidebarStyleClassic => '經典';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -18054,6 +18068,211 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Because you enjoy $genres';
+  }
+
+  @override
+  String get siloSectionBecauseYouWatched => 'Because You Watched';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Because You Watched $title';
+  }
+
+  @override
+  String get siloSectionForYou => 'For You';
+
+  @override
+  String get siloSectionHiddenGems => 'Hidden Gems';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Next in Your Series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular on This Server';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+
+  @override
+  String get siloSectionRandomPicks => 'Random Picks';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Recently Added in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Recently Released Audiobooks';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Recently Released Episodes in $library';
+  }
+
+  @override
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Recently Released in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recommended for You';
+
+  @override
+  String get siloSectionReturningShows => 'Returning Shows';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Saturday Morning Cartoons';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favorites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90s Saturday Mornings';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
+  }
+
+  @override
+  String get siloSectionTopPicksToday => 'Top Picks Today';
+
+  @override
+  String get siloSectionTopRated => 'Top Rated';
+
+  @override
+  String get siloSectionTopRatedMovies => 'Top Rated Movies';
+
+  @override
+  String get siloSectionTopRatedTv => 'Top Rated TV';
+
+  @override
+  String get siloSectionTrendingOnServer => 'Trending on Server';
+
+  @override
+  String get siloSectionTrendingThisWeek => 'Trending This Week';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in China (`yue_CN`).
@@ -25459,6 +25678,12 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get afterHoursPlay => '玩';
+
+  @override
+  String get topNavbarStyleClassic => 'Classic';
+
+  @override
+  String get sidebarStyleClassic => 'Classic';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in Hong Kong (`yue_HK`).
@@ -32863,4 +33088,10 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get afterHoursPlay => '玩';
+
+  @override
+  String get topNavbarStyleClassic => 'Classic';
+
+  @override
+  String get sidebarStyleClassic => 'Classic';
 }
