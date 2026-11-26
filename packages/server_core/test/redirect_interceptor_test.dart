@@ -42,6 +42,7 @@ void main() {
 
   group('redirectInterceptor', () {
     late List<Uri> requested;
+    late RequestOptions lastRequest;
 
     Dio dioFor(String redirectTo, {required bool sameOriginOnly}) {
       requested = [];
@@ -49,8 +50,9 @@ void main() {
         BaseOptions(baseUrl: 'https://silo.example', followRedirects: false),
       );
       dio.httpClientAdapter = _Adapter((options) {
+        lastRequest = options;
         requested.add(options.uri);
-        if (options.uri.path == '/start') {
+        if (options.uri.path == '/start' || options.uri.path == '/Moonfin/LiveTv/ChannelGroups') {
           return ResponseBody.fromString(
             '',
             307,
@@ -103,10 +105,25 @@ void main() {
       expect(requested, hasLength(1));
     });
 
+    test('a guarded request keeps automatic redirects off on the next hop', () async {
+      final dio = dioFor('/elsewhere', sameOriginOnly: false)..options.followRedirects = true;
+      await dio.post('/start', options: Options(
+        followRedirects: false, extra: {sameOriginRedirectsOnly: true},
+      ));
+      expect(lastRequest.uri.path, '/elsewhere');
+      expect(lastRequest.followRedirects, isFalse);
+    });
+
     test('unrestricted, the old behavior follows anywhere', () async {
       final dio = dioFor('https://other.example/next', sameOriginOnly: false);
       expect(await send(dio), 200);
       expect(requested.last.host, 'other.example');
+    });
+
+    test('the optional channel group request falls back on an external redirect', () async {
+      final dio = dioFor('https://other.example/next', sameOriginOnly: false);
+      expect((await ChannelGroupLineup.fetch(dio)).endpointAvailable, isFalse);
+      expect(requested.map((uri) => uri.host), ['silo.example']);
     });
   });
 }

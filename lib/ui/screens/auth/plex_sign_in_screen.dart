@@ -327,8 +327,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
 
   Widget _buildBody(AppLocalizations l10n) {
     final secondary = AppColorScheme.onSurface.withValues(alpha: 0.7);
-    if (_errorMessage != null &&
-        !(_lastAttemptWasCloud && _servers != null)) {
+    if (_errorMessage != null && _servers == null) {
       return Text(
         _errorMessage!,
         style: TextStyle(color: AppColorScheme.statusRequested),

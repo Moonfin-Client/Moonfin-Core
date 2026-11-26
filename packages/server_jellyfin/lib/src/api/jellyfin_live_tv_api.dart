@@ -5,6 +5,7 @@ class JellyfinLiveTvApi implements LiveTvApi, ChannelGroupApi {
   final Dio _dio;
   final DateTime Function() _now;
   final _missingGroupEndpoints = <(String, String?), DateTime>{};
+  final _latestGroupRequests = <(String, String?), Future<ChannelGroupLineup>>{};
   static const _missingEndpointTtl = Duration(minutes: 5);
   static const _postChannelIdsThreshold = 1800;
 
@@ -18,11 +19,19 @@ class JellyfinLiveTvApi implements LiveTvApi, ChannelGroupApi {
     if (_missingGroupEndpoints.containsKey(account)) {
       return const ChannelGroupLineup({}, endpointAvailable: false);
     }
-    final lineup = await ChannelGroupLineup.fetch(_dio);
-    if (!lineup.endpointAvailable) {
-      _missingGroupEndpoints[account] = _now().add(_missingEndpointTtl);
+    final request = ChannelGroupLineup.fetch(_dio);
+    _latestGroupRequests[account] = request;
+    try {
+      final lineup = await request;
+      if (!lineup.endpointAvailable && identical(_latestGroupRequests[account], request)) {
+        _missingGroupEndpoints[account] = _now().add(_missingEndpointTtl);
+      }
+      return lineup;
+    } finally {
+      if (identical(_latestGroupRequests[account], request)) {
+        _latestGroupRequests.remove(account);
+      }
     }
-    return lineup;
   }
 
   @override

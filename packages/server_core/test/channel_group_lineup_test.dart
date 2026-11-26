@@ -15,29 +15,25 @@ Dio fixture(int status, {Object? body}) => Dio()
   }));
 
 void main() {
-  test('returns grouped and ungrouped channels', () async {
+  test('a partial import keeps visible channels and exact group names for the guide', () async {
     final rows = [
-      {'Id': 'one', 'Name': 'One', 'groups': ['News']},
-      {'Id': 'two', 'Name': 'Two', 'groups': <String>[]},
+      {'Id': 'one', 'Name': 'One', 'ChannelNumber': 7, 'groups': ['US| SPORTS', 'US|SPORTS', 'Kids', 'Kids', ' ']},
+      {'Id': 'two', 'Name': 'Two', 'ChannelNumber': '7.1', 'groups': <String>[]},
     ];
-    final grouped = await ChannelGroupLineup.fetch(
-      fixture(200, body: {'supported': true, 'channels': rows}));
-    expect(grouped.channels, rows);
-    expect(grouped.groupsByChannelId, {'one': {'News'}});
-    final empty = await ChannelGroupLineup.fetch(
-      fixture(200, body: {'supported': false, 'channels': [rows.last]}));
-    expect(empty.groupsByChannelId, isEmpty);
-  });
-  test('preserves labels and partial membership', () async {
-    final result = await ChannelGroupLineup.fetch(fixture(200, body: {
-      'supported': true, 'partial': true, 'unresolvedChannelIds': ['offline'],
-      'channels': [{'Id': 'seven', 'Name': 'Seven', 'groups':
-        ['US| SPORTS', 'US|SPORTS', 'Kids', 'Kids', ' ']}],
+    final grouped = await ChannelGroupLineup.fetch(fixture(200, body: {
+      'supported': true, 'partial': true, 'unresolvedChannelIds': ['offline'], 'channels': rows,
     }));
-    expect(result.groupsByChannelId, {'seven': {'US| SPORTS', 'US|SPORTS', 'Kids'}});
-    expect(result.partial, isTrue);
-    expect(result.unresolvedChannelIds, {'offline'});
+    expect(grouped.channels!.map((c) => c['Id']), ['one', 'two']);
+    expect(grouped.channels!.first.containsKey('ChannelNumber'), isFalse);
+    expect(grouped.channels!.last, rows.last);
+    expect(grouped.groupsByChannelId, {'one': {'US| SPORTS', 'US|SPORTS', 'Kids'}});
+    expect(grouped.partial, isTrue);
+    expect(grouped.unresolvedChannelIds, {'offline'});
+
+    final unsupported = await ChannelGroupLineup.fetch(fixture(200, body: {'supported': false, 'channels': [rows.last]}));
+    expect(unsupported.groupsByChannelId, isEmpty);
   });
+
   test('missing plugin falls back but errors propagate', () async {
     final missing = await ChannelGroupLineup.fetch(fixture(404));
     expect(missing.endpointAvailable, isFalse);

@@ -5,51 +5,26 @@ import 'package:test/test.dart';
 import 'admin_fake.dart';
 
 void main() {
-  test(
-    'Emby skips malformed channel rows and rejects invalid or denied lineups',
-    () async {
-      final fake = AdminFake({
-        '/LiveTv/Channels': {
-          'Items': [
-            {
-              'Id': 'one',
-              'Name': 'Sports',
-              'TagItems': [
-                {'Name': 'US | SPORTS'},
-                {'Name': 'US|SPORTS'},
-                {'Name': 'US|SPORTS'},
-              ],
-            },
-            null,
-            {'Name': 'Missing ID'},
-            {'Id': '', 'Name': 'Empty ID'},
-            {'Id': 'bad-name', 'Name': 123, 'Tags': ['Bad group']},
-            {
-              'Id': 'two',
-              'Name': 'News',
-              'Tags': ['CA | NEWS'],
-            },
-            {'Id': 'three', 'Name': 'Local'},
-          ],
-        },
-      });
-      final api = EmbyLiveTvApi(fake.dio);
-      final lineup = await api.getChannelGroups(userId: 'viewer');
-      expect(fake.requests, hasLength(1));
-      expect(fake.last.queryParameters['UserId'], 'viewer');
-      expect(fake.last.queryParameters['Fields'], 'ImageTags,UserData,Tags');
-      expect(lineup.channels!.map((row) => row['Id']), ['one', 'two', 'three']);
-      expect(lineup.groupsByChannelId, {
-        'one': {'US | SPORTS', 'US|SPORTS'},
-        'two': {'CA | NEWS'},
-      });
-      fake.responses['/LiveTv/Channels'] = <String, dynamic>{};
-      await expectLater(
-        api.getChannelGroups(),
-        throwsA(isA<FormatException>()),
-      );
-      fake.statuses['/LiveTv/Channels'] = 403;
-      await expectLater(api.getChannelGroups(), throwsA(isA<DioException>()));
-    },
-  );
+  test('a viewer sees valid guide channels even if one row is incomplete', () async {
+    const path = '/LiveTv/Channels';
+    final fake = AdminFake({path: {'Items': [
+      {'Id': 'one', 'Name': 'Sports', 'TagItems': [
+        for (final name in ['US | SPORTS', 'US|SPORTS', 'US|SPORTS']) {'Name': name},
+      ]},
+      null, {'Name': 'Missing ID'}, {'Id': '', 'Name': 'Empty ID'},
+      {'Id': 'bad-name', 'Name': 123, 'Tags': ['Bad group']},
+      {'Id': 'two', 'Name': 'News', 'Tags': ['CA | NEWS']},
+      {'Id': 'three', 'Name': 'Local'},
+    ]}});
+    final api = EmbyLiveTvApi(fake.dio);
+    final lineup = await api.getChannelGroups(userId: 'viewer');
+    expect(fake.requests.single.queryParameters, containsPair('UserId', 'viewer'));
+    expect(fake.last.queryParameters['Fields'], 'ImageTags,UserData,Tags');
+    expect(lineup.channels!.map((row) => row['Id']), ['one', 'two', 'three']);
+    expect(lineup.groupsByChannelId, {'one': {'US | SPORTS', 'US|SPORTS'}, 'two': {'CA | NEWS'}});
+    fake.responses[path] = <String, dynamic>{};
+    await expectLater(api.getChannelGroups(), throwsFormatException);
+    fake.statuses[path] = 403;
+    await expectLater(api.getChannelGroups(), throwsA(isA<DioException>()));
+  });
 }

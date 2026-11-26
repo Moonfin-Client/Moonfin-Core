@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import '../network/redirect_interceptor.dart';
+
 /// Reads channel groups from the server's supported source.
 abstract interface class ChannelGroupApi {
   Future<ChannelGroupLineup> getChannelGroups({String? userId});
@@ -70,7 +72,11 @@ class ChannelGroupLineup {
     try {
       final response = await dio.get(
         '/Moonfin/LiveTv/ChannelGroups',
-        options: Options(receiveTimeout: const Duration(seconds: 6)),
+        options: Options(
+          receiveTimeout: const Duration(seconds: 6),
+          followRedirects: false,
+          extra: {sameOriginRedirectsOnly: true},
+        ),
       );
       final data = response.data;
       if (data is! Map ||
@@ -92,7 +98,23 @@ class ChannelGroupLineup {
             row['groups'] is! List) {
           throw const FormatException('Invalid guide channel');
         }
-        channels.add(row);
+        final channel = Map<String, dynamic>.of(row);
+        if (channel['ChannelNumber'] is! String) channel.remove('ChannelNumber');
+        final userData = channel['UserData'];
+        if (userData is! Map<String, dynamic>) {
+          channel.remove('UserData');
+        } else if (userData.containsKey('IsFavorite') && userData['IsFavorite'] is! bool) {
+          channel['UserData'] = Map.of(userData)..remove('IsFavorite');
+        }
+        if (channel['ImageTags'] case Map<String, dynamic> tags) {
+          channel['ImageTags'] = {
+            for (final entry in tags.entries)
+              if (entry.value is String) entry.key: entry.value,
+          };
+        } else {
+          channel.remove('ImageTags');
+        }
+        channels.add(channel);
         final groups = labels(row['groups'] as List);
         if (groups.isNotEmpty) memberships[row['Id'] as String] = groups;
       }
@@ -112,7 +134,8 @@ class ChannelGroupLineup {
             : null,
       );
     } on DioException catch (error) {
-      if (error.response?.statusCode == 404) {
+      final status = error.response?.statusCode;
+      if (status == 404 || (status != null && status >= 300 && status < 400)) {
         return const ChannelGroupLineup({}, endpointAvailable: false);
       }
       rethrow;
