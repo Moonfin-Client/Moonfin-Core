@@ -69,4 +69,30 @@ void main() {
     expect(actionPresses, 1);
     expect(find.byType(Dialog), findsOneWidget);
   });
+
+  testWidgets('Down past the last row reaches the buttons, Up goes back', (
+    tester,
+  ) async {
+    await open(tester);
+    final button = Focus.of(tester.element(find.text('Keyboard Shortcuts')));
+    final list = Focus.of(tester.element(find.byType(ListView)));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus, same(button));
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pumpAndSettle();
+
+    expect(actionPresses, 1);
+    expect(find.byType(Dialog), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus, same(list));
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pumpAndSettle();
+
+    expect(actionPresses, 1);
+    expect(find.byType(Dialog), findsNothing);
+  });
 }

@@ -58,9 +58,12 @@ import androidx.media3.common.util.ExperimentalApi
 import androidx.media3.common.util.TimestampAdjuster
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.HttpDataSource
+import androidx.media3.datasource.TransferListener
 import androidx.media3.decoder.av1.Dav1dLibrary
 import androidx.media3.decoder.av1.Libdav1dVideoRenderer
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
@@ -71,6 +74,8 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.analytics.PlaybackStatsListener
+import androidx.media3.exoplayer.upstream.DefaultAllocator
 import androidx.media3.exoplayer.audio.AudioRendererEventListener
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.exoplayer.audio.DefaultAudioSink
@@ -113,6 +118,7 @@ import io.github.peerless2012.ass.media.type.AssRenderType
 import java.io.File
 import java.nio.ByteBuffer
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.roundToInt
 import org.moonfin.nativevideo.iec.Iec61937AudioOutputProvider
@@ -1597,6 +1603,52 @@ class Media3VideoView(
         }
     }
 
+    // Live network and buffer numbers for the stats overlay, sent on each
+    // state tick. Bytes are counted per view so a muted preview's traffic
+    // doesn't land on the main player's graph.
+    private val networkBytes = AtomicLong()
+    private var activitySampleAtMs = 0L
+    private var activitySampleBytes = 0L
+    private var networkActivityBps: Long? = null
+    private var rebufferCount: Int? = null
+    private var activeAllocator: DefaultAllocator? = null
+    private var activeTargetBufferBytes = 0
+    private var streamingMaxBufferMs = DefaultLoadControl.DEFAULT_MAX_BUFFER_MS
+    // One per player: it tracks sessions against a player's own timeline, so
+    // a reused one reports nothing after the player is rebuilt.
+    private lateinit var playbackStats: PlaybackStatsListener
+    private val networkByteCounter = object : TransferListener by Media3TransferLog {
+        override fun onBytesTransferred(
+            source: DataSource,
+            dataSpec: DataSpec,
+            isNetwork: Boolean,
+            bytesTransferred: Int,
+        ) {
+            if (isNetwork) networkBytes.addAndGet(bytesTransferred.toLong())
+        }
+    }
+
+    // Once a second on the view's own clock, so a reading isn't stretched or
+    // squeezed by when the tick lands. Media3's bandwidth estimate only moves
+    // when a download ends, and direct play is one download for the film.
+    private fun refreshNetworkStats() {
+        val now = SystemClock.elapsedRealtime()
+        val elapsedMs = now - activitySampleAtMs
+        if (elapsedMs < 1_000L) return
+        val bytes = networkBytes.get()
+        if (activitySampleAtMs != 0L) {
+            networkActivityBps = (bytes - activitySampleBytes) * 8_000L / elapsedMs
+        }
+        activitySampleAtMs = now
+        activitySampleBytes = bytes
+        rebufferCount = playbackStats.playbackStats?.totalRebufferCount
+    }
+
+    // Local files buffer to Media3's local playback limits, which this
+    // player leaves at their defaults.
+    private fun isLocalSource(): Boolean =
+        currentUrl?.let { parseUri(it).scheme in DefaultLoadControl.LOCAL_PLAYBACK_SCHEMES } == true
+
     private val analyticsListener = object : AnalyticsListener {
         override fun onVideoInputFormatChanged(
             eventTime: AnalyticsListener.EventTime,
@@ -1912,6 +1964,7 @@ class Media3VideoView(
         releaseAssOverlay()
         player.removeListener(listener)
         player.removeAnalyticsListener(analyticsListener)
+        player.removeAnalyticsListener(playbackStats)
         audioPipeline.release()
         player.clearVideoSurface()
         Media3SessionController.releaseForPlayer(player)
@@ -1984,10 +2037,20 @@ class Media3VideoView(
             .coerceAtMost(MAX_TARGET_BUFFER_BYTES)
             .coerceAtLeast(DefaultLoadControl.DEFAULT_MIN_BUFFER_SIZE.toLong())
             .toInt()
+        // The stock allocator, held so the stats overlay can read its fill.
+        val allocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE)
+        activeAllocator = allocator
         val builder = DefaultLoadControl.Builder()
+            .setAllocator(allocator)
             .setTargetBufferBytes(targetBufferBytes)
         // Low RAM boxes cant spare the stretched runway on top of decode
         // buffers, so they keep the stock time budgets.
+        activeTargetBufferBytes = targetBufferBytes
+        streamingMaxBufferMs = if (isLowRamDevice) {
+            DefaultLoadControl.DEFAULT_MAX_BUFFER_MS
+        } else {
+            STREAMING_MAX_BUFFER_MS
+        }
         if (!isLowRamDevice) {
             builder.setBufferDurationsMsForStreaming(
                 DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
@@ -2874,7 +2937,7 @@ class Media3VideoView(
             .setConnectTimeoutMs(120_000)
             .setReadTimeoutMs(120_000)
         bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
-            .setTransferListener(Media3TransferLog)
+            .setTransferListener(networkByteCounter)
         val assHandler = AssHandler(
             AssRenderType.OVERLAY_CANVAS,
             AssHandlerConfig(cacheSize = assCacheSizeMb()),
@@ -2952,6 +3015,8 @@ class Media3VideoView(
                 }
                 it.addListener(listener)
                 it.addAnalyticsListener(analyticsListener)
+                playbackStats = PlaybackStatsListener(false, null)
+                it.addAnalyticsListener(playbackStats)
                 // The MediaSession attaches lazily in setSource() so muted
                 // previews never create one.
             }
@@ -3064,6 +3129,7 @@ class Media3VideoView(
         releaseAssOverlay()
         player.removeListener(listener)
         player.removeAnalyticsListener(analyticsListener)
+        player.removeAnalyticsListener(playbackStats)
         player.clearVideoSurface()
         Media3SessionController.releaseForPlayer(player)
         player.release()
@@ -6988,6 +7054,7 @@ class Media3VideoView(
     }
 
     private fun stateMap(): Map<String, Any?> {
+        refreshNetworkStats()
         val duration = player.duration
         val bufferedPosition = player.bufferedPosition
         val videoSize = player.videoSize
@@ -7021,6 +7088,15 @@ class Media3VideoView(
             // The rate a held start or correction is switching the display
             // for, so the player can say why nothing is playing yet.
             "displayMatchFps" to if (rateSession.hold != null) rateSession.appliedRateChoice?.fps?.toDouble() else null,
+            "networkActivityBps" to networkActivityBps,
+            "bufferedBytes" to activeAllocator?.totalBytesAllocated,
+            "targetBufferBytes" to activeTargetBufferBytes,
+            "maxBufferMs" to if (isLocalSource()) {
+                DefaultLoadControl.DEFAULT_MAX_BUFFER_FOR_LOCAL_PLAYBACK_MS
+            } else {
+                streamingMaxBufferMs
+            },
+            "rebuffers" to rebufferCount,
         )
     }
 
