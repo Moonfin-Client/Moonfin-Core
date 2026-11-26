@@ -57,10 +57,14 @@ class EntryRedirect {
         id != null &&
         server.address == landed &&
         isRedirectToOtherOrigin(entered, landed);
-    await _store.put(
-      server.id,
-      redirected ? EntryAddress(address: entered, serverId: id) : null,
-    );
+    // The server is saved by now: an entry address that can't be stored only
+    // means it won't be followed, never that adding it failed.
+    try {
+      await _store.put(
+        server.id,
+        redirected ? EntryAddress(address: entered, serverId: id) : null,
+      );
+    } catch (_) {}
   }
 
   /// [server] at the address its entry address redirects to now, saved when
@@ -216,6 +220,11 @@ class EntryRedirect {
             await _repository.updateServer(current);
           } catch (_) {}
           return _repository.getServer(server.id) ?? server;
+        }
+        // What replaced it is what the client and listeners go by now.
+        _pointClient(after);
+        if (after.address != server.address) {
+          _moved.add(ServerMove(from: server.address, server: after));
         }
         return after;
       }

@@ -42,6 +42,14 @@ class _AuthStore extends Fake implements AuthenticationStore {
   Future<void> removeServer(String serverId) async => removed.add(serverId);
 }
 
+class _FailingEntries extends EntryAddressStore {
+  _FailingEntries() : super.memory();
+
+  @override
+  Future<void> put(String serverId, EntryAddress? entry) async =>
+      throw StateError('disk full');
+}
+
 class _Client extends Fake implements MediaServerClient {
   _Client(this.baseUrl);
 
@@ -148,6 +156,15 @@ void main() {
     expect(server!.address, targetUrl());
     expect(redirect.entryOf(server.id)?.address, entryUrl());
     expect(redirect.entryOf(server.id)?.serverId, 'abc');
+  });
+
+  test('a server is added even when its entry address can\'t be stored', () async {
+    repo.entryRedirect = EntryRedirect(repo, _FailingEntries(), clients);
+
+    final server = await repo.addServer(entryUrl());
+
+    expect(server?.address, targetUrl());
+    expect(repo.getServer(server!.id), isNotNull);
   });
 
   test('adding without a redirect saves no entry address', () async {
@@ -394,6 +411,7 @@ void main() {
 
   test('a failed move keeps an update that left the address alone', () async {
     await saveWithEntry();
+    clients.byId['server-1'] = _Client('http://127.0.0.1:1');
     final release = store.hold = Completer<void>();
     final following = redirect.withFollowedEntryAddress(
       repo.getServer('server-1')!,
@@ -412,6 +430,7 @@ void main() {
 
     expect(repo.getServer('server-1')!.name, 'Renamed');
     expect(store.saved.last.name, 'Renamed');
+    expect(clients.byId['server-1']!.baseUrl, targetUrl());
   });
 
   test('a server removed while its move saved stays removed', () async {
