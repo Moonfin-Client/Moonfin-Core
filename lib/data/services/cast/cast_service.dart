@@ -163,6 +163,10 @@ class CastService {
       // The target can be dropped while the request is out, and writing then
       // would light the mini player back up for a session nobody is on.
       if (snapshot == null || activeKindNotifier.value != kind) return;
+      if (snapshot.item != null &&
+          snapshot.item!.id != castItemNotifier.value?.id) {
+        castItemNotifier.value = snapshot.item;
+      }
       remoteStateNotifier.value = snapshot.state;
       remotePositionNotifier.value = snapshot.positionTicks;
       remoteVolumeNotifier.value = snapshot.volume;
@@ -303,16 +307,41 @@ class CastService {
   Future<void> play(CastTargetKind kind) async {
     final provider = _controlProviderForKind(kind);
     await provider.play(kind);
+    if (activeKindNotifier.value == kind) {
+      remoteStateNotifier.value = 'playing';
+    }
   }
 
   Future<void> pause(CastTargetKind kind) async {
     final provider = _controlProviderForKind(kind);
     await provider.pause(kind);
+    if (activeKindNotifier.value == kind) {
+      remoteStateNotifier.value = 'paused';
+    }
   }
 
   Future<void> seek(CastTargetKind kind, {required int positionTicks}) async {
     final provider = _controlProviderForKind(kind);
     await provider.seek(kind, positionTicks: positionTicks);
+    if (activeKindNotifier.value == kind) {
+      remotePositionNotifier.value = positionTicks;
+    }
+  }
+
+  Future<void> nextTrack(CastTargetKind kind) async {
+    final provider = _trackSkipProviderForKind(kind);
+    if (provider == null) return;
+    await provider.nextTrack(kind);
+    final pollable = _pollableForKind(kind);
+    if (pollable != null) unawaited(_pollRemoteState(kind, pollable));
+  }
+
+  Future<void> previousTrack(CastTargetKind kind) async {
+    final provider = _trackSkipProviderForKind(kind);
+    if (provider == null) return;
+    await provider.previousTrack(kind);
+    final pollable = _pollableForKind(kind);
+    if (pollable != null) unawaited(_pollRemoteState(kind, pollable));
   }
 
   Future<void> stop(CastTargetKind kind) async {
@@ -338,6 +367,15 @@ class CastService {
   Future<void> setVolume(CastTargetKind kind, {required double volume}) async {
     final provider = _controlProviderForKind(kind);
     await provider.setVolume(kind, volume: volume);
+  }
+
+  CastTrackSkipControls? _trackSkipProviderForKind(CastTargetKind kind) {
+    try {
+      final Object provider = _controlProviderForKind(kind);
+      return provider is CastTrackSkipControls ? provider : null;
+    } on UnsupportedError {
+      return null;
+    }
   }
 
   CastTransportControls _controlProviderForKind(CastTargetKind kind) {

@@ -473,7 +473,17 @@ class _CastMiniPlayerContentState extends State<_CastMiniPlayerContent> {
                           icon: Icon(Icons.stop_rounded, color: AppColorScheme.onSurface),
                           onPressed: () => _doAction(() => _castService.stop(_kind)),
                         ),
-                        if (_kind == CastTargetKind.jellyfinSession) ...[
+                        if (_kind == CastTargetKind.jellyfinSession &&
+                            widget.item.isAudioLike) ...[
+                          IconButton(
+                            icon: Icon(Icons.skip_previous_rounded, color: AppColorScheme.onSurface),
+                            onPressed: () => _doAction(() => _castService.previousTrack(_kind)),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.skip_next_rounded, color: AppColorScheme.onSurface),
+                            onPressed: () => _doAction(() => _castService.nextTrack(_kind)),
+                          ),
+                        ] else if (_kind == CastTargetKind.jellyfinSession) ...[
                           IconButton(
                             icon: Icon(Icons.subtitles_outlined, color: AppColorScheme.onSurface),
                             onPressed: () => _showTrackSelector(audio: false),

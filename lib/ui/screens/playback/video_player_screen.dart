@@ -8347,11 +8347,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             positionTicks: position!.inMicroseconds * 10,
           ),
         );
-      // The local queue would start the next item on this device.
-      case TransportAction.next ||
-          TransportAction.nextAsFinished ||
-          TransportAction.previous:
-        break;
+      case TransportAction.next || TransportAction.nextAsFinished:
+        await _runCastAction(_castService.nextTrack);
+      case TransportAction.previous:
+        await _runCastAction(_castService.previousTrack);
       case TransportAction.stop:
         return false;
     }
