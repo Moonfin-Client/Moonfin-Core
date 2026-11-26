@@ -12983,5 +12983,13 @@
     "sidebarStyleClassic": "Clasic",
     "@sidebarStyleClassic": {
         "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "siloSectionTopRatedMovies": "Filme cu cele mai bune evaluări",
+    "@siloSectionTopRatedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedTv": "Seriale cu cele mai bune evaluări",
+    "@siloSectionTopRatedTv": {
+        "description": "Title of a row a Silo server offers for Home"
     }
 }
