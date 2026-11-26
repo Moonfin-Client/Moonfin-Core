@@ -78,9 +78,6 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   final _modernRatings = ValueNotifier<Map<String, Map<String, double>>>({});
   final Set<String> _modernRatingsRequested = {};
   final Map<int, ValueNotifier<int>> _carouselIndexes = {};
-  // The card each row's focus is on, which the panel goes back to once the
-  // mouse leaves a hovered card.
-  final Map<int, int> _carouselFocusIndexes = {};
 
   bool get _isModern =>
       _prefs.get(UserPreferences.homeRowsStyle).usesModernCards;
@@ -214,8 +211,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     _searchEntryFocusNode.dispose();
     _modernExpansion.dispose();
     _modernRatings.dispose();
-    for (final index in _carouselIndexes.values) {
-      index.dispose();
+    for (final notifier in _carouselIndexes.values) {
+      notifier.dispose();
     }
     super.dispose();
   }
@@ -670,8 +667,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         .scaleFactor;
     final showControls = hasItems && PlatformDetection.useDesktopUi;
     final contentHeight = (rowHeight + 10) * desktopScale;
-    // A Carousel panel fills all the room under the cards, so its rows count
-    // their padding the way Home's Carousel rows do instead of overlapping it.
+    // The Carousel panel fills the room under the cards, so the next row has
+    // to start below it.
     final spacing = expandedHomeRows(_prefs)
         ? 0.0
         : carouselRow
@@ -972,7 +969,6 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         onTap: (index, item) => _onItemTap(item),
         onIndexChanged: (index, item) {
           _onItemSelected(item);
-          _carouselFocusIndexes[rowIndex] = index;
           if (isCarousel) _carouselIndex(rowIndex).value = index;
           _modernExpansion.settle(
             _expansionKey(rowIndex, item),
@@ -1041,12 +1037,6 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                 onHoverEnd: () {
                   if (_modernExpansion.hoveredKey.value == key) {
                     _modernExpansion.hoveredKey.value = null;
-                    // Select opens the focused card, so the panel shows it
-                    // again rather than the card the mouse just left.
-                    final focused = _carouselFocusIndexes[rowIndex];
-                    if (isCarousel && focused != null) {
-                      _carouselIndex(rowIndex).value = focused;
-                    }
                   }
                 },
               );
@@ -1123,8 +1113,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
   }
 
-  /// The Carousel panel under a row, showing the row's focused or hovered
-  /// title the way Home's Carousel rows do.
+  /// Shows the row's focused or hovered title.
   Widget _buildCarouselPanel(
     SeerrDiscoverRow row,
     int rowIndex,
@@ -1184,7 +1173,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         'Name': item.displayTitle,
         'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
         'Overview': item.overview ?? '',
-        'ProductionYear': int.tryParse(_yearFromItem(item) ?? ''),
+        'ProductionYear': ?int.tryParse(_yearFromItem(item) ?? ''),
         if (rating != null && rating.isNotEmpty) 'OfficialRating': rating,
         if ((item.voteAverage ?? 0) > 0) 'CommunityRating': item.voteAverage,
       },
