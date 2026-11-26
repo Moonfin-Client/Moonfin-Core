@@ -266,7 +266,11 @@ void main() {
 
   // A library card carries one backdrop tag and leaves out images such as the
   // disc, so Clear All has to work from the dialog's own fetch of the item.
-  final fetchLandings = ['before Clear All', 'while it asks', 'after confirming'];
+  final fetchLandings = [
+    'before Clear All',
+    'while it asks',
+    'after confirming',
+  ];
   for (final landing in fetchLandings) {
     testWidgets('Clear All removes every image when the fetch lands $landing', (
       tester,
@@ -303,42 +307,43 @@ void main() {
     });
   }
 
-  testWidgets('Clear All after following the series link clears only the series', (
-    tester,
-  ) async {
-    items.item = {
-      'Id': 'a1',
-      'Type': 'Episode',
-      'Name': 'Pilot',
-      'SeriesName': 'ShowBlue',
-      'SeriesId': 's1',
-      'ImageTags': {'Primary': 'still'},
-      'BackdropImageTags': <String>[],
-    };
-    items.library['s1'] = {
-      'Id': 's1',
-      'Type': 'Series',
-      'Name': 'ShowBlue',
-      'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
-      'BackdropImageTags': ['blue', 'green'],
-    };
-    final fetch = Completer<void>();
-    items.hold = fetch;
-    await open(tester);
+  testWidgets(
+    'Clear All after following the series link clears only the series',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'still'},
+        'BackdropImageTags': <String>[],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+        'BackdropImageTags': ['blue', 'green'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      await open(tester);
 
-    await tester.tap(find.text('ShowBlue'));
-    await settle(tester);
-    await tester.tap(find.text(l10n.clearAllArtworkButton));
-    await settle(tester);
-    await tester.tap(find.text(l10n.yes));
-    await settle(tester);
-    fetch.complete();
-    await settle(tester);
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      fetch.complete();
+      await settle(tester);
 
-    expect(items.library['s1']!['ImageTags'], isEmpty);
-    expect(items.library['s1']!['BackdropImageTags'], isEmpty);
-    expect(items.item['ImageTags'], {'Primary': 'still'});
-  });
+      expect(items.library['s1']!['ImageTags'], isEmpty);
+      expect(items.library['s1']!['BackdropImageTags'], isEmpty);
+      expect(items.item['ImageTags'], {'Primary': 'still'});
+    },
+  );
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);
