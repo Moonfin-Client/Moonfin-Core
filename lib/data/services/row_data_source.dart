@@ -328,15 +328,12 @@ class RowDataSource {
     required int fetchLimit,
     required int wanted,
     required Future<Map<String, dynamic>> Function(int limit) fetch,
-    required FutureOr<List<AggregatedItem>> Function(
-      List<AggregatedItem> raw,
-      int limit,
-    )
+    required List<AggregatedItem> Function(List<AggregatedItem> raw, int limit)
     normalize,
   }) async {
     final response = await fetch(fetchLimit);
     final raw = _parseItems(response, serverId);
-    final items = await normalize(raw, wanted);
+    final items = normalize(raw, wanted);
     if (items.length < wanted &&
         items.length < _maxItems &&
         raw.length >= fetchLimit &&
@@ -347,15 +344,20 @@ class RowDataSource {
         return (
           response: retryResponse,
           raw: retryRaw,
-          items: await normalize(
-            retryRaw,
-            wanted > _maxItems ? _maxItems : wanted,
+          items: await withSeriesUserData(
+            normalize(retryRaw, wanted > _maxItems ? _maxItems : wanted),
+            (_) => _client.itemsApi,
           ),
           fetchLimit: _fullRowFetchLimit,
         );
       } catch (_) {}
     }
-    return (response: response, raw: raw, items: items, fetchLimit: fetchLimit);
+    return (
+      response: response,
+      raw: raw,
+      items: await withSeriesUserData(items, (_) => _client.itemsApi),
+      fetchLimit: fetchLimit,
+    );
   }
 
   /// The server may hold more while it filled the page it was asked for, until
@@ -447,12 +449,11 @@ class RowDataSource {
       wanted: _defaultLimit,
       fetch: (limit) =>
           _getLatestItemsWithFallback(parentId: parentId, limit: limit),
-      normalize: (raw, limit) => normalizeAndHydrateLatestMediaItems(
+      normalize: (raw, limit) => normalizeLatestMediaItems(
         raw,
         collectionType: collectionType,
         limit: limit,
         hideWatched: hideWatched,
-        itemsApi: _client.itemsApi,
       ),
     );
     return HomeRow(
@@ -492,20 +493,18 @@ class RowDataSource {
     );
     final items = _parseItems(response, serverId);
     if (isTv) {
-      return normalizeAndHydrateLatestMediaItems(
+      return normalizeLatestMediaItems(
         items,
         collectionType: 'tvshows',
         limit: limit,
         hideWatched: hideWatched,
-        itemsApi: _client.itemsApi,
       );
     }
     if (hideWatched) {
-      return normalizeAndHydrateLatestMediaItems(
+      return normalizeLatestMediaItems(
         items,
         limit: limit,
         hideWatched: true,
-        itemsApi: _client.itemsApi,
       );
     }
     return items;
@@ -542,20 +541,18 @@ class RowDataSource {
     );
     final items = _parseItems(response, serverId);
     if (isTv) {
-      return normalizeAndHydrateLatestMediaItems(
+      return normalizeLatestMediaItems(
         items,
         collectionType: 'tvshows',
         limit: limit,
         hideWatched: hideWatched,
-        itemsApi: _client.itemsApi,
       );
     }
     if (hideWatched) {
-      return normalizeAndHydrateLatestMediaItems(
+      return normalizeLatestMediaItems(
         items,
         limit: limit,
         hideWatched: true,
-        itemsApi: _client.itemsApi,
       );
     }
     return items;
@@ -591,12 +588,11 @@ class RowDataSource {
         recursive: includeItemTypes != null,
         hideWatched: serverHideWatched,
       ),
-      normalize: (raw, limit) => normalizeAndHydrateLatestMediaItems(
+      normalize: (raw, limit) => normalizeLatestMediaItems(
         raw,
         collectionType: collectionType,
         limit: limit,
         hideWatched: hideWatched,
-        itemsApi: _client.itemsApi,
       ),
     );
     return HomeRow(
@@ -1877,11 +1873,10 @@ class RowDataSource {
             wanted: wanted,
             fetch: (limit) =>
                 _getLatestItemsWithFallback(parentId: parentId, limit: limit),
-            normalize: (raw, limit) => normalizeAndHydrateLatestMediaItems(
+            normalize: (raw, limit) => normalizeLatestMediaItems(
               raw,
               limit: limit,
               hideWatched: hideWatched,
-              itemsApi: _client.itemsApi,
             ),
           );
           return _nextRecentPage(row, page, wanted);
@@ -2030,12 +2025,11 @@ class RowDataSource {
             recursive: includeItemTypes != null,
             hideWatched: serverHideWatched,
           ),
-          normalize: (raw, limit) => normalizeAndHydrateLatestMediaItems(
+          normalize: (raw, limit) => normalizeLatestMediaItems(
             raw,
             collectionType: collectionType,
             limit: limit,
             hideWatched: hideWatched,
-            itemsApi: _client.itemsApi,
           ),
         );
         return _nextRecentPage(row, page, wanted);

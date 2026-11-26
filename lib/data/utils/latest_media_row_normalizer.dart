@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -122,7 +121,7 @@ List<AggregatedItem> normalizeLatestMediaItems(
           sourceItems.any((i) => i.type == 'Episode' || i.type == 'Season'));
 
   final normalized = shouldCollapse
-      ? _collapseLatestTvItems(sourceItems).items
+      ? _collapseLatestTvItems(sourceItems)
       : sourceItems;
 
   if (normalized.length <= limit) {
@@ -132,239 +131,77 @@ List<AggregatedItem> normalizeLatestMediaItems(
   return normalized.take(limit).toList();
 }
 
-/// Maximum number of series IDs sent in a single `getItems` hydration request.
-const _seriesHydrationBatchSize = 100;
-
-/// Default timeout for optional series hydration lookups.
-const _defaultHydrationTimeout = Duration(seconds: 8);
-
-/// Normalizes recent-row items and hydrates any [Series] cards that were
-/// collapsed from [Episode] or [Season] items with the parent series's own
-/// `UserData` (such as `UnplayedItemCount` and `Played`) and child counts.
-///
-/// Jellyfin 12's `/Items/Latest`, Emby's `/Items/Latest`, and Plex's
-/// `/recentlyAdded` can return `Episode` items (no `UnplayedItemCount`) or
-/// `Season` items (season-only `UnplayedItemCount`). Hydrating collapsed
-/// cards from the parent `Series` ensures badges reflect the total unwatched
-/// episodes for the show and prevents a watched episode/season from hiding a
-/// show that still has unwatched episodes when [hideWatched] is enabled.
-Future<List<AggregatedItem>> normalizeAndHydrateLatestMediaItems(
-  List<AggregatedItem> items, {
-  String? collectionType,
-  required int limit,
-  bool hideWatched = false,
-  ItemsApi? itemsApi,
-  Duration timeout = _defaultHydrationTimeout,
-  Map<String, Map<String, dynamic>>? seriesCache,
-  @visibleForTesting
-  Future<List<Map<String, dynamic>>> Function(List<String> seriesIds)?
-  fetchSeriesByIds,
-}) async {
-  final shouldCollapse =
-      _isTvCollectionType(collectionType) ||
-      (collectionType == null &&
-          items.any((i) => i.type == 'Episode' || i.type == 'Season'));
-
-  if (!shouldCollapse) {
-    return normalizeLatestMediaItems(
-      items,
-      collectionType: collectionType,
-      limit: limit,
-      hideWatched: hideWatched,
-    );
-  }
-
-  // Collapse before hideWatched so a watched episode/season can still be
-  // evaluated against the full series's UserData after hydration.
-  final collapsedResult = _collapseLatestTvItems(items);
-  var collapsed = collapsedResult.items;
-  final collapsedIds = collapsedResult.collapsedSeriesIds;
-
-  if (!hideWatched && collapsed.length > limit) {
-    collapsed = collapsed.take(limit).toList();
-  }
-
-  final idsToHydrate = <String>[
-    for (final item in collapsed)
-      if (collapsedIds.contains(item.id) &&
-          !(seriesCache?.containsKey(item.id) ?? false))
-        item.id,
-  ];
-
-  final hydratedIds = <String>{};
-  final fetched = <Map<String, dynamic>>[];
-  if (idsToHydrate.isNotEmpty &&
-      timeout > Duration.zero &&
-      (fetchSeriesByIds != null || itemsApi != null)) {
-    final deadline = DateTime.now().add(timeout);
-    for (var i = 0; i < idsToHydrate.length; i += _seriesHydrationBatchSize) {
-      final remaining = deadline.difference(DateTime.now());
-      if (remaining <= Duration.zero) break;
-      final end = (i + _seriesHydrationBatchSize < idsToHydrate.length)
-          ? i + _seriesHydrationBatchSize
-          : idsToHydrate.length;
-      final batch = idsToHydrate.sublist(i, end);
-      try {
-        final batchItems = await (fetchSeriesByIds != null
-                ? fetchSeriesByIds(batch)
-                : itemsApi!
-                      .getItems(
-                        ids: batch,
-                        includeItemTypes: const ['Series'],
-                        fields: 'UserData,ChildCount,RecursiveItemCount',
-                        enableUserData: true,
-                      )
-                      .then(_extractItemsList))
-            .timeout(remaining);
-        fetched.addAll(batchItems);
-      } catch (_) {
-        // Keep successful batches and fall back to unhydrated cards for failed batches.
-      }
+/// Gives each series card built from an episode or season the show's own
+/// watched state, since an episode has no unwatched count and a season only
+/// counts its own episodes. A failed lookup keeps the cards as they were.
+Future<List<AggregatedItem>> withSeriesUserData(
+  List<AggregatedItem> cards,
+  ItemsApi? Function(String serverId) itemsApiFor,
+) async {
+  // A card built from an episode or season keeps that item's SeriesId, while
+  // a show the server sent as a series already has its own counts.
+  final idsByServer = <String, List<String>>{};
+  for (final card in cards) {
+    if (card.type == 'Series' && card.seriesId == card.id) {
+      idsByServer.putIfAbsent(card.serverId, () => []).add(card.id);
     }
   }
-
-  final seriesById = <String, Map<String, dynamic>>{
-    ...?seriesCache,
-    for (final series in fetched)
-      if (series['Id'] != null) series['Id'].toString(): series,
-  };
-  if (seriesCache != null && fetched.isNotEmpty) {
-    for (final series in fetched) {
-      if (series['Id'] != null) {
-        seriesCache[series['Id'].toString()] = series;
-      }
-    }
-  }
-  if (seriesById.isNotEmpty) {
-    collapsed = [
-      for (final item in collapsed)
-        if (seriesById[item.id] case final series?
-            when collapsedIds.contains(item.id))
-          () {
-            hydratedIds.add(item.id);
-            return _mergeSeriesUserData(item, series);
-          }()
-        else
-          item,
-    ];
-  }
-
-  List<AggregatedItem> filtered;
-  if (hideWatched) {
-    final hasUnhydrated = collapsed.any(
-      (item) =>
-          collapsedIds.contains(item.id) && !hydratedIds.contains(item.id),
-    );
-    if (hasUnhydrated) {
-      final fallback = normalizeLatestMediaItems(
-        items,
-        collectionType: collectionType,
-        limit: items.length,
-        hideWatched: true,
-      );
-      final fallbackById = {for (final item in fallback) item.id: item};
-      final firstIndexBySeriesId = <String, int>{};
-      final unwatchedIndexBySeriesId = <String, int>{};
-      for (var i = 0; i < items.length; i++) {
-        final raw = items[i];
-        final key = (raw.type == 'Episode' || raw.type == 'Season')
-            ? (raw.seriesId ?? raw.id)
-            : raw.id;
-        firstIndexBySeriesId.putIfAbsent(key, () => i);
-        if (!_isItemWatchedForRecentRow(raw)) {
-          unwatchedIndexBySeriesId.putIfAbsent(key, () => i);
-        }
-      }
-
-      final ordered = <(int, AggregatedItem)>[];
-      for (var i = 0; i < collapsed.length; i++) {
-        final item = collapsed[i];
-        if (collapsedIds.contains(item.id) && !hydratedIds.contains(item.id)) {
-          final fb = fallbackById[item.id];
-          if (fb != null) {
-            ordered.add((
-              unwatchedIndexBySeriesId[fb.id] ??
-                  firstIndexBySeriesId[item.id] ??
-                  i,
-              fb,
-            ));
+  final userData = <String, Map<String, dynamic>>{};
+  await Future.wait([
+    for (final MapEntry(key: serverId, value: ids) in idsByServer.entries)
+      if (itemsApiFor(serverId) case final api?)
+        _seriesUserData(api, ids).then((found) {
+          for (final MapEntry(:key, :value) in found.entries) {
+            userData['$serverId|$key'] = value;
           }
-        } else if (!_isItemWatchedForRecentRow(item)) {
-          ordered.add((firstIndexBySeriesId[item.id] ?? i, item));
-        }
-      }
-      ordered.sort((a, b) => a.$1.compareTo(b.$1));
-      filtered = [for (final entry in ordered) entry.$2];
-    } else {
-      filtered = [
-        for (final item in collapsed)
-          if (!_isItemWatchedForRecentRow(item)) item,
-      ];
-    }
-  } else {
-    filtered = collapsed;
-  }
-
-  if (filtered.length <= limit) {
-    return filtered;
-  }
-
-  return filtered.take(limit).toList();
-}
-
-List<Map<String, dynamic>> _extractItemsList(Map<String, dynamic> response) {
-  final raw = response['Items'];
-  if (raw is! List) return const [];
+        }),
+  ]);
+  if (userData.isEmpty) return cards;
   return [
-    for (final entry in raw)
-      if (entry is Map) Map<String, dynamic>.from(entry),
+    for (final card in cards)
+      if (userData['${card.serverId}|${card.id}'] case final data?)
+        AggregatedItem(
+          id: card.id,
+          serverId: card.serverId,
+          rawData: {...card.rawData, 'UserData': data},
+        )
+      else
+        card,
   ];
 }
 
-AggregatedItem _mergeSeriesUserData(
-  AggregatedItem item,
-  Map<String, dynamic>? series,
-) {
-  if (series == null) return item;
-  final updatedRaw = Map<String, dynamic>.from(item.rawData);
-  if (series['UserData'] is Map) {
-    updatedRaw['UserData'] = Map<String, dynamic>.from(
-      series['UserData'] as Map,
-    );
+Future<Map<String, Map<String, dynamic>>> _seriesUserData(
+  ItemsApi api,
+  List<String> ids,
+) async {
+  try {
+    final response = await api
+        .getItems(ids: ids, fields: 'UserData')
+        .timeout(const Duration(seconds: 6));
+    return {
+      for (final item in response['Items'] as List? ?? const [])
+        if (item is Map && item['Id'] != null && item['UserData'] is Map)
+          item['Id'].toString(): Map<String, dynamic>.from(
+            item['UserData'] as Map,
+          ),
+    };
+  } catch (_) {
+    return const {};
   }
-  if (series['ChildCount'] != null) {
-    updatedRaw['ChildCount'] = series['ChildCount'];
-  }
-  if (series['RecursiveItemCount'] != null) {
-    updatedRaw['RecursiveItemCount'] = series['RecursiveItemCount'];
-  }
-  return AggregatedItem(
-    id: item.id,
-    serverId: item.serverId,
-    rawData: updatedRaw,
-  );
 }
 
-({List<AggregatedItem> items, Set<String> collapsedSeriesIds})
-_collapseLatestTvItems(List<AggregatedItem> items) {
+List<AggregatedItem> _collapseLatestTvItems(List<AggregatedItem> items) {
   final collapsed = <AggregatedItem>[];
   final seenIds = <String>{};
-  final collapsedSeriesIds = <String>{};
 
   for (final item in items) {
-    final synthesized = item.type == 'Episode' || item.type == 'Season'
-        ? _seriesCardForLatestTvItem(item)
-        : null;
-    final normalized = synthesized ?? item;
+    final normalized = _seriesCardForLatestTvItem(item) ?? item;
     if (seenIds.add(normalized.id)) {
       collapsed.add(normalized);
-      if (synthesized != null) {
-        collapsedSeriesIds.add(normalized.id);
-      }
     }
   }
 
-  return (items: collapsed, collapsedSeriesIds: collapsedSeriesIds);
+  return collapsed;
 }
 
 AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {

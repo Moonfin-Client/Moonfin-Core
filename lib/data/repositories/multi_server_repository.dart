@@ -983,14 +983,6 @@ class MultiServerRepository {
                     hideWatched: hideWatched,
                   );
 
-                  final deadline = DateTime.now().add(_serverTimeout);
-                  Duration remainingHydrationTimeout() {
-                    final remaining =
-                        deadline.difference(DateTime.now()) -
-                        const Duration(milliseconds: 500);
-                    return remaining.isNegative ? Duration.zero : remaining;
-                  }
-
                   var response = await session.client.itemsApi.getLatestItems(
                     parentId: parentId,
                     limit: fetchLimit,
@@ -999,49 +991,29 @@ class MultiServerRepository {
                     imageTypeLimit: _imageTypeLimit,
                   );
                   var rawItems = _parseItems(response, serverId);
-                  var items = await normalizeAndHydrateLatestMediaItems(
+                  var items = normalizeLatestMediaItems(
                     rawItems,
                     limit: targetLimit,
                     hideWatched: hideWatched,
-                    itemsApi: session.client.itemsApi,
-                    timeout: remainingHydrationTimeout(),
                   );
                   if (hideWatched &&
                       items.length < targetLimit &&
                       rawItems.length >= fetchLimit &&
                       fetchLimit < _maxItems) {
-                    final expandedBudget = remainingHydrationTimeout();
-                    if (expandedBudget > Duration.zero) {
-                      try {
-                        fetchLimit = _maxItems;
-                        final expandedResponse = await session.client.itemsApi
-                            .getLatestItems(
-                              parentId: parentId,
-                              limit: fetchLimit,
-                              fields: _fields,
-                              enableImageTypes: _imageTypes,
-                              imageTypeLimit: _imageTypeLimit,
-                            )
-                            .timeout(expandedBudget);
-                        final expandedRaw = _parseItems(
-                          expandedResponse,
-                          serverId,
-                        );
-                        final expandedItems =
-                            await normalizeAndHydrateLatestMediaItems(
-                          expandedRaw,
-                          limit: targetLimit,
-                          hideWatched: true,
-                          itemsApi: session.client.itemsApi,
-                          timeout: remainingHydrationTimeout(),
-                        );
-                        response = expandedResponse;
-                        rawItems = expandedRaw;
-                        items = expandedItems;
-                      } catch (_) {
-                        // Keep the already-fetched initial page if expansion fails or times out.
-                      }
-                    }
+                    fetchLimit = _maxItems;
+                    response = await session.client.itemsApi.getLatestItems(
+                      parentId: parentId,
+                      limit: fetchLimit,
+                      fields: _fields,
+                      enableImageTypes: _imageTypes,
+                      imageTypeLimit: _imageTypeLimit,
+                    );
+                    rawItems = _parseItems(response, serverId);
+                    items = normalizeLatestMediaItems(
+                      rawItems,
+                      limit: targetLimit,
+                      hideWatched: true,
+                    );
                   }
                   if (items.length <= existingCount) {
                     _rowTotals[cacheKey] = items.length;
@@ -1080,6 +1052,14 @@ class MultiServerRepository {
     var uniqueCombined = combined
         .where((item) => seen.add('${item.serverId}_${item.id}'))
         .toList();
+    // Looked up once the servers have answered, so a slow lookup can't push a
+    // server past its time limit and lose its page.
+    if (row.rowType == HomeRowType.latestMedia) {
+      uniqueCombined = await withSeriesUserData(
+        uniqueCombined,
+        _itemsApiAmong(sessions),
+      );
+    }
 
     final List<AggregatedItem> sortedCombined;
     if (row.rowType == HomeRowType.playlists ||
@@ -1288,8 +1268,6 @@ class MultiServerRepository {
     final fields = foldsCopies ? '$_fields,ProviderIds' : _fields;
     final groupedItems = <String, List<AggregatedItem>>{};
 
-    final seriesCachesByServer = <String, Map<String, Map<String, dynamic>>>{};
-
     for (final session in sessions) {
       try {
         final views = await _withTimeout(
@@ -1336,22 +1314,14 @@ class MultiServerRepository {
             var parsed = _parseItems(latestResponse, session.server.id);
             if (parsed.isEmpty) continue;
 
-            final serverSeriesCache = seriesCachesByServer.putIfAbsent(
-              session.server.id,
-              () => {},
-            );
-            List<AggregatedItem>? prehydratedItems;
             if (hideWatched &&
                 parsed.length >= fetchLimit &&
                 fetchLimit < _maxItems) {
-              final unwatchedItems = await normalizeAndHydrateLatestMediaItems(
+              final unwatchedItems = normalizeLatestMediaItems(
                 parsed,
                 collectionType: collectionType,
                 limit: _defaultLimit,
                 hideWatched: true,
-                itemsApi: session.client.itemsApi,
-                timeout: _serverTimeout,
-                seriesCache: serverSeriesCache,
               );
               if (unwatchedItems.length < _defaultLimit) {
                 fetchLimit = _maxItems;
@@ -1367,30 +1337,25 @@ class MultiServerRepository {
                 );
                 parsed = _parseItems(latestResponse, session.server.id);
                 if (parsed.isEmpty) continue;
-              } else {
-                prehydratedItems = unwatchedItems;
               }
             }
 
             // Merged rows are built once every server has answered, so the
-            // raw items are collected here and hydrated per server after
-            // sorting by recency.
+            // items are only collected here.
             if (mergeByType) {
               groupedItems.putIfAbsent(collectionType, () => []).addAll(parsed);
               continue;
             }
 
-            var items =
-                prehydratedItems ??
-                await normalizeAndHydrateLatestMediaItems(
-                  parsed,
-                  collectionType: collectionType,
-                  limit: _defaultLimit,
-                  hideWatched: hideWatched,
-                  itemsApi: session.client.itemsApi,
-                  timeout: _serverTimeout,
-                  seriesCache: serverSeriesCache,
-                );
+            final items = await withSeriesUserData(
+              normalizeLatestMediaItems(
+                parsed,
+                collectionType: collectionType,
+                limit: _defaultLimit,
+                hideWatched: hideWatched,
+              ),
+              (_) => session.client.itemsApi,
+            );
             if (items.isEmpty) continue;
 
             final displayName = hasMultiple
@@ -1424,75 +1389,39 @@ class MultiServerRepository {
 
     if (!mergeByType) return rows;
 
-    final sessionsById = {
-      for (final session in sessions) session.server.id: session,
-    };
-
     for (final entry in groupedItems.entries) {
       final collectionType = entry.key;
 
-      // Sort by recency first, then dedupe per server so two servers sharing
-      // an item ID (e.g. Plex ratingKeys) both survive until copy folding,
-      // and the newest contribution is kept.
-      final sorted = List<AggregatedItem>.from(entry.value)
-        ..sort((a, b) {
-          final da = _parseDateCreated(a.rawData['DateCreated']);
-          final db = _parseDateCreated(b.rawData['DateCreated']);
-          if (da != null && db != null) return db.compareTo(da);
-          if (da != null) return -1;
-          if (db != null) return 1;
-          return 0;
-        });
-
-      final seenKeys = <String>{};
+      // A title in two libraries, or on two servers, is kept once.
+      final seenIds = <String>{};
       final allItems = [
-        for (final item in sorted)
-          if (seenKeys.add('${item.serverId}:${item.id}')) item,
+        for (final item in entry.value)
+          if (seenIds.add(item.id)) item,
       ];
       if (allItems.isEmpty) continue;
 
-      final targetLimit = foldsCopies ? _maxItems : _defaultLimit;
-      final byServer = <String, List<AggregatedItem>>{};
-      for (final item in allItems) {
-        byServer.putIfAbsent(item.serverId, () => []).add(item);
-      }
+      allItems.sort((a, b) {
+        final da = _parseDateCreated(a.rawData['DateCreated']);
+        final db = _parseDateCreated(b.rawData['DateCreated']);
+        if (da != null && db != null) return db.compareTo(da);
+        if (da != null) return -1;
+        if (db != null) return 1;
+        return 0;
+      });
 
-      final hydratedByServer = <String, List<AggregatedItem>>{};
-      await Future.wait(
-        byServer.entries.map((serverEntry) async {
-          final session = sessionsById[serverEntry.key];
-          hydratedByServer[serverEntry.key] =
-              await normalizeAndHydrateLatestMediaItems(
-            serverEntry.value,
-            collectionType: collectionType,
-            limit: targetLimit,
-            hideWatched: hideWatched,
-            itemsApi: session?.client.itemsApi,
-            timeout: _serverTimeout,
-            seriesCache: seriesCachesByServer[serverEntry.key],
-          );
-        }),
+      final normalized = normalizeLatestMediaItems(
+        allItems,
+        collectionType: collectionType,
+        limit: foldsCopies ? _maxItems : _defaultLimit,
+        hideWatched: hideWatched,
       );
-
-      // Re-interleave in recency order after per-server collapse/hydration.
-      final merged = <AggregatedItem>[
-        for (final list in hydratedByServer.values) ...list,
-      ]..sort((a, b) {
-          final da = _parseDateCreated(a.rawData['DateCreated']);
-          final db = _parseDateCreated(b.rawData['DateCreated']);
-          if (da != null && db != null) return db.compareTo(da);
-          if (da != null) return -1;
-          if (db != null) return 1;
-          return 0;
-        });
-
-      final normalized = merged.length <= targetLimit
-          ? merged
-          : merged.take(targetLimit).toList();
       // A title several servers hold shows once, carrying the rest as copies.
-      final items = foldsCopies
-          ? foldCopies(normalized).take(_defaultLimit).toList()
-          : normalized;
+      final items = await withSeriesUserData(
+        foldsCopies
+            ? foldCopies(normalized).take(_defaultLimit).toList()
+            : normalized,
+        _itemsApiAmong(sessions),
+      );
       if (items.isEmpty) continue;
 
       final rowId = '${mergedTypeRowIdPrefix}latest_$collectionType';
@@ -1514,6 +1443,14 @@ class MultiServerRepository {
 
     return rows;
   }
+
+  static ItemsApi? Function(String serverId) _itemsApiAmong(
+    List<ServerUserSession> sessions,
+  ) => (serverId) => sessions
+      .where((s) => s.server.id == serverId)
+      .firstOrNull
+      ?.client
+      .itemsApi;
 
   Future<T> _withTimeout<T>(
     Future<T> Function() fn, {

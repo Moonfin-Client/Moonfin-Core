@@ -1,6 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/latest_media_row_normalizer.dart';
+import 'package:server_core/server_core.dart';
+
+class _ItemsApi extends Mock implements ItemsApi {}
+
+Future<Map<String, dynamic>> _seriesLookup(_ItemsApi api) =>
+    api.getItems(ids: any(named: 'ids'), fields: 'UserData');
+
+void _answerSeries(_ItemsApi api, Map<String, int> unplayedById) {
+  when(() => _seriesLookup(api)).thenAnswer(
+    (_) async => {
+      'Items': [
+        for (final MapEntry(key: id, value: unplayed) in unplayedById.entries)
+          {
+            'Id': id,
+            'Type': 'Series',
+            'UserData': {'Played': false, 'UnplayedItemCount': unplayed},
+          },
+      ],
+    },
+  );
+}
 
 AggregatedItem _createItem({
   required String id,
@@ -532,455 +554,74 @@ void main() {
     });
   });
 
-  group('normalizeAndHydrateLatestMediaItems', () {
-    test(
-      'hydrates collapsed Episode and Season cards with series UnplayedItemCount and skips native Series',
-      () async {
-        const episodeItem = AggregatedItem(
-          id: 'ep-yaga-1',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-yaga-1',
-            'Name': 'Episode 1',
-            'Type': 'Episode',
-            'SeriesId': 'series-yaga',
-            'SeriesName': 'YAGA',
-            'UserData': {'Played': false},
-          },
-        );
-        const seasonItem = AggregatedItem(
-          id: 'season-foundation-2',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'season-foundation-2',
-            'Name': 'Season 2',
-            'Type': 'Season',
-            'SeriesId': 'series-foundation',
-            'SeriesName': 'Foundation',
-            'UserData': {'Played': false, 'UnplayedItemCount': 10},
-            'ChildCount': 10,
-          },
-        );
-        const nativeSeries = AggregatedItem(
-          id: 'series-cyberpunk',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'series-cyberpunk',
-            'Name': 'Cyberpunk: Edgerunners',
-            'Type': 'Series',
-            'UserData': {'Played': false, 'UnplayedItemCount': 20},
-            'ChildCount': 1,
-          },
-        );
+  group('withSeriesUserData', () {
+    late _ItemsApi api;
 
-        List<String>? requestedIds;
-        final result = await normalizeAndHydrateLatestMediaItems(
-          [episodeItem, seasonItem, nativeSeries],
-          collectionType: 'tvshows',
-          limit: 10,
-          fetchSeriesByIds: (ids) async {
-            requestedIds = ids;
-            return [
-              {
-                'Id': 'series-yaga',
-                'Type': 'Series',
-                'UserData': {'Played': false, 'UnplayedItemCount': 6},
-                'ChildCount': 1,
-                'RecursiveItemCount': 6,
-              },
-              {
-                'Id': 'series-foundation',
-                'Type': 'Series',
-                'UserData': {'Played': false, 'UnplayedItemCount': 24},
-                'ChildCount': 3,
-                'RecursiveItemCount': 30,
-              },
-            ];
-          },
-        );
+    setUp(() => api = _ItemsApi());
 
-        expect(requestedIds, equals(['series-yaga', 'series-foundation']));
-        expect(result.length, equals(3));
-        expect(result[0].id, equals('series-yaga'));
-        expect(result[0].unplayedItemCount, equals(6));
-        expect(result[1].id, equals('series-foundation'));
-        expect(result[1].unplayedItemCount, equals(24));
-        expect(result[1].childCount, equals(3));
-        expect(result[2].id, equals('series-cyberpunk'));
-        expect(result[2].unplayedItemCount, equals(20));
-      },
+    List<AggregatedItem> latestTvRow() => normalizeLatestMediaItems(
+      [
+        _createItem(
+          id: 'e1',
+          name: 'Episode',
+          type: 'Episode',
+          seriesId: 's1',
+          seriesName: 'From an Episode',
+        ),
+        _createItem(
+          id: 'se1',
+          name: 'Season 2',
+          type: 'Season',
+          seriesId: 's2',
+          seriesName: 'From a Season',
+        ),
+        _createItem(id: 's3', name: 'Sent as a Series', type: 'Series'),
+      ],
+      collectionType: 'tvshows',
+      limit: 10,
     );
 
-    test('skips fetchSeriesByIds when all items are already Series or Movies', () async {
-      const nativeSeries = AggregatedItem(
-        id: 'series-1',
-        serverId: 'server1',
-        rawData: {
-          'Id': 'series-1',
-          'Name': 'Show 1',
-          'Type': 'Series',
-          'UserData': {'Played': false, 'UnplayedItemCount': 5},
-        },
-      );
+    test('series cards from episodes and seasons take the show counts', () async {
+      _answerSeries(api, {'s1': 7, 's2': 9});
 
-      var called = false;
-      final result = await normalizeAndHydrateLatestMediaItems(
-        [nativeSeries],
-        collectionType: 'tvshows',
-        limit: 10,
-        fetchSeriesByIds: (_) async {
-          called = true;
-          return const [];
-        },
-      );
+      final result = await withSeriesUserData(latestTvRow(), (_) => api);
 
-      expect(called, isFalse);
-      expect(result.single.unplayedItemCount, equals(5));
+      expect(result.map((i) => i.unplayedItemCount), [7, 9, null]);
+      verify(
+        () => api.getItems(ids: ['s1', 's2'], fields: 'UserData'),
+      ).called(1);
     });
 
-    test(
-      'hideWatched evaluates hydrated series UserData rather than episode Played state',
-      () async {
-        const watchedEpisodeOfUnfinishedSeries = AggregatedItem(
-          id: 'ep-yaga-1',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-yaga-1',
-            'Name': 'Episode 1',
-            'Type': 'Episode',
-            'SeriesId': 'series-yaga',
-            'SeriesName': 'YAGA',
-            'UserData': {'Played': true},
-          },
-        );
-        const unwatchedEpisodeOfFinishedSeries = AggregatedItem(
-          id: 'ep-done-1',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-done-1',
-            'Name': 'Episode 1',
-            'Type': 'Episode',
-            'SeriesId': 'series-done',
-            'SeriesName': 'Done Show',
-            'UserData': {'Played': false},
-          },
-        );
+    test('a row of shows sent as series asks for nothing', () async {
+      final row = [_createItem(id: 's3', name: 'Series', type: 'Series')];
 
-        final result = await normalizeAndHydrateLatestMediaItems(
-          [watchedEpisodeOfUnfinishedSeries, unwatchedEpisodeOfFinishedSeries],
-          collectionType: 'tvshows',
-          limit: 10,
-          hideWatched: true,
-          fetchSeriesByIds: (_) async => [
-            {
-              'Id': 'series-yaga',
-              'Type': 'Series',
-              'UserData': {'Played': false, 'UnplayedItemCount': 5},
-              'ChildCount': 1,
-            },
-            {
-              'Id': 'series-done',
-              'Type': 'Series',
-              'UserData': {'Played': true, 'UnplayedItemCount': 0},
-              'ChildCount': 1,
-            },
-          ],
-        );
-
-        expect(result.map((i) => i.id).toList(), equals(['series-yaga']));
-        expect(result.single.unplayedItemCount, equals(5));
-      },
-    );
-
-    test('falls back to collapsed cards if fetchSeriesByIds throws', () async {
-      const seasonItem = AggregatedItem(
-        id: 'season-1',
-        serverId: 'server1',
-        rawData: {
-          'Id': 'season-1',
-          'Name': 'Season 1',
-          'Type': 'Season',
-          'SeriesId': 'series-1',
-          'SeriesName': 'Show 1',
-          'UserData': {'Played': false, 'UnplayedItemCount': 8},
-        },
-      );
-
-      final result = await normalizeAndHydrateLatestMediaItems(
-        [seasonItem],
-        collectionType: 'tvshows',
-        limit: 10,
-        fetchSeriesByIds: (_) async => throw Exception('network error'),
-      );
-
-      expect(result.single.id, equals('series-1'));
-      expect(result.single.unplayedItemCount, equals(8));
+      expect(await withSeriesUserData(row, (_) => api), same(row));
+      verifyZeroInteractions(api);
     });
 
-    test(
-      'hideWatched preserves show with older unwatched episode when newest episode is watched and hydration fails',
-      () async {
-        const watchedNewestEpisode = AggregatedItem(
-          id: 'ep-yaga-2',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-yaga-2',
-            'Name': 'Episode 2',
-            'Type': 'Episode',
-            'SeriesId': 'series-yaga',
-            'SeriesName': 'YAGA',
-            'UserData': {'Played': true},
-          },
-        );
-        const unwatchedOlderEpisode = AggregatedItem(
-          id: 'ep-yaga-1',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-yaga-1',
-            'Name': 'Episode 1',
-            'Type': 'Episode',
-            'SeriesId': 'series-yaga',
-            'SeriesName': 'YAGA',
-            'UserData': {'Played': false},
-          },
-        );
+    test('a failed lookup keeps the cards', () async {
+      when(() => _seriesLookup(api)).thenThrow(Exception('offline'));
+      final row = latestTvRow();
 
-        final result = await normalizeAndHydrateLatestMediaItems(
-          [watchedNewestEpisode, unwatchedOlderEpisode],
-          collectionType: 'tvshows',
-          limit: 10,
-          hideWatched: true,
-          fetchSeriesByIds: (_) async => throw Exception('network error'),
-        );
+      expect(await withSeriesUserData(row, (_) => api), same(row));
+    });
 
-        expect(result.map((i) => i.id).toList(), equals(['series-yaga']));
-        expect(result.single.isPlayed, isFalse);
-      },
-    );
-
-    test('chunks series hydration requests into batches of 100', () async {
-      final episodes = [
-        for (var i = 0; i < 150; i++)
-          AggregatedItem(
-            id: 'ep-$i',
-            serverId: 'server1',
-            rawData: {
-              'Id': 'ep-$i',
-              'Name': 'Episode 1',
-              'Type': 'Episode',
-              'SeriesId': 'series-$i',
-              'SeriesName': 'Show $i',
-              'UserData': const {'Played': false},
-            },
-          ),
+    test('each server is asked about its own cards', () async {
+      final other = _ItemsApi();
+      _answerSeries(api, {'s1': 3});
+      _answerSeries(other, {'s1': 8});
+      final card = latestTvRow().first;
+      final row = [
+        card,
+        AggregatedItem(id: 's1', serverId: 'server2', rawData: card.rawData),
       ];
 
-      final batchSizes = <int>[];
-      final result = await normalizeAndHydrateLatestMediaItems(
-        episodes,
-        collectionType: 'tvshows',
-        limit: 150,
-        hideWatched: true,
-        fetchSeriesByIds: (ids) async {
-          batchSizes.add(ids.length);
-          return [
-            for (final id in ids)
-              {
-                'Id': id,
-                'Type': 'Series',
-                'UserData': {'Played': false, 'UnplayedItemCount': 4},
-                'ChildCount': 1,
-              },
-          ];
-        },
+      final result = await withSeriesUserData(
+        row,
+        (serverId) => serverId == 'server1' ? api : other,
       );
 
-      expect(batchSizes, equals([100, 50]));
-      expect(result.length, equals(150));
-      expect(result.last.unplayedItemCount, equals(4));
+      expect(result.map((i) => i.unplayedItemCount), [3, 8]);
     });
-
-    test('preserves earlier hydrated batches when a later batch fails', () async {
-      final episodes = [
-        for (var i = 0; i < 120; i++)
-          AggregatedItem(
-            id: 'ep-$i',
-            serverId: 'server1',
-            rawData: {
-              'Id': 'ep-$i',
-              'Name': 'Episode 1',
-              'Type': 'Episode',
-              'SeriesId': 'series-$i',
-              'SeriesName': 'Show $i',
-              'UserData': const {'Played': false},
-            },
-          ),
-      ];
-
-      var callCount = 0;
-      final result = await normalizeAndHydrateLatestMediaItems(
-        episodes,
-        collectionType: 'tvshows',
-        limit: 120,
-        fetchSeriesByIds: (ids) async {
-          callCount++;
-          if (callCount == 2) throw Exception('second batch failed');
-          return [
-            for (final id in ids)
-              {
-                'Id': id,
-                'Type': 'Series',
-                'UserData': {'Played': false, 'UnplayedItemCount': 7},
-                'ChildCount': 1,
-              },
-          ];
-        },
-      );
-
-      expect(result.length, equals(120));
-      expect(result.first.unplayedItemCount, equals(7));
-      expect(result.last.unplayedItemCount, isNull);
-    });
-
-    test(
-      'preserves filter-before-collapse order when hydration fails for mixed episodes',
-      () async {
-        const aWatchedNewest = AggregatedItem(
-          id: 'ep-a-2',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-a-2',
-            'Name': 'A Ep 2',
-            'Type': 'Episode',
-            'SeriesId': 'series-a',
-            'SeriesName': 'Show A',
-            'UserData': {'Played': true},
-          },
-        );
-        const bUnwatchedMiddle = AggregatedItem(
-          id: 'ep-b-1',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-b-1',
-            'Name': 'B Ep 1',
-            'Type': 'Episode',
-            'SeriesId': 'series-b',
-            'SeriesName': 'Show B',
-            'UserData': {'Played': false},
-          },
-        );
-        const aUnwatchedOldest = AggregatedItem(
-          id: 'ep-a-1',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'ep-a-1',
-            'Name': 'A Ep 1',
-            'Type': 'Episode',
-            'SeriesId': 'series-a',
-            'SeriesName': 'Show A',
-            'UserData': {'Played': false},
-          },
-        );
-
-        final result = await normalizeAndHydrateLatestMediaItems(
-          [aWatchedNewest, bUnwatchedMiddle, aUnwatchedOldest],
-          collectionType: 'tvshows',
-          limit: 1,
-          hideWatched: true,
-          fetchSeriesByIds: (_) async => throw Exception('network error'),
-        );
-
-        expect(result.map((i) => i.id).toList(), equals(['series-b']));
-      },
-    );
-
-    test(
-      'preserves relative order between unhydrated fallback cards and native Series after duplicate collapse',
-      () async {
-        AggregatedItem ep(String id, String seriesId) => AggregatedItem(
-          id: id,
-          serverId: 'server1',
-          rawData: {
-            'Id': id,
-            'Name': 'Ep',
-            'Type': 'Episode',
-            'SeriesId': seriesId,
-            'SeriesName': seriesId,
-            'UserData': const {'Played': false},
-          },
-        );
-        const nativeC = AggregatedItem(
-          id: 'series-c',
-          serverId: 'server1',
-          rawData: {
-            'Id': 'series-c',
-            'Name': 'Show C',
-            'Type': 'Series',
-            'UserData': {'Played': false, 'UnplayedItemCount': 2},
-          },
-        );
-
-        final result = await normalizeAndHydrateLatestMediaItems(
-          [
-            ep('a1', 'series-a'),
-            ep('a2', 'series-a'),
-            ep('a3', 'series-a'),
-            ep('b1', 'series-b'),
-            nativeC,
-          ],
-          collectionType: 'tvshows',
-          limit: 2,
-          hideWatched: true,
-          fetchSeriesByIds: (_) async => throw Exception('network error'),
-        );
-
-        expect(
-          result.map((i) => i.id).toList(),
-          equals(['series-a', 'series-b']),
-        );
-      },
-    );
-
-    test(
-      'preserves relative order between unhydrated fallback and partial-hydration cards',
-      () async {
-        AggregatedItem ep(String id, String seriesId, {bool watched = false}) =>
-            AggregatedItem(
-              id: id,
-              serverId: 'server1',
-              rawData: {
-                'Id': id,
-                'Name': 'Ep',
-                'Type': 'Episode',
-                'SeriesId': seriesId,
-                'SeriesName': seriesId,
-                'UserData': {'Played': watched},
-              },
-            );
-
-        final result = await normalizeAndHydrateLatestMediaItems(
-          [
-            ep('a1', 'series-a', watched: true),
-            ep('a2', 'series-a', watched: true),
-            ep('a3', 'series-a', watched: true),
-            ep('b1', 'series-b'),
-            ep('c1', 'series-c'),
-          ],
-          collectionType: 'tvshows',
-          limit: 1,
-          hideWatched: true,
-          fetchSeriesByIds: (_) async => [
-            {
-              'Id': 'series-c',
-              'Type': 'Series',
-              'UserData': {'Played': false, 'UnplayedItemCount': 3},
-              'ChildCount': 1,
-            },
-          ],
-        );
-
-        expect(result.map((i) => i.id).toList(), equals(['series-b']));
-      },
-    );
   });
 }
