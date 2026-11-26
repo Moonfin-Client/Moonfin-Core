@@ -540,4 +540,29 @@ void main() {
 
     expect(service.remoteStateNotifier.value, 'playing');
   });
+
+  test('in-flight poll started before pause does not overwrite paused state',
+      () async {
+    final stalePoll = Completer<RemotePlaybackSnapshot?>();
+    final provider = _FakeRemoteProvider();
+    provider.onFetchSnapshot = () => stalePoll.future;
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+
+    await service.playToTarget(target, item: track1);
+    await service.pause(CastTargetKind.jellyfinSession);
+    expect(service.remoteStateNotifier.value, 'paused');
+
+    // Poll started before pause resolves late with stale 'playing' state.
+    stalePoll.complete(
+      RemotePlaybackSnapshot(
+        state: 'playing',
+        positionTicks: 300000000,
+        item: track1,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.remoteStateNotifier.value, 'paused');
+  });
 }

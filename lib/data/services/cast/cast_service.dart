@@ -339,6 +339,7 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.play(kind);
     if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
+      _appliedPollSeq = _nextPollSeq;
       remoteStateNotifier.value = 'playing';
     }
   }
@@ -348,6 +349,7 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.pause(kind);
     if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
+      _appliedPollSeq = _nextPollSeq;
       remoteStateNotifier.value = 'paused';
     }
   }
@@ -357,6 +359,7 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.seek(kind, positionTicks: positionTicks);
     if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
+      _appliedPollSeq = _nextPollSeq;
       remotePositionNotifier.value = positionTicks;
     }
   }
