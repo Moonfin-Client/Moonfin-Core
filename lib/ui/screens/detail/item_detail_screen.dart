@@ -337,7 +337,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   bool _fullPageOpened = false;
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
-  String? _lastDetailBackdropItemId;
+  String? _lastDetailBackdropKey;
+  String? _lastDetailItemId;
   final GlobalKey<NouveauDetailContentState> _nouveauContentKey =
       GlobalKey<NouveauDetailContentState>();
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -528,13 +529,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     }
     if (item != null) {
       final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
-      bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
+      final backdropKey = detailBackdropKey(_backgroundService, item);
+      bool needInitialBackdrop = _lastDetailBackdropKey != backdropKey;
       if (useTrackBackdrop && _lastFocusedBackdropItemId == null) {
         needInitialBackdrop = true;
       }
 
       if (needInitialBackdrop) {
-        _lastDetailBackdropItemId = item.id;
+        _lastDetailBackdropKey = backdropKey;
         _focusedPrimaryBackdropUrlCache.clear();
 
         final target = useTrackBackdrop ? _viewModel.tracks.first : item;
@@ -549,7 +551,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         if (useTrackBackdrop) {
           _onBackdropItemFocused(_viewModel.tracks.first);
         }
-
+      }
+      if (_lastDetailItemId != item.id) {
+        _lastDetailItemId = item.id;
         if (item.mediaSources.isNotEmpty) {
           _selectedMediaSourceId = item.mediaSources.first['Id']?.toString();
         } else {
@@ -11577,6 +11581,12 @@ bool usesFirstTrackBackdrop(AggregatedItem item, List<AggregatedItem> tracks) =>
     item.type == 'Playlist' &&
     tracks.isNotEmpty &&
     item.backdropImageTags.isEmpty;
+
+/// A reload after Change Artwork keeps the item's id but brings new image tags,
+/// so the page picks its backdrop again when either changes.
+@visibleForTesting
+String detailBackdropKey(BackgroundService backgrounds, AggregatedItem item) =>
+    '${item.id}|${backgrounds.backdropUrlsFor(item).join('|')}';
 
 /// [queue] with [parts] playing right after [target], or unchanged when the
 /// target isn't the item at [startIndex]. Public for its tests. Every

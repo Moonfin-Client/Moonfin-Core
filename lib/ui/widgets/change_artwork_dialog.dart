@@ -30,17 +30,22 @@ class ImageDimensions {
 
 class ChangeArtworkDialog extends StatefulWidget {
   final AggregatedItem item;
+  final VoidCallback? onChanged;
 
-  const ChangeArtworkDialog({super.key, required this.item});
+  const ChangeArtworkDialog({super.key, required this.item, this.onChanged});
 
-  static Future<bool?> show(
+  /// True when any artwork changed, however the dialog was closed.
+  static Future<bool> show(
     BuildContext context, {
     required AggregatedItem item,
-  }) {
-    return showFocusRestoringDialog<bool>(
+  }) async {
+    var changed = false;
+    await showFocusRestoringDialog<void>(
       context: context,
-      builder: (_) => ChangeArtworkDialog(item: item),
+      builder: (_) =>
+          ChangeArtworkDialog(item: item, onChanged: () => changed = true),
     );
+    return changed;
   }
 
   @override
@@ -209,6 +214,11 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       node.dispose();
     }
     super.dispose();
+  }
+
+  void _markChanged() {
+    _hasChanged = true;
+    widget.onChanged?.call();
   }
 
   Future<void> _refreshItemMetadata() async {
@@ -709,6 +719,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         imageType: ImageType.fromServerString(category),
         imageUrl: url,
       );
+      _markChanged();
 
       final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
@@ -721,7 +732,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           if (_historyIndex >= 0 && _historyIndex < _history.length) {
             _history[_historyIndex] = _item;
           }
-          _hasChanged = true;
           _actionInProgress.remove(category);
         });
       }
@@ -779,6 +789,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         imageType: ImageType.fromServerString(category),
         imageIndex: imageIndex,
       );
+      _markChanged();
 
       final updatedRaw = await client.itemsApi.getItem(_item.id);
       if (mounted) {
@@ -791,7 +802,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           if (_historyIndex >= 0 && _historyIndex < _history.length) {
             _history[_historyIndex] = _item;
           }
-          _hasChanged = true;
           _actionInProgress.remove(category);
         });
       }
@@ -848,6 +858,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
+            _markChanged();
           }
         } else {
           await client.adminItemsApi.deleteItemImage(
@@ -855,6 +866,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
+          _markChanged();
         }
       }
 
@@ -869,7 +881,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           if (_historyIndex >= 0 && _historyIndex < _history.length) {
             _history[_historyIndex] = _item;
           }
-          _hasChanged = true;
           _actionInProgress.clear();
         });
       }
@@ -925,11 +936,13 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         bytes: fileBytes,
         contentType: mimeType,
       );
+      _markChanged();
+      // The row keeps saying Missing until the item brings the new tag.
+      await _refreshItemMetadata();
 
       if (mounted) {
         _fetchRemoteImages(category);
         setState(() {
-          _hasChanged = true;
           _actionInProgress.remove(category);
         });
         ScaffoldMessenger.of(
@@ -1348,7 +1361,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                       disableScale: true,
                       borderRadius: 8,
                       suppressFocusGlow: true,
-                      onSelect: () => Navigator.pop(context, _hasChanged),
+                      onSelect: () => Navigator.pop(context),
                       onNavigateDown: () =>
                           _getFirstFilterFocusNode().requestFocus(),
                       onNavigateLeft: () =>
