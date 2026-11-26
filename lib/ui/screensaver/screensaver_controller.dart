@@ -56,6 +56,7 @@ class ScreensaverController {
   ScreensaverTimeout _timeoutCache = ScreensaverTimeout.m5;
   bool _activityPaused = false;
   bool _playbackActive = false;
+  bool _wakeLockAcquired = false;
   bool _streamPlaying = false;
   bool _trailerActive = false;
   bool _homePreviewActive = false;
@@ -258,8 +259,16 @@ class ScreensaverController {
       if (PlatformDetection.isAppleTV) {
         await _systemChannel.invokeMethod('setIdleTimerDisabled', enabled);
       } else if (enabled) {
+        // Asking twice while the lock is held gives the platform a second
+        // inhibition. The plugin tracks only the newest handle, so the older
+        // one is never released and the desktop stops idling for the rest of
+        // the session. Two refreshes can land in the same frame, so this is
+        // checked before the await rather than through the plugin's own status.
+        if (_wakeLockAcquired) return;
+        _wakeLockAcquired = true;
         await WakelockPlus.enable();
       } else {
+        _wakeLockAcquired = false;
         await WakelockPlus.disable();
       }
     } catch (_) {}
