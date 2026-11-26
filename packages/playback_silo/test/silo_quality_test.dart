@@ -172,5 +172,53 @@ void main() {
       transformations(server.bodies(startPath).single).single['name'],
       'client_dv7_to_dv81',
     );
+
+    // A track change asks for direct play again, but the picked quality
+    // still holds, so the offer stays off.
+    stream = await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.trackChange,
+        position: Duration(minutes: 10),
+        audioStreamIndex: 1,
+      ),
+    );
+    final track = server.bodies(_replanPath).last;
+    expect(
+      track['client_features'],
+      isNot(contains('client_video_transformations_v1')),
+    );
+    expect(transformations(track), isEmpty);
+
+    // Back to automatic: the offer returns, and stays for the next track
+    // change.
+    stream = await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.qualityChange,
+        position: Duration(minutes: 10),
+      ),
+    );
+    final auto = server.bodies(_replanPath).last;
+    expect(
+      auto['client_features'],
+      contains('client_video_transformations_v1'),
+    );
+    expect(transformations(auto).single['name'], 'client_dv7_to_dv81');
+    await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.trackChange,
+        position: Duration(minutes: 10),
+        audioStreamIndex: 1,
+      ),
+    );
+    expect(
+      transformations(server.bodies(_replanPath).last).single['name'],
+      'client_dv7_to_dv81',
+    );
   });
 }

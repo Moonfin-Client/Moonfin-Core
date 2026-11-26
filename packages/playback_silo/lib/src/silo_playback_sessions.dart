@@ -76,6 +76,11 @@ class SiloPlaybackSession {
   /// (`bandwidth_cap_kbps`), sent on every replan so a seek keeps it. A
   /// quality change replaces it. Null for none.
   late int? bandwidthCapKbps = startBody['bandwidth_cap_kbps'] as int?;
+
+  /// Whether the viewer picked a quality, which asks for a server stream
+  /// until they go back to automatic. Every replan then leaves out the
+  /// player's own profile 7 conversion, not only the quality change.
+  bool manualQuality = false;
 }
 
 /// The Silo sessions of one client, by session id, shared by its resolver

@@ -248,12 +248,15 @@ class SiloMediaStreamResolver
     if (failure) session.recoveries++;
     if (request.reason == ReplanReason.qualityChange) {
       session.bandwidthCapKbps = _kbps(request.maxStreamingBitrate);
+      session.manualQuality = !request.enableDirectPlay;
     }
     final start = session.startBody;
     // As at the start: a replan that asks for a server stream (a quality
     // change, a Dolby Vision transcode) offers no profile 7 conversion of the
-    // player's own, which would win it the original file again.
-    final offersTransforms = request.enableDirectPlay;
+    // player's own, which would win it the original file again. A picked
+    // quality holds through later replans (a track change, a seek) until the
+    // viewer goes back to automatic.
+    final offersTransforms = request.enableDirectPlay && !session.manualQuality;
     final body = <String, dynamic>{
       'protocol_version': 3,
       'client_features': offersTransforms
