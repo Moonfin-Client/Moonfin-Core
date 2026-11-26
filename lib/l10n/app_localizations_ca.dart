@@ -2181,6 +2181,24 @@ class AppLocalizationsCa extends AppLocalizations {
   String get hideMpvStats => 'Amaga les estadístiques de mpv (Shift+I)';
 
   @override
+  String get showPlaybackStats => 'Show Playback Stats';
+
+  @override
+  String get hidePlaybackStats => 'Hide Playback Stats';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Network Activity';
+
+  @override
+  String get playbackStatsBufferHealth => 'Buffer Health';
+
+  @override
+  String get playbackStatsBufferMemory => 'Buffer Memory';
+
+  @override
+  String get playbackStatsRebuffers => 'Rebuffers';
+
+  @override
   String get keyboardShortcutsTitle => 'Dreceres de teclat';
 
   @override

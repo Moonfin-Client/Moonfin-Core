@@ -2165,6 +2165,24 @@ class AppLocalizationsHi extends AppLocalizations {
   String get hideMpvStats => 'Hide mpv Statistics (Shift+I)';
 
   @override
+  String get showPlaybackStats => 'Show Playback Stats';
+
+  @override
+  String get hidePlaybackStats => 'Hide Playback Stats';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Network Activity';
+
+  @override
+  String get playbackStatsBufferHealth => 'Buffer Health';
+
+  @override
+  String get playbackStatsBufferMemory => 'Buffer Memory';
+
+  @override
+  String get playbackStatsRebuffers => 'Rebuffers';
+
+  @override
   String get keyboardShortcutsTitle => 'Keyboard shortcuts';
 
   @override

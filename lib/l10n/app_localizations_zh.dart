@@ -2120,6 +2120,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hideMpvStats => '隐藏 mpv 统计信息（Shift+I）';
 
   @override
+  String get showPlaybackStats => 'Show Playback Stats';
+
+  @override
+  String get hidePlaybackStats => 'Hide Playback Stats';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Network Activity';
+
+  @override
+  String get playbackStatsBufferHealth => 'Buffer Health';
+
+  @override
+  String get playbackStatsBufferMemory => 'Buffer Memory';
+
+  @override
+  String get playbackStatsRebuffers => 'Rebuffers';
+
+  @override
   String get keyboardShortcutsTitle => '键盘快捷键';
 
   @override

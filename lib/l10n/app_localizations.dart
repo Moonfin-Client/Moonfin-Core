@@ -3748,6 +3748,42 @@ abstract class AppLocalizations {
   /// **'Hide mpv Statistics (Shift+I)'**
   String get hideMpvStats;
 
+  /// Button in the playback information sheet that shows live network and buffer stats with small graphs over the video
+  ///
+  /// In en, this message translates to:
+  /// **'Show Playback Stats'**
+  String get showPlaybackStats;
+
+  /// Button in the playback information sheet that hides the live network and buffer stats over the video
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Playback Stats'**
+  String get hidePlaybackStats;
+
+  /// Row in the playback stats over the video: how much data arrived in the last second, like 12.4 Mbps
+  ///
+  /// In en, this message translates to:
+  /// **'Network Activity'**
+  String get playbackStatsNetworkActivity;
+
+  /// Row in the playback stats over the video: seconds of video loaded ahead of the play position, like 95.3 / 120 s
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer Health'**
+  String get playbackStatsBufferHealth;
+
+  /// Row in the playback stats over the video: memory the loaded video uses out of the most it may use, like 210 / 384 MB
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer Memory'**
+  String get playbackStatsBufferMemory;
+
+  /// Row in the playback stats over the video: how many times playback stopped to load more, not counting seeks
+  ///
+  /// In en, this message translates to:
+  /// **'Rebuffers'**
+  String get playbackStatsRebuffers;
+
   /// Title of the screen and dialog that list every keyboard shortcut
   ///
   /// In en, this message translates to:
