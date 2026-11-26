@@ -9895,5 +9895,22 @@
     "setupDetailQuestion": "Kaip turėtų atrodyti filmas ar serialas, kai jį atidarote?",
     "@setupDetailQuestion": {
         "description": "Setup wizard question for the detail screen style"
-    }
+    },
+    "mediaBarSourceType": "Šaltinis",
+    "@mediaBarSourceType": {
+        "description": "Setting for which titles the media bar draws from"
+    },
+    "mediaBarModeGallery": "Galerija",
+    "@mediaBarModeGallery": {
+        "description": "Media bar style option: Gallery"
+    },
+    "mediaBarModeBookshelf": "Knygų lentyna",
+    "@mediaBarModeBookshelf": {
+        "description": "Media bar style option: Bookshelf"
+    },
+    "requested4k": "4K užklausta",
+    "@requested4k": {
+        "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
+    },
+    "adminTaskResultAborted": "Nutraukta dėl serverio išjungimo"
 }
