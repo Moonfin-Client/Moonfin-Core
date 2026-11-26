@@ -224,13 +224,15 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _refreshItemMetadata() async {
+    final itemId = _item.id;
     try {
       final client = GetIt.instance<MediaServerClient>();
-      final updatedRaw = await client.itemsApi.getItem(_item.id);
-      if (mounted) {
+      final updatedRaw = await client.itemsApi.getItem(itemId);
+      // The admin may have moved to another item while this loaded.
+      if (mounted && _item.id == itemId) {
         setState(() {
           _item = AggregatedItem(
-            id: _item.id,
+            id: itemId,
             serverId: _item.serverId,
             rawData: updatedRaw,
           );
@@ -819,6 +821,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   Future<void> _clearAllArtwork() async {
     final l10n = AppLocalizations.of(context);
+    final itemId = _item.id;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog.adaptive(
@@ -847,7 +850,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       _actionInProgress.addAll(_supportedCategories);
     });
     // Without the full item, Clear All would skip images the card leaves out.
-    await _openingRefresh;
+    if (itemId == widget.item.id) await _openingRefresh;
 
     try {
       final client = GetIt.instance<MediaServerClient>();
@@ -858,7 +861,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         if (category == 'Backdrop') {
           for (int i = tags.length - 1; i >= 0; i--) {
             await client.adminItemsApi.deleteItemImage(
-              _item.id,
+              itemId,
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
@@ -866,7 +869,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           }
         } else {
           await client.adminItemsApi.deleteItemImage(
-            _item.id,
+            itemId,
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
@@ -2132,20 +2135,24 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             style: BorderStyle.solid,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.image_not_supported,
-              color: Colors.white30,
-              size: 28,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              l10n.missing,
-              style: const TextStyle(fontSize: 12, color: Colors.white30),
-            ),
-          ],
+        // Shrinks to fit short cards such as Banner.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.image_not_supported,
+                color: Colors.white30,
+                size: 28,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.missing,
+                style: const TextStyle(fontSize: 12, color: Colors.white30),
+              ),
+            ],
+          ),
         ),
       );
     } else {

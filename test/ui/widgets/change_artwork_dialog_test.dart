@@ -16,13 +16,20 @@ class _MockMediaServerClient extends Mock implements MediaServerClient {}
 
 /// An album with a cover and no backdrop until one is uploaded.
 class _FakeItemsApi extends Fake implements ItemsApi {
-  Map<String, dynamic> item = {
-    'Id': 'a1',
-    'Type': 'MusicAlbum',
-    'Name': 'AlbumRed',
-    'ImageTags': {'Primary': 'cover'},
-    'BackdropImageTags': <String>[],
+  /// The server's items by id.
+  final library = <String, Map<String, dynamic>>{
+    'a1': {
+      'Id': 'a1',
+      'Type': 'MusicAlbum',
+      'Name': 'AlbumRed',
+      'ImageTags': {'Primary': 'cover'},
+      'BackdropImageTags': <String>[],
+    },
   };
+
+  /// The item the dialog opens on.
+  Map<String, dynamic> get item => library['a1']!;
+  set item(Map<String, dynamic> value) => library['a1'] = value;
 
   bool failing = false;
 
@@ -39,7 +46,7 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     hold = null;
     if (held != null) await held.future;
     if (failing) throw Exception('connection lost');
-    return Map<String, dynamic>.from(item);
+    return Map<String, dynamic>.from(library[itemId]!);
   }
 }
 
@@ -78,8 +85,8 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     required String contentType,
   }) async {
     uploads.add(imageType);
-    items.item = {
-      ...items.item,
+    items.library[itemId] = {
+      ...items.library[itemId]!,
       'BackdropImageTags': ['uploaded'],
     };
   }
@@ -90,15 +97,15 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     required ImageType imageType,
     int? imageIndex,
   }) async {
-    final item = items.item;
+    final item = items.library[itemId]!;
     if (imageType == ImageType.backdrop) {
       final backdrops = List<String>.from(item['BackdropImageTags'] as List);
       backdrops.removeAt(imageIndex!);
-      items.item = {...item, 'BackdropImageTags': backdrops};
+      items.library[itemId] = {...item, 'BackdropImageTags': backdrops};
     } else {
       final tags = Map<String, dynamic>.from(item['ImageTags'] as Map);
       tags.remove(imageType.toServerString());
-      items.item = {...item, 'ImageTags': tags};
+      items.library[itemId] = {...item, 'ImageTags': tags};
     }
   }
 }
@@ -295,6 +302,43 @@ void main() {
       expect(items.item['BackdropImageTags'], isEmpty);
     });
   }
+
+  testWidgets('Clear All after following the series link clears only the series', (
+    tester,
+  ) async {
+    items.item = {
+      'Id': 'a1',
+      'Type': 'Episode',
+      'Name': 'Pilot',
+      'SeriesName': 'ShowBlue',
+      'SeriesId': 's1',
+      'ImageTags': {'Primary': 'still'},
+      'BackdropImageTags': <String>[],
+    };
+    items.library['s1'] = {
+      'Id': 's1',
+      'Type': 'Series',
+      'Name': 'ShowBlue',
+      'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+      'BackdropImageTags': ['blue', 'green'],
+    };
+    final fetch = Completer<void>();
+    items.hold = fetch;
+    await open(tester);
+
+    await tester.tap(find.text('ShowBlue'));
+    await settle(tester);
+    await tester.tap(find.text(l10n.clearAllArtworkButton));
+    await settle(tester);
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+    fetch.complete();
+    await settle(tester);
+
+    expect(items.library['s1']!['ImageTags'], isEmpty);
+    expect(items.library['s1']!['BackdropImageTags'], isEmpty);
+    expect(items.item['ImageTags'], {'Primary': 'still'});
+  });
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);
