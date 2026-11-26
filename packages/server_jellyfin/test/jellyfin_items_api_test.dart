@@ -217,6 +217,28 @@ void main() {
     expect(request?.path, '/Items/Latest');
   });
 
+  // Issue #2388: with grouping into collections on, a movie in a collection
+  // came back as the collection, which the media bar skips.
+  test('recently released asks for titles, not their collections', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(
+      dio,
+      () => 'user-1',
+    ).getRecentlyReleasedItems(includeItemTypes: ['Movie']);
+
+    expect(request?.queryParameters['CollapseBoxSetItems'], isFalse);
+  });
+
   test('a new playlist is made private', () async {
     RequestOptions? request;
     final dio = Dio()
