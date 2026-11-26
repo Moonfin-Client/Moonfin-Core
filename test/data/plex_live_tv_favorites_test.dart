@@ -9,9 +9,11 @@ import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
+import 'package:moonfin/data/repositories/search_repository.dart';
 import 'package:moonfin/data/services/plex_live_tv_favorites.dart';
 import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
+import 'package:moonfin/data/viewmodels/search_view_model.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_plex/server_plex.dart';
@@ -55,7 +57,7 @@ bool _saved(MediaServerClient client, String id) =>
 class _LineupApi extends Mock implements LiveTvApi, DirectChannelGroupApi {}
 
 class _LineupClient extends PlexMediaServerClient {
-  _LineupClient(this.liveTvApi) : super(baseUrl: 'https://pms.example', deviceInfo: _device);
+  _LineupClient(this.liveTvApi, {super.cloudOnly}) : super(baseUrl: 'https://pms.example', deviceInfo: _device);
   @override
   final LiveTvApi liveTvApi;
 }
@@ -190,6 +192,40 @@ void main() {
     await expectLater(save(), throwsA(isA<DioException>()));
     expect(_saved(direct, 'channel-plex-free123'), isFalse);
     expect(cloud.rows.single['id'], 'different');
+  });
+
+  test('an incomplete favorites list keeps the saved heart and a valid empty list clears it', () async {
+    final client = _plex();
+    cloud.rows = [{'source': _source, 'id': 'free123'}];
+    await PlexLiveTvFavorites.refresh(client);
+    cloud.rows = [{'id': 'free123'}];
+    await expectLater(PlexLiveTvFavorites.refresh(client), throwsFormatException);
+    expect(_saved(client, 'channel-plex-free123'), isTrue);
+    cloud.rows.clear();
+    await PlexLiveTvFavorites.refresh(client);
+    expect(_saved(client, 'channel-plex-free123'), isFalse);
+  });
+
+  test('Search updates a visible favorite in a 2,001-channel Plex lineup', () async {
+    final api = _LineupApi();
+    final client = _LineupClient(api, cloudOnly: true)..userId = 'plex-user';
+    addTearDown(client.dispose);
+    when(() => api.getChannels(fields: 'ImageTags', enableTotalRecordCount: false, userId: 'plex-user'))
+        .thenAnswer((_) async => {'Items': [
+          _channel,
+          for (var i = 0; i < 2000; i++) {'Id': 'channel-plex-$i', 'Type': 'TvChannel', 'Name': 'Other'},
+        ]});
+    final reply = Completer<void>();
+    cloud.holdGet = reply.future;
+    cloud.rows = [{'source': _source, 'id': 'free123'}];
+    final model = SearchViewModel(SearchRepository(client), client);
+    addTearDown(model.dispose);
+    model.searchImmediate('Free Channel');
+    await pumpEventQueue();
+    expect(model.results.single.items.single.isFavorite, isFalse);
+    reply.complete();
+    await pumpEventQueue();
+    expect(model.results.single.items.single.isFavorite, isTrue);
   });
 
   group('two DVRs with channel 4', () {

@@ -209,10 +209,7 @@ class PlexLiveTvFavorites {
     final prefs = GetIt.instance<UserPreferences>();
     final previous = prefs.get(pref).toSet();
     // Cache the full Plex favorites list, even if only some channels are loaded.
-    final favorites = <String>{
-      for (final row in rows)
-        if (row['source'] is String && row['id'] is String) _key(row),
-    };
+    final favorites = rows.map(_key).toSet();
     await prefs.set(pref, favorites.toList()..sort());
     _checkAccount(client, token, session: session);
     _publishCached(client, token);
@@ -304,6 +301,15 @@ class PlexLiveTvFavorites {
     _catalog(client).channels.removeWhere(
       (id, _) => !isPlexFreeTvChannel(client, id) && !present.contains(id),
     );
+  }
+
+  /// Search can still hold a row after its recent user-data update was evicted.
+  static bool? cachedFavoriteFor(MediaServerClient client, String id, String syncId) {
+    final userId = client.userId;
+    if (userId == null || syncKey(client, id) != syncId) return null;
+    final info = _catalog(client).channels[id];
+    if (info == null) return null;
+    return GetIt.instance.maybeGet<UserPreferences>()?.get(_preference(userId)).contains(_key(info));
   }
 
   static Map<String, dynamic> applyToItem(

@@ -15,6 +15,7 @@ import '../repositories/multi_server_repository.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/media_server_client_factory.dart';
+import '../services/plex_live_tv_favorites.dart';
 import '../services/user_data_sync.dart';
 import '../services/plugin_sync_service.dart';
 import '../services/seerr/seerr_api_models.dart';
@@ -123,6 +124,7 @@ class SearchViewModel extends ChangeNotifier {
                ? scopedParentId
                : null {
     userDataSync.addListener(_onUserDataChanged);
+    PlexLiveTvFavorites.favoriteListChanged.addListener(_onUserDataChanged);
   }
 
   void setSeerrRepository(SeerrRepository repo) {
@@ -147,12 +149,21 @@ class SearchViewModel extends ChangeNotifier {
   List<SearchResultGroup> _results = const [];
   List<SearchResultGroup> get results => _results;
 
+  bool? _cachedPlexFavorite(AggregatedItem item) {
+    final key = item.rawData['PlexFavoriteSyncKey'];
+    if (key is! String) return null;
+    final client = _multiServerRepository == null
+        ? _client
+        : GetIt.instance.maybeGet<MediaServerClientFactory>()?.getClientIfExists(item.serverId);
+    return client == null ? null : PlexLiveTvFavorites.cachedFavoriteFor(client, item.id, key);
+  }
+
   List<SearchResultGroup> _withChannelUserData(List<SearchResultGroup> groups) {
     List<SearchResultGroup>? changed;
     for (var i = 0; i < groups.length; i++) {
       final group = groups[i];
       if (!group.itemTypes.contains('LiveTvChannel')) continue;
-      final updated = userDataSync.applyAll(group.items);
+      final updated = userDataSync.applyAll(group.items, favoriteFallback: _cachedPlexFavorite);
       if (identical(updated, group.items)) continue;
       changed ??= List<SearchResultGroup>.of(groups);
       changed[i] = group.copyWith(items: updated);
@@ -502,7 +513,7 @@ class SearchViewModel extends ChangeNotifier {
     if (q.isEmpty || q.startsWith('studio:')) return const [];
     _channelsFuture ??= _loadChannelLineup();
     try {
-      final all = userDataSync.applyAll(await _channelsFuture!);
+      final all = await _channelsFuture!;
       return all
           .where((c) => foldForSearch(c.name).contains(q))
           .take(_resultLimit)
@@ -597,6 +608,7 @@ class SearchViewModel extends ChangeNotifier {
   @override
   void dispose() {
     userDataSync.removeListener(_onUserDataChanged);
+    PlexLiveTvFavorites.favoriteListChanged.removeListener(_onUserDataChanged);
     _debounceTimer?.cancel();
     // Keeps searches that answer after the screen closed from landing on it.
     _searchRun++;

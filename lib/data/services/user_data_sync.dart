@@ -137,13 +137,17 @@ class UserDataSync extends ChangeNotifier {
 
   /// Returns [item] itself when nothing newer is known, so callers can compare
   /// with `identical` and skip rebuilding a list that did not move.
-  AggregatedItem apply(AggregatedItem item) {
+  AggregatedItem apply(AggregatedItem item, {
+    bool? Function(AggregatedItem)? favoriteFallback,
+  }) {
     final original = _userData[item.id];
     final scopedKey = channelFavoriteKey(item.rawData) ??
         (item.type == 'TvChannel' && item.serverId.isNotEmpty
             ? serverChannelKey(item.serverId, item.id)
             : null);
-    final scopedFavorite = scopedKey is String ? favoriteFor(scopedKey) : null;
+    final scopedFavorite = scopedKey is String
+        ? favoriteFor(scopedKey) ?? favoriteFallback?.call(item)
+        : null;
     if (original == null && scopedFavorite == null) return item;
     final patch = <String, dynamic>{...?original};
     if (scopedKey is String) {
@@ -170,11 +174,13 @@ class UserDataSync extends ChangeNotifier {
 
   /// Returns [items] itself when no entry changed, which keeps list identity
   /// stable for the caches that key off it.
-  List<AggregatedItem> applyAll(List<AggregatedItem> items) {
-    if (_userData.isEmpty || items.isEmpty) return items;
+  List<AggregatedItem> applyAll(List<AggregatedItem> items, {
+    bool? Function(AggregatedItem)? favoriteFallback,
+  }) {
+    if (_userData.isEmpty && favoriteFallback == null) return items;
     List<AggregatedItem>? patched;
     for (var i = 0; i < items.length; i++) {
-      final updated = apply(items[i]);
+      final updated = apply(items[i], favoriteFallback: favoriteFallback);
       if (identical(updated, items[i])) continue;
       patched ??= List<AggregatedItem>.of(items);
       patched[i] = updated;
