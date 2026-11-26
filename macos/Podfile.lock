@@ -6,8 +6,6 @@ PODS:
     - FlutterMacOS
     - OrderedSet (~> 6.0.3)
   - FlutterMacOS (1.0.0)
-  - gamepads_darwin (0.1.1):
-    - FlutterMacOS
   - libretro_host (0.1.0)
   - LzmaSDK-ObjC (2.1.1)
   - moonfin_game_host (0.1.0):
@@ -17,8 +15,6 @@ PODS:
   - rar (0.2.1):
     - FlutterMacOS
     - UnrarKit (~> 2.9)
-  - screen_retriever_macos (0.0.1):
-    - FlutterMacOS
   - UnrarKit (2.10):
     - UnrarKit/unrar-lib (= 2.10)
   - UnrarKit/unrar-lib (2.10)
@@ -27,11 +23,9 @@ DEPENDENCIES:
   - archive_extract (from `Flutter/ephemeral/.symlinks/plugins/archive_extract/macos`)
   - flutter_inappwebview_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - gamepads_darwin (from `Flutter/ephemeral/.symlinks/plugins/gamepads_darwin/macos`)
   - libretro_host (from `../native/libretro_host`)
   - moonfin_game_host (from `game_host`)
   - rar (from `Flutter/ephemeral/.symlinks/plugins/rar/macos`)
-  - screen_retriever_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos`)
 
 SPEC REPOS:
   trunk:
@@ -46,30 +40,24 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
-  gamepads_darwin:
-    :path: Flutter/ephemeral/.symlinks/plugins/gamepads_darwin/macos
   libretro_host:
     :path: "../native/libretro_host"
   moonfin_game_host:
     :path: game_host
   rar:
     :path: Flutter/ephemeral/.symlinks/plugins/rar/macos
-  screen_retriever_macos:
-    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos
 
 SPEC CHECKSUMS:
   archive_extract: fa02419dff51d40b97c25de265b5db2357a4162d
   flutter_inappwebview_macos: c2d68649f9f8f1831bfcd98d73fd6256366d9d1d
   FlutterMacOS: c232990155153907050900a2e175c7773903ba4e
-  gamepads_darwin: 643b6a69e20ca678fae83781b7f7fc8f15f5d710
   libretro_host: becbc28b6e0d23dffeef32b0d432ab4990798f1a
   LzmaSDK-ObjC: 6c68c37743a658fc9a4c7b70f7d6045b587aa42b
   moonfin_game_host: 07f43f7e194bb2cec1d7a077f549d9acf916a803
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   rar: bea203a640a83e62c47f6e110dd6af83a7e56ac3
-  screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
   UnrarKit: 62f535c7a34ec52d2514b9b148f33dcfa9a9dc39
 
 PODFILE CHECKSUM: 7dfce0c5a0177fe6b96ece8fe5253a9c99d96876
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0

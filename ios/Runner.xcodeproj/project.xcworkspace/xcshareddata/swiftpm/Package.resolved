@@ -27,6 +27,14 @@
       }
     },
     {
+      "identity" : "csqlite",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/simolus3/CSQLite.git",
+      "state" : {
+        "revision" : "1ee46d19a4f451a7aa64ffc64fc99b4748131e62"
+      }
+    },
+    {
       "identity" : "cwlcatchexception",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mattgallagher/CwlCatchException.git",
