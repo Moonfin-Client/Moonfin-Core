@@ -970,6 +970,22 @@ void main() {
     },
   );
 
+  test('a channel number search keeps the All Channels or Favorites surfing lineup', () async {
+    _stubChannels(liveTv, [
+      for (final id in ['1', '2', '3'])
+        {..._channel(id, number: '10$id'), 'UserData': {'IsFavorite': id != '2'}},
+    ]);
+    final vm = LiveTvGuideViewModel(client);
+    addTearDown(vm.dispose);
+    await vm.load();
+    vm.setChannelQuery('103');
+    expect(vm.filteredChannels.single.id, '3');
+    expect(vm.surfingChannels.map((c) => c.id), ['1', '2', '3']);
+    vm.setFilter(GuideFilter.favorites);
+    expect(vm.filteredChannels.single.id, '3');
+    expect(vm.surfingChannels.map((c) => c.id), ['1', '3']);
+  });
+
   test('channel favorites follow user-data updates and the favorites filter', () async {
     _stubChannels(liveTv, [_channel('c1'), _channel('c2')]);
     final vm = LiveTvGuideViewModel(client);
@@ -1142,6 +1158,24 @@ void main() {
   });
 
   group('category filters', () {
+    test('search keeps category stations for surfing until their listings change', () async {
+      stubNumberedChannels(3);
+      var matching = {'c0', 'c1'};
+      when(() => _guide(liveTv, category: GuideFilter.sports))
+          .thenAnswer(_serverFiltered((id) => matching.contains(id)));
+      final vm = await loadFilter(GuideFilter.sports);
+      vm.setChannelQuery('c1');
+      await pumpEventQueue();
+      expect(vm.filteredChannels.single.id, 'c1');
+      expect(vm.surfingChannels.map((c) => c.id), ['c0', 'c1']);
+      expect(vm.programsHighWater, 1);
+      await vm.setWindowStart(vm.windowEnd);
+      expect(vm.surfingChannels.map((c) => c.id), ['c0', 'c1']);
+      matching = {'c1'};
+      await vm.setWindowStart(vm.windowEnd);
+      expect(vm.surfingChannels.single.id, 'c1');
+    });
+
     for (final reload in [false, true]) {
       test('a viewer change during a category request reloads the guide on return (reload=$reload)', () async {
         stubNumberedChannels(1);

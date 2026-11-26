@@ -343,7 +343,8 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   bool get hasFailedCategoryListings =>
       _isCategory(_filter) &&
       _categoryLoadedFor == _filter &&
-      _categoryFailedIds.isNotEmpty;
+      _categoryFailedIds.isNotEmpty &&
+      (_channelQuery.isEmpty || _pageChannels.any((c) => _categoryFailedIds.contains(c.id)));
 
   bool get retryingCategoryListings =>
       hasFailedCategoryListings && _categoryFetchInFlight;
@@ -385,8 +386,11 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       : _programsHighWater < _pageChannels.length;
 
   /// How many channels (in list order) have been requested so far.
-  int get programsHighWater =>
-      _isCategory(_filter) ? _categoryPrograms.length : _programsHighWater;
+  int get programsHighWater {
+    if (!_isCategory(_filter)) return _programsHighWater;
+    if (_channelQuery.isEmpty) return _categoryPrograms.length;
+    return _pageChannels.where((c) => _categoryPrograms.containsKey(c.id)).length;
+  }
 
   bool get listingsAccessDenied =>
       _state == GuideState.error &&
@@ -645,7 +649,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
 
   // Search the full channel list first, so a match appears even if its
   // guide data hasn't loaded.
-  void _updatePageRows() {
+  List<GuideChannel> _channelRows(String query) {
     Iterable<GuideChannel> rows = _channels;
     final group = _selectedGroup;
     if (group != null) {
@@ -658,14 +662,18 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     if (_filter == GuideFilter.favorites) {
       rows = rows.where((channel) => channel.isFavorite);
     }
-    if (_channelQuery.isNotEmpty) {
+    if (query.isNotEmpty) {
       rows = rows.where(
         (channel) =>
-            channel.name.toLowerCase().contains(_channelQuery) ||
-            (channel.number?.toLowerCase().contains(_channelQuery) ?? false),
+            channel.name.toLowerCase().contains(query) ||
+            (channel.number?.toLowerCase().contains(query) ?? false),
       );
     }
-    _pageChannels = identical(rows, _channels) ? _channels : rows.toList();
+    return identical(rows, _channels) ? _channels : rows.toList();
+  }
+
+  void _updatePageRows() {
+    _pageChannels = _channelRows(_channelQuery);
     _categoryHighWater = 0;
     _advanceCategoryCursor();
   }
@@ -687,7 +695,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     _updatePageRows();
     _resetPageCursor();
     if (_isCategory(_filter)) {
-      unawaited(_loadCategoryPrograms());
+      unawaited(_loadCategoryPrograms(searchChanged: true));
     } else {
       _resetCategory();
       _notifyListeners();
@@ -759,12 +767,18 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     return move != null && move.current() ? move.settled.future : null;
   }
 
-  List<GuideChannel> get filteredChannels {
-    if (!_isCategory(_filter)) return _pageChannels;
+  List<GuideChannel> get filteredChannels => _categoryRows(_pageChannels);
+
+  /// Search picks the starting station. Surfing follows the selected filter.
+  List<GuideChannel> get surfingChannels =>
+      _channelQuery.isEmpty ? filteredChannels : _categoryRows(_channelRows(''));
+
+  List<GuideChannel> _categoryRows(List<GuideChannel> channels) {
+    if (!_isCategory(_filter)) return channels;
     if (_categoryLoadedFor != _filter) {
       return const [];
     }
-    return _pageChannels
+    return channels
         .where((ch) => _categoryPrograms.containsKey(ch.id))
         .toList();
   }
@@ -1201,8 +1215,18 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadCategoryPrograms() async {
-    _resetCategory();
+  Future<void> _loadCategoryPrograms({bool searchChanged = false}) async {
+    if (searchChanged && _categoryLoadedFor == _filter) {
+      // A text edit doesn't change which programs match in this time window.
+      // Cancel the old walk and retry failed rows in the new search.
+      _categoryRequest++;
+      _categoryQueriedIds.removeAll(_categoryFailedIds);
+      _categoryFailedIds.clear();
+      _categoryHighWater = 0;
+      _advanceCategoryCursor();
+    } else {
+      _resetCategory();
+    }
     final request = _categoryRequest;
     final session = userDataSync.session;
     _categoryFetchInFlight = true;
@@ -1335,7 +1359,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
                 ? error.error
                 : error;
             final malformed = cause is FormatException || cause is TypeError;
-            final hasListings = fetched.programs.isNotEmpty || _categoryPrograms.isNotEmpty;
+            final hasListings = fetched.programs.isNotEmpty || programsHighWater > 0;
             if (!malformed || !hasListings) rethrow;
             debugPrint('Malformed Live TV category retry (${cause.runtimeType})');
           }
@@ -1400,7 +1424,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         _categoryPrograms.addAll(reply.programs);
         _notifyListeners();
       }
-      if (hasMorePrograms && _categoryPrograms.length < _categoryMinRowsPerPage) {
+      if (hasMorePrograms && programsHighWater < _categoryMinRowsPerPage) {
         await _walkCategory(recordingRevision: recordingRevision);
       }
     } catch (_) {
@@ -1812,11 +1836,8 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       // A focus restore may have fetched a matching category channel far
       // beyond the scroll prefix. Retain those targets across window changes.
       final previouslyShownCategoryRows =
-          windowStart != null && category != null && _categoryLoadedFor == category
-          ? [
-              for (final channel in _pageChannels)
-                if (_categoryPrograms.containsKey(channel.id)) channel,
-            ]
+          category != null && (windowStart != null || _channelQuery.isNotEmpty)
+          ? surfingChannels
           : const <GuideChannel>[];
       final size = _batchSizeFor(category);
       final fetched = <String, List<GuideProgram>>{};
@@ -1860,7 +1881,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         }
         // Previously requested rows beyond the cutoff remain available for Retry.
         failed.addAll(requestedRows.skip(end).map((channel) => channel.id));
-        if (windowStart != null && category != null && samePage()) {
+        if (previouslyShownCategoryRows.isNotEmpty && samePage()) {
           final prefixIds = rows.take(end).map((channel) => channel.id).toSet();
           final extraRows = [
             for (final channel in previouslyShownCategoryRows)
@@ -1887,8 +1908,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       final ids = rows.take(end).map((c) => c.id).toSet();
       final requestedIds = {
         ...ids,
-        if (windowStart != null && category != null)
-          for (final channel in previouslyShownCategoryRows) channel.id,
+        for (final channel in previouslyShownCategoryRows) channel.id,
       };
       // Keep the current listings and time if every channel request failed.
       if (windowStart != null &&

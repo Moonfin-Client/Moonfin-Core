@@ -599,7 +599,7 @@ void main() {
     });
   }
 
-  testWidgets('playback uses the guide filter until a mini-guide selection', (
+  testWidgets('a searched channel starts playback in its group until a mini-guide selection', (
     tester,
   ) async {
     useTvLayout();
@@ -624,11 +624,13 @@ void main() {
           path: Destinations.liveTvPlayer,
           builder: (_, s) {
             lineup = (s.extra as Map)['channels'] as List<GuideChannel>;
+            final current = lineup[(s.extra as Map)['startIndex'] as int];
+            expect(current.id, 'ch47');
             return Material(
               child: LiveTvGuideScreen(
                 miniPlayerMode: true,
                 embedded: true,
-                currentChannel: lineup[(s.extra as Map)['startIndex'] as int],
+                currentChannel: current,
                 onChannelSelected: (id, currentLineup) {
                   expect(currentLineup.map((c) => c.id), contains(id));
                   picked = id;
@@ -655,18 +657,19 @@ void main() {
     // The TV keyboard commits text through the LocalSearchField controller.
     tester.widget<LocalSearchField>(
       find.byType(LocalSearchField),
-    ).controller.text = 'Channel 4';
+    ).controller.text = 'Channel 47';
     await _pumpFrames(tester);
     expect(
       tester.widgetList<EpgChannelCell>(find.byType(EpgChannelCell))
           .map((channel) => channel.name),
-      ['Channel 46', 'Channel 47'],
+      ['Channel 47'],
     );
     await focusGuideNode(tester, 'GuideChannel:0');
     await _sendKeyAndPump(tester, LogicalKeyboardKey.enter);
-    expect(lineup.map((channel) => channel.id), ['ch46', 'ch47']);
+    expect(lineup.map((channel) => channel.id), ['ch1', 'ch46', 'ch47']);
+    final groupNames = lineup.map((channel) => channel.name).toSet();
     final outsideLineup = find.byWidgetPredicate((w) =>
-        w is EpgChannelCell && w.name != 'Channel 46' && w.name != 'Channel 47');
+        w is EpgChannelCell && !groupNames.contains(w.name));
     await tapAndPump(tester, outsideLineup.hitTestable().first);
     expect(picked, isNotNull);
     expect(lineup.map((channel) => channel.id), isNot(contains(picked)));

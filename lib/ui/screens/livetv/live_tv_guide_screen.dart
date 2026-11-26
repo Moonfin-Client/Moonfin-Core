@@ -3616,7 +3616,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   Future<void> _watchChannel(String channelId) async {
     unawaited(_prefs.set(UserPreferences.liveTvLastChannelId, channelId));
-    final channels = _vm.filteredChannels;
+    final channels = _vm.surfingChannels;
     if (widget.embedded || widget.miniPlayerMode) {
       widget.onChannelSelected?.call(channelId, channels);
       if (widget.embedded) return;
