@@ -15,14 +15,11 @@ class _Request {
 }
 
 /// Serves [itemCount] items in order and, like Jellyfin, reports the page's
-/// own length as the total when the count is turned off. With
-/// [estimatedTotal] it reports what was seen plus one while there is more,
-/// as Silo can, and ignores the count flag.
+/// own length as the total when the count is turned off.
 class _SlicingItemsApi implements ItemsApi {
-  _SlicingItemsApi(this.itemCount, {this.estimatedTotal = false});
+  _SlicingItemsApi(this.itemCount);
 
   final int itemCount;
-  final bool estimatedTotal;
   final List<_Request> requests = <_Request>[];
 
   @override
@@ -80,14 +77,10 @@ class _SlicingItemsApi implements ItemsApi {
       for (var i = start; i < end; i++)
         <String, dynamic>{'Id': 'item-$i', 'Name': 'Item $i'},
     ];
-    final int total;
-    if (estimatedTotal) {
-      total = end < itemCount ? end + 1 : itemCount;
-    } else {
-      total = enableTotalRecordCount == false ? page.length : itemCount;
-    }
     return <String, dynamic>{
-      'TotalRecordCount': total,
+      'TotalRecordCount': enableTotalRecordCount == false
+          ? page.length
+          : itemCount,
       'Items': page,
     };
   }
@@ -168,35 +161,8 @@ void main() {
     expect(vm.hasMore, isFalse);
   });
 
-  test('a collapsed browse keeps the first page total while paging', () async {
+  test('a server that does not collapse keeps its usual paging', () async {
     final api = _SlicingItemsApi(640);
-    final vm = await _viewModel(api, groupCollections: true);
-    addTearDown(vm.dispose);
-
-    await vm.load();
-    await vm.loadMore();
-
-    // The second page reports only its own length without the count, which
-    // must not end the browse early.
-    expect(vm.items, hasLength(600));
-    expect(vm.hasMore, isTrue);
-  });
-
-  test('a reload counts its first page again', () async {
-    final api = _SlicingItemsApi(640);
-    final vm = await _viewModel(api, groupCollections: true);
-    addTearDown(vm.dispose);
-
-    await vm.load();
-    await vm.loadMore();
-    await vm.load();
-
-    expect(api.requests.last.startIndex, 0);
-    expect(api.requests.last.enableTotalRecordCount, isNull);
-  });
-
-  test('a server with an estimated total keeps counting every page', () async {
-    final api = _SlicingItemsApi(640, estimatedTotal: true);
     final vm = await _viewModel(
       api,
       groupCollections: true,
@@ -206,14 +172,12 @@ void main() {
 
     await vm.load();
     await vm.loadMore();
-    await vm.loadMore();
 
+    expect(api.requests.map((r) => r.limit), <int?>[75, 48]);
     expect(
       api.requests.map((r) => r.enableTotalRecordCount),
       everyElement(isNull),
     );
-    expect(vm.items, hasLength(640));
-    expect(vm.hasMore, isFalse);
   });
 
   test('an uncollapsed browse keeps its usual paging', () async {

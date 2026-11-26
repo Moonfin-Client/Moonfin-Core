@@ -80,9 +80,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   static const _pageSize = 48;
   static const _firstPageSize = 75;
-  // Grouping into collections makes the server resolve the whole library
-  // against every collection before it can cut a page out, so a page costs
-  // about the same whatever its size. Collapsed browses take bigger pages.
+  // Grouping into collections makes Jellyfin and Emby resolve the whole
+  // library before they can cut a page out, so a page costs about the same
+  // whatever its size.
   static const _collapsedPageSize = 300;
   // Name and CollectionType come back as default fields, so the library lookup
   // needs none. Asking for the full set makes the server recursively count the
@@ -181,8 +181,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool _totalCountKnown = true;
   bool _hasMoreFromPageSize = false;
 
-  /// The server's TotalRecordCount from the first page, for later pages of a
-  /// collapsed browse that don't ask for it again.
+  /// The last total the server counted, which later pages of a collapsed
+  /// browse reuse instead of asking again.
   int? _serverTotalCount;
 
   bool get hasMore =>
@@ -1020,24 +1020,21 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'SortName';
     }
 
-    // Asking for the total makes the server run the collapsed query a second
-    // time just to count it, and the first page already said how many there
-    // are, so later pages skip it. Only Jellyfin and Emby take the flag and
-    // give an exact total; Silo's can be an estimate that grows as pages come
-    // in, so it keeps counting. A merged browse and the rating sort keep their
-    // own paging.
-    final collapsedBrowse = collapseBoxSets == true &&
+    // Counting runs the collapsed query a second time, so later pages reuse
+    // the first page's total. Plex and Silo don't collapse, and a merged
+    // browse and the rating sort page their own way, so those keep the usual
+    // paging.
+    final collapsedBrowse =
+        collapseBoxSets == true &&
         !isMergedBrowse &&
-        _sortBy != LibrarySortBy.myRating;
+        _sortBy != LibrarySortBy.myRating &&
+        (_client.serverType == ServerType.jellyfin ||
+            _client.serverType == ServerType.emby);
     if (collapsedBrowse && pageSizeOverride == null) {
       pageSize = _collapsedPageSize;
     }
     final skipTotalCount =
-        collapsedBrowse &&
-        startIndex > 0 &&
-        _serverTotalCount != null &&
-        (_client.serverType == ServerType.jellyfin ||
-            _client.serverType == ServerType.emby);
+        collapsedBrowse && startIndex > 0 && _serverTotalCount != null;
 
     // Plain directories come in full with the first page and everything else
     // follows by name.
