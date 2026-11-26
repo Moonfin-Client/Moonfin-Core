@@ -12307,7 +12307,7 @@
     "@achievementsDoubleCreditBody": {
         "description": "What the Double Credit power-up does"
     },
-    "achievementsStreakFreeze": "Katselusarjan suojaus",
+    "achievementsStreakFreeze": "Streak Freeze",
     "@achievementsStreakFreeze": {
         "description": "Power-up that protects a watch streak"
     },
@@ -12613,7 +12613,7 @@
     "@friendsMessages": {
         "description": "Entry that opens the list of chats"
     },
-    "friendsUnreadCount": "{count, plural, =0{Ei lukemattomia viestejä} =1{1 lukematon viesti} other{{count} lukematonta viestiä}}",
+    "friendsUnreadCount": "{count, plural, =0{No unread messages} =1{1 unread message} other{{count} unread messages}}",
     "@friendsUnreadCount": {
         "description": "How many chat messages are unread",
         "placeholders": {
@@ -19045,5 +19045,13 @@
     "navReelSwipeHint": "Päivitä pyyhkäisemällä, napauta keskeltä siirtyäksesi eteenpäin",
     "@navReelSwipeHint": {
         "description": "Hint at the bottom of the Reel sidebar on phones"
+    },
+    "settingsAudioPassthroughFallback": "Silent Passthrough toiminnon dekoodaus",
+    "@settingsAudioPassthroughFallback": {
+        "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "settingsAudioPassthroughFallbackDescription": "Jos ulostulolaite ei pysty toistamaan passthrough-raitaa ja ääni pysyy mykkänä, dekoodaa se sen sijaan tällä laitteella.",
+    "@settingsAudioPassthroughFallbackDescription": {
+        "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
     }
 }
