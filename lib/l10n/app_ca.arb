@@ -19029,5 +19029,261 @@
     "settingsAudioPassthroughFallbackDescription": "Si la sortida no pot reproduir una pista de passthrough i queda en silenci, descodifica-la en aquest dispositiu.",
     "@settingsAudioPassthroughFallbackDescription": {
         "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "siloSectionBecauseYouWatched": "Perquè vas veure",
+    "@siloSectionBecauseYouWatched": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionBecauseYouWatchedTitle": "Perquè vas veure {title}",
+    "@siloSectionBecauseYouWatchedTitle": {
+        "description": "Title of a row a Silo server offers for Home. {title}: the title of a movie or show the profile watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionForYou": "Per a tu",
+    "@siloSectionForYou": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionHiddenGems": "Joies amagades",
+    "@siloSectionHiddenGems": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionHighlyRatedInLibrary": "Molt ben valorat a la teva biblioteca",
+    "@siloSectionHighlyRatedInLibrary": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionNextInYourSeries": "El següent de les teves sèries",
+    "@siloSectionNextInYourSeries": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionPickedFromYourHistory": "Triat del teu historial",
+    "@siloSectionPickedFromYourHistory": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionPopularOnServer": "Popular en aquest servidor",
+    "@siloSectionPopularOnServer": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionProfilesLikeYouEnjoyed": "Han agradat a perfils com el teu",
+    "@siloSectionProfilesLikeYouEnjoyed": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRandomPicks": "Seleccions aleatòries",
+    "@siloSectionRandomPicks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedAudiobooks": "Audiollibres afegits recentment",
+    "@siloSectionRecentlyAddedAudiobooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedEbooks": "Llibres electrònics afegits recentment",
+    "@siloSectionRecentlyAddedEbooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedIn": "Afegit recentment a {library}",
+    "@siloSectionRecentlyAddedIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyAddedManga": "Manga afegit recentment",
+    "@siloSectionRecentlyAddedManga": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedMovies": "Pel·lícules afegides recentment",
+    "@siloSectionRecentlyAddedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedTv": "TV afegida recentment",
+    "@siloSectionRecentlyAddedTv": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedAudiobooks": "Audiollibres publicats recentment",
+    "@siloSectionRecentlyReleasedAudiobooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedEbooks": "Llibres electrònics publicats recentment",
+    "@siloSectionRecentlyReleasedEbooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedEpisodesIn": "Episodis publicats recentment a {library}",
+    "@siloSectionRecentlyReleasedEpisodesIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyReleasedIn": "Publicat recentment a {library}",
+    "@siloSectionRecentlyReleasedIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyReleasedManga": "Manga publicat recentment",
+    "@siloSectionRecentlyReleasedManga": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedMovies": "Pel·lícules publicades recentment",
+    "@siloSectionRecentlyReleasedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecommendedForYou": "Recomanat per a tu",
+    "@siloSectionRecommendedForYou": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionReturningShows": "Sèries en emissió",
+    "@siloSectionReturningShows": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionSeasonalChristmasClassics": "Clàssics de Nadal",
+    "@siloSectionSeasonalChristmasClassics": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasComedies": "Comèdies de Nadal",
+    "@siloSectionSeasonalChristmasComedies": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasFamily": "Nadal en família",
+    "@siloSectionSeasonalChristmasFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasFavorites": "Preferits de Nadal",
+    "@siloSectionSeasonalChristmasFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasHallmark": "Nadal de Hallmark",
+    "@siloSectionSeasonalChristmasHallmark": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasRomcoms": "Comèdies romàntiques de Nadal",
+    "@siloSectionSeasonalChristmasRomcoms": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalEasterFamily": "Pel·lícules de Pasqua",
+    "@siloSectionSeasonalEasterFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (easter)"
+    },
+    "siloSectionSeasonalFamilyMovieNightFavorites": "Preferits de la família",
+    "@siloSectionSeasonalFamilyMovieNightFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalFamilyMovieNight": "Nit de cinema en família",
+    "@siloSectionSeasonalFamilyMovieNight": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalHalloweenAnimated": "Halloween animat",
+    "@siloSectionSeasonalHalloweenAnimated": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenFamily": "Halloween en família",
+    "@siloSectionSeasonalHalloweenFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenFavorites": "Preferits de Halloween",
+    "@siloSectionSeasonalHalloweenFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenHorror": "Terror de Halloween",
+    "@siloSectionSeasonalHalloweenHorror": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenTv": "TV de Halloween",
+    "@siloSectionSeasonalHalloweenTv": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalSaturdayMorningCartoons": "Dibuixos animats de dissabte al matí",
+    "@siloSectionSeasonalSaturdayMorningCartoons": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalSaturdayMorningModern": "Preferits de dissabte al matí",
+    "@siloSectionSeasonalSaturdayMorningModern": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalSaturdayMorningNineties": "Matins de dissabte dels anys 90",
+    "@siloSectionSeasonalSaturdayMorningNineties": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalStPatricksIrishFilm": "Cinema irlandès",
+    "@siloSectionSeasonalStPatricksIrishFilm": {
+        "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+    },
+    "siloSectionSeasonalStPatricksIrishTv": "TV irlandesa",
+    "@siloSectionSeasonalStPatricksIrishTv": {
+        "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+    },
+    "siloSectionSeasonalSummerBlockbusters": "Èxits de taquilla d'estiu",
+    "@siloSectionSeasonalSummerBlockbusters": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalSummerClassicSummer": "Pel·lícules clàssiques d'estiu",
+    "@siloSectionSeasonalSummerClassicSummer": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalSummerNostalgia": "Nostàlgia d'estiu",
+    "@siloSectionSeasonalSummerNostalgia": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalThanksgivingFavorites": "Pel·lícules d'Acció de Gràcies",
+    "@siloSectionSeasonalThanksgivingFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalThanksgivingFeelGood": "Preferits que et fan sentir bé",
+    "@siloSectionSeasonalThanksgivingFeelGood": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalValentinesFavorites": "Preferits de Sant Valentí",
+    "@siloSectionSeasonalValentinesFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesLoveStories": "Històries d'amor clàssiques",
+    "@siloSectionSeasonalValentinesLoveStories": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesRomanticDramas": "Drames romàntics",
+    "@siloSectionSeasonalValentinesRomanticDramas": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesRomcoms": "Comèdies romàntiques de Sant Valentí",
+    "@siloSectionSeasonalValentinesRomcoms": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalPicks": "Seleccions de temporada",
+    "@siloSectionSeasonalPicks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopPicksToday": "Millors recomanacions d'avui",
+    "@siloSectionTopPicksToday": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRated": "Els més valorats",
+    "@siloSectionTopRated": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedMovies": "Pel·lícules més valorades",
+    "@siloSectionTopRatedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedTv": "Sèries més valorades",
+    "@siloSectionTopRatedTv": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTrendingOnServer": "Tendències al servidor",
+    "@siloSectionTrendingOnServer": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTrendingThisWeek": "Tendències d'aquesta setmana",
+    "@siloSectionTrendingThisWeek": {
+        "description": "Title of a row a Silo server offers for Home"
     }
 }
