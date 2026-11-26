@@ -67,6 +67,7 @@ class _FakeRemoteProvider
   final commands = <String>[];
   RemotePlaybackSnapshot? snapshot;
   Future<RemotePlaybackSnapshot?> Function()? onFetchSnapshot;
+  Future<void> Function()? onPause;
 
   @override
   Set<CastTargetKind> get supportedKinds => {CastTargetKind.jellyfinSession};
@@ -94,7 +95,10 @@ class _FakeRemoteProvider
   Future<void> play(CastTargetKind kind) async => commands.add('play');
 
   @override
-  Future<void> pause(CastTargetKind kind) async => commands.add('pause');
+  Future<void> pause(CastTargetKind kind) async {
+    commands.add('pause');
+    if (onPause != null) await onPause!();
+  }
 
   @override
   Future<void> seek(CastTargetKind kind, {required int positionTicks}) async =>
@@ -459,5 +463,81 @@ void main() {
     expect(service.castItemNotifier.value?.id, 'track-2');
     expect(service.remoteStateNotifier.value, 'playing');
     expect(service.remotePositionNotifier.value, 50000000);
+  });
+
+  test('earlier poll still applies while a newer poll is still pending',
+      () async {
+    final firstPoll = Completer<RemotePlaybackSnapshot?>();
+    final secondPoll = Completer<RemotePlaybackSnapshot?>();
+    var calls = 0;
+    final provider = _FakeRemoteProvider();
+    provider.onFetchSnapshot = () {
+      calls++;
+      return calls == 1 ? firstPoll.future : secondPoll.future;
+    };
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+
+    await service.playToTarget(target, item: track1);
+    // Start a second poll while the first is still pending.
+    await service.nextTrack(CastTargetKind.jellyfinSession);
+
+    // First poll finishes before second poll; it must still apply (no starvation).
+    firstPoll.complete(
+      RemotePlaybackSnapshot(
+        state: 'playing',
+        positionTicks: 150000000,
+        item: track1,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.remoteStateNotifier.value, 'playing');
+    expect(service.remotePositionNotifier.value, 150000000);
+
+    // Second poll finishes later and advances state cleanly.
+    secondPoll.complete(
+      RemotePlaybackSnapshot(
+        state: 'playing',
+        positionTicks: 250000000,
+        item: track2,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.castItemNotifier.value?.id, 'track-2');
+    expect(service.remotePositionNotifier.value, 250000000);
+  });
+
+  test('pending pause from previous cast session does not overwrite new session',
+      () async {
+    final pauseCompleter = Completer<void>();
+    final provider = _FakeRemoteProvider();
+    provider.onPause = () => pauseCompleter.future;
+    provider.snapshot = RemotePlaybackSnapshot(
+      state: 'playing',
+      positionTicks: 100000000,
+      item: track2,
+    );
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+
+    const targetB = CastTarget(
+      id: 'tv-session-2',
+      kind: CastTargetKind.jellyfinSession,
+      title: 'Bedroom TV',
+      subtitle: 'Moonfin for Android TV',
+    );
+
+    await service.playToTarget(target, item: track1);
+    final pendingPause = service.pause(CastTargetKind.jellyfinSession);
+    await service.playToTarget(targetB, item: track2);
+    await Future<void>.delayed(Duration.zero);
+    expect(service.remoteStateNotifier.value, 'playing');
+
+    pauseCompleter.complete();
+    await pendingPause;
+
+    expect(service.remoteStateNotifier.value, 'playing');
   });
 }

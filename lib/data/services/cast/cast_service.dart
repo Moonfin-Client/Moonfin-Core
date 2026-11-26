@@ -27,7 +27,9 @@ class CastService {
   final ValueNotifier<int> remotePositionNotifier = ValueNotifier(0);
   final ValueNotifier<double?> remoteVolumeNotifier = ValueNotifier(null);
   Timer? _remotePollTimer;
-  int _remotePollSeq = 0;
+  int _castSessionId = 0;
+  int _nextPollSeq = 0;
+  int _appliedPollSeq = 0;
 
   /// Reports a cast to its server session where the server needs it (Silo).
   late final CastSessionReporter sessionReporter = CastSessionReporter(
@@ -98,7 +100,8 @@ class CastService {
         }
       case 'disconnected':
         if (activeKindNotifier.value == castKind) {
-          _remotePollSeq++;
+          _castSessionId++;
+          _appliedPollSeq = 0;
           activeKindNotifier.value = null;
           activeTargetNotifier.value = null;
           castItemNotifier.value = null;
@@ -160,16 +163,19 @@ class CastService {
     PollableRemoteState pollable,
   ) async {
     if (activeKindNotifier.value != kind) return;
-    final seq = ++_remotePollSeq;
+    final sessionId = _castSessionId;
+    final seq = ++_nextPollSeq;
     try {
       final snapshot = await pollable.fetchRemoteSnapshot(kind);
-      // Discard if a newer poll started or the cast was switched/stopped
-      // while this request was in flight.
+      // Discard responses from replaced sessions or older polls that
+      // arrive after a newer snapshot has already been applied.
       if (snapshot == null ||
-          seq != _remotePollSeq ||
+          sessionId != _castSessionId ||
+          seq <= _appliedPollSeq ||
           activeKindNotifier.value != kind) {
         return;
       }
+      _appliedPollSeq = seq;
       if (snapshot.item != null) {
         final current = castItemNotifier.value;
         if (current == null || snapshot.item!.id != current.id) {
@@ -298,7 +304,8 @@ class CastService {
       subtitleStreamIndex: subtitleStreamIndex,
     );
 
-    _remotePollSeq++;
+    _castSessionId++;
+    _appliedPollSeq = 0;
     activeTargetNotifier.value = target;
     castItemNotifier.value = item;
     activeKindNotifier.value = target.kind;
@@ -328,25 +335,28 @@ class CastService {
   }
 
   Future<void> play(CastTargetKind kind) async {
+    final sessionId = _castSessionId;
     final provider = _controlProviderForKind(kind);
     await provider.play(kind);
-    if (activeKindNotifier.value == kind) {
+    if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
       remoteStateNotifier.value = 'playing';
     }
   }
 
   Future<void> pause(CastTargetKind kind) async {
+    final sessionId = _castSessionId;
     final provider = _controlProviderForKind(kind);
     await provider.pause(kind);
-    if (activeKindNotifier.value == kind) {
+    if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
       remoteStateNotifier.value = 'paused';
     }
   }
 
   Future<void> seek(CastTargetKind kind, {required int positionTicks}) async {
+    final sessionId = _castSessionId;
     final provider = _controlProviderForKind(kind);
     await provider.seek(kind, positionTicks: positionTicks);
-    if (activeKindNotifier.value == kind) {
+    if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
       remotePositionNotifier.value = positionTicks;
     }
   }
@@ -371,7 +381,8 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.stop(kind);
     if (activeKindNotifier.value == kind) {
-      _remotePollSeq++;
+      _castSessionId++;
+      _appliedPollSeq = 0;
       unawaited(sessionReporter.end());
       _stopRemotePolling();
       activeKindNotifier.value = null;
