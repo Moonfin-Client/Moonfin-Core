@@ -15898,5 +15898,13 @@
     "moonbaseFeatureSync": "Inställningarna synkroniseras mellan dina enheter",
     "@moonbaseFeatureSync": {
         "description": "Moonbase dialog feature"
+    },
+    "serverMessages": "Meddelanden",
+    "@serverMessages": {
+        "description": "Menu button and window title for messages sent by the server admin"
+    },
+    "musicSortYear": "År",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
     }
 }
