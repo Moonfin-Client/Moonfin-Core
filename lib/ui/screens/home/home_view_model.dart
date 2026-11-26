@@ -42,6 +42,7 @@ import '../../../util/calendar_days.dart';
 import '../../../util/date_format_util.dart';
 import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/server_section_title.dart';
 import '../../../util/server_url.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
@@ -3794,7 +3795,8 @@ class HomeViewModel extends ChangeNotifier {
     return [
       HomeRow(
         id: 'seasonal',
-        title: section.title,
+        title: localizeServerSectionTitle(section, currentAppLocalizations()),
+        serverSection: section,
         rowType: HomeRowType.pluginDynamic,
         items: items,
       ),

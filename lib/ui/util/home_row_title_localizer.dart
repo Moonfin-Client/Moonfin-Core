@@ -2,6 +2,7 @@ import '../../data/models/home_row.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
+import '../../util/server_section_title.dart';
 
 /// The Seerr page builds its rows from the type alone, so it localizes the
 /// title here rather than carrying one around.
@@ -43,6 +44,11 @@ String localizeHomeRowTitle({
   required AppLocalizations l10n,
   bool mergeContinueWatchingAndNextUp = false,
 }) {
+  // Translated as it's shown, so a language picked after the row loaded applies.
+  final serverSection = row.serverSection;
+  if (serverSection != null) {
+    return localizeServerSectionTitle(serverSection, l10n);
+  }
   switch (row.id) {
     case 'resume':
       return mergeContinueWatchingAndNextUp

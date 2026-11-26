@@ -2240,6 +2240,8 @@ class SiloItemsApi
             id: s.id,
             title: s.title.isEmpty ? s.sectionType : s.title,
             kind: s.sectionType,
+            titleKey: s.titleKey,
+            titleArgs: s.titleArgs,
           ),
     ];
   }
