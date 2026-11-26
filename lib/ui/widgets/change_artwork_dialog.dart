@@ -239,17 +239,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   // The admin may have moved to another item while the fetch loaded, so only
   // the entries for the fetched item take it.
   void _applyFetchedItem(String itemId, Map<String, dynamic> rawData) {
-    if (_item.id == itemId) {
-      _item = AggregatedItem(
-        id: itemId,
-        serverId: _item.serverId,
-        rawData: rawData,
-      );
-      if (_historyIndex >= 0 && _historyIndex < _history.length) {
-        _history[_historyIndex] = _item;
-      }
-      return;
-    }
     for (var i = 0; i < _history.length; i++) {
       if (_history[i].id == itemId) {
         _history[i] = AggregatedItem(
@@ -258,6 +247,13 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           rawData: rawData,
         );
       }
+    }
+    if (_item.id == itemId) {
+      _item = AggregatedItem(
+        id: itemId,
+        serverId: _item.serverId,
+        rawData: rawData,
+      );
     }
   }
 
@@ -866,7 +862,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     });
     // The dialog may close, or move to another item, while Clear All waits.
     bool stopped() {
-      if (mounted && _item.id == itemId) return false;
+      // A closed dialog stays mounted until its exit animation ends.
+      final open = mounted && (ModalRoute.of(context)?.isActive ?? true);
+      if (open && _item.id == itemId) return false;
       if (mounted) {
         setState(() {
           _actionInProgress.clear();
@@ -886,6 +884,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     };
 
     var deleted = false;
+    var wasStopped = false;
     try {
       final client = GetIt.instance<MediaServerClient>();
       deleting:
@@ -917,19 +916,22 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       if (!mounted) return;
       // A stopped clear still refreshes the item if it deleted anything, so
       // going Back does not show the deleted images again.
-      if (stopped() && !deleted) return;
+      wasStopped = stopped();
+      if (wasStopped && !deleted) return;
 
       final updatedRaw = await client.itemsApi.getItem(itemId);
       if (mounted) {
         setState(() {
           _applyFetchedItem(itemId, updatedRaw);
-          _actionInProgress.clear();
+          // A stopped clear already unlocked the rows, which may now belong
+          // to a newer Clear All.
+          if (!wasStopped) _actionInProgress.clear();
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _actionInProgress.clear();
+          if (!wasStopped) _actionInProgress.clear();
         });
         await _handleActionError(e, 'clear');
       }

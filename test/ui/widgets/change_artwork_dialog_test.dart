@@ -309,7 +309,10 @@ void main() {
       await settle(tester);
       await tester.tap(find.text(l10n.yes));
       await settle(tester);
-      if (landing == 'after confirming') fetch.complete();
+      if (landing == 'after confirming') {
+        expect(admin.deletes, isEmpty);
+        fetch.complete();
+      }
       await settle(tester);
 
       expect(items.item['ImageTags'], isEmpty);
@@ -346,11 +349,11 @@ void main() {
       await settle(tester);
       await tester.tap(find.text(l10n.yes));
       await settle(tester);
+      expect(items.library['s1']!['ImageTags'], isEmpty);
+      expect(items.library['s1']!['BackdropImageTags'], isEmpty);
       fetch.complete();
       await settle(tester);
 
-      expect(items.library['s1']!['ImageTags'], isEmpty);
-      expect(items.library['s1']!['BackdropImageTags'], isEmpty);
       expect(items.item['ImageTags'], {'Primary': 'still'});
     },
   );
@@ -539,6 +542,139 @@ void main() {
       expect(find.text(l10n.missing), findsNWidgets(3));
     },
   );
+
+  testWidgets(
+    'Clear All refreshes every history entry for the item it cleared',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'still'},
+        'BackdropImageTags': <String>[],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+        'BackdropImageTags': ['blue'],
+      };
+      await open(tester);
+
+      // Two taps on the series link before the first one loads.
+      final firstTap = Completer<void>();
+      items.hold = firstTap;
+      await tester.tap(find.text('ShowBlue'));
+      await tester.pump();
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      firstTap.complete();
+      await settle(tester);
+
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+
+      expect(find.text('ShowBlue'), findsOneWidget);
+      expect(find.text('Pilot'), findsNothing);
+      // Every series row: Primary, Backdrop, Banner, Logo, Thumb and Art.
+      expect(find.text(l10n.missing), findsNWidgets(6));
+    },
+  );
+
+  testWidgets('Clear All sends no delete once the dialog starts closing', (
+    tester,
+  ) async {
+    items.item = {
+      ...items.item,
+      'ImageTags': {'Primary': 'cover', 'Disc': 'disc'},
+      'BackdropImageTags': ['blue'],
+    };
+    await open(tester);
+
+    final firstDelete = Completer<void>();
+    admin.deleteHold = firstDelete;
+    await tester.tap(find.text(l10n.clearAllArtworkButton));
+    await settle(tester);
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+    expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+    firstDelete.complete();
+    await tester.pump();
+    await settle(tester);
+
+    expect(find.byType(ChangeArtworkDialog), findsNothing);
+    expect(admin.deletes, ['a1 Primary null']);
+  });
+
+  testWidgets("a stopped Clear All's refresh leaves a newer Clear All locked", (
+    tester,
+  ) async {
+    items.item = {
+      'Id': 'a1',
+      'Type': 'Season',
+      'Name': 'Season 1',
+      'SeriesName': 'ShowBlue',
+      'SeriesId': 's1',
+      'ImageTags': {'Primary': 'cover'},
+      'BackdropImageTags': ['red'],
+    };
+    items.library['s1'] = {
+      'Id': 's1',
+      'Type': 'Series',
+      'Name': 'ShowBlue',
+      'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+      'BackdropImageTags': <String>[],
+    };
+    await open(tester);
+
+    final seasonDelete = Completer<void>();
+    admin.deleteHold = seasonDelete;
+    await tester.tap(find.text(l10n.clearAllArtworkButton));
+    await settle(tester);
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+    await tester.tap(find.text('ShowBlue'));
+    await settle(tester);
+    final seasonRefresh = Completer<void>();
+    items.hold = seasonRefresh;
+    seasonDelete.complete();
+    await settle(tester);
+
+    final seriesDelete = Completer<void>();
+    admin.deleteHold = seriesDelete;
+    await tester.tap(find.text(l10n.clearAllArtworkButton));
+    await settle(tester);
+    await tester.tap(find.text(l10n.yes));
+    await settle(tester);
+    // The series rows are locked while its Clear All runs.
+    List<bool> enabledDeleteButtons() => find
+        .byIcon(Icons.delete_outline)
+        .evaluate()
+        .map((icon) => icon.findAncestorWidgetOfExactType<GestureDetector>())
+        .map((button) => button?.onTap != null)
+        .toList();
+    final locked = enabledDeleteButtons();
+    expect(locked.where((enabled) => !enabled), isNotEmpty);
+    seasonRefresh.complete();
+    await settle(tester);
+
+    // The old season refresh must not unlock them.
+    expect(enabledDeleteButtons(), locked);
+
+    seriesDelete.complete();
+    await settle(tester);
+    expect(find.byType(ChangeArtworkDialog), findsOneWidget);
+    expect(items.library['s1']!['ImageTags'], isEmpty);
+  });
 
   testWidgets(
     'Clear All deletes nothing once the dialog closes while it waits',
