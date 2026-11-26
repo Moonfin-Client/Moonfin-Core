@@ -211,7 +211,7 @@ class EntryRedirect {
         // update or a removal replaced it meanwhile, which then stays.
         final after = _repository.getServer(server.id);
         if (after == null) return server;
-        if (current != null && after.address == moved.address) {
+        if (current != null && identical(after, moved)) {
           try {
             await _repository.updateServer(current);
           } catch (_) {}
@@ -228,23 +228,10 @@ class EntryRedirect {
         _moved.add(ServerMove(from: server.address, server: moved));
         return moved;
       }
-      var now = saved;
-      // Another update that came in while this one saved wins, on disk too.
-      // Its own write may have landed before this one, so write what the
-      // list holds now, and again while it keeps changing underneath.
-      for (var i = 0; i < 3; i++) {
-        try {
-          await _repository.updateServer(now);
-        } catch (_) {}
-        final again = _repository.getServer(server.id);
-        if (again == null) return server;
-        if (again.address == now.address) break;
-        now = again;
-      }
-      final latest = _repository.getServer(server.id);
-      if (latest == null) return server;
-      _pointClient(latest);
-      return latest;
+      // Another update came in while this one saved. The repository writes
+      // in order, so its own write lands after this one and wins on disk too.
+      _pointClient(saved);
+      return saved;
     });
     _saving = done.then((_) {}, onError: (_) {});
     return done;

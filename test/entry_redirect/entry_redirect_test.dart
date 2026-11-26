@@ -371,7 +371,7 @@ void main() {
     await saveWithEntry();
     store.saved.clear();
 
-    // The move is held while it saves, and a later update lands meanwhile...
+    // The move is held while it saves, and a later update comes in...
     final release = store.hold = Completer<void>();
     final following = redirect.withFollowedEntryAddress(
       repo.getServer('server-1')!,
@@ -379,16 +379,39 @@ void main() {
     while (store.hold != null) {
       await Future<void>.delayed(const Duration(milliseconds: 10));
     }
-    await repo.updateServer(
+    final later = repo.updateServer(
       repo.getServer('server-1')!.copyWith(address: 'http://127.0.0.1:3'),
     );
     // ...then the move's own save fails.
     store.failNext = true;
     release.complete();
+    await later;
 
     expect((await following).address, 'http://127.0.0.1:3');
     expect(repo.getServer('server-1')!.address, 'http://127.0.0.1:3');
     expect(store.saved.last.address, 'http://127.0.0.1:3');
+  });
+
+  test('a failed move keeps an update that left the address alone', () async {
+    await saveWithEntry();
+    final release = store.hold = Completer<void>();
+    final following = redirect.withFollowedEntryAddress(
+      repo.getServer('server-1')!,
+    );
+    while (store.hold != null) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    // Renamed at the address the move just put in the list.
+    final later = repo.updateServer(
+      repo.getServer('server-1')!.copyWith(name: 'Renamed'),
+    );
+    store.failNext = true;
+    release.complete();
+    await later;
+    await following;
+
+    expect(repo.getServer('server-1')!.name, 'Renamed');
+    expect(store.saved.last.name, 'Renamed');
   });
 
   test('a server removed while its move saved stays removed', () async {
@@ -403,13 +426,15 @@ void main() {
     while (store.hold != null) {
       await Future<void>.delayed(const Duration(milliseconds: 10));
     }
-    await repo.deleteServer('server-1');
+    final removing = repo.deleteServer('server-1');
     release.complete();
     await following;
+    await removing;
     await Future<void>.delayed(Duration.zero);
     await sub.cancel();
 
     expect(repo.getServer('server-1'), isNull);
+    expect(store.removed, contains('server-1'));
     expect(moves, isEmpty);
   });
 

@@ -74,13 +74,13 @@ class ServerRepository {
           : server;
 
       if (normalizedAddress != server.address && normalizedAddress.isNotEmpty) {
-        await _authStore.putServer(normalizedServer);
+        await _storePut(normalizedServer);
       }
 
       final endpointKey = _endpointIdentity(normalizedServer.address);
       final existingServerId = seenEndpoints[endpointKey];
       if (existingServerId != null && existingServerId != normalizedServer.id) {
-        await _authStore.removeServer(normalizedServer.id);
+        await _storeRemove(normalizedServer.id);
         continue;
       }
 
@@ -171,7 +171,7 @@ class ServerRepository {
             serverType: serverType,
             dateLastAccessed: DateTime.now(),
           );
-          await _authStore.putServer(updated);
+          await _storePut(updated);
           _servers[existingIndex] = updated;
           await entryRedirect?.recordAdded( // entry redirect
             updated,
@@ -201,7 +201,7 @@ class ServerRepository {
           dateAdded: DateTime.now(),
         );
 
-        await _authStore.putServer(server);
+        await _storePut(server);
         _servers.add(server);
         await entryRedirect?.recordAdded( // entry redirect
           server,
@@ -296,7 +296,7 @@ class ServerRepository {
   Future<void> saveServer(Server server) async {
     _servers.removeWhere((s) => s.id == server.id);
     _servers.add(server);
-    await _authStore.putServer(server);
+    await _storePut(server);
   }
 
   Future<void> updateServer(Server server) async {
@@ -304,14 +304,14 @@ class ServerRepository {
     if (index >= 0) {
       _servers[index] = server;
     }
-    await _authStore.putServer(server);
+    await _storePut(server);
   }
 
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);
     _servers.removeWhere((s) => s.id == serverId);
     _clientFactory.removeClient(serverId);
-    await _authStore.removeServer(serverId);
+    await _storeRemove(serverId);
     final certStore = _certStore;
     if (removed == null || certStore == null) return;
     final host = Uri.tryParse(removed.address)?.host ?? '';
@@ -321,6 +321,20 @@ class ServerRepository {
     }
     await removeClientCertificate(certStore, host);
   }
+
+  // entry redirect: server writes reach the store in the order they were
+  // made, so a move that saves slowly can't land on disk after a later update.
+  Future<void> _storeWrites = Future.value();
+  Future<void> _storeInOrder(Future<void> Function() write) {
+    final done = _storeWrites.then((_) => write());
+    _storeWrites = done.then((_) {}, onError: (_) {});
+    return done;
+  }
+
+  Future<void> _storePut(Server server) =>
+      _storeInOrder(() => _authStore.putServer(server));
+  Future<void> _storeRemove(String serverId) =>
+      _storeInOrder(() => _authStore.removeServer(serverId));
 
   /// Follows entry addresses of servers added through a redirect; set by
   /// `registerEntryRedirect`.
