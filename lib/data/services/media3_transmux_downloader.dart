@@ -77,6 +77,7 @@ class Media3TransmuxDownloader {
   StreamSubscription<dynamic>? _eventSub;
   String? _activeTaskId;
   Completer<TransmuxResult>? _completer;
+  Completer<void>? _idle;
   void Function(int bytesWritten)? _onBytesWritten;
 
   void _ensureSubscribed() {
@@ -122,7 +123,15 @@ class Media3TransmuxDownloader {
     _activeTaskId = null;
     _onBytesWritten = null;
     _completer = null;
+    _idle?.complete();
+    _idle = null;
   }
+
+  /// Whether a transmux is running. Only one runs at a time.
+  bool get isBusy => _activeTaskId != null;
+
+  /// Completes when the running transmux ends or fails to start.
+  Future<void> get idle => _idle?.future ?? Future.value();
 
   /// Starts the transmux and completes when it reaches a terminal state.
   ///
@@ -143,6 +152,7 @@ class Media3TransmuxDownloader {
     _ensureSubscribed();
     final completer = Completer<TransmuxResult>();
     _completer = completer;
+    _idle = Completer<void>();
     _activeTaskId = taskId;
     _onBytesWritten = onBytesWritten;
     try {

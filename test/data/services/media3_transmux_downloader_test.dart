@@ -145,6 +145,61 @@ void main() {
       await expectLater(future, throwsA(isA<TransmuxCancelledException>()));
     });
 
+    test('stays busy until the running transmux ends, even on error', () async {
+      final transmux = Media3TransmuxDownloader.instance;
+      expect(transmux.isBusy, isFalse);
+      final future = transmux.start(
+        taskId: 'a::7',
+        url: 'https://server/stream',
+        headers: const {},
+        outputPath: '/tmp/out.mp4',
+        allowUntrustedTls: false,
+        onBytesWritten: (_) {},
+      );
+      expect(transmux.isBusy, isTrue);
+      var idle = false;
+      transmux.idle.then((_) => idle = true).ignore();
+      await pumpEventQueue();
+      expect(idle, isFalse);
+
+      final failed = expectLater(
+        future,
+        throwsA(isA<TransmuxFailedException>()),
+      );
+      await _emit({
+        'event': 'error',
+        'taskId': 'a::7',
+        'message': 'read timed out',
+        'errorCode': 2001,
+      });
+      await failed;
+      await pumpEventQueue();
+      expect(idle, isTrue);
+      expect(transmux.isBusy, isFalse);
+    });
+
+    test('a refused start frees anyone waiting for the slot', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            throw PlatformException(code: 'TRANSMUX_START_FAILED');
+          });
+      final transmux = Media3TransmuxDownloader.instance;
+      final future = transmux.start(
+        taskId: 'a::8',
+        url: 'https://server/stream',
+        headers: const {},
+        outputPath: '/tmp/out.mp4',
+        allowUntrustedTls: false,
+        onBytesWritten: (_) {},
+      );
+      var idle = false;
+      transmux.idle.then((_) => idle = true).ignore();
+      await expectLater(future, throwsA(isA<TransmuxUnavailableException>()));
+      await pumpEventQueue();
+      expect(idle, isTrue);
+      expect(transmux.isBusy, isFalse);
+    });
+
     test('a native refusal reads as unavailable, not as a failure', () async {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(_control, (call) async {
