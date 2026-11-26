@@ -63,83 +63,92 @@ void main() {
     manager.dispose();
   });
 
-  test('a forced refresh does not take a second wake lock', () {
-    PlatformDetection.setTvMode(true);
-    final requests = <bool>[];
-    wakelockPlusPlatformInstance = _RecordingWakeLock(requests);
+  group('on the TV layout', () {
+    setUp(() => PlatformDetection.setTvMode(true));
+    tearDown(() => PlatformDetection.setTvMode(false));
 
-    fakeAsync((async) {
-      final controller = ScreensaverController(prefs, manager);
-      async.elapse(Duration.zero);
-      expect(controller.holdsScreenOn, isTrue);
-      expect(requests, [true]);
+    test('a forced refresh does not take a second wake lock', () {
+      final requests = <bool>[];
+      wakelockPlusPlatformInstance = _RecordingWakeLock(requests);
 
-      // Startup and every screensaver visibility change refresh with force.
-      // Forcing re-asserts the lock; it must not acquire a second one.
-      controller.refreshWakeLock();
-      controller.refreshWakeLock();
-      async.elapse(Duration.zero);
+      fakeAsync((async) {
+        final controller = ScreensaverController(prefs, manager);
+        async.elapse(Duration.zero);
+        expect(controller.holdsScreenOn, isTrue);
+        expect(requests, [true]);
 
-      expect(requests, [true]);
-      controller.dispose();
-      async.elapse(Duration.zero);
-      expect(requests, [true, false]);
+        // Startup and every screensaver visibility change refresh with force.
+        // Forcing re-asserts the lock; it must not acquire a second one.
+        controller.refreshWakeLock();
+        controller.refreshWakeLock();
+        async.elapse(Duration.zero);
+
+        expect(requests, [true]);
+        controller.dispose();
+        async.elapse(Duration.zero);
+        expect(requests, [true, false]);
+      });
     });
   });
 
-  test('a playback session takes one wake lock and releases it', () {
-    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-    final requests = <bool>[];
-    wakelockPlusPlatformInstance = _RecordingWakeLock(requests);
+  group('on the desktop layout', () {
+    setUp(() => PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop));
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
 
-    fakeAsync((async) {
-      final controller = ScreensaverController(prefs, manager);
-      async.elapse(Duration.zero);
-      expect(requests, isEmpty);
+    test('a playback session takes one wake lock and releases it', () {
+      final requests = <bool>[];
+      wakelockPlusPlatformInstance = _RecordingWakeLock(requests);
 
-      controller.setPlaybackActive(true);
-      async.elapse(Duration.zero);
-      expect(requests, [true]);
+      fakeAsync((async) {
+        final controller = ScreensaverController(prefs, manager);
+        async.elapse(Duration.zero);
+        expect(requests, isEmpty);
 
-      controller.setPlaybackActive(false);
-      async.elapse(Duration.zero);
-      expect(requests, [true, false]);
+        controller.setPlaybackActive(true);
+        async.elapse(Duration.zero);
+        expect(requests, [true]);
 
-      controller.setPlaybackActive(true);
-      controller.refreshWakeLock();
-      async.elapse(Duration.zero);
-      expect(requests, [true, false, true]);
+        controller.setPlaybackActive(false);
+        async.elapse(Duration.zero);
+        expect(requests, [true, false]);
 
-      controller.dispose();
-      async.elapse(Duration.zero);
-      expect(requests, [true, false, true, false]);
+        controller.setPlaybackActive(true);
+        controller.refreshWakeLock();
+        async.elapse(Duration.zero);
+        expect(requests, [true, false, true]);
+
+        controller.dispose();
+        async.elapse(Duration.zero);
+        expect(requests, [true, false, true, false]);
+      });
     });
-  });
 
-  test('a failed acquisition is retried by the next refresh', () {
-    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-    final requests = <bool>[];
-    wakelockPlusPlatformInstance = _RecordingWakeLock(requests, failures: 1);
+    test('a failed acquisition is retried by the next refresh', () {
+      final requests = <bool>[];
+      wakelockPlusPlatformInstance = _RecordingWakeLock(requests, failures: 1);
 
-    fakeAsync((async) {
-      final controller = ScreensaverController(prefs, manager);
+      fakeAsync((async) {
+        final controller = ScreensaverController(prefs, manager);
 
-      controller.setPlaybackActive(true);
-      async.elapse(Duration.zero);
-      expect(requests, [true]);
+        controller.setPlaybackActive(true);
+        async.elapse(Duration.zero);
+        expect(requests, [true]);
 
-      // The attempt failed, so the refresh has to be allowed to take the lock
-      // rather than giving up for the rest of the session.
-      controller.refreshWakeLock();
-      async.elapse(Duration.zero);
-      expect(requests, [true, true]);
+        // The attempt failed, so the refresh has to be allowed to take the lock
+        // rather than giving up for the rest of the session.
+        controller.refreshWakeLock();
+        async.elapse(Duration.zero);
+        expect(requests, [true, true]);
 
-      controller.setPlaybackActive(false);
-      async.elapse(Duration.zero);
-      expect(requests, [true, true, false]);
+        controller.setPlaybackActive(false);
+        async.elapse(Duration.zero);
+        expect(requests, [true, true, false]);
 
-      controller.dispose();
-      async.elapse(Duration.zero);
+        controller.dispose();
+        async.elapse(Duration.zero);
+      });
     });
   });
 }
