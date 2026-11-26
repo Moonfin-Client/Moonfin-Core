@@ -18140,12 +18140,8 @@
   "@siloSectionSeasonalFamilyMovieNightFavorites": {
     "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
   },
-  "siloSectionSeasonalFamilyMovieNightLiveAction": "Family Movie Night",
-  "@siloSectionSeasonalFamilyMovieNightLiveAction": {
-    "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
-  },
-  "siloSectionSeasonalFamilyMovieNightNew": "Family Movie Night",
-  "@siloSectionSeasonalFamilyMovieNightNew": {
+  "siloSectionSeasonalFamilyMovieNight": "Family Movie Night",
+  "@siloSectionSeasonalFamilyMovieNight": {
     "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
   },
   "siloSectionSeasonalHalloweenAnimated": "Animated Halloween",
@@ -18203,18 +18199,6 @@
   "siloSectionSeasonalSummerNostalgia": "Summer Nostalgia",
   "@siloSectionSeasonalSummerNostalgia": {
     "description": "Title of a seasonal row on a Silo server's Home (summer)"
-  },
-  "siloSectionSeasonalSummerBlockbusterBlockbusters": "Summer Blockbusters",
-  "@siloSectionSeasonalSummerBlockbusterBlockbusters": {
-    "description": "Title of a seasonal row on a Silo server's Home (summerBlockbuster)"
-  },
-  "siloSectionSeasonalSummerBlockbusterClassicSummer": "Classic Summer Movies",
-  "@siloSectionSeasonalSummerBlockbusterClassicSummer": {
-    "description": "Title of a seasonal row on a Silo server's Home (summerBlockbuster)"
-  },
-  "siloSectionSeasonalSummerBlockbusterNostalgia": "Summer Nostalgia",
-  "@siloSectionSeasonalSummerBlockbusterNostalgia": {
-    "description": "Title of a seasonal row on a Silo server's Home (summerBlockbuster)"
   },
   "siloSectionSeasonalThanksgivingFavorites": "Thanksgiving Movies",
   "@siloSectionSeasonalThanksgivingFavorites": {

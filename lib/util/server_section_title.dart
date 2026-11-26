@@ -58,8 +58,8 @@ String localizeServerSectionTitle(
     'home.section.seasonal.easter.faith' => l10n.siloSectionSeasonalEasterFaith,
     'home.section.seasonal.easter.family' => l10n.siloSectionSeasonalEasterFamily,
     'home.section.seasonal.familyMovieNight.favorites' => l10n.siloSectionSeasonalFamilyMovieNightFavorites,
-    'home.section.seasonal.familyMovieNight.liveAction' => l10n.siloSectionSeasonalFamilyMovieNightLiveAction,
-    'home.section.seasonal.familyMovieNight.new' => l10n.siloSectionSeasonalFamilyMovieNightNew,
+    'home.section.seasonal.familyMovieNight.liveAction' ||
+    'home.section.seasonal.familyMovieNight.new' => l10n.siloSectionSeasonalFamilyMovieNight,
     'home.section.seasonal.halloween.animated' => l10n.siloSectionSeasonalHalloweenAnimated,
     'home.section.seasonal.halloween.family' => l10n.siloSectionSeasonalHalloweenFamily,
     'home.section.seasonal.halloween.favorites' => l10n.siloSectionSeasonalHalloweenFavorites,
@@ -71,12 +71,12 @@ String localizeServerSectionTitle(
     'home.section.seasonal.saturdayMorning.nineties' => l10n.siloSectionSeasonalSaturdayMorningNineties,
     'home.section.seasonal.stPatricks.irishFilm' => l10n.siloSectionSeasonalStPatricksIrishFilm,
     'home.section.seasonal.stPatricks.irishTv' => l10n.siloSectionSeasonalStPatricksIrishTv,
-    'home.section.seasonal.summer.blockbusters' => l10n.siloSectionSeasonalSummerBlockbusters,
-    'home.section.seasonal.summer.classicSummer' => l10n.siloSectionSeasonalSummerClassicSummer,
-    'home.section.seasonal.summer.nostalgia' => l10n.siloSectionSeasonalSummerNostalgia,
-    'home.section.seasonal.summerBlockbuster.blockbusters' => l10n.siloSectionSeasonalSummerBlockbusterBlockbusters,
-    'home.section.seasonal.summerBlockbuster.classicSummer' => l10n.siloSectionSeasonalSummerBlockbusterClassicSummer,
-    'home.section.seasonal.summerBlockbuster.nostalgia' => l10n.siloSectionSeasonalSummerBlockbusterNostalgia,
+    'home.section.seasonal.summer.blockbusters' ||
+    'home.section.seasonal.summerBlockbuster.blockbusters' => l10n.siloSectionSeasonalSummerBlockbusters,
+    'home.section.seasonal.summer.classicSummer' ||
+    'home.section.seasonal.summerBlockbuster.classicSummer' => l10n.siloSectionSeasonalSummerClassicSummer,
+    'home.section.seasonal.summer.nostalgia' ||
+    'home.section.seasonal.summerBlockbuster.nostalgia' => l10n.siloSectionSeasonalSummerNostalgia,
     'home.section.seasonal.thanksgiving.favorites' => l10n.siloSectionSeasonalThanksgivingFavorites,
     'home.section.seasonal.thanksgiving.feelGood' => l10n.siloSectionSeasonalThanksgivingFeelGood,
     'home.section.seasonal.valentines.favorites' => l10n.siloSectionSeasonalValentinesFavorites,
