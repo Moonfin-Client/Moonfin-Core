@@ -129,6 +129,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_home_row_info_overlay': SettingsPreviewScene.home,
     'pref_detail_screen_style': SettingsPreviewScene.details,
     'pref_personal_rating_style': SettingsPreviewScene.details,
+    'pref_personal_rating_intervals': SettingsPreviewScene.details,
     'pref_hide_details_media_description': SettingsPreviewScene.details,
     'pref_show_details_backdrop': SettingsPreviewScene.details,
     'pref_details_backdrop_size': SettingsPreviewScene.details,

@@ -712,6 +712,24 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'quick look',
       'frost',
     ]),
+    if (GetIt.instance.isRegistered<MediaServerClient>() &&
+        GetIt.instance<MediaServerClient>().features.supportsFractionalRatings &&
+        prefs.get(UserPreferences.personalRatingStyle) !=
+            PersonalRatingStyle.thumbs)
+      details.leaf(
+        'pref_personal_rating_intervals',
+        l10n.personalRatingIntervals,
+        keywords: [
+          'rating',
+          'stars',
+          'numeric',
+          'steps',
+          'half',
+          'quarter',
+          'precision',
+          'granularity',
+        ],
+      ),
     details.leaf(
       'pref_show_details_backdrop',
       l10n.detailsScreenBackdrop,

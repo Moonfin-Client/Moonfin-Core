@@ -114,6 +114,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('recommendationSystemSource', UserPreferences.recommendationSystemSource, SyncCodec.enumName, enumValues: prefs.RecommendationSystemSource.values),
   SyncedField('detailScreenStyle', UserPreferences.detailScreenStyle, SyncCodec.enumName, enumValues: prefs.DetailScreenStyle.values),
   SyncedField('personalRatingStyle', UserPreferences.personalRatingStyle, SyncCodec.enumName, enumValues: prefs.PersonalRatingStyle.values),
+  SyncedField('personalRatingIntervals', UserPreferences.personalRatingIntervals, SyncCodec.integer),
   SyncedField('detailExpandedTabs', UserPreferences.detailExpandedTabs, SyncCodec.boolean),
   SyncedField('detailShowTechnicalDetails', UserPreferences.detailShowTechnicalDetails, SyncCodec.boolean),
   SyncedField('detailShowFullDate', UserPreferences.detailShowFullDate, SyncCodec.boolean),

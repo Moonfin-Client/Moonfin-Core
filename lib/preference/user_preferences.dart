@@ -804,6 +804,7 @@ class UserPreferences extends ChangeNotifier {
     'showRatingBadges',
     'enableEpisodeRatings',
     'pref_personal_rating_style',
+    'pref_personal_rating_intervals',
     'tmdbApiKey',
     'seerrBlockNsfw',
     'seerrShowMissingCollectionItems',
@@ -3497,6 +3498,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_personal_rating_style',
     values: PersonalRatingStyle.values,
     defaultValue: PersonalRatingStyle.thumbs,
+  );
+
+  static final personalRatingIntervals = Preference<int>(
+    key: 'pref_personal_rating_intervals',
+    defaultValue: 11,
   );
 
   static final tmdbApiKey = Preference(key: 'tmdbApiKey', defaultValue: '');

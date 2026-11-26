@@ -80,7 +80,50 @@ class _DetailsScreenSettingsScreenState
                       PersonalRatingStyle.stars => l10n.personalRatingStars,
                       PersonalRatingStyle.numeric => l10n.personalRatingNumeric,
                     },
+                    onChangedValue: (style) {
+                      final current = prefs.get(
+                        UserPreferences.personalRatingIntervals,
+                      );
+                      final normalized = effectivePersonalRatingIntervals(
+                        style,
+                        current,
+                      );
+                      if (style != PersonalRatingStyle.thumbs &&
+                          normalized != current) {
+                        prefs.set(
+                          UserPreferences.personalRatingIntervals,
+                          normalized,
+                        );
+                      }
+                      _pushPersonalizationSync();
+                    },
                   ),
+                  if (prefs.get(UserPreferences.personalRatingStyle)
+                          case final ratingStyle
+                      when ratingStyle != PersonalRatingStyle.thumbs &&
+                          GetIt.instance<MediaServerClient>()
+                              .features
+                              .supportsFractionalRatings)
+                    IntPickerPreferenceTile(
+                      key: ValueKey(
+                        'pref_personal_rating_intervals_${ratingStyle.name}',
+                      ),
+                      preference: UserPreferences.personalRatingIntervals,
+                      title: l10n.personalRatingIntervals,
+                      icon: Icons.tune,
+                      options: ratingStyle == PersonalRatingStyle.stars
+                          ? {
+                              6: l10n.personalRatingIntervalWhole,
+                              11: l10n.personalRatingIntervalHalf,
+                              21: l10n.personalRatingIntervalQuarter,
+                            }
+                          : {
+                              11: l10n.personalRatingIntervalWhole,
+                              21: l10n.personalRatingIntervalHalf,
+                              41: l10n.personalRatingIntervalQuarter,
+                            },
+                      onChanged: _pushPersonalizationSync,
+                    ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.detailsBackdropEnabled,
                     title: l10n.detailsScreenBackdrop,

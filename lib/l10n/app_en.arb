@@ -14347,6 +14347,22 @@
   "@personalRatingNumeric": {
     "description": "Personal rating style using a numeric score out of ten."
   },
+  "personalRatingIntervals": "Rating Intervals",
+  "@personalRatingIntervals": {
+    "description": "Selects the step granularity for personal ratings and their display precision."
+  },
+  "personalRatingIntervalWhole": "Whole (1)",
+  "@personalRatingIntervalWhole": {
+    "description": "Short label for whole-number personal rating steps."
+  },
+  "personalRatingIntervalHalf": "Half (0.5)",
+  "@personalRatingIntervalHalf": {
+    "description": "Short label for half-step (0.5) personal rating intervals."
+  },
+  "personalRatingIntervalQuarter": "Quarter (0.25)",
+  "@personalRatingIntervalQuarter": {
+    "description": "Short label for quarter-step (0.25) personal rating intervals."
+  },
   "rate": "Rate",
   "@rate": {
     "description": "Action that opens the personal rating control."

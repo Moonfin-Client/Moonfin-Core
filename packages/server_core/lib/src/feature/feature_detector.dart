@@ -110,6 +110,10 @@ class FeatureDetector {
   /// stands in for favorites.
   bool get supportsPersonalRatings => !_isPlex;
 
+  /// Personal ratings finer than one point out of ten. Silo saves whole
+  /// ratings only.
+  bool get supportsFractionalRatings => _isJellyfin || _isEmby;
+
   /// Favoriting people. Plex can only favorite media, and Silo keeps no
   /// person favorites.
   bool get supportsPersonFavorites => !_isPlex && !_isSilo;
