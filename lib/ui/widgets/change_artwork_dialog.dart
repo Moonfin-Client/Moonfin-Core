@@ -228,33 +228,36 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       final updatedRaw = await client.itemsApi.getItem(itemId);
-      // The admin may have moved to another item while this loaded.
-      if (mounted && _item.id == itemId) {
-        setState(() {
-          _item = AggregatedItem(
-            id: itemId,
-            serverId: _item.serverId,
-            rawData: updatedRaw,
-          );
-          if (_historyIndex >= 0 && _historyIndex < _history.length) {
-            _history[_historyIndex] = _item;
-          }
-        });
-      } else if (mounted) {
-        setState(() {
-          for (var i = 0; i < _history.length; i++) {
-            if (_history[i].id == itemId) {
-              _history[i] = AggregatedItem(
-                id: itemId,
-                serverId: _history[i].serverId,
-                rawData: updatedRaw,
-              );
-            }
-          }
-        });
+      if (mounted) {
+        setState(() => _applyFetchedItem(itemId, updatedRaw));
       }
     } catch (e) {
       debugPrint('Failed to refresh item metadata: $e');
+    }
+  }
+
+  // The admin may have moved to another item while the fetch loaded, so only
+  // the entries for the fetched item take it.
+  void _applyFetchedItem(String itemId, Map<String, dynamic> rawData) {
+    if (_item.id == itemId) {
+      _item = AggregatedItem(
+        id: itemId,
+        serverId: _item.serverId,
+        rawData: rawData,
+      );
+      if (_historyIndex >= 0 && _historyIndex < _history.length) {
+        _history[_historyIndex] = _item;
+      }
+      return;
+    }
+    for (var i = 0; i < _history.length; i++) {
+      if (_history[i].id == itemId) {
+        _history[i] = AggregatedItem(
+          id: itemId,
+          serverId: _history[i].serverId,
+          rawData: rawData,
+        );
+      }
     }
   }
 
@@ -909,17 +912,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       }
       if (stopped()) return;
 
-      final updatedRaw = await client.itemsApi.getItem(_item.id);
+      final updatedRaw = await client.itemsApi.getItem(itemId);
       if (mounted) {
         setState(() {
-          _item = AggregatedItem(
-            id: _item.id,
-            serverId: _item.serverId,
-            rawData: updatedRaw,
-          );
-          if (_historyIndex >= 0 && _historyIndex < _history.length) {
-            _history[_historyIndex] = _item;
-          }
+          _applyFetchedItem(itemId, updatedRaw);
           _actionInProgress.clear();
         });
       }

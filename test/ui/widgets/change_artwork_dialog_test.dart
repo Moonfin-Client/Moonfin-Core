@@ -486,6 +486,54 @@ void main() {
   );
 
   testWidgets(
+    'Clear All refetch stays on the season when the series link was followed',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Season',
+        'Name': 'Season 1',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'cover'},
+        'BackdropImageTags': ['red'],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo', 'Thumb': 'thumb'},
+        'BackdropImageTags': ['blue'],
+      };
+      await open(tester);
+
+      final refetch = Completer<void>();
+      items.hold = refetch;
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      expect(items.item['ImageTags'], isEmpty);
+      expect(items.item['BackdropImageTags'], isEmpty);
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      refetch.complete();
+      await settle(tester);
+
+      expect(find.text('Season 1'), findsNothing);
+      expect(find.text('ShowBlue'), findsOneWidget);
+      // Banner and Art are the series' only empty rows.
+      expect(find.text(l10n.missing), findsNWidgets(2));
+
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+
+      expect(find.text('Season 1'), findsOneWidget);
+      // Primary, Backdrop and Banner are all cleared on the season.
+      expect(find.text(l10n.missing), findsNWidgets(3));
+    },
+  );
+
+  testWidgets(
     'Clear All deletes nothing once the dialog closes while it waits',
     (tester) async {
       items.item = {
