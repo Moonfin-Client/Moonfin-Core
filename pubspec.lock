@@ -288,6 +288,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  connectivity_plus_tvos:
+    dependency: "direct main"
+    description:
+      name: connectivity_plus_tvos
+      sha256: f24fc5654949a404c15d478150471f01d5aa612852fe1280704c9cbcede05eea
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   console:
     dependency: transitive
     description:
@@ -2159,6 +2167,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.7.0"
+  wakelock_plus_tvos:
+    dependency: "direct main"
+    description:
+      name: wakelock_plus_tvos
+      sha256: "642bbbe2993dae33b0c8fe196731f96f010c1b7b10b297597c5d137928553468"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   watcher:
     dependency: transitive
     description:

@@ -1,15 +1,20 @@
 PODS:
   - sqflite_tvos (0.0.1)
+  - wakelock_plus_tvos (0.0.2)
 
 DEPENDENCIES:
   - sqflite_tvos (from `.symlinks/plugins/sqflite_tvos/tvos`)
+  - wakelock_plus_tvos (from `.symlinks/plugins/wakelock_plus_tvos/tvos`)
 
 EXTERNAL SOURCES:
   sqflite_tvos:
     :path: ".symlinks/plugins/sqflite_tvos/tvos"
+  wakelock_plus_tvos:
+    :path: ".symlinks/plugins/wakelock_plus_tvos/tvos"
 
 SPEC CHECKSUMS:
   sqflite_tvos: c473ff0295bc0c18f416393eed404091eb1598a5
+  wakelock_plus_tvos: fcf1e9b11e26471f418eaf27769580161bcc13c2
 
 PODFILE CHECKSUM: 43576aca4b7dd1e087e92721de53fb4e0c73eaae
 
