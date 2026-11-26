@@ -18813,5 +18813,13 @@
     "navReelSwipeHint": "Deslizá para girar y tocá en el centro para entrar",
     "@navReelSwipeHint": {
         "description": "Hint at the bottom of the Reel sidebar on phones"
+    },
+    "settingsAudioPassthroughFallback": "Decodificar Passthrough Silencioso",
+    "@settingsAudioPassthroughFallback": {
+        "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "settingsAudioPassthroughFallbackDescription": "Si la salida no puede reproducir una pista en passthrough y queda en silencio, decodificala en este dispositivo.",
+    "@settingsAudioPassthroughFallbackDescription": {
+        "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
     }
 }
