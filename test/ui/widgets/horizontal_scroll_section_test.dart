@@ -114,4 +114,42 @@ void main() {
 
     expect(controller.offset, greaterThan(0));
   });
+
+  testWidgets('HorizontalScrollControls scrolls left and right on a controller', (
+    tester,
+  ) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              HorizontalScrollControls(controller: controller),
+              SizedBox(
+                height: 80,
+                child: ListView(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  children: const [SizedBox(width: 2000)],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(controller.offset, 0);
+
+    await tester.tap(find.byIcon(Icons.chevron_right));
+    await tester.pumpAndSettle();
+    final afterRight = controller.offset;
+    expect(afterRight, greaterThan(0));
+
+    await tester.tap(find.byIcon(Icons.chevron_left));
+    await tester.pumpAndSettle();
+    expect(controller.offset, lessThan(afterRight));
+  });
 }

@@ -31,6 +31,7 @@ import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
+import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/marquee_text.dart';
 import '../../widgets/player_volume_control.dart';
@@ -8249,27 +8250,42 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     unawaited(() async {
-      await showStyledPlayerDialog<void>(
-        context,
-        title: AppLocalizations.of(context).castAndCrew,
-        maxWidth: 680,
-        builder: (dialogCtx) => SizedBox(
-          height: 210,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.spaceXl,
-              AppSpacing.spaceSm,
-              AppSpacing.space2xl,
-              AppSpacing.spaceSm,
+      final title = AppLocalizations.of(context).castAndCrew;
+      final scrollController = ScrollController();
+      try {
+        await showStyledPlayerDialog<void>(
+          context,
+          title: title,
+          titleBuilder: PlatformDetection.useDesktopUi
+              ? (_) => Row(
+                  children: [
+                    Expanded(child: Text(title, style: playerDialogTitleStyle)),
+                    HorizontalScrollControls(controller: scrollController),
+                  ],
+                )
+              : null,
+          maxWidth: 680,
+          builder: (dialogCtx) => SizedBox(
+            height: 210,
+            child: ListView.separated(
+              controller: scrollController,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spaceXl,
+                AppSpacing.spaceSm,
+                AppSpacing.space2xl,
+                AppSpacing.spaceSm,
+              ),
+              itemCount: people.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 16),
+              itemBuilder: (ctx, i) =>
+                  personCard(dialogCtx, people[i], autofocus: i == 0),
             ),
-            itemCount: people.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 16),
-            itemBuilder: (ctx, i) =>
-                personCard(dialogCtx, people[i], autofocus: i == 0),
           ),
-        ),
-      );
+        );
+      } finally {
+        scrollController.dispose();
+      }
     }());
     _showControls();
   }
