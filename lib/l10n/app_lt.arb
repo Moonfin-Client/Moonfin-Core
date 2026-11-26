@@ -6596,7 +6596,7 @@
     "settingsOpenGroups": "Atidaryti bendrą žiūrėjimą",
     "settingsOpenGroupsSubtitle": "Pradėkite arba prisijunkite prie vykstančio žiūrėjimo",
     "settingsSyncplayEnabled": "Bendras žiūrėjimas",
-    "settingsSyncplayEnabledSubtitle": "Įgalinti grupės stebėjimo funkcijas",
+    "settingsSyncplayEnabledSubtitle": "Žiūrėkite su draugais šiame serveryje, visi vienu metu",
     "settingsSyncplayButton": "Bendro žiūrėjimo mygtukas",
     "settingsSyncplayButtonSubtitle": "Rodyti bendro žiūrėjimo mygtuką naršymo juostoje",
     "settingsSyncplayAdvancedCorrection": "Išplėstinė korekcija",
@@ -9912,5 +9912,30 @@
     "@requested4k": {
         "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
     },
-    "adminTaskResultAborted": "Nutraukta dėl serverio išjungimo"
+    "adminTaskResultAborted": "Nutraukta dėl serverio išjungimo",
+    "displayStudiosRowsSubtitle": "Rodyti studijų eilutę pagrindinio ekrano skiltyse.",
+    "source": "Šaltinis",
+    "@source": {
+        "description": "Heading for the disc source filters in the library filter picker."
+    },
+    "detailSections": "Skiltys",
+    "@detailSections": {
+        "description": "Settings tile title for switching Details screen sections on and off"
+    },
+    "detailSectionGroupSections": "Skiltys",
+    "@detailSectionGroupSections": {
+        "description": "Group heading for the rows, tabs and cards of the Details screen"
+    },
+    "settingsWatchTogetherSection": "Bendras žiūrėjimas",
+    "@settingsWatchTogetherSection": {
+        "description": "Section header on the Playback settings screen for SyncPlay"
+    },
+    "addServerAddressChoice": "Jellyfin, Emby ar Silo jūsų tinkle arba internete",
+    "@addServerAddressChoice": {
+        "description": "Add Server dialog: what the Server Address option is for"
+    },
+    "afterHoursCastPointsLine": "Po 25 taškus.",
+    "@afterHoursCastPointsLine": {
+        "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    }
 }
