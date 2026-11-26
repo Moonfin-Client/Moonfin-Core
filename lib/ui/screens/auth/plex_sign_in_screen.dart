@@ -38,7 +38,11 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
   String? _token;
   List<PlexServer>? _servers;
   PlexServer? _connecting;
+  bool _connectingCloud = false;
+  PlexServer? _lastAttemptedServer;
+  bool _lastAttemptWasCloud = false;
   String? _errorMessage;
+  String? _discoveryError;
   Timer? _pollTimer;
   bool _polling = false;
   bool _usePassword = false;
@@ -104,11 +108,18 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
 
   Future<void> _signedIn(String token) async {
     _pollTimer?.cancel();
-    setState(() => _token = token);
+    // Show Plex Free TV before server discovery finishes.
+    setState(() {
+      _token = token;
+      _servers = const [];
+      _lastAttemptedServer = null;
+      _lastAttemptWasCloud = false;
+    });
     await _loadServers(token);
   }
 
   Future<void> _loadServers(String token) async {
+    if (mounted) setState(() => _discoveryError = null);
     try {
       final servers = await _plexRepository.loadServers(
         token,
@@ -116,17 +127,23 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       );
       if (!mounted) return;
       setState(() => _servers = servers);
-      if (servers.length == 1) await _connect(servers.first);
-    } catch (e) {
-      _showError(e);
+    } catch (error) {
+      // Keep Free TV selectable if server discovery fails.
+      if (!mounted) return;
+      setState(() {
+        _servers ??= const [];
+        _discoveryError = describeError(error, AppLocalizations.of(context));
+      });
     }
   }
 
   Future<void> _connect(PlexServer server) async {
     final token = _token;
-    if (token == null || _connecting != null) return;
+    if (token == null || _connecting != null || _connectingCloud) return;
     setState(() {
       _connecting = server;
+      _lastAttemptedServer = server;
+      _lastAttemptWasCloud = false;
       _errorMessage = null;
     });
     try {
@@ -147,6 +164,30 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     }
   }
 
+  Future<void> _connectCloud() async {
+    final token = _token;
+    if (token == null || _connecting != null || _connectingCloud) return;
+    setState(() {
+      _connectingCloud = true;
+      _lastAttemptedServer = null;
+      _lastAttemptWasCloud = true;
+      _errorMessage = null;
+    });
+    try {
+      final connected = await _plexRepository.connectCloud(token);
+      if (!mounted) return;
+      if (connected) {
+        context.go(Destinations.home);
+      } else {
+        setState(() => _errorMessage = AppLocalizations.of(context).loginFailed);
+      }
+    } catch (e) {
+      if (mounted) _showError(e);
+    } finally {
+      if (mounted) setState(() => _connectingCloud = false);
+    }
+  }
+
   void _showError(Object e) {
     if (!mounted) return;
     _pollTimer?.cancel();
@@ -155,19 +196,28 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     );
   }
 
-  /// An approved code stays approved, so only a failure before approval
-  /// needs a new one.
+  /// Reuse an approved Plex token when retrying instead of requesting another PIN.
   void _retry() {
     final token = _token;
-    setState(() {
-      _errorMessage = null;
-      if (token == null) _pin = null;
-    });
     if (token == null) {
-      _requestPin();
-    } else if (_servers == null) {
-      _loadServers(token);
+      setState(() {
+        _errorMessage = null;
+        _pin = null;
+      });
+      unawaited(_requestPin());
+      return;
     }
+    if (_lastAttemptWasCloud) {
+      unawaited(_connectCloud());
+      return;
+    }
+    final server = _lastAttemptedServer;
+    if (server != null) {
+      unawaited(_connect(server));
+      return;
+    }
+    setState(() => _errorMessage = null);
+    unawaited(_loadServers(token));
   }
 
   @override
@@ -223,11 +273,15 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
                       style: _focusableButtonStyle(),
                     ),
                   ),
-                  if (_errorMessage != null) ...[
+                  if (_errorMessage != null || _discoveryError != null) ...[
                     const SizedBox(width: 12),
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: _retry,
+                        onPressed: _connecting != null || _connectingCloud
+                            ? null
+                            : _errorMessage != null
+                            ? _retry
+                            : () => _loadServers(_token!),
                         icon: const Icon(Icons.refresh, size: 18),
                         label: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -250,6 +304,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
   PlexPin? get _shownPin =>
       _errorMessage == null &&
           _connecting == null &&
+          !_connectingCloud &&
           _servers == null &&
           !_usePassword &&
           _token == null
@@ -272,7 +327,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
 
   Widget _buildBody(AppLocalizations l10n) {
     final secondary = AppColorScheme.onSurface.withValues(alpha: 0.7);
-    if (_errorMessage != null) {
+    if (_errorMessage != null && _servers == null) {
       return Text(
         _errorMessage!,
         style: TextStyle(color: AppColorScheme.statusRequested),
@@ -280,25 +335,42 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       );
     }
 
+    if (_connectingCloud) {
+      return _buildLoading(l10n.plexConnectingToFreeTv);
+    }
     if (_connecting != null) {
       return _buildLoading(l10n.connectingToServerEllipsis);
     }
 
     final servers = _servers;
     if (servers != null) {
-      if (servers.isEmpty) {
-        return Text(l10n.plexNoServers, style: TextStyle(color: secondary));
-      }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (_errorMessage != null) ...[
+            Text(
+              _errorMessage!,
+              style: TextStyle(color: AppColorScheme.statusRequested),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+          ],
           Text(
             l10n.selectAServer,
             style: Theme.of(context).textTheme.titleMedium
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
+          _buildServerTile(null),
           ...servers.map(_buildServerTile),
+          if (_discoveryError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              _discoveryError!,
+              style: TextStyle(color: AppColorScheme.statusRequested),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ],
       );
     }
@@ -393,7 +465,9 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     );
   }
 
-  Widget _buildServerTile(PlexServer server) {
+  /// A null server means Plex Free TV (Cloud).
+  Widget _buildServerTile(PlexServer? server) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Material(
@@ -401,7 +475,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
         borderRadius: AppRadius.circular(12),
         child: InkWell(
           borderRadius: AppRadius.circular(12),
-          onTap: () => _connect(server),
+          onTap: () => server == null ? _connectCloud() : _connect(server),
           focusColor: AppColorScheme.accent,
           hoverColor: AppColorScheme.onSurface.withValues(alpha: 0.08),
           child: Padding(
@@ -415,7 +489,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        server.name,
+                        server?.name ?? l10n.plexFreeTvCloudTitle,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppColorScheme.onSurface.withValues(
@@ -424,8 +498,10 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
                         ),
                       ),
                       Text(
-                        server.address ??
-                            AppLocalizations.of(context).noReachableAddress,
+                        server == null
+                            ? l10n.plexNoMediaServerRequired
+                            : server.address ??
+                                  l10n.noReachableAddress,
                         style: TextStyle(
                           fontSize: 13,
                           color: AppColorScheme.onSurface.withValues(

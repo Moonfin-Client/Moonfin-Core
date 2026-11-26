@@ -116,6 +116,7 @@ void main() {
     client = _MockMediaServerClient();
     liveTvApi = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTvApi);
+    when(() => client.baseUrl).thenReturn('https://jellyfin.test');
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userId).thenReturn('user');
 
@@ -194,7 +195,7 @@ void main() {
           child: LiveTvGuideScreen(
             miniPlayerMode: true,
             embedded: true,
-            onChannelSelected: onChannelSelected,
+            onChannelSelected: (id, _) => onChannelSelected(id),
             onClose: () {},
           ),
         ),

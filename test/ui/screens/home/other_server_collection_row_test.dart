@@ -102,6 +102,7 @@ void main() {
       },
     );
     final otherClient = _Client();
+    when(() => otherClient.serverType).thenReturn(ServerType.emby);
     when(() => otherClient.baseUrl).thenReturn('http://other');
     when(() => otherClient.itemsApi).thenReturn(otherItems);
     multiServer = _MultiServer();
@@ -127,6 +128,7 @@ void main() {
 
   HomeViewModel model() {
     final client = _Client();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userId).thenReturn('user');
     when(() => client.baseUrl).thenReturn('http://server');
     final mediaBar = _MediaBar();

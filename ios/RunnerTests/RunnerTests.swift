@@ -73,6 +73,27 @@ private final class OverlayPair {
 
 final class RunnerTests: XCTestCase {
     @MainActor
+    func testChannelCarouselKeepsTheHighlightedIDWhenFavoritesReorder() {
+        let channels = ["A", "B", "C", "D"].map {
+            ChannelCarouselEntry(dictionary: ["id": $0], accent: .white)
+        }
+        let theme = ChannelCarouselTheme(accent: .white, surface: .black, surfaceVariant: .black,
+            onSurface: .white, rangeTrack: .gray, rangeProgress: .white, isGlass: false)
+        let carousel = ChannelCarouselOverlayViewController(entries: channels, startIndex: 1, theme: theme)
+
+        carousel.update(entries: [channels[2], channels[0], channels[3], channels[1]], theme: theme)
+        XCTAssertEqual(carousel.centeredChannel?.channelId, "B")
+        carousel.update(entries: [channels[1], channels[3]], theme: theme)
+        XCTAssertEqual(carousel.centeredChannel?.channelId, "B")
+        carousel.update(entries: [channels[2], channels[3]], theme: theme)
+        XCTAssertEqual(carousel.centeredChannel?.channelId, "C")
+        carousel.update(entries: [], theme: theme)
+        XCTAssertNil(carousel.centeredChannel)
+        carousel.update(entries: channels, theme: theme)
+        XCTAssertEqual(carousel.centeredChannel?.channelId, "A")
+    }
+
+    @MainActor
     private func image() -> CGImage {
         UIGraphicsImageRenderer(size: CGSize(width: 100, height: 40)).image { context in
             UIColor.white.setFill()

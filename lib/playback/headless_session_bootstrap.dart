@@ -130,6 +130,7 @@ class HeadlessSessionBootstrap {
       serverId: serverId,
       serverType: server.serverType,
       baseUrl: server.address,
+      cloudOnly: server.cloudOnly,
     );
     SiloTokenStorage(
       GetIt.instance<AuthenticationStore>(),

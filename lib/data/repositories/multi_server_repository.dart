@@ -175,6 +175,7 @@ class MultiServerRepository {
           serverId: server.id,
           serverType: server.serverType,
           baseUrl: server.address,
+          cloudOnly: server.cloudOnly,
         );
         // A Silo profile restores its account's pair and profile. Setting the
         // stored access token would drop the active session's refresh token.
@@ -198,6 +199,12 @@ class MultiServerRepository {
     return sessions;
   }
 
+  /// Cloud connections can supply Live TV, but not media libraries.
+  Future<List<ServerUserSession>> _mediaLibrarySessions() async => [
+    for (final session in await getLoggedInServers())
+      if (!session.server.cloudOnly) session,
+  ];
+
   // Concurrent callers share one in-flight aggregation instead of each
   // fanning out to every server.
   Future<List<AggregatedLibrary>>? _inFlightLibraries;
@@ -208,7 +215,7 @@ class MultiServerRepository {
       );
 
   Future<List<AggregatedLibrary>> _getAggregatedLibrariesNow() async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final hasMultiple = sessions.length > 1;
 
     final results = await Future.wait(
@@ -292,7 +299,7 @@ class MultiServerRepository {
   }
 
   Future<HomeRow> getAggregatedResume({int limit = _defaultLimit}) async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final perServer = (limit * 3).clamp(1, 100);
 
     final results = await _gatherPerServer(
@@ -321,7 +328,7 @@ class MultiServerRepository {
   }
 
   Future<HomeRow> getAggregatedResumeAudio({int limit = _defaultLimit}) async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final perServer = (limit * 3).clamp(1, 100);
 
     final results = await Future.wait(
@@ -350,7 +357,7 @@ class MultiServerRepository {
   }
 
   Future<HomeRow> getAggregatedNextUp({int limit = _defaultLimit}) async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final perServer = (limit * 3).clamp(1, 100);
 
     final results = await _gatherPerServer(
@@ -392,7 +399,7 @@ class MultiServerRepository {
     String sortOrder = _defaultSortOrder,
     String? mediaType,
   }) async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final isAudio = mediaType == 'Audio';
     final cacheKeyPrefix = isAudio ? 'audioPlaylists' : 'playlists';
 
@@ -565,7 +572,7 @@ class MultiServerRepository {
     const rowType = HomeRowType.genres;
 
     final browseItemTypes = normalizeBrowsableGenreItemTypes(includeItemTypes);
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final perServer = (limit * 3).clamp(1, 100);
 
     final results = await _gatherPerServer(sessions, (session) async {
@@ -621,7 +628,7 @@ class MultiServerRepository {
     const cacheKeyPrefix = 'studios';
     const rowType = HomeRowType.studios;
 
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final perServer = (limit * 3).clamp(1, 100);
 
     final selectedSet = selectedIds
@@ -725,7 +732,7 @@ class MultiServerRepository {
     final prefs = GetIt.instance.isRegistered<UserPreferences>()
         ? GetIt.instance<UserPreferences>()
         : null;
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
 
     // Group existing items by serverId to know how many items we already have for each server
     final Map<String, List<AggregatedItem>> itemsByServer = {};
@@ -1162,7 +1169,7 @@ class MultiServerRepository {
     String sortBy = _defaultSortBy,
     String sortOrder = _defaultSortOrder,
   }) async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final perServer = (limit * 3).clamp(1, 100);
 
     final results = await Future.wait(
@@ -1253,7 +1260,7 @@ class MultiServerRepository {
   }
 
   Future<List<HomeRow>> getAggregatedLatestMediaRows() async {
-    final sessions = await getLoggedInServers();
+    final sessions = await _mediaLibrarySessions();
     final hasMultiple = sessions.length > 1;
     final rows = <HomeRow>[];
 
@@ -1472,6 +1479,7 @@ class MultiServerRepository {
     List<ServerUserSession> sessions,
     Future<List<AggregatedItem>> Function(ServerUserSession session) task, {
     required String label,
+    void Function()? onPartialFailure,
   }) async {
     var failures = 0;
     final results = await Future.wait(
@@ -1488,6 +1496,7 @@ class MultiServerRepository {
     if (sessions.isNotEmpty && failures == sessions.length) {
       throw StateError('MultiServer: all servers failed to load $label');
     }
+    if (failures > 0) onPartialFailure?.call();
     return results;
   }
 
@@ -1497,8 +1506,13 @@ class MultiServerRepository {
   Future<List<List<AggregatedItem>>> searchEachServer(
     Future<List<AggregatedItem>> Function(SearchRepository repository) search, {
     required String label,
+    bool includeCloudOnly = false,
+    void Function()? onPartialFailure,
   }) async {
-    final sessions = await getLoggedInServers();
+    // Include Cloud connections for channel search, not media searches.
+    final sessions = includeCloudOnly
+        ? await getLoggedInServers()
+        : await _mediaLibrarySessions();
     return _gatherPerServer(
       sessions,
       (session) async => [
@@ -1510,6 +1524,7 @@ class MultiServerRepository {
           ),
       ],
       label: label,
+      onPartialFailure: onPartialFailure,
     );
   }
 

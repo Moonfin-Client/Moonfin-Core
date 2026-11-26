@@ -153,6 +153,13 @@ double classicHomeRowOverlayClipTop({
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  /// Plex Cloud never loads the media bar, so don't leave Home waiting for it.
+  @visibleForTesting
+  static bool mediaBarEnabledForHome({
+    required bool enabledByMode,
+    required bool cloudOnlyPlex,
+  }) => enabledByMode && !cloudOnlyPlex;
+
   @visibleForTesting
   static bool showsCalendarSeeAll(HomeRow row, UserPreferences prefs) =>
       _ContentRowsState._showsCalendarSeeAll(row, prefs);
@@ -1209,7 +1216,10 @@ class _ContentRowsState extends State<_ContentRows>
 
   bool _isMediaBarEnabledByMode() {
     final mode = widget.prefs.get(UserPreferences.mediaBarMode);
-    return UserPreferences.isMediaBarModeEnabled(mode);
+    return HomeScreen.mediaBarEnabledForHome(
+      enabledByMode: UserPreferences.isMediaBarModeEnabled(mode),
+      cloudOnlyPlex: widget.viewModel.isCloudOnlyPlex,
+    );
   }
 
   bool _useMedia3InlinePreview() {
@@ -5263,21 +5273,23 @@ class _ContentRowsState extends State<_ContentRows>
     final rowHeight = squarePosterSide + (56 * metadataScale);
     final actions = <_LiveTvAction>[
       _LiveTvAction(Icons.tv_rounded, l10n.guide, Destinations.liveTvGuide),
-      _LiveTvAction(
-        Icons.fiber_manual_record_rounded,
-        l10n.recordings,
-        Destinations.liveTvRecordings,
-      ),
-      _LiveTvAction(
-        Icons.schedule_rounded,
-        l10n.schedule,
-        Destinations.liveTvSchedule,
-      ),
-      _LiveTvAction(
-        Icons.movie_creation,
-        l10n.series,
-        Destinations.liveTvSeriesRecordings,
-      ),
+      if (!isCloudOnlyPlexClient(GetIt.instance<MediaServerClient>())) ...[
+        _LiveTvAction(
+          Icons.fiber_manual_record_rounded,
+          l10n.recordings,
+          Destinations.liveTvRecordings,
+        ),
+        _LiveTvAction(
+          Icons.schedule_rounded,
+          l10n.schedule,
+          Destinations.liveTvSchedule,
+        ),
+        _LiveTvAction(
+          Icons.movie_creation,
+          l10n.series,
+          Destinations.liveTvSeriesRecordings,
+        ),
+      ],
     ];
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),

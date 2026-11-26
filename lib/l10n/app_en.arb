@@ -911,6 +911,18 @@
   "@plexNoServers": {
     "description": "Shown when the Plex account has no servers"
   },
+  "plexConnectingToFreeTv": "Connecting to Plex Free TV...",
+  "@plexConnectingToFreeTv": {
+    "description": "Progress label while connecting a Plex account to Free TV"
+  },
+  "plexFreeTvCloudTitle": "Plex Free TV (Cloud)",
+  "@plexFreeTvCloudTitle": {
+    "description": "Cloud-only Plex Free TV choice in the Plex sign-in screen"
+  },
+  "plexNoMediaServerRequired": "No Plex Media Server required",
+  "@plexNoMediaServerRequired": {
+    "description": "Subtitle explaining that Plex Free TV works without a Plex Media Server"
+  },
   "loadingLinkedServers": "Loading linked servers...",
   "@loadingLinkedServers": {
     "description": "Status text while fetching Emby Connect server list"
@@ -1761,6 +1773,7 @@
     "description": "Placeholder text for an empty item list screen"
   },
   "failedToLoad": "Failed to load",
+  "retryMissingGuideListings": "Some listings failed to load. Retry",
 
   "@failedToLoad": {
     "description": "Error message when item detail fails to load"
@@ -3542,6 +3555,10 @@
   "noProgramData": "No program data",
   "@noProgramData": {
     "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+  },
+  "guideLoadingListings": "Loading listings…",
+  "@guideLoadingListings": {
+    "description": "Loading indicator for the channel's current and next program listings"
   },
   "liveBadge": "LIVE",
   "@liveBadge": {
@@ -6120,6 +6137,7 @@
       }
     }
   },
+  "profileSavedWithPinErrors": "Profile saved. Some guide pins could not be synced.",
   "syncing": "Syncing...",
   "@syncing": {
     "description": "Label while syncing"
@@ -11427,6 +11445,75 @@
   "settingsPrivacyPolicySubtitle": "How Moonfin handles your data",
   "settingsCheckForUpdates": "Check for Updates",
   "settingsCheckForUpdatesSubtitle": "Check for the latest Moonfin release",
+  "liveTvCategoryDisplay": "Live TV guide filters",
+  "@liveTvCategoryDisplay": {
+    "description": "Settings label for choosing program categories, tuner channel groups, or both in the Live TV guide."
+  },
+  "liveTvProgrammeCategories": "Program categories",
+  "@liveTvProgrammeCategories": {
+    "description": "Heading for program-based filters such as Movies, Sports, and News in the Live TV browse picker."
+  },
+  "liveTvChannelGroups": "Channel groups",
+  "@liveTvChannelGroups": {
+    "description": "Heading for channel groups supplied by the Live TV tuner or M3U playlist, not program categories."
+  },
+  "guideDvrChannels": "DVR Channels",
+  "@guideDvrChannels": {
+    "description": "Live TV guide shortcut for all channels from the viewer's Plex DVR tuners."
+  },
+  "guidePlexFreeTv": "Plex Free TV",
+  "@guidePlexFreeTv": {
+    "description": "Live TV guide shortcut for all free streaming channels supplied by Plex."
+  },
+  "guideFavoriteGroupsAndCategories": "Favorite groups and categories",
+  "@guideFavoriteGroupsAndCategories": {
+    "description": "Heading for the viewer's saved groups and program categories in the Live TV filter picker."
+  },
+  "guideHoldOk": "Hold OK",
+  "@guideHoldOk": {
+    "description": "TV remote hint to hold OK to save or remove a guide group or category shortcut."
+  },
+  "guideUnfavorite": "Unfavorite",
+  "@guideUnfavorite": {
+    "description": "Action hint for removing a channel group or program category from saved guide filters."
+  },
+  "guideSavedFilterSaveFailed": "Couldn't save filter. Try again.",
+  "@guideSavedFilterSaveFailed": {
+    "description": "Error message shown inside the Live TV filter picker when saving a group or category shortcut fails."
+  },
+  "guideGroupShortcut": "{name} (group)",
+  "@guideGroupShortcut": {
+    "description": "Pinned channel-group shortcut; distinguishes a group from a program category with the same name.",
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "guideCategoryShortcut": "{name} (category)",
+  "@guideCategoryShortcut": {
+    "description": "Pinned program-category shortcut; distinguishes a category from a channel group with the same name.",
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "guideAllChannels": "All channels",
+  "@guideAllChannels": {
+    "description": "Browse option that shows all accessible Live TV channels, without a category or channel-group filter."
+  },
+  "guideWindowLoadFailed": "Couldn’t load {time} listings.",
+  "@guideWindowLoadFailed": {
+    "description": "Brief notice when the guide stays on its current time after a paging request fails.",
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "guideSearchChannels": "Search channels",
+  "@guideSearchChannels": {
+    "description": "Placeholder for the Live TV guide search field that searches channel names and numbers."
+  },
+  "guideSearchGroups": "Search groups",
+  "@guideSearchGroups": {
+    "description": "Placeholder for the Live TV browse picker search field when it filters channel-group names."
+  },
+  "guideSearchGroupsAndCategories": "Search groups and categories",
+  "@guideSearchGroupsAndCategories": {
+    "description": "Placeholder for the Live TV browse picker search field when it filters both channel groups and program categories."
+  },
   "settingsBoth": "Both",
   "settingsShuffleContentTypeFilter": "Shuffle Content Type Filter",
   "settingsAudioPreferencesSubtitle": "Audio tracks, processing, and passthrough options",

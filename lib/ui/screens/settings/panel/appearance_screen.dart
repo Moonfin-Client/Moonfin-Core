@@ -96,6 +96,19 @@ class _AppearanceScreenState extends State<_AppearanceScreen> {
                       const _DetailsScreenSettingsScreen(),
                     ),
                   ),
+                  if (liveTvOnAnySignedInServer())
+                    EnumPreferenceTile<LiveTvCategoryDisplay>(
+                      preference: UserPreferences.liveTvCategoryDisplay,
+                      title: l10n.liveTvCategoryDisplay,
+                      icon: Icons.filter_list,
+                      labelOf: (value) => switch (value) {
+                        LiveTvCategoryDisplay.programmes =>
+                          l10n.liveTvProgrammeCategories,
+                        LiveTvCategoryDisplay.groups =>
+                          l10n.liveTvChannelGroups,
+                        LiveTvCategoryDisplay.both => l10n.settingsBoth,
+                      },
+                    ),
                 ],
               ),
               _SectionHeader(l10n.theme),

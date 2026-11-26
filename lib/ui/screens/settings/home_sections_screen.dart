@@ -12,6 +12,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/multi_server_repository.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/playlist_utils.dart';
@@ -958,8 +959,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       others = [
         for (final session in await GetIt.instance<MultiServerRepository>()
             .getLoggedInServers())
-          if (normalizeServerBaseUrl(session.client.baseUrl) !=
-              normalizeServerBaseUrl(active.baseUrl))
+          if (!session.server.cloudOnly &&
+              normalizeServerBaseUrl(session.client.baseUrl) !=
+                  normalizeServerBaseUrl(active.baseUrl))
             session,
       ];
     } catch (_) {}
@@ -969,7 +971,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     };
 
     final clients = [
-      active,
+      if (!isCloudOnlyPlexClient(active)) active,
       if (_prefs.get(UserPreferences.enableMultiServerLibraries))
         for (final session in others) session.client,
     ];

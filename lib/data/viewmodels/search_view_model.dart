@@ -14,6 +14,9 @@ import '../models/aggregated_item.dart';
 import '../repositories/multi_server_repository.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
+import '../services/media_server_client_factory.dart';
+import '../services/plex_live_tv_favorites.dart';
+import '../services/user_data_sync.dart';
 import '../services/plugin_sync_service.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../utils/blocked_ratings.dart';
@@ -119,7 +122,10 @@ class SearchViewModel extends ChangeNotifier {
        _scopedParentId =
            (scopedParentId != null && scopedParentId.isNotEmpty)
                ? scopedParentId
-               : null;
+               : null {
+    userDataSync.addListener(_onUserDataChanged);
+    PlexLiveTvFavorites.favoriteListChanged.addListener(_onUserDataChanged);
+  }
 
   void setSeerrRepository(SeerrRepository repo) {
     _seerrRepository = repo;
@@ -142,6 +148,35 @@ class SearchViewModel extends ChangeNotifier {
 
   List<SearchResultGroup> _results = const [];
   List<SearchResultGroup> get results => _results;
+
+  bool? _cachedPlexFavorite(AggregatedItem item) {
+    final key = item.rawData['PlexFavoriteSyncKey'];
+    if (key is! String) return null;
+    final client = _multiServerRepository == null
+        ? _client
+        : GetIt.instance.maybeGet<MediaServerClientFactory>()?.getClientIfExists(item.serverId);
+    return client == null ? null : PlexLiveTvFavorites.cachedFavoriteFor(client, item.id, key);
+  }
+
+  List<SearchResultGroup> _withChannelUserData(List<SearchResultGroup> groups) {
+    List<SearchResultGroup>? changed;
+    for (var i = 0; i < groups.length; i++) {
+      final group = groups[i];
+      if (!group.itemTypes.contains('LiveTvChannel')) continue;
+      final updated = userDataSync.applyAll(group.items, favoriteFallback: _cachedPlexFavorite);
+      if (identical(updated, group.items)) continue;
+      changed ??= List<SearchResultGroup>.of(groups);
+      changed[i] = group.copyWith(items: updated);
+    }
+    return changed ?? groups;
+  }
+
+  void _onUserDataChanged() {
+    final updated = _withChannelUserData(_results);
+    if (identical(updated, _results)) return;
+    _results = updated;
+    notifyListeners();
+  }
 
   List<SeerrDiscoverItem> _seerrResults = const [];
   List<SeerrDiscoverItem> get seerrResults => _seerrResults;
@@ -306,7 +341,7 @@ class SearchViewModel extends ChangeNotifier {
 
       if (run != _searchRun || query != _query) return;
 
-      _results = _withPeople(groups, people ?? const []);
+      _results = _withChannelUserData(_withPeople(groups, people ?? const []));
       _seerrResults = seerr;
       _gameResults = games;
       if (smart != null || _smartQuery != query) {
@@ -327,7 +362,7 @@ class SearchViewModel extends ChangeNotifier {
         unawaited(
           peopleFuture.then((found) {
             if (found.isEmpty || run != _searchRun || query != _query) return;
-            _results = _withPeople(groups, found);
+            _results = _withChannelUserData(_withPeople(groups, found));
             notifyListeners();
           }),
         );
@@ -360,20 +395,27 @@ class SearchViewModel extends ChangeNotifier {
       label: 'people search',
     ).then(_interleave).catchError((_) => <AggregatedItem>[]);
     final channelsFuture = _channelMatches(query);
-    final perServerItems = await _searchEachServer(
-      (repository) => repository.searchGroups(
-        query,
-        [
-          for (final group in activeGroups)
-            if (!group.itemTypes.contains('Person') &&
-                !group.itemTypes.contains('LiveTvChannel'))
-              group.itemTypes,
-        ],
-        perGroup: _resultLimit,
-        limit: _globalFetchLimit,
-      ),
-      label: 'search',
-    );
+    List<List<AggregatedItem>> perServerItems;
+    try {
+      perServerItems = await _searchEachServer(
+        (repository) => repository.searchGroups(
+          query,
+          [
+            for (final group in activeGroups)
+              if (!group.itemTypes.contains('Person') &&
+                  !group.itemTypes.contains('LiveTvChannel'))
+                group.itemTypes,
+          ],
+          perGroup: _resultLimit,
+          limit: _globalFetchLimit,
+        ),
+        label: 'search',
+      );
+    } catch (_) {
+      // A library outage must not hide usable channel matches.
+      if ((await channelsFuture).isEmpty) rethrow;
+      perServerItems = const [];
+    }
     final channels = await channelsFuture;
     final foldsCopies =
         _serverNames.isNotEmpty &&
@@ -418,10 +460,23 @@ class SearchViewModel extends ChangeNotifier {
   Future<List<List<AggregatedItem>>> _searchEachServer(
     Future<List<AggregatedItem>> Function(SearchRepository repository) search, {
     required String label,
+    bool includeCloudOnly = false,
+    void Function()? onPartialFailure,
   }) async {
     final multiServer = _multiServerRepository;
-    if (multiServer == null) return [await search(_searchRepository)];
-    return multiServer.searchEachServer(search, label: label);
+    if (multiServer == null) {
+      // Cloud accounts can search Live TV channels, but not media libraries.
+      if (!includeCloudOnly && isCloudOnlyPlexClient(_client)) {
+        return const <List<AggregatedItem>>[];
+      }
+      return [await search(_searchRepository)];
+    }
+    return multiServer.searchEachServer(
+      search,
+      label: label,
+      includeCloudOnly: includeCloudOnly,
+      onPartialFailure: onPartialFailure,
+    );
   }
 
   /// Takes one result from each server in turn, so every server keeps its own
@@ -435,19 +490,28 @@ class SearchViewModel extends ChangeNotifier {
     ];
   }
 
-  // The lineup is fetched once per search session and reused across queries,
-  // since /LiveTv/Channels has no search parameter of its own.
+  // A complete lineup is reused across queries, but partial multi-server
+  // results are shown only for the current search and retried next time.
   Future<List<AggregatedItem>>? _channelsFuture;
+
+  Future<List<AggregatedItem>> _loadChannelLineup() async {
+    var partial = false;
+    final perServer = await _searchEachServer(
+      (repository) => repository.fetchLiveTvChannels(),
+      label: 'channel lineup',
+      includeCloudOnly: true,
+      onPartialFailure: () => partial = true,
+    );
+    if (partial) _channelsFuture = null;
+    return perServer.expand((channels) => channels).toList();
+  }
 
   Future<List<AggregatedItem>> _channelMatches(String query) async {
     // Channels come back wholesale rather than through a search the server
     // answers, so the folding it would have done has to happen here.
     final q = foldForSearch(query.trim());
     if (q.isEmpty || q.startsWith('studio:')) return const [];
-    _channelsFuture ??= _searchEachServer(
-      (repository) => repository.fetchLiveTvChannels(),
-      label: 'channel lineup',
-    ).then((perServer) => perServer.expand((channels) => channels).toList());
+    _channelsFuture ??= _loadChannelLineup();
     try {
       final all = await _channelsFuture!;
       return all
@@ -543,6 +607,8 @@ class SearchViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    userDataSync.removeListener(_onUserDataChanged);
+    PlexLiveTvFavorites.favoriteListChanged.removeListener(_onUserDataChanged);
     _debounceTimer?.cancel();
     // Keeps searches that answer after the screen closed from landing on it.
     _searchRun++;

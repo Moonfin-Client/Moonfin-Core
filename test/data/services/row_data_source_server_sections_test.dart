@@ -12,7 +12,10 @@ import 'package:moonfin/ui/util/home_row_title_localizer.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _MockClient extends Mock implements MediaServerClient {}
+class _MockClient extends Mock implements MediaServerClient {
+  @override
+  ServerType get serverType => ServerType.silo;
+}
 
 class _MockItemsApi extends Mock implements ItemsApi {}
 

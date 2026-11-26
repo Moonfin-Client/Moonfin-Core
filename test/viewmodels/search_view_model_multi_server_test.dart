@@ -7,9 +7,11 @@ import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/auth/store/authentication_store.dart';
 import 'package:moonfin/auth/store/credential_store.dart';
+import 'package:moonfin/data/repositories/item_mutation_repository.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
 import 'package:moonfin/data/repositories/search_repository.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/search_view_model.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
@@ -18,6 +20,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockItemsApi extends Mock implements ItemsApi {}
+
+class _MockLiveTvApi extends Mock implements LiveTvApi {}
+
+class _MockUserLibrary extends Mock implements UserLibraryApi {}
 
 class _MockImageApi extends Mock implements ImageApi {}
 
@@ -33,6 +39,10 @@ void main() {
   late Map<String, _MockClient> clients;
   late Map<String, _MockItemsApi> itemsApis;
   late MultiServerRepository multiServer;
+  late _MockAuthStore authStore;
+  late _MockCredentialStore credentials;
+  late _MockClientFactory factory;
+  late List<Server> servers;
 
   Future<Map<String, dynamic>> itemsSearch(_MockItemsApi api) => api.getItems(
     searchTerm: any(named: 'searchTerm'),
@@ -52,27 +62,39 @@ void main() {
   };
 
   setUp(() async {
+    userDataSync.reset();
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
 
-    final authStore = _MockAuthStore();
-    final credentials = _MockCredentialStore();
-    final factory = _MockClientFactory();
+    authStore = _MockAuthStore();
+    credentials = _MockCredentialStore();
+    factory = _MockClientFactory();
     final session = _MockSessionRepository();
     clients = {};
     itemsApis = {};
-    final servers = <Server>[];
+    servers = <Server>[];
     for (final id in ['a', 'b']) {
       final client = _MockClient();
       final itemsApi = _MockItemsApi();
+      final liveTvApi = _MockLiveTvApi();
       clients[id] = client;
       itemsApis[id] = itemsApi;
       when(() => client.itemsApi).thenReturn(itemsApi);
       when(() => client.imageApi).thenReturn(_MockImageApi());
       when(() => client.gamesApi).thenReturn(null);
       when(() => client.serverType).thenReturn(ServerType.jellyfin);
+      when(() => client.userId).thenReturn('user-$id');
+      when(() => factory.serverIdOf(client)).thenReturn(id);
+      when(() => client.liveTvApi).thenReturn(liveTvApi);
+      when(
+        () => liveTvApi.getChannels(
+          fields: 'ImageTags',
+          enableTotalRecordCount: false,
+          userId: 'user-$id',
+        ),
+      ).thenAnswer((_) async => {'Items': []});
       when(() => itemsApi.getPersons(
         searchTerm: any(named: 'searchTerm'),
         limit: any(named: 'limit'),
@@ -104,10 +126,12 @@ void main() {
           serverId: id,
           serverType: ServerType.jellyfin,
           baseUrl: 'http://$id',
+          cloudOnly: false,
         ),
       ).thenReturn(client);
       when(() => factory.getClientIfExists(id)).thenReturn(client);
     }
+    GetIt.instance.registerSingleton<MediaServerClientFactory>(factory);
     when(authStore.getServers).thenReturn(servers);
     when(() => session.activeServerId).thenReturn('a');
     when(() => session.activeUserId).thenReturn('user-a');
@@ -119,7 +143,10 @@ void main() {
     );
   });
 
-  tearDown(() => GetIt.instance.reset());
+  tearDown(() async {
+    userDataSync.reset();
+    await GetIt.instance.reset();
+  });
 
   Future<SearchViewModel> search({
     MultiServerRepository? across,
@@ -203,6 +230,39 @@ void main() {
 
     expect(vm.state, SearchState.ready);
     expect(movieResults(vm), [('a1', 'a')]);
+  });
+
+  test('during a library outage channel search still finds stations and updates favorites on the right server', () async {
+    for (final api in itemsApis.values) {
+      when(() => itemsSearch(api)).thenThrow(StateError('library offline'));
+    }
+    void publishStation(String id) {
+      final channels = clients[id]!.liveTvApi;
+      when(() => channels.getChannels(fields: 'ImageTags', enableTotalRecordCount: false, userId: 'user-$id'))
+          .thenAnswer((_) async => {'Items': [{'Id': 'news', 'Type': 'TvChannel', 'Name': 'Alien News'}]});
+    }
+    publishStation('a');
+    final result = await search(across: multiServer);
+    expect(result.state, SearchState.ready);
+    expect(result.results.single.items.single.name, 'Alien News');
+    publishStation('b');
+    final vm = await search(across: multiServer);
+    Future<void> searchAgain(String term) async {
+      vm.searchImmediate(term);
+      while (vm.state == SearchState.loading) { await pumpEventQueue(); }
+    }
+    Map<String, bool> favorites() => {
+      for (final item in vm.results.single.items) item.serverId: item.isFavorite,
+    };
+    expect(favorites(), {'a': false, 'b': false});
+    final library = _MockUserLibrary();
+    when(() => clients['a']!.userLibraryApi).thenReturn(library);
+    when(() => library.markFavorite('news')).thenAnswer((_) async {});
+    await ItemMutationRepository(clients['a']!).setFavorite('news', isFavorite: true, isChannel: true);
+    expect(favorites(), {'a': true, 'b': false});
+
+    await searchAgain('News');
+    expect(favorites(), {'a': true, 'b': false});
   });
 
   test('with multi-server search off only the active server is searched', () async {

@@ -164,6 +164,33 @@ void main() {
     expect(adapter.requests, contains('DELETE /Moonfin/Settings'));
   });
 
+  test('only a successful global reset discards pending guide pins', () async {
+    const pins = ['group:Sports'];
+    const edits = ['add:group:Sports'];
+    await prefs.set(UserPreferences.liveTvSavedFilters, pins);
+    await prefs.set(UserPreferences.liveTvSavedFilterChanges, edits);
+    adapter.failDeletes = true;
+    expect(
+      await service.resetProfileToDefaults(client, profile: 'global'),
+      isFalse,
+    );
+    adapter.failDeletes = false;
+    await service.resetProfileToDefaults(client, profile: 'desktop');
+    expect(prefs.get(UserPreferences.liveTvSavedFilters), pins);
+    expect(prefs.get(UserPreferences.liveTvSavedFilterChanges), edits);
+    adapter.requests.clear();
+    adapter.resolvedProfile = {
+      'liveTvSavedFilters': ['group:Admin'],
+    };
+    expect(
+      await service.resetProfileToDefaults(client, profile: 'global'),
+      isTrue,
+    );
+    expect(prefs.get(UserPreferences.liveTvSavedFilters), ['group:Admin']);
+    expect(prefs.get(UserPreferences.liveTvSavedFilterChanges), isEmpty);
+    expect(adapter.requests.where((r) => r.startsWith('POST')), isEmpty);
+  });
+
   test('a changed setting is back to its default afterwards', () async {
     await prefs.set(UserPreferences.use24HourClock, true);
     expect(prefs.get(UserPreferences.use24HourClock), isTrue);

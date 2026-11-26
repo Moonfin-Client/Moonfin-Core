@@ -24,6 +24,7 @@ class _MockSessionRepository extends Mock implements SessionRepository {}
 class _StreamAdapter implements HttpClientAdapter {
   final List<StreamController<Uint8List>> streams = [];
   final List<RequestOptions> streamRequests = [];
+  final resolved = <String, dynamic>{};
 
   void send(String text) =>
       streams.last.add(Uint8List.fromList(utf8.encode(text)));
@@ -50,6 +51,8 @@ class _StreamAdapter implements HttpClientAdapter {
     Map<String, dynamic>? body;
     if (path.endsWith('/Moonfin/Ping')) {
       body = {'installed': true, 'settingsSyncEnabled': true};
+    } else if (path.contains('/Moonfin/Settings/Resolved/')) {
+      body = resolved;
     } else if (path.contains('/Moonfin/Settings/')) {
       body = {};
     }
@@ -77,15 +80,19 @@ Map<String, dynamic> _seerrEvent({String route = '/seerr/media/1'}) => {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late PluginSyncService service;
+  late PluginSyncService Function() createService;
   late _StreamAdapter adapter;
   late _MockClient client;
+  late UserPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'pref_last_server_id': 'srv1'});
+    SharedPreferences.setMockInitialValues({
+      'pref_last_server_id': 'srv1',
+      'pref_last_user_id': 'user1',
+    });
     final store = PreferenceStore();
     await store.init();
-    final prefs = UserPreferences(store);
+    prefs = UserPreferences(store);
 
     final session = _MockSessionRepository();
     when(() => session.activeUserId).thenReturn('user1');
@@ -96,6 +103,7 @@ void main() {
     client = _MockClient();
     when(() => client.baseUrl).thenReturn('http://plugin.test');
     when(() => client.accessToken).thenReturn('token');
+    when(() => client.userId).thenReturn('user1');
     when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.deviceInfo).thenReturn(
       const DeviceInfo(
@@ -108,7 +116,8 @@ void main() {
     GetIt.instance.registerSingleton<MediaServerClient>(client);
 
     adapter = _StreamAdapter();
-    service = PluginSyncService(
+    // Construct the service in the clock zone that drives its sign-in queue.
+    createService = () => PluginSyncService(
       prefs,
       store,
       dio: Dio(pluginRequestOptions())..httpClientAdapter = adapter,
@@ -119,8 +128,33 @@ void main() {
   tearDown(() => GetIt.instance.reset());
 
   group('settings stream', () {
+    for (final type in [ServerType.jellyfin, ServerType.plex]) {
+      test('enabling sync after login receives an admin guide pin on ${type.name}', () async {
+        when(() => client.serverType).thenReturn(type);
+        await prefs.set(UserPreferences.pluginSyncEnabled, false);
+        await prefs.set(UserPreferences.pluginSyncInitializedForServer('srv1'), true);
+        fakeAsync((async) {
+          final service = createService();
+          service.syncOnLogin(client, serverId: 'srv1');
+          async.elapse(const Duration(seconds: 5));
+          expect(service.pluginAvailable, isTrue);
+          expect(adapter.streams, isEmpty);
+
+          service.setSyncEnabled(true);
+          async.elapse(Duration.zero);
+          expect(adapter.streams, hasLength(1));
+          adapter.resolved['liveTvSavedFilters'] = ['group:Sports'];
+          adapter.send('data: {"type":"settingsUpdated"}\n\n');
+          async.elapse(Duration.zero);
+          expect(prefs.get(UserPreferences.liveTvSavedFilters), ['group:Sports']);
+          service.dispose();
+        });
+      });
+    }
+
     test('a quiet stream stays open past the server heartbeat', () {
       fakeAsync((async) {
+        final service = createService();
         final heard = <SeerrNotificationEvent>[];
         service.seerrNotifications.listen(heard.add);
         service.syncOnLogin(client, serverId: 'srv1');
@@ -141,6 +175,7 @@ void main() {
       when(() => client.serverType).thenReturn(ServerType.plex);
       when(() => client.baseUrl).thenReturn('http://plex.test:32400');
       fakeAsync((async) {
+        final service = createService();
         final heard = <SeerrNotificationEvent>[];
         service.seerrNotifications.listen(heard.add);
         service.syncOnLogin(client, serverId: 'srv1');
@@ -164,6 +199,7 @@ void main() {
 
     test('a stream quiet past the idle limit opens again', () {
       fakeAsync((async) {
+        final service = createService();
         service.syncOnLogin(client, serverId: 'srv1');
         async.elapse(const Duration(seconds: 5));
         adapter.send(':connected\n\n');
@@ -177,6 +213,9 @@ void main() {
   });
 
   group('Seerr notifications', () {
+    late PluginSyncService service;
+    setUp(() => service = createService());
+
     test('every listener hears one, even after another stops', () async {
       final kept = <SeerrNotificationEvent>[];
       final dropped = service.seerrNotifications.listen((_) {});

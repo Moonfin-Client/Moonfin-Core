@@ -620,6 +620,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.gamepadNavigationDescription,
         keywords: ['gamepad', 'controller', 'input'],
       ),
+    if (liveTvOnAnyServer)
+      style.leaf(
+        'live_tv_category_display',
+        l10n.liveTvCategoryDisplay,
+        header: l10n.layout,
+        keywords: ['live tv', 'guide', 'channel groups', 'categories'],
+      ),
     style.leaf('pref_interface_style', l10n.interfaceStyle, keywords: [
       'classic',
       'modern',

@@ -13,19 +13,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/services/log_service.dart';
+import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/user_data_sync.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
+import 'package:moonfin/playback/native_apple_player_backend.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
+import 'package:moonfin/ui/screens/livetv/live_tv_guide_screen.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_player_screen.dart';
+import 'package:moonfin/ui/screens/playback/appletv_livetv_player_host_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
 class _Client extends Mock implements MediaServerClient {}
+
+class _Factory extends Mock implements MediaServerClientFactory {}
 
 class _LiveTvApi extends Mock implements LiveTvApi {}
 
@@ -41,6 +47,9 @@ class _Log extends Fake implements LogService {
 }
 
 class _Screensaver extends Fake implements ScreensaverController {
+  @override
+  void setNativePlayerPresented(bool presented) {}
+
   @override
   void setPlaybackActive(bool active) {}
 }
@@ -83,6 +92,9 @@ class _Manager extends PlaybackManager {
   final _Backend fakeBackend;
   final seeks = <Duration>[];
   final playedChannelIds = <String>[];
+  String? playedServerId;
+  String? failedChannel;
+  Completer<void>? failedTune;
   final resumes = <bool>[];
   var stops = 0;
   final _bringup = StreamController<PlaybackBringupState>.broadcast();
@@ -117,8 +129,11 @@ class _Manager extends PlaybackManager {
     bool carryTrackSelections = false,
     bool stopCurrentAsFinished = false,
   }) async {
-    final id = (items.first as AggregatedItem).id;
+    final item = items.first as AggregatedItem;
+    final id = item.id;
+    playedServerId = item.serverId;
     playedChannelIds.add(id);
+    if (id == failedChannel) await failedTune?.future;
     _bringup
       ..add(
         PlaybackBringupState(
@@ -129,7 +144,7 @@ class _Manager extends PlaybackManager {
       )
       ..add(
         PlaybackBringupState(
-          phase: PlaybackBringupPhase.ready,
+          phase: id == failedChannel ? PlaybackBringupPhase.failed : PlaybackBringupPhase.ready,
           sessionToken: 1,
           itemId: id,
         ),
@@ -192,6 +207,7 @@ void main() {
     when(() => userLibrary.markFavorite(any())).thenAnswer((_) async {});
     when(() => userLibrary.unmarkFavorite(any())).thenAnswer((_) async {});
     final client = _Client();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userLibraryApi).thenReturn(userLibrary);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user');
@@ -215,7 +231,19 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Future<void> pumpPlayer(WidgetTester tester) async {
+  const ard = GuideChannel(
+    id: 'ard',
+    name: 'Das Erste',
+    rawData: {'ChannelFavoriteSyncKey': 'channel:http://server\u0000ard'},
+  );
+  const zdf = GuideChannel(
+    id: 'zdf',
+    name: 'ZDF',
+    rawData: {'ChannelFavoriteSyncKey': 'channel:http://server\u0000zdf'},
+  );
+  Future<void> pumpPlayer(WidgetTester tester, {
+    List<GuideChannel> channels = const [ard, zdf],
+  }) async {
     tester.view.physicalSize = const Size(1920, 1080);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -223,17 +251,19 @@ void main() {
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: const [Locale('en')],
-        home: const LiveTvPlayerScreen(
-          channels: [
-            GuideChannel(id: 'ard', name: 'Das Erste', rawData: {}),
-            GuideChannel(id: 'zdf', name: 'ZDF', rawData: {}),
-          ],
-          startIndex: 0,
-        ),
+        home: LiveTvPlayerScreen(channels: channels, startIndex: 0),
       ),
     );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  void useSavedPlexAccount() {
+    final client = GetIt.instance<MediaServerClient>();
+    when(() => client.baseUrl).thenReturn('https://plex.tv');
+    final factory = _Factory();
+    when(() => factory.serverIdOf(client)).thenReturn('plex-cloud-viewer');
+    GetIt.instance.registerSingleton<MediaServerClientFactory>(factory);
   }
 
   Future<void> hideControls(WidgetTester tester) async {
@@ -246,10 +276,86 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('native guide shares the starting tune and adopts the selected lineup after Retry', (tester) async {
+    useSavedPlexAccount();
+    final messenger = tester.binding.defaultBinaryMessenger;
+    const events = MethodChannel('moonfin/native_apple_player_events');
+    const control = MethodChannel('moonfin/native_apple_player_control');
+    messenger.setMockMethodCallHandler(events, (_) async => null);
+    messenger.setMockMethodCallHandler(control, (_) async => null);
+    final native = NativeApplePlayerBackend(GetIt.instance<UserPreferences>());
+    GetIt.instance.registerSingleton<NativeApplePlayerBackend>(native);
+    addTearDown(() {
+      native.dispose();
+      messenger.setMockMethodCallHandler(events, null);
+      messenger.setMockMethodCallHandler(control, null);
+    });
+    Future<void> send(Map<String, Object> action) async {
+      await messenger.handlePlatformMessage(events.name,
+          const StandardMethodCodec().encodeSuccessEnvelope(action), (_) {});
+      await tester.pump();
+    }
+
+    Future<void> pumpHost(List<GuideChannel> channels) async {
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: AppleTvLiveTvPlayerHostScreen(channels: channels, startIndex: 0),
+      ));
+      await tester.pump();
+    }
+
+    manager.failedChannel = ard.id;
+    manager.failedTune = Completer<void>();
+    final guide = find.byType(LiveTvGuideScreen);
+    Future<void> openGuide() async {
+      await send({'event': 'openGuide'});
+      await tester.pumpAndSettle();
+    }
+    Future<void> leaveGuide([String? id]) async {
+      Navigator.of(tester.element(guide)).pop(id);
+      await tester.pumpAndSettle();
+    }
+    await pumpHost([ard]);
+    expect(manager.playedServerId, 'plex-cloud-viewer');
+    await openGuide();
+    tester.widget<LiveTvGuideScreen>(guide).onChannelSelected!(ard.id, const [ard]);
+    await leaveGuide(ard.id);
+    manager.failedChannel = null;
+    manager.failedTune!.complete();
+    await tester.pumpAndSettle();
+    expect(manager.playedChannelIds, [ard.id]);
+
+    await openGuide();
+    const third = GuideChannel(id: 'third', name: 'Third', rawData: {});
+    tester.widget<LiveTvGuideScreen>(guide).onChannelSelected!(zdf.id, const [zdf, third]);
+    manager.failedChannel = zdf.id;
+    await leaveGuide(zdf.id);
+    manager.failedChannel = null;
+    await send({'event': 'messageAction'});
+    await send({'event': 'selectChannel', 'channelId': third.id});
+    expect(manager.playedChannelIds, [ard.id, zdf.id, zdf.id, third.id]);
+    await pumpHost([ard]);
+    await openGuide();
+    expect(tester.widget<LiveTvGuideScreen>(guide).currentChannel?.id, third.id);
+    await leaveGuide();
+    await send({'event': 'selectChannel', 'channelId': zdf.id});
+    expect(manager.playedChannelIds.last, zdf.id);
+    await pumpHost([third, zdf]);
+    await openGuide();
+    expect(tester.widget<LiveTvGuideScreen>(guide).currentChannel?.id, zdf.id);
+    await leaveGuide();
+    await pumpHost([ard]);
+    await openGuide();
+    expect(tester.widget<LiveTvGuideScreen>(guide).currentChannel?.id, zdf.id);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 2));
+  });
+
   testWidgets('favorite control toggles the channel and follows tuning', (
     tester,
   ) async {
-    await pumpPlayer(tester);
+    await pumpPlayer(tester, channels: const [ard]);
+    await pumpPlayer(tester, channels: const [zdf, ard]);
     final favorite = find.byTooltip(l10n.favoriteChannel);
     expect(favorite, findsOneWidget);
     expect(tester.widget<Icon>(find.descendant(
@@ -272,10 +378,104 @@ void main() {
     await press(tester, LogicalKeyboardKey.channelUp);
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byTooltip(l10n.unfavoriteChannel), findsOneWidget);
+    // Removing the playing channel from the guide must still unpin that channel.
+    await pumpPlayer(tester, channels: const [zdf]);
     await tester.tap(find.byTooltip(l10n.unfavoriteChannel));
     await tester.pump();
     verify(() => userLibrary.unmarkFavorite('ard')).called(1);
     expect(find.byTooltip(l10n.favoriteChannel), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  Future<void> pickFromGuide(WidgetTester tester, GuideChannel station) async {
+    await tester.tap(find.byTooltip(l10n.guide));
+    await tester.pump();
+    tester.widget<LiveTvGuideScreen>(find.byType(LiveTvGuideScreen))
+        .onChannelSelected!(station.id, [station]);
+  }
+
+  for (final needsRetry in [false, true]) {
+    testWidgets('selecting the starting station shares its tune (retry: $needsRetry)', (tester) async {
+      useSavedPlexAccount();
+      manager.failedChannel = ard.id;
+      manager.failedTune = Completer<void>();
+      await pumpPlayer(tester);
+      expect(manager.playedServerId, 'plex-cloud-viewer');
+      await pickFromGuide(tester, ard);
+      if (!needsRetry) manager.failedChannel = null;
+      manager.failedTune!.complete();
+      await tester.pump();
+      expect(manager.playedChannelIds, [ard.id]);
+      if (needsRetry) {
+        manager.failedChannel = null;
+        await tester.tap(find.text(l10n.retry));
+        await tester.pump();
+      }
+      await press(tester, LogicalKeyboardKey.channelUp);
+      expect(manager.playedChannelIds, [ard.id, if (needsRetry) ard.id]);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  testWidgets('surfing after a failed guide tune wraps within the previous group', (tester) async {
+    await pumpPlayer(tester);
+    const third = GuideChannel(id: 'third', name: 'Third', rawData: {});
+    manager.failedChannel = third.id;
+    await pickFromGuide(tester, third);
+    await tester.pump();
+    expect(find.text(l10n.retry), findsOneWidget);
+    await press(tester, LogicalKeyboardKey.channelDown);
+    await press(tester, LogicalKeyboardKey.channelUp);
+    expect(manager.playedChannelIds, [ard.id, third.id, zdf.id, ard.id]);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  for (final attempt in ['success', 'failure', 'retry']) {
+    testWidgets('filtered lineup follows a successful guide tune ($attempt)', (tester) async {
+      await pumpPlayer(tester, channels: const [ard]);
+      if (attempt != 'success') manager.failedChannel = zdf.id;
+      await pickFromGuide(tester, zdf);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      if (attempt == 'retry') {
+        manager.failedChannel = null;
+        await tester.tap(find.text(l10n.retry));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      await press(tester, LogicalKeyboardKey.channelUp);
+      expect(manager.playedChannelIds, [
+        'ard', 'zdf', if (attempt == 'retry') 'zdf', if (attempt == 'failure') 'ard',
+      ]);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  testWidgets('remote OK retries when the carousel cannot restore the old station', (tester) async {
+    await pumpPlayer(tester);
+    await hideControls(tester);
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    expect(FocusManager.instance.primaryFocus?.debugLabel, 'LiveTvPlayPause');
+    await press(tester, LogicalKeyboardKey.arrowUp);
+    await tester.pump(const Duration(milliseconds: 100));
+    final carousel = tester.widget<ChannelCarousel>(find.byType(ChannelCarousel));
+    manager.failedChannel = zdf.id;
+    manager.failedTune = Completer<void>();
+    carousel.onChannelSelected!(carousel.channels.firstWhere((c) => c.channelId == zdf.id));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(manager.playedChannelIds, [ard.id, zdf.id]);
+    await pumpPlayer(tester, channels: const [zdf]);
+    manager.failedTune!.complete();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byType(ChannelCarousel), findsNothing);
+    manager.failedChannel = null;
+    expect(find.text(l10n.retry), findsOneWidget);
+    await press(tester, LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(manager.playedChannelIds, [ard.id, zdf.id, zdf.id]);
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets('Channel Up works off TV too', (tester) async {

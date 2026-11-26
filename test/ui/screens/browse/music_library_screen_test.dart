@@ -89,7 +89,7 @@ class _FakeMutations extends Fake implements ItemMutationRepository {
   final favorites = <(String, bool)>[];
 
   @override
-  Future<void> setFavorite(String itemId, {required bool isFavorite}) async =>
+  Future<void> setFavorite(String itemId, {required bool isFavorite, bool isChannel = false, String? expectedChannelKey}) async =>
       favorites.add((itemId, isFavorite));
 }
 
@@ -174,6 +174,7 @@ void main() {
     prefs = UserPreferences(store);
 
     final client = _MockClient();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user-1');
     when(() => client.itemsApi).thenReturn(_OneSongItemsApi());

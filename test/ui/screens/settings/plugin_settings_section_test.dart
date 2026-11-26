@@ -87,5 +87,9 @@ void main() {
     expect(find.text('Sync off'), findsOneWidget);
     expect(find.text('Global'), findsNothing);
     expect(find.text('Reset TV Profile'), findsNothing);
+
+    when(() => sync.setSyncEnabled(true)).thenAnswer((_) async {});
+    await tester.tap(find.byType(Switch));
+    verify(() => sync.setSyncEnabled(true)).called(1);
   });
 }

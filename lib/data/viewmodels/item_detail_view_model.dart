@@ -2812,7 +2812,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     final newState = !item.isFavorite;
     _applyOptimisticUpdate({'IsFavorite': newState});
     try {
-      await _mutations.setFavorite(_mutationId, isFavorite: newState);
+      await _mutations.setFavorite(_mutationId, isFavorite: newState, isChannel: item.type == 'TvChannel',
+          expectedChannelKey: channelFavoriteKey(item.rawData));
       await _reload();
     } catch (_) {
       _applyOptimisticUpdate({'IsFavorite': !newState});

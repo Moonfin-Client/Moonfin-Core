@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
+import '../services/plex_live_tv_favorites.dart';
 import '../utils/blocked_ratings.dart';
 
 class SearchRepository {
@@ -97,8 +100,12 @@ class SearchRepository {
       userId: _client.userId,
     );
     final items = response['Items'] as List? ?? const [];
-    return items.map((item) {
-      final data = Map<String, dynamic>.from(item as Map);
+    final channels = items.map((item) {
+      final data = PlexLiveTvFavorites.applyToItem(
+        _client,
+        Map<String, dynamic>.from(item as Map),
+        fromLineup: true,
+      );
       data['Type'] ??= 'TvChannel';
       return AggregatedItem(
         id: data['Id']?.toString() ?? '',
@@ -106,6 +113,10 @@ class SearchRepository {
         rawData: data,
       );
     }).toList();
+    // Return cached hearts with the lineup; new ones are published by
+    // UserDataSync when the cloud request finishes.
+    unawaited(PlexLiveTvFavorites.refreshForBrowse(_client));
+    return channels;
   }
 
   Future<List<AggregatedItem>> search(

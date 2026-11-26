@@ -81,6 +81,7 @@ void main() {
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
 
     final client = _MockClient();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.baseUrl).thenReturn('http://server');
     when(() => client.userId).thenReturn('user-1');
     when(() => client.itemsApi).thenReturn(_FakeItemsApi());

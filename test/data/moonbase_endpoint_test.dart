@@ -160,6 +160,30 @@ void main() {
   group('Plex', () {
     tearDown(() => GetIt.instance.reset());
 
+    test('cloud-only Plex never probes Moonbase with an account token', () async {
+      final client = PlexMediaServerClient(
+        baseUrl: 'https://plex.tv',
+        deviceInfo: _device,
+        cloudOnly: true,
+      )..accessToken = 'plex-account-token';
+      final server = _Companion();
+      final dio = _dio(server);
+
+      expect(isCloudOnlyPlexClient(client), isTrue);
+      expect(await moonbaseEndpoint(client, dio), isNull);
+      expect(moonbaseKnownMissing(client), isTrue);
+      expect(
+        await plexAccountMoonbaseEndpoint(
+          serverId: 'plex-cloud-test',
+          serverUrl: client.baseUrl,
+          token: 'plex-account-token',
+          dio: dio,
+        ),
+        isNull,
+      );
+      expect(server.requests, isEmpty);
+    });
+
     test('finds the companion next to Plex and signs with the PMS token',
         () async {
       final client = _plex('http://192.168.50.45:32400');

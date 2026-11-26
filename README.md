@@ -85,6 +85,7 @@ If a Silo server has a newer API than your version of Moonfin, Moonfin won't con
 - **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
 - **Smart Search** that finds titles from a plain sentence, **poster labels** like 4K and HDR, and a **Calendar** of what's coming up in Sonarr and Radarr with reminders on phones and tablets, all served by the Moonbase plugin.
 - **Live TV and DVR** with a program guide, rewind on channels that keep a rewind window, a quick channel changer on TV, automatic recovery when a channel stalls, and recording management.
+  Plex syncs channel favorites across devices as one account-wide list. If two devices edit favorites at the same time, the last save can overwrite the other device’s changes, even when they edited different channels.
 - **Client certificates (mTLS)** for servers that require one, with a page you open on your phone to send the certificate to a TV.
 - **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, on both Jellyfin and Emby.
 - **Cinema Mode and segment skipping** for pre-rolls, intros, credits, and SponsorBlock.

@@ -29,6 +29,8 @@ private let carouselInactivity: TimeInterval = 120
 /// Flutter overlay, so the two surfaces behave the same way.
 @MainActor
 final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayerNavigable {
+    var onVisibleChannelsChanged: (([String]) -> Void)?
+    private var lastVisibleIds: [String] = []
     var onChannelSelected: ((String) -> Void)?
 
     /// DOWN leaves the carousel and hands the player its controls.
@@ -68,6 +70,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     private var inactivityTimer: Timer?
     private var headerTimer: Timer?
     private var dismissed = false
+    private var visibleOnScreen = false
 
     private static let overlayPadding = UIEdgeInsets(top: 48, left: 48, bottom: 48, right: 48)
     private static let headerPadding = UIEdgeInsets(top: 12, left: 32, bottom: 0, right: 32)
@@ -82,8 +85,8 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     private static let glowMargin: CGFloat = 48
 
     private var count: Int { entries.count }
-    private var centeredIndex: Int {
-        CarouselIndex.channelIndex(for: centerIndex, count: count)
+    var centeredChannel: ChannelCarouselEntry? {
+        entries.indices.contains(centerIndex) ? entries[centerIndex] : nil
     }
 
     init(entries: [ChannelCarouselEntry], startIndex: Int, theme: ChannelCarouselTheme) {
@@ -205,6 +208,14 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // A temporary modal can hide this carousel without dismissing it.
+        // Restore its visible-channel neighborhood when it reappears.
+        visibleOnScreen = true
+        if !dismissed {
+            bindCards()
+            updateHeader()
+            resetInactivity()
+        }
         guard scrim.transform.isIdentity, scrim.frame.height > 0 else { return }
         scrim.transform = CGAffineTransform(translationX: 0, y: scrim.frame.height)
         UIView.animate(
@@ -213,6 +224,21 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
         ) {
             self.scrim.transform = .identity
         }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // The host can replace this overlay with a prompt without going
+        // through dismissCarousel. Either way, stop prewarming offscreen cards.
+        visibleOnScreen = false
+        clearVisibleChannelTracking()
+        stopTimers()
+    }
+
+    private func clearVisibleChannelTracking() {
+        guard !lastVisibleIds.isEmpty else { return }
+        lastVisibleIds.removeAll()
+        onVisibleChannelsChanged?([])
     }
 
     private func stopTimers() {
@@ -224,6 +250,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     private func dismissCarousel(showingControls: Bool = false) {
         guard !dismissed else { return }
         dismissed = true
+        clearVisibleChannelTracking()
         stopTimers()
         UIView.animate(
             withDuration: carouselExitDuration, delay: 0,
@@ -248,13 +275,14 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     /// Adopts a fresh lineup. Cards are rebound in place so a schedule arriving
     /// mid scroll cannot move the selection.
     func update(entries: [ChannelCarouselEntry], theme: ChannelCarouselTheme) {
-        let previousId = self.entries.indices.contains(centeredIndex)
-            ? self.entries[centeredIndex].channelId : ""
+        let previousId = centeredChannel?.channelId
         self.theme = theme
         let countChanged = entries.count != self.entries.count
         self.entries = entries
-        if countChanged {
+        if let previousId, centeredChannel?.channelId != previousId {
             centerIndex = entries.firstIndex { $0.channelId == previousId } ?? 0
+        }
+        if countChanged {
             rebuildCards()
         } else {
             for card in cards { card.applyTheme(theme) }
@@ -300,10 +328,17 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
 
     private func bindCards() {
         guard count > 0 else { return }
+        var visibleIds: [String] = []
         for (slot, card) in cards.enumerated() {
             let offset = slot - halfSpan
             let index = CarouselIndex.channelIndex(for: centerIndex + offset, count: count)
-            card.configure(entries[index], centered: offset == 0)
+            let entry = entries[index]
+            card.configure(entry, centered: offset == 0)
+            if !visibleIds.contains(entry.channelId) { visibleIds.append(entry.channelId) }
+        }
+        if visibleOnScreen && !dismissed && visibleIds != lastVisibleIds {
+            lastVisibleIds = visibleIds
+            onVisibleChannelsChanged?(visibleIds)
         }
     }
 
@@ -352,8 +387,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     }
 
     private func updateHeader() {
-        guard entries.indices.contains(centeredIndex) else { return }
-        let entry = entries[centeredIndex]
+        guard let entry = centeredChannel else { return }
         // Some sources repeat the program name as the episode title. Showing
         // it twice reads as a glitch.
         let episode =
@@ -432,9 +466,9 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     }
 
     private func tuneCenteredChannel() {
-        guard entries.indices.contains(centeredIndex) else { return }
-        let id = entries[centeredIndex].channelId
+        guard let id = centeredChannel?.channelId else { return }
         dismissed = true
+        clearVisibleChannelTracking()
         stopTimers()
         dismiss(animated: false) { [weak self] in
             self?.onChannelSelected?(id)

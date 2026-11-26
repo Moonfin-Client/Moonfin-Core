@@ -38,6 +38,8 @@ class _PluginAdapter implements HttpClientAdapter {
     Map<String, dynamic>? body;
     if (path.endsWith('/Moonfin/Ping')) {
       body = {'installed': true, 'settingsSyncEnabled': true};
+    } else if (path.contains('/Moonfin/Settings/Resolved/')) {
+      body = {'use24HourClock': true};
     } else if (path.contains('/Moonfin/Settings/')) {
       body = {};
     }
@@ -59,6 +61,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late PluginSyncService service;
+  late UserPreferences prefs;
   late _MockClient client;
   late _MockSeerrRepository seerr;
   late bool seerrSignedIn;
@@ -74,7 +77,7 @@ void main() {
     SharedPreferences.setMockInitialValues({'pref_last_server_id': 'srv1'});
     final store = PreferenceStore();
     await store.init();
-    final prefs = UserPreferences(store);
+    prefs = UserPreferences(store);
 
     final session = _MockSessionRepository();
     when(() => session.activeUserId).thenReturn('user1');
@@ -118,6 +121,7 @@ void main() {
     await service
         .syncOnLogin(client, serverId: 'srv1')
         .timeout(const Duration(seconds: 2));
+    expect(prefs.get(UserPreferences.use24HourClock), isTrue);
   });
 
   test('a live Seerr session skips signing in again', () async {

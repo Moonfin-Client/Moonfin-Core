@@ -2,9 +2,21 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
+import 'media_server_client_factory.dart';
+
+String serverChannelKey(String serverId, String channelId) => 'channel:$serverId\u0000$channelId';
+
+String serverChannelKeyFor(MediaServerClient client, String channelId) {
+  final factory = GetIt.instance.maybeGet<MediaServerClientFactory>();
+  return serverChannelKey(factory?.serverIdOf(client) ?? client.baseUrl, channelId);
+}
+
+String? channelFavoriteKey(Map<String, dynamic> row) =>
+    (row['PlexFavoriteSyncKey'] ?? row['ChannelFavoriteSyncKey']) as String?;
 
 /// The newest watched state, resume position and favourite flag this client
 /// knows about, for every item a screen is still holding.
@@ -125,9 +137,25 @@ class UserDataSync extends ChangeNotifier {
 
   /// Returns [item] itself when nothing newer is known, so callers can compare
   /// with `identical` and skip rebuilding a list that did not move.
-  AggregatedItem apply(AggregatedItem item) {
-    final patch = _userData[item.id];
-    if (patch == null) return item;
+  AggregatedItem apply(AggregatedItem item, {
+    bool? Function(AggregatedItem)? favoriteFallback,
+  }) {
+    final original = _userData[item.id];
+    final scopedKey = channelFavoriteKey(item.rawData) ??
+        (item.type == 'TvChannel' && item.serverId.isNotEmpty
+            ? serverChannelKey(item.serverId, item.id)
+            : null);
+    final scopedFavorite = scopedKey is String
+        ? favoriteFor(scopedKey) ?? favoriteFallback?.call(item)
+        : null;
+    if (original == null && scopedFavorite == null) return item;
+    final patch = <String, dynamic>{...?original};
+    if (scopedKey is String) {
+      // A raw item ID can identify different channels on different servers.
+      patch.remove('IsFavorite');
+      if (scopedFavorite != null) patch['IsFavorite'] = scopedFavorite;
+    }
+    if (patch.isEmpty) return item;
     final current = item.rawData['UserData'];
     if (current is Map && _alreadyHolds(current, patch)) return item;
     final merged = <String, dynamic>{
@@ -146,11 +174,13 @@ class UserDataSync extends ChangeNotifier {
 
   /// Returns [items] itself when no entry changed, which keeps list identity
   /// stable for the caches that key off it.
-  List<AggregatedItem> applyAll(List<AggregatedItem> items) {
-    if (_userData.isEmpty || items.isEmpty) return items;
+  List<AggregatedItem> applyAll(List<AggregatedItem> items, {
+    bool? Function(AggregatedItem)? favoriteFallback,
+  }) {
+    if (_userData.isEmpty && favoriteFallback == null) return items;
     List<AggregatedItem>? patched;
     for (var i = 0; i < items.length; i++) {
-      final updated = apply(items[i]);
+      final updated = apply(items[i], favoriteFallback: favoriteFallback);
       if (identical(updated, items[i])) continue;
       patched ??= List<AggregatedItem>.of(items);
       patched[i] = updated;
@@ -176,12 +206,14 @@ class UserDataSync extends ChangeNotifier {
         : all;
     if (ids.isEmpty) return;
 
+    final readSession = session;
     for (var start = 0; start < ids.length; start += _refreshChunkSize) {
       final chunk = ids.sublist(
         start,
         min(start + _refreshChunkSize, ids.length),
       );
       try {
+        final readRevision = revision;
         final data = await client.itemsApi.getItems(
           ids: chunk,
           fields: 'UserData',
@@ -196,6 +228,12 @@ class UserDataSync extends ChangeNotifier {
           final userData = raw['UserData'];
           if (id == null || id.isEmpty || userData is! Map) continue;
           changes[id] = Map<String, dynamic>.from(userData);
+          if (raw['Type'] == 'TvChannel' && userData['IsFavorite'] is bool) {
+            final key = serverChannelKeyFor(client, id);
+            if (session == readSession && revisionFor(key) <= readRevision) {
+              changes[key] = {'IsFavorite': userData['IsFavorite']};
+            }
+          }
         }
         publishAll(changes, replace: true);
       } catch (_) {
@@ -207,7 +245,7 @@ class UserDataSync extends ChangeNotifier {
 
   /// Follows the session websocket for the signed-in user. Safe to call again
   /// on a reconnect or a user switch, which drops the previous subscription.
-  void bindTo(Stream<ServerWebSocketMessage> events, {String? userId}) {
+  void bindTo(Stream<ServerWebSocketMessage> events, {String? userId, String? serverId}) {
     _socketSubscription?.cancel();
     final expectedUser = _normalizeId(userId);
     _socketSubscription = events.listen((event) {
@@ -226,6 +264,9 @@ class UserDataSync extends ChangeNotifier {
         if (id == null || id.isEmpty) continue;
         final patch = Map<String, dynamic>.from(entry)..remove('ItemId');
         if (patch.isNotEmpty) changes[id] = patch;
+        if (serverId != null && patch['IsFavorite'] is bool) {
+          changes[serverChannelKey(serverId, id)] = {'IsFavorite': patch['IsFavorite']};
+        }
       }
       publishAll(changes, replace: true);
     });

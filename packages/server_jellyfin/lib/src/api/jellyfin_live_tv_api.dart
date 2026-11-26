@@ -1,11 +1,38 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
-class JellyfinLiveTvApi implements LiveTvApi {
+class JellyfinLiveTvApi implements LiveTvApi, ChannelGroupApi {
   final Dio _dio;
+  final DateTime Function() _now;
+  final _missingGroupEndpoints = <(String, String?), DateTime>{};
+  final _latestGroupRequests = <(String, String?), Future<ChannelGroupLineup>>{};
+  static const _missingEndpointTtl = Duration(minutes: 5);
   static const _postChannelIdsThreshold = 1800;
 
-  JellyfinLiveTvApi(this._dio);
+  JellyfinLiveTvApi(this._dio, {DateTime Function()? now}) : _now = now ?? DateTime.now;
+
+  @override
+  Future<ChannelGroupLineup> getChannelGroups({String? userId}) async {
+    final account = (_dio.options.baseUrl, userId);
+    final now = _now();
+    _missingGroupEndpoints.removeWhere((_, expiry) => !expiry.isAfter(now));
+    if (_missingGroupEndpoints.containsKey(account)) {
+      return const ChannelGroupLineup({}, endpointAvailable: false);
+    }
+    final request = ChannelGroupLineup.fetch(_dio);
+    _latestGroupRequests[account] = request;
+    try {
+      final lineup = await request;
+      if (!lineup.endpointAvailable && identical(_latestGroupRequests[account], request)) {
+        _missingGroupEndpoints[account] = _now().add(_missingEndpointTtl);
+      }
+      return lineup;
+    } finally {
+      if (identical(_latestGroupRequests[account], request)) {
+        _latestGroupRequests.remove(account);
+      }
+    }
+  }
 
   @override
   Future<Map<String, dynamic>> getChannels({

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -17,11 +16,14 @@ import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/home/home_view_model.dart';
 import 'package:server_core/server_core.dart';
+import 'package:server_plex/server_plex.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockDataSource extends Mock implements RowDataSource {}
 
 class _MockClient extends Mock implements MediaServerClient {}
+
+class _MockPlexClient extends Mock implements PlexMediaServerClient {}
 
 class _MockMediaBar extends Mock implements MediaBarViewModel {}
 
@@ -36,6 +38,21 @@ void main() {
   late _MockDataSource source;
   late HomeViewModel model;
   late UserPreferences prefs;
+
+  HomeViewModel homeFor(MediaServerClient client) {
+    when(() => client.userId).thenReturn('user');
+    when(() => client.baseUrl).thenReturn('http://server.test');
+    final mediaBar = _MockMediaBar();
+    when(() => mediaBar.load(force: any(named: 'force')))
+        .thenAnswer((_) async {});
+    return HomeViewModel(
+      dataSource: source,
+      prefs: prefs,
+      client: client,
+      mediaBarViewModel: mediaBar,
+      multiServerRepo: _MockMultiServer(),
+    );
+  }
 
   setUp(() async {
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
@@ -60,18 +77,8 @@ void main() {
 
     source = _MockDataSource();
     final client = _MockClient();
-    when(() => client.userId).thenReturn('user');
-    when(() => client.baseUrl).thenReturn('http://server.test');
-    final mediaBar = _MockMediaBar();
-    when(() => mediaBar.load(force: any(named: 'force')))
-        .thenAnswer((_) async {});
-    model = HomeViewModel(
-      dataSource: source,
-      prefs: prefs,
-      client: client,
-      mediaBarViewModel: mediaBar,
-      multiServerRepo: _MockMultiServer(),
-    );
+    model = homeFor(client);
+
   });
 
   tearDown(() async {
@@ -79,6 +86,14 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
     await GetIt.instance.reset();
   });
+
+  HomeRow favoriteChannels([List<AggregatedItem> items = const []]) =>
+      HomeRow(
+        id: 'liveTvFavorites',
+        title: 'Favorite Channels',
+        rowType: HomeRowType.liveTvFavorites,
+        items: items,
+      );
 
   void stubLiveTvRows() {
     when(() => source.hasLiveTvChannels()).thenAnswer((_) async => true);
@@ -96,12 +111,19 @@ void main() {
         ],
       ),
     );
+    when(() => source.loadFavoritesChannels('http://server.test'))
+        .thenAnswer((_) async => favoriteChannels());
+  }
+
+  void stubFavoriteChannel() {
     when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
-      (_) async => const HomeRow(
-        id: 'liveTvFavorites',
-        title: 'Favorite Channels',
-        rowType: HomeRowType.liveTvFavorites,
-      ),
+      (_) async => favoriteChannels([
+        AggregatedItem(
+          id: 'favorite',
+          serverId: 'http://server.test',
+          rawData: {'Type': 'TvChannel'},
+        ),
+      ]),
     );
   }
 
@@ -225,6 +247,22 @@ void main() {
     },
   );
 
+  test('returning from Kids Mode restores live rows even when listings go offline', () async {
+    await enableSections({HomeSectionType.liveTv});
+    stubLiveTvRows();
+    stubFavoriteChannel();
+    await model.load();
+    final ids = model.rows.map((row) => row.id).toList();
+    expect(ids, ['liveTv', 'liveTvOnNow', 'liveTvFavorites']);
+    await prefs.set(UserPreferences.kidsModeEnabled, true);
+    expect(model.rows, isEmpty);
+    await prefs.set(UserPreferences.kidsModeEnabled, false);
+    expect(model.rows.map((row) => row.id), ids);
+    when(() => source.loadOnNow('http://server.test')).thenThrow(Exception('EPG unavailable'));
+    await model.load();
+    expect(model.rows.map((row) => row.id), ['liveTv', 'liveTvFavorites']);
+  });
+
   test(
     'available channels load airing programs as the standalone row',
     () async {
@@ -250,6 +288,58 @@ void main() {
       expect(model.isLoading, isFalse);
     },
   );
+
+  for (final (serverType, cloudOnly) in [
+    (ServerType.jellyfin, false),
+    (ServerType.emby, false),
+    (ServerType.plex, false),
+    (ServerType.plex, true),
+  ]) {
+    test('returning from the guide updates ${cloudOnly ? 'Plex Cloud' : serverType.name} channel favorites', () async {
+      await enableSections({HomeSectionType.liveTv});
+      stubLiveTvRows();
+      final MediaServerClient serverClient;
+      if (serverType == ServerType.plex) {
+        final plex = _MockPlexClient();
+        when(() => plex.cloudOnly).thenReturn(cloudOnly);
+        serverClient = plex;
+      } else {
+        serverClient = _MockClient();
+      }
+      when(() => serverClient.serverType).thenReturn(serverType);
+      var favorites = <AggregatedItem>[];
+      when(() => source.loadFavoritesChannels('http://server.test'))
+          .thenAnswer((_) async => favoriteChannels(List.of(favorites)));
+      model.dispose();
+      model = homeFor(serverClient);
+      await model.load();
+      expect(model.rows.any((r) => r.rowType == HomeRowType.liveTvFavorites), isFalse);
+
+      favorites = [
+        AggregatedItem(
+          id: 'favorite-channel',
+          serverId: 'http://server.test',
+          rawData: {'Type': 'TvChannel', 'Name': 'Favorite Channel'},
+        ),
+      ];
+      await model.refreshResumeAndNextUp();
+      expect(model.rows.map((r) => r.id), contains('liveTvFavorites'));
+      expect(
+        model.rows.firstWhere((r) => r.rowType == HomeRowType.liveTvFavorites).items.single.id,
+        'favorite-channel',
+      );
+
+      favorites = [];
+      await model.refreshResumeAndNextUp();
+      expect(model.rows.any((r) => r.rowType == HomeRowType.liveTvFavorites), isFalse);
+      verify(() => source.loadFavoritesChannels('http://server.test')).called(3);
+      if (cloudOnly) {
+        verifyNever(() => source.hasLiveTvChannels());
+      } else {
+        verify(() => source.hasLiveTvChannels()).called(1);
+      }
+    });
+  }
 
   group('returning to Home', () {
     HomeRow airing(List<String> ids) => HomeRow(
