@@ -106,7 +106,7 @@ class PlexLiveTvFavorites {
                 (serverId == null || current.serverId == serverId)
             ? current
             : null);
-    final token = user?.plexToken;
+    final token = user?.plexToken ?? user?.accessToken;
     if (token == null || token.isEmpty) {
       throw StateError('No Plex account token for this user');
     }
@@ -114,8 +114,8 @@ class PlexLiveTvFavorites {
     return (id: userId, token: token);
   }
 
-  static void _checkAccount(MediaServerClient client, String token) {
-    if (_account(client).token != token) {
+  static void _checkAccount(MediaServerClient client, String token, {int? session}) {
+    if ((session != null && session != userDataSync.session) || _account(client).token != token) {
       throw StateError('Plex account changed while saving favorites');
     }
   }
@@ -200,9 +200,10 @@ class PlexLiveTvFavorites {
   static Future<void> _cache(
     MediaServerClient client,
     String token,
-    List<Map<String, dynamic>> rows,
-  ) async {
-    _checkAccount(client, token);
+    List<Map<String, dynamic>> rows, {
+    int? session,
+  }) async {
+    _checkAccount(client, token, session: session);
     final userId = client.userId!;
     final pref = _preference(userId);
     final prefs = GetIt.instance<UserPreferences>();
@@ -213,7 +214,7 @@ class PlexLiveTvFavorites {
         if (row['source'] is String && row['id'] is String) _key(row),
     };
     await prefs.set(pref, favorites.toList()..sort());
-    _checkAccount(client, token);
+    _checkAccount(client, token, session: session);
     _publishCached(client, token);
     _lastRefresh[userId] = DateTime.now();
     if (!setEquals(previous, favorites)) {
@@ -295,11 +296,26 @@ class PlexLiveTvFavorites {
     }
   }
 
+  static void pruneMissingDvrChannels(MediaServerClient client, ChannelGroupLineup? lineup) {
+    final rows = lineup?.channels;
+    if (rows == null || lineup!.partial || !lineup.endpointAvailable) return;
+
+    final present = {for (final row in rows) row['Id']?.toString()};
+    _catalog(client).channels.removeWhere(
+      (id, _) => !isPlexFreeTvChannel(client, id) && !present.contains(id),
+    );
+  }
+
   static Map<String, dynamic> applyToItem(
     MediaServerClient client,
-    Map<String, dynamic> item,
-  ) {
+    Map<String, dynamic> item, {
+    bool fromLineup = false,
+  }) {
     final channelId = item['Id']?.toString() ?? '';
+    if ((fromLineup || item['Type'] == 'TvChannel') &&
+        channelId.isNotEmpty && client.serverType != ServerType.plex) {
+      return {...item, 'ChannelFavoriteSyncKey': serverChannelKeyFor(client, channelId)};
+    }
     final userId = client.userId;
     if (item['Type'] != 'TvChannel' ||
         !isPlexLiveTvChannel(client, channelId) ||
@@ -333,14 +349,19 @@ class PlexLiveTvFavorites {
     MediaServerClient client,
     String channelId, {
     required bool isFavorite,
+    String? expectedSyncKey,
   }) async {
     if (!isPlexLiveTvChannel(client, channelId)) {
       throw ArgumentError.value(channelId, 'channelId');
     }
     final account = _account(client);
+    final free = isPlexFreeTvChannel(client, channelId);
+    final selectedKey = expectedSyncKey ?? syncKey(client, channelId);
+    final session = userDataSync.session;
     await _serial(account.id, () async {
+      _checkAccount(client, account.token, session: session);
       final info = _catalog(client).channels[channelId] ??
-          (isPlexFreeTvChannel(client, channelId)
+          (free
               ? <String, dynamic>{
                   'source': _freeSource,
                   'id': channelId.substring(_freePrefix.length),
@@ -349,8 +370,17 @@ class PlexLiveTvFavorites {
       if (info == null) {
         throw StateError('Plex DVR channel has no verified EPG provider identity');
       }
+      if (syncKey(client, channelId) != selectedKey) {
+        throw StateError('Plex DVR provider changed while waiting to save favorites');
+      }
       final remote = await _read(client, account.token);
-      _checkAccount(client, account.token);
+      _checkAccount(client, account.token, session: session);
+      if (!free) {
+        final current = _catalog(client).channels[channelId];
+        if (current == null || !_matches(info, current)) {
+          throw StateError('Plex DVR provider changed while saving favorites');
+        }
+      }
       final rows = [...remote];
       final hadFavorite = rows.any((row) => _matches(info, row));
       if (isFavorite && !hadFavorite) {
@@ -358,19 +388,21 @@ class PlexLiveTvFavorites {
       } else if (!isFavorite && hadFavorite) {
         rows.removeWhere((row) => _matches(info, row));
       }
-      // Plex replaces the full favorites list on write, so keep other PMS entries.
+      // _serial orders edits in this app instance. Plex replaces the entire
+      // account list, so another device's edit between our GET and PUT can be lost.
       if (isFavorite != hadFavorite) {
+        _lastRefresh.remove(account.id);
         await _write(client, account.token, rows);
       }
       try {
-        await _cache(client, account.token, rows);
+        await _cache(client, account.token, rows, session: session);
       } catch (_) {
         // Plex saved the favorite even though the local cache write failed.
         // Keep that value and refresh it next time, unless the account changed.
-        _checkAccount(client, account.token);
+        _checkAccount(client, account.token, session: session);
         _lastRefresh.remove(account.id);
         userDataSync.publish(
-          syncKey(client, channelId),
+          selectedKey,
           {'IsFavorite': isFavorite},
         );
       }

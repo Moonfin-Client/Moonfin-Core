@@ -43,8 +43,11 @@ class PlexLiveTvFavoritesApi {
       throw const FormatException('Invalid Plex favorite-channel response');
     }
     final raw = container['FavoriteChannel'];
-    if (raw == null && container['size'] == 0) return [];
-    if (raw is! List || raw.any((item) => item is! Map)) {
+    final size = container['size'];
+    if (raw == null && (size == 0 || size == '0')) return [];
+    if (raw is! List ||
+        (size != null && int.tryParse('$size') != raw.length) ||
+        raw.any((item) => item is! Map)) {
       throw const FormatException('Invalid Plex favorite-channel list');
     }
     return [for (final row in raw) Map<String, dynamic>.from(row as Map)];

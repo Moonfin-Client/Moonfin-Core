@@ -69,7 +69,7 @@ class _LiveTvChannelPlayerLoaderState extends State<LiveTvChannelPlayerLoader> {
           .cast<Map<String, dynamic>>()
           .map(
             (item) => GuideChannel.fromRawItem(
-              PlexLiveTvFavorites.applyToItem(client, item),
+              PlexLiveTvFavorites.applyToItem(client, item, fromLineup: true),
             ),
           )
           .toList()
@@ -84,7 +84,7 @@ class _LiveTvChannelPlayerLoaderState extends State<LiveTvChannelPlayerLoader> {
         final raw = await client.userLibraryApi.getItem(widget.channelId);
         channels = [
           GuideChannel.fromRawItem(
-            PlexLiveTvFavorites.applyToItem(client, raw),
+            PlexLiveTvFavorites.applyToItem(client, raw, fromLineup: true),
           ),
         ];
         index = 0;

@@ -104,6 +104,7 @@ class SearchRepository {
       final data = PlexLiveTvFavorites.applyToItem(
         _client,
         Map<String, dynamic>.from(item as Map),
+        fromLineup: true,
       );
       data['Type'] ??= 'TvChannel';
       return AggregatedItem(

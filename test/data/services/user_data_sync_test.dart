@@ -164,19 +164,22 @@ void main() {
     test('applies what the socket reports', () async {
       final events = StreamController<ServerWebSocketMessage>();
       addTearDown(events.close);
-      sync.bindTo(events.stream, userId: 'user-1');
+      sync.bindTo(events.stream, userId: 'user-1', serverId: 'a');
 
       events.add(
         const UserDataChangedMessage(
           userId: 'user-1',
           userDataList: [
             {'ItemId': 'ep1', 'Played': true},
+            {'ItemId': 'ch1', 'IsFavorite': true},
           ],
         ),
       );
       await Future<void>.delayed(Duration.zero);
 
       expect(sync.apply(_episode()).isPlayed, isTrue);
+      expect(sync.favoriteFor(serverChannelKey('a', 'ch1')), isTrue);
+      expect(sync.favoriteFor(serverChannelKey('b', 'ch1')), isNull);
     });
 
     test('ignores another account, however the id is punctuated', () async {
@@ -306,6 +309,27 @@ void main() {
       when(() => client.itemsApi).thenReturn(itemsApi);
       return (client: client, itemsApi: itemsApi);
     }
+
+    test('an earlier refresh preserves a confirmed channel favorite', () async {
+      final fake = clientReturning([]);
+      when(() => fake.client.baseUrl).thenReturn('http://media.test');
+      final reply = Completer<Map<String, dynamic>>();
+      when(() => fake.itemsApi.getItems(
+        ids: any(named: 'ids'), fields: 'UserData', recursive: true,
+        limit: 2, enableTotalRecordCount: false,
+      )).thenAnswer((_) => reply.future);
+      final key = serverChannelKeyFor(fake.client, 'news');
+      final refreshing = sync.refreshFromServer(fake.client, ['news', 'sports']);
+      sync.requestFavorite(key, true);
+      sync.confirmFavorite(key, true);
+      reply.complete({'Items': [
+        for (final id in ['news', 'sports'])
+          {'Id': id, 'Type': 'TvChannel', 'UserData': {'IsFavorite': false}},
+      ]});
+      await refreshing;
+      expect(sync.favoriteFor(key), isTrue);
+      expect(sync.favoriteFor(serverChannelKeyFor(fake.client, 'sports')), isFalse);
+    });
 
     test('publishes the user data the server returned', () async {
       final fake = clientReturning([

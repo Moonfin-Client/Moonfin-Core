@@ -72,6 +72,7 @@ class LiveTvPlayerScreen extends StatefulWidget {
 class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     with WidgetsBindingObserver, ImmersiveSystemUi {
   late List<GuideChannel> _syncedChannels;
+  List<GuideChannel>? _retryGuideLineup;
   final _manager = GetIt.instance<PlaybackManager>();
   // media_kit isn't registered on platforms that run a different backend, so
   // ask the container rather than listing them.
@@ -99,7 +100,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     return backend is HtmlVideoBackend ? backend : null;
   }
 
-  late int _currentIndex;
+  late GuideChannel _currentChannel;
+  Future<bool>? _startingTune;
   bool _leavingPlayer = false;
   bool _infoVisible = true;
   Timer? _hideTimer;
@@ -254,7 +256,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _screensaverPlayingSub = _state.playingStream.listen(
       _screensaverController.setPlaybackActive,
     );
-    _currentIndex = widget.startIndex;
+    _currentChannel = _syncedChannels[widget.startIndex];
     _applyPlayerDisplayMode();
     _applySubtitleStyle();
     _prefs.addListener(_applySubtitleStyle);
@@ -300,7 +302,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         setState(() => _canRewind = canRewind);
       }
     });
-    _playCurrentChannel();
+    _startingTune = _playCurrentChannel().whenComplete(() {
+      _startingTune = null;
+    });
     _scheduleHide();
     _startProgramRefresh();
 
@@ -825,32 +829,38 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  GuideChannel get _currentChannel => _syncedChannels[_currentIndex];
-
   @override
   void didUpdateWidget(covariant LiveTvPlayerScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.channels, widget.channels)) {
-      _syncedChannels = [
-        for (final channel in widget.channels) channel.withSyncedUserData(),
-      ];
+      final sameGroup = GuideChannel.sameStationOrder(
+        oldWidget.channels, widget.channels,
+      );
+      if (!sameGroup) _retryGuideLineup = null;
+      _syncedChannels = GuideChannel.updatePlayerLineup(
+        _syncedChannels, widget.channels, keepGroup: sameGroup,
+      );
+      _currentChannel = _syncedChannels.firstWhere(
+        (channel) => channel.id == _currentChannel.id,
+        orElse: () => _currentChannel,
+      );
     }
   }
 
   void _onChannelUserDataChanged() {
     if (!mounted) return;
     final updated = GuideChannel.withSyncedUserDataAll(_syncedChannels);
-    if (updated == null) return;
-    final currentId = _currentChannel.id;
+    final playing = _currentChannel.withSyncedUserData();
+    if (updated == null && identical(playing, _currentChannel)) return;
     if (_prefs.get(UserPreferences.liveTvChannelSortBy) ==
         ChannelSortBy.favoritesFirst) {
-      updated.sort(
+      updated?.sort(
         LiveTvGuideViewModel.comparatorFor(ChannelSortBy.favoritesFirst),
       );
     }
     setState(() {
-      _syncedChannels = updated;
-      _currentIndex = updated.indexWhere((channel) => channel.id == currentId);
+      if (updated != null) _syncedChannels = updated;
+      _currentChannel = playing;
     });
   }
 
@@ -860,6 +870,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       await ItemMutationRepository(_client).setFavorite(
         channel.id,
         isFavorite: !channel.isFavorite,
+        isChannel: true,
+        expectedChannelKey: channelFavoriteKey(channel.rawData),
       );
     } catch (_) {
       if (mounted) {
@@ -875,6 +887,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   Future<bool> _playCurrentChannel() async {
+    _startingTune = null;
+    _retryGuideLineup = null;
     // A channel change starts a new stream, so whatever caption choice is
     // remembered has to be put back once this one reports its own captions.
     _captionTrackApplied = false;
@@ -889,7 +903,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     unawaited(_prefs.set(UserPreferences.liveTvLastChannelId, channel.id));
     final item = AggregatedItem(
       id: channel.id,
-      serverId: _client.baseUrl,
+      serverId: GetIt.instance.maybeGet<MediaServerClientFactory>()?.serverIdOf(_client) ?? _client.baseUrl,
       rawData: channel.rawData,
     );
     final allowDirect = _prefs.get(UserPreferences.liveTvDirectPlayEnabled);
@@ -986,6 +1000,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   /// What the failure card's Retry control does.
   Future<void> _retryCurrentChannel() async {
     if (_isSwitching) return;
+    final lineup = _retryGuideLineup;
+    if (lineup != null) return _onGuideChannelSelected(_currentChannel.id, lineup);
     _isSwitching = true;
     try {
       await _playCurrentChannel();
@@ -1043,17 +1059,19 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     });
   }
 
-  Future<void> _switchChannel(int newIndex) async {
-    if (_isSwitching) return;
+  Future<bool> _switchChannel(GuideChannel channel) async {
+    if (_isSwitching) return false;
     _isSwitching = true;
     try {
+      final starting = channel.id == _currentChannel.id ? _startingTune : null;
       setState(() {
-        _currentIndex = newIndex;
+        _currentChannel = channel;
         _currentProgram = null;
         _infoVisible = true;
       });
-      await _playCurrentChannel();
-      _scheduleHide();
+      final succeeded = await (starting ?? _playCurrentChannel());
+      if (mounted && !_isStopping) _scheduleHide();
+      return succeeded;
     } finally {
       _isSwitching = false;
     }
@@ -1412,7 +1430,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         if (order.isNotEmpty) {
           order[_focusedControlIndex.clamp(0, order.length - 1)].requestFocus();
         }
-      } else if (priorInfoVisible && priorFocus?.canRequestFocus == true) {
+      } else if (!_channelFailed && priorInfoVisible && priorFocus?.canRequestFocus == true) {
         priorFocus!.requestFocus();
       } else {
         _focusPlayerRoot();
@@ -1430,7 +1448,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
     if (selectedIndex < 0 || !_isCarouselOpen) return;
     if (_isSwitching) return;
-    if (selectedIndex == _currentIndex) {
+    if (channelId == _currentChannel.id) {
       _dismissChannelCarousel();
       return;
     }
@@ -1440,7 +1458,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _isSwitching = true;
     try {
       setState(() {
-        _currentIndex = selectedIndex;
+        _currentChannel = _syncedChannels[selectedIndex];
         _currentProgram = null;
         _infoVisible = false;
       });
@@ -1456,9 +1474,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       final restoreIndex = _syncedChannels.indexWhere(
         (channel) => channel.id == previousId,
       );
-      if (restoreIndex < 0) return;
+      if (restoreIndex < 0) {
+        // The previous station left the lineup. Expose Retry for the failed tune.
+        _dismissChannelCarousel();
+        return;
+      }
       setState(() {
-        _currentIndex = restoreIndex;
+        _currentChannel = _syncedChannels[restoreIndex];
         _currentProgram = previousProgram;
         _infoVisible = false;
         _carouselSelectionRevision++;
@@ -1862,13 +1884,24 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (_isSwitching) return;
     final index = lineup.indexWhere((channel) => channel.id == channelId);
     if (index < 0) return;
-    final alreadyPlaying = _currentChannel.id == channelId;
+    if (_currentChannel.id != channelId || !_channelIsUp) {
+      final originalChannels = widget.channels;
+      final succeeded = await _switchChannel(lineup[index].withSyncedUserData());
+      if (!mounted || _isStopping ||
+          !GuideChannel.sameStationOrder(originalChannels, widget.channels)) {
+        return;
+      }
+      if (!succeeded) {
+        _retryGuideLineup = lineup;
+        return;
+      }
+    }
     setState(() {
-      _syncedChannels = lineup;
-      _currentIndex = index;
+      _retryGuideLineup = null;
+      _syncedChannels = GuideChannel.withSyncedUserDataAll(lineup) ?? lineup;
+      _currentChannel = _syncedChannels[index];
     });
     _warmChannelCarousel();
-    if (!alreadyPlaying) await _switchChannel(index);
   }
 
   Future<void> _exitPlayback() async {
@@ -2004,13 +2037,17 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         return KeyEventResult.handled;
       case LogicalKeyboardKey.channelUp:
       case LogicalKeyboardKey.channelDown:
-        if (event is KeyDownEvent) {
-          final delta = event.logicalKey == LogicalKeyboardKey.channelUp
-              ? 1
-              : -1;
-          // Follows the guide's order, like the carousel, and wraps around.
-          final next = (_currentIndex + delta) % _syncedChannels.length;
-          if (next != _currentIndex) unawaited(_switchChannel(next));
+        if (event is KeyDownEvent && _syncedChannels.isNotEmpty) {
+          final up = event.logicalKey == LogicalKeyboardKey.channelUp;
+          final current = _syncedChannels.indexWhere(
+            (channel) => channel.id == _currentChannel.id,
+          );
+          // From outside the group, Up starts at the first station and Down at the last.
+          final next = up
+              ? current + 1
+              : current.clamp(0, _syncedChannels.length) - 1;
+          final target = _syncedChannels[next % _syncedChannels.length];
+          if (target.id != _currentChannel.id) unawaited(_switchChannel(target));
         }
         return KeyEventResult.handled;
       case LogicalKeyboardKey.mediaRecord:

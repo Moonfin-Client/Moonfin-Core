@@ -89,7 +89,7 @@ class _FakeMutations extends Fake implements ItemMutationRepository {
   final favorites = <(String, bool)>[];
 
   @override
-  Future<void> setFavorite(String itemId, {required bool isFavorite}) async =>
+  Future<void> setFavorite(String itemId, {required bool isFavorite, bool isChannel = false, String? expectedChannelKey}) async =>
       favorites.add((itemId, isFavorite));
 }
 

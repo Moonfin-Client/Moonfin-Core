@@ -375,7 +375,7 @@ class SessionRepository {
     _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
     _bindAccessChanges(client);
-    userDataSync.bindTo(_socketHandler.events, userId: userId);
+    userDataSync.bindTo(_socketHandler.events, userId: userId, serverId: serverId);
     _refreshCarBrowseTree(signedIn: true);
 
     if (serverId != _activeServerId || userId != _activeUserId) {

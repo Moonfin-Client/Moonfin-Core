@@ -171,9 +171,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   bool get _canOpenRecordings => !isCloudOnlyPlexClient(_client);
   int get _maxWindowBarIndex =>
       _canOpenRecordings ? _kWindowBarRecordings : _kWindowBarDate;
-  final _emptyCategoryRetryFocus = FocusNode(
-    debugLabel: 'GuideEmptyCategoryRetry',
-  );
+  final _categoryRetryFocus = FocusNode(debugLabel: 'GuideCategoryRetry');
   final _guideErrorRetryFocus = FocusNode(debugLabel: 'GuideErrorRetry');
   final _channelScrollController = ScrollController();
   final _programScrollController = ScrollController();
@@ -246,6 +244,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     availableHeight: kTvDesignWidth * 9 / 16,
   );
   Duration? _lastLayoutWindow;
+  Duration? _layoutWindowInFlight;
 
   /// Whether the current layout actually renders the hero band, the only
   /// widget that consumes per-program artwork.
@@ -924,6 +923,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   /// UP out of the grid or channel column. The mini-player surface has no
   /// controls row, so it keeps going straight to the player.
   void _focusWindowBarFromGrid() {
+    if (!_categoryRetryFocus.hasFocus && _focusCategoryRetry()) return;
     if (widget.miniPlayerMode) {
       _focusMiniPlayer();
       return;
@@ -934,20 +934,24 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
   /// DOWN out of the genre rail lands on the same button UP left behind.
   void _focusWindowBarFromGenres() => _focusWindowBar(_lastWindowBarIndex);
 
+  bool _focusCategoryRetry() {
+    if (!_vm.hasFailedCategoryListings || _categoryRetryFocus.context?.mounted != true ||
+        !_categoryRetryFocus.canRequestFocus) {
+      return false;
+    }
+    _categoryRetryFocus.requestFocus();
+    return true;
+  }
+
   void _focusLastChannelRow() {
     if (_vm.state == GuideState.error &&
         _guideErrorRetryFocus.context?.mounted == true) {
       _guideErrorRetryFocus.requestFocus();
       return;
     }
+    if (_focusCategoryRetry()) return;
     final channels = _vm.filteredChannels;
-    if (channels.isEmpty) {
-      if (_vm.hasFailedCategoryListings &&
-          _emptyCategoryRetryFocus.context?.mounted == true) {
-        _emptyCategoryRetryFocus.requestFocus();
-      }
-      return;
-    }
+    if (channels.isEmpty) return;
 
     var targetIndex = _lastFocusedRowIndex ?? 0;
     final focusedChannelId = _focusedChannel.value?.id;
@@ -1083,7 +1087,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _focusedProgram.removeListener(_scheduleArtworkLookup);
     _focusedChannel.removeListener(_scheduleArtworkLookup);
     _channelRailFocused.removeListener(_scheduleArtworkLookup);
-    _emptyCategoryRetryFocus.dispose();
+    _categoryRetryFocus.dispose();
     _guideErrorRetryFocus.dispose();
     _channelScrollController.dispose();
     _programScrollController.dispose();
@@ -1337,35 +1341,56 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   void _scheduleGuideWindowUpdate(Duration window) {
     if (_vm.state != GuideState.ready) return;
-    if (_vm.guideWindow == window) {
-      _lastLayoutWindow = window;
+    final changed = _lastLayoutWindow != window;
+    _lastLayoutWindow = window;
+    // A pending resize owns the request slot. Its completion will reconcile
+    // this latest layout duration, even if it matches the old guide window.
+    if (_layoutWindowInFlight != null || !changed) {
       return;
     }
-    if (window == _lastLayoutWindow) return;
-    // Keep the request latched while it's in flight, without retrying a
-    // genuine listings failure on every rebuild.
-    _lastLayoutWindow = window;
+    _requestGuideWindowUpdate(window);
+  }
+
+  void _requestGuideWindowUpdate(Duration window) {
+    _layoutWindowInFlight = window;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || _lastLayoutWindow != window) return;
+      final failureRevision = _vm.failedWindowMoveRevision;
+      var failed = false;
       try {
-        final failureRevision = _vm.failedWindowMoveRevision;
-        await _vm.setWindow(window);
         if (!mounted || _lastLayoutWindow != window) return;
-        if (_vm.guideWindow == window) return;
-        if (_vm.failedWindowMoveRevision != failureRevision) {
-          _showWindowFailure(_vm.windowStart.add(window));
+        await _vm.setWindow(window);
+        if (!mounted || _lastLayoutWindow != window || _vm.guideWindow == window) {
           return;
         }
-        // A reload can supersede the resize and finish before this await
-        // resumes. Queue another frame even if the guide is already ready.
-        if (_vm.state == GuideState.ready) {
-          setState(() => _lastLayoutWindow = null);
-        } else {
-          _lastLayoutWindow = null;
+        if (_vm.failedWindowMoveRevision != failureRevision) {
+          failed = true;
+          _showWindowFailure(_vm.windowStart.add(window));
         }
       } catch (_) {
+        failed = true;
         if (mounted && _lastLayoutWindow == window) {
           _showWindowFailure(_vm.windowStart.add(window));
+        }
+      } finally {
+        _layoutWindowInFlight = null;
+        if (!mounted) return;
+        final desired = _lastLayoutWindow;
+        if (desired != null && desired != window) {
+          if (_vm.state == GuideState.ready) {
+            _requestGuideWindowUpdate(desired);
+          } else {
+            _lastLayoutWindow = null;
+          }
+        } else if (!failed && desired == window &&
+            _vm.guideWindow != window &&
+            _vm.failedWindowMoveRevision == failureRevision) {
+          // A superseded move can return without committing. Retry on a new
+          // frame, but keep the latch after a genuine listings failure.
+          if (_vm.state == GuideState.ready) {
+            setState(() => _lastLayoutWindow = null);
+          } else {
+            _lastLayoutWindow = null;
+          }
         }
       }
     });
@@ -1380,6 +1405,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
         // left region is only channel-column wide and 22-24 px tall, so it
         // can't hold the chevrons and the range text at the narrowest size.
         if (!widget.miniPlayerMode && !compactSearch) _buildGuideWindowBar(),
+        if (_vm.hasFailedCategoryListings && _vm.filteredChannels.isNotEmpty)
+          _buildCategoryRetryButton(partial: true),
         Expanded(child: _buildBody()),
       ],
     );
@@ -1406,6 +1433,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             ),
         ],
         const SizedBox(height: 8),
+        if (_vm.hasFailedCategoryListings && _vm.filteredChannels.isNotEmpty)
+          _buildCategoryRetryButton(partial: true),
         Expanded(child: _buildMobileBody()),
       ],
     );
@@ -2260,26 +2289,36 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             style: TextStyle(color: Colors.white.withAlpha(179)),
           ),
           const SizedBox(height: 16),
-          Focus(
-            canRequestFocus: false,
-            onKeyEvent: (_, event) {
-              if (event.isActionable && event.logicalKey.isUpKey) {
-                _focusWindowBarFromGrid();
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: OutlinedButton.icon(
-              focusNode: _emptyCategoryRetryFocus,
-              autofocus: true,
-              onPressed: _vm.retryingCategoryListings
-                  ? null
-                  : () => unawaited(_vm.retryFailedCategoryListings()),
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.retry),
-            ),
-          ),
+          _buildCategoryRetryButton(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryRetryButton({bool partial = false}) {
+    final l10n = AppLocalizations.of(context);
+    return Focus(
+      canRequestFocus: false,
+      onKeyEvent: (_, event) {
+        if (!event.isActionable) return KeyEventResult.ignored;
+        if (event.logicalKey.isUpKey) {
+          _focusWindowBarFromGrid();
+          return KeyEventResult.handled;
+        }
+        if (partial && event.logicalKey.isDownKey) {
+          _focusChannelRow(0);
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: OutlinedButton.icon(
+        focusNode: _categoryRetryFocus,
+        autofocus: !partial,
+        onPressed: _vm.retryingCategoryListings
+            ? null
+            : () => unawaited(_vm.retryFailedCategoryListings()),
+        icon: const Icon(Icons.refresh),
+        label: Text(partial ? l10n.retryMissingGuideListings : l10n.retry),
       ),
     );
   }

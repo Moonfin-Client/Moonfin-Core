@@ -70,6 +70,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
     private var inactivityTimer: Timer?
     private var headerTimer: Timer?
     private var dismissed = false
+    private var visibleOnScreen = false
 
     private static let overlayPadding = UIEdgeInsets(top: 48, left: 48, bottom: 48, right: 48)
     private static let headerPadding = UIEdgeInsets(top: 12, left: 32, bottom: 0, right: 32)
@@ -209,8 +210,10 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
         super.viewDidAppear(animated)
         // A temporary modal can hide this carousel without dismissing it.
         // Restore its visible-channel neighborhood when it reappears.
-        if !dismissed && lastVisibleIds.isEmpty {
+        visibleOnScreen = true
+        if !dismissed {
             bindCards()
+            updateHeader()
             resetInactivity()
         }
         guard scrim.transform.isIdentity, scrim.frame.height > 0 else { return }
@@ -227,6 +230,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
         super.viewDidDisappear(animated)
         // The host can replace this overlay with a prompt without going
         // through dismissCarousel. Either way, stop prewarming offscreen cards.
+        visibleOnScreen = false
         clearVisibleChannelTracking()
         stopTimers()
     }
@@ -332,7 +336,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
             card.configure(entry, centered: offset == 0)
             if !visibleIds.contains(entry.channelId) { visibleIds.append(entry.channelId) }
         }
-        if visibleIds != lastVisibleIds {
+        if visibleOnScreen && !dismissed && visibleIds != lastVisibleIds {
             lastVisibleIds = visibleIds
             onVisibleChannelsChanged?(visibleIds)
         }

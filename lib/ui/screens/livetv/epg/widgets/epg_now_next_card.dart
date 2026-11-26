@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../util/focus/dpad_keys.dart';
 import '../../../../widgets/adaptive/adaptive_glass.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/offline_aware_image.dart';
@@ -128,10 +129,18 @@ class EpgNowNextCard extends StatelessWidget {
                     ),
                     if (onRetry != null) ...[
                       const SizedBox(width: 8),
-                      TextButton.icon(
-                        onPressed: onRetry,
-                        icon: const Icon(Icons.refresh, size: 16),
-                        label: Text(AppLocalizations.of(context).retry),
+                      Focus(
+                        canRequestFocus: false,
+                        onKeyEvent: (_, event) {
+                          if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+                          if (isActivateKey(event)) onRetry?.call();
+                          return KeyEventResult.handled;
+                        },
+                        child: TextButton.icon(
+                          onPressed: onRetry,
+                          icon: const Icon(Icons.refresh, size: 16),
+                          label: Text(AppLocalizations.of(context).retry),
+                        ),
                       ),
                     ],
                   ],

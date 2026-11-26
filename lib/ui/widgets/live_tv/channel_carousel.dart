@@ -218,13 +218,17 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
       _ownsFocusNode = widget.focusNode == null;
       _requestInitialFocus();
     }
+    final centered = _centredChannelIndex;
     if (oldWidget.channels.length != widget.channels.length) {
       _endHold();
       _seedFromChannels();
+      _alignScrollAfterLayout();
       _reportEmptyIfNeeded();
-    } else if ((oldWidget.initialIndex != widget.initialIndex ||
-            oldWidget.selectionRevision != widget.selectionRevision) &&
-        widget.initialIndex != _centredChannelIndex) {
+    } else if (_channelCount > 0 &&
+        widget.initialIndex != centered &&
+        (oldWidget.initialIndex != widget.initialIndex ||
+            oldWidget.selectionRevision != widget.selectionRevision ||
+            oldWidget.channels[centered].channelId != widget.channels[centered].channelId)) {
       _endHold();
       _resetToInitialIndex();
     }
@@ -262,6 +266,10 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
     final start = widget.initialIndex.clamp(0, _channelCount - 1);
     _rawIndex = _seedIndex + start;
     _rawIndexListenable.value = _rawIndex;
+    _alignScrollAfterLayout();
+  }
+
+  void _alignScrollAfterLayout() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = _scrollController;
       if (mounted && controller?.hasClients == true) {
@@ -490,12 +498,7 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
     if (layout.pitch == _cardExtent) return;
     _cardExtent = layout.pitch;
     _cardWidth = layout.width;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = _scrollController;
-      if (mounted && controller?.hasClients == true) {
-        controller!.jumpTo(_offsetFor(_rawIndex));
-      }
-    });
+    _alignScrollAfterLayout();
   }
 
   /// A lineup that fits the viewport renders its real count, centred, with no

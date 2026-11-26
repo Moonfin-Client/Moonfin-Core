@@ -1765,6 +1765,7 @@
     "description": "Placeholder text for an empty item list screen"
   },
   "failedToLoad": "Failed to load",
+  "retryMissingGuideListings": "Some listings failed to load. Retry",
 
   "@failedToLoad": {
     "description": "Error message when item detail fails to load"
