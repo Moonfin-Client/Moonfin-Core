@@ -101,6 +101,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   bool _radioFetchInFlight = false;
   String? _radioSeededItemId;
   bool _castOwnsTransport = false;
+  bool _castDragStarted = false;
   double? _castDragPositionMs;
   String? _castDragTargetId;
   String? _castDragItemId;
@@ -1935,41 +1936,42 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                   ? pos.inMilliseconds.toDouble().clamp(0, maxMs)
                   : 0,
               max: maxMs > 0 ? maxMs : 1,
-              onChangeStart: _castOwnsTransport
-                  ? (v) {
-                      _castDragTargetId =
-                          _castService.activeTargetNotifier.value?.id;
-                      _castDragItemId = _castService.castItemNotifier.value?.id;
-                      setState(() => _castDragPositionMs = v);
-                    }
-                  : null,
+              onChangeStart: (v) {
+                if (!_castOwnsTransport) return;
+                _castDragStarted = true;
+                _castDragTargetId =
+                    _castService.activeTargetNotifier.value?.id;
+                _castDragItemId = _castService.castItemNotifier.value?.id;
+                setState(() => _castDragPositionMs = v);
+              },
               onChanged: (v) {
-                if (_castOwnsTransport) {
-                  if (_castDragPositionMs == null) return;
-                  setState(() => _castDragPositionMs = v);
-                } else {
-                  _manager.seekTo(Duration(milliseconds: v.toInt()));
+                if (_castDragStarted) {
+                  if (_castOwnsTransport && _castDragPositionMs != null) {
+                    setState(() => _castDragPositionMs = v);
+                  }
+                  return;
+                }
+                _manager.seekTo(Duration(milliseconds: v.toInt()));
+              },
+              onChangeEnd: (v) {
+                if (!_castDragStarted) return;
+                final valid = _castOwnsTransport &&
+                    _castDragPositionMs != null &&
+                    _castService.activeTargetNotifier.value?.id ==
+                        _castDragTargetId &&
+                    _castService.castItemNotifier.value?.id == _castDragItemId;
+                _castDragStarted = false;
+                setState(() {
+                  _castDragPositionMs = null;
+                  _castDragTargetId = null;
+                  _castDragItemId = null;
+                });
+                if (valid) {
+                  unawaited(
+                    _manager.seekTo(Duration(milliseconds: v.toInt())),
+                  );
                 }
               },
-              onChangeEnd: _castOwnsTransport
-                  ? (v) {
-                      final valid = _castDragPositionMs != null &&
-                          _castService.activeTargetNotifier.value?.id ==
-                              _castDragTargetId &&
-                          _castService.castItemNotifier.value?.id ==
-                              _castDragItemId;
-                      setState(() {
-                        _castDragPositionMs = null;
-                        _castDragTargetId = null;
-                        _castDragItemId = null;
-                      });
-                      if (valid) {
-                        unawaited(
-                          _manager.seekTo(Duration(milliseconds: v.toInt())),
-                        );
-                      }
-                    }
-                  : null,
             ),
           ),
           Padding(

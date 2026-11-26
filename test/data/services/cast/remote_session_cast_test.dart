@@ -418,4 +418,46 @@ void main() {
     expect(service.remoteStateNotifier.value, 'playing');
     expect(service.remotePositionNotifier.value, 200000000);
   });
+
+  test('older overlapping same-target poll does not overwrite newer poll result',
+      () async {
+    final firstPoll = Completer<RemotePlaybackSnapshot?>();
+    var calls = 0;
+    final provider = _FakeRemoteProvider();
+    provider.onFetchSnapshot = () {
+      calls++;
+      if (calls == 1) return firstPoll.future;
+      return Future.value(
+        RemotePlaybackSnapshot(
+          state: 'playing',
+          positionTicks: 50000000,
+          item: track2,
+        ),
+      );
+    };
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+
+    await service.playToTarget(target, item: track1);
+    // Trigger a newer poll via nextTrack while the initial poll is still in flight.
+    await service.nextTrack(CastTargetKind.jellyfinSession);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.castItemNotifier.value?.id, 'track-2');
+    expect(service.remotePositionNotifier.value, 50000000);
+
+    // Older poll resolves late with track1; it must be discarded.
+    firstPoll.complete(
+      RemotePlaybackSnapshot(
+        state: 'paused',
+        positionTicks: 900000000,
+        item: track1,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(service.castItemNotifier.value?.id, 'track-2');
+    expect(service.remoteStateNotifier.value, 'playing');
+    expect(service.remotePositionNotifier.value, 50000000);
+  });
 }

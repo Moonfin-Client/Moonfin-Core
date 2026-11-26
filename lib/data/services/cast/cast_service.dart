@@ -27,7 +27,7 @@ class CastService {
   final ValueNotifier<int> remotePositionNotifier = ValueNotifier(0);
   final ValueNotifier<double?> remoteVolumeNotifier = ValueNotifier(null);
   Timer? _remotePollTimer;
-  int _castGeneration = 0;
+  int _remotePollSeq = 0;
 
   /// Reports a cast to its server session where the server needs it (Silo).
   late final CastSessionReporter sessionReporter = CastSessionReporter(
@@ -98,7 +98,7 @@ class CastService {
         }
       case 'disconnected':
         if (activeKindNotifier.value == castKind) {
-          _castGeneration++;
+          _remotePollSeq++;
           activeKindNotifier.value = null;
           activeTargetNotifier.value = null;
           castItemNotifier.value = null;
@@ -160,13 +160,13 @@ class CastService {
     PollableRemoteState pollable,
   ) async {
     if (activeKindNotifier.value != kind) return;
-    final generation = _castGeneration;
+    final seq = ++_remotePollSeq;
     try {
       final snapshot = await pollable.fetchRemoteSnapshot(kind);
-      // The target can be dropped or switched while the request is out; writing
-      // then would overwrite the new cast or revive a stopped session.
+      // Discard if a newer poll started or the cast was switched/stopped
+      // while this request was in flight.
       if (snapshot == null ||
-          generation != _castGeneration ||
+          seq != _remotePollSeq ||
           activeKindNotifier.value != kind) {
         return;
       }
@@ -298,7 +298,7 @@ class CastService {
       subtitleStreamIndex: subtitleStreamIndex,
     );
 
-    _castGeneration++;
+    _remotePollSeq++;
     activeTargetNotifier.value = target;
     castItemNotifier.value = item;
     activeKindNotifier.value = target.kind;
@@ -371,7 +371,7 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.stop(kind);
     if (activeKindNotifier.value == kind) {
-      _castGeneration++;
+      _remotePollSeq++;
       unawaited(sessionReporter.end());
       _stopRemotePolling();
       activeKindNotifier.value = null;
