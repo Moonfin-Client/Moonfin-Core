@@ -23,6 +23,7 @@ import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../preference/preference_constants.dart';
 import '../upcoming_episode_badge.dart';
+import '../../../../util/date_format_util.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/detail_playback_info.dart';
 import '../../../../util/detail_track_highlight.dart';
@@ -4735,6 +4736,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
     final prefs = GetIt.instance<UserPreferences>();
+    final showFullDate = prefs.get(UserPreferences.detailShowFullDate);
+    final locale = Localizations.localeOf(context).toString();
     final hidden = detailMetadataLayout.hidden(prefs);
     final ordered = detailMetadataLayout.ordered(
       DetailMetadataItem.values,
@@ -4752,7 +4755,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (hidden.contains(entry.id)) continue;
       switch (entry) {
         case DetailMetadataItem.year:
-          addText(item.productionYear?.toString());
+          addText(
+            formatDetailReleaseDate(
+              item,
+              showFullDate: showFullDate,
+              locale: locale,
+            ),
+          );
         case DetailMetadataItem.parentalRating:
           addText(item.officialRating);
         case DetailMetadataItem.runtimeAndSeasons:

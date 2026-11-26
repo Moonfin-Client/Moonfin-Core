@@ -9,6 +9,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/detail_metadata_layout.dart';
 import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/user_preferences.dart';
+import '../../../../../util/date_format_util.dart';
 import '../../../../../util/overview_text.dart';
 import '../../../../../util/playback_time_label.dart';
 import '../../../../widgets/logo_view.dart';
@@ -912,6 +913,8 @@ class NouveauHeroState extends State<NouveauHero> {
       values.add(Text(value, style: style));
     }
 
+    final showFullDate = widget.prefs.get(UserPreferences.detailShowFullDate);
+    final locale = Localizations.localeOf(context).toString();
     final hidden = detailMetadataLayout.hidden(widget.prefs);
     final runtime = _effectiveRuntime(item);
 
@@ -931,7 +934,13 @@ class NouveauHeroState extends State<NouveauHero> {
       if (hidden.contains(entry.id)) continue;
       switch (entry) {
         case DetailMetadataItem.year:
-          addText(item.productionYear?.toString());
+          addText(
+            formatDetailReleaseDate(
+              item,
+              showFullDate: showFullDate,
+              locale: locale,
+            ),
+          );
         case DetailMetadataItem.parentalRating:
           if (item.officialRating?.trim().isNotEmpty ?? false) {
             addText(item.officialRating);

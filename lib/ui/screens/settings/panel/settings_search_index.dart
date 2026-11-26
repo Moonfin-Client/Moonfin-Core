@@ -736,6 +736,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['codec', 'bitrate info'],
     ),
     details.leaf(
+      'pref_detail_show_full_date',
+      l10n.detailShowFullDate,
+      subtitle: l10n.detailShowFullDateSubtitle,
+      keywords: ['date', 'release date', 'air date', 'year'],
+    ),
+    details.leaf(
       'pref_detail_trailers_external',
       l10n.openTrailersExternally,
       subtitle: l10n.openTrailersExternallySubtitle,

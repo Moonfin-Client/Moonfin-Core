@@ -134,6 +134,7 @@ class SettingsPreviewController extends ChangeNotifier {
     'pref_details_backdrop_size': SettingsPreviewScene.details,
     'detailsBackgroundBlurAmount': SettingsPreviewScene.details,
     'pref_detail_show_technical_details': SettingsPreviewScene.details,
+    'pref_detail_show_full_date': SettingsPreviewScene.details,
     'pref_detail_expanded_tabs': SettingsPreviewScene.details,
     'detailMetadataOrderTv': SettingsPreviewScene.details,
     'detailMetadataOrderMobile': SettingsPreviewScene.details,

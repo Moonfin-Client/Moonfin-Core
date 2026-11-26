@@ -599,6 +599,14 @@
   "@showTechnicalDetailsSubtitle": {
     "description": "Explanation under the show technical details setting"
   },
+  "detailShowFullDate": "Show Full Date",
+  "@detailShowFullDate": {
+    "description": "Label for the detail screen setting to show full release or air dates instead of only the year"
+  },
+  "detailShowFullDateSubtitle": "Show the full release or air date instead of only the year on details pages",
+  "@detailShowFullDateSubtitle": {
+    "description": "Explanation under the show full date setting"
+  },
   "recommendationSystem": "Recommendation System",
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"

@@ -189,6 +189,13 @@ class _DetailsScreenSettingsScreenState
                     onChanged: _pushPersonalizationSync,
                   ),
                   SwitchPreferenceTile(
+                    preference: UserPreferences.detailShowFullDate,
+                    title: l10n.detailShowFullDate,
+                    subtitle: l10n.detailShowFullDateSubtitle,
+                    icon: Icons.calendar_today_outlined,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  SwitchPreferenceTile(
                     preference: UserPreferences.detailTrailersExternal,
                     title: l10n.openTrailersExternally,
                     subtitle: l10n.openTrailersExternallySubtitle,

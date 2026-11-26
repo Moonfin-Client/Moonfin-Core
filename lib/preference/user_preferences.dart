@@ -601,6 +601,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_music_library_style',
     'pref_detail_expanded_tabs',
     'pref_detail_show_technical_details',
+    'pref_detail_show_full_date',
     'pref_detail_trailers_external',
     'pref_hide_details_media_description',
     'pref_detail_use_series_thumbnails',
@@ -1948,6 +1949,13 @@ class UserPreferences extends ChangeNotifier {
   /// server like [detailScreenStyle].
   static final detailShowTechnicalDetails = Preference(
     key: 'pref_detail_show_technical_details',
+    defaultValue: false,
+  );
+
+  /// When on, details pages display the full release or air date instead of
+  /// only the production year. Stored per server like [detailScreenStyle].
+  static final detailShowFullDate = Preference(
+    key: 'pref_detail_show_full_date',
     defaultValue: false,
   );
 

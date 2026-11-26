@@ -73,6 +73,7 @@ void main() {
     'detailMetadataOrderMobile',
     'detailMetadataOrderTv',
     'detailScreenStyle',
+    'detailShowFullDate',
     'detailShowTechnicalDetails',
     'detailTrailersExternal',
     'detailUseSeriesThumbnails',
