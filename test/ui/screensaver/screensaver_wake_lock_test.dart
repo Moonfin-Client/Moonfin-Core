@@ -14,9 +14,13 @@ import 'package:wakelock_plus_platform_interface/wakelock_plus_platform_interfac
 /// enabling while already held leaks an inhibition that nothing ever releases
 /// and keeps the desktop from ever idling for the rest of the session.
 class _RecordingWakeLock extends WakelockPlusPlatformInterface {
-  _RecordingWakeLock(this.requests);
+  _RecordingWakeLock(this.requests, {this.failures = 0});
 
   final List<bool> requests;
+
+  /// Number of enable attempts that fail, standing in for a platform that
+  /// refuses the lock.
+  int failures;
   bool _held = false;
 
   @override
@@ -25,6 +29,10 @@ class _RecordingWakeLock extends WakelockPlusPlatformInterface {
   @override
   Future<void> toggle({required bool enable}) async {
     requests.add(enable);
+    if (enable && failures > 0) {
+      failures--;
+      throw Exception('wake lock unavailable');
+    }
     _held = enable;
   }
 
@@ -105,6 +113,33 @@ void main() {
       controller.dispose();
       async.elapse(Duration.zero);
       expect(requests, [true, false, true, false]);
+    });
+  });
+
+  test('a failed acquisition is retried by the next refresh', () {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    final requests = <bool>[];
+    wakelockPlusPlatformInstance = _RecordingWakeLock(requests, failures: 1);
+
+    fakeAsync((async) {
+      final controller = ScreensaverController(prefs, manager);
+
+      controller.setPlaybackActive(true);
+      async.elapse(Duration.zero);
+      expect(requests, [true]);
+
+      // The attempt failed, so the refresh has to be allowed to take the lock
+      // rather than giving up for the rest of the session.
+      controller.refreshWakeLock();
+      async.elapse(Duration.zero);
+      expect(requests, [true, true]);
+
+      controller.setPlaybackActive(false);
+      async.elapse(Duration.zero);
+      expect(requests, [true, true, false]);
+
+      controller.dispose();
+      async.elapse(Duration.zero);
     });
   });
 }

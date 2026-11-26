@@ -266,7 +266,14 @@ class ScreensaverController {
         // checked before the await rather than through the plugin's own status.
         if (_wakeLockAcquired) return;
         _wakeLockAcquired = true;
-        await WakelockPlus.enable();
+        try {
+          await WakelockPlus.enable();
+        } catch (_) {
+          // Nothing was acquired, so a later refresh may retry. Holding the
+          // reservation would leave playback with no lock for the rest of the
+          // session.
+          _wakeLockAcquired = false;
+        }
       } else {
         _wakeLockAcquired = false;
         await WakelockPlus.disable();
