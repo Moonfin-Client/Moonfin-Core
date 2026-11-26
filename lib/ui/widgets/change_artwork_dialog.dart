@@ -54,6 +54,8 @@ class ChangeArtworkDialog extends StatefulWidget {
 
 class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   late AggregatedItem _item;
+  // The item fetch started on open.
+  late final Future<void> _openingRefresh;
   late List<String> _supportedCategories;
   final Map<String, List<Map<String, dynamic>>> _remoteImages = {};
   final Map<String, bool> _loadingCategories = {};
@@ -182,7 +184,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     for (final category in _supportedCategories) {
       _fetchRemoteImages(category);
     }
-    _refreshItemMetadata();
+    _openingRefresh = _refreshItemMetadata();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusFirstItem();
       _checkLibrariesWriteAccess();
@@ -844,6 +846,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     setState(() {
       _actionInProgress.addAll(_supportedCategories);
     });
+    // Without the full item, Clear All would skip images the card leaves out.
+    await _openingRefresh;
 
     try {
       final client = GetIt.instance<MediaServerClient>();

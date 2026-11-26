@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,12 +26,18 @@ class _FakeItemsApi extends Fake implements ItemsApi {
 
   bool failing = false;
 
+  /// Holds back the next fetch until it completes.
+  Completer<void>? hold;
+
   @override
   Future<Map<String, dynamic>> getItem(
     String itemId, {
     String? mediaSourceId,
     String? fields,
   }) async {
+    final held = hold;
+    hold = null;
+    if (held != null) await held.future;
     if (failing) throw Exception('connection lost');
     return Map<String, dynamic>.from(item);
   }
@@ -74,6 +82,24 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
       ...items.item,
       'BackdropImageTags': ['uploaded'],
     };
+  }
+
+  @override
+  Future<void> deleteItemImage(
+    String itemId, {
+    required ImageType imageType,
+    int? imageIndex,
+  }) async {
+    final item = items.item;
+    if (imageType == ImageType.backdrop) {
+      final backdrops = List<String>.from(item['BackdropImageTags'] as List);
+      backdrops.removeAt(imageIndex!);
+      items.item = {...item, 'BackdropImageTags': backdrops};
+    } else {
+      final tags = Map<String, dynamic>.from(item['ImageTags'] as Map);
+      tags.remove(imageType.toServerString());
+      items.item = {...item, 'ImageTags': tags};
+    }
   }
 }
 
@@ -130,7 +156,10 @@ void main() {
     }
   }
 
-  Future<Future<bool>> open(WidgetTester tester) async {
+  Future<Future<bool>> open(
+    WidgetTester tester, {
+    Map<String, dynamic>? card,
+  }) async {
     tester.view.physicalSize = const Size(1400, 2400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -148,7 +177,7 @@ void main() {
                 item: AggregatedItem(
                   id: 'a1',
                   serverId: 'server',
-                  rawData: items.item,
+                  rawData: card ?? items.item,
                 ),
               ),
               child: const Text('open'),
@@ -227,6 +256,45 @@ void main() {
     await settle(tester);
     expect(await result, isTrue);
   });
+
+  // A library card carries one backdrop tag and leaves out images such as the
+  // disc, so Clear All has to work from the dialog's own fetch of the item.
+  final fetchLandings = ['before Clear All', 'while it asks', 'after confirming'];
+  for (final landing in fetchLandings) {
+    testWidgets('Clear All removes every image when the fetch lands $landing', (
+      tester,
+    ) async {
+      items.item = {
+        ...items.item,
+        'ImageTags': {'Primary': 'cover', 'Disc': 'disc'},
+        'BackdropImageTags': ['blue', 'green', 'yellow'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      await open(
+        tester,
+        card: {
+          ...items.item,
+          'ImageTags': {'Primary': 'cover'},
+          'BackdropImageTags': ['blue'],
+        },
+      );
+
+      if (landing == 'before Clear All') fetch.complete();
+      await settle(tester);
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      if (landing == 'while it asks') fetch.complete();
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      if (landing == 'after confirming') fetch.complete();
+      await settle(tester);
+
+      expect(items.item['ImageTags'], isEmpty);
+      expect(items.item['BackdropImageTags'], isEmpty);
+    });
+  }
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);
