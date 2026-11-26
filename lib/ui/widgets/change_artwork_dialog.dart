@@ -240,6 +240,18 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             _history[_historyIndex] = _item;
           }
         });
+      } else if (mounted) {
+        setState(() {
+          for (var i = 0; i < _history.length; i++) {
+            if (_history[i].id == itemId) {
+              _history[i] = AggregatedItem(
+                id: itemId,
+                serverId: _history[i].serverId,
+                rawData: updatedRaw,
+              );
+            }
+          }
+        });
       }
     } catch (e) {
       debugPrint('Failed to refresh item metadata: $e');
