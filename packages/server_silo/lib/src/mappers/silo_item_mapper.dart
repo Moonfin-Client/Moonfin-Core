@@ -495,10 +495,10 @@ Map<String, dynamic> _userData(SiloItemType type, Map<String, dynamic> item) {
   final state = asJsonMap(item['user_state']) ?? const <String, dynamic>{};
   final data = asJsonMap(item['user_data']) ?? const <String, dynamic>{};
   final played = state['played'] == true || data['played'] == true;
+  // A rewatch keeps the item played and has a position again. Silo resets the
+  // position when a play completes, so a played item with one is in progress.
   final position = data['position_seconds'] ?? item['position_seconds'];
-  final positionSeconds = position is num && position > 0 && !played
-      ? position
-      : 0;
+  final positionSeconds = position is num && position > 0 ? position : 0;
   final duration = data['duration_seconds'] ?? item['duration_seconds'];
   final unplayed = data['unplayed_count'];
   // A card in a list sorted by watch date (`date_viewed`) carries the date in
