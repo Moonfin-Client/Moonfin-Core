@@ -16,6 +16,9 @@ Future<Map<String, Object?>> aetherVideoProcessingArgs(
         lineArt || prefs.get(UserPreferences.upscaleLowResolutionVideo),
     'upscaleFullHD': prefs.get(UserPreferences.upscaleFullHdVideo),
     'upscaleLineArt': lineArt,
+    'toneMapPeakNits': int.tryParse(
+      prefs.get(UserPreferences.hdrToneMapPeakNits),
+    ),
   };
 }
 

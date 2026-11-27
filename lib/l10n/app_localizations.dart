@@ -23038,6 +23038,18 @@ abstract class AppLocalizations {
   /// **'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.'**
   String get upscaleAnimationLineArtSubtitle;
 
+  /// Apple TV and Mac player setting that picks the screen's peak brightness so Moonfin tone maps brighter HDR10 video to it
+  ///
+  /// In en, this message translates to:
+  /// **'HDR tone mapping'**
+  String get hdrToneMapping;
+
+  /// Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names
+  ///
+  /// In en, this message translates to:
+  /// **'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
+  String get hdrToneMappingDescription;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:

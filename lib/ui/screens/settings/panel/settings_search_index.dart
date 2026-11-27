@@ -1852,6 +1852,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['upscale', 'anime', 'animation', 'cartoon', 'anime4k'],
       ),
     ],
+    if (PlatformDetection.isAppleTV || PlatformDetection.isMacOS)
+      quality.leaf(
+        'hdr_tone_map_peak_nits',
+        l10n.hdrToneMapping,
+        subtitle: l10n.hdrToneMappingDescription,
+        keywords: ['hdr', 'hdr10', 'tone mapping', 'nits', 'brightness'],
+      ),
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
       quality.leaf(
         'exoplayer_prefer_ffmpeg',
