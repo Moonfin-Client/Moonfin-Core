@@ -12527,6 +12527,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '当“匹配帧率”关闭时，将 24 fps 视频放慢 0.1%，使其适配电视且不丢帧。当音频直通到功放时不使用此项。';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => '开启“匹配帧率”';
 
   @override

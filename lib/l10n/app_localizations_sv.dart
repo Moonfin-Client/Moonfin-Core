@@ -13182,6 +13182,13 @@ class AppLocalizationsSv extends AppLocalizations {
       'När funktionen ”Match Frame Rate” är avstängd spelas videon med 24 fps upp 0,1 % långsammare så att den passar TV:n utan att bildrutor går förlorade. Används inte när ljudet skickas vidare till en receiver.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Aktivera anpassning till bildfrekvens';
 
   @override

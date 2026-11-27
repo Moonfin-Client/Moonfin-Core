@@ -13136,6 +13136,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kare Hızı Eşleştirme kapalıyken 24 fps videoyu %0,1 daha yavaş oynatır; böylece video TV\'ye kare atlamadan uyum sağlar. Ses bir AV alıcıya doğrudan aktarılıyorsa kullanılmaz.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Kare Hızını Eşleştirmeyi Açın';
 
   @override

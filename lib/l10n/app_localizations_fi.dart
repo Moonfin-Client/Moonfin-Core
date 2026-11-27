@@ -13193,6 +13193,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kun ”Match Frame Rate” -asetus on pois päältä, 24 fps:n videota toistetaan 0,1 % hitaammin, jotta se sopii televisioon ilman kuvanpudotuksia. Tätä asetusta ei käytetä, kun ääni välitetään suoraan vahvistimeen.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Ota käyttöön kuvataajuuden täsmäys';
 
   @override

@@ -23002,6 +23002,18 @@ abstract class AppLocalizations {
   /// **'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.'**
   String get cadenceSlowdownSubtitle;
 
+  /// Apple player setting that sharpens SD and 720p video up to the screen's resolution on the device
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale video below 1080p'**
+  String get upscaleLowResolutionVideo;
+
+  /// Subtitle for the setting that upscales video below 1080p on Apple devices
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.'**
+  String get upscaleLowResolutionVideoSubtitle;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:

@@ -11917,6 +11917,14 @@
   "av1SoftwareUhdDirectPlaySubtitle": "Play AV1 above 1080p, including HDR10, from the original file instead of asking the server to transcode it. This device decodes AV1 in software, so heavy 4K or high bitrate files may stutter.",
   "cadenceSlowdown": "Smooth 24 fps on a 60 Hz TV",
   "cadenceSlowdownSubtitle": "When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.",
+  "upscaleLowResolutionVideo": "Upscale video below 1080p",
+  "@upscaleLowResolutionVideo": {
+    "description": "Apple player setting that sharpens SD and 720p video up to the screen's resolution on the device"
+  },
+  "upscaleLowResolutionVideoSubtitle": "Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.",
+  "@upscaleLowResolutionVideoSubtitle": {
+    "description": "Subtitle for the setting that upscales video below 1080p on Apple devices"
+  },
   "cadenceTipTitle": "Turn On Match Frame Rate",
   "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
   "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",

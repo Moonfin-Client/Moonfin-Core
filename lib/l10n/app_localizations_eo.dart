@@ -13087,6 +13087,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override

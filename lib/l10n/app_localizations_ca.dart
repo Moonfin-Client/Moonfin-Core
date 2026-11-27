@@ -13333,6 +13333,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Quan Match Frame Rate està desactivat, reprodueix el vídeo de 24 fps un 0,1 % més lent perquè s\'ajusti al televisor sense perdre fotogrames. No s\'utilitza quan l\'àudio passa directament a un receptor.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Activa Match Frame Rate';
 
   @override

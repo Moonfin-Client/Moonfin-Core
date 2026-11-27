@@ -89,6 +89,13 @@ class _QualityDecodingScreen extends StatelessWidget {
                   subtitle: l10n.av1SoftwareUhdDirectPlaySubtitle,
                   icon: Icons.memory,
                 ),
+              if (PlatformDetection.isApple || PlatformDetection.isAppleTV)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.upscaleLowResolutionVideo,
+                  title: l10n.upscaleLowResolutionVideo,
+                  subtitle: l10n.upscaleLowResolutionVideoSubtitle,
+                  icon: Icons.high_quality,
+                ),
               if (DisplayHdrProbe.isSupported) const _RedetectDisplayTile(),
               if (PlatformDetection.isAppleTV)
                 SwitchPreferenceTile(

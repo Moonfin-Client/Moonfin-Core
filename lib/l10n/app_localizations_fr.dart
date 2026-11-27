@@ -13293,6 +13293,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Quand « Adapter la fréquence d\'images » est désactivé, lit la vidéo 24 fps 0,1 % plus lentement pour l\'adapter au téléviseur sans perte d\'images. Inutilisé quand l\'audio est transmis en Passthrough vers un ampli AV.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Activer « Adapter la fréquence d\'images »';
 
   @override

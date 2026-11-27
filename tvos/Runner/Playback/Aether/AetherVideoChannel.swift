@@ -244,7 +244,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
                 secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args),
                 cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
-                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args)))
+                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args),
+                upscaleLowResolution: (args["upscaleLowResolution"] as? Bool) ?? false))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

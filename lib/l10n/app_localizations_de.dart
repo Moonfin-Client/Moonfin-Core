@@ -13309,6 +13309,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn „Bildrate anpassen“ aus ist, 24-fps-Videos 0,1 % langsamer abspielen, damit sie ohne ausgelassene Bilder zum Fernseher passen. Wird nicht verwendet, wenn Audio an einen Receiver durchgereicht wird.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => '„Bildrate anpassen“ aktivieren';
 
   @override

@@ -13225,6 +13225,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Quando Adatta frequenza fotogrammi è disattivato, rallenta dello 0,1% i video a 24 fps per adattarli alla TV senza perdere fotogrammi. Non viene usato quando l\'audio è inviato in passthrough a un ricevitore.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
   String get cadenceTipTitle => 'Attiva Adatta Frequenza Fotogrammi';
 
   @override
