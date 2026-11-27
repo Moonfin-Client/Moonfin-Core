@@ -59,6 +59,7 @@ import '../../../data/models/media_segment.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/models/trickplay_prefetch_planner.dart';
 import '../../../data/models/trickplay_preview_layout.dart';
+import '../../../data/services/background_service.dart';
 import '../../../data/services/cast/cast_service.dart';
 import '../../../data/services/cast/cast_target.dart';
 import '../../../data/services/cast/native_airplay_channel.dart';
@@ -566,6 +567,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   int _skipForwardAccum = 0;
   int _skipBackwardAccum = 0;
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
+  // Backdrop of the item being brought up, shown until its picture plays.
+  String? _loadingBackdropUrl;
+  // A re-resolve of this item (seek, track switch, reconnect) keeps its picture.
+  String? _readyItemId;
+  StreamSubscription<bool>? _loadingBackdropBufferingSub;
   PlayerState get _state => _manager.state;
   QueueService get _queue => _manager.queueService;
 
@@ -934,11 +940,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       setState(() => _reconnecting = reconnecting);
     });
     _bringupState = _manager.bringupState;
+    _syncLoadingBackdrop();
     _bringupSub = _manager.bringupStateStream.listen((state) {
       if (!mounted) return;
       setState(() {
         _bringupState = state;
       });
+      _syncLoadingBackdrop();
       _showBringupFailureIfAny(state);
       unawaited(_syncAutoHdrSwitching());
       unawaited(_syncMedia3ZoomMode());
@@ -1104,7 +1112,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _onSubtitleLoadingChanged,
     );
     _onSubtitleLoadingChanged(_state.isSubtitleLoading);
+    _loadingBackdropBufferingSub = _state.bufferingStream.listen(
+      (_) => _syncLoadingBackdrop(),
+    );
     _playingSub = _state.playingStream.listen((playing) {
+      _syncLoadingBackdrop();
       _updateDisplayPlaying(playing);
       _syncCinemaSkip();
       // The hide timer passes over a player that hasn't started yet, so a
@@ -1246,6 +1258,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _userLeftAppSub?.cancel();
     _pipActionSub?.cancel();
     _playingSub?.cancel();
+    _loadingBackdropBufferingSub?.cancel();
     _bufferingSub?.cancel();
     _subtitleLoadingSub?.cancel();
     _subtitleLoadingTimer?.cancel();
@@ -4421,6 +4434,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         ), // Workaround for a Flutter web issue where the video surface can block pointer events.
                       if (_castOwnsTransport) _buildCastingCover(),
                       _buildTrickplayVideoCover(),
+                      if (_loadingBackdropUrl != null)
+                        Positioned.fill(
+                          child: ColoredBox(
+                            color: Colors.black,
+                            child: Image(
+                              image: offlineAwareImageProvider(
+                                _loadingBackdropUrl!,
+                                headers: serverImageHeaders,
+                              ),
+                              fit: BoxFit.cover,
+                              color: Colors.black.withValues(alpha: 0.45),
+                              colorBlendMode: BlendMode.srcOver,
+                              gaplessPlayback: true,
+                              errorBuilder: (_, _, _) =>
+                                  const SizedBox.shrink(),
+                            ),
+                          ),
+                        ),
                       _buildBringupOverlay(context),
                       if (_isRestoringPosition)
                         const Positioned.fill(
@@ -4821,6 +4852,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     await backend.setZoomMode(_media3ZoomModeWire(_effectiveZoomMode));
   }
 
+  void _syncLoadingBackdrop() {
+    if (!mounted) return;
+    var url = _loadingBackdropUrl;
+    final item = _queue.currentItem;
+    if (_bringupState.phase == PlaybackBringupPhase.ready) {
+      _readyItemId = _bringupState.itemId;
+    }
+    if (_isBringupInProgress(_bringupState.phase)) {
+      // Until playItems sets the queue it still holds the previous item.
+      url =
+          item is AggregatedItem &&
+              item.id == _bringupState.itemId &&
+              item.id != _readyItemId
+          ? GetIt.instance<BackgroundService>()
+                .backdropUrlsFor(item)
+                .firstOrNull
+          : null;
+    } else if (_bringupState.phase != PlaybackBringupPhase.ready ||
+        (!_state.isBuffering && (_state.isPlaying || _manager.viewerPaused))) {
+      url = null;
+    }
+    if (url != _loadingBackdropUrl) {
+      setState(() => _loadingBackdropUrl = url);
+    }
+  }
+
   bool _isBringupInProgress(PlaybackBringupPhase phase) {
     return phase.isInProgress;
   }
@@ -4862,7 +4919,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         child: IgnorePointer(
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.45),
+              // The backdrop layer below carries its own dim.
+              color: _loadingBackdropUrl == null
+                  ? Colors.black.withValues(alpha: 0.45)
+                  : Colors.transparent,
             ),
             child: pos == LoadingAnimationPosition.bouncing
                 ? BouncingPositionWrapper(

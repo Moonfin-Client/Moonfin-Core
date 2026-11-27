@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/services/background_service.dart';
 import 'package:moonfin/data/services/cast/cast_service.dart';
 import 'package:moonfin/data/services/cast/cast_target.dart';
 import 'package:moonfin/data/services/cast/native_airplay_channel.dart';
@@ -139,6 +142,13 @@ class _Screensaver extends Fake implements ScreensaverController {
 
 class _Lifecycle extends Fake implements PlaybackLifecycleHandler {}
 
+class _Backgrounds extends Fake implements BackgroundService {
+  @override
+  List<String> backdropUrlsFor(AggregatedItem item) => [
+    'https://server.invalid/${item.id}/backdrop.jpg',
+  ];
+}
+
 class _Users extends Fake implements UserRepository {
   @override
   User? get currentUser => null;
@@ -154,10 +164,19 @@ class _Manager extends PlaybackManager {
   int finishedNextInQueueCalls = 0;
   bool blockNextAdvance = false;
   PlaybackBringupState bringup = const PlaybackBringupState.idle();
+  final bringupEvents = StreamController<PlaybackBringupState>.broadcast();
   StreamResolutionResult? resolution;
 
   @override
   PlaybackBringupState get bringupState => bringup;
+
+  @override
+  Stream<PlaybackBringupState> get bringupStateStream => bringupEvents.stream;
+
+  void emitBringup(PlaybackBringupState state) {
+    bringup = state;
+    bringupEvents.add(state);
+  }
 
   @override
   StreamResolutionResult? get currentResolution => resolution;
@@ -239,6 +258,7 @@ void main() {
     GetIt.instance.registerSingleton<ThemeMusicService>(_ThemeMusic());
     GetIt.instance.registerSingleton<ScreensaverController>(_Screensaver());
     GetIt.instance.registerSingleton<UserRepository>(_Users());
+    GetIt.instance.registerSingleton<BackgroundService>(_Backgrounds());
   });
 
   tearDown(() async {
@@ -1940,5 +1960,66 @@ void main() {
     expect(manager.stopCalls, 0);
     expect(find.byType(VideoPlayerScreen), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
+  });
+
+  group('loading backdrop', () {
+    final episode = AggregatedItem(
+      id: 'ep1',
+      serverId: '',
+      rawData: const {'Id': 'ep1', 'Type': 'Episode'},
+    );
+    final backdrop = find.byWidgetPredicate(
+      (w) => w is Image && w.colorBlendMode == BlendMode.srcOver,
+    );
+
+    PlaybackBringupState phase(PlaybackBringupPhase phase) =>
+        PlaybackBringupState(phase: phase, itemId: episode.id);
+
+    // A stream event lands after the frame it was sent in, so pump twice.
+    Future<void> pumpEvent(WidgetTester tester) async {
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('shows while the item comes up and clears once it plays', (
+      tester,
+    ) async {
+      manager.queueService.setQueue([episode]);
+      manager.bringup = phase(PlaybackBringupPhase.resolving);
+      // The spinner never settles, so pump rather than settle.
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: const [Locale('en')],
+          home: const VideoPlayerScreen(),
+        ),
+      );
+      await tester.pump();
+      expect(backdrop, findsOneWidget);
+
+      manager.emitBringup(phase(PlaybackBringupPhase.ready));
+      await pumpEvent(tester);
+      expect(backdrop, findsOneWidget);
+
+      manager.state.setPlaying(true);
+      await pumpEvent(tester);
+      expect(backdrop, findsNothing);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('stays off when the playing item resolves again', (
+      tester,
+    ) async {
+      manager.queueService.setQueue([episode]);
+      manager.bringup = phase(PlaybackBringupPhase.ready);
+      manager.state.setPlaying(true);
+      await mountPlayer(tester);
+      expect(backdrop, findsNothing);
+
+      manager.emitBringup(phase(PlaybackBringupPhase.resolving));
+      await pumpEvent(tester);
+      expect(backdrop, findsNothing);
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 }
