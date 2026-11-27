@@ -248,15 +248,15 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
       (hdr['dolby_vision_profiles'] as List).isNotEmpty;
   final maxResolution = _maxResolution(codecProfiles);
   final ceilings = _channelCeilings(codecProfiles);
-  // A server without per-codec ceilings gets the lowest limit for every
-  // codec, as before.
-  final allLimits = [?ceilings.all, ...ceilings.byCodec.values];
-  final maxChannels = channelCeilingsByCodec
-      ? ceilings.all
-      : (allLimits.isEmpty ? null : allLimits.reduce(min));
-  final maxChannelsByCodec =
-      channelCeilingsByCodec && ceilings.byCodec.isNotEmpty
-      ? ceilings.byCodec
+  // A server without per-codec ceilings, or a map past Silo's 32 entries,
+  // gets the lowest limit for every codec, as before.
+  final byCodec =
+      channelCeilingsByCodec &&
+      ceilings.byCodec.isNotEmpty &&
+      ceilings.byCodec.length <= 32;
+  final maxChannels = byCodec ? ceilings.all : ceilings.lowest;
+  final maxChannelsByCodec = byCodec
+      ? Map<String, int>.unmodifiable(ceilings.byCodec)
       : null;
 
   Map<String, dynamic> delivery({
@@ -540,29 +540,30 @@ String? _maxResolution(List<Map<String, dynamic>> codecProfiles) {
 /// profiles that name no codec, and [byCodec] the lowest per codec from those
 /// that do. A profile caps only the codecs it names, so a passthrough codec
 /// left out of it keeps its channels. No limit is what a player that
-/// downmixes on its own advertises (eight channels).
-({int? all, Map<String, int> byCodec}) _channelCeilings(
+/// downmixes on its own advertises (eight channels). [lowest] is the lowest
+/// of them all.
+({int? all, Map<String, int> byCodec, int? lowest}) _channelCeilings(
   List<Map<String, dynamic>> codecProfiles,
 ) {
   int? all;
+  int? lowest;
   final byCodec = <String, int>{};
   for (final p in codecProfiles) {
     final limits = _limits(
       [p],
       'VideoAudio',
       'AudioChannels',
-    ).where((limit) => limit < 6);
+    ).where((limit) => limit < 6).toList();
     if (limits.isEmpty) continue;
-    final lowest = limits.reduce(min);
+    final limit = limits.reduce(min);
+    lowest = min(lowest ?? limit, limit);
     final codecs = _csv(p['Codec']);
     if (codecs.isEmpty) {
-      all = all == null ? lowest : min(all, lowest);
-    } else {
-      for (final codec in codecs) {
-        final current = byCodec[codec];
-        byCodec[codec] = current == null ? lowest : min(current, lowest);
-      }
+      all = min(all ?? limit, limit);
+    }
+    for (final codec in codecs) {
+      byCodec.update(codec, (c) => min(c, limit), ifAbsent: () => limit);
     }
   }
-  return (all: all, byCodec: byCodec);
+  return (all: all, byCodec: byCodec, lowest: lowest);
 }

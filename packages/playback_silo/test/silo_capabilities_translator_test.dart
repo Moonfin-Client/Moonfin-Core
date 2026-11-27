@@ -92,9 +92,15 @@ void _expectFitsContract(SiloClientCapabilities caps) {
 /// [_expectFitsContract] for a server newer than the pinned contract, which
 /// predates `max_channels_by_codec`: the rest of each delivery must fit.
 void _expectFitsPinnedContract(SiloClientCapabilities caps) {
+  expect(
+    siloSchemaErrors('ClientCodecCapabilitiesV3', caps.clientCapabilities),
+    isEmpty,
+  );
   for (final entry in caps.deliveries.entries) {
-    final byCodec = entry.value['max_channels_by_codec'] as Map<String, int>;
+    final byCodec =
+        entry.value['max_channels_by_codec'] as Map<String, int>? ?? {};
     expect(byCodec.length, lessThanOrEqualTo(32));
+    expect(byCodec.keys, everyElement(hasLength(inInclusiveRange(1, 64))));
     expect(byCodec.values, everyElement(inInclusiveRange(1, 64)));
     expect(
       siloSchemaErrors(
@@ -270,6 +276,7 @@ void main() {
         expect(d['max_channels'], 2);
         expect(d['max_channels_by_codec'], {'aac': 2});
       }
+      _expectFitsPinnedContract(c);
     });
 
     test('a codec takes its lowest limit, and six or more is none', () {
@@ -277,6 +284,13 @@ void main() {
       final d = c.deliveries['original_http']!;
       expect(d, isNot(contains('max_channels')));
       expect(d['max_channels_by_codec'], {'aac': 2});
+    });
+
+    test('more codecs than Silo takes fall back to one ceiling', () {
+      final codecs = [for (var i = 0; i < 33; i++) 'codec$i'].join(',');
+      final d = caps([audio(codecs, 2)]).deliveries['original_http']!;
+      expect(d['max_channels'], 2);
+      expect(d, isNot(contains('max_channels_by_codec')));
     });
 
     test('an older server gets the lowest limit for every codec', () {
