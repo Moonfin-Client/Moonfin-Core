@@ -123,6 +123,7 @@ class SessionRepository {
   final UserRepository _userRepository;
   final PluginSyncService _pluginSyncService;
   final _logger = Logger();
+  static const _logoutWait = Duration(seconds: 5);
 
   String? _activeServerId;
   String? _activeUserId;
@@ -814,21 +815,15 @@ class SessionRepository {
 
   /// Removes [serverId] with its saved users, and ends their logins on the
   /// server in the background (ServerRepository.deleteServer). The signed-in
-  /// server is signed out of first; its login ends with the others, so an
-  /// unreachable server doesn't hold the removal.
+  /// server is signed out of first, as with Sign Out.
   Future<void> removeServer(String serverId) async {
     if (_activeServerId == serverId) {
-      await destroyCurrentSession(keepLogin: true);
+      await destroyCurrentSession();
     }
     await _serverRepository.deleteServer(serverId);
   }
 
-  /// [keepLogin] leaves the login and its saved user in place for a caller
-  /// that ends it itself ([removeServer]).
-  Future<void> destroyCurrentSession({
-    bool tokenKnownInvalid = false,
-    bool keepLogin = false,
-  }) async {
+  Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
     _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
@@ -870,13 +865,14 @@ class SessionRepository {
     // one profile keeps it for the account's other stored profiles, and
     // only the last one ends it on Silo. The tokens go with that
     // last profile too (AuthenticationStore.removeUser).
-    final keepsLogin =
-        keepLogin ||
-        (serverId != null && _siloSiblings(serverId, userId).isNotEmpty);
-    if (serverId != null && !tokenKnownInvalid && !keepsLogin) {
+    final keepsSiloLogin =
+        serverId != null && _siloSiblings(serverId, userId).isNotEmpty;
+    if (serverId != null && !tokenKnownInvalid && !keepsSiloLogin) {
       try {
         final client = _clientFactory.getClientIfExists(serverId);
-        await client?.authApi.logout();
+        // An unreachable server doesn't hold the sign-out; the request
+        // carries on and clears the client's session when it ends.
+        await client?.authApi.logout().timeout(_logoutWait);
       } catch (_) {}
     }
 
@@ -898,7 +894,7 @@ class SessionRepository {
       await _credentialStore.deleteToken(serverId);
       // A profile whose account stays signed in stays listed, so the user
       // grid still offers every profile of the account.
-      if (userId != null && !keepsLogin) {
+      if (userId != null && !keepsSiloLogin) {
         await _authStore.removeUser(serverId, userId);
       }
       _clientFactory.removeClient(serverId);

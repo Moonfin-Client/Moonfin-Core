@@ -250,9 +250,23 @@ void main() {
       expect(factory.client.authApiFake.logouts, 1);
     });
 
-    test('removing the signed-in server signs out and leaves its login '
+    test('removing the signed-in server signs out of it, then removes it',
+        () async {
+      await store.putUser(_profile('brady'));
+      repo.setActiveSessionForTest('s1', 'brady');
+
+      await repo.removeServer('s1');
+
+      expect(repo.activeServerId, isNull);
+      expect(factory.client.authApiFake.logouts, 1);
+      // The sign-out ended this login, so deleteServer has none left to end.
+      expect(servers.deleted, [('s1', false)]);
+    });
+
+    test('removing the signed-in server keeps a sibling profile\'s login '
         'for deleteServer to end', () async {
       await store.putUser(_profile('brady'));
+      await store.putUser(_profile('kid'));
       repo.setActiveSessionForTest('s1', 'brady');
 
       await repo.removeServer('s1');

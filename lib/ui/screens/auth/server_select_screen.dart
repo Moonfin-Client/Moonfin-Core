@@ -705,7 +705,12 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       padding: const EdgeInsets.only(bottom: 4),
       child: _FocusableTile(
         focusNode: focusNode,
-        onTap: () => context.go('${Destinations.server}?serverId=${server.id}'),
+        onTap: () {
+          // Opening a server while one is being removed could sign in
+          // before the removal's sign-out ends.
+          if (_removingServer) return;
+          context.go('${Destinations.server}?serverId=${server.id}');
+        },
         onLongPress: () => _deleteServer(server),
         child: Row(
           children: [

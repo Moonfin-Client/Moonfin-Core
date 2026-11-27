@@ -287,12 +287,14 @@ class ServerRepository {
     final removed = getServer(serverId);
     // Read before the store entry goes: the saved logins are ended on the
     // server too, so their tokens stop working there.
-    final logins = removed == null ? const <(String, SiloTokens?)>[] : _savedLogins(removed);
+    final logins = removed == null
+        ? const <(String, SiloTokens?)>[]
+        : _savedLogins(removed);
     _servers.removeWhere((s) => s.id == serverId);
     _clientFactory.removeClient(serverId);
     await _authStore.removeServer(serverId);
-    if (logins.isNotEmpty) {
-      unawaited(_endLogins(removed!, logins));
+    if (removed != null && logins.isNotEmpty) {
+      unawaited(_endLogins(removed, logins));
     }
     final certStore = _certStore;
     if (removed == null || certStore == null) return;
@@ -337,7 +339,7 @@ class ServerRepository {
     };
     return [
       for (final login in logins)
-        if (!elsewhere.contains(login.$1)) login,
+        if (login.$1.isEmpty || !elsewhere.contains(login.$1)) login,
     ];
   }
 
