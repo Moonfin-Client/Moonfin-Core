@@ -6,8 +6,15 @@ import 'package:server_core/server_core.dart';
 import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/server_repository.dart';
+import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/auth/store/authentication_preferences.dart';
 import 'package:moonfin/auth/store/authentication_store.dart';
+import 'package:moonfin/auth/store/credential_store.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/socket_handler.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 
 class _AuthStore extends Fake implements AuthenticationStore {
   final servers = <Server>[];
@@ -37,6 +44,49 @@ class _AuthStore extends Fake implements AuthenticationStore {
   @override
   Map<String, dynamic>? getSiloTokens(String serverId, String accountId) =>
       siloTokens[serverId]?[accountId];
+
+  @override
+  Future<void> removeUser(String serverId, String userId) async {
+    users[serverId]?.removeWhere((u) => u.id == userId);
+  }
+}
+
+class _Prefs extends Fake implements AuthenticationPreferences {
+  @override
+  UserSelectBehavior get loginBehavior => UserSelectBehavior.lastUser;
+
+  @override
+  Future<void> setLastServerId(String id) async {}
+
+  @override
+  Future<void> setLastUserId(String id) async {}
+
+  @override
+  Future<void> clearAutoLogin() async {}
+}
+
+class _Credentials extends Fake implements CredentialStore {
+  @override
+  Future<void> deleteToken(String serverId) async {}
+}
+
+class _Socket extends Fake implements SocketHandler {
+  @override
+  void disconnect() {}
+}
+
+class _Users extends Fake implements UserRepository {
+  @override
+  void setCurrentUser(User? user) {}
+}
+
+class _PluginSync extends Fake implements PluginSyncService {
+  @override
+  void resetState({
+    bool notify = true,
+    bool stopStream = true,
+    bool keepIncompleteRecordings = false,
+  }) {}
 }
 
 Server _server(String id, ServerType type, String address) => Server(
@@ -71,7 +121,8 @@ void main() {
   late HttpServer http;
   late List<(String, String)> requests;
   late _AuthStore store;
-  late ServerRepository repo;
+  late ServerRepository servers;
+  late SessionRepository repo;
   late String address;
   final factory = MediaServerClientFactory(
     deviceInfo: const DeviceInfo(
@@ -85,7 +136,17 @@ void main() {
   setUp(() async {
     requests = [];
     store = _AuthStore();
-    repo = ServerRepository(store, factory);
+    servers = ServerRepository(store, factory);
+    repo = SessionRepository(
+      store,
+      _Prefs(),
+      _Credentials(),
+      factory,
+      _Socket(),
+      servers,
+      _Users(),
+      _PluginSync(),
+    );
     http = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     address = 'http://127.0.0.1:${http.port}';
     http.listen((request) async {
@@ -101,7 +162,7 @@ void main() {
 
   tearDown(() => http.close(force: true));
 
-  // The logouts run in the background after deleteServer returns.
+  // The logouts run in the background after removeServer returns.
   Future<void> waitForRequests(int count) async {
     final deadline = DateTime.now().add(const Duration(seconds: 5));
     while (requests.length < count && DateTime.now().isBefore(deadline)) {
@@ -115,9 +176,9 @@ void main() {
       'a1': _pair('access-1', 'refresh-1'),
       'a2': _pair('access-2', 'refresh-2'),
     };
-    await repo.loadStoredServers();
+    await servers.loadStoredServers();
 
-    await repo.deleteServer('s1');
+    await repo.removeServer('s1');
     await waitForRequests(2);
 
     expect(store.servers, isEmpty);
@@ -143,9 +204,9 @@ void main() {
         _user('j1', 'u2', 'token-2'),
         _user('j1', 'u3', ''),
       ];
-      await repo.loadStoredServers();
+      await servers.loadStoredServers();
 
-      await repo.deleteServer('j1');
+      await repo.removeServer('j1');
       await waitForRequests(2);
       // Give a third (wrong) request time to show up.
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -173,14 +234,61 @@ void main() {
       _user('j1', 'u2', 'own'),
     ];
     store.users['j2'] = [_user('j2', 'u1', 'shared')];
-    await repo.loadStoredServers();
+    await servers.loadStoredServers();
 
-    await repo.deleteServer('j1');
+    await repo.removeServer('j1');
     await waitForRequests(1);
     await Future<void>.delayed(const Duration(milliseconds: 100));
 
     expect(requests, hasLength(1));
     expect(requests.single.$2, contains('own'));
+  });
+
+  group('the signed-in server', () {
+    Future<void> signIn(String serverId, String userId, String token) async {
+      final server = servers.getServer(serverId)!;
+      factory
+              .getClient(
+                serverId: serverId,
+                serverType: server.serverType,
+                baseUrl: server.address,
+              )
+              .accessToken =
+          token;
+      repo.setActiveSessionForTest(serverId, userId);
+    }
+
+    test('its login is ended when no other server holds it', () async {
+      store.servers.add(_server('j1', ServerType.jellyfin, address));
+      store.users['j1'] = [_user('j1', 'u1', 'own')];
+      await servers.loadStoredServers();
+      await signIn('j1', 'u1', 'own');
+
+      await repo.removeServer('j1');
+      await waitForRequests(1);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      expect(repo.activeServerId, isNull);
+      expect(requests, hasLength(1));
+      expect(requests.single.$2, contains('own'));
+    });
+
+    test('a login another saved server holds is not ended', () async {
+      store.servers
+        ..add(_server('j1', ServerType.jellyfin, address))
+        ..add(_server('j2', ServerType.jellyfin, 'http://other.invalid'));
+      store.users['j1'] = [_user('j1', 'u1', 'shared')];
+      store.users['j2'] = [_user('j2', 'u1', 'shared')];
+      await servers.loadStoredServers();
+      await signIn('j1', 'u1', 'shared');
+
+      await repo.removeServer('j1');
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+
+      expect(repo.activeServerId, isNull);
+      expect(requests, isEmpty);
+      expect(store.users['j2'], hasLength(1));
+    });
   });
 
   test('a server that never answers does not hold the removal', () async {
@@ -198,10 +306,10 @@ void main() {
       _server('s1', ServerType.silo, 'http://127.0.0.1:${silent.port}'),
     );
     store.siloTokens['s1'] = {'a1': _pair('access-1', 'refresh-1')};
-    await repo.loadStoredServers();
+    await servers.loadStoredServers();
 
     final watch = Stopwatch()..start();
-    await repo.deleteServer('s1');
+    await repo.removeServer('s1');
 
     expect(watch.elapsed, lessThan(const Duration(seconds: 1)));
     expect(store.servers, isEmpty);
@@ -211,11 +319,11 @@ void main() {
     await http.close(force: true);
     store.servers.add(_server('s1', ServerType.silo, address));
     store.siloTokens['s1'] = {'a1': _pair('access-1', 'refresh-1')};
-    await repo.loadStoredServers();
+    await servers.loadStoredServers();
 
-    await repo.deleteServer('s1');
+    await repo.removeServer('s1');
 
     expect(store.servers, isEmpty);
-    expect(repo.servers, isEmpty);
+    expect(servers.servers, isEmpty);
   });
 }

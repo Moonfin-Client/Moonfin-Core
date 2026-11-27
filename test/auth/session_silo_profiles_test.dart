@@ -87,12 +87,13 @@ class _Servers extends Fake implements ServerRepository {
   final Server server;
 
   @override
-  Server? getServer(String id) => server;
+  Server? getServer(String id) => id == server.id ? server : null;
 
   @override
   Future<Server> withCheckedType(Server server) async => server;
 
-  /// What the store held for the server when deleteServer ran.
+  /// Whether the store still held the account's login when deleteServer
+  /// ran. The removal reads the logins it ends before that.
   final deleted = <(String, bool)>[];
   AuthenticationStore? store;
 
@@ -259,12 +260,12 @@ void main() {
 
       expect(repo.activeServerId, isNull);
       expect(factory.client.authApiFake.logouts, 1);
-      // The sign-out ended this login, so deleteServer has none left to end.
+      // The sign-out ended this login, so the removal has none left to end.
       expect(servers.deleted, [('s1', false)]);
     });
 
     test('removing the signed-in server keeps a sibling profile\'s login '
-        'for deleteServer to end', () async {
+        'for the removal to end', () async {
       await store.putUser(_profile('brady'));
       await store.putUser(_profile('kid'));
       repo.setActiveSessionForTest('s1', 'brady');
