@@ -132,22 +132,25 @@ double _focusHeadroom(double imageHeight, bool cardExpansion) =>
     ? imageHeight * (MediaCard.focusScale - 1)
     : 0.0;
 
-/// Clips inactive Classic rows where they pass behind the pinned info area.
+/// Clips Classic rows where they pass behind the pinned info area.
 ///
-/// The focused row must remain complete: it is the user's active navigation
-/// target, and clipping its artwork can leave only the card metadata visible.
-/// [isFocused] means the row holds focus. A mouse scroll makes the row nearest
-/// the top the active one without focusing it, so that row still passes
-/// behind the info area like the rest.
+/// A focused row must be complete where it comes to rest: it is the user's
+/// active navigation target, and clipping its artwork can leave only the card
+/// metadata visible. While it slides there it is clipped at the info area or
+/// at its resting top, whichever is higher. [isFocused] means the row holds
+/// focus. A mouse scroll makes the row nearest the top the active one without
+/// focusing it, so that row still passes behind the info area like the rest.
 @visibleForTesting
 double classicHomeRowOverlayClipTop({
   required bool isFocused,
   required double rowViewportTop,
+  required double rowRestTop,
   required double rowExtent,
   required double overlayBottom,
 }) {
-  if (isFocused) return 0.0;
-  return (overlayBottom - rowViewportTop).clamp(0.0, rowExtent);
+  final clipEdge =
+      isFocused ? math.min(overlayBottom, rowRestTop) : overlayBottom;
+  return (clipEdge - rowViewportTop).clamp(0.0, rowExtent);
 }
 
 class HomeScreen extends StatelessWidget {
@@ -4578,6 +4581,17 @@ class _ContentRowsState extends State<_ContentRows>
     return classicRowPadding(prefs);
   }
 
+  /// Where row [rowIndex]'s top settles in the viewport once scrolled to.
+  double _classicRowRestTop(int rowIndex, List<double> rowTopOffsets) {
+    // The first build runs before the list has laid out, and the scroll
+    // extent the resting offset clamps to doesn't exist yet.
+    final restingOffset = _scrollController.hasClients &&
+            _scrollController.position.hasContentDimensions
+        ? _restingOffsetForRow(rowIndex)
+        : null;
+    return rowTopOffsets[rowIndex] - (restingOffset ?? 0.0);
+  }
+
   Widget _buildShiftedRow({
     required Widget child,
     required int rowIndex,
@@ -4614,6 +4628,7 @@ class _ContentRowsState extends State<_ContentRows>
         classicClipTop: classicHomeRowOverlayClipTop(
           isFocused: _rowStateOf(rowIndex)?.hasFocusedItem ?? false,
           rowViewportTop: rowViewportTop,
+          rowRestTop: _classicRowRestTop(rowIndex, rowTopOffsets),
           rowExtent: rowExtent,
           overlayBottom: overlayBottom,
         ),
