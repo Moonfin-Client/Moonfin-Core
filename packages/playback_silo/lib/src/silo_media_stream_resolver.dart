@@ -68,19 +68,20 @@ class SiloMediaStreamResolver
     }
     final file = await _file(mediaItem, itemId, mediaSourceId);
 
+    final api = client.playbackApi;
+    final server = await _playable(api);
+
     final environment = _environment();
     final capabilities = siloCapabilitiesFromDeviceProfile(
       deviceProfile ?? const {},
       traits: environment.traits,
+      channelCeilingsByCodec: server.has('codec_channel_ceilings_v1'),
     );
     final context = siloPlaybackContext(
       environment: environment,
       appVersion: client.deviceInfo.appVersion,
       capabilities: capabilities,
     );
-
-    final api = client.playbackApi;
-    final server = await _playable(api);
     // A version the viewer picked plays as that version, on a server that
     // can keep an attempt on one file.
     final pinned = file.explicit && server.has('fixed_media_file_v1');

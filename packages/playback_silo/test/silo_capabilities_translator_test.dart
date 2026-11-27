@@ -89,6 +89,24 @@ void _expectFitsContract(SiloClientCapabilities caps) {
   }
 }
 
+/// [_expectFitsContract] for a server newer than the pinned contract, which
+/// predates `max_channels_by_codec`: the rest of each delivery must fit.
+void _expectFitsPinnedContract(SiloClientCapabilities caps) {
+  for (final entry in caps.deliveries.entries) {
+    final byCodec = entry.value['max_channels_by_codec'] as Map<String, int>;
+    expect(byCodec.length, lessThanOrEqualTo(32));
+    expect(byCodec.values, everyElement(inInclusiveRange(1, 64)));
+    expect(
+      siloSchemaErrors(
+        'DeliveryCapabilityV3',
+        {...entry.value}..remove('max_channels_by_codec'),
+      ),
+      isEmpty,
+      reason: entry.key,
+    );
+  }
+}
+
 void main() {
   group('the libmpv backend', () {
     final caps = siloCapabilitiesFromDeviceProfile(
@@ -215,6 +233,62 @@ void main() {
     });
 
     test('fits Silo\'s start-request schema', () => _expectFitsContract(caps));
+  });
+
+  group('channel ceilings on a server with per-codec ceilings', () {
+    Map<String, dynamic> audio(String? codec, int channels) => {
+      'Type': 'VideoAudio',
+      'Codec': ?codec,
+      'Conditions': [
+        {
+          'Condition': 'LessThanEqual',
+          'Property': 'AudioChannels',
+          'Value': '$channels',
+        },
+      ],
+    };
+    SiloClientCapabilities caps(List<Map<String, dynamic>> audioProfiles) =>
+        siloCapabilitiesFromDeviceProfile({
+          ..._mpvProfile(),
+          'CodecProfiles': audioProfiles,
+        }, channelCeilingsByCodec: true);
+
+    test('a cap that leaves passthrough codecs out only caps the rest', () {
+      // Stereo PCM with AC-3, DTS and TrueHD bitstreamed, plus the forced
+      // stereo AAC profile.
+      final c = caps([audio('aac,flac,opus', 2), audio('aac', 2)]);
+      for (final d in c.deliveries.values) {
+        expect(d, isNot(contains('max_channels')));
+        expect(d['max_channels_by_codec'], {'aac': 2, 'flac': 2, 'opus': 2});
+      }
+      _expectFitsPinnedContract(c);
+    });
+
+    test('a cap on every codec stays one ceiling', () {
+      final c = caps([audio(null, 2), audio('aac', 2)]);
+      for (final d in c.deliveries.values) {
+        expect(d['max_channels'], 2);
+        expect(d['max_channels_by_codec'], {'aac': 2});
+      }
+    });
+
+    test('a codec takes its lowest limit, and six or more is none', () {
+      final c = caps([audio('aac,eac3', 6), audio('aac', 2), audio(null, 8)]);
+      final d = c.deliveries['original_http']!;
+      expect(d, isNot(contains('max_channels')));
+      expect(d['max_channels_by_codec'], {'aac': 2});
+    });
+
+    test('an older server gets the lowest limit for every codec', () {
+      final c = siloCapabilitiesFromDeviceProfile({
+        ..._mpvProfile(),
+        'CodecProfiles': [audio('aac,flac', 2)],
+      });
+      for (final d in c.deliveries.values) {
+        expect(d['max_channels'], 2);
+        expect(d, isNot(contains('max_channels_by_codec')));
+      }
+    });
   });
 
   test('a player without embedded subtitle rendering opts out of it', () {

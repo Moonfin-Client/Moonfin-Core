@@ -200,10 +200,14 @@ class SiloClientCapabilities {
 ///   transcoding profiles' video codecs, and those profiles' audio codecs.
 ///   A profile without HLS transcoding has no `hls`. A channel limit below 6
 ///   on the audio codec profiles becomes `max_channels`, and a player that
-///   downmixes on its own has none.
+///   downmixes on its own has none. With [channelCeilingsByCodec] (Silo's
+///   `codec_channel_ceilings_v1`) a limit on named codecs goes to
+///   `max_channels_by_codec` instead, so a passthrough codec the profile
+///   leaves out of its channel limit is copied as it is.
 SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
   Map<String, dynamic> deviceProfile, {
   SiloPlayerTraits traits = const SiloPlayerTraits(),
+  bool channelCeilingsByCodec = false,
 }) {
   final directPlay = _profiles(deviceProfile['DirectPlayProfiles']);
   final codecProfiles = _profiles(deviceProfile['CodecProfiles']);
@@ -243,7 +247,17 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
       hdr['hdr10_plus'] == true ||
       (hdr['dolby_vision_profiles'] as List).isNotEmpty;
   final maxResolution = _maxResolution(codecProfiles);
-  final maxChannels = _maxChannels(codecProfiles);
+  final ceilings = _channelCeilings(codecProfiles);
+  // A server without per-codec ceilings gets the lowest limit for every
+  // codec, as before.
+  final allLimits = [?ceilings.all, ...ceilings.byCodec.values];
+  final maxChannels = channelCeilingsByCodec
+      ? ceilings.all
+      : (allLimits.isEmpty ? null : allLimits.reduce(min));
+  final maxChannelsByCodec =
+      channelCeilingsByCodec && ceilings.byCodec.isNotEmpty
+      ? ceilings.byCodec
+      : null;
 
   Map<String, dynamic> delivery({
     required bool supported,
@@ -263,6 +277,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
     // Silo honors passthrough only under `exact` evidence.
     'audio_passthrough_codecs': const <String>[],
     'max_channels': ?maxChannels,
+    'max_channels_by_codec': ?maxChannelsByCodec,
     'subtitles': subtitles,
     'features': const <String>[],
     // A stream's URL and headers are fixed once the player opens it.
@@ -521,12 +536,33 @@ String? _maxResolution(List<Map<String, dynamic>> codecProfiles) {
   return '4320p';
 }
 
-/// A channel limit below six on the audio codec profiles, as Silo's
-/// per-delivery `max_channels`. Null means none, which is what a player that
+/// The channel limits below six on the audio codec profiles: [all] from the
+/// profiles that name no codec, and [byCodec] the lowest per codec from those
+/// that do. A profile caps only the codecs it names, so a passthrough codec
+/// left out of it keeps its channels. No limit is what a player that
 /// downmixes on its own advertises (eight channels).
-int? _maxChannels(List<Map<String, dynamic>> codecProfiles) {
-  final limits = _limits(codecProfiles, 'VideoAudio', 'AudioChannels');
-  if (limits.isEmpty) return null;
-  final lowest = limits.reduce(min);
-  return lowest < 6 ? lowest : null;
+({int? all, Map<String, int> byCodec}) _channelCeilings(
+  List<Map<String, dynamic>> codecProfiles,
+) {
+  int? all;
+  final byCodec = <String, int>{};
+  for (final p in codecProfiles) {
+    final limits = _limits(
+      [p],
+      'VideoAudio',
+      'AudioChannels',
+    ).where((limit) => limit < 6);
+    if (limits.isEmpty) continue;
+    final lowest = limits.reduce(min);
+    final codecs = _csv(p['Codec']);
+    if (codecs.isEmpty) {
+      all = all == null ? lowest : min(all, lowest);
+    } else {
+      for (final codec in codecs) {
+        final current = byCodec[codec];
+        byCodec[codec] = current == null ? lowest : min(current, lowest);
+      }
+    }
+  }
+  return (all: all, byCodec: byCodec);
 }

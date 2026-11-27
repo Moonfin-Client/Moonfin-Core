@@ -12,12 +12,34 @@ final _profile =
         as Map<String, dynamic>;
 
 /// The capabilities fixture, without `fixed_media_file_v1` when [fixed] is
-/// false (an older server).
-SiloRoute _capabilities({bool fixed = true}) {
+/// false (an older server), and with `codec_channel_ceilings_v1` when
+/// [ceilings] is true.
+SiloRoute _capabilities({bool fixed = true, bool ceilings = false}) {
   final caps = fixtureJson('silo/playback_capabilities.json');
   if (!fixed) (caps['features'] as List).remove('fixed_media_file_v1');
+  if (ceilings) (caps['features'] as List).add('codec_channel_ceilings_v1');
   return SiloTestServer.json(caps);
 }
+
+/// The mpv profile capped at stereo for the codecs it decodes, with the
+/// passthrough codecs left out of the cap.
+final _stereoPassthroughProfile = {
+  ..._profile,
+  'CodecProfiles': [
+    ...(_profile['CodecProfiles'] as List),
+    {
+      'Type': 'VideoAudio',
+      'Codec': 'aac,flac',
+      'Conditions': [
+        {
+          'Condition': 'LessThanEqual',
+          'Property': 'AudioChannels',
+          'Value': '2',
+        },
+      ],
+    },
+  ],
+};
 
 void main() {
   // The Salt Path: 2160p (4603, the default) and 1080p (4602).
@@ -63,6 +85,35 @@ void main() {
     final body = await started(version: '4602', fixed: false);
     expect(body['file_id'], '4602');
     expect(body, isNot(contains('allow_alternate_versions')));
+  });
+
+  group('a stereo cap that spares passthrough codecs', () {
+    Future<Map<String, dynamic>> deliveries({required bool ceilings}) async {
+      final server = SiloTestServer({
+        capabilitiesPath: _capabilities(ceilings: ceilings),
+        startPath: SiloTestServer.file('decision_remux.json', status: 201),
+      });
+      await SiloMediaStreamResolver(
+        siloTestClient(server),
+      ).resolve(item, deviceProfile: _stereoPassthroughProfile);
+      final body = server.bodies(startPath).single;
+      return (body['client_playback_context'] as Map)['deliveries']
+          as Map<String, dynamic>;
+    }
+
+    test('caps only those codecs on a server with per-codec ceilings', () async {
+      for (final d in (await deliveries(ceilings: true)).values) {
+        expect(d, isNot(contains('max_channels')));
+        expect(d['max_channels_by_codec'], {'aac': 2, 'flac': 2});
+      }
+    });
+
+    test('caps every codec on an older server', () async {
+      for (final d in (await deliveries(ceilings: false)).values) {
+        expect(d['max_channels'], 2);
+        expect(d, isNot(contains('max_channels_by_codec')));
+      }
+    });
   });
 
   test('a single version is never pinned', () async {
