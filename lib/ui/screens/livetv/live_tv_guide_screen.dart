@@ -2665,9 +2665,13 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             ),
           ),
           actions: [
+            SlidingFocusActions(
+              surface: AppColorScheme.surface,
+              children: [
             // That airing is over. Single-episode recording no longer applies.
             if (!isEnded)
               adaptiveDialogAction(
+                solidFocusOn: AppColorScheme.surface,
                 autofocus: isRecordingNow,
                 focusNode: isRecordingNow ? defaultActionFocusNode : null,
                 onPressed: () async {
@@ -2730,6 +2734,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             if (hasSeriesTimer)
               adaptiveDialogAction(
+                solidFocusOn: AppColorScheme.surface,
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   final seriesTimerId = program.rawData['SeriesTimerId']
@@ -2768,6 +2773,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             if (program.isSeries)
               adaptiveDialogAction(
+                solidFocusOn: AppColorScheme.surface,
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   dialogActionInProgress = true;
@@ -2822,6 +2828,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 ),
               ),
             adaptiveDialogAction(
+              solidFocusOn: AppColorScheme.surface,
               onPressed: channel == null
                   ? null
                   : () async {
@@ -2859,6 +2866,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             ),
             adaptiveDialogAction(
+              solidFocusOn: AppColorScheme.surface,
               autofocus: !isRecordingNow,
               focusNode: isRecordingNow ? null : defaultActionFocusNode,
               onPressed: () {
@@ -2873,12 +2881,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             ),
             adaptiveDialogAction(
+              solidFocusOn: AppColorScheme.surface,
               onPressed: () {
                 if (dialogActionInProgress) return;
                 dialogActionInProgress = true;
                 Navigator.of(dialogContext).pop();
               },
               child: Text(l10n.close),
+            ),
+              ],
             ),
           ],
         );
