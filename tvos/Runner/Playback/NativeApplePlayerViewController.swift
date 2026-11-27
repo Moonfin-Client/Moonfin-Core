@@ -4061,6 +4061,11 @@ extension NativeApplePlayerViewController {
         doubleTap.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTap)
 
+        let twoFingerTap = UITapGestureRecognizer(
+            target: self, action: #selector(handleTouchTwoFingerTap))
+        twoFingerTap.numberOfTouchesRequired = 2
+        view.addGestureRecognizer(twoFingerTap)
+
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTouchTap))
         tap.require(toFail: doubleTap)
         view.addGestureRecognizer(tap)
@@ -4321,6 +4326,11 @@ extension NativeApplePlayerViewController {
             activate(x < third ? .skipBack : .skipForward)
         }
         showOsd()
+    }
+
+    @objc private func handleTouchTwoFingerTap() {
+        guard presentedViewController == nil, !nextUpVisible else { return }
+        togglePlayPause()
     }
 
     @objc private func handleControlTap(_ recognizer: UITapGestureRecognizer) {

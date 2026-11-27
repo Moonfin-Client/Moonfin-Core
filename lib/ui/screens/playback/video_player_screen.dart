@@ -549,6 +549,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (mounted) _toggleControls();
     },
     onDoubleTap: _onSurfaceDoubleTap,
+    onTwoFingerTap: () {
+      if (mounted) _togglePlayPause();
+    },
   );
   DateTime? _lastDesktopClickAt;
   bool _wasPlayingBeforeDesktopClick = false;
