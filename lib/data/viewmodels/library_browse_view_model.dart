@@ -107,6 +107,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   List<AggregatedItem> _items = const [];
 
+  /// What the grid showed when a reload started, kept on screen until the
+  /// reload's first page arrives.
+  List<AggregatedItem> _shownWhileLoading = const [];
+
   // The grid reads this from its item builders, so a search would otherwise
   // rescan and reallocate the whole library several times a frame.
   List<AggregatedItem>? _searchResults;
@@ -141,6 +145,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       : item.sortName ?? item.name;
 
   List<AggregatedItem> get items {
+    if (_state == LibraryBrowseState.loading && _items.isEmpty) {
+      return _shownWhileLoading;
+    }
     // The server folds accents for the searches it answers, so matching here
     // has to as well or the same query finds different things depending on
     // which search box it was typed into.
@@ -648,6 +655,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     // A scroll page still on its way belongs to the old list, so it shouldn't
     // hold up paging of the new one.
     _loadingMore = false;
+    // The grid keeps showing the last list until the new first page replaces
+    // it, rather than blanking for the round trip. Playlists aren't kept,
+    // since their categories are read again below.
+    _shownWhileLoading = isPlaylistBrowse ? const [] : items;
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;

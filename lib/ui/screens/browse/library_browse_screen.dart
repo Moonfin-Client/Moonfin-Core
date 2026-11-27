@@ -301,7 +301,20 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     }
   }
 
+  LibraryBrowseState? _lastState;
+
   void _onChanged() {
+    // A new sort or filter starts over at the top. The grid stayed up through
+    // the reload, so its scroll and remembered card belong to the old list.
+    if (_lastState == LibraryBrowseState.loading &&
+        _vm.state == LibraryBrowseState.ready) {
+      if (_scrollController.hasClients) _scrollController.jumpTo(0);
+      if (lastFocusedGridIndex != null) lastFocusedGridIndex = 0;
+      // A new list that starts like the old one still needs the grid's focus
+      // nodes and fill count reset.
+      _lastGridItemsLength = -1;
+    }
+    _lastState = _vm.state;
     _hasSubtitlesCache = null;
     if (widget.previewStyle != null &&
         _vm.focusedItem == null &&
@@ -1404,7 +1417,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   Widget _buildBody() {
     final showHorizChevrons =
         _horizontalGridIsScrollable &&
-        _vm.state == LibraryBrowseState.ready &&
+        _vm.state != LibraryBrowseState.error &&
         PlatformDetection.useDesktopUi &&
         !PlatformDetection.isTV;
     return Column(
@@ -1440,7 +1453,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           ),
         Expanded(
           child: switch (_vm.state) {
-            LibraryBrowseState.loading => SkeletonLibraryGrid(
+            LibraryBrowseState.loading when _vm.items.isEmpty =>
+              SkeletonLibraryGrid(
                 cardWidth: _cardWidth(),
                 aspectRatio: _gridBaseAspectRatio(),
                 isSongs: _isSongsBrowse,
@@ -1463,7 +1477,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   ],
                 ),
               ),
-            LibraryBrowseState.ready =>
+            // A reload keeps the old cards up until the new ones arrive.
+            LibraryBrowseState.loading || LibraryBrowseState.ready =>
               _isSongsBrowse ? _buildSongsList() : _buildGrid(),
           },
         ),
