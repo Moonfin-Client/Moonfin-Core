@@ -65,12 +65,19 @@ class Media3PlayerBackend extends PlayerBackend
   static Map<String, dynamic> audioDecoderPreferencesPayload(
     UserPreferences prefs,
   ) {
+    // A bitstream skips the processor chain, so Night Mode turns passthrough
+    // off to get decoded audio it can compress.
+    final nightMode = prefs.get(UserPreferences.audioNightMode);
     return <String, dynamic>{
-      'passthroughMode': prefs.get(UserPreferences.audioPassthroughMode).name,
-      'passthroughCodecs': prefs
-          .resolvedPassthroughCodecs()
-          .map((codec) => codec.wireName)
-          .toList(growable: false),
+      'passthroughMode': nightMode
+          ? AudioPassthroughMode.disabled.name
+          : prefs.get(UserPreferences.audioPassthroughMode).name,
+      'passthroughCodecs': nightMode
+          ? const <String>[]
+          : prefs
+                .resolvedPassthroughCodecs()
+                .map((codec) => codec.wireName)
+                .toList(growable: false),
       // 'platform' has the HAL pack raw encodings, 'iec' packs IEC 61937 in
       // the app. Only sent as 'iec' when the choke-point getter says the
       // mode is actually live here.
@@ -78,6 +85,7 @@ class Media3PlayerBackend extends PlayerBackend
           ? AudioPassthroughOutput.iecPacker.wireName
           : AudioPassthroughOutput.platform.wireName,
       'downmixToStereo': prefs.get(UserPreferences.downmixToStereo),
+      'nightMode': nightMode,
     };
   }
 
@@ -1602,16 +1610,21 @@ class Media3PlayerBackend extends PlayerBackend
     final maxBitrate = int.tryParse(_prefs.get(UserPreferences.maxBitrate));
     final maxResolution = _prefs.get(UserPreferences.maxVideoResolution);
     final audioCapabilityProfile = _prefs.detectedAudioCapabilities;
+    // Night Mode turns passthrough off, so the server profile has to match.
+    final bitstream = !_prefs.get(UserPreferences.audioNightMode);
 
     return DeviceProfileBuilder.build(
       maxBitrateMbps: maxBitrate,
       audioCapabilityProfile: audioCapabilityProfile,
       audioFallbackCodec: _prefs.resolveAudioFallbackCodec(),
       transcodeAudioCodecs: _prefs.resolveTranscodeAudioCodecs(),
-      ac3PassthroughEnabled: _prefs.resolveAc3PassthroughEnabled(),
-      eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
-      dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
-      trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
+      ac3PassthroughEnabled: bitstream && _prefs.resolveAc3PassthroughEnabled(),
+      eac3PassthroughEnabled:
+          bitstream && _prefs.resolveEac3PassthroughEnabled(),
+      dtsCorePassthroughEnabled:
+          bitstream && _prefs.resolveDtsCorePassthroughEnabled(),
+      trueHdPassthroughEnabled:
+          bitstream && _prefs.resolveTrueHdPassthroughEnabled(),
       // The bundled FFmpeg decoder leaves the channel layout unset for stereo
       // TrueHD, so every packet is rejected and playback sits at 0ms with a
       // black screen. Surround decodes fine. See androidx/media#1843.
