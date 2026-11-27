@@ -1,5 +1,6 @@
 // Issue #1610: Live TV tiles took focus from a remote but never opened, since
 // each wrapped a GestureDetector, which only answers pointer taps.
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -46,6 +47,42 @@ class _OwnersAdapter implements HttpClientAdapter {
       mine
           ? jsonEncode({'timerIds': [], 'seriesTimerIds': [], 'itemIds': []})
           : '{}',
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+// Answers the first Owners/Mine read with nothing owned, then holds each later
+// one until the test completes it, so replies can arrive in any order.
+class _HeldOwnersAdapter implements HttpClientAdapter {
+  final reads = <Completer<List<String>>>[];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    var body = '{}';
+    if (options.uri.path.endsWith('/Owners/Mine')) {
+      final read = Completer<List<String>>();
+      if (reads.isEmpty) read.complete(const []);
+      reads.add(read);
+      final timerIds = await read.future;
+      body = jsonEncode({
+        'timerIds': timerIds,
+        'seriesTimerIds': [],
+        'itemIds': [],
+      });
+    }
+    return ResponseBody.fromString(
+      body,
       200,
       headers: {
         Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -199,6 +236,49 @@ void main() {
       notifyLiveTvRecordingsChanged();
       await tester.pumpAndSettle();
       expect(find.text(strings.recordingsScopeMine), findsOneWidget);
+    });
+
+    testWidgets('an older owners read finishing last does not undo a newer one',
+        (tester) async {
+      when(() => client.baseUrl).thenReturn('http://server.test');
+      when(() => client.accessToken).thenReturn('token');
+      when(() => client.deviceInfo).thenReturn(
+        const DeviceInfo(
+          id: 'dev1',
+          name: 'test',
+          appName: 'moonfin',
+          appVersion: '0.0.0',
+        ),
+      );
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.recordingsScope,
+        'mine',
+      );
+      final adapter = _HeldOwnersAdapter();
+      final owners = RecordingOwnersService(
+        client: () => client,
+        dio: Dio()..httpClientAdapter = adapter,
+      )..setSupported(true);
+      addTearDown(owners.dispose);
+      GetIt.instance.registerSingleton<RecordingOwnersService>(owners);
+      final strings = await l10n();
+
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      expect(find.text('${strings.schedule} (0)'), findsOneWidget);
+
+      // Two changes close together: the first read still sees nothing owned,
+      // the second sees the timer just scheduled, and the first answers last.
+      notifyLiveTvRecordingsChanged();
+      await tester.pump(const Duration(milliseconds: 10));
+      notifyLiveTvRecordingsChanged();
+      await tester.pump(const Duration(milliseconds: 10));
+      expect(adapter.reads, hasLength(3));
+      adapter.reads[2].complete(const ['timer-1']);
+      await tester.pumpAndSettle();
+      adapter.reads[1].complete(const []);
+      await tester.pumpAndSettle();
+
+      expect(find.text('${strings.schedule} (1)'), findsOneWidget);
     });
   });
 

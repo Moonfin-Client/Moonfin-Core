@@ -50,6 +50,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
   MineIds? _mine;
   _RecordingsScope _scope = _RecordingsScope.everyone;
   int _loads = 0;
+  int _changeReads = 0;
 
   // The first visit lands on My Recordings once it arrives, unless the user
   // has already moved off the header.
@@ -300,8 +301,11 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     // whichever scope is showing once the ids are back, so a switch made
     // meanwhile still gets them.
     final before = _mine!.itemIds;
+    final read = ++_changeReads;
     final mine = await _readMine(owners);
-    if (!mounted || _mine == null) return;
+    // A newer change's read answers for both; an older one landing last
+    // would put back ids from before it.
+    if (!mounted || _mine == null || read != _changeReads) return;
     if (mine != null) _mine = mine;
     _applyOwnerFilters();
     // A recording claimed or left from a page opened over this one changes
