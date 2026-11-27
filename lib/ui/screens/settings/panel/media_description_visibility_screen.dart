@@ -1,7 +1,5 @@
 part of '../settings_side_panel.dart';
 
-/// Screen allowing users to toggle media description visibility across video
-/// detail pages.
 class _MediaDescriptionVisibilityScreen extends StatefulWidget {
   const _MediaDescriptionVisibilityScreen();
 
@@ -15,22 +13,9 @@ class _MediaDescriptionVisibilityScreenState
   @override
   void initState() {
     super.initState();
-    _seedLegacyDefaults();
-  }
-
-  void _seedLegacyDefaults() {
-    final prefs = GetIt.instance<UserPreferences>();
-    if (!prefs.get(UserPreferences.hideDetailsMediaDescription)) return;
-    if (!prefs.containsPreference(
-      UserPreferences.hideDetailsMediaDescriptionMovie,
-    )) {
-      prefs.set(UserPreferences.hideDetailsMediaDescriptionMovie, true);
-    }
-    if (!prefs.containsPreference(
-      UserPreferences.hideDetailsMediaDescriptionEpisode,
-    )) {
-      prefs.set(UserPreferences.hideDetailsMediaDescriptionEpisode, true);
-    }
+    // The old switch can arrive by sync, or with another server or user, after
+    // the startup carry-over has run.
+    GetIt.instance<UserPreferences>().seedHideDescriptionTogglesFromLegacy();
   }
 
   @override

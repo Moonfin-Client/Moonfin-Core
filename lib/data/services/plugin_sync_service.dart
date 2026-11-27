@@ -2148,7 +2148,8 @@ class PluginSyncService extends ChangeNotifier {
     }
   }
 
-  /// Serializes one table-driven field for the outgoing profile.
+  /// An unset Movie or Episode toggle still follows the old single switch, so
+  /// sending its default would turn that off on the other devices.
   bool _shouldExportSyncedField(SyncedField field) {
     if (field.pref == UserPreferences.hideDetailsMediaDescriptionMovie ||
         field.pref == UserPreferences.hideDetailsMediaDescriptionEpisode) {
@@ -2157,6 +2158,7 @@ class PluginSyncService extends ChangeNotifier {
     return true;
   }
 
+  /// Serializes one table-driven field for the outgoing profile.
   dynamic _encodeSyncedField(SyncedField field) {
     switch (field.codec) {
       case SyncCodec.boolean:

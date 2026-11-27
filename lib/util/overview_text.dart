@@ -38,42 +38,42 @@ String cleanOverview(String? input) {
 }
 
 /// Whether the plot summary is being held back from someone avoiding spoilers
-/// or opting out of descriptions on video detail pages.
+/// or opting out of descriptions on video detail pages. Kids Mode hides it on
+/// every video page, Seerr ones included, and never on other pages.
 bool hidesMediaDescription({
   required String? itemType,
   UserPreferences? prefs,
   bool? hideMediaDescription,
   bool isSeerr = false,
 }) {
-  if (prefs != null) {
-    if (prefs.get(UserPreferences.kidsModeEnabled)) {
-      return true;
-    }
-    if (isSeerr) {
-      return false;
-    }
-    return switch (itemType) {
-      'Movie' => _resolvedHideFlag(
-        prefs,
-        UserPreferences.hideDetailsMediaDescriptionMovie,
-      ),
-      'Series' || 'Show' || 'Tv' =>
-        prefs.get(UserPreferences.hideDetailsMediaDescriptionShow),
-      'Season' =>
-        prefs.get(UserPreferences.hideDetailsMediaDescriptionSeason),
-      'Episode' => _resolvedHideFlag(
-        prefs,
-        UserPreferences.hideDetailsMediaDescriptionEpisode,
-      ),
-      'BoxSet' || 'Collection' =>
-        prefs.get(UserPreferences.hideDetailsMediaDescriptionBoxSet),
-      _ => false,
-    };
+  if (prefs == null) {
+    return !isSeerr &&
+        (hideMediaDescription ?? false) &&
+        (itemType == 'Movie' || itemType == 'Episode');
   }
-
-  return !isSeerr &&
-      (hideMediaDescription ?? false) &&
-      (itemType == 'Movie' || itemType == 'Episode');
+  final kids = prefs.get(UserPreferences.kidsModeEnabled);
+  if (isSeerr && !kids) return false;
+  return switch (itemType) {
+    'Movie' =>
+      kids ||
+          _resolvedHideFlag(
+            prefs,
+            UserPreferences.hideDetailsMediaDescriptionMovie,
+          ),
+    'Series' =>
+      kids || prefs.get(UserPreferences.hideDetailsMediaDescriptionShow),
+    'Season' =>
+      kids || prefs.get(UserPreferences.hideDetailsMediaDescriptionSeason),
+    'Episode' =>
+      kids ||
+          _resolvedHideFlag(
+            prefs,
+            UserPreferences.hideDetailsMediaDescriptionEpisode,
+          ),
+    'BoxSet' =>
+      kids || prefs.get(UserPreferences.hideDetailsMediaDescriptionBoxSet),
+    _ => false,
+  };
 }
 
 bool _resolvedHideFlag(UserPreferences prefs, Preference<bool> pref) =>

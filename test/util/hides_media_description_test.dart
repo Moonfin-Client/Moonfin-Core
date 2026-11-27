@@ -72,16 +72,10 @@ void main() {
       final prefs = await makePrefs();
       final cases = <(Preference<bool>, List<String>)>[
         (UserPreferences.hideDetailsMediaDescriptionMovie, ['Movie']),
-        (
-          UserPreferences.hideDetailsMediaDescriptionShow,
-          ['Series', 'Show', 'Tv'],
-        ),
+        (UserPreferences.hideDetailsMediaDescriptionShow, ['Series']),
         (UserPreferences.hideDetailsMediaDescriptionSeason, ['Season']),
         (UserPreferences.hideDetailsMediaDescriptionEpisode, ['Episode']),
-        (
-          UserPreferences.hideDetailsMediaDescriptionBoxSet,
-          ['BoxSet', 'Collection'],
-        ),
+        (UserPreferences.hideDetailsMediaDescriptionBoxSet, ['BoxSet']),
       ];
 
       for (final (pref, matchingTypes) in cases) {
@@ -144,12 +138,9 @@ void main() {
       for (final type in [
         'Movie',
         'Series',
-        'Show',
-        'Tv',
         'Season',
         'Episode',
         'BoxSet',
-        'Collection',
         'Person',
       ]) {
         expect(
@@ -186,13 +177,21 @@ void main() {
       }
     });
 
-    test('Kids Mode hides descriptions regardless of toggles', () async {
+    test('Kids Mode hides every video page, Seerr included, but no others',
+        () async {
       final prefs = await makePrefs();
       await prefs.set(UserPreferences.kidsModeEnabled, true);
 
-      expect(hidesMediaDescription(itemType: 'Movie', prefs: prefs), isTrue);
-      expect(hidesMediaDescription(itemType: 'Series', prefs: prefs), isTrue);
-      expect(hidesMediaDescription(itemType: 'Episode', prefs: prefs), isTrue);
+      for (final type in ['Movie', 'Series', 'Season', 'Episode', 'BoxSet']) {
+        expect(hidesMediaDescription(itemType: type, prefs: prefs), isTrue);
+        expect(
+          hidesMediaDescription(itemType: type, prefs: prefs, isSeerr: true),
+          isTrue,
+        );
+      }
+      for (final type in ['Book', 'Person', 'MusicAlbum']) {
+        expect(hidesMediaDescription(itemType: type, prefs: prefs), isFalse);
+      }
     });
   });
 }

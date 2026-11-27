@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:moonfin/util/overview_text.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +11,7 @@ import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/focus/scroll_utils.dart';
 import '../../../../../util/item_watch_state.dart';
+import '../../../../../util/overview_text.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../navigation/destinations.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
