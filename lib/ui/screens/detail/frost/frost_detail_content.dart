@@ -234,14 +234,16 @@ class _FrostDetailContentState extends State<FrostDetailContent>
   void initState() {
     super.initState();
     FocusManager.instance.addListener(_trackHome);
+  }
+
+  void _selectTab(_Tab tab) {
+    if (_tab == tab) return;
+    setState(() => _tab = tab);
     final type = _vm.item?.type;
-    if (!_vm.isSeerrOnly &&
-        (type == 'Series' || type == 'Episode') &&
-        _vm.seriesEpisodes.isEmpty) {
-      final vm = _vm;
-      vm.loadAllSeriesEpisodes().whenComplete(() {
-        if (mounted && identical(vm, _vm)) setState(() {});
-      });
+    if (tab == _Tab.episodes &&
+        !_vm.isSeerrOnly &&
+        (type == 'Series' || type == 'Episode')) {
+      unawaited(_vm.loadAllSeriesEpisodes());
     }
   }
 
@@ -1070,7 +1072,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
     return _FrostFocus(
       focusNode: _tabNode(tab),
       onFocusChange: (focused) {
-        if (focused && _tab != tab) setState(() => _tab = tab);
+        if (focused) _selectTab(tab);
         _trackHome();
       },
       // Focus picks the tab, but a click doesn't move focus, so it has to.
@@ -2708,7 +2710,7 @@ class _FrostDetailContentState extends State<FrostDetailContent>
           Expanded(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => setState(() => _tab = tab),
+              onTap: () => _selectTab(tab),
               child: AnimatedContainer(
                 duration: _duration,
                 height: 32,

@@ -529,6 +529,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       });
       return;
     }
+    _maybeLoadParentCollections();
     if (item != null) {
       final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
       final backdropKey = detailBackdropKey(_backgroundService, item);
@@ -639,7 +640,21 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     final sectionsChanged = sections != _sectionVisibility;
     _sectionVisibility = sections;
     setState(() {});
+    _maybeLoadParentCollections();
     if (sectionsChanged) _recoverFocusAfterSectionChange();
+  }
+
+  void _maybeLoadParentCollections() {
+    const section = DetailSection.collections;
+    final style = _style;
+    final drawsCollections = style == DetailScreenStyle.frost
+        ? !detailPageDraws(_viewModel.item?.type)
+        : section.isAvailableIn(style);
+    if (!widget.quickLook &&
+        drawsCollections &&
+        _sectionVisibility.shows(section)) {
+      unawaited(_viewModel.loadParentCollections());
+    }
   }
 
   /// A change synced from another device can take away the section that has
