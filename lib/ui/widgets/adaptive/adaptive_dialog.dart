@@ -107,6 +107,19 @@ const _slideCurve = Curves.easeOutCubic;
 Color _pillFill(Color surface) =>
     surface.computeLuminance() < 0.5 ? Colors.white : Colors.black;
 
+/// The `actions` for a dialog whose buttons use [solidFocusOn].
+///
+/// Apple idioms keep each action as its own top-level dialog action, which
+/// the Cupertino dialog lays out and exposes to VoiceOver one by one. Other
+/// idioms get them wrapped in a single [SlidingFocusActions].
+List<Widget> slidingFocusDialogActions({
+  required Color surface,
+  required List<Widget> children,
+}) {
+  if (AppUiIdiomResolver.isApple) return children;
+  return [SlidingFocusActions(surface: surface, children: children)];
+}
+
 /// Lays out dialog actions and draws one filled pill behind the focused one.
 /// When focus moves the pill slides to the next action instead of each
 /// button fading its own background in and out.
@@ -166,31 +179,63 @@ class _SlidingFocusActionsState extends State<SlidingFocusActions> {
     super.dispose();
   }
 
+  int? _focusedIndex() {
+    for (var i = 0; i < _nodes.length; i++) {
+      if (_nodes[i].hasFocus) return i;
+    }
+    return null;
+  }
+
+  Rect? _measure(int index) {
+    final stackBox =
+        _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    final box = _keys[index].currentContext?.findRenderObject() as RenderBox?;
+    if (stackBox == null || box == null || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero, ancestor: stackBox) & box.size;
+  }
+
   void _onFocusChange(int index, bool hasFocus) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (!hasFocus) {
-        if (_nodes.any((n) => n.hasFocus)) return;
+        if (_focusedIndex() != null) return;
         setState(() {
           _rect = null;
           _animate = false;
         });
         return;
       }
-      final stackBox =
-          _stackKey.currentContext?.findRenderObject() as RenderBox?;
-      final box = _keys[index].currentContext?.findRenderObject() as RenderBox?;
-      if (stackBox == null || box == null || !box.hasSize) return;
-      final offset = box.localToGlobal(Offset.zero, ancestor: stackBox);
+      final rect = _measure(index);
+      if (rect == null) return;
       setState(() {
         _animate = _rect != null;
-        _rect = offset & box.size;
+        _rect = rect;
+      });
+    });
+  }
+
+  // The actions can reflow without focus moving, for example when the dialog
+  // rebuilds narrower and the OverflowBar switches from a row to a column, so
+  // measure the focused one again after each build and move the pill there
+  // without animating. Not a LayoutBuilder: dialogs ask their actions for
+  // intrinsic sizes, which a LayoutBuilder can't give.
+  void _remeasureAfterLayout() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _rect == null) return;
+      final index = _focusedIndex();
+      if (index == null) return;
+      final rect = _measure(index);
+      if (rect == null || rect == _rect) return;
+      setState(() {
+        _animate = false;
+        _rect = rect;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    _remeasureAfterLayout();
     final rect = _rect;
     return Stack(
       key: _stackKey,

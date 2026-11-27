@@ -2664,8 +2664,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ],
             ),
           ),
-          actions: [
-            SlidingFocusActions(
+          actions: slidingFocusDialogActions(
               surface: AppColorScheme.surface,
               children: [
             // That airing is over. Single-episode recording no longer applies.
@@ -2890,8 +2889,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               child: Text(l10n.close),
             ),
               ],
-            ),
-          ],
+          ),
         );
       },
     ).whenComplete(defaultActionFocusNode.dispose);
