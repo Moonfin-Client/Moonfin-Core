@@ -2446,6 +2446,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       var startIndex = 0;
 
       while (true) {
+        if (_isDisposed) return result;
         final data = await _client.itemsApi.getItems(
           includeItemTypes: ['BoxSet'],
           recursive: true,
