@@ -599,7 +599,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     private func applyPhase(_ phase: PlaybackPhase) {
-        let previousPhase = lastPhase
         lastPhase = phase
         switch phase {
         case .idle:
@@ -616,13 +615,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         case .paused: state = .paused
         case .seeking: state = .buffering(bufferProgress)
         case .rebuffering:
+            // Only a stall out of playback counts. A seek already shows
+            // buffering, so one landing short of buffered media isn't counted.
+            if state == .playing { rebufferCount += 1 }
             state = .buffering(bufferProgress)
             sawPlaybackThisLoad = true
-            // Only a stall out of playback counts, so a seek landing short of
-            // buffered media or a reader stall in between isn't counted again.
-            if previousPhase == .playing {
-                rebufferCount += 1
-            }
         case .stalled: applyStalledState()
         case .ended: state = .ended
         case .error(let message):
@@ -671,15 +668,18 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     private func applyStalledState() {
         guard case .stalled = lastPhase, let engine = Self.sharedEngine() else { return }
+        let isSeeking = engine.isSeeking || engine.state == .seeking
         let next = Self.stalledState(
             isNativePath: engine.playbackBackend == .native,
             sawPlayback: sawPlaybackThisLoad,
-            isSeeking: engine.isSeeking || engine.state == .seeking,
+            isSeeking: isSeeking,
             isPlaying: engine.state == .playing,
             isPaused: engine.state == .paused,
             isBuffering: engine.isBuffering,
             secondsSinceClockAdvanced: CACurrentMediaTime() - lastClockAdvanceAt,
             bufferProgress: bufferProgress)
+        // A stall that drains the buffer out of playback is a rebuffer too.
+        if state == .playing, case .buffering = next, !isSeeking { rebufferCount += 1 }
         if next != state { state = next }
     }
 

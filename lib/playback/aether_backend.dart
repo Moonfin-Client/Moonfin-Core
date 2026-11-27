@@ -62,6 +62,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   Duration _duration = Duration.zero;
   Duration _buffer = Duration.zero;
   PlaybackNetworkStats? _networkStats;
+  int _sourceLoads = 0;
   LiveSeekWindow? _liveSeekWindow;
   bool _isPlaying = false;
   bool _isBuffering = false;
@@ -185,6 +186,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
           ? null
           : _toInt(map['networkActivityBps']),
       rebuffers: _toInt(map['rebuffers']),
+      load: _sourceLoads,
     );
   }
 
@@ -438,6 +440,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
 
     _liveSeekWindow = null;
     _networkStats = null;
+    _sourceLoads++;
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,

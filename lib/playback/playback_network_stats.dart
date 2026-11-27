@@ -10,6 +10,7 @@ class PlaybackNetworkStats {
     this.bufferedBytes,
     this.targetBufferBytes,
     this.rebuffers,
+    this.load = 0,
   });
 
   /// How much is buffered past the play position.
@@ -27,6 +28,10 @@ class PlaybackNetworkStats {
 
   /// Times playback stalled to buffer this item, seeks left out.
   final int? rebuffers;
+
+  /// Which source load this reading belongs to, so a reload can be told
+  /// apart from the next reading of the same source.
+  final int load;
 }
 
 /// A player engine that can fill the playback stats overlay.
