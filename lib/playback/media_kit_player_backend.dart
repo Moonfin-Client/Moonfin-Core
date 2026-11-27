@@ -247,9 +247,14 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   /// mpv can't filter a bitstream, so Night Mode decodes passthrough tracks.
   static Set<PassthroughCodec> passthroughCodecsFor(UserPreferences prefs) =>
-      prefs.get(UserPreferences.audioNightMode)
+      _nightModeOn(prefs)
       ? const <PassthroughCodec>{}
       : prefs.resolvedPassthroughCodecs();
+
+  // The Android libmpv is built without acompressor and alimiter, so adding
+  // the filter there stops playback.
+  static bool _nightModeOn(UserPreferences prefs) =>
+      !PlatformDetection.isAndroid && prefs.get(UserPreferences.audioNightMode);
 
   static const String _nightModeLabel = '@moonfin-night';
 
@@ -2214,7 +2219,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     final native = _player.platform;
     if (native is! NativePlayer) return;
     await _nativeCommand(native, ['af', 'remove', _nightModeLabel]);
-    if (_prefs.get(UserPreferences.audioNightMode)) {
+    if (_nightModeOn(_prefs)) {
       await _nativeCommand(native, ['af', 'add', nightModeFilter]);
     }
   }
