@@ -58,6 +58,57 @@ _started(Object stop) async {
 const _item = {'Id': 'movie-imdb-tt0295701'};
 
 void main() {
+  group('lifecycle', () {
+    test('a session that starts playing, then stops, says so', () async {
+      final s = await _started(_stopped);
+      final changes = <SiloPlaybackLifecycle>[];
+      final sub = SiloPlaybackSessions.lifecycle.listen(changes.add);
+
+      await s.service.onPlaybackStart(_item, s.stream);
+      expect(SiloPlaybackSessions.playingNow?.sessionId, _session);
+      expect(SiloPlaybackSessions.playingNow?.client, same(s.client));
+      await s.service.onPlaybackStop(
+        _item,
+        s.stream,
+        const Duration(minutes: 1),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      expect(changes.map((c) => c.playing), [true, false]);
+      expect(changes.map((c) => c.sessionId).toSet(), {_session});
+      // Each change names the client the session is on, so a session from
+      // a server other than the signed-in one is followed on its own server.
+      expect(changes.every((c) => identical(c.client, s.client)), isTrue);
+      // A listener that starts after the end finds nothing playing.
+      expect(SiloPlaybackSessions.playingNow, isNull);
+      expect(
+        changes.first.installationId,
+        'c621caf1-c95a-4626-a74f-bee7cf6b1402',
+      );
+    });
+
+    test('a session Silo reports gone ends it', () async {
+      final s = await _started(_stopped);
+      s.server.routes[_progressPath] = [
+        SiloTestServer.problemRoute(404, 'not_found', 'Session not found.'),
+      ];
+      final changes = <SiloPlaybackLifecycle>[];
+      final sub = SiloPlaybackSessions.lifecycle.listen(changes.add);
+
+      await s.service.onPlaybackStart(_item, s.stream);
+      await s.service.onPlaybackProgress(
+        _item,
+        s.stream,
+        const Duration(minutes: 1),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      expect(changes.map((c) => c.playing), [true, false]);
+    });
+  });
+
   test('the stop carries the stop id and the final sample', () async {
     final s = await _started(_stopped);
     await s.service.onPlaybackProgress(

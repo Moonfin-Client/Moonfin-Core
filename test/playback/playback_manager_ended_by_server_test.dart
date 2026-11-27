@@ -243,6 +243,23 @@ void main() {
     expect(service.progressReports, 1);
   });
 
+  testWidgets('a terminate for the playing session stops it like a refusal; '
+      'one for another session is ignored', (tester) async {
+    managerWith(StateError('no refusal here'));
+    await playMovie();
+
+    await manager.endSessionByServer('other', 'Ended.');
+    expect(backend.playing, isTrue);
+    expect(events, isEmpty);
+
+    await manager.endSessionByServer('session', 'Ended.');
+    await tester.pump();
+
+    expect(backend.playing, isFalse);
+    expect(service.stops, 1);
+    expect(events, ['ended: Ended.', 'closed']);
+  });
+
   testWidgets('a report the viewer retired before it was refused closes '
       'nothing', (tester) async {
     managerWith(

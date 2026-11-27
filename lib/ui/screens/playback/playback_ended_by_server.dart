@@ -5,10 +5,12 @@ import '../../../l10n/app_localizations.dart';
 
 /// The viewer's text for a message from
 /// `PlaybackManager.endedByServerStream`: Silo's fixed English one is
-/// translated, anything else is shown as the server put it.
+/// translated (an administrator's reason follows it on its own line),
+/// anything else is shown as the server put it.
 String playbackEndedByServerText(BuildContext context, String message) =>
-    message == siloEndedOnServerMessage
-    ? AppLocalizations.of(context).siloPlaybackEndedOnServer
+    message.startsWith(siloEndedOnServerMessage)
+    ? AppLocalizations.of(context).siloPlaybackEndedOnServer +
+          message.substring(siloEndedOnServerMessage.length)
     : message;
 
 /// Shows why the server ended playback. The snack bar stays up on the

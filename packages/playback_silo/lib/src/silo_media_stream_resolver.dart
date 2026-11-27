@@ -276,11 +276,13 @@ class SiloMediaStreamResolver
         // Silo recorded the play when it ended the session.
         session.ended = true;
         client.notePlaybackEnded(session.itemId);
+        _sessions.noteEnded(session);
         throw siloEndedOnServerRefusal;
       }
       if (SiloPlaybackApi.isSessionGone(error) ||
           SiloPlaybackApi.isInstallationChanged(error)) {
         session.ended = true;
+        _sessions.noteEnded(session);
       }
       rethrow;
     }
