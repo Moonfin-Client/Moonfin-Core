@@ -2365,6 +2365,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
 
       final scannedCollections = await _findParentCollectionsByScanningBoxSets(item.id);
+      if (_isDisposed) return;
       boxSetInfo.addAll(scannedCollections);
 
       if (boxSetInfo.isEmpty) {
@@ -2474,6 +2475,9 @@ class ItemDetailViewModel extends ChangeNotifier {
         // doesn't fire a whole page of requests in one burst.
         const maxConcurrent = 12;
         for (var i = 0; i < candidates.length; i += maxConcurrent) {
+          // A closed page would otherwise keep scanning, holding up the
+          // requests of whatever the viewer opens next.
+          if (_isDisposed) return result;
           final batch = candidates.skip(i).take(maxConcurrent);
           await Future.wait(batch.map((candidate) async {
             final membership = await _client.itemsApi.getItems(
