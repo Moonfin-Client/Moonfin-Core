@@ -785,10 +785,10 @@ class _SeriesTimerRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: SizedBox(
-        height: _rowStripHeight,
+        height: 160,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          padding: _rowStripPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 60),
           itemCount: timers.length,
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
@@ -1071,16 +1071,6 @@ class _RecordingsPillButtonState extends State<_RecordingsPillButton> {
   }
 }
 
-// A focused card grows by its focus expansion (about 8%), so the strip leaves
-// room above and below it; without it the list clips the card's top edge and
-// focus outline.
-const double _rowStripFocusRoom = 8;
-const double _rowStripHeight = 160 + 2 * _rowStripFocusRoom;
-const EdgeInsets _rowStripPadding = EdgeInsets.symmetric(
-  horizontal: 60,
-  vertical: _rowStripFocusRoom,
-);
-
 class _RecordingRow extends StatelessWidget {
   final String title;
   final List<RecordingItem> items;
@@ -1126,10 +1116,10 @@ class _RecordingRow extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: _rowStripHeight,
+              height: 160,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: _rowStripPadding,
+                padding: const EdgeInsets.symmetric(horizontal: 60),
                 itemCount: items.length,
                 separatorBuilder: (_, _) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
