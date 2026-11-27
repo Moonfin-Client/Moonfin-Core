@@ -24,9 +24,46 @@ class ServerTypeIcon extends StatelessWidget {
         ServerType.emby => _EmbyLogoPainter(effectiveColor),
         ServerType.plex => _PlexLogoPainter(effectiveColor),
         ServerType.silo => _SiloGlyphPainter(effectiveColor),
+        ServerType.audiobookshelf => _BookshelfGlyphPainter(effectiveColor),
       },
     );
   }
+}
+
+/// Three books on a shelf, a stand-in that isn't Audiobookshelf's own logo.
+class _BookshelfGlyphPainter extends CustomPainter {
+  final Color color;
+  _BookshelfGlyphPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.scale(size.width / 256);
+    final paint = Paint()..color = color;
+    RRect book(double left, double top, double width) => RRect.fromLTRBR(
+      left,
+      top,
+      left + width,
+      196,
+      const Radius.circular(10),
+    );
+    canvas.drawRRect(book(44, 60, 44), paint);
+    canvas.drawRRect(book(100, 40, 44), paint);
+    canvas.save();
+    canvas.translate(196, 196);
+    canvas.rotate(-0.28);
+    canvas.drawRRect(
+      RRect.fromLTRBR(-44, -136, 0, 0, const Radius.circular(10)),
+      paint,
+    );
+    canvas.restore();
+    canvas.drawRRect(
+      RRect.fromLTRBR(28, 206, 228, 224, const Radius.circular(9)),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_BookshelfGlyphPainter old) => old.color != color;
 }
 
 class _PlexLogoPainter extends CustomPainter {

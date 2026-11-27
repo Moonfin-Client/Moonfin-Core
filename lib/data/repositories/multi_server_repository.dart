@@ -147,7 +147,8 @@ class MultiServerRepository {
             activeServerId != null &&
             server.id != activeServerId &&
             (server.serverType == ServerType.jellyfin ||
-                server.serverType == ServerType.emby);
+                server.serverType == ServerType.emby ||
+                server.serverType == ServerType.audiobookshelf);
         if (server.id == activeServerId &&
             activeUser != null &&
             activeUser.accessToken.isNotEmpty) {

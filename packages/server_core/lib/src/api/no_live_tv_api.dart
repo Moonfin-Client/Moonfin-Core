@@ -1,11 +1,10 @@
-import 'package:server_core/server_core.dart';
+import 'live_tv_api.dart';
 
-/// Silo doesn't serve Live TV, guides or recordings, and never will. Reads
-/// answer with empty results so shared rows render nothing, and writes are
-/// unsupported. The UI hides Live TV entry points through
-/// `FeatureDetector.supportsLiveTv`.
-class SiloLiveTvApi implements LiveTvApi {
-  const SiloLiveTvApi();
+/// For a server without Live TV, guides or recordings. Reads answer with
+/// empty results so shared rows render nothing, and writes are unsupported.
+/// The UI hides Live TV entry points through `FeatureDetector.supportsLiveTv`.
+class NoLiveTvApi implements LiveTvApi {
+  const NoLiveTvApi();
 
   static Map<String, dynamic> get _empty => {
     'Items': <Map<String, dynamic>>[],
@@ -94,5 +93,5 @@ class SiloLiveTvApi implements LiveTvApi {
   Future<void> cancelSeriesTimer(String seriesTimerId) => _unsupported();
 
   static Future<T> _unsupported<T>() =>
-      Future.error(UnsupportedError('Silo does not support Live TV'));
+      Future.error(UnsupportedError("This server doesn't support Live TV"));
 }

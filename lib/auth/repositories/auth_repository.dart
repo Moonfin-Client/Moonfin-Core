@@ -114,6 +114,32 @@ class AuthRepository {
     }
   }
 
+  /// Signs in with whatever [request] answers in the shape of a Jellyfin
+  /// authentication result, for the ways a server has of its own
+  /// (Audiobookshelf's API keys and OpenID).
+  Future<LoginState> authenticateWith({
+    required MediaServerClient client,
+    required String serverId,
+    required Future<Map<String, dynamic>> Function() request,
+  }) async {
+    _stateController.add(const Authenticating());
+    try {
+      return await _handleAuthResult(
+        result: await request(),
+        client: client,
+        serverId: serverId,
+        fallbackName: '',
+      );
+    } on DioException catch (e) {
+      return _handleDioError(e);
+    } catch (e) {
+      _logger.e('Authentication failed', error: e);
+      final state = ApiClientError(error: e.toString(), errorType: 'exception');
+      _stateController.add(state);
+      return state;
+    }
+  }
+
   Future<LoginState> _handleAuthResult({
     required Map<String, dynamic> result,
     required MediaServerClient client,

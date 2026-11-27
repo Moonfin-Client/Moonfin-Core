@@ -8,7 +8,6 @@ import 'api/silo_admin_items_api.dart';
 import 'api/silo_instant_mix_api.dart';
 import 'api/silo_items_api.dart';
 import 'api/silo_user_library_api.dart';
-import 'api/silo_live_tv_api.dart';
 import 'api/silo_auth_api.dart';
 import 'api/silo_image_api.dart';
 import 'api/silo_display_preferences_api.dart';
@@ -440,7 +439,7 @@ class SiloMediaServerClient extends MediaServerClient
   );
 
   @override
-  final LiveTvApi liveTvApi = const SiloLiveTvApi();
+  final LiveTvApi liveTvApi = const NoLiveTvApi();
 
   @override
   final InstantMixApi instantMixApi = const SiloInstantMixApi();

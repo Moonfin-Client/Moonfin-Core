@@ -69,6 +69,35 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get absApiKey => 'API Key';
+
+  @override
+  String get absApiKeyHint =>
+      'Make one in Audiobookshelf under Settings > API Keys, then paste it here.';
+
+  @override
+  String get absOpenId => 'OpenID';
+
+  @override
+  String get absOpenIdIntro =>
+      'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.';
+
+  @override
+  String get absOpenIdWaiting =>
+      'Finish signing in on the page that opened in your browser.';
+
+  @override
+  String get absOpenIdOpen => 'Open Sign-in Page';
+
+  @override
+  String get absOpenIdOpenAgain => 'Open It Again';
+
+  @override
+  String absOpenIdRedirectRefused(String address) {
+    return 'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add $address to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.';
+  }
+
+  @override
   String get quickConnect => 'Quick Connect';
 
   @override

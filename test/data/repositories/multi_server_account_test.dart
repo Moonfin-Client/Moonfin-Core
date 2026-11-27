@@ -32,6 +32,7 @@ void main() {
   late _Client foo;
   late _Client bar;
   late _Session session;
+  late _ClientFactory factory;
   late MultiServerRepository repository;
   late List<LogEvent> warnings;
 
@@ -64,7 +65,7 @@ void main() {
     credentials = _Credentials();
     session = _Session();
     foo = _Client();
-    final factory = _ClientFactory();
+    factory = _ClientFactory();
     bar = _Client();
     when(store.getServers).thenReturn([
       server('foo', ServerType.jellyfin),
@@ -236,4 +237,29 @@ void main() {
       verify(() => bar.accessToken = 'token-alice-bar').called(1);
     },
   );
+
+  test('an Audiobookshelf account follows the viewer by name too', () async {
+    final abs = _Client();
+    when(store.getServers).thenReturn([
+      server('foo', ServerType.jellyfin),
+      server('abs', ServerType.audiobookshelf),
+    ]);
+    when(() => store.getUsers('abs')).thenReturn([
+      user('abs', 'alice-abs', 'alice'),
+      user('abs', 'john-abs', 'john'),
+    ]);
+    when(() => credentials.getToken('abs')).thenAnswer((_) async => null);
+    when(
+      () => factory.getClient(
+        serverId: 'abs',
+        serverType: ServerType.audiobookshelf,
+        baseUrl: 'http://abs',
+      ),
+    ).thenReturn(abs);
+
+    final sessions = await repository.getLoggedInServers();
+
+    expect(sessions.map((session) => session.userId), ['john-foo', 'john-abs']);
+    verify(() => abs.accessToken = 'token-john-abs').called(1);
+  });
 }

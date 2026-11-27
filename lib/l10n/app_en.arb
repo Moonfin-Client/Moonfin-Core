@@ -81,6 +81,44 @@
       }
     }
   },
+  "absApiKey": "API Key",
+  "@absApiKey": {
+    "description": "Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password"
+  },
+  "absApiKeyHint": "Make one in Audiobookshelf under Settings > API Keys, then paste it here.",
+  "@absApiKeyHint": {
+    "description": "Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app"
+  },
+  "absOpenId": "OpenID",
+  "@absOpenId": {
+    "description": "Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name"
+  },
+  "absOpenIdIntro": "Sign in on your server's sign-in page in the browser. Moonfin finishes signing in once the page sends you back.",
+  "@absOpenIdIntro": {
+    "description": "Audiobookshelf sign-in: what happens when signing in with OpenID"
+  },
+  "absOpenIdWaiting": "Finish signing in on the page that opened in your browser.",
+  "@absOpenIdWaiting": {
+    "description": "Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page"
+  },
+  "absOpenIdOpen": "Open Sign-in Page",
+  "@absOpenIdOpen": {
+    "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser"
+  },
+  "absOpenIdOpenAgain": "Open It Again",
+  "@absOpenIdOpenAgain": {
+    "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once"
+  },
+  "absOpenIdRedirectRefused": "Audiobookshelf didn't accept Moonfin's sign-in address. An admin has to add {address} to Allowed Mobile Redirect URIs in Audiobookshelf's authentication settings.",
+  "@absOpenIdRedirectRefused": {
+    "description": "Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf",
+    "placeholders": {
+      "address": {
+        "type": "String",
+        "example": "moonfin://oauth"
+      }
+    }
+  },
   "quickConnect": "Quick Connect",
   "@quickConnect": {
     "description": "Quick Connect toggle button label"

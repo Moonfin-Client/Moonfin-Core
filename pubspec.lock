@@ -1429,6 +1429,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  playback_audiobookshelf:
+    dependency: "direct main"
+    description:
+      path: "packages/playback_audiobookshelf"
+      relative: true
+    source: path
+    version: "0.1.0"
   playback_core:
     dependency: "direct main"
     description:
@@ -1687,6 +1694,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+  server_audiobookshelf:
+    dependency: "direct main"
+    description:
+      path: "packages/server_audiobookshelf"
+      relative: true
+    source: path
+    version: "0.1.0"
   server_core:
     dependency: "direct main"
     description:

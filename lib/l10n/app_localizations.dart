@@ -334,6 +334,54 @@ abstract class AppLocalizations {
   /// **'Connecting to {serverName}'**
   String connectingToServer(String serverName);
 
+  /// Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get absApiKey;
+
+  /// Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app
+  ///
+  /// In en, this message translates to:
+  /// **'Make one in Audiobookshelf under Settings > API Keys, then paste it here.'**
+  String get absApiKeyHint;
+
+  /// Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'OpenID'**
+  String get absOpenId;
+
+  /// Audiobookshelf sign-in: what happens when signing in with OpenID
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.'**
+  String get absOpenIdIntro;
+
+  /// Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page
+  ///
+  /// In en, this message translates to:
+  /// **'Finish signing in on the page that opened in your browser.'**
+  String get absOpenIdWaiting;
+
+  /// Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser
+  ///
+  /// In en, this message translates to:
+  /// **'Open Sign-in Page'**
+  String get absOpenIdOpen;
+
+  /// Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once
+  ///
+  /// In en, this message translates to:
+  /// **'Open It Again'**
+  String get absOpenIdOpenAgain;
+
+  /// Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf
+  ///
+  /// In en, this message translates to:
+  /// **'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add {address} to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.'**
+  String absOpenIdRedirectRefused(String address);
+
   /// Quick Connect toggle button label
   ///
   /// In en, this message translates to:

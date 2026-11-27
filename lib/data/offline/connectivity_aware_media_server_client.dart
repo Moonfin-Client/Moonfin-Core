@@ -20,6 +20,11 @@ bool shouldUseOfflineCatalog() {
       !getIt<ConnectivityService>().canReachServer;
 }
 
+/// The server's own client behind [client], which the client factory hands
+/// out wrapped in a [ConnectivityAwareMediaServerClient].
+MediaServerClient onlineClientOf(MediaServerClient client) =>
+    client is ConnectivityAwareMediaServerClient ? client.onlineClient : client;
+
 /// Wraps the active server client and routes the browse/read APIs to the
 /// offline downloads catalog whenever the server is unreachable, so the
 /// regular UI renders offline with downloaded content only.

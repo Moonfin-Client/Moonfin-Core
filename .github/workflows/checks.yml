@@ -102,7 +102,7 @@ jobs:
         run: |
           mkdir -p /tmp/test-results
           status=0
-          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo"
+          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin server_plex playback_plex server_silo playback_silo server_audiobookshelf playback_audiobookshelf"
 
           flutter pub get
 

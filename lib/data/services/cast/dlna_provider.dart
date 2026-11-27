@@ -6,6 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:playback_emby/playback_emby.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_plex/playback_plex.dart';
+import 'package:playback_audiobookshelf/playback_audiobookshelf.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../util/platform_detection.dart';
@@ -202,6 +203,7 @@ class DlnaProvider
         client,
         environment: () => siloReceiverEnvironment('dlna'),
       ).createStreamResolver(),
+      ServerType.audiobookshelf => AbsMediaStreamResolver(client),
     };
   }
 

@@ -34,6 +34,7 @@ import '../../../data/database/offline_database.dart';
 import '../../../data/models/lyrics.dart';
 import '../../../data/repositories/offline_repository.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/book_parts.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
@@ -3388,6 +3389,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final canDownloadAll =
         userCanDownload() &&
+        downloadableHere(item.rawData) &&
         (item.type == 'MusicAlbum' ||
             item.type == 'AudioBook' ||
             (item.type == 'Playlist' &&
@@ -7303,7 +7305,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     ).where((s) => s['Type'] == 'Audio').toList();
 
     final canShowDownloadActions =
-        _isDownloadable(item.type) && userCanDownload();
+        _isDownloadable(item.type) &&
+        downloadableHere(item.rawData) &&
+        userCanDownload();
 
     final String playButtonLabel;
     if (isPhoto) {
