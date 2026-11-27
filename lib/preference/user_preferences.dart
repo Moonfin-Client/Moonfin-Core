@@ -3249,6 +3249,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  /// Kept on the device rather than synced, since it tunes the local touch
+  /// screen.
+  static final playerSwipeSeek = Preference(
+    key: 'pref_player_swipe_seek',
+    defaultValue: true,
+  );
+
   /// Where brightness and volume swipe gesture indicators appear relative to the swipe side.
   /// Belongs to the device, since it tunes the local touch screen, so it isn't synced.
   static final gestureIndicatorPlacement = EnumPreference(

@@ -3729,6 +3729,13 @@ class AppLocalizationsBe extends AppLocalizations {
       'Slide up or down on the player to change brightness on the left and volume on the right';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Invert Gesture Indicators';
 
   @override

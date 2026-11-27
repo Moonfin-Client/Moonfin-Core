@@ -323,6 +323,8 @@ final class NativeApplePlayerViewController: UIViewController {
     /// their indicators sit on the side opposite the swipe.
     private var swipeGesturesEnabled = false
     private var gestureIndicatorsInverted = false
+    private var swipeSeekEnabled = true
+    private var touchPanSeeks = true
     private var panDirectionDecided = false
     private var panStartInWindow = CGPoint.zero
     private var verticalSwipe: (isVolume: Bool, startValue: Float)?
@@ -1591,6 +1593,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         swipeGesturesEnabled = (args["swipeGestures"] as? Bool) ?? false
         gestureIndicatorsInverted = (args["gestureIndicatorsInverted"] as? Bool) ?? false
+        swipeSeekEnabled = (args["swipeSeek"] as? Bool) ?? true
         #endif
         if let sync = args["syncPlay"] as? [String: Any] {
             syncPlayEnabled = true
@@ -4157,15 +4160,18 @@ extension NativeApplePlayerViewController {
         ])
     }
 
-    /// A drag sideways scrubs the way the remote's touch surface does. Up or
-    /// down changes brightness on the left half and volume on the right, the
-    /// same as the Flutter player, while that setting is on.
+    /// A drag sideways scrubs the way the remote's touch surface does. With
+    /// Swipe to Seek off it only scrubs while the controls show, since a drag
+    /// is the only way to scrub here. Up or down changes brightness on the
+    /// left half and volume on the right, the same as the Flutter player,
+    /// while that setting is on.
     @objc private func handleTouchPan(_ recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             panDirectionDecided = false
             verticalSwipe = nil
             panStartInWindow = recognizer.location(in: nil)
+            touchPanSeeks = swipeSeekEnabled || isOsdOnScreen
         case .changed:
             if !panDirectionDecided {
                 let t = recognizer.translation(in: nil)
@@ -4188,7 +4194,7 @@ extension NativeApplePlayerViewController {
         default:
             break
         }
-        handleScrubPan(recognizer)
+        if touchPanSeeks { handleScrubPan(recognizer) }
     }
 
     private func beginVerticalSwipe() {

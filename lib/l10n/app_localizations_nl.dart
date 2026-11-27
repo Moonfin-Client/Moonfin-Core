@@ -3721,6 +3721,13 @@ class AppLocalizationsNl extends AppLocalizations {
       'Schuif links naar boven of naar beneden in de speler om helderheid te veranderen en rechts om volume te veranderen';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Invert Gesture Indicators';
 
   @override

@@ -544,6 +544,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _verticalDragStartValue = 0.0;
   bool _verticalDragIsVolume = false;
   bool _verticalDragIgnored = false;
+  // Where a sideways swipe started, set only while that swipe seeks.
+  Duration? _swipeSeekFrom;
+  double _swipeSeekStartX = 0.0;
   late final _surfaceTaps = PlayerSurfaceTaps(
     onSingleTap: () {
       if (mounted) _toggleControls();
@@ -3355,17 +3358,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  // While a released commit is still converging, the pending target is
+  // already null but _state.position still reads pre-seek. A quick follow-up
+  // press or swipe based on it would jump back to the old position.
+  Duration get _scrubBasePosition =>
+      _pendingScrubSeekTarget ??
+      (_isSeeking ? _lastScrubCommitTarget : null) ??
+      _transportPosition;
+
   void _seekRelativeAccumulate(int ms) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    // While a released commit is still converging, the pending target is
-    // already null but _state.position still reads pre-seek - basing a quick
-    // follow-up press on it would jump back to the old position.
-    final basePosition =
-        _pendingScrubSeekTarget ??
-        (_isSeeking ? _lastScrubCommitTarget : null) ??
-        _transportPosition;
-    final target = basePosition + Duration(milliseconds: ms);
+    final target = _scrubBasePosition + Duration(milliseconds: ms);
     _prefetchTrickplayDirectional(target, forward: ms > 0);
     _accumulateScrub(target);
   }
@@ -4289,6 +4293,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         (PlatformDetection.useMobileUi &&
             !_controlsVisible &&
             _canUseTemporarySpeed());
+    // Only with the controls down, since the seek bar is there otherwise. It
+    // stays on while a swipe seeks, or the release would never arrive.
+    final swipeSeek =
+        _swipeSeekFrom != null ||
+        (PlatformDetection.useMobileUi &&
+            !_controlsVisible &&
+            !_isOsdLocked &&
+            !hideOsdForPreroll &&
+            _prefs.get(UserPreferences.playerSwipeSeek));
     if (_isInPiP) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -4329,6 +4342,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             onVerticalDragUpdate: swipeGestures ? _onVerticalDragUpdate : null,
             onVerticalDragEnd: swipeGestures ? _onVerticalDragEnd : null,
             onVerticalDragCancel: swipeGestures ? _onVerticalDragCancel : null,
+            onHorizontalDragStart: swipeSeek ? _onSwipeSeekStart : null,
+            onHorizontalDragUpdate: swipeSeek ? _onSwipeSeekUpdate : null,
+            onHorizontalDragEnd: swipeSeek ? _onSwipeSeekEnd : null,
             onLongPressStart: holdForSpeed ? _onSurfaceLongPressStart : null,
             onLongPressEnd: holdForSpeed ? (_) => _onSurfaceLongPressEnd() : null,
             onLongPressCancel: holdForSpeed ? _onSurfaceLongPressEnd : null,
@@ -4494,6 +4510,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       _buildSkipIndicatorOverlay(),
                       if (_temporarySpeedActive && !PlatformDetection.isTV)
                         _buildTemporarySpeedOverlay(),
+                      _buildSwipeSeekOverlay(),
                       if (_isOsdLocked && !hideOsdForPreroll)
                         _buildLockedOverlay(),
                       if (_isSkipSegmentButtonVisible)
@@ -7152,6 +7169,44 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  void _onSwipeSeekStart(DragStartDetails details) {
+    if (_state.duration <= Duration.zero ||
+        startsInSystemEdgeStrip(
+          details.localPosition.dy,
+          MediaQuery.sizeOf(context).height,
+          MediaQuery.paddingOf(context),
+        )) {
+      return;
+    }
+    _suppressSeekPrompts(duration: _seekDragPromptSuppressionDuration);
+    final from = _scrubBasePosition;
+    _swipeSeekFrom = from;
+    _swipeSeekStartX = details.localPosition.dx;
+    _accumulateScrub(from, showControls: false);
+  }
+
+  void _onSwipeSeekUpdate(DragUpdateDetails details) {
+    final from = _swipeSeekFrom;
+    if (from == null) return;
+    // A full-width sweep covers the larger of 90 seconds or a twelfth of the
+    // runtime, the same as the native Apple player.
+    final sweepMs = math.max(90000, _state.duration.inMilliseconds ~/ 12);
+    final dx = details.localPosition.dx - _swipeSeekStartX;
+    final offsetMs = dx / MediaQuery.sizeOf(context).width * sweepMs;
+    _accumulateScrub(
+      from + Duration(milliseconds: offsetMs.round()),
+      showControls: false,
+    );
+    _prefetchVisibleTrickplayPreview(_pendingScrubSeekTarget!);
+  }
+
+  void _onSwipeSeekEnd(DragEndDetails _) {
+    if (_swipeSeekFrom == null) return;
+    setState(() => _swipeSeekFrom = null);
+    _suppressSeekPrompts();
+    _commitPendingScrub();
+  }
+
   Widget _buildVolumeOverlay() {
     final displayVolume = _useSystemVolume
         ? _systemVolume
@@ -7221,7 +7276,50 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  Widget _buildSwipeSeekOverlay() {
+    final from = _swipeSeekFrom;
+    if (from == null) return const SizedBox.shrink();
+    final target = _pendingScrubSeekTarget ?? from;
+    final offset = Duration(seconds: target.inSeconds - from.inSeconds);
+    final sign = offset.isNegative ? '-' : '+';
+    return _buildTopPill(
+      Text(
+        '${formatPlaybackDuration(target)} / '
+        '${formatPlaybackDuration(_state.duration)}   '
+        '$sign${formatPlaybackDuration(offset.abs())}',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontFeatures: [FontFeature.tabularFigures()],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTemporarySpeedOverlay() {
+    return _buildTopPill(
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${_temporarySpeed.toStringAsFixed(0)}x',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 6),
+          const AdaptiveIcon(
+            Icons.fast_forward_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopPill(Widget child) {
     return Positioned(
       top: MediaQuery.paddingOf(context).top + AppSpacing.spaceLg,
       left: 0,
@@ -7234,24 +7332,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               color: Colors.black.withValues(alpha: 0.6),
               borderRadius: AppRadius.circular(14),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${_temporarySpeed.toStringAsFixed(0)}x',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const AdaptiveIcon(
-                  Icons.fast_forward_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ],
-            ),
+            child: child,
           ),
         ),
       ),

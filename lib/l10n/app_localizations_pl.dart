@@ -3883,6 +3883,13 @@ class AppLocalizationsPl extends AppLocalizations {
       'Przesuwaj palcem w górę lub w dół: po lewej stronie, aby zmienić jasność, a po prawej - głośność';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Invert Gesture Indicators';
 
   @override

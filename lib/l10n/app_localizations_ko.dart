@@ -3645,6 +3645,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '플레이어에서 위아래로 밀어 왼쪽은 밝기, 오른쪽은 음량을 조절합니다';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => '제스처 표시기 반전';
 
   @override

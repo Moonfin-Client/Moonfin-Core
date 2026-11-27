@@ -1764,6 +1764,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['swipe', 'gestures', 'volume', 'brightness'],
       ),
       video.leaf(
+        'pref_player_swipe_seek',
+        l10n.playerSwipeSeek,
+        subtitle: l10n.playerSwipeSeekDescription,
+        keywords: ['swipe', 'gestures', 'seek', 'scrub', 'rewind'],
+      ),
+      video.leaf(
         'pref_gesture_indicator_placement',
         l10n.invertGestureIndicators,
         subtitle: l10n.invertGestureIndicatorsDescription,

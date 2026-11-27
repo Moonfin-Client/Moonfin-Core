@@ -3707,6 +3707,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Parlaklığı değiştirmek için sol tarafta, sesi değiştirmek için sağ tarafta oynatıcı üzerinde yukarı veya aşağı kaydırın';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Hareket Göstergelerini Ters Çevir';
 
   @override

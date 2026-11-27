@@ -3734,6 +3734,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Scorri verso l\'alto o il basso sul player per modificare la luminosità a sinistra e il volume a destra';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Inverti Indicatori dei Gesti';
 
   @override

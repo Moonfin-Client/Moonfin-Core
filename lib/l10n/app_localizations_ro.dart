@@ -3759,6 +3759,13 @@ class AppLocalizationsRo extends AppLocalizations {
       'Glisează în sus sau în jos pe player pentru a schimba luminozitatea în stânga și volumul în dreapta';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Invert Gesture Indicators';
 
   @override

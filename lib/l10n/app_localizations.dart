@@ -6502,6 +6502,18 @@ abstract class AppLocalizations {
   /// **'Slide up or down on the player to change brightness on the left and volume on the right'**
   String get playerSwipeGesturesDescription;
 
+  /// Setting that lets a sideways swipe on the video move playback back or ahead
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to Seek'**
+  String get playerSwipeSeek;
+
+  /// Description for the swipe to seek setting
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left or right on the player to go back or ahead while the controls are hidden'**
+  String get playerSwipeSeekDescription;
+
   /// Setting title for inverting placement of brightness and volume gesture indicators
   ///
   /// In en, this message translates to:

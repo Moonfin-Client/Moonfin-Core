@@ -3618,6 +3618,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playerSwipeGesturesDescription => '在播放器上上下滑动，左侧改变亮度，右侧改变音量';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => '反转手势指示器';
 
   @override

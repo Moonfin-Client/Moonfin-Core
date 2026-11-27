@@ -3735,6 +3735,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Húzd az ujjad felfelé vagy lefelé a lejátszó bal oldalán a fényerő, a jobb oldalán pedig a hangerő szabályozásához';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Invert Gesture Indicators';
 
   @override

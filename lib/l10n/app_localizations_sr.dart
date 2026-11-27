@@ -3755,6 +3755,13 @@ class AppLocalizationsSr extends AppLocalizations {
       'Превуците нагоре или надоле преко плејера да бисте мењали осветљеност са леве стране и јачину звука са десне стране';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Invert Gesture Indicators';
 
   @override

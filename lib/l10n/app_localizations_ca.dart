@@ -3752,6 +3752,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Desplaça el controlador cap amunt o cap avall per canviar la brillantor a l\'esquerra i el volum a la dreta';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Inverteix els indicadors de gestos';
 
   @override

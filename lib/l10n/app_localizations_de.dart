@@ -3802,6 +3802,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Auf der linken Seite des Players nach oben oder unten wischen, um die Helligkeit zu ändern, und auf der rechten Seite, um die Lautstärke anzupassen.';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Gestenanzeigen umkehren';
 
   @override

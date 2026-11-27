@@ -3731,6 +3731,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Liu’uta soittimen ylä- tai alaosaa säätääksesi kirkkautta vasemmalla ja äänenvoimakkuutta oikealla';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Käännä eleiden ilmaisimet';
 
   @override

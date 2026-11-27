@@ -1419,6 +1419,57 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('a sideways swipe seeks only with the controls hidden', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    manager.state.setDuration(const Duration(hours: 2));
+    manager.state.setPosition(const Duration(minutes: 30));
+    manager.state.setPlaying(true);
+    await tester.pump();
+
+    expect(find.byType(Slider), findsOneWidget);
+    await tester.timedDragFrom(
+      const Offset(200, 300),
+      const Offset(240, 0),
+      const Duration(milliseconds: 300),
+    );
+    await tester.pump();
+    expect(manager.seeks, isEmpty, reason: 'the seek bar is up');
+
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.byType(Slider), findsNothing);
+
+    final finger = await tester.startGesture(const Offset(200, 300));
+    await finger.moveBy(const Offset(40, 0));
+    await tester.pump();
+    // A sweep across the 800 wide screen covers a twelfth of two hours.
+    await finger.moveBy(const Offset(200, 0));
+    await tester.pump();
+    expect(find.text('32:30 / 2:00:00   +2:30'), findsOneWidget);
+    expect(manager.seeks, isEmpty, reason: 'the seek waits for the release');
+
+    await finger.moveBy(const Offset(-300, 0));
+    await tester.pump();
+    expect(find.text('28:45 / 2:00:00   -1:15'), findsOneWidget);
+
+    await finger.up();
+    await tester.pump();
+    expect(manager.seeks, [const Duration(minutes: 28, seconds: 45)]);
+    expect(find.textContaining('2:00:00'), findsNothing);
+    expect(find.byType(Slider), findsNothing);
+
+    // Lets the commit stop waiting for the player to land.
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpWidget(const SizedBox());
+  });
+
   // Issue #1804: the button also waited out the debounce meant for a
   // buffering blip after a pause the viewer asked for.
   testWidgets('a pause the viewer asked for shows play at once', (

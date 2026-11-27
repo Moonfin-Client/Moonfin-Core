@@ -3751,6 +3751,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Glissez vers le haut ou le bas sur le lecteur : à gauche pour la luminosité, à droite pour le volume';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Inverser les indicateurs de geste';
 
   @override

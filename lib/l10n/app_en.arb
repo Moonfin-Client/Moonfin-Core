@@ -5010,6 +5010,14 @@
   "@playerSwipeGesturesDescription": {
     "description": "Description for player swipe gestures"
   },
+  "playerSwipeSeek": "Swipe to Seek",
+  "@playerSwipeSeek": {
+    "description": "Setting that lets a sideways swipe on the video move playback back or ahead"
+  },
+  "playerSwipeSeekDescription": "Slide left or right on the player to go back or ahead while the controls are hidden",
+  "@playerSwipeSeekDescription": {
+    "description": "Description for the swipe to seek setting"
+  },
   "invertGestureIndicators": "Invert Gesture Indicators",
   "@invertGestureIndicators": {
     "description": "Setting title for inverting placement of brightness and volume gesture indicators"
