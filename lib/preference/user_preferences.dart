@@ -2633,6 +2633,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final upscaleAnimationLineArt = Preference(
+    key: 'upscale_animation_line_art',
+    defaultValue: false,
+  );
+
   static final media3SkipSilence = Preference(
     key: 'media3_skip_silence',
     defaultValue: false,

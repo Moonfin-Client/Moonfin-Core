@@ -655,7 +655,8 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
                 cadenceTip: AetherPlayerWrapper.cadenceTip(from: args),
                 upscaleLowResolution: (args["upscaleLowResolution"] as? Bool) ?? false,
-                upscaleFullHD: (args["upscaleFullHD"] as? Bool) ?? false))
+                upscaleFullHD: (args["upscaleFullHD"] as? Bool) ?? false,
+                upscaleLineArt: (args["upscaleLineArt"] as? Bool) ?? false))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

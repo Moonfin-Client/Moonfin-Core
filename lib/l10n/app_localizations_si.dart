@@ -13100,6 +13100,13 @@ class AppLocalizationsSi extends AppLocalizations {
       'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
 
   @override
+  String get upscaleAnimationLineArt => 'Upscale anime with line art';
+
+  @override
+  String get upscaleAnimationLineArtSubtitle =>
+      'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override

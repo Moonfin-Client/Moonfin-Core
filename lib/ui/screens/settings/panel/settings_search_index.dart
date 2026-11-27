@@ -1845,6 +1845,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.upscaleFullHdVideoSubtitle,
         keywords: ['upscale', '1080p', 'full hd', '4k', 'sharpen', 'lanczos'],
       ),
+      quality.leaf(
+        'upscale_animation_line_art',
+        l10n.upscaleAnimationLineArt,
+        subtitle: l10n.upscaleAnimationLineArtSubtitle,
+        keywords: ['upscale', 'anime', 'animation', 'cartoon', 'anime4k'],
+      ),
     ],
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
       quality.leaf(

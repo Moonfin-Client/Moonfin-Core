@@ -102,6 +102,12 @@ class _QualityDecodingScreen extends StatelessWidget {
                   subtitle: l10n.upscaleFullHdVideoSubtitle,
                   icon: Icons.hd,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.upscaleAnimationLineArt,
+                  title: l10n.upscaleAnimationLineArt,
+                  subtitle: l10n.upscaleAnimationLineArtSubtitle,
+                  icon: Icons.brush,
+                ),
               ],
               if (DisplayHdrProbe.isSupported) const _RedetectDisplayTile(),
               if (PlatformDetection.isAppleTV)

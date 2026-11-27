@@ -72,6 +72,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
+  int _loadGeneration = 0;
   EngineTrust? _trust;
   Timer? _audioDelayDebounce;
 
@@ -291,6 +292,10 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
+    final generation = ++_loadGeneration;
+    final videoProcessing = await aetherVideoProcessingArgs(_prefs);
+    // A stop or a newer load that came in during the wait wins.
+    if (_disposed || generation != _loadGeneration) return;
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
     final headers = payload['headers'] is Map
@@ -350,7 +355,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
       'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
       ...appleTvCadenceArgs(_prefs),
-      ...aetherVideoProcessingArgs(_prefs),
+      ...videoProcessing,
     });
   }
 
@@ -390,6 +395,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
 
   @override
   Future<void> stop() async {
+    _loadGeneration++;
     _pendingEmbeddedSubtitle = null;
     await _invoke<void>('stop');
     _stopStallWatchdog();

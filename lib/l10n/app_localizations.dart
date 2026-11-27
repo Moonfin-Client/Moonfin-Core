@@ -23026,6 +23026,18 @@ abstract class AppLocalizations {
   /// **'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
   String get upscaleFullHdVideoSubtitle;
 
+  /// Apple player setting that upscales anime and other drawn animation with a scaler made for line art
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale anime with line art'**
+  String get upscaleAnimationLineArt;
+
+  /// Subtitle for the line art upscaling setting. Anime and Animation are genre names from the media library
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.'**
+  String get upscaleAnimationLineArtSubtitle;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:
