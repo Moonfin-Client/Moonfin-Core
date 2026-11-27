@@ -938,6 +938,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var toneMapPeakNits: Double?
         var nightMode = false
         var binaural = false
+        var loudnessTargetLUFS: Double?
     }
 
     /// The Match Frame Rate hint, localized on the Dart side.
@@ -1189,6 +1190,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             autoplay: sourceConfiguration.autoPlay,
             audioShaping: AudioShaping(
                 compressor: sourceConfiguration.nightMode ? .night : nil,
+                loudnessTargetLUFS: audioOnly ? nil : sourceConfiguration.loudnessTargetLUFS,
                 binaural: sourceConfiguration.binaural && outputIsHeadphones)
         )
 

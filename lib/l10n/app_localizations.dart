@@ -23062,6 +23062,30 @@ abstract class AppLocalizations {
   /// **'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.'**
   String get binauralHeadphonesSubtitle;
 
+  /// Apple player setting that raises quietly mixed movies and shows to a chosen loudness
+  ///
+  /// In en, this message translates to:
+  /// **'Loudness target'**
+  String get loudnessTarget;
+
+  /// Description for the loudness target setting. Atmos is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.'**
+  String get loudnessTargetDescription;
+
+  /// Loudness target option at broadcast loudness. LUFS is a unit and stays as is
+  ///
+  /// In en, this message translates to:
+  /// **'Standard (-24 LUFS)'**
+  String get loudnessTargetStandard;
+
+  /// Louder loudness target option. LUFS is a unit and stays as is
+  ///
+  /// In en, this message translates to:
+  /// **'Loud (-16 LUFS)'**
+  String get loudnessTargetLoud;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:

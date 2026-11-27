@@ -250,7 +250,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 upscaleLineArt: (args["upscaleLineArt"] as? Bool) ?? false,
                 toneMapPeakNits: (args["toneMapPeakNits"] as? NSNumber)?.doubleValue,
                 nightMode: (args["nightMode"] as? Bool) ?? false,
-                binaural: (args["binaural"] as? Bool) ?? false))
+                binaural: (args["binaural"] as? Bool) ?? false,
+                loudnessTargetLUFS: (args["loudnessTargetLufs"] as? NSNumber)?.doubleValue))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

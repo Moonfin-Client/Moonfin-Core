@@ -13171,6 +13171,19 @@ class AppLocalizationsTr extends AppLocalizations {
       'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
 
   @override
+  String get loudnessTarget => 'Loudness target';
+
+  @override
+  String get loudnessTargetDescription =>
+      'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.';
+
+  @override
+  String get loudnessTargetStandard => 'Standard (-24 LUFS)';
+
+  @override
+  String get loudnessTargetLoud => 'Loud (-16 LUFS)';
+
+  @override
   String get cadenceTipTitle => 'Kare Hızını Eşleştirmeyi Açın';
 
   @override

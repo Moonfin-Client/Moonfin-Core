@@ -2881,6 +2881,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final loudnessTargetLufs = Preference(
+    key: 'loudness_target_lufs',
+    defaultValue: 'off',
+  );
+
   static final customMpvConfEnabled = Preference(
     key: 'custom_mpv_conf_enabled',
     defaultValue: false,

@@ -11957,6 +11957,22 @@
   "@binauralHeadphonesSubtitle": {
     "description": "Subtitle for the binaural headphones setting"
   },
+  "loudnessTarget": "Loudness target",
+  "@loudnessTarget": {
+    "description": "Apple player setting that raises quietly mixed movies and shows to a chosen loudness"
+  },
+  "loudnessTargetDescription": "Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it's on, Atmos plays as plain surround and passthrough is off.",
+  "@loudnessTargetDescription": {
+    "description": "Description for the loudness target setting. Atmos is a product name"
+  },
+  "loudnessTargetStandard": "Standard (-24 LUFS)",
+  "@loudnessTargetStandard": {
+    "description": "Loudness target option at broadcast loudness. LUFS is a unit and stays as is"
+  },
+  "loudnessTargetLoud": "Loud (-16 LUFS)",
+  "@loudnessTargetLoud": {
+    "description": "Louder loudness target option. LUFS is a unit and stays as is"
+  },
   "cadenceTipTitle": "Turn On Match Frame Rate",
   "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
   "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",

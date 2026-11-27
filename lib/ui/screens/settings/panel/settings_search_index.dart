@@ -1926,6 +1926,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.compressDynamicRange,
       keywords: ['loudness', 'volume leveling'],
     ),
+    if (PlatformDetection.isApple || PlatformDetection.isAppleTV)
+      audio.leaf(
+        'loudness_target_lufs',
+        l10n.loudnessTarget,
+        subtitle: l10n.loudnessTargetDescription,
+        keywords: ['loudness', 'volume', 'quiet', 'lufs', 'normalize'],
+      ),
     audio.leaf(
       'pref_audio_language',
       l10n.defaultAudioLanguage,

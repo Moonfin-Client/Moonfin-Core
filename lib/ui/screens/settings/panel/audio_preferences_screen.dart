@@ -245,6 +245,18 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                 subtitle: l10n.compressDynamicRange,
                 icon: Icons.nights_stay,
               ),
+              if (PlatformDetection.isApple || PlatformDetection.isAppleTV)
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.loudnessTargetLufs,
+                  title: l10n.loudnessTarget,
+                  description: l10n.loudnessTargetDescription,
+                  icon: Icons.graphic_eq,
+                  options: {
+                    'off': l10n.off,
+                    '-24': l10n.loudnessTargetStandard,
+                    '-16': l10n.loudnessTargetLoud,
+                  },
+                ),
             ],
           ),
           _SectionHeader(l10n.settingsAudioStreamSection),

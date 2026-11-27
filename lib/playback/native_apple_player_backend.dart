@@ -474,6 +474,9 @@ class NativeApplePlayerBackend
       ...videoProcessing,
       'nightMode': _prefs.get(UserPreferences.audioNightMode),
       'binaural': _prefs.get(UserPreferences.binauralHeadphones),
+      'loudnessTargetLufs': int.tryParse(
+        _prefs.get(UserPreferences.loudnessTargetLufs),
+      ),
     });
   }
 
