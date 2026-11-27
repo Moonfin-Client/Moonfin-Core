@@ -160,7 +160,7 @@
     "@secureStorageUnavailableMessage": {
         "description": "Explanation when secure storage is not available"
     },
-    "ok": "Gerai",
+    "ok": "OK",
     "@ok": {
         "description": "Generic OK button label"
     },
@@ -265,11 +265,11 @@
     "@noHomeRowsLoaded": {
         "description": "Heading when home screen has no rows to display"
     },
-    "noHomeRowsHint": "Pabandykite atnaujinti arba sumažinti aktyvias namų dalis.",
+    "noHomeRowsHint": "Pabandykite atnaujinti arba sumažinti aktyvių pagrindinio ekrano skilčių skaičių.",
     "@noHomeRowsHint": {
         "description": "Hint text below the no-home-rows heading"
     },
-    "retryHomeRows": "Iš naujo bandykite pagrindines eilutes",
+    "retryHomeRows": "Bandyti vėl įkelti pagrindinio ekrano eilutes",
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
@@ -898,7 +898,7 @@
     "@trackList": {
         "description": "AppBar title for the item list screen"
     },
-    "itemListPlaceholder": "Čia pasirodys prekių sąrašas",
+    "itemListPlaceholder": "Čia bus rodomas elementų sąrašas",
     "@itemListPlaceholder": {
         "description": "Placeholder text for an empty item list screen"
     },
@@ -2697,11 +2697,11 @@
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
-    "homeRowInfoOverlay": "Pradžios eilutės informacijos perdanga",
+    "homeRowInfoOverlay": "Pagrindinio ekrano eilutės informacijos sluoksnis",
     "@homeRowInfoOverlay": {
         "description": "Setting for home row info overlay"
     },
-    "showTitleMetadataOnHomeRows": "Rodyti pavadinimą ir metaduomenis naršant pagrindines eilutes",
+    "showTitleMetadataOnHomeRows": "Rodyti pavadinimą ir metaduomenis naršant pagrindinio ekrano eilutes",
     "@showTitleMetadataOnHomeRows": {
         "description": "Description for home row info overlay"
     },
@@ -3560,7 +3560,7 @@
     "@tvShowsOnly": {
         "description": "Content type: TV shows only"
     },
-    "itemCount": "Prekių skaičius",
+    "itemCount": "Elementų skaičius",
     "@itemCount": {
         "description": "Setting for item count"
     },
@@ -6470,7 +6470,7 @@
     "@contextMenuGoToSeries": {
         "description": "Context menu action to navigate to the parent series of an episode"
     },
-    "settingsAdministrationSubtitle": "Prisijunkite prie serverio administravimo skydelio",
+    "settingsAdministrationSubtitle": "Atidaryti serverio administravimo skydelį",
     "settingsAccountSecurity": "Paskyra ir sauga",
     "settingsAccountSecuritySubtitle": "Autentifikavimas, PIN kodas ir tėvų kontrolė",
     "settingsPersonalization": "Personalizavimas",
@@ -7412,7 +7412,7 @@
     "@gamePaused": {
         "description": "Status shown in the in-game menu while the game is paused"
     },
-    "gameSaveState": "Įrašyti būseną",
+    "gameSaveState": "Išsaugoti būseną",
     "@gameSaveState": {
         "description": "In-game menu action to save the game state"
     },
@@ -9308,7 +9308,7 @@
     "@calendarSettingsColorByType": {
         "description": "Color by choice that colors episodes and movies differently"
     },
-    "afterHoursPlay": "Leisti",
+    "afterHoursPlay": "Žaisti",
     "@afterHoursPlay": {
         "description": "Button that starts playing a game in the arcade. Play as in playing a game, not playing media"
     },
@@ -9937,5 +9937,84 @@
     "afterHoursCastPointsLine": "Po 25 taškus.",
     "@afterHoursCastPointsLine": {
         "description": "What a collectible is worth in an arcade game, one line on its How to play card. Keep under about 60 characters, it shows in a small column"
+    },
+    "adminPageDescUsers": "Paskyros, prieiga ir tėvų kontrolė",
+    "adminLibraryFolderRequired": "Pridėkite bent vieną aplanką į šią biblioteką.",
+    "clientCertAdd": "Pridėti sertifikatą",
+    "@clientCertAdd": {
+        "description": "Button that starts importing a certificate for a new host"
+    },
+    "clientCertAddButton": "Pridėti kliento sertifikatą",
+    "@clientCertAddButton": {
+        "description": "Button that opens the certificate import from the add-server and sign-in screens"
+    },
+    "watchPartyVoteHelp": "Pridėkite filmų, už kuriuos visi galės balsuoti, tada paleiskite pasirinktą. Serialų serijas ir toliau pasirenkate jūs.",
+    "@watchPartyVoteHelp": {
+        "description": "Under the host's vote list in a Watch Party"
+    },
+    "adminLiveTvAddProvider": "Pridėti teikėją",
+    "adminLiveTvAddTuner": "Pridėti imtuvo įrenginį",
+    "watchPartySuggested": "Pridėta prie bendro žiūrėjimo balsavimo",
+    "@watchPartySuggested": {
+        "description": "Snackbar after the host adds a movie to the Watch Party vote"
+    },
+    "serverMessagesShowButtonSubtitle": "Prideda mygtuką į meniu serverio administratoriaus siunčiamiems pranešimams",
+    "@serverMessagesShowButtonSubtitle": {
+        "description": "Explains the setting that shows or hides the messages button"
+    },
+    "pageTransitionsSubtitle": "Reguliuoja išblukimo trukmę pereinant tarp puslapių",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeedSubtitle": "Reguliuoja, kaip greitai fokuso rodiklis juda tarp elementų ir eilučių",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "advancedPlayback": "Papildomi atkūrimo nustatymai",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "adminTranscodingHwaHelp": "Išplėstinis režimas leidžia pasirinkti aparatinius kodekus ir nustatyti jų eilės tvarką.",
+    "calendarSettingsStyleAgenda": "Tvarkarašti",
+    "@calendarSettingsStyleAgenda": {
+        "description": "Calendar style that lists episodes and movies day by day"
+    },
+    "adminDashboardAlerts": "Perspėjimai",
+    "downloadUnwatchedEpisodes": "Visos neperžiūrėtos serijos",
+    "@downloadUnwatchedEpisodes": {
+        "description": "Download scope option: only episodes not yet marked as watched"
+    },
+    "downloadUnwatchedMovies": "Visi neperžiūrėti filmai",
+    "@downloadUnwatchedMovies": {
+        "description": "Download scope option: only collection movies not yet marked as watched"
+    },
+    "adminActivityAllUsers": "Visi naudotojai",
+    "seasonalFollowerDescription": "Šventinis akcentas, pavyzdžiui, Helovyno planšetė, juda paskui jūsų pasirinktą elementą pagrindiniame ekrane",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "seasonalFollowerPointerDescription": "Šventinis akcentas, pavyzdžiui, Helovyno planšetė, pagrindiniame ekrane tampa pelės žymekliu",
+    "@seasonalFollowerPointerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer"
+    },
+    "calendarShowReleaseDate": "Rodyti išleidimo datą pagrindiniame ekrane",
+    "@calendarShowReleaseDate": {
+        "description": "Shows the release date under each item of a calendar row"
+    },
+    "afterHoursHowToPlay": "Kaip žaisti",
+    "@afterHoursHowToPlay": {
+        "description": "Title of the card that explains an arcade game's controls, enemies, obstacles and powerups, and the button that opens it"
+    },
+    "afterHoursPlayAgain": "Žaisti dar kartą",
+    "@afterHoursPlayAgain": {
+        "description": "Button that starts a new run of the same arcade game"
+    },
+    "afterHoursBackToGame": "Grįžti į žaidimą",
+    "@afterHoursBackToGame": {
+        "description": "Button on the How to play card opened from the pause menu, which returns to the paused game"
+    },
+    "afterHoursGameOver": "Žaidimas baigtas",
+    "@afterHoursGameOver": {
+        "description": "Shown when a run in an arcade game ends"
     }
 }
