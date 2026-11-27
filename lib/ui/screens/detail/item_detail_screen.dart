@@ -3389,7 +3389,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final canDownloadAll =
         userCanDownload() &&
-        downloadableHere(item.rawData) &&
+        serverAllowsDownload(item.rawData) &&
         (item.type == 'MusicAlbum' ||
             item.type == 'AudioBook' ||
             (item.type == 'Playlist' &&
@@ -7306,7 +7306,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
     final canShowDownloadActions =
         _isDownloadable(item.type) &&
-        downloadableHere(item.rawData) &&
+        serverAllowsDownload(item.rawData) &&
         userCanDownload();
 
     final String playButtonLabel;
