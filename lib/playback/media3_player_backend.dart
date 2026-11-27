@@ -79,11 +79,9 @@ class Media3PlayerBackend extends PlayerBackend
                 .map((codec) => codec.wireName)
                 .toList(growable: false),
       // 'platform' has the HAL pack raw encodings, 'iec' packs IEC 61937 in
-      // the app. Only sent as 'iec' when the choke-point getter says the
-      // mode is actually live here.
-      'passthroughOutput': prefs.media3IecPackerSelected
-          ? AudioPassthroughOutput.iecPacker.wireName
-          : AudioPassthroughOutput.platform.wireName,
+      // the app and 'iec-truehd' packs only TrueHD there. Only sent as an IEC
+      // mode when the choke-point getter says it is actually live here.
+      'passthroughOutput': prefs.media3PassthroughOutput.wireName,
       'downmixToStereo': prefs.get(UserPreferences.downmixToStereo),
       'nightMode': nightMode,
     };

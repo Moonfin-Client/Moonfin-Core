@@ -36,9 +36,13 @@ enum AudioPassthroughMode {
 /// - [iecPacker]: the app packs IEC 61937 itself and plays through an
 ///   ENCODING_IEC61937 track, bypassing buggy vendor packers. Under this mode
 ///   an eligible codec either rides the IEC path or decodes locally.
+/// - [iecTrueHd]: the app packs only TrueHD, every other codec takes the
+///   [platform] path. For devices whose HAL loses Atmos on raw TrueHD but
+///   can't play other IEC bitstreams.
 enum AudioPassthroughOutput {
   platform('platform'),
-  iecPacker('iec');
+  iecPacker('iec'),
+  iecTrueHd('iec-truehd');
 
   const AudioPassthroughOutput(this.wireName);
 

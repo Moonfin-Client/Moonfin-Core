@@ -1100,14 +1100,19 @@ class UserPreferences extends ChangeNotifier {
         )
       : const AudioCapabilityProfile.optimistic();
 
-  /// Whether the IEC app packer is the active output path: the preference is
-  /// set, the engine is Media3, and this is Android TV. The single choke
-  /// point that keeps every other engine and platform untouched.
-  bool get media3IecPackerSelected =>
-      get(audioPassthroughOutput) == AudioPassthroughOutput.iecPacker &&
+  /// The live passthrough output: the preference when the engine is Media3
+  /// on Android TV, otherwise [AudioPassthroughOutput.platform]. The single
+  /// choke point that keeps every other engine and platform untouched.
+  AudioPassthroughOutput get media3PassthroughOutput =>
       get(playbackEnginePreference) == PlaybackEnginePreference.media3 &&
-      PlatformDetection.isAndroid &&
-      PlatformDetection.isTV;
+          PlatformDetection.isAndroid &&
+          PlatformDetection.isTV
+      ? get(audioPassthroughOutput)
+      : AudioPassthroughOutput.platform;
+
+  /// Whether the IEC app packer carries every eligible codec.
+  bool get media3IecPackerSelected =>
+      media3PassthroughOutput == AudioPassthroughOutput.iecPacker;
 
   // Mode-aware passthrough resolution. Disabled bitstreams nothing, auto
   // follows the detected hardware capability, and manual follows the stored
@@ -1115,19 +1120,21 @@ class UserPreferences extends ChangeNotifier {
   // the live detected profile is used. Under the IEC packer the capability
   // predicate is the codec's IEC carrier eligibility instead of the raw
   // passthrough encoding, so auto mode and the advertised server profile
-  // follow what the IEC path can actually carry.
+  // follow what the IEC path can actually carry. [appPacked] overrides that
+  // per codec, for the TrueHD-only packer.
   bool _resolvePassthrough(
     Preference<bool> pref,
     bool Function(AudioCapabilityProfile) capabilityOf,
     bool Function(AudioCapabilityProfile) iecCapabilityOf,
-    AudioCapabilityProfile? profile,
-  ) {
+    AudioCapabilityProfile? profile, {
+    bool? appPacked,
+  }) {
     switch (get(audioPassthroughMode)) {
       case AudioPassthroughMode.disabled:
         return false;
       case AudioPassthroughMode.auto:
         final capabilities = profile ?? detectedAudioCapabilities;
-        return media3IecPackerSelected
+        return (appPacked ?? media3IecPackerSelected)
             ? iecCapabilityOf(capabilities)
             : capabilityOf(capabilities);
       case AudioPassthroughMode.manual:
@@ -1176,6 +1183,7 @@ class UserPreferences extends ChangeNotifier {
         (p) => p.canPassthroughTrueHd,
         (p) => p.canIecTrueHd,
         profile,
+        appPacked: media3PassthroughOutput != AudioPassthroughOutput.platform,
       );
 
   /// The effective passthrough codec set for the current mode, in wire form

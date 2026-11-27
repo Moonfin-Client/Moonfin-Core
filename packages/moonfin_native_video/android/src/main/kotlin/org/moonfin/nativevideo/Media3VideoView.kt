@@ -2915,8 +2915,8 @@ class Media3VideoView(
             passthroughMode,
             passthroughCodecs,
         )
-        iecOutputProvider = if (passthroughOutput == "iec" && Build.VERSION.SDK_INT >= 24) {
-            Iec61937AudioOutputProvider(context)
+        iecOutputProvider = if (passthroughOutput != "platform" && Build.VERSION.SDK_INT >= 24) {
+            Iec61937AudioOutputProvider(context, trueHdOnly = passthroughOutput == "iec-truehd")
         } else {
             null
         }
@@ -4342,8 +4342,9 @@ class Media3VideoView(
                 // App-side IEC packing writes PCM-shaped bursts that must
                 // never get HW_AV_SYNC headers, so tunneling stays off while
                 // the IEC output mode is live (it returns after the session
-                // fallback disables IEC).
-                (iecOutputProvider?.sessionIecDisabled != false)
+                // fallback disables IEC). The TrueHD-only mode leaves the
+                // other codecs on the stock path, and TrueHD is lossless.
+                (iecOutputProvider?.let { it.trueHdOnly || it.sessionIecDisabled } != false)
 
         tunnelingActive = shouldEnableTunneling
 

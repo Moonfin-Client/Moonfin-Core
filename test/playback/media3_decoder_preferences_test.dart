@@ -173,10 +173,38 @@ void main() {
       expect(payload['passthroughOutput'], 'iec');
     });
 
+    test(
+      'passthroughOutput sends iec-truehd on Android TV with Media3',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        PlatformDetection.setTvMode(true);
+        addTearDown(() {
+          debugDefaultTargetPlatformOverride = null;
+          PlatformDetection.setTvMode(false);
+        });
+
+        final prefs = await _prefs();
+        await prefs.set(
+          UserPreferences.playbackEnginePreference,
+          PlaybackEnginePreference.media3,
+        );
+        await prefs.set(
+          UserPreferences.audioPassthroughOutput,
+          AudioPassthroughOutput.iecTrueHd,
+        );
+
+        final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(
+          prefs,
+        );
+
+        expect(payload['passthroughOutput'], 'iec-truehd');
+      },
+    );
+
     test('AudioPassthroughOutput wire names match the Kotlin bridge', () {
       expect(
         AudioPassthroughOutput.values.map((o) => o.wireName).toList(),
-        ['platform', 'iec'],
+        ['platform', 'iec', 'iec-truehd'],
       );
     });
   });

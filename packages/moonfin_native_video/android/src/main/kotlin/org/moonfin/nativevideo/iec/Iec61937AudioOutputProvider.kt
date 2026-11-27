@@ -32,10 +32,16 @@ import org.moonfin.nativevideo.stockAudioOutputProvider
  * is reported unsupported and the renderer decodes locally. Raw passthrough
  * only returns via the session-level fallback or the user turning the setting
  * off.
+ *
+ * With [trueHdOnly] only TrueHD is packed here and every other codec takes the
+ * stock path, for HALs that play app-packed TrueHD but no other IEC stream.
  */
 @UnstableApi
 @RequiresApi(24)
-class Iec61937AudioOutputProvider(context: Context) : AudioOutputProvider {
+class Iec61937AudioOutputProvider(
+    context: Context,
+    val trueHdOnly: Boolean = false,
+) : AudioOutputProvider {
 
     private val appContext = context.applicationContext
     private val prober = Iec61937CapabilityProber()
@@ -167,6 +173,7 @@ class Iec61937AudioOutputProvider(context: Context) : AudioOutputProvider {
         if (sessionIecDisabled) return null
         val format = formatConfig.format
         val codec = Iec61937Packer.codecForMime(format.sampleMimeType) ?: return null
+        if (trueHdOnly && codec != IecCodec.TRUEHD) return null
         // Tunneling and app-packed IEC are mutually exclusive. The track
         // selector already avoids tunneling in IEC mode, this is defense in
         // depth.
