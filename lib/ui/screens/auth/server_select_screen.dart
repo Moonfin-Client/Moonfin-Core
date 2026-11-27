@@ -488,6 +488,11 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       ),
     );
     if (confirmed == true) {
+      // Removing the signed-in server signs out of it first, so the session
+      // doesn't carry on against a server that's gone.
+      if (_sessionRepo.activeServerId == server.id) {
+        await _sessionRepo.destroyCurrentSession();
+      }
       await _serverRepo.deleteServer(server.id);
       if (!mounted) return;
       setState(() {});

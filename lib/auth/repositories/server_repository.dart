@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:server_core/server_core.dart';
+import 'package:server_silo/server_silo.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../data/services/client_certificate_service.dart';
@@ -283,9 +284,15 @@ class ServerRepository {
 
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);
+    // Read before the store entry goes: the saved logins are ended on the
+    // server too, so their tokens stop working there.
+    final logins = removed == null ? const <Object>[] : _savedLogins(removed);
     _servers.removeWhere((s) => s.id == serverId);
     _clientFactory.removeClient(serverId);
     await _authStore.removeServer(serverId);
+    if (removed != null && logins.isNotEmpty) {
+      unawaited(_endLogins(removed, logins));
+    }
     final certStore = _certStore;
     if (removed == null || certStore == null) return;
     final host = Uri.tryParse(removed.address)?.host ?? '';
@@ -295,6 +302,55 @@ class ServerRepository {
     }
     await removeClientCertificate(certStore, host);
   }
+
+  /// The logins saved for [server]: one token pair per Silo account (its
+  /// profiles share it), one access token per Jellyfin or Emby user. Plex
+  /// has no server-side sign-out.
+  List<Object> _savedLogins(Server server) {
+    switch (server.serverType) {
+      case ServerType.silo:
+        return [
+          for (final accountId in _authStore.getSiloAccountIds(server.id))
+            ?SiloTokens.fromJson(_authStore.getSiloTokens(server.id, accountId)),
+        ];
+      case ServerType.jellyfin:
+      case ServerType.emby:
+        return {
+          for (final user in _authStore.getUsers(server.id))
+            if (user.accessToken.isNotEmpty) user.accessToken,
+        }.toList();
+      case ServerType.plex:
+        return const [];
+    }
+  }
+
+  /// Signs [logins] out on [server], each on a client of its own so nothing
+  /// is saved back for the removed server. Best effort: a server that is off
+  /// or slow only costs the wait.
+  Future<void> _endLogins(Server server, List<Object> logins) async {
+    Future<void> end(Object login) async {
+      final client = _clientFactory.createStandaloneClient(
+        serverId: server.id,
+        serverType: server.serverType,
+        baseUrl: server.address,
+      );
+      try {
+        if (login is SiloTokens) {
+          (client as SiloMediaServerClient).session.setTokens(login);
+        } else {
+          client.accessToken = login as String;
+        }
+        await client.authApi.logout().timeout(_logoutTimeout);
+      } catch (_) {
+      } finally {
+        client.dispose();
+      }
+    }
+
+    await Future.wait(logins.map(end));
+  }
+
+  static const _logoutTimeout = Duration(seconds: 5);
 
   Future<(Map<String, dynamic>, ServerType, String)> _probeServer(
     String baseUrl,
