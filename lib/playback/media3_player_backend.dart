@@ -89,8 +89,9 @@ class Media3PlayerBackend extends PlayerBackend
     };
   }
 
-  /// How the native side should treat a Dolby Vision profile 7 stream.
-  @visibleForTesting
+  /// How the native side should treat a Dolby Vision profile 7 stream. A
+  /// Silo start tells Silo the same (`siloMedia3DoviMode`), except a strip
+  /// the viewer turned down for a transcode.
   static Media3DoviCompatMode doviCompatMode(
     UserPreferences prefs, {
     bool? supportsP7,
