@@ -122,12 +122,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   List<AggregatedItem>? _searchNamesSource;
   List<String> _searchNames = const [];
 
-  List<String> get _foldedNames {
-    if (!identical(_searchNamesSource, _items)) {
+  List<String> _foldedNamesOf(List<AggregatedItem> source) {
+    if (!identical(_searchNamesSource, source)) {
       _searchNames = [
-        for (final item in _items) foldForSearch(_searchTextOf(item)),
+        for (final item in source) foldForSearch(_searchTextOf(item)),
       ];
-      _searchNamesSource = _items;
+      _searchNamesSource = source;
     }
     return _searchNames;
   }
@@ -145,26 +145,26 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       : item.sortName ?? item.name;
 
   List<AggregatedItem> get items {
-    if (_state == LibraryBrowseState.loading && _items.isEmpty) {
-      return _shownWhileLoading;
-    }
+    final source = _state == LibraryBrowseState.loading && _items.isEmpty
+        ? _shownWhileLoading
+        : _items;
     // The server folds accents for the searches it answers, so matching here
     // has to as well or the same query finds different things depending on
     // which search box it was typed into.
     final query = foldForSearch(_searchQuery.trim());
-    if (query.isEmpty) return _items;
+    if (query.isEmpty) return source;
     if (_searchResults != null &&
         _searchResultsQuery == query &&
-        identical(_searchResultsSource, _items)) {
+        identical(_searchResultsSource, source)) {
       return _searchResults!;
     }
-    final names = _foldedNames;
+    final names = _foldedNamesOf(source);
     final matches = [
-      for (var i = 0; i < _items.length; i++)
-        if (names[i].contains(query)) _items[i],
+      for (var i = 0; i < source.length; i++)
+        if (names[i].contains(query)) source[i],
     ];
     _searchResults = matches;
-    _searchResultsSource = _items;
+    _searchResultsSource = source;
     _searchResultsQuery = query;
     return matches;
   }
@@ -657,8 +657,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _loadingMore = false;
     // The grid keeps showing the last list until the new first page replaces
     // it, rather than blanking for the round trip. Playlists aren't kept,
-    // since their categories are read again below.
-    _shownWhileLoading = isPlaylistBrowse ? const [] : items;
+    // since their categories are read again below. A reload started before
+    // the last one landed keeps what is still shown.
+    if (isPlaylistBrowse) {
+      _shownWhileLoading = const [];
+    } else if (_items.isNotEmpty) {
+      _shownWhileLoading = _items;
+    }
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
@@ -756,8 +761,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       await _fetchPage(0, generation: generation);
       if (generation != _listGeneration) return;
       _state = LibraryBrowseState.ready;
+      _shownWhileLoading = const [];
     } catch (e) {
       if (generation != _listGeneration) return;
+      _shownWhileLoading = const [];
       _error = e;
       _isNetworkError = isNetworkException(e);
       _state = LibraryBrowseState.error;

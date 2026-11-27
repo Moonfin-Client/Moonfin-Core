@@ -291,6 +291,11 @@ void main() {
     expect(_ids(vm), ['item-1', 'item-2', 'item-3', 'item-4']);
     expect(vm.hasMore, isFalse);
 
+    // A search typed meanwhile narrows the old list too.
+    vm.setSearchQuery('item 2');
+    expect(_ids(vm), ['item-2']);
+    vm.setSearchQuery('');
+
     api.pending[1].complete([7, 8]);
     await reload;
 
