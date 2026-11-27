@@ -2628,6 +2628,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final upscaleFullHdVideo = Preference(
+    key: 'upscale_full_hd_video',
+    defaultValue: false,
+  );
+
   static final media3SkipSilence = Preference(
     key: 'media3_skip_silence',
     defaultValue: false,

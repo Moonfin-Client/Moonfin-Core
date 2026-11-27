@@ -23014,6 +23014,18 @@ abstract class AppLocalizations {
   /// **'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.'**
   String get upscaleLowResolutionVideoSubtitle;
 
+  /// Apple player setting that sharpens 1080p video up to the resolution of a larger screen, such as a 4K TV
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale 1080p video'**
+  String get upscaleFullHdVideo;
+
+  /// Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
+  String get upscaleFullHdVideoSubtitle;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:

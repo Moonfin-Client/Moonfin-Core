@@ -11925,6 +11925,14 @@
   "@upscaleLowResolutionVideoSubtitle": {
     "description": "Subtitle for the setting that upscales video below 1080p on Apple devices"
   },
+  "upscaleFullHdVideo": "Upscale 1080p video",
+  "@upscaleFullHdVideo": {
+    "description": "Apple player setting that sharpens 1080p video up to the resolution of a larger screen, such as a 4K TV"
+  },
+  "upscaleFullHdVideoSubtitle": "Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.",
+  "@upscaleFullHdVideoSubtitle": {
+    "description": "Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names"
+  },
   "cadenceTipTitle": "Turn On Match Frame Rate",
   "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
   "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",

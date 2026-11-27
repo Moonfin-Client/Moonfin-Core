@@ -13124,6 +13124,13 @@ class AppLocalizationsMn extends AppLocalizations {
       'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
 
   @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override
