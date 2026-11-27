@@ -15930,6 +15930,52 @@ class AppLocalizationsEs extends AppLocalizations {
       'Hide the movie or episode descriptive text.';
 
   @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
+
+  @override
   String get detailUseSeriesThumbnails => 'Usar miniaturas de la serie';
 
   @override
@@ -17542,6 +17588,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Playback was ended on the Silo server.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'PIN for $name';
   }
@@ -18653,19 +18703,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String siloSectionBecauseYouEnjoy(String genres) {
-    return 'Because you enjoy $genres';
+    return 'Porque te gustan los $genres';
   }
 
   @override
-  String get siloSectionBecauseYouWatched => 'Because You Watched';
+  String get siloSectionBecauseYouWatched => 'Porque viste';
 
   @override
   String siloSectionBecauseYouWatchedTitle(String title) {
-    return 'Because You Watched $title';
+    return 'Porque viste $title';
   }
 
   @override
-  String get siloSectionForYou => 'For You';
+  String get siloSectionForYou => 'Para ti';
 
   @override
   String get siloSectionHiddenGems => 'Hidden Gems';
@@ -18738,46 +18788,48 @@ class AppLocalizationsEs extends AppLocalizations {
   String get siloSectionReturningShows => 'Returning Shows';
 
   @override
-  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+  String get siloSectionSeasonalChristmasClassics => 'Clásicos Navideños';
 
   @override
-  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+  String get siloSectionSeasonalChristmasComedies => 'Comedias Navideñas';
 
   @override
-  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+  String get siloSectionSeasonalChristmasFamily => 'Navidad en Familia';
 
   @override
-  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+  String get siloSectionSeasonalChristmasFavorites => 'Favoritos de Navidad';
 
   @override
-  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+  String get siloSectionSeasonalChristmasHallmark => 'Navidad de Hallmark';
 
   @override
-  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+  String get siloSectionSeasonalChristmasRomcoms =>
+      'Comedias Románticas Navideñas';
 
   @override
-  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+  String get siloSectionSeasonalEasterFaith => 'Cuentos de Pascua';
 
   @override
-  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+  String get siloSectionSeasonalEasterFamily => 'Películas de Pascua';
 
   @override
-  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+  String get siloSectionSeasonalFamilyMovieNightFavorites =>
+      'Favoritos de la familia';
 
   @override
-  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+  String get siloSectionSeasonalFamilyMovieNight => 'Noche de cine en Familia';
 
   @override
-  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+  String get siloSectionSeasonalHalloweenAnimated => 'Halloween animado';
 
   @override
-  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+  String get siloSectionSeasonalHalloweenFamily => 'Halloween en Familia';
 
   @override
-  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+  String get siloSectionSeasonalHalloweenFavorites => 'Favoritos de Halloween';
 
   @override
-  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+  String get siloSectionSeasonalHalloweenHorror => 'Terror de Halloween';
 
   @override
   String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
@@ -18795,7 +18847,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get siloSectionSeasonalSaturdayMorningNineties =>
-      '90s Saturday Mornings';
+      'Mañanas de sábado de los 90';
 
   @override
   String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
@@ -18807,7 +18859,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
 
   @override
-  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+  String get siloSectionSeasonalSummerClassicSummer =>
+      'Películas Clásicas de Verano';
 
   @override
   String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
@@ -18816,13 +18869,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
 
   @override
-  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+  String get siloSectionSeasonalThanksgivingFeelGood =>
+      'Favoritos para sentirse bien';
 
   @override
   String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
 
   @override
-  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+  String get siloSectionSeasonalValentinesLoveStories =>
+      'Historias de Amor Clásicas';
 
   @override
   String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
@@ -31026,6 +31081,14 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback =>
+      'Decodificar Passthrough Silencioso';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'Si la salida no puede reproducir una pista en passthrough y queda en silencio, decodificala en este dispositivo.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -45425,6 +45488,228 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get navReelSwipeHint =>
       'Deslizá para girar y tocá en el centro para entrar';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Porque disfrutás de $genres';
+  }
+
+  @override
+  String get siloSectionBecauseYouWatched => 'Porque viste';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Porque viste $title';
+  }
+
+  @override
+  String get siloSectionForYou => 'Para vos';
+
+  @override
+  String get siloSectionHiddenGems => 'Joyas ocultas';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary =>
+      'Mejor calificadas en tu biblioteca';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Siguiente en tus series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Elegido según tu historial';
+
+  @override
+  String get siloSectionPopularOnServer => 'Populares en este servidor';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed =>
+      'Perfiles como el tuyo disfrutaron';
+
+  @override
+  String get siloSectionRandomPicks => 'Selección al azar';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks =>
+      'Audiolibros agregados recientemente';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks =>
+      'Libros electrónicos agregados recientemente';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Agregado recientemente en $library';
+  }
+
+  @override
+  String get siloSectionRecentlyAddedManga => 'Manga agregado recientemente';
+
+  @override
+  String get siloSectionRecentlyAddedMovies =>
+      'Películas agregadas recientemente';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Series agregadas recientemente';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Audiolibros estrenados recientemente';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks =>
+      'Libros electrónicos publicados recientemente';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Episodios estrenados recientemente en $library';
+  }
+
+  @override
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Estrenado recientemente en $library';
+  }
+
+  @override
+  String get siloSectionRecentlyReleasedManga =>
+      'Manga publicado recientemente';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies =>
+      'Películas estrenadas recientemente';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recomendado para vos';
+
+  @override
+  String get siloSectionReturningShows => 'Series que regresan';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Clásicos navideños';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Comedias navideñas';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Navidad en familia';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Favoritas de Navidad';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Navidad estilo Hallmark';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms =>
+      'Comedias románticas navideñas';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Historias de Pascua';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Películas de Pascua';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites =>
+      'Favoritas para toda la familia';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Noche de cine en familia';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Halloween animado';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Halloween en familia';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Favoritas de Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Terror de Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Series de Halloween';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'Películas de Año Nuevo';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Dibujos animados de los sábados por la mañana';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Favoritos de los sábados por la mañana';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      'Sábados por la mañana de los 90';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Cine irlandés';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Series irlandesas';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters =>
+      'Éxitos taquilleros de verano';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer =>
+      'Películas clásicas de verano';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Nostalgia de verano';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites =>
+      'Películas de Acción de Gracias';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood =>
+      'Favoritas para sentirse bien';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites =>
+      'Favoritas de San Valentín';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories =>
+      'Historias de amor clásicas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Dramas románticos';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms =>
+      'Comedias románticas de San Valentín';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Selección de temporada';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Lo mejor de $genre';
+  }
+
+  @override
+  String get siloSectionTopPicksToday => 'Las mejores elecciones de hoy';
+
+  @override
+  String get siloSectionTopRated => 'Mejor calificadas';
+
+  @override
+  String get siloSectionTopRatedMovies => 'Películas mejor puntuadas';
+
+  @override
+  String get siloSectionTopRatedTv => 'Series mejor puntuadas';
+
+  @override
+  String get siloSectionTrendingOnServer => 'Tendencia en el servidor';
+
+  @override
+  String get siloSectionTrendingThisWeek => 'Tendencia esta semana';
 }
 
 /// The translations for Spanish Castilian, as used in the Dominican Republic (`es_DO`).

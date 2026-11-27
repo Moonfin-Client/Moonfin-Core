@@ -501,11 +501,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra el còdec, la resolució i la informació del flux al resum del bàner';
 
   @override
-  String get detailShowFullDate => 'Show Full Date';
+  String get detailShowFullDate => 'Mostra la data completa';
 
   @override
   String get detailShowFullDateSubtitle =>
-      'Show the full release or air date instead of only the year on details pages';
+      'Mostra la data completa d\'estrena o d\'emissió en lloc de només l\'any a les pàgines de detalls';
 
   @override
   String get recommendationSystem => 'Sistema de recomanacions';
@@ -2181,22 +2181,22 @@ class AppLocalizationsCa extends AppLocalizations {
   String get hideMpvStats => 'Amaga les estadístiques de mpv (Shift+I)';
 
   @override
-  String get showPlaybackStats => 'Show Playback Stats';
+  String get showPlaybackStats => 'Mostra les estadístiques de reproducció';
 
   @override
-  String get hidePlaybackStats => 'Hide Playback Stats';
+  String get hidePlaybackStats => 'Amaga les estadístiques de reproducció';
 
   @override
-  String get playbackStatsNetworkActivity => 'Network Activity';
+  String get playbackStatsNetworkActivity => 'Activitat de xarxa';
 
   @override
-  String get playbackStatsBufferHealth => 'Buffer Health';
+  String get playbackStatsBufferHealth => 'Estat del búfer';
 
   @override
-  String get playbackStatsBufferMemory => 'Buffer Memory';
+  String get playbackStatsBufferMemory => 'Memòria del búfer';
 
   @override
-  String get playbackStatsRebuffers => 'Rebuffers';
+  String get playbackStatsRebuffers => 'Recàrregues del búfer';
 
   @override
   String get keyboardShortcutsTitle => 'Dreceres de teclat';
@@ -4297,11 +4297,12 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsAudioPassthroughOutputIecLabel => 'Aplicació (IEC)';
 
   @override
-  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+  String get settingsAudioPassthroughFallback =>
+      'Descodifica el passthrough silenciós';
 
   @override
   String get settingsAudioPassthroughFallbackDescription =>
-      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
+      'Si la sortida no pot reproduir una pista de passthrough i queda en silenci, descodifica-la en aquest dispositiu.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -6262,25 +6263,25 @@ class AppLocalizationsCa extends AppLocalizations {
   String get keep => 'Mantenir';
 
   @override
-  String get removeRequest => 'Remove Request';
+  String get removeRequest => 'Elimina la sol·licitud';
 
   @override
   String removeFailedRequestForTitle(String title) {
-    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+    return 'La teva sol·licitud fallida de «$title» s\'eliminarà. La pots tornar a sol·licitar més tard.';
   }
 
   @override
   String get removeFailedRequestRefused =>
-      'The request wasn\'t removed. It was retried, or part of it arrived.';
+      'La sol·licitud no s\'ha eliminat. S\'ha tornat a provar o n\'ha arribat una part.';
 
   @override
   String removeOthersFailedRequestForTitle(String title, String name) {
-    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+    return 'La sol·licitud fallida de «$title» feta per $name s\'eliminarà. La podrà tornar a sol·licitar més tard.';
   }
 
   @override
   String get removeFailedRequestError =>
-      'Couldn\'t remove the request. Try again.';
+      'No s\'ha pogut eliminar la sol·licitud. Torna-ho a provar.';
 
   @override
   String get itemNotFoundInLibrary =>
@@ -15886,16 +15887,16 @@ class AppLocalizationsCa extends AppLocalizations {
   String get personalRatingNumeric => 'Puntuació numèrica d\'1 a 10';
 
   @override
-  String get personalRatingIntervals => 'Rating Intervals';
+  String get personalRatingIntervals => 'Intervals de valoració';
 
   @override
-  String get personalRatingIntervalWhole => 'Whole (1)';
+  String get personalRatingIntervalWhole => 'Enter (1)';
 
   @override
-  String get personalRatingIntervalHalf => 'Half (0.5)';
+  String get personalRatingIntervalHalf => 'Mig (0,5)';
 
   @override
-  String get personalRatingIntervalQuarter => 'Quarter (0.25)';
+  String get personalRatingIntervalQuarter => 'Quart (0,25)';
 
   @override
   String get rate => 'Puntuar';
@@ -16045,6 +16046,52 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Amaga el text descriptiu de la pel·lícula o de l\'episodi.';
+
+  @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
 
   @override
   String get detailUseSeriesThumbnails => 'Utilitza les miniatures de la sèrie';
@@ -17682,6 +17729,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'S\'ha finalitzat la reproducció al servidor Silo.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'PIN de $name';
   }
@@ -18799,206 +18850,222 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String siloSectionBecauseYouEnjoy(String genres) {
-    return 'Because you enjoy $genres';
+    return 'Perquè t\'agraden $genres';
   }
 
   @override
-  String get siloSectionBecauseYouWatched => 'Because You Watched';
+  String get siloSectionBecauseYouWatched => 'Perquè vas veure';
 
   @override
   String siloSectionBecauseYouWatchedTitle(String title) {
-    return 'Because You Watched $title';
+    return 'Perquè vas veure $title';
   }
 
   @override
-  String get siloSectionForYou => 'For You';
+  String get siloSectionForYou => 'Per a tu';
 
   @override
-  String get siloSectionHiddenGems => 'Hidden Gems';
+  String get siloSectionHiddenGems => 'Joies amagades';
 
   @override
-  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+  String get siloSectionHighlyRatedInLibrary =>
+      'Molt ben valorat a la teva biblioteca';
 
   @override
-  String get siloSectionNextInYourSeries => 'Next in Your Series';
+  String get siloSectionNextInYourSeries => 'El següent de les teves sèries';
 
   @override
-  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+  String get siloSectionPickedFromYourHistory => 'Triat del teu historial';
 
   @override
-  String get siloSectionPopularOnServer => 'Popular on This Server';
+  String get siloSectionPopularOnServer => 'Popular en aquest servidor';
 
   @override
-  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+  String get siloSectionProfilesLikeYouEnjoyed =>
+      'Han agradat a perfils com el teu';
 
   @override
-  String get siloSectionRandomPicks => 'Random Picks';
+  String get siloSectionRandomPicks => 'Seleccions aleatòries';
 
   @override
-  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+  String get siloSectionRecentlyAddedAudiobooks =>
+      'Audiollibres afegits recentment';
 
   @override
-  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+  String get siloSectionRecentlyAddedEbooks =>
+      'Llibres electrònics afegits recentment';
 
   @override
   String siloSectionRecentlyAddedIn(String library) {
-    return 'Recently Added in $library';
+    return 'Afegit recentment a $library';
   }
 
   @override
-  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+  String get siloSectionRecentlyAddedManga => 'Manga afegit recentment';
 
   @override
-  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+  String get siloSectionRecentlyAddedMovies =>
+      'Pel·lícules afegides recentment';
 
   @override
-  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+  String get siloSectionRecentlyAddedTv => 'TV afegida recentment';
 
   @override
   String get siloSectionRecentlyReleasedAudiobooks =>
-      'Recently Released Audiobooks';
+      'Audiollibres publicats recentment';
 
   @override
-  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+  String get siloSectionRecentlyReleasedEbooks =>
+      'Llibres electrònics publicats recentment';
 
   @override
   String siloSectionRecentlyReleasedEpisodesIn(String library) {
-    return 'Recently Released Episodes in $library';
+    return 'Episodis publicats recentment a $library';
   }
 
   @override
   String siloSectionRecentlyReleasedIn(String library) {
-    return 'Recently Released in $library';
+    return 'Publicat recentment a $library';
   }
 
   @override
-  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+  String get siloSectionRecentlyReleasedManga => 'Manga publicat recentment';
 
   @override
-  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+  String get siloSectionRecentlyReleasedMovies =>
+      'Pel·lícules publicades recentment';
 
   @override
-  String get siloSectionRecommendedForYou => 'Recommended for You';
+  String get siloSectionRecommendedForYou => 'Recomanat per a tu';
 
   @override
-  String get siloSectionReturningShows => 'Returning Shows';
+  String get siloSectionReturningShows => 'Sèries en emissió';
 
   @override
-  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+  String get siloSectionSeasonalChristmasClassics => 'Clàssics de Nadal';
 
   @override
-  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+  String get siloSectionSeasonalChristmasComedies => 'Comèdies de Nadal';
 
   @override
-  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+  String get siloSectionSeasonalChristmasFamily => 'Nadal en família';
 
   @override
-  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+  String get siloSectionSeasonalChristmasFavorites => 'Preferits de Nadal';
 
   @override
-  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+  String get siloSectionSeasonalChristmasHallmark => 'Nadal de Hallmark';
 
   @override
-  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+  String get siloSectionSeasonalChristmasRomcoms =>
+      'Comèdies romàntiques de Nadal';
 
   @override
-  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+  String get siloSectionSeasonalEasterFaith => 'Històries de Pasqua';
 
   @override
-  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+  String get siloSectionSeasonalEasterFamily => 'Pel·lícules de Pasqua';
 
   @override
-  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+  String get siloSectionSeasonalFamilyMovieNightFavorites =>
+      'Preferits de la família';
 
   @override
-  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+  String get siloSectionSeasonalFamilyMovieNight => 'Nit de cinema en família';
 
   @override
-  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+  String get siloSectionSeasonalHalloweenAnimated => 'Halloween animat';
 
   @override
-  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+  String get siloSectionSeasonalHalloweenFamily => 'Halloween en família';
 
   @override
-  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+  String get siloSectionSeasonalHalloweenFavorites => 'Preferits de Halloween';
 
   @override
-  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+  String get siloSectionSeasonalHalloweenHorror => 'Terror de Halloween';
 
   @override
-  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+  String get siloSectionSeasonalHalloweenTv => 'TV de Halloween';
 
   @override
-  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+  String get siloSectionSeasonalNewYearFavorites => 'Pel·lícules de Cap d\'Any';
 
   @override
   String get siloSectionSeasonalSaturdayMorningCartoons =>
-      'Saturday Morning Cartoons';
+      'Dibuixos animats de dissabte al matí';
 
   @override
   String get siloSectionSeasonalSaturdayMorningModern =>
-      'Saturday Morning Favorites';
+      'Preferits de dissabte al matí';
 
   @override
   String get siloSectionSeasonalSaturdayMorningNineties =>
-      '90s Saturday Mornings';
+      'Matins de dissabte dels anys 90';
 
   @override
-  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Cinema irlandès';
 
   @override
-  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+  String get siloSectionSeasonalStPatricksIrishTv => 'TV irlandesa';
 
   @override
-  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+  String get siloSectionSeasonalSummerBlockbusters =>
+      'Èxits de taquilla d\'estiu';
 
   @override
-  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+  String get siloSectionSeasonalSummerClassicSummer =>
+      'Pel·lícules clàssiques d\'estiu';
 
   @override
-  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+  String get siloSectionSeasonalSummerNostalgia => 'Nostàlgia d\'estiu';
 
   @override
-  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+  String get siloSectionSeasonalThanksgivingFavorites =>
+      'Pel·lícules d\'Acció de Gràcies';
 
   @override
-  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+  String get siloSectionSeasonalThanksgivingFeelGood =>
+      'Preferits que et fan sentir bé';
 
   @override
-  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+  String get siloSectionSeasonalValentinesFavorites =>
+      'Preferits de Sant Valentí';
 
   @override
-  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+  String get siloSectionSeasonalValentinesLoveStories =>
+      'Històries d\'amor clàssiques';
 
   @override
-  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Drames romàntics';
 
   @override
-  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+  String get siloSectionSeasonalValentinesRomcoms =>
+      'Comèdies romàntiques de Sant Valentí';
 
   @override
-  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+  String get siloSectionSeasonalPicks => 'Seleccions de temporada';
 
   @override
   String siloSectionTopGenre(String genre) {
-    return 'Top $genre';
+    return 'El millor de $genre';
   }
 
   @override
-  String get siloSectionTopPicksToday => 'Top Picks Today';
+  String get siloSectionTopPicksToday => 'Millors recomanacions d\'avui';
 
   @override
-  String get siloSectionTopRated => 'Top Rated';
+  String get siloSectionTopRated => 'Els més valorats';
 
   @override
-  String get siloSectionTopRatedMovies => 'Top Rated Movies';
+  String get siloSectionTopRatedMovies => 'Pel·lícules més valorades';
 
   @override
-  String get siloSectionTopRatedTv => 'Top Rated TV';
+  String get siloSectionTopRatedTv => 'Sèries més valorades';
 
   @override
-  String get siloSectionTrendingOnServer => 'Trending on Server';
+  String get siloSectionTrendingOnServer => 'Tendències al servidor';
 
   @override
-  String get siloSectionTrendingThisWeek => 'Trending This Week';
+  String get siloSectionTrendingThisWeek => 'Tendències d\'aquesta setmana';
 }
