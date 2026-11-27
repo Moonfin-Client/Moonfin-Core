@@ -240,10 +240,26 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   static bool _passthroughActive(UserPreferences prefs) {
     return passthroughCodecsFromSet(
-      prefs.resolvedPassthroughCodecs(),
+      passthroughCodecsFor(prefs),
       downmixToStereo: prefs.get(UserPreferences.downmixToStereo),
     ).isNotEmpty;
   }
+
+  /// mpv can't filter a bitstream, so Night Mode decodes passthrough tracks.
+  static Set<PassthroughCodec> passthroughCodecsFor(UserPreferences prefs) =>
+      prefs.get(UserPreferences.audioNightMode)
+      ? const <PassthroughCodec>{}
+      : prefs.resolvedPassthroughCodecs();
+
+  static const String _nightModeLabel = '@moonfin-night';
+
+  // ffmpeg wants linear values, so this is a -30 dB threshold, +10 dB of
+  // makeup, a 6 dB knee and a -1 dB limit. level=0 stops the limiter from
+  // raising the output back to full scale.
+  @visibleForTesting
+  static const String nightModeFilter =
+      '$_nightModeLabel:lavfi=[acompressor=threshold=0.0316:ratio=4:attack=5:'
+      'release=250:makeup=3.162:knee=2,alimiter=limit=0.891:level=0]';
 
   bool _isStale = false;
   // Held the way media_kit normalizes it, since that is what its playlist
@@ -1019,6 +1035,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
     // A hwdec line in the user's mpv.conf still wins over this one.
     await _applyCustomMpvConfIfEnabled(force: hwdec != null);
+    await _applyNightMode();
     await _applyAssOverrideMode();
 
     if (_player.platform is NativePlayer) {
@@ -2071,7 +2088,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     try {
       final native = _player.platform as NativePlayer;
       final properties = passthroughMpvPropertiesFromSet(
-        _prefs.resolvedPassthroughCodecs(),
+        passthroughCodecsFor(_prefs),
         downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
         // Windows needs exclusive mode to bitstream. PipeWire can't link an
         // exclusive stream while anything else plays, so Linux goes silent.
@@ -2193,6 +2210,15 @@ class MediaKitPlayerBackend extends PlayerBackend
     unawaited(_drainAudioPassthroughApplyQueue());
   }
 
+  Future<void> _applyNightMode() async {
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    await _nativeCommand(native, ['af', 'remove', _nightModeLabel]);
+    if (_prefs.get(UserPreferences.audioNightMode)) {
+      await _nativeCommand(native, ['af', 'add', nightModeFilter]);
+    }
+  }
+
   Future<void> _drainAudioPassthroughApplyQueue() async {
     try {
       do {
@@ -2252,6 +2278,7 @@ class MediaKitPlayerBackend extends PlayerBackend
         UserPreferences.customMpvConfUnsafeAdvanced,
       );
 
+      var replacedAf = false;
       for (final parsed in parsedEntries) {
         final key = parsed.$1;
         final value = parsed.$2;
@@ -2270,7 +2297,11 @@ class MediaKitPlayerBackend extends PlayerBackend
         try {
           await _nativeSetProperty(native, key, value);
         } catch (_) {}
+        if (key == 'af') replacedAf = true;
       }
+      // An af line replaces the whole chain, so the night filter has to go
+      // back on.
+      if (replacedAf) await _applyNightMode();
 
       _appliedCustomMpvConfPath = path;
       _appliedCustomMpvConfMtime = stat.modified;

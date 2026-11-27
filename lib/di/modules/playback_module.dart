@@ -640,7 +640,7 @@ void registerPlaybackModule() {
 
     final audioSpdifCodecs = context.backend is MediaKitPlayerBackend
         ? MediaKitPlayerBackend.passthroughCodecsFromSet(
-            prefs.resolvedPassthroughCodecs(),
+            MediaKitPlayerBackend.passthroughCodecsFor(prefs),
             downmixToStereo: prefs.get(UserPreferences.downmixToStereo),
           )
         : const <String>[];
