@@ -11,6 +11,7 @@ import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/focus/scroll_utils.dart';
 import '../../../../../util/item_watch_state.dart';
+import '../../../../../util/overview_text.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../navigation/destinations.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
@@ -1056,6 +1057,11 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
                       width: layout.cardWidth,
                       imageHeight: layout.imageHeight,
                       compactLayout: layout.compact,
+                      hideOverview: hidesMediaDescription(
+                        itemType: episode.type,
+                        prefs: widget.prefs,
+                        isSeerr: episode.serverId == 'seerr',
+                      ),
                       isNextUp: episode.id == nextUpEpisode?.id,
                       isFocused: isFocused,
                       suppressArtworkFocus:

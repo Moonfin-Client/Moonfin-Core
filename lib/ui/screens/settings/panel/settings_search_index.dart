@@ -339,6 +339,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.dashboard_customize_outlined,
     open: () => push(const _DetailSectionsScreen()),
   );
+  final mediaDescriptionVisibility = _SearchSection(
+    slug: 'media-description-visibility',
+    path: [
+      l10n.appearance,
+      l10n.detailsPage,
+      l10n.toggleMediaDescriptionVisibility,
+    ],
+    icon: Icons.description_outlined,
+    open: () => push(const _MediaDescriptionVisibilityScreen()),
+  );
   final ratingSources = _SearchSection(
     slug: 'rating-sources',
     path: [l10n.appearance, l10n.detailsPage, l10n.ratingSources],
@@ -772,12 +782,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['subtitles'],
     ),
     details.leaf(
-      'pref_hide_details_media_description',
-      l10n.hideDetailsMediaDescription,
-      subtitle: l10n.hideDetailsMediaDescriptionSubtitle,
-      keywords: ['spoiler', 'description', 'overview'],
-    ),
-    details.leaf(
       'pref_detail_use_series_thumbnails',
       l10n.detailUseSeriesThumbnails,
       subtitle: l10n.detailUseSeriesThumbnailsSubtitle,
@@ -873,6 +877,47 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'links',
       'social media',
     ]),
+    mediaDescriptionVisibility.screen(keywords: [
+      'spoilers',
+      'descriptions',
+      'overview',
+      'synopsis',
+      'movie description',
+      'show description',
+      'episode description',
+      'season description',
+      'collection description',
+    ]),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionMovie.key,
+      l10n.hideMediaDescriptionMovie,
+      subtitle: l10n.hideMediaDescriptionMovieSubtitle,
+      keywords: ['spoiler', 'movie', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionShow.key,
+      l10n.hideMediaDescriptionShow,
+      subtitle: l10n.hideMediaDescriptionShowSubtitle,
+      keywords: ['spoiler', 'show', 'series', 'tv', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionSeason.key,
+      l10n.hideMediaDescriptionSeason,
+      subtitle: l10n.hideMediaDescriptionSeasonSubtitle,
+      keywords: ['spoiler', 'season', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionEpisode.key,
+      l10n.hideMediaDescriptionEpisode,
+      subtitle: l10n.hideMediaDescriptionEpisodeSubtitle,
+      keywords: ['spoiler', 'episode', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionBoxSet.key,
+      l10n.hideMediaDescriptionBoxSet,
+      subtitle: l10n.hideMediaDescriptionBoxSetSubtitle,
+      keywords: ['spoiler', 'collection', 'boxset', 'description', 'overview'],
+    ),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),
     navigation.leaf('pref_navbar_position', l10n.navigationStyle, keywords: [

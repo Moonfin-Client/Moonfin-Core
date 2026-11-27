@@ -3336,8 +3336,42 @@ Widget _homeRowsColumn(
 
 Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
   live: (context, shown) {
-    final items =
-        previewValue(context, UserPreferences.hideDetailsMediaDescription)
+    final prefs = GetIt.instance<UserPreferences>();
+    final legacyHide = previewValue(
+      context,
+      UserPreferences.hideDetailsMediaDescription,
+    );
+    final movieHide =
+        prefs.containsPreference(
+          UserPreferences.hideDetailsMediaDescriptionMovie,
+        )
+        ? previewValue(
+            context,
+            UserPreferences.hideDetailsMediaDescriptionMovie,
+          )
+        : legacyHide;
+    final episodeHide =
+        prefs.containsPreference(
+          UserPreferences.hideDetailsMediaDescriptionEpisode,
+        )
+        ? previewValue(
+            context,
+            UserPreferences.hideDetailsMediaDescriptionEpisode,
+          )
+        : legacyHide;
+    final hideDescription =
+        movieHide ||
+        episodeHide ||
+        previewValue(context, UserPreferences.hideDetailsMediaDescriptionShow) ||
+        previewValue(
+          context,
+          UserPreferences.hideDetailsMediaDescriptionSeason,
+        ) ||
+        previewValue(
+          context,
+          UserPreferences.hideDetailsMediaDescriptionBoxSet,
+        );
+    final items = hideDescription
         ? [for (final item in shown) item.withoutOverview()]
         : shown;
     return switch (style) {

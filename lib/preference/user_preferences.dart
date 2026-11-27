@@ -163,6 +163,7 @@ class UserPreferences extends ChangeNotifier {
     _seedClockFormatFromSystem();
     _migrateScreensaverPreferences();
     _migrateSystemImePreference();
+    seedHideDescriptionTogglesFromLegacy();
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -345,6 +346,20 @@ class UserPreferences extends ChangeNotifier {
       return;
     }
     if (_store.get(legacy)) _store.set(style, KeyboardStyle.native);
+  }
+
+  /// Carries the old single switch into the Movie and Episode toggles that
+  /// replaced it, unless they were already set.
+  void seedHideDescriptionTogglesFromLegacy() {
+    if (!get(hideDetailsMediaDescription)) return;
+    for (final pref in [
+      hideDetailsMediaDescriptionMovie,
+      hideDetailsMediaDescriptionEpisode,
+    ]) {
+      if (!containsPreference(pref)) {
+        _store.set(getEffectivePreference(pref), true);
+      }
+    }
   }
 
   // On first run, default the 12h/24h clock to the device's locale so users in
@@ -604,6 +619,11 @@ class UserPreferences extends ChangeNotifier {
     'pref_detail_show_full_date',
     'pref_detail_trailers_external',
     'pref_hide_details_media_description',
+    'pref_hide_details_media_description_movie',
+    'pref_hide_details_media_description_show',
+    'pref_hide_details_media_description_season',
+    'pref_hide_details_media_description_episode',
+    'pref_hide_details_media_description_box_set',
     'pref_detail_use_series_thumbnails',
     'pref_hide_home_media_description',
     'pref_hide_home_watch_progress',
@@ -1975,6 +1995,36 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  /// Hides the description on movie detail pages.
+  static final hideDetailsMediaDescriptionMovie = Preference(
+    key: 'pref_hide_details_media_description_movie',
+    defaultValue: false,
+  );
+
+  /// Hides the description on show detail pages.
+  static final hideDetailsMediaDescriptionShow = Preference(
+    key: 'pref_hide_details_media_description_show',
+    defaultValue: false,
+  );
+
+  /// Hides the description on season detail pages.
+  static final hideDetailsMediaDescriptionSeason = Preference(
+    key: 'pref_hide_details_media_description_season',
+    defaultValue: false,
+  );
+
+  /// Hides the description on episode detail pages and in episode lists.
+  static final hideDetailsMediaDescriptionEpisode = Preference(
+    key: 'pref_hide_details_media_description_episode',
+    defaultValue: false,
+  );
+
+  /// Hides the description on collection detail pages.
+  static final hideDetailsMediaDescriptionBoxSet = Preference(
+    key: 'pref_hide_details_media_description_box_set',
+    defaultValue: false,
+  );
+
   /// When on, thumbnails on Classic details page are replaced with series thumbnail.
   static final detailUseSeriesThumbnails = Preference(
     key: 'pref_detail_use_series_thumbnails',
@@ -2036,9 +2086,14 @@ class UserPreferences extends ChangeNotifier {
       get(kidsModeEnabled) ? false : get(detailTrailersExternal);
 
   /// True means hidden. The preference is named for hiding, so Kids Mode
-  /// forces it on rather than off to leave the description out.
-  bool get effectiveHideDetailsMediaDescription =>
-      get(kidsModeEnabled) ? true : get(hideDetailsMediaDescription);
+  /// forces it on rather than off to leave the description out. Otherwise it
+  /// follows the Episode toggle, or the old single switch while that toggle
+  /// was never set.
+  bool get effectiveHideDetailsMediaDescription => get(kidsModeEnabled)
+      ? true
+      : (containsPreference(hideDetailsMediaDescriptionEpisode)
+            ? get(hideDetailsMediaDescriptionEpisode)
+            : get(hideDetailsMediaDescription));
 
   bool get effectiveDetailUseSeriesThumbnails =>
       get(kidsModeEnabled) ? false : get(detailUseSeriesThumbnails);
