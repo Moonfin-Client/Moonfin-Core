@@ -527,10 +527,10 @@ Map<String, dynamic> _userData(SiloItemType type, Map<String, dynamic> item) {
 /// show.
 Map<String, dynamic> siloProgressToUserData(Map<String, dynamic> entry) {
   final completed = entry['completed'] == true;
+  // Silo resets the position when a play completes, so a completed entry with
+  // one is a rewatch in progress.
   final position = entry['position_seconds'];
-  final positionSeconds = position is num && position > 0 && !completed
-      ? position
-      : 0;
+  final positionSeconds = position is num && position > 0 ? position : 0;
   final lastPlayed = _timestamp(entry['updated_at']);
   return {
     'PlaybackPositionTicks': secondsToTicks(positionSeconds),

@@ -9732,16 +9732,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   /// Resolves where a mixed video queue should start playing. Resumes an item
   /// left partway through, otherwise the first unwatched one, and the top when
-  /// everything is watched or nothing has been started. A watched queue with an
-  /// item being rewatched resumes that item.
-  static (int, Duration) _resolveQueueResumeStart(List<AggregatedItem> items) {
+  /// everything is watched or nothing has been started. With [resumeRewatch], a
+  /// watched queue with an item being rewatched resumes that item.
+  static (int, Duration) _resolveQueueResumeStart(
+    List<AggregatedItem> items, {
+    bool resumeRewatch = false,
+  }) {
     final allWatched = items.every((e) => e.isPlayed);
     final allUnwatched = items.every(
       (e) =>
           !e.isPlayed &&
           (e.playbackPosition == null || e.playbackPosition == Duration.zero),
     );
-    final rewatch = allWatched ? latestRewatch(items) : null;
+    final rewatch = allWatched && resumeRewatch ? latestRewatch(items) : null;
     if (rewatch != null) {
       return (items.indexOf(rewatch), rewatch.playbackPosition!);
     }
@@ -9870,9 +9873,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final isFullyWatched = ws.isFullyWatched;
             final isFullyUnwatched = ws.isFullyUnwatched;
 
-            // A watched run with an episode being rewatched carries on with
-            // that episode instead of starting over.
-            final rewatch = isFullyWatched ? latestRewatch(allEpisodes) : null;
+            // Resuming a watched run carries on with an episode being
+            // rewatched instead of starting over.
+            final rewatch = isFullyWatched && resume
+                ? latestRewatch(allEpisodes)
+                : null;
             AggregatedItem targetEpisode;
             if (rewatch != null) {
               targetEpisode = rewatch;
@@ -9935,8 +9940,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               queueEpisodes,
               startIndex: idx,
             );
-            final startPosition = resume && hasResumePosition(selectedEpisode)
-                ? selectedEpisode.playbackPosition!
+            final startPosition =
+                resume && (rewatch != null || !isFullyWatched)
+                ? (selectedEpisode.playbackPosition ?? Duration.zero)
                 : Duration.zero;
 
             ensureLaunchStillWanted(launchSession);
@@ -10244,6 +10250,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
             final (startIndex, startPosition) = _resolveQueueResumeStart(
               playableQueue,
+              resumeRewatch: resume,
             );
 
             ensureLaunchStillWanted(launchSession);
