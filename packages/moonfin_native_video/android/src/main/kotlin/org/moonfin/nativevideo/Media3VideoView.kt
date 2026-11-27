@@ -147,6 +147,24 @@ import org.moonfin.nativevideo.subtitle.syncDelaysPayload
 import org.moonfin.nativevideo.subtitle.withEdges
 import org.moonfin.nativevideo.ts.withHdmvTsSupport
 
+/**
+ * Media3's stock AudioTrack output with DTS-HD passthrough tracks sized like
+ * the other bitstreams. When a DTS-HD stream has no bitrate, as in MKV, Media3
+ * sizes its track for a full second at the format's 18 Mbps peak, a 2.25 MB
+ * buffer meant for DTS Express streams. Android only starts a track once its
+ * buffer is full, and a high bitrate remux can't load that much DTS-HD MA
+ * ahead inside the byte budget, so the picture freezes on the first frame.
+ */
+@UnstableApi
+internal fun stockAudioOutputProvider(context: Context): AudioTrackAudioOutputProvider =
+    AudioTrackAudioOutputProvider.Builder(context)
+        .setAudioTrackBufferSizeProvider(
+            DefaultAudioTrackBufferSizeProvider.Builder()
+                .setDtshdBufferMultiplicationFactor(1)
+                .build(),
+        )
+        .build()
+
 @OptIn(ExperimentalApi::class)
 private class MoonfinRenderersFactory(
     context: Context,
@@ -283,21 +301,7 @@ private class MoonfinRenderersFactory(
             // else routes to the stock provider inside.
             sinkBuilder.setAudioOutputProvider(iecOutputProvider)
         } else {
-            // When a DTS-HD stream has no bitrate, as in MKV, Media3 sizes its
-            // track for a full second at the format's 18 Mbps peak, a 2.25 MB
-            // buffer meant for DTS Express streams. Android only starts a track
-            // once its buffer is full, and a high bitrate remux can't load that
-            // much DTS-HD MA ahead inside the byte budget, so the picture
-            // freezes on the first frame.
-            sinkBuilder.setAudioOutputProvider(
-                AudioTrackAudioOutputProvider.Builder(context)
-                    .setAudioTrackBufferSizeProvider(
-                        DefaultAudioTrackBufferSizeProvider.Builder()
-                            .setDtshdBufferMultiplicationFactor(1)
-                            .build(),
-                    )
-                    .build(),
-            )
+            sinkBuilder.setAudioOutputProvider(stockAudioOutputProvider(context))
         }
         val sink = sinkBuilder.build()
         // Some TV HALs never resume a paused bitstream track and hand back a
