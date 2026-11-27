@@ -116,6 +116,46 @@ void main() {
     });
   });
 
+  test('a retry under a new installation asks only for what it reads',
+      () async {
+    final replaced = fixtureJson('silo/playback_capabilities.json')
+      ..['installation_id'] = '0b7e2a51-3d84-4f1c-9a6e-58c2d1f0e7b4';
+    (replaced['features'] as List).remove('fixed_media_file_v1');
+    final server = SiloTestServer({
+      capabilitiesPath: [
+        _capabilities(ceilings: true),
+        SiloTestServer.json(replaced),
+      ],
+      startPath: [
+        SiloTestServer.problemRoute(
+          409,
+          'installation_changed',
+          'The server installation changed.',
+        ),
+        SiloTestServer.file('decision_remux.json', status: 201),
+      ],
+    });
+    await SiloMediaStreamResolver(siloTestClient(server)).resolve(
+          item,
+          deviceProfile: _stereoPassthroughProfile,
+          mediaSourceId: '4602',
+        );
+
+    final bodies = server.bodies(startPath);
+    Iterable<Map> deliveries(Map body) =>
+        ((body['client_playback_context'] as Map)['deliveries'] as Map)
+            .values
+            .cast<Map>();
+    expect(bodies[0]['allow_alternate_versions'], isFalse);
+    expect(deliveries(bodies[0]).first['max_channels_by_codec'], isNotNull);
+    expect(bodies[1]['installation_id'], replaced['installation_id']);
+    expect(bodies[1], isNot(contains('allow_alternate_versions')));
+    for (final d in deliveries(bodies[1])) {
+      expect(d['max_channels'], 2);
+      expect(d, isNot(contains('max_channels_by_codec')));
+    }
+  });
+
   test('a single version is never pinned', () async {
     final server = SiloTestServer({
       capabilitiesPath: _capabilities(),

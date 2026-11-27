@@ -261,11 +261,28 @@ void main() {
 
     test('a cap that leaves passthrough codecs out only caps the rest', () {
       // Stereo PCM with AC-3, DTS and TrueHD bitstreamed, plus the forced
-      // stereo AAC profile.
-      final c = caps([audio('aac,flac,opus', 2), audio('aac', 2)]);
+      // stereo cap on what the player direct plays.
+      final c = caps([audio('aac,flac,opus', 2), audio('aac,mp2,mp3', 2)]);
       for (final d in c.deliveries.values) {
         expect(d, isNot(contains('max_channels')));
-        expect(d['max_channels_by_codec'], {'aac': 2, 'flac': 2, 'opus': 2});
+        expect(d['max_channels_by_codec'], {
+          'aac': 2,
+          'flac': 2,
+          'opus': 2,
+          'mp2': 2,
+          'mp3': 2,
+        });
+      }
+      _expectFitsPinnedContract(c);
+    });
+
+    test('Downmix to Stereo on Auto caps every codec it direct plays', () {
+      // A player that can't downmix: the channel setting leaves no general
+      // cap, and the forced stereo cap names AAC, MP2 and MP3.
+      final c = caps([audio(null, 8), audio('aac,mp2,mp3', 2)]);
+      for (final d in c.deliveries.values) {
+        expect(d, isNot(contains('max_channels')));
+        expect(d['max_channels_by_codec'], {'aac': 2, 'mp2': 2, 'mp3': 2});
       }
       _expectFitsPinnedContract(c);
     });

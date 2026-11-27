@@ -521,6 +521,7 @@ class DeviceProfileBuilder {
       bridgesAudioToEac3: bridgesAudioToEac3,
       playerDecodesStereoTrueHd: playerDecodesStereoTrueHd,
       forceStereo: limitStereoDirectPlay,
+      directPlayAudioCodecs: effectiveAllowedAudioCodecs,
       maxResolution: maxResolution,
       supportsAvc: effectiveSupportsAvc,
       supportsAvcHigh10: effectiveSupportsAvcHigh10,
@@ -1162,6 +1163,7 @@ class DeviceProfileBuilder {
     required bool bridgesAudioToEac3,
     required bool playerDecodesStereoTrueHd,
     required bool forceStereo,
+    required List<String> directPlayAudioCodecs,
     required MaxVideoResolution maxResolution,
     required bool supportsAvc,
     required bool supportsAvcHigh10,
@@ -1802,7 +1804,9 @@ class DeviceProfileBuilder {
       profiles.add(
         _codecProfile(
           type: 'VideoAudio',
-          codec: _downmixSupportedAudioCodecs.join(','),
+          codec: directPlayAudioCodecs.isEmpty
+              ? null
+              : directPlayAudioCodecs.join(','),
           conditions: <Map<String, dynamic>>[
             _condition(
               condition: 'LessThanEqual',
