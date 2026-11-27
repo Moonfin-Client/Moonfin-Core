@@ -1978,6 +1978,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.downmixToStereo,
         keywords: ['stereo', 'downmix', '2.0'],
       ),
+      if (PlatformDetection.isIOS || PlatformDetection.isAppleTV)
+        audio.leaf(
+          'binaural_headphones',
+          l10n.binauralHeadphones,
+          subtitle: l10n.binauralHeadphonesSubtitle,
+          keywords: ['spatial', 'surround', '3d', 'airpods'],
+        ),
       audio.leaf(
         'pref_max_audio_channels',
         l10n.settingsMaxAudioChannels,

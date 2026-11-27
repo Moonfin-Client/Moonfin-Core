@@ -473,6 +473,7 @@ class NativeApplePlayerBackend
       ...appleTvCadenceArgs(_prefs),
       ...videoProcessing,
       'nightMode': _prefs.get(UserPreferences.audioNightMode),
+      'binaural': _prefs.get(UserPreferences.binauralHeadphones),
     });
   }
 

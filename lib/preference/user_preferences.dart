@@ -2876,6 +2876,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final binauralHeadphones = Preference(
+    key: 'binaural_headphones',
+    defaultValue: false,
+  );
+
   static final customMpvConfEnabled = Preference(
     key: 'custom_mpv_conf_enabled',
     defaultValue: false,

@@ -344,6 +344,13 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                   subtitle: l10n.settingsDownmixToStereoDescription,
                   icon: Icons.speaker,
                 ),
+                if (PlatformDetection.isIOS || PlatformDetection.isAppleTV)
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.binauralHeadphones,
+                    title: l10n.binauralHeadphones,
+                    subtitle: l10n.binauralHeadphonesSubtitle,
+                    icon: Icons.headphones,
+                  ),
               ],
             ),
             if (isManual && _showPassthroughToggles) ...[

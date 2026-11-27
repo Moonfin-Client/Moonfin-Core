@@ -11949,6 +11949,14 @@
   "@hdrToneMappingDescription": {
     "description": "Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names"
   },
+  "binauralHeadphones": "Binaural audio for headphones",
+  "@binauralHeadphones": {
+    "description": "iPhone, iPad and Apple TV audio setting that renders surround sound as 3D stereo for headphones"
+  },
+  "binauralHeadphonesSubtitle": "Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.",
+  "@binauralHeadphonesSubtitle": {
+    "description": "Subtitle for the binaural headphones setting"
+  },
   "cadenceTipTitle": "Turn On Match Frame Rate",
   "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
   "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",

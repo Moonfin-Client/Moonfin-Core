@@ -12871,6 +12871,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
 
   @override
+  String get binauralHeadphones => 'Binaural audio for headphones';
+
+  @override
+  String get binauralHeadphonesSubtitle =>
+      'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override
