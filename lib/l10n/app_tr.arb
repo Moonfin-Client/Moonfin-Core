@@ -18873,5 +18873,504 @@
     "sidebarStyleClassic": "Klasik",
     "@sidebarStyleClassic": {
         "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "detailShowFullDate": "Tam Tarihi Göster",
+    "@detailShowFullDate": {
+        "description": "Label for the detail screen setting to show full release or air dates instead of only the year"
+    },
+    "detailShowFullDateSubtitle": "Ayrıntı sayfalarında yalnızca yıl yerine tam çıkış veya yayın tarihini göster",
+    "@detailShowFullDateSubtitle": {
+        "description": "Explanation under the show full date setting"
+    },
+    "carListenNow": "Şimdi Dinle",
+    "@carListenNow": {
+        "description": "Car tab with quick starts, recently played and in-progress items"
+    },
+    "carRecentlyPlayed": "Son Çalınanlar",
+    "@carRecentlyPlayed": {
+        "description": "Car shelf and tile listing the music played most recently"
+    },
+    "carInstantMix": "Anlık Karışım",
+    "@carInstantMix": {
+        "description": "Car tile that plays a mix of similar songs, seeded from the last song played"
+    },
+    "showPlaybackStats": "Oynatma İstatistiklerini Göster",
+    "@showPlaybackStats": {
+        "description": "Button in the playback information sheet that shows live network and buffer stats with small graphs over the video"
+    },
+    "hidePlaybackStats": "Oynatma İstatistiklerini Gizle",
+    "@hidePlaybackStats": {
+        "description": "Button in the playback information sheet that hides the live network and buffer stats over the video"
+    },
+    "playbackStatsNetworkActivity": "Ağ Etkinliği",
+    "@playbackStatsNetworkActivity": {
+        "description": "Row in the playback stats over the video: how much data arrived in the last second, like 12.4 Mbps"
+    },
+    "playbackStatsBufferHealth": "Arabellek Durumu",
+    "@playbackStatsBufferHealth": {
+        "description": "Row in the playback stats over the video: seconds of video loaded ahead of the play position, like 95.3 / 120 s"
+    },
+    "playbackStatsBufferMemory": "Arabellek Belleği",
+    "@playbackStatsBufferMemory": {
+        "description": "Row in the playback stats over the video: memory the loaded video uses out of the most it may use, like 210 / 384 MB"
+    },
+    "playbackStatsRebuffers": "Yeniden Arabellekleme",
+    "@playbackStatsRebuffers": {
+        "description": "Row in the playback stats over the video: how many times playback stopped to load more, not counting seeks"
+    },
+    "settingsAudioPassthroughFallback": "Sessiz Passthrough'u Çöz",
+    "@settingsAudioPassthroughFallback": {
+        "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "settingsAudioPassthroughFallbackDescription": "Çıkış aygıtı bir passthrough ses parçasını oynatamayıp sessiz kalırsa, parçayı bunun yerine bu cihazda çöz.",
+    "@settingsAudioPassthroughFallbackDescription": {
+        "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "seerrTestNotification": "Test Bildirimi Gönder",
+    "@seerrTestNotification": {
+        "description": "Title for the button that sends a test notification from the server"
+    },
+    "seerrTestNotificationDesc": "Uygulama içi ve arka plan anlık bildirim iletimini doğrula",
+    "@seerrTestNotificationDesc": {
+        "description": "Subtitle for the send test notification button"
+    },
+    "seerrTestNotificationSentBody": "{count, plural, =1{1 cihaza} other{{count} cihaza}} gönderildi.",
+    "@seerrTestNotificationSentBody": {
+        "description": "Body message shown when a test notification is sent to registered devices",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "seerrTestNotificationPushDisabled": "Uygulama içi bildirim gönderildi. Sunucu anlık bildirimleri etkin değil.",
+    "@seerrTestNotificationPushDisabled": {
+        "description": "Message shown when a test notification was sent in-app but server push is off"
+    },
+    "seerrTestNotificationFailed": "Test bildirimi gönderilemedi",
+    "@seerrTestNotificationFailed": {
+        "description": "Message shown when sending a test notification fails"
+    },
+    "seerrPushServerStatus": "Sunucu Anlık Bildirimi",
+    "@seerrPushServerStatus": {
+        "description": "Label for the server push delivery status"
+    },
+    "seerrPushDeviceStatus": "Cihaz Anlık Bildirimi",
+    "@seerrPushDeviceStatus": {
+        "description": "Label for the device push registration status"
+    },
+    "seerrPushDeviceRegistered": "Kayıtlı",
+    "@seerrPushDeviceRegistered": {
+        "description": "Status indicating this device has a registered push token"
+    },
+    "seerrPushDeviceNotRegistered": "Kayıtlı değil",
+    "@seerrPushDeviceNotRegistered": {
+        "description": "Status indicating this device is not registered for push"
+    },
+    "removeRequest": "İsteği Kaldır",
+    "@removeRequest": {
+        "description": "Button and dialog title for deleting a failed Silo request"
+    },
+    "removeFailedRequestForTitle": "\"{title}\" için başarısız olan isteğiniz silinecek. İsteği daha sonra yeniden oluşturabilirsiniz.",
+    "@removeFailedRequestForTitle": {
+        "description": "Confirmation message before deleting a failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestRefused": "İstek kaldırılmadı. Yeniden denendi veya bir kısmı ulaştı.",
+    "@removeFailedRequestRefused": {
+        "description": "Snackbar when Silo refuses to delete a failed request because it changed"
+    },
+    "removeOthersFailedRequestForTitle": "{name} tarafından oluşturulan başarısız \"{title}\" isteği silinecek. Kullanıcı isteği daha sonra yeniden oluşturabilir.",
+    "@removeOthersFailedRequestForTitle": {
+        "description": "Confirmation message before an admin deletes another user's failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestError": "İstek kaldırılamadı. Tekrar deneyin.",
+    "@removeFailedRequestError": {
+        "description": "Snackbar when deleting a failed Silo request fails for a reason other than the request changing"
+    },
+    "personalRatingIntervals": "Puanlama Aralıkları",
+    "@personalRatingIntervals": {
+        "description": "Selects the step granularity for personal ratings and their display precision."
+    },
+    "personalRatingIntervalWhole": "Tam (1)",
+    "@personalRatingIntervalWhole": {
+        "description": "Short label for whole-number personal rating steps."
+    },
+    "personalRatingIntervalHalf": "Yarım (0,5)",
+    "@personalRatingIntervalHalf": {
+        "description": "Short label for half-step (0.5) personal rating intervals."
+    },
+    "personalRatingIntervalQuarter": "Çeyrek (0,25)",
+    "@personalRatingIntervalQuarter": {
+        "description": "Short label for quarter-step (0.25) personal rating intervals."
+    },
+    "topNavbarStyle": "Üst Çubuk Stili",
+    "@topNavbarStyle": {
+        "description": "Settings title for choosing how the top navigation bar looks"
+    },
+    "topNavbarStyleTabline": "Tabline",
+    "@topNavbarStyleTabline": {
+        "description": "Top bar style: text tabs with an underline and no container"
+    },
+    "topNavbarStyleAtlas": "Atlas",
+    "@topNavbarStyleAtlas": {
+        "description": "Top bar style: a solid bar whose tabs open a panel of shortcuts and artwork"
+    },
+    "topNavbarStyleClassicHint": "Standart çubuk",
+    "@topNavbarStyleClassicHint": {
+        "description": "Hint under the Classic top bar style option"
+    },
+    "topNavbarStyleTablineHint": "Altı çizgili metin sekmeleri, kapsül yok",
+    "@topNavbarStyleTablineHint": {
+        "description": "Hint under the Tabline top bar style option"
+    },
+    "topNavbarStyleAtlasHint": "Sekmeler, kısayollar ve görseller içeren bir panel açar",
+    "@topNavbarStyleAtlasHint": {
+        "description": "Hint under the Atlas top bar style option"
+    },
+    "sidebarStyle": "Kenar Çubuğu Stili",
+    "@sidebarStyle": {
+        "description": "Settings title for choosing how the left sidebar looks"
+    },
+    "sidebarStyleReel": "Reel",
+    "@sidebarStyleReel": {
+        "description": "Sidebar style: a wheel of destinations that turns through a fixed focus window"
+    },
+    "sidebarStyleMosaic": "Mosaic",
+    "@sidebarStyleMosaic": {
+        "description": "Sidebar style: a panel of tiles with each library shown by its artwork"
+    },
+    "sidebarStyleClassicHint": "Standart kenar çubuğu",
+    "@sidebarStyleClassicHint": {
+        "description": "Hint under the Classic sidebar style option"
+    },
+    "sidebarStyleReelHint": "Bölümler arasında dönen bir çark",
+    "@sidebarStyleReelHint": {
+        "description": "Hint under the Reel sidebar style option"
+    },
+    "sidebarStyleMosaicHint": "Kütüphane görsellerinden oluşan karolar paneli",
+    "@sidebarStyleMosaicHint": {
+        "description": "Hint under the Mosaic sidebar style option"
+    },
+    "navContinueIn": "Devam Et: {section}",
+    "@navContinueIn": {
+        "description": "Heading over the items to resume in one library, shown in the Atlas top bar panel",
+        "placeholders": {
+            "section": {
+                "type": "String"
+            }
+        }
+    },
+    "navFeatured": "Öne Çıkan: {title}",
+    "@navFeatured": {
+        "description": "Caption on the Home tile of the Mosaic sidebar naming what the home screen features",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "navOpenMenu": "Menüyü aç",
+    "@navOpenMenu": {
+        "description": "Accessibility label of the button that opens the Reel or Mosaic sidebar"
+    },
+    "navReelSwipeHint": "Çevirmek için kaydırın, gitmek için ortaya dokunun",
+    "@navReelSwipeHint": {
+        "description": "Hint at the bottom of the Reel sidebar on phones"
+    },
+    "siloSectionBecauseYouEnjoy": "{genres} türlerinden keyif aldığınız için",
+    "@siloSectionBecauseYouEnjoy": {
+        "description": "Title of a row a Silo server offers for Home. {genres}: one or more genre names joined by the server, not translated",
+        "placeholders": {
+            "genres": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionBecauseYouWatched": "İzlediklerinize Göre",
+    "@siloSectionBecauseYouWatched": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionBecauseYouWatchedTitle": "{title} İzlediğiniz İçin",
+    "@siloSectionBecauseYouWatchedTitle": {
+        "description": "Title of a row a Silo server offers for Home. {title}: the title of a movie or show the profile watched",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionForYou": "Sizin İçin",
+    "@siloSectionForYou": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionHiddenGems": "Gizli Cevherler",
+    "@siloSectionHiddenGems": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionHighlyRatedInLibrary": "Kütüphanenizde Yüksek Puanlılar",
+    "@siloSectionHighlyRatedInLibrary": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionNextInYourSeries": "Serilerinizde Sıradakiler",
+    "@siloSectionNextInYourSeries": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionPickedFromYourHistory": "Geçmişinizden seçilenler",
+    "@siloSectionPickedFromYourHistory": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionPopularOnServer": "Bu Sunucuda Popüler Olanlar",
+    "@siloSectionPopularOnServer": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionProfilesLikeYouEnjoyed": "Sizin Gibi Profillerin Beğendikleri",
+    "@siloSectionProfilesLikeYouEnjoyed": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRandomPicks": "Rastgele Seçimler",
+    "@siloSectionRandomPicks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedAudiobooks": "Son Eklenen Sesli Kitaplar",
+    "@siloSectionRecentlyAddedAudiobooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedEbooks": "Son Eklenen E-Kitaplar",
+    "@siloSectionRecentlyAddedEbooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedIn": "Son Eklenenler: {library}",
+    "@siloSectionRecentlyAddedIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyAddedManga": "Son Eklenen Mangalar",
+    "@siloSectionRecentlyAddedManga": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedMovies": "Son Eklenen Filmler",
+    "@siloSectionRecentlyAddedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyAddedTv": "Son Eklenen Diziler",
+    "@siloSectionRecentlyAddedTv": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedAudiobooks": "Son Çıkan Sesli Kitaplar",
+    "@siloSectionRecentlyReleasedAudiobooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedEbooks": "Son Çıkan E-Kitaplar",
+    "@siloSectionRecentlyReleasedEbooks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedEpisodesIn": "Son Çıkan Bölümler: {library}",
+    "@siloSectionRecentlyReleasedEpisodesIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyReleasedIn": "Son Çıkanlar: {library}",
+    "@siloSectionRecentlyReleasedIn": {
+        "description": "Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it",
+        "placeholders": {
+            "library": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionRecentlyReleasedManga": "Son Çıkan Mangalar",
+    "@siloSectionRecentlyReleasedManga": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecentlyReleasedMovies": "Son Çıkan Filmler",
+    "@siloSectionRecentlyReleasedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionRecommendedForYou": "Size Önerilenler",
+    "@siloSectionRecommendedForYou": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionReturningShows": "Geri Dönen Diziler",
+    "@siloSectionReturningShows": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionSeasonalChristmasClassics": "Noel Klasikleri",
+    "@siloSectionSeasonalChristmasClassics": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasComedies": "Noel Komedileri",
+    "@siloSectionSeasonalChristmasComedies": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasFamily": "Ailece Noel",
+    "@siloSectionSeasonalChristmasFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasFavorites": "Noel Favorileri",
+    "@siloSectionSeasonalChristmasFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasHallmark": "Hallmark Noel Filmleri",
+    "@siloSectionSeasonalChristmasHallmark": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalChristmasRomcoms": "Noel Romantik Komedileri",
+    "@siloSectionSeasonalChristmasRomcoms": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalEasterFaith": "Paskalya Hikâyeleri",
+    "@siloSectionSeasonalEasterFaith": {
+        "description": "Title of a seasonal row on a Silo server's Home (easter)"
+    },
+    "siloSectionSeasonalEasterFamily": "Paskalya Filmleri",
+    "@siloSectionSeasonalEasterFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (easter)"
+    },
+    "siloSectionSeasonalFamilyMovieNightFavorites": "Ailenin Favorileri",
+    "@siloSectionSeasonalFamilyMovieNightFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalFamilyMovieNight": "Aile Film Gecesi",
+    "@siloSectionSeasonalFamilyMovieNight": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalHalloweenAnimated": "Animasyonlu Cadılar Bayramı",
+    "@siloSectionSeasonalHalloweenAnimated": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenFamily": "Ailece Cadılar Bayramı",
+    "@siloSectionSeasonalHalloweenFamily": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenFavorites": "Cadılar Bayramı Favorileri",
+    "@siloSectionSeasonalHalloweenFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenHorror": "Cadılar Bayramı Korku Filmleri",
+    "@siloSectionSeasonalHalloweenHorror": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalHalloweenTv": "Cadılar Bayramı Dizileri",
+    "@siloSectionSeasonalHalloweenTv": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalNewYearFavorites": "Yılbaşı Filmleri",
+    "@siloSectionSeasonalNewYearFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (newYear)"
+    },
+    "siloSectionSeasonalSaturdayMorningCartoons": "Cumartesi Sabahı Çizgi Filmleri",
+    "@siloSectionSeasonalSaturdayMorningCartoons": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalSaturdayMorningModern": "Cumartesi Sabahı Favorileri",
+    "@siloSectionSeasonalSaturdayMorningModern": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalSaturdayMorningNineties": "90'ların Cumartesi Sabahları",
+    "@siloSectionSeasonalSaturdayMorningNineties": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalStPatricksIrishFilm": "İrlanda Filmleri",
+    "@siloSectionSeasonalStPatricksIrishFilm": {
+        "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+    },
+    "siloSectionSeasonalStPatricksIrishTv": "İrlanda Dizileri",
+    "@siloSectionSeasonalStPatricksIrishTv": {
+        "description": "Title of a seasonal row on a Silo server's Home (stPatricks)"
+    },
+    "siloSectionSeasonalSummerBlockbusters": "Yaz Gişe Rekortmenleri",
+    "@siloSectionSeasonalSummerBlockbusters": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalSummerClassicSummer": "Klasik Yaz Filmleri",
+    "@siloSectionSeasonalSummerClassicSummer": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalSummerNostalgia": "Yaz Nostaljisi",
+    "@siloSectionSeasonalSummerNostalgia": {
+        "description": "Title of a seasonal row on a Silo server's Home (summer)"
+    },
+    "siloSectionSeasonalThanksgivingFavorites": "Şükran Günü Filmleri",
+    "@siloSectionSeasonalThanksgivingFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalThanksgivingFeelGood": "İçinizi Isıtan Favoriler",
+    "@siloSectionSeasonalThanksgivingFeelGood": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalValentinesFavorites": "Sevgililer Günü Favorileri",
+    "@siloSectionSeasonalValentinesFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesLoveStories": "Klasik Aşk Hikâyeleri",
+    "@siloSectionSeasonalValentinesLoveStories": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesRomanticDramas": "Romantik Dramlar",
+    "@siloSectionSeasonalValentinesRomanticDramas": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalValentinesRomcoms": "Sevgililer Günü Romantik Komedileri",
+    "@siloSectionSeasonalValentinesRomcoms": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "siloSectionSeasonalPicks": "Mevsimlik Seçimler",
+    "@siloSectionSeasonalPicks": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopGenre": "En İyi {genre}",
+    "@siloSectionTopGenre": {
+        "description": "Title of a row a Silo server offers for Home. {genre}: a genre name as the server sends it, not translated",
+        "placeholders": {
+            "genre": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionTopPicksToday": "Bugünün En İyi Seçimleri",
+    "@siloSectionTopPicksToday": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRated": "En Yüksek Puanlılar",
+    "@siloSectionTopRated": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedMovies": "En Yüksek Puanlı Filmler",
+    "@siloSectionTopRatedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedTv": "En Yüksek Puanlı Diziler",
+    "@siloSectionTopRatedTv": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTrendingOnServer": "Sunucuda Trend Olanlar",
+    "@siloSectionTrendingOnServer": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTrendingThisWeek": "Bu Hafta Trend Olanlar",
+    "@siloSectionTrendingThisWeek": {
+        "description": "Title of a row a Silo server offers for Home"
     }
 }
