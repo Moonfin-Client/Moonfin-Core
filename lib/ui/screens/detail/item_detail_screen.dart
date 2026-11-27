@@ -7386,13 +7386,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             resume: seasonRewatchEp != null || seasonNextUpEp != null,
           );
         } else {
-          // A watched series may have an episode being rewatched, which only
-          // the episode list fetched on play can tell.
+          // A watched series or box set may have an episode being rewatched,
+          // which only the queue fetched on play can tell.
           _play(
             context,
             item,
             resume: isBoxSet
-                ? (!boxSetAllWatched && !boxSetAllUnwatched)
+                ? !boxSetAllUnwatched
                 : (!isPhoto && (hasProgress || (isSeries && isFullyWatched))),
           );
         }
