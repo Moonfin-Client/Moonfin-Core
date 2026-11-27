@@ -69,6 +69,35 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get absApiKey => 'API Key';
+
+  @override
+  String get absApiKeyHint =>
+      'Make one in Audiobookshelf under Settings > API Keys, then paste it here.';
+
+  @override
+  String get absOpenId => 'OpenID';
+
+  @override
+  String get absOpenIdIntro =>
+      'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.';
+
+  @override
+  String get absOpenIdWaiting =>
+      'Finish signing in on the page that opened in your browser.';
+
+  @override
+  String get absOpenIdOpen => 'Open Sign-in Page';
+
+  @override
+  String get absOpenIdOpenAgain => 'Open It Again';
+
+  @override
+  String absOpenIdRedirectRefused(String address) {
+    return 'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add $address to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.';
+  }
+
+  @override
   String get quickConnect => 'Quick Connect';
 
   @override
@@ -495,6 +524,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get showTechnicalDetailsSubtitle => '배너 요약에 코덱, 해상도, 스트림 정보를 표시합니다';
+
+  @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
 
   @override
   String get recommendationSystem => '추천 시스템';
@@ -1927,6 +1963,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get carServerUnreachable => '서버에 연결할 수 없습니다';
 
   @override
+  String get carListenNow => 'Listen Now';
+
+  @override
+  String get carRecentlyPlayed => 'Recently Played';
+
+  @override
+  String get carInstantMix => 'Instant Mix';
+
+  @override
   String downloadsCount(int count) {
     return '다운로드 $count회';
   }
@@ -2113,6 +2158,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hideMpvStats => 'mpv 통계 숨기기(Shift+I)';
+
+  @override
+  String get showPlaybackStats => 'Show Playback Stats';
+
+  @override
+  String get hidePlaybackStats => 'Hide Playback Stats';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Network Activity';
+
+  @override
+  String get playbackStatsBufferHealth => 'Buffer Health';
+
+  @override
+  String get playbackStatsBufferMemory => 'Buffer Memory';
+
+  @override
+  String get playbackStatsRebuffers => 'Rebuffers';
 
   @override
   String get keyboardShortcutsTitle => '키보드 단축키';
@@ -3582,6 +3645,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '플레이어에서 위아래로 밀어 왼쪽은 밝기, 오른쪽은 음량을 조절합니다';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => '제스처 표시기 반전';
 
   @override
@@ -4131,6 +4201,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => '앱(IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
 
   @override
   String get settingsDownmixToStereoDescription => '디코딩된 모든 오디오를 2채널로 다운믹스합니다.';
@@ -6007,6 +6084,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get keep => '유지';
+
+  @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
 
   @override
   String get itemNotFoundInLibrary => 'Moonfin 라이브러리에서 항목을 찾을 수 없습니다.';
@@ -12644,6 +12742,54 @@ class AppLocalizationsKo extends AppLocalizations {
       'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get upscaleAnimationLineArt => 'Upscale anime with line art';
+
+  @override
+  String get upscaleAnimationLineArtSubtitle =>
+      'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.';
+
+  @override
+  String get hdrToneMapping => 'HDR tone mapping';
+
+  @override
+  String get hdrToneMappingDescription =>
+      'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get binauralHeadphones => 'Binaural audio for headphones';
+
+  @override
+  String get binauralHeadphonesSubtitle =>
+      'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
+
+  @override
+  String get loudnessTarget => 'Loudness target';
+
+  @override
+  String get loudnessTargetDescription =>
+      'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.';
+
+  @override
+  String get loudnessTargetStandard => 'Standard (-24 LUFS)';
+
+  @override
+  String get loudnessTargetLoud => 'Loud (-16 LUFS)';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override
@@ -15097,6 +15243,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get personalRatingNumeric => '10점 만점 점수';
 
   @override
+  String get personalRatingIntervals => 'Rating Intervals';
+
+  @override
+  String get personalRatingIntervalWhole => 'Whole (1)';
+
+  @override
+  String get personalRatingIntervalHalf => 'Half (0.5)';
+
+  @override
+  String get personalRatingIntervalQuarter => 'Quarter (0.25)';
+
+  @override
   String get rate => '평가';
 
   @override
@@ -15242,6 +15400,52 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hideDetailsMediaDescriptionSubtitle => '영화 또는 에피소드의 설명 텍스트를 숨깁니다.';
+
+  @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
 
   @override
   String get detailUseSeriesThumbnails => '상세 페이지에서 시리즈 썸네일 사용';
@@ -16782,6 +16986,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get siloPlaybackEndedOnServer => 'Silo 서버에서 재생이 종료되었습니다.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return '$name의 PIN';
   }
@@ -17818,124 +18026,268 @@ class AppLocalizationsKo extends AppLocalizations {
   String get clickpadSeekingPausedOnly => 'Only while paused';
 
   @override
-  String get recordingsScopeMine => 'Mine';
+  String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get recordingsScopeEveryone => 'Everyone';
+  String get topNavbarStyleClassic => '클래식';
 
   @override
-  String get myRecordings => 'My Recordings';
+  String get topNavbarStyleTabline => 'Tabline';
 
   @override
-  String get myRecordingsEmpty => 'Recordings you schedule will show up here.';
+  String get topNavbarStyleAtlas => 'Atlas';
 
   @override
-  String get addToMyRecordings => 'Add to My Recordings';
+  String get topNavbarStyleClassicHint => 'The standard bar';
 
   @override
-  String get addedToMyRecordings => 'Added to My Recordings';
+  String get topNavbarStyleTablineHint =>
+      'Text tabs with an underline, no pill';
 
   @override
-  String get addSeriesToMyRecordings => 'Add Series to My Recordings';
+  String get topNavbarStyleAtlasHint =>
+      'Tabs open a panel with shortcuts and artwork';
 
   @override
-  String ownerRecordingOne(String name) {
-    return '$name is recording this';
+  String get sidebarStyle => 'Sidebar Style';
+
+  @override
+  String get sidebarStyleClassic => '클래식';
+
+  @override
+  String get sidebarStyleReel => 'Reel';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'The standard sidebar';
+
+  @override
+  String get sidebarStyleReelHint =>
+      'A wheel that turns through the destinations';
+
+  @override
+  String get sidebarStyleMosaicHint => 'A panel of tiles with library artwork';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Continue in $section';
   }
 
   @override
-  String ownerRecordingTwo(String first, String second) {
-    return '$first and $second are recording this';
+  String navFeatured(String title) {
+    return 'Featured: $title';
   }
 
   @override
-  String ownerRecordingMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count other users are recording this',
-    );
-    return '$_temp0';
+  String get navOpenMenu => 'Open menu';
+
+  @override
+  String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Because you enjoy $genres';
   }
 
   @override
-  String ownerWaitingOne(String name) {
-    return '$name is also waiting for this';
+  String get siloSectionBecauseYouWatched => 'Because You Watched';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Because You Watched $title';
   }
 
   @override
-  String ownerWaitingTwo(String first, String second) {
-    return '$first and $second are also waiting for this';
+  String get siloSectionForYou => 'For You';
+
+  @override
+  String get siloSectionHiddenGems => 'Hidden Gems';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Next in Your Series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular on This Server';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+
+  @override
+  String get siloSectionRandomPicks => 'Random Picks';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Recently Added in $library';
   }
 
   @override
-  String ownerWaitingMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count other users are also waiting for this',
-    );
-    return '$_temp0';
+  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Recently Released Audiobooks';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Recently Released Episodes in $library';
   }
 
   @override
-  String sharedCancelOne(String name) {
-    return '$name also has this in My Recordings. Cancelling stops it for everyone.';
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Recently Released in $library';
   }
 
   @override
-  String sharedCancelTwo(String first, String second) {
-    return '$first and $second also have this in My Recordings. Cancelling stops it for everyone.';
+  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recommended for You';
+
+  @override
+  String get siloSectionReturningShows => 'Returning Shows';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Saturday Morning Cartoons';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favorites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90s Saturday Mornings';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
   }
 
   @override
-  String sharedCancelMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other:
-          '$count other users also have this in My Recordings. Cancelling stops it for everyone.',
-    );
-    return '$_temp0';
-  }
+  String get siloSectionTopPicksToday => 'Top Picks Today';
 
   @override
-  String sharedDeleteOne(String name) {
-    return '$name also has this in My Recordings. Deleting removes it for everyone.';
-  }
+  String get siloSectionTopRated => 'Top Rated';
 
   @override
-  String sharedDeleteTwo(String first, String second) {
-    return '$first and $second also have this in My Recordings. Deleting removes it for everyone.';
-  }
+  String get siloSectionTopRatedMovies => 'Top Rated Movies';
 
   @override
-  String sharedDeleteMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other:
-          '$count other users also have this in My Recordings. Deleting removes it for everyone.',
-    );
-    return '$_temp0';
-  }
+  String get siloSectionTopRatedTv => 'Top Rated TV';
 
   @override
-  String get sharedKeep => 'Keep';
+  String get siloSectionTrendingOnServer => 'Trending on Server';
 
   @override
-  String get sharedCancelForEveryone => 'Cancel for Everyone';
-
-  @override
-  String get sharedDeleteForEveryone => 'Delete for Everyone';
-
-  @override
-  String get sharedSeriesChange =>
-      'Other users also record this series. Changes apply to everyone.';
-
-  @override
-  String get sharedKeepAsIs => 'Keep As Is';
-
-  @override
-  String get sharedChangeForEveryone => 'Change for Everyone';
+  String get siloSectionTrendingThisWeek => 'Trending This Week';
 }

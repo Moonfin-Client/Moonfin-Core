@@ -1,0 +1,340 @@
+import 'dart:async';
+
+import 'package:fake_async/fake_async.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/repositories/item_mutation_repository.dart';
+import 'package:moonfin/data/repositories/mdblist_repository.dart';
+import 'package:moonfin/data/repositories/seerr_repository.dart';
+import 'package:moonfin/data/repositories/tmdb_repository.dart';
+import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
+import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
+import 'package:moonfin/data/viewmodels/seerr_media_detail_view_model.dart';
+import 'package:moonfin/preference/seerr_preferences.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final _movieJson = {
+  'id': 121,
+  'title': 'The Lord of the Rings: The Two Towers',
+  'releases': {
+    'results': [
+      {
+        'iso_3166_1': 'DE',
+        'release_dates': [
+          {'certification': '12'},
+        ],
+      },
+      {
+        'iso_3166_1': 'US',
+        'release_dates': [
+          {'certification': ''},
+          {'certification': '  '},
+          {'certification': 'PG-13'},
+          {'certification': 'R'},
+        ],
+      },
+    ],
+  },
+};
+
+final _tvJson = {
+  'id': 1396,
+  'name': 'Breaking Bad',
+  'contentRatings': {
+    'results': [
+      {'iso_3166_1': 'DE', 'rating': '16'},
+      {'iso_3166_1': 'US', 'rating': 'TV-MA'},
+    ],
+  },
+};
+
+class _Seerr extends Fake implements SeerrRepository {
+  SeerrUser user = const SeerrUser(id: 1);
+  Future<Map<String, dynamic>> settings = Future.value({});
+
+  @override
+  Future<void> ensureInitialized({bool force = false}) async {}
+
+  @override
+  Future<Map<String, dynamic>> getPublicSettings() => settings;
+
+  @override
+  Future<SeerrUser> getCurrentUser() async => user;
+
+  @override
+  Future<(SeerrMovieDetails, bool)> getMovieDetailsWithWatchlist(
+    int id,
+  ) async => (SeerrMovieDetails.fromJson(_movieJson), false);
+
+  @override
+  Future<(SeerrTvDetails, bool)> getTvDetailsWithWatchlist(int id) async =>
+      (SeerrTvDetails.fromJson(_tvJson), false);
+}
+
+class _Prefs extends Fake implements SeerrPreferences {}
+
+class _Client extends Mock implements MediaServerClient {}
+
+class _SearchRecoverySeerr extends _Seerr {
+  final String mediaType;
+  int detailFetches = 0;
+
+  _SearchRecoverySeerr(this.mediaType);
+
+  @override
+  Future<(SeerrMovieDetails, bool)> getMovieDetailsWithWatchlist(
+    int id,
+  ) async => throw StateError('Initial details request failed');
+
+  @override
+  Future<(SeerrTvDetails, bool)> getTvDetailsWithWatchlist(int id) async =>
+      throw StateError('Initial details request failed');
+
+  @override
+  Future<SeerrDiscoverPage> search(
+    String query, {
+    String? mediaType,
+    int limit = 20,
+    int offset = 0,
+  }) async => SeerrDiscoverPage(
+    results: [
+      SeerrDiscoverItem(
+        id: int.parse(query),
+        mediaType: this.mediaType,
+        title: 'Search result',
+        mediaInfo: const SeerrMediaInfo(status: 3),
+      ),
+    ],
+  );
+
+  @override
+  Future<SeerrMovieDetails> getMovieDetails(int id) async {
+    detailFetches++;
+    return SeerrMovieDetails.fromJson({
+      ..._movieJson,
+      'mediaInfo': {'status': 5},
+    });
+  }
+
+  @override
+  Future<SeerrTvDetails> getTvDetails(int id) async {
+    detailFetches++;
+    return SeerrTvDetails.fromJson({
+      ..._tvJson,
+      'mediaInfo': {'status': 5},
+    });
+  }
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  for (final mediaType in ['movie', 'tv']) {
+    test(
+      '$mediaType search recovery preserves country through a status poll',
+      () {
+        fakeAsync((async) {
+          final repo = _SearchRecoverySeerr(mediaType)
+            ..user = const SeerrUser(
+              id: 1,
+              discoverRegion: 'DE',
+              streamingRegion: 'GB',
+            )
+            ..settings = Future.value({'discoverRegion': 'US'});
+          final vm = SeerrMediaDetailViewModel(repo, _Prefs());
+          vm.load(mediaType == 'tv' ? '1396' : '121', mediaType);
+          async.flushMicrotasks();
+
+          expect(vm.state.error, isNull);
+          expect(vm.state.discoverRegion, 'DE');
+          expect(vm.state.streamingRegion, 'GB');
+          expect(vm.state.parentalRating, isNull);
+          expect(repo.detailFetches, 0);
+
+          async.elapse(const Duration(seconds: 30));
+          expect(repo.detailFetches, 1);
+          expect(vm.state.discoverRegion, 'DE');
+          expect(vm.state.parentalRating, mediaType == 'tv' ? '16' : '12');
+          vm.dispose();
+        });
+      },
+    );
+  }
+
+  test('movie rating uses the selected country and first nonblank release', () {
+    final state = SeerrMediaDetailState(
+      movie: SeerrMovieDetails.fromJson(_movieJson),
+    );
+    expect(state.parentalRating, 'PG-13');
+    expect(state.copyWith(discoverRegion: 'DE').parentalRating, '12');
+    expect(state.copyWith(discoverRegion: 'FR').parentalRating, isNull);
+  });
+
+  test('TV rating uses the selected country', () {
+    final state = SeerrMediaDetailState(tv: SeerrTvDetails.fromJson(_tvJson));
+    expect(state.parentalRating, 'TV-MA');
+    expect(state.copyWith(discoverRegion: 'DE').parentalRating, '16');
+    expect(state.copyWith(discoverRegion: 'FR').parentalRating, isNull);
+  });
+
+  test('missing, empty and blank ratings leave the badge absent', () {
+    for (final releases in [
+      null,
+      <String, dynamic>{},
+      {'results': <dynamic>[]},
+      {
+        'results': [
+          {'iso_3166_1': 'US'},
+          {
+            'iso_3166_1': 'US',
+            'release_dates': [
+              <String, dynamic>{},
+              {'certification': ' '},
+            ],
+          },
+        ],
+      },
+    ]) {
+      final movie = SeerrMovieDetails.fromJson({
+        ..._movieJson,
+        'releases': releases,
+      });
+      expect(SeerrMediaDetailState(movie: movie).parentalRating, isNull);
+    }
+    final tv = SeerrTvDetails.fromJson({
+      ..._tvJson,
+      'contentRatings': {
+        'results': [
+          {'iso_3166_1': 'US', 'rating': ' '},
+        ],
+      },
+    });
+    expect(SeerrMediaDetailState(tv: tv).parentalRating, isNull);
+  });
+
+  test('Silo single ratings still reach the detail badge', () {
+    expect(
+      const SeerrMediaDetailState(
+        movie: SeerrMovieDetails(id: 1, title: 'Movie', contentRating: 'PG'),
+      ).parentalRating,
+      'PG',
+    );
+    expect(
+      const SeerrMediaDetailState(
+        tv: SeerrTvDetails(id: 2, contentRating: 'TV-PG'),
+      ).parentalRating,
+      'TV-PG',
+    );
+  });
+
+  test('discovery country reads nested user settings', () {
+    final user = SeerrUser.fromJson({
+      'id': 1,
+      'settings': {'discoverRegion': 'DE', 'streamingRegion': 'US'},
+    });
+    expect(user.discoverRegion, 'DE');
+    expect(SeerrUser.fromJson({'id': 1}).discoverRegion, isNull);
+  });
+
+  group('Seerr-only detail metadata', () {
+    late _Seerr repo;
+    late _Client client;
+
+    setUp(() async {
+      await GetIt.instance.reset();
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+      repo = _Seerr();
+      GetIt.instance.registerLazySingletonAsync<SeerrRepository>(
+        () async => repo,
+      );
+      GetIt.instance.registerSingleton<SeerrPreferences>(_Prefs());
+      client = _Client();
+    });
+
+    tearDown(() => GetIt.instance.reset());
+
+    ItemDetailViewModel viewModel(String id) {
+      final tmdb = TmdbRepository(client);
+      return ItemDetailViewModel(
+        itemId: id,
+        client: client,
+        mutations: ItemMutationRepository(client),
+        mdbListRepository: MdbListRepository(client, tmdb),
+        tmdbRepository: tmdb,
+      );
+    }
+
+    test('movie metadata gets its rating without a library item', () {
+      fakeAsync((async) {
+        final vm = viewModel('tmdb:movie:121');
+        vm.load();
+        async.flushMicrotasks();
+        expect(vm.item?.officialRating, 'PG-13');
+        expect(vm.item?.serverId, 'seerr');
+        vm.dispose();
+      });
+    });
+
+    test(
+      'TV uses the user discovery country over server and streaming country',
+      () {
+        fakeAsync((async) {
+          repo.user = const SeerrUser(
+            id: 1,
+            discoverRegion: 'DE',
+            streamingRegion: 'US',
+          );
+          repo.settings = Future.value({'discoverRegion': 'US'});
+          final vm = viewModel('tmdb:tv:1396');
+          vm.load();
+          async.flushMicrotasks();
+          expect(vm.item?.officialRating, '16');
+          vm.dispose();
+        });
+      },
+    );
+
+    test('late server country updates the rating and can remove it', () {
+      for (final region in ['DE', 'FR']) {
+        fakeAsync((async) {
+          final settings = Completer<Map<String, dynamic>>();
+          repo.settings = settings.future;
+          final vm = viewModel('tmdb:movie:121');
+          vm.load();
+          async.flushMicrotasks();
+          expect(vm.item?.officialRating, 'PG-13');
+          settings.complete({
+            'discoverRegion': region,
+            'streamingRegion': 'US',
+          });
+          async.flushMicrotasks();
+          expect(vm.item?.officialRating, region == 'DE' ? '12' : null);
+          vm.dispose();
+        });
+      }
+    });
+
+    test('late server settings do not replace the user discovery country', () {
+      fakeAsync((async) {
+        final settings = Completer<Map<String, dynamic>>();
+        repo.settings = settings.future;
+        repo.user = const SeerrUser(id: 1, discoverRegion: 'US');
+        final vm = viewModel('tmdb:movie:121');
+        vm.load();
+        async.flushMicrotasks();
+        expect(vm.item?.officialRating, 'PG-13');
+        settings.complete({'discoverRegion': 'DE'});
+        async.flushMicrotasks();
+        expect(vm.item?.officialRating, 'PG-13');
+        vm.dispose();
+      });
+    });
+  });
+}

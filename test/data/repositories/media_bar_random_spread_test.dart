@@ -23,6 +23,7 @@ class _Library {
 
   final int size;
   final sorts = <String?>[];
+  final collapses = <bool?>[];
 
   int rankOf(String id) => int.parse(id.substring(1));
 
@@ -30,6 +31,7 @@ class _Library {
     final args = invocation.namedArguments;
     final sortBy = args[#sortBy] as String?;
     sorts.add(sortBy);
+    if (sortBy == 'Random') collapses.add(args[#collapseBoxSetItems] as bool?);
     if (args[#limit] == 1 && args[#enableTotalRecordCount] == true) {
       return {'Items': const [], 'TotalRecordCount': size};
     }
@@ -80,6 +82,7 @@ void main() {
         sortBy: any(named: 'sortBy'),
         sortOrder: any(named: 'sortOrder'),
         recursive: any(named: 'recursive'),
+        collapseBoxSetItems: any(named: 'collapseBoxSetItems'),
         parentId: any(named: 'parentId'),
         startIndex: any(named: 'startIndex'),
         limit: any(named: 'limit'),
@@ -150,5 +153,16 @@ void main() {
     final (_, sorts) = await load(library);
 
     expect(sorts, contains('Random'));
+  });
+
+  // Issue #2388: with "Group movies into collections" on, Jellyfin sent the
+  // collection back instead of its movies, and the bar skips collections.
+  test('asks for the movies inside collections, not the collection', () async {
+    final library = _Library(2000);
+
+    await load(library);
+
+    expect(library.collapses, isNotEmpty);
+    expect(library.collapses, everyElement(isFalse));
   });
 }

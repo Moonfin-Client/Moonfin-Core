@@ -1697,6 +1697,16 @@ class SiloWatchPartyManager extends ChangeNotifier {
     return session != null && _room?.attachedSessionId == session;
   }
 
+  /// Whether a pause or resume now would be taken by the room and do
+  /// nothing, because this viewer can't control a host-only room.
+  bool get blocksTransport {
+    final room = _room;
+    return !_applying &&
+        room != null &&
+        room.isPlaying &&
+        room.canControlTransport != true;
+  }
+
   Future<bool> _intercept(TransportAction action, {Duration? position}) async {
     final room = _room;
     if (_applying || room == null || !room.isPlaying) return false;

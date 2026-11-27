@@ -1,3 +1,5 @@
+import 'package:server_core/server_core.dart';
+
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 import '../models/aggregated_item.dart';
@@ -127,6 +129,65 @@ List<AggregatedItem> normalizeLatestMediaItems(
   }
 
   return normalized.take(limit).toList();
+}
+
+/// Gives each series card built from an episode or season the show's own
+/// watched state, since an episode has no unwatched count and a season only
+/// counts its own episodes. A failed lookup keeps the cards as they were.
+Future<List<AggregatedItem>> withSeriesUserData(
+  List<AggregatedItem> cards,
+  ItemsApi? Function(String serverId) itemsApiFor,
+) async {
+  // A card built from an episode or season keeps that item's SeriesId, while
+  // a show the server sent as a series already has its own counts.
+  final idsByServer = <String, List<String>>{};
+  for (final card in cards) {
+    if (card.type == 'Series' && card.seriesId == card.id) {
+      idsByServer.putIfAbsent(card.serverId, () => []).add(card.id);
+    }
+  }
+  final userData = <String, Map<String, dynamic>>{};
+  await Future.wait([
+    for (final MapEntry(key: serverId, value: ids) in idsByServer.entries)
+      if (itemsApiFor(serverId) case final api?)
+        _seriesUserData(api, ids).then((found) {
+          for (final MapEntry(:key, :value) in found.entries) {
+            userData['$serverId|$key'] = value;
+          }
+        }),
+  ]);
+  if (userData.isEmpty) return cards;
+  return [
+    for (final card in cards)
+      if (userData['${card.serverId}|${card.id}'] case final data?)
+        AggregatedItem(
+          id: card.id,
+          serverId: card.serverId,
+          rawData: {...card.rawData, 'UserData': data},
+        )
+      else
+        card,
+  ];
+}
+
+Future<Map<String, Map<String, dynamic>>> _seriesUserData(
+  ItemsApi api,
+  List<String> ids,
+) async {
+  try {
+    final response = await api
+        .getItems(ids: ids, fields: 'UserData')
+        .timeout(const Duration(seconds: 6));
+    return {
+      for (final item in response['Items'] as List? ?? const [])
+        if (item is Map && item['Id'] != null && item['UserData'] is Map)
+          item['Id'].toString(): Map<String, dynamic>.from(
+            item['UserData'] as Map,
+          ),
+    };
+  } catch (_) {
+    return const {};
+  }
 }
 
 List<AggregatedItem> _collapseLatestTvItems(List<AggregatedItem> items) {

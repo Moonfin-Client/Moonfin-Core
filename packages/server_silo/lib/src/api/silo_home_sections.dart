@@ -10,6 +10,8 @@ class SiloSectionEntry {
     required this.id,
     required this.sectionType,
     required this.title,
+    this.titleKey,
+    this.titleArgs = const {},
     this.itemLimit,
   });
 
@@ -21,10 +23,18 @@ class SiloSectionEntry {
       return null;
     }
     final limit = json['item_limit'];
+    final key = json['title_key'];
+    final args = json['title_args'];
     return SiloSectionEntry(
       id: id,
       sectionType: type,
       title: json['title'] is String ? json['title'] as String : '',
+      titleKey: key is String && key.isNotEmpty ? key : null,
+      titleArgs: {
+        if (args is Map)
+          for (final MapEntry(:key, :value) in args.entries)
+            if (key is String && value is String) key: value,
+      },
       itemLimit: limit is num ? limit.toInt() : null,
     );
   }
@@ -37,6 +47,13 @@ class SiloSectionEntry {
   final String sectionType;
 
   final String title;
+
+  /// The translation catalog key of [title] (`home.section.hiddenGems`…),
+  /// sent only while the title is Silo's own, not one the user renamed.
+  final String? titleKey;
+
+  /// Values for [titleKey]'s placeholders by name (`library`, `genre`…).
+  final Map<String, String> titleArgs;
 
   /// How many cards Silo puts in the section.
   final int? itemLimit;

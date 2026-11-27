@@ -35,6 +35,32 @@ void main() {
     expect(sections[1].kind, 'trending_on_server');
   });
 
+  test('each row\'s translation key, while its title is Silo\'s own', () async {
+    final layout = siloFixture('home_layout_title_keys.json');
+    // A row the profile renamed: Silo drops the key with the old title.
+    (layout['sections'] as List).add({
+      'id': '1',
+      'section_type': 'hidden_gems',
+      'title': 'Sunday Picks',
+    });
+    final server = FixtureServer({_layoutPath: siloJson(layout)});
+    final sections = await siloTestClient(
+      server,
+    ).itemsApi.getServerHomeSections();
+
+    final hidden = sections.firstWhere((s) => s.kind == 'hidden_gems');
+    expect(hidden.titleKey, 'home.section.hiddenGems');
+    expect(hidden.titleArgs, isEmpty);
+    final inLibrary = sections.firstWhere(
+      (s) => s.titleKey == 'home.section.recentlyAddedIn',
+    );
+    expect(inLibrary.title, 'Recently Added in AudioBooks');
+    expect(inLibrary.titleArgs, {'library': 'AudioBooks'});
+    final renamed = sections.singleWhere((s) => s.id == '1');
+    expect(renamed.title, 'Sunday Picks');
+    expect(renamed.titleKey, isNull);
+  });
+
   test('a row\'s items, in Silo\'s order', () async {
     final server = _server();
     final api = siloTestClient(server).itemsApi;

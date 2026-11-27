@@ -43,7 +43,8 @@ class SiloPlaySessionService implements PlayerService {
     return session;
   }
 
-  /// Nothing to send: the start opened the session.
+  /// Nothing to send (the start opened the session). Says the session is
+  /// playing, for its playback control socket.
   @override
   Future<void> onPlaybackStart(
     dynamic mediaItem,
@@ -51,7 +52,10 @@ class SiloPlaySessionService implements PlayerService {
     int? positionTicks,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
-  }) async {}
+  }) async {
+    final session = _live(resolution);
+    if (session != null) _sessions.notePlaying(session);
+  }
 
   /// One progress sample: the media position in seconds (the player's plus
   /// the stream's timeline offset, which the playback manager already
@@ -112,11 +116,13 @@ class SiloPlaySessionService implements PlayerService {
     if (SiloPlaybackApi.isEndedByServer(error)) {
       session.ended = true;
       _noteEnded(session);
+      _sessions.noteEnded(session);
       throw siloEndedOnServerRefusal;
     }
     if (SiloPlaybackApi.isSessionGone(error) ||
         SiloPlaybackApi.isInstallationChanged(error)) {
       session.ended = true;
+      _sessions.noteEnded(session);
       return true;
     }
     return false;
@@ -199,6 +205,7 @@ class SiloPlaySessionService implements PlayerService {
       // Ended either way: a stop Silo never got lets the session expire.
       session.ended = true;
       _sessions.remove(session.sessionId);
+      _sessions.noteEnded(session);
     }
   }
 

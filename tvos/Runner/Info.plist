@@ -69,6 +69,29 @@
   -->
   <key>FLTAssetsPath</key>
   <string>flutter_assets</string>
+  <!-- Keep the engine's built-in deep linking off so raw moonfin:// URIs
+       only reach DeepLinkService. -->
+  <key>FlutterDeepLinkingEnabled</key>
+  <false/>
+  <key>UIApplicationSceneManifest</key>
+  <dict>
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <false/>
+    <key>UISceneConfigurations</key>
+    <dict>
+      <key>UIWindowSceneSessionRoleApplication</key>
+      <array>
+        <dict>
+          <key>UISceneClassName</key>
+          <string>UIWindowScene</string>
+          <key>UISceneConfigurationName</key>
+          <string>flutter</string>
+          <key>UISceneDelegateClassName</key>
+          <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+        </dict>
+      </array>
+    </dict>
+  </dict>
   <key>UIMainStoryboardFile</key>
   <string>Main</string>
   <key>UIRequiredDeviceCapabilities</key>

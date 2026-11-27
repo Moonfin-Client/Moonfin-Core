@@ -34,6 +34,7 @@ import '../../../util/scroll_sensitivity_binding.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/marquee_text.dart';
 import '../../widgets/player_volume_control.dart';
+import '../../widgets/playback/playback_stats_overlay.dart';
 import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/player_logo.dart';
 import '../../widgets/playback/seek_icons.dart';
@@ -256,6 +257,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ? backend
         : null;
   }
+
+  bool _playbackStatsVisible = false;
 
   Media3PlayerBackend? get _activeMedia3Backend {
     final backend = _activeBackend;
@@ -541,11 +544,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _verticalDragStartValue = 0.0;
   bool _verticalDragIsVolume = false;
   bool _verticalDragIgnored = false;
+  // Where a sideways swipe started, set only while that swipe seeks.
+  Duration? _swipeSeekFrom;
+  double _swipeSeekStartX = 0.0;
   late final _surfaceTaps = PlayerSurfaceTaps(
     onSingleTap: () {
       if (mounted) _toggleControls();
     },
     onDoubleTap: _onSurfaceDoubleTap,
+    onTwoFingerTap: () {
+      if (mounted) _togglePlayPause();
+    },
   );
   DateTime? _lastDesktopClickAt;
   bool _wasPlayingBeforeDesktopClick = false;
@@ -3349,17 +3358,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  // While a released commit is still converging, the pending target is
+  // already null but _state.position still reads pre-seek. A quick follow-up
+  // press or swipe based on it would jump back to the old position.
+  Duration get _scrubBasePosition =>
+      _pendingScrubSeekTarget ??
+      (_isSeeking ? _lastScrubCommitTarget : null) ??
+      _transportPosition;
+
   void _seekRelativeAccumulate(int ms) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    // While a released commit is still converging, the pending target is
-    // already null but _state.position still reads pre-seek - basing a quick
-    // follow-up press on it would jump back to the old position.
-    final basePosition =
-        _pendingScrubSeekTarget ??
-        (_isSeeking ? _lastScrubCommitTarget : null) ??
-        _transportPosition;
-    final target = basePosition + Duration(milliseconds: ms);
+    final target = _scrubBasePosition + Duration(milliseconds: ms);
     _prefetchTrickplayDirectional(target, forward: ms > 0);
     _accumulateScrub(target);
   }
@@ -4283,6 +4293,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         (PlatformDetection.useMobileUi &&
             !_controlsVisible &&
             _canUseTemporarySpeed());
+    // Only with the controls down, since the seek bar is there otherwise. It
+    // stays on while a swipe seeks, or the release would never arrive.
+    final swipeSeek =
+        _swipeSeekFrom != null ||
+        (PlatformDetection.useMobileUi &&
+            !_controlsVisible &&
+            !_isOsdLocked &&
+            !hideOsdForPreroll &&
+            _prefs.get(UserPreferences.playerSwipeSeek));
     if (_isInPiP) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -4323,6 +4342,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             onVerticalDragUpdate: swipeGestures ? _onVerticalDragUpdate : null,
             onVerticalDragEnd: swipeGestures ? _onVerticalDragEnd : null,
             onVerticalDragCancel: swipeGestures ? _onVerticalDragCancel : null,
+            onHorizontalDragStart: swipeSeek ? _onSwipeSeekStart : null,
+            onHorizontalDragUpdate: swipeSeek ? _onSwipeSeekUpdate : null,
+            onHorizontalDragEnd: swipeSeek ? _onSwipeSeekEnd : null,
             onLongPressStart: holdForSpeed ? _onSurfaceLongPressStart : null,
             onLongPressEnd: holdForSpeed ? (_) => _onSurfaceLongPressEnd() : null,
             onLongPressCancel: holdForSpeed ? _onSurfaceLongPressEnd : null,
@@ -4450,6 +4472,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             ),
                           ),
                         ),
+                      // Above the controls so the dim doesn't cover it.
+                      ?_buildPlaybackStatsOverlay(
+                        context,
+                        controlsUp:
+                            _controlsVisible &&
+                            !_isOsdLocked &&
+                            !hideOsdForPreroll,
+                      ),
                       // The controls carry the indicator while they're up.
                       // Once they hide it stays in the corner, since the wait
                       // can outlast the controls by minutes.
@@ -4480,6 +4510,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       _buildSkipIndicatorOverlay(),
                       if (_temporarySpeedActive && !PlatformDetection.isTV)
                         _buildTemporarySpeedOverlay(),
+                      _buildSwipeSeekOverlay(),
                       if (_isOsdLocked && !hideOsdForPreroll)
                         _buildLockedOverlay(),
                       if (_isSkipSegmentButtonVisible)
@@ -5150,6 +5181,51 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         });
       }
     });
+  }
+
+  Widget? _buildPlaybackStatsOverlay(
+    BuildContext context, {
+    required bool controlsUp,
+  }) {
+    final media3 = _activeMedia3Backend;
+    if (!_playbackStatsVisible || media3 == null) return null;
+    // TVs can overscan, so it keeps to the margins the TV top bar uses.
+    final tv = PlatformDetection.useLeanbackUi;
+    final top = MediaQuery.of(context).padding.top;
+    final resolution = _manager.currentResolution;
+    final source = resolution?.sourceBitrate;
+    // The URL only names a cap, which says nothing once it's at or above the
+    // file's own rate.
+    final cap = resolution?.deliveredBitrate;
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 200),
+      left: tv ? 48 : AppSpacing.spaceLg,
+      right: tv ? 48 : AppSpacing.spaceLg,
+      // Below the top bar while it's up, so the title isn't covered.
+      top: controlsUp
+          ? (_topOverlayHeight ?? top) + AppSpacing.spaceSm
+          : top + (tv ? 27 : AppSpacing.spaceLg),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: ExcludeFocus(
+          child: IgnorePointer(
+            child: PlaybackStatsOverlay(
+              // A new item starts with empty graphs. Offline items are bare
+              // paths with no id, so the path keys them. The server is part
+              // of the key because ids can repeat across servers.
+              key: ValueKey((
+                _serverIdForQueueItem(_queue.currentItem),
+                _itemIdForQueueItem(_queue.currentItem) ?? _queue.currentItem,
+              )),
+              read: () => media3.networkStats,
+              serverBitrate: cap != null && (source == null || cap < source)
+                  ? cap
+                  : source,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildTopOverlay(BuildContext context) {
@@ -7093,6 +7169,44 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  void _onSwipeSeekStart(DragStartDetails details) {
+    if (_state.duration <= Duration.zero ||
+        startsInSystemEdgeStrip(
+          details.localPosition.dy,
+          MediaQuery.sizeOf(context).height,
+          MediaQuery.paddingOf(context),
+        )) {
+      return;
+    }
+    _suppressSeekPrompts(duration: _seekDragPromptSuppressionDuration);
+    final from = _scrubBasePosition;
+    _swipeSeekFrom = from;
+    _swipeSeekStartX = details.localPosition.dx;
+    _accumulateScrub(from, showControls: false);
+  }
+
+  void _onSwipeSeekUpdate(DragUpdateDetails details) {
+    final from = _swipeSeekFrom;
+    if (from == null) return;
+    // A full-width sweep covers the larger of 90 seconds or a twelfth of the
+    // runtime, the same as the native Apple player.
+    final sweepMs = math.max(90000, _state.duration.inMilliseconds ~/ 12);
+    final dx = details.localPosition.dx - _swipeSeekStartX;
+    final offsetMs = dx / MediaQuery.sizeOf(context).width * sweepMs;
+    _accumulateScrub(
+      from + Duration(milliseconds: offsetMs.round()),
+      showControls: false,
+    );
+    _prefetchVisibleTrickplayPreview(_pendingScrubSeekTarget!);
+  }
+
+  void _onSwipeSeekEnd(DragEndDetails _) {
+    if (_swipeSeekFrom == null) return;
+    setState(() => _swipeSeekFrom = null);
+    _suppressSeekPrompts();
+    _commitPendingScrub();
+  }
+
   Widget _buildVolumeOverlay() {
     final displayVolume = _useSystemVolume
         ? _systemVolume
@@ -7162,7 +7276,50 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  Widget _buildSwipeSeekOverlay() {
+    final from = _swipeSeekFrom;
+    if (from == null) return const SizedBox.shrink();
+    final target = _pendingScrubSeekTarget ?? from;
+    final offset = Duration(seconds: target.inSeconds - from.inSeconds);
+    final sign = offset.isNegative ? '-' : '+';
+    return _buildTopPill(
+      Text(
+        '${formatPlaybackDuration(target)} / '
+        '${formatPlaybackDuration(_state.duration)}   '
+        '$sign${formatPlaybackDuration(offset.abs())}',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontFeatures: [FontFeature.tabularFigures()],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTemporarySpeedOverlay() {
+    return _buildTopPill(
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${_temporarySpeed.toStringAsFixed(0)}x',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 6),
+          const AdaptiveIcon(
+            Icons.fast_forward_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopPill(Widget child) {
     return Positioned(
       top: MediaQuery.paddingOf(context).top + AppSpacing.spaceLg,
       left: 0,
@@ -7175,24 +7332,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               color: Colors.black.withValues(alpha: 0.6),
               borderRadius: AppRadius.circular(14),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${_temporarySpeed.toStringAsFixed(0)}x',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const AdaptiveIcon(
-                  Icons.fast_forward_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ],
-            ),
+            child: child,
           ),
         ),
       ),
@@ -8604,6 +8744,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // mpv's own statistics overlay, the Shift+I one, offered as a button so
     // it can be found without knowing the key.
     final mediaKit = _mpvStatsBackend;
+    final hasPlaybackStats = _activeMedia3Backend != null;
     unawaited(
       showStreamInfoDialog(
         context: context,
@@ -8621,6 +8762,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 // above the player stands the video down.
                 Navigator.of(context, rootNavigator: true).pop();
                 unawaited(mediaKit.toggleMpvStats());
+              },
+            ),
+          if (hasPlaybackStats)
+            (
+              label: _playbackStatsVisible
+                  ? l10n.hidePlaybackStats
+                  : l10n.showPlaybackStats,
+              icon: Icons.network_check_rounded,
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                if (!mounted) return;
+                setState(() => _playbackStatsVisible = !_playbackStatsVisible);
               },
             ),
           // The same list ? and F1 open, for whoever does not know those keys.

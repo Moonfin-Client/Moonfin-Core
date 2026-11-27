@@ -27,13 +27,16 @@ class PlexMediaServerClient extends MediaServerClient {
   String? _accessToken;
   String? _userId;
   final GamesApi? Function(MediaServerClient client)? _gamesApi;
+  final PlexUserConfigurationStore? _configStore;
 
   PlexMediaServerClient({
     required String baseUrl,
     required this.deviceInfo,
     GamesApi? Function(MediaServerClient client)? gamesApi,
+    PlexUserConfigurationStore? configStore,
   }) : _baseUrl = baseUrl,
        _gamesApi = gamesApi,
+       _configStore = configStore,
        _dio = Dio(
          BaseOptions(
            baseUrl: baseUrl,
@@ -144,7 +147,12 @@ class PlexMediaServerClient extends MediaServerClient {
   late final UserLibraryApi userLibraryApi = PlexUserLibraryApi(_dio, itemsApi);
 
   @override
-  late final UserViewsApi userViewsApi = PlexUserViewsApi(_dio);
+  late final UserViewsApi userViewsApi = PlexUserViewsApi(
+    _dio,
+    () async => _userId == null
+        ? const UserConfiguration()
+        : await usersApi.getUserConfiguration(),
+  );
 
   @override
   late final LiveTvApi liveTvApi = PlexLiveTvApi(_dio);
@@ -161,6 +169,7 @@ class PlexMediaServerClient extends MediaServerClient {
     _dio,
     _requireUserId,
     (policy) => _mayDeleteMedia = policy.enableContentDeletion,
+    configStore: _configStore,
   );
 
   static Never _noAdmin() =>

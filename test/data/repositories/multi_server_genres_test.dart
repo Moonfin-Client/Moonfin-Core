@@ -112,15 +112,15 @@ void main() {
           dateAdded: DateTime(2026),
         ),
       );
-      when(() => authStore.getUsers(id)).thenReturn([
-        PrivateUser(
-          id: 'user-$id',
-          name: 'user',
-          serverId: id,
-          accessToken: 'token-$id',
-          lastUsed: DateTime(2026),
-        ),
-      ]);
+      final user = PrivateUser(
+        id: 'user-$id',
+        name: 'user',
+        serverId: id,
+        accessToken: 'token-$id',
+        lastUsed: DateTime(2026),
+      );
+      when(() => authStore.getUsers(id)).thenReturn([user]);
+      when(() => authStore.getUser(id, user.id)).thenReturn(user);
       when(() => credentials.getToken(id)).thenAnswer((_) async => null);
       when(
         () => factory.getClient(
@@ -132,6 +132,7 @@ void main() {
       when(() => factory.getClientIfExists(id)).thenReturn(client);
     }
     when(authStore.getServers).thenReturn(servers);
+    when(() => session.accountSelectionGeneration).thenReturn(0);
     when(() => session.activeServerId).thenReturn('a');
     when(() => session.activeUserId).thenReturn('user-a');
     multiServer = MultiServerRepository(

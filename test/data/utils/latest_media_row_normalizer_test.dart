@@ -1,6 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/utils/latest_media_row_normalizer.dart';
+import 'package:server_core/server_core.dart';
+
+class _ItemsApi extends Mock implements ItemsApi {}
+
+Future<Map<String, dynamic>> _seriesLookup(_ItemsApi api) =>
+    api.getItems(ids: any(named: 'ids'), fields: 'UserData');
+
+void _answerSeries(_ItemsApi api, Map<String, int> unplayedById) {
+  when(() => _seriesLookup(api)).thenAnswer(
+    (_) async => {
+      'Items': [
+        for (final MapEntry(key: id, value: unplayed) in unplayedById.entries)
+          {
+            'Id': id,
+            'Type': 'Series',
+            'UserData': {'Played': false, 'UnplayedItemCount': unplayed},
+          },
+      ],
+    },
+  );
+}
 
 AggregatedItem _createItem({
   required String id,
@@ -529,6 +551,77 @@ void main() {
       );
 
       expect(result.map((i) => i.id).toList(), equals(['m2', 's2']));
+    });
+  });
+
+  group('withSeriesUserData', () {
+    late _ItemsApi api;
+
+    setUp(() => api = _ItemsApi());
+
+    List<AggregatedItem> latestTvRow() => normalizeLatestMediaItems(
+      [
+        _createItem(
+          id: 'e1',
+          name: 'Episode',
+          type: 'Episode',
+          seriesId: 's1',
+          seriesName: 'From an Episode',
+        ),
+        _createItem(
+          id: 'se1',
+          name: 'Season 2',
+          type: 'Season',
+          seriesId: 's2',
+          seriesName: 'From a Season',
+        ),
+        _createItem(id: 's3', name: 'Sent as a Series', type: 'Series'),
+      ],
+      collectionType: 'tvshows',
+      limit: 10,
+    );
+
+    test('series cards from episodes and seasons take the show counts', () async {
+      _answerSeries(api, {'s1': 7, 's2': 9});
+
+      final result = await withSeriesUserData(latestTvRow(), (_) => api);
+
+      expect(result.map((i) => i.unplayedItemCount), [7, 9, null]);
+      verify(
+        () => api.getItems(ids: ['s1', 's2'], fields: 'UserData'),
+      ).called(1);
+    });
+
+    test('a row of shows sent as series asks for nothing', () async {
+      final row = [_createItem(id: 's3', name: 'Series', type: 'Series')];
+
+      expect(await withSeriesUserData(row, (_) => api), same(row));
+      verifyZeroInteractions(api);
+    });
+
+    test('a failed lookup keeps the cards', () async {
+      when(() => _seriesLookup(api)).thenThrow(Exception('offline'));
+      final row = latestTvRow();
+
+      expect(await withSeriesUserData(row, (_) => api), same(row));
+    });
+
+    test('each server is asked about its own cards', () async {
+      final other = _ItemsApi();
+      _answerSeries(api, {'s1': 3});
+      _answerSeries(other, {'s1': 8});
+      final card = latestTvRow().first;
+      final row = [
+        card,
+        AggregatedItem(id: 's1', serverId: 'server2', rawData: card.rawData),
+      ];
+
+      final result = await withSeriesUserData(
+        row,
+        (serverId) => serverId == 'server1' ? api : other,
+      );
+
+      expect(result.map((i) => i.unplayedItemCount), [3, 8]);
     });
   });
 }

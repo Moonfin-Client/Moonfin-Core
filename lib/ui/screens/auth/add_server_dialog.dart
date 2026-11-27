@@ -90,6 +90,10 @@ const _warningText = Color(0xFFFFD27A);
     tile: const Color(0x245EC7BC),
     glyph: const Color(0xFF5EC7BC),
   ),
+  ServerType.audiobookshelf => (
+    tile: const Color(0x246FA8DC),
+    glyph: const Color(0xFF8DBDE8),
+  ),
 };
 
 String _brand(ServerType type) => switch (type) {
@@ -97,6 +101,7 @@ String _brand(ServerType type) => switch (type) {
   ServerType.emby => 'Emby',
   ServerType.plex => 'Plex',
   ServerType.silo => 'Silo',
+  ServerType.audiobookshelf => 'Audiobookshelf',
 };
 
 ButtonStyle _primaryStyle({bool compact = false}) {

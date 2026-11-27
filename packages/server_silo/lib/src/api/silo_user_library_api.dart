@@ -19,8 +19,9 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
   @override
   Future<Map<String, dynamic>> getItem(String itemId) => _items.getItem(itemId);
 
-  /// Silo rates in whole stars, 1 to 5, which Moonfin's star and numeric
-  /// rating styles can show. See [updateNumericUserRating].
+  /// Silo rates 1 to 10 (shown as five stars with half stars), which
+  /// Moonfin's star and numeric rating styles can show. See
+  /// [updateNumericUserRating].
   @override
   bool get supportsNumericUserRatings => true;
 
@@ -71,20 +72,20 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
     'Silo saves positions only during playback, not for $itemId',
   );
 
-  /// A thumbs rating as stars: up is 5, down is 1. Silo has no likes, only
-  /// stars. Read back, 5 shows as liked and 1 as disliked (Moonfin counts a
-  /// rating of 6.5 out of 10 or more as liked).
+  /// A thumbs rating out of 10: up is 10, down is 2 (one star). Silo has no
+  /// likes, only ratings. Read back, 10 shows as liked and 2 as disliked
+  /// (Moonfin counts a rating of 6.5 out of 10 or more as liked).
   @override
   Future<void> updateUserRating(String itemId, {required bool likes}) =>
-      _setStars(itemId, likes ? 5 : 1);
+      _setRating(itemId, likes ? 10 : 2);
 
-  /// Moonfin's rating, 0 to 10, as Silo's whole stars: halved and rounded,
-  /// half a star up (3½ stars is 4), and at least 1 star, Silo's lowest.
+  /// Moonfin's rating, 0 to 10, as Silo's whole number from 1 to 10: rounded
+  /// half up (7.5 is 8), and at least 1, Silo's lowest.
   @override
   Future<void> updateNumericUserRating(
     String itemId, {
     required double rating,
-  }) => _setStars(itemId, siloStarsFromRating(rating));
+  }) => _setRating(itemId, toSiloRating(rating));
 
   /// `DELETE /ratings/{id}`. An item that wasn't rated succeeds.
   @override
@@ -93,14 +94,14 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
     _dio.delete<void>('/api/v2/ratings/${_titleId(itemId, 'rating')}'),
   );
 
-  /// `PUT /ratings/{id}` with `{"rating": stars}`, replacing any earlier
+  /// `PUT /ratings/{id}` with `{"rating": rating}`, replacing any earlier
   /// rating. `non_retryable` in the contract (a repeat moves the rating
   /// time), so it's sent once like the watched writes.
-  Future<void> _setStars(String itemId, int stars) => _changed(
+  Future<void> _setRating(String itemId, int rating) => _changed(
     itemId,
     _dio.put<void>(
       '/api/v2/ratings/${_titleId(itemId, 'rating')}',
-      data: {'rating': stars},
+      data: {'rating': rating},
     ),
   );
 
@@ -185,6 +186,5 @@ class SiloUserLibraryApi implements UserLibraryApi, OfflineProgressSyncApi {
   }
 }
 
-/// Moonfin's personal rating (0 to 10) as Silo's whole stars (1 to 5).
-int siloStarsFromRating(double rating) =>
-    (rating / 2).round().clamp(1, 5).toInt();
+/// Moonfin's personal rating (0 to 10) as Silo's whole rating (1 to 10).
+int toSiloRating(double rating) => rating.round().clamp(1, 10).toInt();

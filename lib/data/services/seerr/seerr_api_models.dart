@@ -50,6 +50,9 @@ class SeerrRequest {
   final bool is4k;
   final List<SeerrSeasonRequest>? seasons;
 
+  /// A failed Silo request with nothing delivered, which the viewer may delete.
+  final bool canRemove;
+
   const SeerrRequest({
     required this.id,
     required this.status,
@@ -63,6 +66,7 @@ class SeerrRequest {
     this.externalId,
     this.is4k = false,
     this.seasons,
+    this.canRemove = false,
   });
 
   factory SeerrRequest.fromJson(Map<String, dynamic> json) =>
@@ -227,6 +231,8 @@ class SeerrUser {
   final int? permissions;
   @JsonKey(readValue: _readUserSetting)
   final String? streamingRegion;
+  @JsonKey(readValue: _readUserSetting)
+  final String? discoverRegion;
 
   const SeerrUser({
     required this.id,
@@ -237,6 +243,7 @@ class SeerrUser {
     this.apiKey,
     this.permissions,
     this.streamingRegion,
+    this.discoverRegion,
   });
 
   String get bestName => displayName ?? username ?? email ?? 'Unknown';
@@ -414,6 +421,7 @@ class SeerrMovieDetails {
 
   /// The US age rating. Only Silo's detail carries one.
   final String? contentRating;
+  final SeerrMovieReleases? releases;
   final int? budget;
   final int? revenue;
   final double? voteAverage;
@@ -440,6 +448,7 @@ class SeerrMovieDetails {
     this.status,
     this.runtime,
     this.contentRating,
+    this.releases,
     this.budget,
     this.revenue,
     this.voteAverage,
@@ -479,6 +488,7 @@ class SeerrTvDetails {
 
   /// The US age rating. Only Silo's detail carries one.
   final String? contentRating;
+  final SeerrContentRatings? contentRatings;
   final double? voteAverage;
   final int? voteCount;
   final double? popularity;
@@ -507,6 +517,7 @@ class SeerrTvDetails {
     this.numberOfSeasons,
     this.numberOfEpisodes,
     this.contentRating,
+    this.contentRatings,
     this.voteAverage,
     this.voteCount,
     this.popularity,
@@ -527,6 +538,73 @@ class SeerrTvDetails {
       _$SeerrTvDetailsFromJson(json);
 
   Map<String, dynamic> toJson() => _$SeerrTvDetailsToJson(this);
+}
+
+/// Movie certifications are nested by country, then by release. Seerr keeps
+/// TMDB's snake_case keys inside these objects.
+@JsonSerializable()
+class SeerrMovieReleases {
+  final List<SeerrReleaseRegion> results;
+
+  const SeerrMovieReleases({this.results = const []});
+
+  factory SeerrMovieReleases.fromJson(Map<String, dynamic> json) =>
+      _$SeerrMovieReleasesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrMovieReleasesToJson(this);
+}
+
+@JsonSerializable()
+class SeerrReleaseRegion {
+  @JsonKey(name: 'iso_3166_1')
+  final String region;
+  @JsonKey(name: 'release_dates')
+  final List<SeerrReleaseCertification> releaseDates;
+
+  const SeerrReleaseRegion({required this.region, this.releaseDates = const []});
+
+  factory SeerrReleaseRegion.fromJson(Map<String, dynamic> json) =>
+      _$SeerrReleaseRegionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrReleaseRegionToJson(this);
+}
+
+@JsonSerializable()
+class SeerrReleaseCertification {
+  final String? certification;
+
+  const SeerrReleaseCertification({this.certification});
+
+  factory SeerrReleaseCertification.fromJson(Map<String, dynamic> json) =>
+      _$SeerrReleaseCertificationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrReleaseCertificationToJson(this);
+}
+
+@JsonSerializable()
+class SeerrContentRatings {
+  final List<SeerrContentRating> results;
+
+  const SeerrContentRatings({this.results = const []});
+
+  factory SeerrContentRatings.fromJson(Map<String, dynamic> json) =>
+      _$SeerrContentRatingsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrContentRatingsToJson(this);
+}
+
+@JsonSerializable()
+class SeerrContentRating {
+  @JsonKey(name: 'iso_3166_1')
+  final String region;
+  final String? rating;
+
+  const SeerrContentRating({required this.region, this.rating});
+
+  factory SeerrContentRating.fromJson(Map<String, dynamic> json) =>
+      _$SeerrContentRatingFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrContentRatingToJson(this);
 }
 
 @JsonSerializable()

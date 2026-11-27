@@ -288,6 +288,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  connectivity_plus_tvos:
+    dependency: "direct main"
+    description:
+      name: connectivity_plus_tvos
+      sha256: f24fc5654949a404c15d478150471f01d5aa612852fe1280704c9cbcede05eea
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   console:
     dependency: transitive
     description:
@@ -332,10 +340,10 @@ packages:
     dependency: "direct main"
     description:
       name: cupertino_icons
-      sha256: "41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd"
+      sha256: b7cc2390aac296c083bea762859413eb1cf5b630c70e0c7e4d831018f762a8b2
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.9"
+    version: "2.0.0"
   cupertino_ui:
     dependency: transitive
     description:
@@ -371,10 +379,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: "98f28b42168cc509abc92f88518882fd58061ea372d7999aecc424345c7bff6a"
+      sha256: b4fed1b2835da9d670d7bed7db79ae2a94b0f5ad6312268158a9b5479abbacdd
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.4.0"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -771,10 +779,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_widget_from_html_core
-      sha256: "50990ec287434a280ed15d602aa3bf6e8db9c54159762d906057a04e9493b91a"
+      sha256: "530f2e3cc57be1a00f8bfae1b0000064e8a6df0cf1fb4d48a80f85afde9b39b7"
       url: "https://pub.dev"
     source: hosted
-    version: "0.16.1"
+    version: "0.17.4"
   freezed_annotation:
     dependency: transitive
     description:
@@ -1137,8 +1145,8 @@ packages:
     dependency: "direct main"
     description:
       path: "libs/windows/media_kit_libs_windows_video"
-      ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
-      resolved-ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
+      resolved-ref: d739f693073a816f7d13afef1e3261aee7c46d9f
       url: "https://github.com/RadicalMuffinMan/media-kit.git"
     source: git
     version: "1.0.12"
@@ -1146,8 +1154,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit_video
-      ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
-      resolved-ref: "402fb2a3e19c77eaefb2737d0428d0cdc1a88ece"
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
+      resolved-ref: d739f693073a816f7d13afef1e3261aee7c46d9f
       url: "https://github.com/RadicalMuffinMan/media-kit.git"
     source: git
     version: "2.0.1"
@@ -1421,6 +1429,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  playback_audiobookshelf:
+    dependency: "direct main"
+    description:
+      path: "packages/playback_audiobookshelf"
+      relative: true
+    source: path
+    version: "0.1.0"
   playback_core:
     dependency: "direct main"
     description:
@@ -1679,6 +1694,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+  server_audiobookshelf:
+    dependency: "direct main"
+    description:
+      path: "packages/server_audiobookshelf"
+      relative: true
+    source: path
+    version: "0.1.0"
   server_core:
     dependency: "direct main"
     description:
@@ -2159,6 +2181,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.7.0"
+  wakelock_plus_tvos:
+    dependency: "direct main"
+    description:
+      name: wakelock_plus_tvos
+      sha256: "642bbbe2993dae33b0c8fe196731f96f010c1b7b10b297597c5d137928553468"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   watcher:
     dependency: transitive
     description:

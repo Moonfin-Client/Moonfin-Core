@@ -63,6 +63,8 @@ import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 import 'package:moonfin/ui/widgets/info_area.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/modern_row.dart';
+import 'package:moonfin/ui/widgets/nav_styles/nav_button_style.dart';
+import 'package:moonfin/ui/widgets/nav_styles/reel_nav.dart';
 import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/playback_time_row.dart';
@@ -290,6 +292,16 @@ void main() {
         SettingsPreviewController.sceneForKey(pref.key),
         SettingsPreviewScene.home,
         reason: pref.key,
+      );
+    }
+    for (final key in [
+      UserPreferences.topNavbarStyle.key,
+      UserPreferences.sidebarStyle.key,
+    ]) {
+      expect(
+        SettingsPreviewController.sceneForKey(key),
+        SettingsPreviewScene.home,
+        reason: key,
       );
     }
     for (final key in [
@@ -676,6 +688,40 @@ void main() {
         controller.showScene(SettingsPreviewScene.home);
         await pump();
       }
+      controller.tryValue('pref_navbar_position', NavbarPosition.top);
+      for (final style in TopNavbarStyle.values) {
+        controller.tryValue('pref_top_navbar_style', style);
+        await pump();
+        expect(
+          find.byType(TablineTabLabel),
+          style == TopNavbarStyle.tabline ? findsWidgets : findsNothing,
+          reason: '$style',
+        );
+        expect(
+          find.byIcon(Icons.keyboard_arrow_down_rounded),
+          style == TopNavbarStyle.atlas ? findsWidgets : findsNothing,
+          reason: '$style',
+        );
+      }
+      controller.tryValue('pref_navbar_position', NavbarPosition.left);
+      for (final style in SidebarStyle.values) {
+        controller.tryValue('pref_sidebar_style', style);
+        await pump();
+        expect(
+          find.byType(ReelNav),
+          style == SidebarStyle.reel ? findsOneWidget : findsNothing,
+          reason: '$style',
+        );
+        expect(
+          find.byIcon(Icons.apps_rounded),
+          style == SidebarStyle.mosaic ? findsOneWidget : findsNothing,
+          reason: '$style',
+        );
+      }
+      controller
+        ..clearTry('pref_top_navbar_style')
+        ..clearTry('pref_sidebar_style')
+        ..tryValue('pref_navbar_position', NavbarPosition.values.last);
       for (final size in PosterSize.values) {
         controller.tryValue('poster_size', size);
         await pump();
@@ -1179,7 +1225,7 @@ void main() {
       expect(find.text('3.9/5'), findsOneWidget);
       expect(find.text('87%'), findsNothing);
       // The media bar never shows the viewer's own rating.
-      expect(find.text('8.0'), findsNothing);
+      expect(find.text('8'), findsNothing);
       expect(
         tester.getTopLeft(find.text(l10n.letterboxd)).dx,
         lessThan(tester.getTopLeft(find.text(l10n.imdb)).dx),
@@ -1205,7 +1251,7 @@ void main() {
         ..tryValue('pref_home_rows_style', HomeRowsStyle.v2);
       await pumpPreview(tester, controller);
       expect(find.byType(RatingsRow), findsOneWidget);
-      expect(find.text('8.0'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
 
       controller
         ..focus(
@@ -2009,19 +2055,19 @@ void main() {
         ..tryValue('pref_detail_screen_style', DetailScreenStyle.modern);
       await pumpPreview(tester, controller);
       expect(controller.scene, SettingsPreviewScene.details);
-      expect(find.text('8.0'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
 
       controller.tryValue(
         'pref_personal_rating_style',
         PersonalRatingStyle.stars,
       );
       await pumpPreview(tester, controller);
-      expect(find.text('4.0/5'), findsOneWidget);
-      expect(find.text('8.0'), findsNothing);
+      expect(find.text('4/5'), findsOneWidget);
+      expect(find.text('8'), findsNothing);
 
       controller.clearTry('pref_personal_rating_style');
       await pumpPreview(tester, controller);
-      expect(find.text('8.0'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
       debugDefaultTargetPlatformOverride = null;
     });
   });

@@ -69,6 +69,10 @@ class SeerrRepository {
   bool get isAvailable => _isAvailable;
   bool get isMoonfinMode => _isMoonfinMode;
 
+  /// The shortest query the search screen sends, as the server's own app
+  /// has it.
+  int get minSearchQueryLength => _httpClient?.minSearchQueryLength ?? 1;
+
   /// Whether the server has Seerr configured and enabled, regardless of whether
   /// this user has a session yet. Lets callers tell "not set up on the server"
   /// apart from "set up but not signed in".
@@ -810,6 +814,9 @@ class SeerrRepository {
 
   Future<void> retryRequest(int requestId) =>
       _withClient((c) => c.retryRequest(requestId));
+
+  Future<void> removeFailedRequest(int requestId) =>
+      _withClient((c) => c.removeFailedRequest(requestId));
 
   Future<SeerrRequestCounts> getRequestCount() => _withClient(
     (c) async => SeerrRequestCounts.fromJson(await c.getRequestCount()),

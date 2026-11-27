@@ -202,7 +202,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   final VideoController? _videoController;
   final UserPreferences _prefs;
   final Future<void> Function(int handle)? _onNativeHandleReady;
-  final bool _hwDecodingEnabled;
+  bool _hwDecodingEnabled;
 
   /// Owns the decision about native HDR output and the window it needs.
   /// Public so the playback info sheet can report what actually happened.
@@ -240,10 +240,31 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   static bool _passthroughActive(UserPreferences prefs) {
     return passthroughCodecsFromSet(
-      prefs.resolvedPassthroughCodecs(),
+      passthroughCodecsFor(prefs),
       downmixToStereo: prefs.get(UserPreferences.downmixToStereo),
     ).isNotEmpty;
   }
+
+  /// mpv can't filter a bitstream, so Night Mode decodes passthrough tracks.
+  static Set<PassthroughCodec> passthroughCodecsFor(UserPreferences prefs) =>
+      _nightModeOn(prefs)
+      ? const <PassthroughCodec>{}
+      : prefs.resolvedPassthroughCodecs();
+
+  // The Android libmpv is built without acompressor and alimiter, so adding
+  // the filter there stops playback.
+  static bool _nightModeOn(UserPreferences prefs) =>
+      !PlatformDetection.isAndroid && prefs.get(UserPreferences.audioNightMode);
+
+  static const String _nightModeLabel = '@moonfin-night';
+
+  // ffmpeg wants linear values, so this is a -30 dB threshold, +10 dB of
+  // makeup, a 6 dB knee and a -1 dB limit. level=0 stops the limiter from
+  // raising the output back to full scale.
+  @visibleForTesting
+  static const String nightModeFilter =
+      '$_nightModeLabel:lavfi=[acompressor=threshold=0.0316:ratio=4:attack=5:'
+      'release=250:makeup=3.162:knee=2,alimiter=limit=0.891:level=0]';
 
   bool _isStale = false;
   // Held the way media_kit normalizes it, since that is what its playlist
@@ -318,6 +339,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   Completer<void>? _secondaryPositionUpdate;
   StreamSubscription<Duration>? _secondaryPositionSub;
   Timer? _secondaryMetricsTimer;
+  Timer? _textureSizeTimer;
   static final _mpvSrtAlignment = RegExp(r'\\an([1-9])');
 
   @override
@@ -546,6 +568,27 @@ class MediaKitPlayerBackend extends PlayerBackend
     return Uri.decodeFull(a.path) == Uri.decodeFull(b.path);
   }
 
+  /// Null lets media_kit pick, which is `auto` on desktop and `auto-safe` on
+  /// Android, or `no` in an emulator.
+  static String? _controllerHwdec(bool enabled) => enabled
+      ? (PlatformDetection.isAndroid && PlatformDetection.isTV
+            ? 'auto-copy'
+            : (PlatformDetection.isLinux ? 'auto-safe' : null))
+      : 'no';
+
+  /// The backend lives as long as the app, so a toggle change has to reach mpv
+  /// when the next title opens. Null while the toggle hasn't moved, so a
+  /// fallback that turned hwdec off for the session isn't undone.
+  @visibleForTesting
+  static String? hwdecForToggle({
+    required bool applied,
+    required bool enabled,
+  }) {
+    if (enabled == applied) return null;
+    return _controllerHwdec(enabled) ??
+        (PlatformDetection.isAndroid ? 'auto-safe' : 'auto');
+  }
+
   static Future<void> _nativeSetProperty(
     Object native,
     String key,
@@ -630,7 +673,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     // Sizing the texture to the crop lets the picture fit any window.
     if (!PlatformDetection.useNativeVideoSurface) {
       _letterboxGeometrySub = _letterboxCropper.geometryStream.listen(
-        (geometry) => unawaited(_sizeTextureToCrop(geometry)),
+        (_) => unawaited(_sizeTexture()),
       );
     }
     _prefs.addListener(_onPreferencesChanged);
@@ -651,9 +694,23 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   @override
   void didChangeMetrics() {
-    if (_isDisposed || !_secondarySubtitleRequested) return;
-    // mpv's OSD dimensions may settle after Flutter reports the new viewport.
-    // Debounce resize events so a paused player still recomputes wrapping.
+    if (_isDisposed) return;
+    // A window drag reports every step, and each new size rebuilds the
+    // texture, so only the size it settles on is applied.
+    if (_videoController != null &&
+        (PlatformDetection.isWindows || PlatformDetection.isLinux)) {
+      _textureSizeTimer?.cancel();
+      _textureSizeTimer = Timer(const Duration(milliseconds: 250), () {
+        if (!_isDisposed) unawaited(_sizeTexture());
+      });
+    }
+    _scheduleSecondaryRemeasure();
+  }
+
+  /// mpv's OSD dimensions may settle after Flutter reports the new viewport.
+  /// Debounce resize events so a paused player still recomputes wrapping.
+  void _scheduleSecondaryRemeasure() {
+    if (!_secondarySubtitleRequested) return;
     _secondaryMetricsTimer?.cancel();
     _secondaryMetricsTimer = Timer(const Duration(milliseconds: 100), () {
       if (!_isDisposed) unawaited(_refreshStackedSecondaryPosition(force: true));
@@ -665,11 +722,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     Future<void> Function(int handle)? onNativeHandleReady,
   }) {
     final hwDecodingEnabled = prefs.get(UserPreferences.hardwareDecoding);
-    final String? hwdec = hwDecodingEnabled
-        ? (PlatformDetection.isAndroid && PlatformDetection.isTV
-              ? 'auto-copy'
-              : (PlatformDetection.isLinux ? 'auto-safe' : null))
-        : 'no';
+    final hwdec = _controllerHwdec(hwDecodingEnabled);
 
     final player = MpvPlayerRegistry.instance.create(
       configuration: PlayerConfiguration(
@@ -956,9 +1009,38 @@ class MediaKitPlayerBackend extends PlayerBackend
         (PlatformDetection.isWindows || PlatformDetection.isLinux) &&
         _player.platform is NativePlayer) {
       _desktopRenderQualityApplied = true;
-      await _applyDesktopRenderQuality(_player.platform as NativePlayer);
+      final native = _player.platform as NativePlayer;
+      await _applyDesktopRenderQuality(native);
+      // libmpv starts without a config folder, so mpv has nowhere to keep
+      // compiled shaders and builds them all again for each new renderer. On
+      // Windows that holds the native window's first frame back by ~175 ms.
+      if (PlatformDetection.isWindows) {
+        try {
+          final support = await getApplicationSupportDirectory();
+          await _nativeSetProperty(
+            native,
+            'gpu-shader-cache-dir',
+            '${support.path}\\mpv-shader-cache',
+          );
+        } catch (_) {}
+      }
     }
-    await _applyCustomMpvConfIfEnabled();
+    final hwDecodingEnabled = _prefs.get(UserPreferences.hardwareDecoding);
+    final hwdec = hwdecForToggle(
+      applied: _hwDecodingEnabled,
+      enabled: hwDecodingEnabled,
+    );
+    if (hwdec != null) {
+      _hwDecodingEnabled = hwDecodingEnabled;
+      // The native surface sets hwdec itself each time it attaches.
+      final native = _player.platform;
+      if (!_useNativeSurface && native is NativePlayer) {
+        await _nativeSetProperty(native, 'hwdec', hwdec);
+      }
+    }
+    // A hwdec line in the user's mpv.conf still wins over this one.
+    await _applyCustomMpvConfIfEnabled(force: hwdec != null);
+    await _applyNightMode();
     await _applyAssOverrideMode();
 
     if (_player.platform is NativePlayer) {
@@ -1225,7 +1307,10 @@ class MediaKitPlayerBackend extends PlayerBackend
   void _onVideoParams(VideoParams params) {
     final loaded = params.gamma != null || params.primaries != null;
     _decodedVideoParams = loaded ? params : null;
-    if (loaded) _refreshSubtitleFontSize();
+    if (loaded) {
+      _refreshSubtitleFontSize();
+      unawaited(_sizeTexture());
+    }
     if (!loaded || !PlatformDetection.supportsNativeHdrWindow) return;
     final status = hdrOutput.status.value;
     final engagedCheckDue =
@@ -1780,7 +1865,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   }) async {
     final on = displayHdr ?? _passthroughHintOn;
     _passthroughHintOn = on;
-    // mpv 0.40+ defaults the mode to `target`, which adapts to the monitor's
+    // mpv 0.41+ defaults the mode to `target`, which adapts to the monitor's
     // EDID and leaves weak-HDR panels dim and double-tone-mapped. `source`
     // passes the stream's own metadata. Older builds ignore the write.
     await _nativeSetProperty(native, 'target-colorspace-hint-mode', 'source');
@@ -1869,30 +1954,69 @@ class MediaKitPlayerBackend extends PlayerBackend
     } catch (_) {}
   }
 
-  /// A PipeWire output that can't take a bitstream can leave mpv stuck at the
-  /// start: the bundled mpv 0.37 has no SPDIF in its PipeWire driver and
-  /// never starts after its own PCM fallback, and 0.41 keeps reopening an
-  /// output that refuses the format. Decoding the track gets it playing.
+  /// A PipeWire output that can't take a bitstream leaves the audio silent:
+  /// the bundled mpv 0.37 has no SPDIF in its PipeWire driver and can stall
+  /// at the start, and 0.41 keeps reopening an output that refuses the format
+  /// while the video plays on. Decoding the track brings the sound back.
   /// audio-spdif then stays empty until the passthrough settings change, so
-  /// the next file doesn't stall the same way.
+  /// the next file doesn't go silent the same way.
   Future<void> _applyLinuxPassthroughFallbackIfNeeded(int generation) async {
-    if (!PlatformDetection.isLinux) return;
-    final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
-    if (spdif.isEmpty) return;
-    await Future<void>.delayed(_linuxPassthroughStartTimeout);
-    final native = _player.platform;
-    if (native is! NativePlayer || !_ownsPlayback(generation)) return;
-    final format = await _tryNativeGetProperty(native, 'audio-params/format');
-    if (format == null || !format.startsWith('spdif')) return;
-    // A slow restart also leaves the core idle, but its output is open.
-    if (await _tryNativeGetProperty(native, 'core-idle') != 'yes' ||
-        await _tryNativeGetProperty(native, 'pause') != 'no' ||
-        await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
-        await _tryNativeGetProperty(native, 'current-ao') != null) {
+    if (!PlatformDetection.isLinux ||
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
       return;
     }
-    if (!_ownsPlayback(generation)) return;
-    debugPrint('[audio] $format output never started, decoding instead');
+    final spdif = _appliedAudioPassthroughProperties?['audio-spdif'] ?? '';
+    if (spdif.isEmpty) return;
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    // Only the latest check counts, so a quick second track switch isn't
+    // judged by the first switch's timer.
+    final check = ++_linuxPassthroughCheck;
+    String? format;
+    // mpv has no audio position while no output plays the bitstream. A seek
+    // or a reopened output only clears it for a moment, so check twice.
+    for (final wait in const [
+      _linuxPassthroughStartTimeout,
+      Duration(milliseconds: 500),
+    ]) {
+      await Future<void>.delayed(wait);
+      if (!_ownsPlayback(generation) || check != _linuxPassthroughCheck) {
+        return;
+      }
+      format = await _tryNativeGetProperty(native, 'audio-params/format');
+      if (format == null || !format.startsWith('spdif')) return;
+      if (_player.state.buffering) {
+        // mpv leaves a cache pause by itself, with no resume or track switch
+        // to start another check, so check again once it has.
+        try {
+          await _player.stream.buffering.firstWhere((b) => !b);
+        } catch (_) {
+          return;
+        }
+        if (check == _linuxPassthroughCheck) {
+          unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
+        }
+        return;
+      }
+      if (await _tryNativeGetProperty(native, 'pause') != 'no' ||
+          await _tryNativeGetProperty(native, 'paused-for-cache') != 'no' ||
+          await _tryNativeGetProperty(native, 'audio-pts') != null) {
+        return;
+      }
+      // A slow start also has no audio position yet, but its output is open
+      // and the video waits for it. Silent output either plays the video on
+      // (0.41) or stalls with no output at all (0.37).
+      if (await _tryNativeGetProperty(native, 'core-idle') != 'no' &&
+          await _tryNativeGetProperty(native, 'current-ao') != null) {
+        return;
+      }
+    }
+    if (!_ownsPlayback(generation) ||
+        check != _linuxPassthroughCheck ||
+        !_prefs.get(UserPreferences.passthroughSilentFallback)) {
+      return;
+    }
+    debugPrint('[audio] $format output never played, decoding instead');
     await _nativeSetProperty(native, 'audio-spdif', '');
     // Before mpv 0.41, audio-spdif only takes effect once the audio decoder
     // is recreated, which selecting the track again does. Queued with
@@ -1904,6 +2028,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       await _nativeSetProperty(native, 'aid', aid);
     });
   }
+
+  int _linuxPassthroughCheck = 0;
 
   Future<void> _audioTrackChanges = Future<void>.value();
 
@@ -1967,7 +2093,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     try {
       final native = _player.platform as NativePlayer;
       final properties = passthroughMpvPropertiesFromSet(
-        _prefs.resolvedPassthroughCodecs(),
+        passthroughCodecsFor(_prefs),
         downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
         // Windows needs exclusive mode to bitstream. PipeWire can't link an
         // exclusive stream while anything else plays, so Linux goes silent.
@@ -1977,6 +2103,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       if (mapEquals(_appliedAudioPassthroughProperties, properties)) {
         return;
       }
+      // A check still sampling would judge, and clear, the old setting.
+      ++_linuxPassthroughCheck;
 
       var allApplied = true;
 
@@ -2006,21 +2134,61 @@ class MediaKitPlayerBackend extends PlayerBackend
       } else {
         _appliedAudioPassthroughProperties = null;
       }
+      // The new setting can be just as silent, so check it again.
+      unawaited(_applyLinuxPassthroughFallbackIfNeeded(_playbackGeneration));
     } catch (_) {}
   }
 
-  Future<void> _sizeTextureToCrop(MpvCropGeometry? geometry) async {
+  /// Sizes the video texture to the crop, and on desktop to no more than the
+  /// window shows. mpv otherwise draws at the source size, so a 4K title in
+  /// a 1080p window renders four times the pixels Flutter then scales away.
+  Future<void> _sizeTexture() async {
     final controller = _videoController;
     if (controller == null || _isDisposed) return;
+    final crop = _letterboxCropper.geometry?.rect;
+    (int?, int?) size = (crop?.w, crop?.h);
+    final params = _decodedVideoParams;
+    // mpv reports the stored size; a quarter turn shows it the other way up.
+    final turned = params?.rotate == 90 || params?.rotate == 270;
+    final width = crop?.w ?? (turned ? params?.dh : params?.dw);
+    final height = crop?.h ?? (turned ? params?.dw : params?.dh);
+    final window = PlatformDispatcher.instance.implicitView?.physicalSize;
+    if ((PlatformDetection.isWindows || PlatformDetection.isLinux) &&
+        width != null &&
+        height != null &&
+        window != null) {
+      // A minimised window has no size; keep the texture until it's back.
+      if (window.isEmpty) return;
+      size =
+          cappedTextureSize(width: width, height: height, window: window) ??
+          size;
+    }
     try {
-      await controller.setSize(
-        width: geometry?.rect.w,
-        height: geometry?.rect.h,
-      );
+      await controller.setSize(width: size.$1, height: size.$2);
     } catch (_) {
       // The controller can be torn down while a resize is in flight.
     }
     _refreshSubtitleFontSize();
+    // The font size can change with the window's shape, after the resize's
+    // own measurement, and nothing measures again while paused.
+    _scheduleSecondaryRemeasure();
+  }
+
+  /// The smallest texture that still covers [window], or null when the
+  /// source is no bigger than that. Covering rather than fitting means Zoom
+  /// to Fill and Stretch never have to enlarge it.
+  @visibleForTesting
+  static (int, int)? cappedTextureSize({
+    required int width,
+    required int height,
+    required Size window,
+  }) {
+    if (width <= 0 || height <= 0 || window.isEmpty) return null;
+    final scaleX = window.width / width;
+    final scaleY = window.height / height;
+    final scale = scaleX > scaleY ? scaleX : scaleY;
+    if (scale >= 1) return null;
+    return ((width * scale).round(), (height * scale).round());
   }
 
   Future<void> _configureLetterboxCropper() async {
@@ -2045,6 +2213,15 @@ class MediaKitPlayerBackend extends PlayerBackend
 
     _audioPassthroughApplyInProgress = true;
     unawaited(_drainAudioPassthroughApplyQueue());
+  }
+
+  Future<void> _applyNightMode() async {
+    final native = _player.platform;
+    if (native is! NativePlayer) return;
+    await _nativeCommand(native, ['af', 'remove', _nightModeLabel]);
+    if (_nightModeOn(_prefs)) {
+      await _nativeCommand(native, ['af', 'add', nightModeFilter]);
+    }
   }
 
   Future<void> _drainAudioPassthroughApplyQueue() async {
@@ -2106,6 +2283,7 @@ class MediaKitPlayerBackend extends PlayerBackend
         UserPreferences.customMpvConfUnsafeAdvanced,
       );
 
+      var replacedAf = false;
       for (final parsed in parsedEntries) {
         final key = parsed.$1;
         final value = parsed.$2;
@@ -2124,7 +2302,11 @@ class MediaKitPlayerBackend extends PlayerBackend
         try {
           await _nativeSetProperty(native, key, value);
         } catch (_) {}
+        if (key == 'af') replacedAf = true;
       }
+      // An af line replaces the whole chain, so the night filter has to go
+      // back on.
+      if (replacedAf) await _applyNightMode();
 
       _appliedCustomMpvConfPath = path;
       _appliedCustomMpvConfMtime = stat.modified;
@@ -2145,15 +2327,9 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
 
     final content = await file.readAsString();
-    final entries = <(String, String)>[];
-    for (final rawLine in content.split('\n')) {
-      final parsed = _parseMpvConfLine(rawLine);
-      if (parsed != null) {
-        entries.add(parsed);
-      }
-    }
-
-    final immutable = List<(String, String)>.unmodifiable(entries);
+    final immutable = List<(String, String)>.unmodifiable(
+      parseMpvConf(content),
+    );
     _parsedMpvConfCache[path] = _ParsedMpvConfCacheEntry(
       modified: modified,
       length: length,
@@ -2186,12 +2362,33 @@ class MediaKitPlayerBackend extends PlayerBackend
     return null;
   }
 
-  (String, String)? _parseMpvConfLine(String line) {
-    final trimmed = line.trim();
-    if (trimmed.isEmpty || trimmed.startsWith('#') || trimmed.startsWith(';')) {
-      return null;
+  @visibleForTesting
+  static List<(String, String)> parseMpvConf(String content) {
+    final entries = <(String, String)>[];
+    var inProfile = false;
+    for (final rawLine in content.split('\n')) {
+      final line = rawLine.trim();
+      // Keys under [name] belong to an mpv profile, which only applies when
+      // that profile is used. [default] or [] goes back to the top level.
+      // Like mpv, the name runs to the first ], before any # comment.
+      final close = line.startsWith('[') ? line.indexOf(']') : -1;
+      if (close > 0) {
+        final name = line.substring(1, close);
+        inProfile = name.isNotEmpty && name != 'default';
+        continue;
+      }
+      if (inProfile) continue;
+      final parsed = _parseMpvConfLine(line);
+      if (parsed != null) {
+        entries.add(parsed);
+      }
     }
-    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    return entries;
+  }
+
+  static (String, String)? _parseMpvConfLine(String line) {
+    final trimmed = line.trim();
+    if (trimmed.isEmpty || trimmed.startsWith('#')) {
       return null;
     }
 
@@ -2223,6 +2420,12 @@ class MediaKitPlayerBackend extends PlayerBackend
 
     var key = rawKey.toLowerCase();
     var value = (rawValue == null || rawValue.isEmpty) ? 'yes' : rawValue;
+    // mpv drops one pair of quotes around a value.
+    if (value.length >= 2 &&
+        (value[0] == '"' || value[0] == "'") &&
+        value.endsWith(value[0])) {
+      value = value.substring(1, value.length - 1);
+    }
 
     if (key.startsWith('no-') && (rawValue == null || rawValue.isEmpty)) {
       key = key.substring(3);
@@ -2232,7 +2435,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     return (key, value);
   }
 
-  String _stripInlineComment(String input) {
+  static String _stripInlineComment(String input) {
     var inSingleQuote = false;
     var inDoubleQuote = false;
     for (var i = 0; i < input.length; i++) {
@@ -2245,7 +2448,7 @@ class MediaKitPlayerBackend extends PlayerBackend
         inSingleQuote = !inSingleQuote;
         continue;
       }
-      if (!inSingleQuote && !inDoubleQuote && (ch == '#' || ch == ';')) {
+      if (!inSingleQuote && !inDoubleQuote && ch == '#') {
         return input.substring(0, i).trimRight();
       }
     }
@@ -2302,6 +2505,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     'video-sync',
     'tone-mapping',
     'tone-mapping-param',
+    // Removed in mpv 0.37, but Android still bundles a 0.36 build.
     'tone-mapping-mode',
     'gamut-mapping-mode',
     'target-trc',
@@ -2317,7 +2521,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     // gpu-api and gpu-context deliberately stay OUT of this list: they belong
     // to the unsafe-advanced tier, and listing them here would bypass that
     // gate on every platform - a wrong gpu-context blacks out all playback.
-    'target-inverse-tone-mapping',
+    'inverse-tone-mapping',
     // media_kit initializes every native platform with dither=no, which bands
     // dark gradients on desktop. Let a conf turn it back on.
     'dither',
@@ -2729,9 +2933,11 @@ class MediaKitPlayerBackend extends PlayerBackend
     final generation = _playbackGeneration;
     // A change still queued when another source opens was meant for the old
     // one, and its ordinal would pick a track in the new one.
-    return _queueAudioTrackChange(() async {
+    final change = _queueAudioTrackChange(() async {
       if (_ownsPlayback(generation)) await _setAudioTrack(mpvTrackId);
     });
+    unawaited(_applyLinuxPassthroughFallbackIfNeeded(generation));
+    return change;
   }
 
   Future<void> _setAudioTrack(int mpvTrackId) async {
@@ -3835,7 +4041,10 @@ class MediaKitPlayerBackend extends PlayerBackend
     final hasBackground = ((color >> 24) & 0xff) != 0;
     final hasShadow = !hasBackground && shadowColor != 0;
     return {
-      'sub-back-color': _argbToMpvColor(hasShadow ? shadowColor : color),
+      'sub-back-color': _argbToMpvColor(color),
+      // Before 0.39 mpv draws a box for any sub-back-color with alpha. From
+      // 0.39 this is an alias of sub-back-color, so it has to come after it.
+      if (hasShadow) 'sub-shadow-color': _argbToMpvColor(shadowColor),
       'sub-border-style': hasBackground
           ? 'background-box'
           : 'outline-and-shadow',
@@ -3929,6 +4138,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _videoParamsSub?.cancel();
     _secondaryPositionSub?.cancel();
     _secondaryMetricsTimer?.cancel();
+    _textureSizeTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _tracksChangedController.close();
     _playingGateChangedController.close();

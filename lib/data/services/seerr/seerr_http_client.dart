@@ -346,6 +346,11 @@ class SeerrHttpClient {
     _requireSuccess(response, 'deleteRequest');
   }
 
+  /// Only Silo can delete a failed request.
+  Future<void> removeFailedRequest(int requestId) async {
+    throw UnsupportedError('removeFailedRequest');
+  }
+
   Future<void> approveRequest(int requestId) async {
     await _postRequestAction(
       requestId,
@@ -592,6 +597,10 @@ class SeerrHttpClient {
     _requireSuccess(response, 'getLanguages');
     return response.data as List<dynamic>;
   }
+
+  /// The shortest query the search screen sends. Detail lookups by title
+  /// search with any length.
+  int get minSearchQueryLength => 1;
 
   Future<Map<String, dynamic>> search(
     String query, {

@@ -6,11 +6,13 @@ import 'package:dio/dio.dart' show DioException;
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
+import 'package:server_audiobookshelf/server_audiobookshelf.dart';
 import 'package:server_silo/server_silo.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/services/silo_token_storage.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import 'log_service.dart';
 import 'websocket_message_parser.dart';
 
@@ -38,6 +40,7 @@ abstract class ServerWebSocketClient {
       ServerType.emby => EmbyWebSocketClient(client),
       ServerType.plex => PlexWebSocketClient(client),
       ServerType.silo => SiloEventsSocketClient(client),
+      ServerType.audiobookshelf => AbsSocketClient(client),
     };
   }
 }
@@ -267,6 +270,53 @@ abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
     _messageController.close();
     _connectionController.close();
   }
+
+  /// Asks again for the user data of [ids], and of their seasons and shows
+  /// for the unwatched counts, and passes it on as a user data change. For
+  /// servers whose socket doesn't send it in the app's shape.
+  Future<void> refreshUserData(Set<String> ids) async {
+    try {
+      final items = await _withUserData(ids);
+      final parents = {
+        for (final item in items)
+          for (final key in const ['SeasonId', 'SeriesId'])
+            if (item[key] case final String id) id,
+      }..removeAll(ids);
+      if (parents.isNotEmpty) items.addAll(await _withUserData(parents));
+      if (_disposed) return;
+      emit(
+        UserDataChangedMessage(
+          userId: client.userId ?? '',
+          userDataList: [
+            for (final item in items)
+              if (item['UserData'] case final Map userData)
+                {
+                  // A server can drop the percentage once an item is finished,
+                  // and a missing key would leave the old progress bar up.
+                  'PlayedPercentage': null,
+                  ...userData.cast<String, dynamic>(),
+                  'ItemId': item['Id'],
+                },
+          ],
+        ),
+      );
+    } catch (e) {
+      warn("$label watch state couldn't be refreshed", e);
+    }
+  }
+
+  Future<List<Map>> _withUserData(Set<String> ids) async {
+    final result = await client.itemsApi.getItems(
+      ids: ids.toList(),
+      fields: 'UserData',
+      limit: ids.length,
+      enableTotalRecordCount: false,
+    );
+    return [
+      for (final item in result['Items'] as List? ?? const [])
+        if (item is Map) item,
+    ];
+  }
 }
 
 class JellyfinWebSocketClient extends _ReconnectingWebSocketClient {
@@ -390,54 +440,58 @@ class PlexWebSocketClient extends _ReconnectingWebSocketClient {
           changed.add('${session['ratingKey']}');
         }
       }
-      if (changed.isNotEmpty) unawaited(_refresh(changed));
+      if (changed.isNotEmpty) unawaited(refreshUserData(changed));
     } catch (e) {
       warn('Plex WebSocket message could not be parsed', e);
     }
   }
+}
 
-  Future<void> _refresh(Set<String> ids) async {
-    try {
-      final items = await _withUserData(ids);
-      final parents = {
-        for (final item in items)
-          for (final key in const ['SeasonId', 'SeriesId'])
-            if (item[key] case final String id) id,
-      }..removeAll(ids);
-      if (parents.isNotEmpty) items.addAll(await _withUserData(parents));
-      if (_disposed) return;
-      emit(
-        UserDataChangedMessage(
-          userId: client.userId ?? '',
-          userDataList: [
-            for (final item in items)
-              if (item['UserData'] case final Map userData)
-                {
-                  // Plex drops the percentage once an item is finished, and a
-                  // missing key would leave the old progress bar up.
-                  'PlayedPercentage': null,
-                  ...userData.cast<String, dynamic>(),
-                  'ItemId': item['Id'],
-                },
-          ],
-        ),
-      );
-    } catch (e) {
-      warn('Plex watch state could not be refreshed', e);
-    }
+/// Audiobookshelf talks socket.io (Engine.IO 4) over the websocket: the
+/// server opens with `0`, pings with `2` for a `3` back, and sends events as
+/// `42["name",data]`. The socket only joins the user's room once it has sent
+/// the token in an `auth` event.
+class AbsSocketClient extends _ReconnectingWebSocketClient {
+  AbsSocketClient(MediaServerClient client, {Duration? connectTimeout})
+    : super(client, 'Audiobookshelf', connectTimeout: connectTimeout);
+
+  @override
+  Uri? buildUri() {
+    if (client.accessToken == null) return null;
+    final wsUrl = client.baseUrl.replaceFirst('http', 'ws');
+    return Uri.parse('$wsUrl/socket.io/?EIO=4&transport=websocket');
   }
 
-  Future<List<Map>> _withUserData(Set<String> ids) async {
-    final result = await client.itemsApi.getItems(
-      ids: ids.toList(),
-      fields: 'UserData',
-      limit: ids.length,
-      enableTotalRecordCount: false,
-    );
-    return [
-      for (final item in result['Items'] as List? ?? const [])
-        if (item is Map) item,
-    ];
+  /// Nothing the app sends means anything to this socket.
+  @override
+  void send(String messageType, [Object? data]) {}
+
+  @override
+  void handleMessage(dynamic data) {
+    final frame = data.toString();
+    try {
+      if (frame == '2') {
+        channel?.sink.add('3');
+      } else if (frame.startsWith('0')) {
+        channel?.sink.add('40');
+      } else if (frame.startsWith('40')) {
+        channel?.sink.add('42${jsonEncode(['auth', client.accessToken])}');
+      } else if (frame.startsWith('42')) {
+        final event = jsonDecode(frame.substring(2));
+        if (event is! List || event.isEmpty || event.first is! String) return;
+        final name = event.first as String;
+        if (name == 'invalid_token') {
+          logFailure('$label socket refused the token', name);
+          return;
+        }
+        final abs = onlineClientOf(client);
+        if (abs is! AbsMediaServerClient) return;
+        final ids = abs.applySocketEvent(name, event.length > 1 ? event[1] : null);
+        if (ids.isNotEmpty) unawaited(refreshUserData(ids));
+      }
+    } catch (e) {
+      warn("$label socket message couldn't be parsed", e);
+    }
   }
 }
 

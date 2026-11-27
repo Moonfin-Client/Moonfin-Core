@@ -1,3 +1,5 @@
+import 'package:server_core/server_core.dart';
+
 import 'aggregated_item.dart';
 
 enum HomeRowType {
@@ -37,6 +39,10 @@ class HomeRow {
   final int totalCount;
   final bool isAudio;
 
+  /// The server's own row (Silo's home section) this row shows, kept so its
+  /// title follows the app's language when that changes after the row loaded.
+  final ServerHomeSection? serverSection;
+
   const HomeRow({
     required this.id,
     required this.title,
@@ -46,6 +52,7 @@ class HomeRow {
     this.isLoading = false,
     this.totalCount = 0,
     this.isAudio = false,
+    this.serverSection,
   });
 
   HomeRow copyWith({
@@ -57,6 +64,7 @@ class HomeRow {
     bool? isLoading,
     int? totalCount,
     bool? isAudio,
+    ServerHomeSection? serverSection,
   }) =>
       HomeRow(
         id: id ?? this.id,
@@ -67,6 +75,7 @@ class HomeRow {
         isLoading: isLoading ?? this.isLoading,
         totalCount: totalCount ?? this.totalCount,
         isAudio: isAudio ?? this.isAudio,
+        serverSection: serverSection ?? this.serverSection,
       );
 
   bool get isEmpty => items.isEmpty && !isLoading;

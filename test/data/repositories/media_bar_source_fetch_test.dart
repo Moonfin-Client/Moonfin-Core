@@ -103,6 +103,7 @@ void main() {
         sortBy: any(named: 'sortBy'),
         sortOrder: any(named: 'sortOrder'),
         recursive: any(named: 'recursive'),
+        collapseBoxSetItems: any(named: 'collapseBoxSetItems'),
         parentId: any(named: 'parentId'),
         startIndex: any(named: 'startIndex'),
         limit: any(named: 'limit'),
@@ -111,6 +112,15 @@ void main() {
         enableImageTypes: any(named: 'enableImageTypes'),
         minPremiereDate: any(named: 'minPremiereDate'),
         filters: any(named: 'filters'),
+      ),
+    ).thenAnswer(server.answer);
+    when(
+      () => items.getLatestItems(
+        includeItemTypes: any(named: 'includeItemTypes'),
+        parentId: any(named: 'parentId'),
+        limit: any(named: 'limit'),
+        fields: any(named: 'fields'),
+        enableImageTypes: any(named: 'enableImageTypes'),
       ),
     ).thenAnswer(server.answer);
     final images = _ImageApi();
@@ -162,6 +172,22 @@ void main() {
 
     expect(server.asked.length, lessThanOrEqualTo(6));
     expect(shown, hasLength(10));
+  });
+
+  test('a dated source takes the newest from each collection in turn',
+      () async {
+    final server = _Server({
+      'a': const ['a0', 'a1', 'a2'],
+      'b': const ['b0', 'b1', 'b2'],
+    });
+
+    final shown = await load(
+      server,
+      itemCount: 4,
+      source: UserPreferences.mediaBarSourceRecentlyAdded,
+    );
+
+    expect(shown, ['a0', 'b0', 'a1', 'b1']);
   });
 
   test('shows a title two collections share only once', () async {

@@ -8613,7 +8613,7 @@
     "adminDrawerNfo": "NFO Settings",
     "adminActivitySeverityAll": "All severities",
     "adminActivityDateRange": "Date range",
-    "adminRemoveDeviceConfirm": "Remove device '{name}'? The user will need to sign in again on this device.",
+    "adminRemoveDeviceConfirm": "Remove device \"{name}\"? The user will need to sign in again on this device.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -9208,7 +9208,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Your '{libraryName}' library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Your \"{libraryName}\" library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -12782,5 +12782,49 @@
     "seerrDownloadFailed": "Download failed",
     "@seerrDownloadFailed": {
         "description": "Label on the Seerr download bar when the download client reports the download as failed"
+    },
+    "topNavbarStyleClassic": "Classic",
+    "@topNavbarStyleClassic": {
+        "description": "Top bar style: the standard centered pill of icon buttons"
+    },
+    "sidebarStyleClassic": "Classic",
+    "@sidebarStyleClassic": {
+        "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "musicMixRediscoverSubtitle": "Favourites you haven't played lately",
+    "@musicMixRediscoverSubtitle": {
+        "description": "Line under the Rediscover mix card"
+    },
+    "calendarSettingsScopeDescription": "My shows keeps the series you favourited or started watching",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "moonbaseFeatureRows": "Custom rows from your favourite lists",
+    "@moonbaseFeatureRows": {
+        "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+    },
+    "siloSectionSeasonalChristmasFavorites": "Christmas Favourites",
+    "@siloSectionSeasonalChristmasFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalFamilyMovieNightFavorites": "Family Favourites",
+    "@siloSectionSeasonalFamilyMovieNightFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalHalloweenFavorites": "Halloween Favourites",
+    "@siloSectionSeasonalHalloweenFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalSaturdayMorningModern": "Saturday Morning Favourites",
+    "@siloSectionSeasonalSaturdayMorningModern": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalThanksgivingFeelGood": "Feel-Good Favourites",
+    "@siloSectionSeasonalThanksgivingFeelGood": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalValentinesFavorites": "Valentine's Favourites",
+    "@siloSectionSeasonalValentinesFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
     }
 }

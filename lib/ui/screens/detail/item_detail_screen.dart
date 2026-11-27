@@ -34,6 +34,7 @@ import '../../../data/database/offline_database.dart';
 import '../../../data/models/lyrics.dart';
 import '../../../data/repositories/offline_repository.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/book_parts.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
@@ -80,7 +81,9 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../util/focus/key_event_utils.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/overview_text.dart';
+import '../../../util/personal_rating_intervals.dart';
 import '../../../util/seerr_credits.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
@@ -359,7 +362,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   bool _fullPageOpened = false;
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
-  String? _lastDetailBackdropItemId;
+  String? _lastDetailBackdropKey;
+  String? _lastDetailItemId;
   final GlobalKey<NouveauDetailContentState> _nouveauContentKey =
       GlobalKey<NouveauDetailContentState>();
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -550,20 +554,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       return;
     }
     if (item != null) {
-      bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
-      if (item.type == 'Playlist' &&
-          _viewModel.tracks.isNotEmpty &&
-          _lastFocusedBackdropItemId == null) {
+      final useTrackBackdrop = usesFirstTrackBackdrop(item, _viewModel.tracks);
+      final backdropKey = detailBackdropKey(_backgroundService, item);
+      bool needInitialBackdrop = _lastDetailBackdropKey != backdropKey;
+      if (useTrackBackdrop && _lastFocusedBackdropItemId == null) {
         needInitialBackdrop = true;
       }
 
       if (needInitialBackdrop) {
-        _lastDetailBackdropItemId = item.id;
+        _lastDetailBackdropKey = backdropKey;
         _focusedPrimaryBackdropUrlCache.clear();
 
-        final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
-            ? _viewModel.tracks.first
-            : item;
+        final target = useTrackBackdrop ? _viewModel.tracks.first : item;
         if (!widget.quickLook) {
           _backgroundService.setBackground(
             target,
@@ -572,10 +574,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _backdropUrl.value = _backgroundService.currentUrl;
         }
 
-        if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {
+        if (useTrackBackdrop) {
           _onBackdropItemFocused(_viewModel.tracks.first);
         }
-
+      }
+      if (_lastDetailItemId != item.id) {
+        _lastDetailItemId = item.id;
         if (item.mediaSources.isNotEmpty) {
           _selectedMediaSourceId = item.mediaSources.first['Id']?.toString();
         } else {
@@ -1330,9 +1334,8 @@ class _DetailContentState extends State<_DetailContent> {
   FocusNode? _headerOverviewFocusNode(AggregatedItem item) {
     if (hidesMediaDescription(
       itemType: item.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: viewModel.isSeerrOnly,
     )) {
       return null;
     }
@@ -3410,6 +3413,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final canDownloadAll =
         userCanDownload() &&
+        downloadableHere(item.rawData) &&
         (item.type == 'MusicAlbum' ||
             item.type == 'AudioBook' ||
             (item.type == 'Playlist' &&
@@ -4256,9 +4260,8 @@ class _HeaderSection extends StatelessWidget {
             item.overview!.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: prefs,
+              isSeerr: viewModel.isSeerrOnly,
             )) ...[
           const SizedBox(height: 8),
           _OverviewText(
@@ -4698,13 +4701,20 @@ class DetailMetadataRow extends StatelessWidget {
       );
 
       final runtime = _runtimeForItem(item, selectedMediaSource);
+      final showFullDate = prefs.get(UserPreferences.detailShowFullDate);
+      final locale = Localizations.localeOf(context).toString();
 
       for (final entry in ordered) {
         if (hidden.contains(entry.id)) continue;
         switch (entry) {
           case DetailMetadataItem.year:
-            if (item.productionYear != null) {
-              parts.add(_text(theme, item.productionYear.toString()));
+            final dateText = formatDetailReleaseDate(
+              item,
+              showFullDate: showFullDate,
+              locale: locale,
+            );
+            if (dateText != null) {
+              parts.add(_text(theme, dateText));
             }
           case DetailMetadataItem.parentalRating:
             if (item.officialRating != null) {
@@ -6578,7 +6588,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   void _focusUpTarget() {
     final upTarget = widget.upTarget;
     if (upTarget != null &&
-        upTarget.context != null &&
+        upTarget.context?.mounted == true &&
         upTarget.canRequestFocus) {
       upTarget.requestFocus();
     } else if (NavigationLayout.focusNavbarNotifier.value != null) {
@@ -6913,6 +6923,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         : PersonalRatingStyle.thumbs;
   }
 
+  int _personalRatingIntervals() =>
+      _personalRatingStyle() != PersonalRatingStyle.thumbs &&
+          viewModel.supportsFractionalRatings
+      ? GetIt.instance<UserPreferences>().get(
+          UserPreferences.personalRatingIntervals,
+        )
+      : defaultPersonalRatingIntervals;
+
   bool? _displayRatingLikes(AggregatedItem item) =>
       item.personalRatingLikes ??
       (item.personalRating == null
@@ -6933,11 +6951,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         return likes ? l10n.like : l10n.dislike;
       case PersonalRatingStyle.stars:
         if (rating == null) return l10n.rate;
-        final stars = rating / 2;
-        if (stars == 0) return l10n.personalRatingOutOfFive('0');
-        final fullStars = stars.floor();
-        final hasHalfStar = stars - fullStars >= 0.25;
-        return '${'★' * fullStars}${hasHalfStar ? '½' : ''}';
+        return formatPersonalStarActionLabel(
+          rating,
+          _personalRatingIntervals(),
+          l10n.personalRatingOutOfFive('0'),
+        );
       case PersonalRatingStyle.numeric:
         return rating == null ? l10n.rate : l10n.personalRatingRated;
     }
@@ -6949,6 +6967,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return PersonalRatingDialog.show(
       context,
       style: _personalRatingStyle(),
+      intervals: _personalRatingIntervals(),
       rating: item.personalRating,
       likes: _displayRatingLikes(item),
       onSetThumbRating: viewModel.setThumbRating,
@@ -7417,7 +7436,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     ).where((s) => s['Type'] == 'Audio').toList();
 
     final canShowDownloadActions =
-        _isDownloadable(item.type) && userCanDownload();
+        _isDownloadable(item.type) &&
+        downloadableHere(item.rawData) &&
+        userCanDownload();
 
     final String playButtonLabel;
     if (isPhoto) {
@@ -7634,6 +7655,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
           iconBuilder: (size, color) => _PersonalRatingActionIcon(
             style: _personalRatingStyle(),
+            intervals: _personalRatingIntervals(),
             rating: item.personalRating,
             likes: _displayRatingLikes(item),
             size: size,
@@ -11720,6 +11742,20 @@ Future<bool> _anyItemHasCompletedDownload(
   return false;
 }
 
+/// Only a playlist with no backdrop of its own borrows its first track's art,
+/// so one set through Change Artwork wins.
+@visibleForTesting
+bool usesFirstTrackBackdrop(AggregatedItem item, List<AggregatedItem> tracks) =>
+    item.type == 'Playlist' &&
+    tracks.isNotEmpty &&
+    item.backdropImageTags.isEmpty;
+
+/// A reload after Change Artwork keeps the item's id but brings new image tags,
+/// so the page picks its backdrop again when either changes.
+@visibleForTesting
+String detailBackdropKey(BackgroundService backgrounds, AggregatedItem item) =>
+    '${item.id}|${backgrounds.backdropUrlsFor(item).join('|')}';
+
 /// [queue] with [parts] playing right after [target], or unchanged when the
 /// target isn't the item at [startIndex]. Public for its tests. Every
 /// production caller lives in this file.
@@ -12011,9 +12047,8 @@ bool _showsEpisodeOverview(AggregatedItem episode, UserPreferences prefs) =>
     episode.overview != null &&
     !hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
 
 bool _isReadableBookItem(AggregatedItem item) {
@@ -13134,6 +13169,7 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
 
 class _PersonalRatingActionIcon extends StatelessWidget {
   final PersonalRatingStyle style;
+  final int intervals;
   final double? rating;
   final bool? likes;
   final double size;
@@ -13141,6 +13177,7 @@ class _PersonalRatingActionIcon extends StatelessWidget {
 
   const _PersonalRatingActionIcon({
     required this.style,
+    required this.intervals,
     required this.rating,
     required this.likes,
     required this.size,
@@ -13170,9 +13207,11 @@ class _PersonalRatingActionIcon extends StatelessWidget {
           Text(
             rating == null
                 ? '–'
-                : rating == rating!.roundToDouble()
-                ? rating!.toInt().toString()
-                : rating!.toString(),
+                : formatPersonalRatingBadge(
+                    rating!,
+                    PersonalRatingStyle.numeric,
+                    intervals,
+                  ),
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.w800,
@@ -15792,12 +15831,37 @@ class DetailSeasonsRow extends StatelessWidget {
                     ? 30
                     : (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) + 6,
                 left: 6,
-                child: AnimeSeasonAudioBadge(
-                  seriesId: season.seriesId,
-                  seasonId: season.id,
-                  scale: 0.85,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimeSeasonAudioBadge(
+                      seriesId: season.seriesId,
+                      seasonId: season.id,
+                      scale: 0.85,
+                    ),
+                    // A Seerr-only season isn't in the library, so it has no labels.
+                    if (onSeasonTap == null)
+                      PosterBadges(
+                        itemId: season.id,
+                        scale: 0.85,
+                        padding: const EdgeInsets.only(top: 4),
+                      ),
+                  ],
                 ),
               ),
+              // The other corners, clear of the Seerr banner and the watched badge.
+              if (onSeasonTap == null)
+                Positioned.fill(
+                  child: PosterBadgeCorners(
+                    itemId: season.id,
+                    scale: 0.85,
+                    top: (hasSeerrBanner ? kSeerrStatusBannerHeight : 0) +
+                        (season.isPlayed || (season.unplayedItemCount ?? 0) > 0
+                            ? 34
+                            : 6),
+                  ),
+                ),
             ],
             focusColor: isNeon
                 ? AppColorScheme.accent

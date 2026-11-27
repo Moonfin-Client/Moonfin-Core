@@ -26,10 +26,10 @@ bool seerrPublicFlag(
   required bool fallback,
 }) => settings.containsKey(key) ? settings[key] == true : fallback;
 
-/// Where to look up a title's streaming services, in the order Seerr's own
-/// page uses: the user's region, then the server's, then the US.
+/// A region setting in the order Seerr's own pages read it: the user's, then
+/// the server's, then the US.
 @visibleForTesting
-String seerrStreamingRegion(String? user, String? server) {
+String seerrRegion(String? user, String? server) {
   if (user != null && user.isNotEmpty) return user;
   if (server != null && server.isNotEmpty) return server;
   return 'US';
@@ -258,6 +258,7 @@ class SeerrMediaDetailState {
   final bool onUserWatchlist;
   final String? watchlistError;
   final String streamingRegion;
+  final String discoverRegion;
 
   /// The HD track's Radarr/Sonarr queue from Moonbase, or null when the plugin
   /// can't read it or the title isn't on its way.
@@ -280,6 +281,7 @@ class SeerrMediaDetailState {
     this.onUserWatchlist = false,
     this.watchlistError,
     this.streamingRegion = 'US',
+    this.discoverRegion = 'US',
     this.arrQueue,
   });
 
@@ -299,6 +301,29 @@ class SeerrMediaDetailState {
   }
 
   String? get tagline => movie?.tagline ?? tv?.tagline;
+
+  /// Matches Seerr's details page: use the discovery country, not the country
+  /// selected for streaming providers, and skip releases without a rating.
+  String? get parentalRating {
+    final releases = movie?.releases?.results ?? const <SeerrReleaseRegion>[];
+    for (final entry in releases) {
+      if (entry.region != discoverRegion) continue;
+      for (final release in entry.releaseDates) {
+        final rating = release.certification?.trim();
+        if (rating != null && rating.isNotEmpty) return rating;
+      }
+    }
+    final ratings = tv?.contentRatings?.results ?? const <SeerrContentRating>[];
+    for (final entry in ratings) {
+      if (entry.region != discoverRegion) continue;
+      final rating = entry.rating?.trim();
+      if (rating != null && rating.isNotEmpty) return rating;
+    }
+    // Silo supplies a single rating instead of Seerr's regional objects.
+    final rating = (movie?.contentRating ?? tv?.contentRating)?.trim();
+    return rating == null || rating.isEmpty ? null : rating;
+  }
+
   String? get overview => movie?.overview ?? tv?.overview;
   String? get posterPath => movie?.posterPath ?? tv?.posterPath;
   String? get backdropPath => movie?.backdropPath ?? tv?.backdropPath;
@@ -400,6 +425,7 @@ class SeerrMediaDetailState {
     bool? onUserWatchlist,
     String? watchlistError,
     String? streamingRegion,
+    String? discoverRegion,
     ArrQueue? arrQueue,
     bool clearArrQueue = false,
   }) =>
@@ -420,6 +446,7 @@ class SeerrMediaDetailState {
         onUserWatchlist: onUserWatchlist ?? this.onUserWatchlist,
         watchlistError: watchlistError,
         streamingRegion: streamingRegion ?? this.streamingRegion,
+        discoverRegion: discoverRegion ?? this.discoverRegion,
         arrQueue: clearArrQueue ? null : (arrQueue ?? this.arrQueue),
       );
 }
@@ -440,6 +467,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   bool _movie4kEnabled = true;
   bool _series4kEnabled = true;
   String? _serverStreamingRegion;
+  String? _serverDiscoverRegion;
 
   static const _downloadPollInterval = Duration(seconds: 15);
   static const _waitingPollInterval = Duration(seconds: 30);
@@ -640,11 +668,16 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       );
       final region = settings['streamingRegion'];
       _serverStreamingRegion = region is String ? region : null;
+      final discover = settings['discoverRegion'];
+      _serverDiscoverRegion = discover is String ? discover : null;
       final streamingRegion = _streamingRegionFor(_state.currentUser);
-      if (streamingRegion != _state.streamingRegion) {
+      final discoverRegion = _discoverRegionFor(_state.currentUser);
+      if (streamingRegion != _state.streamingRegion ||
+          discoverRegion != _state.discoverRegion) {
         // copyWith clears the error fields it isn't handed, so pass them on.
         _state = _state.copyWith(
           streamingRegion: streamingRegion,
+          discoverRegion: discoverRegion,
           error: _state.error,
           requestError: _state.requestError,
           requestErrorKind: _state.requestErrorKind,
@@ -659,7 +692,10 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   }
 
   String _streamingRegionFor(SeerrUser? user) =>
-      seerrStreamingRegion(user?.streamingRegion, _serverStreamingRegion);
+      seerrRegion(user?.streamingRegion, _serverStreamingRegion);
+
+  String _discoverRegionFor(SeerrUser? user) =>
+      seerrRegion(user?.discoverRegion, _serverDiscoverRegion);
 
   /// The search hit of the kind that was asked for.
   ///
@@ -739,6 +775,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
             currentUser: user,
             onUserWatchlist: onWatchlist,
             streamingRegion: _streamingRegionFor(user),
+            discoverRegion: _discoverRegionFor(user),
           );
           notifyListeners();
           _loadRelated(tmdbId, 'tv');
@@ -746,7 +783,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
           debugPrint('[SeerrDetail] getTvDetails failed: $e. Attempting fallback to search...');
           final fallbackDetails = await _trySearchFallbackTv(tmdbId, title);
           if (fallbackDetails != null) {
-            _state = SeerrMediaDetailState(tv: fallbackDetails, currentUser: user);
+            _state = SeerrMediaDetailState(
+              tv: fallbackDetails,
+              currentUser: user,
+              streamingRegion: _streamingRegionFor(user),
+              discoverRegion: _discoverRegionFor(user),
+            );
             notifyListeners();
           } else {
             rethrow;
@@ -760,6 +802,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
             currentUser: user,
             onUserWatchlist: onWatchlist,
             streamingRegion: _streamingRegionFor(user),
+            discoverRegion: _discoverRegionFor(user),
           );
           notifyListeners();
           _loadRelated(tmdbId, 'movie');
@@ -767,7 +810,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
           debugPrint('[SeerrDetail] getMovieDetails failed: $e. Attempting fallback to search...');
           final fallbackDetails = await _trySearchFallbackMovie(tmdbId, title);
           if (fallbackDetails != null) {
-            _state = SeerrMediaDetailState(movie: fallbackDetails, currentUser: user);
+            _state = SeerrMediaDetailState(
+              movie: fallbackDetails,
+              currentUser: user,
+              streamingRegion: _streamingRegionFor(user),
+              discoverRegion: _discoverRegionFor(user),
+            );
             notifyListeners();
           } else {
             rethrow;

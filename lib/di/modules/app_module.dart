@@ -41,7 +41,6 @@ import '../../data/services/cast/google_cast_provider.dart';
 import '../../data/services/cast/native_cast_channel.dart';
 import '../../data/services/cast/remote_session_cast_provider.dart';
 import '../../data/services/achievements_service.dart';
-import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/incomplete_recordings_service.dart';
 import '../../data/services/recording_owners_service.dart';
 import '../../data/services/server_messages_service.dart';
@@ -137,6 +136,11 @@ Future<bool?> _serverRefusesUser() async {
   }
 }
 
+/// The signed in user's access window from the Moonfin plugin, judged on the
+/// server's clock, or null when the server can't say.
+Future<AccessWindow?> _loadAccessWindow() =>
+    _getIt<MediaServerClient>().usersApi.getAccessWindow();
+
 /// Stops whatever is playing when the user's access schedule closes.
 Future<void> _stopPlaybackForAccessSchedule() async {
   // Each step is best effort, so one that fails doesn't leave the rest undone.
@@ -163,7 +167,6 @@ void registerAppModule() {
     () => openDefaultRetroArtworkDiskCache(),
     dispose: (cache) => cache.dispose(),
   );
-  _getIt.registerLazySingleton(() => SocketHandler());
   _getIt.registerLazySingleton(() => CustomExternalListsService());
   _getIt.registerLazySingleton(
     () => BackgroundService(),
@@ -186,6 +189,7 @@ void registerAppModule() {
       loadSchedules: _loadAccessSchedules,
       onBlocked: _stopPlaybackForAccessSchedule,
       serverRefuses: _serverRefusesUser,
+      loadAccessWindow: _loadAccessWindow,
     );
     // An administrator has no schedule to enforce.
     String? watched(User? user) =>
@@ -233,9 +237,6 @@ void registerAppModule() {
       nativeAirPlay: _getIt<NativeAirPlayChannel>(),
     ),
     dispose: (service) => service.dispose(),
-  );
-  _getIt.registerLazySingleton(
-    () => PluginSyncService(_getIt<UserPreferences>(), _getIt()),
   );
   _getIt.registerLazySingleton(
     () => AchievementsService(),

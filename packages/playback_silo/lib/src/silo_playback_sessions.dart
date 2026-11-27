@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:playback_core/playback_core.dart';
@@ -79,15 +80,18 @@ class SiloPlaybackSession {
 }
 
 /// The Silo sessions of one client, by session id, shared by its resolver
-/// and its session service (both built from the same client).
+/// and its session service (both built from the same client). Their starts
+/// and ends go on [lifecycle], one stream for all clients, since one session
+/// plays at a time.
 class SiloPlaybackSessions {
-  SiloPlaybackSessions._();
+  SiloPlaybackSessions._(this._client);
 
   static final _byClient = Expando<SiloPlaybackSessions>('siloSessions');
 
   static SiloPlaybackSessions of(MediaServerClient client) =>
-      _byClient[client] ??= SiloPlaybackSessions._();
+      _byClient[client] ??= SiloPlaybackSessions._(client);
 
+  final MediaServerClient _client;
   final _sessions = <String, SiloPlaybackSession>{};
 
   SiloPlaybackSession? operator [](String? sessionId) =>
@@ -101,6 +105,66 @@ class SiloPlaybackSessions {
   /// The session [resolution] belongs to, if Moonfin still has it.
   SiloPlaybackSession? sessionOf(StreamResolutionResult resolution) =>
       this[resolution.playSessionId];
+
+  static final _lifecycle = StreamController<SiloPlaybackLifecycle>.broadcast();
+
+  /// A Silo session starting to play and ending, on any client, for what
+  /// follows the playing session (the app's playback control socket). Each
+  /// change names the client the session is on, which may not be the
+  /// signed-in server's. A replan of the same session reports it playing
+  /// again.
+  static Stream<SiloPlaybackLifecycle> get lifecycle => _lifecycle.stream;
+
+  static SiloPlaybackLifecycle? _playingNow;
+
+  /// The session that last started playing and hasn't ended, for a listener
+  /// that starts while it plays.
+  static SiloPlaybackLifecycle? get playingNow => _playingNow;
+
+  void notePlaying(SiloPlaybackSession session) {
+    final change = _change(session, playing: true);
+    _playingNow = change;
+    _lifecycle.add(change);
+  }
+
+  void noteEnded(SiloPlaybackSession session) {
+    final change = _change(session, playing: false);
+    if (_playingNow?.isSameSession(change) ?? false) _playingNow = null;
+    _lifecycle.add(change);
+  }
+
+  SiloPlaybackLifecycle _change(
+    SiloPlaybackSession session, {
+    required bool playing,
+  }) => SiloPlaybackLifecycle(
+    client: _client,
+    sessionId: session.sessionId,
+    installationId: session.installationId,
+    playing: playing,
+  );
+}
+
+/// One change in [SiloPlaybackSessions.lifecycle].
+class SiloPlaybackLifecycle {
+  const SiloPlaybackLifecycle({
+    required this.client,
+    required this.sessionId,
+    required this.installationId,
+    required this.playing,
+  });
+
+  /// The client the session was started on.
+  final MediaServerClient client;
+  final String sessionId;
+  final String installationId;
+
+  /// True when the session started playing, false when it ended.
+  final bool playing;
+
+  /// Whether [other] is about the same session: session ids are only unique
+  /// on one server.
+  bool isSameSession(SiloPlaybackLifecycle other) =>
+      identical(client, other.client) && sessionId == other.sessionId;
 }
 
 final _random = Random.secure();

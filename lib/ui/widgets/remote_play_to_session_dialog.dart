@@ -9,6 +9,7 @@ import 'package:playback_core/playback_core.dart';
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/cast/cast_service.dart';
 import '../../data/services/cast/cast_target.dart';
+import '../../data/services/cast/native_dlna_channel.dart';
 import '../../l10n/app_localizations.dart';
 import '../util/error_message.dart';
 import 'overlay_sheet.dart';
@@ -71,6 +72,8 @@ Future<void> showRemotePlayToSessionDialog(
       );
     }
   } catch (e) {
+    // A newer cast or a Stop took over while this DLNA cast was starting.
+    if (e is DlnaCastSuperseded) return;
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context);
     messenger.showSnackBar(

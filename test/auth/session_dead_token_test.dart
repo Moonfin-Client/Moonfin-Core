@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -143,6 +145,22 @@ class _TestServerRepository extends Fake implements ServerRepository {
   Future<Server> withCheckedType(Server server) async => server;
 }
 
+class _BlockingServerRepository extends _TestServerRepository {
+  _BlockingServerRepository(super.server);
+
+  final probe = Completer<Server>();
+  final started = Completer<void>();
+
+  @override
+  Server? getServer(String id) => id == server.id ? server : null;
+
+  @override
+  Future<Server> withCheckedType(Server server) {
+    started.complete();
+    return probe.future;
+  }
+}
+
 class _TestUserRepository extends Fake implements UserRepository {
   @override
   void setCurrentUser(User? user) {}
@@ -217,6 +235,56 @@ void main() {
       expect(clientFactory.removedClients, 1);
     },
   );
+
+  test('account selection stays paused through overlapping switches', () async {
+    final server = Server(
+      id: 'server-1',
+      name: 'Test',
+      address: 'https://server.test',
+      version: '10.11.0',
+      serverType: ServerType.jellyfin,
+      dateAdded: DateTime.utc(2026, 8, 21),
+    );
+    final serverRepo = _BlockingServerRepository(server);
+    final repo = SessionRepository(
+      _TestAuthStore(
+        PrivateUser(
+          id: 'user-1',
+          name: 'viewer',
+          serverId: server.id,
+          accessToken: 'token',
+          lastUsed: DateTime.utc(2026, 8, 21),
+        ),
+      ),
+      _TestAuthPrefs(),
+      _TestCredentialStore(),
+      _TestClientFactory(),
+      _TestSocketHandler(),
+      serverRepo,
+      _TestUserRepository(),
+      _TestPluginSyncService(),
+    );
+    final originalGeneration = repo.accountSelectionGeneration;
+    final firstSwitch = repo.switchCurrentSession(
+      serverId: server.id,
+      userId: 'user-1',
+    );
+    final failedProbe = expectLater(firstSwitch, throwsStateError);
+    await serverRepo.started.future;
+
+    expect(repo.accountSelectionGeneration, isNull);
+    expect(
+      await repo.switchCurrentSession(serverId: 'missing', userId: 'user-2'),
+      isFalse,
+    );
+    final generationWhileProbeWasPending = repo.accountSelectionGeneration;
+    serverRepo.probe.completeError(StateError('probe failed'));
+    await failedProbe;
+
+    expect(generationWhileProbeWasPending, isNull);
+    expect(repo.accountSelectionGeneration, isNotNull);
+    expect(repo.accountSelectionGeneration, isNot(originalGeneration));
+  });
 
   // Music left playing in the background belongs to the user signing out, and
   // the sign-in screen has nothing to stop it.

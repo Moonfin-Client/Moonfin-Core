@@ -4,6 +4,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:collection/collection.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/anime_marker_badge.dart';
+import '../../../widgets/separated_wrap.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../preference/preference_constants.dart';
 import '../upcoming_episode_badge.dart';
+import '../../../../util/date_format_util.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/detail_playback_info.dart';
 import '../../../../util/detail_track_highlight.dart';
@@ -1394,6 +1396,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       );
 
       return SeasonCard(
+        posterBadgeItemId: seerrOnlyVm != null ? null : season.id,
         seerrStatus: seerrSeasonStatus[season.indexNumber],
         badge: AnimeSeasonAudioBadge(
           seriesId: season.seriesId,
@@ -4664,9 +4667,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         if (overview.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: widget.prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: widget.prefs,
+              isSeerr: _vm.isSeerrOnly,
             )) ...[
           if (!hideTitleAndLogo || tagline.isNotEmpty)
             const SizedBox(height: 8),
@@ -4735,6 +4737,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
     final prefs = GetIt.instance<UserPreferences>();
+    final showFullDate = prefs.get(UserPreferences.detailShowFullDate);
+    final locale = Localizations.localeOf(context).toString();
     final hidden = detailMetadataLayout.hidden(prefs);
     final ordered = detailMetadataLayout.ordered(
       DetailMetadataItem.values,
@@ -4752,7 +4756,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (hidden.contains(entry.id)) continue;
       switch (entry) {
         case DetailMetadataItem.year:
-          addText(item.productionYear?.toString());
+          addText(
+            formatDetailReleaseDate(
+              item,
+              showFullDate: showFullDate,
+              locale: locale,
+            ),
+          );
         case DetailMetadataItem.parentalRating:
           addText(item.officialRating);
         case DetailMetadataItem.runtimeAndSeasons:
@@ -4832,18 +4842,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     if (pieces.isEmpty) return const SizedBox.shrink();
 
-    final separated = <Widget>[];
-    for (var i = 0; i < pieces.length; i++) {
-      if (i > 0) {
-        separated.add(Text('·', style: style));
-      }
-      separated.add(pieces[i]);
-    }
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return SeparatedWrap(
+      separator: Text('·', style: style),
       spacing: 8,
       runSpacing: 6,
-      children: separated,
+      children: pieces,
     );
   }
 
@@ -5013,9 +5016,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final progress = (episode.playedPercentage ?? 0) / 100.0;
     final hideOverview = hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: widget.prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: widget.prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
     return UpNextCard(
       label: combinedLabel,

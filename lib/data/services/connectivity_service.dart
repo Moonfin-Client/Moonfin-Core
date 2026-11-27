@@ -99,24 +99,12 @@ class ConnectivityService extends ChangeNotifier {
        _retryBase = retryBase;
 
   void initialize() {
-    if (!PlatformDetection.isAppleTV) {
-      _subscription =
-          _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
-    }
+    _subscription =
+        _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
     _checkInitialState();
   }
 
   Future<void> _checkInitialState() async {
-    if (PlatformDetection.isAppleTV) {
-      _isOnline = true;
-      await _checkServerReachability();
-      if (_serverReachable) {
-        _triggerSync();
-      }
-      _initialCheckDone = true;
-      notifyListeners();
-      return;
-    }
     final results = await _connectivity.checkConnectivity();
     _isOnline = _hasNetwork(results);
     _isCellularOnly = _cellularOnly(results);
@@ -189,8 +177,6 @@ class ConnectivityService extends ChangeNotifier {
     // device is only known now.
     if (!_isOnline && _serverOnDevice()) _isOnline = true;
     if (!_isOnline) return;
-    // Straight to the probe rather than recheckNow, which would add a
-    // connectivity_plus call on Apple TV, where the service never makes one.
     await _checkServerReachability();
     if (_serverReachable) _triggerSync();
   }

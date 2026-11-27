@@ -21,6 +21,7 @@ import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../upcoming_episode_badge.dart';
+import '../../../../util/date_format_util.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/platform_detection.dart';
@@ -29,6 +30,7 @@ import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/focus/can_claim_initial_focus.dart';
 import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
+import '../../../widgets/separated_wrap.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/quick_return_wrapper.dart';
@@ -867,6 +869,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.75);
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
+    final showFullDate = widget.prefs.get(UserPreferences.detailShowFullDate);
+    final locale = Localizations.localeOf(context).toString();
     final hidden = detailMetadataLayout.hidden(widget.prefs);
     final ordered = detailMetadataLayout.ordered(
       DetailMetadataItem.values,
@@ -884,7 +888,13 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       if (hidden.contains(entry.id)) continue;
       switch (entry) {
         case DetailMetadataItem.year:
-          addText(item.productionYear?.toString());
+          addText(
+            formatDetailReleaseDate(
+              item,
+              showFullDate: showFullDate,
+              locale: locale,
+            ),
+          );
         case DetailMetadataItem.parentalRating:
           addText(item.officialRating);
         case DetailMetadataItem.runtimeAndSeasons:
@@ -959,16 +969,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
 
     if (pieces.isEmpty) return const SizedBox.shrink();
 
-    final separated = <Widget>[];
-    for (var i = 0; i < pieces.length; i++) {
-      if (i > 0) separated.add(Text('·', style: style));
-      separated.add(pieces[i]);
-    }
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return SeparatedWrap(
+      separator: Text('·', style: style),
       spacing: 8,
       runSpacing: 6,
-      children: separated,
+      children: pieces,
     );
   }
 
@@ -1141,9 +1146,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         (!isPerson || visibility.shows(DetailSection.biography)) &&
         !hidesMediaDescription(
           itemType: item.type,
-          hideMediaDescription: widget.prefs.get(
-            UserPreferences.hideDetailsMediaDescription,
-          ),
+          prefs: widget.prefs,
+          isSeerr: _vm.isSeerrOnly,
         );
     final tagline = isPerson || !visibility.shows(DetailSection.tagline)
         ? null

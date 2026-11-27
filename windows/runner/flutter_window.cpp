@@ -229,7 +229,10 @@ bool SetHdrStateForWindow(HWND hwnd, bool enabled) {
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
 
-FlutterWindow::~FlutterWindow() {}
+// windowManager.destroy() only posts WM_QUIT, so OnDestroy hasn't run yet.
+// Without it the controller is deleted while flutter_controller_ still points
+// at it, and the messages the engine sends this window during teardown crash.
+FlutterWindow::~FlutterWindow() { OnDestroy(); }
 
 bool FlutterWindow::OnCreate() {
   if (!Win32Window::OnCreate()) {

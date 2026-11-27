@@ -577,6 +577,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   bool get supportsPersonalRating => _client.features.supportsPersonalRatings;
 
+  bool get supportsFractionalRatings =>
+      _client.features.supportsFractionalRatings;
+
   bool get supportsPersonFavorites => _client.features.supportsPersonFavorites;
 
   /// Plex keeps no YouTube links, so a trailer it doesn't have is searched
@@ -733,6 +736,17 @@ class ItemDetailViewModel extends ChangeNotifier {
     final seerr = _seerr;
     if (_isSeerrOnly && _seerrResolvedLibraryId == null && seerr != null) {
       _seerrResolvedLibraryId = _libraryIdFromSeerr(seerr.state);
+      // Public settings can arrive after the title. Keep its rating in step
+      // with the discovery country when that happens or details refresh.
+      final item = _item;
+      final rating = seerr.state.parentalRating;
+      if (item != null && item.officialRating != rating) {
+        _item = AggregatedItem(
+          id: item.id,
+          serverId: item.serverId,
+          rawData: {...item.rawData, 'OfficialRating': rating},
+        );
+      }
     }
     notifyListeners();
   }
@@ -948,6 +962,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       if (year != null) 'ProductionYear': year,
       'PremiereDate': s.releaseDate ?? s.firstAirDate,
       'CommunityRating': s.voteAverage,
+      'OfficialRating': s.parentalRating,
       'Genres': [for (final g in s.genres) g.name],
       'Studios': [for (final n in s.networks) {'Name': n.name}],
       'Taglines': [?s.tagline],

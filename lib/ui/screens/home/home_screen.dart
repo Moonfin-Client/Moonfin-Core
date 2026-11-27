@@ -1004,7 +1004,7 @@ class _ContentRowsState extends State<_ContentRows>
   static const _previewStartDelay = Duration(milliseconds: 1200);
   static Duration get _focusHandoffDuration => navigationAnimationDuration;
   // Ease out so the scroll starts moving as soon as the key is pressed.
-  static const _focusHandoffCurve = Curves.easeOutCubic;
+  static const _focusHandoffCurve = Curves.easeOutSine;
   static const _mediaBarFadeDuration = Duration(milliseconds: 220);
   static const double _activeRowRecalcDistance = 48.0;
 
@@ -2983,11 +2983,16 @@ class _ContentRowsState extends State<_ContentRows>
       }
 
       if (_scrollController.hasClients && _scrollController.offset > 0) {
-        await _scrollController.animateTo(
-          0,
-          duration: _focusHandoffDuration,
-          curve: _focusHandoffCurve,
-        );
+        // Start after the frame this call scheduled, which rebuilds the media
+        // bar. Started now, the scroll's first tick lands on that slow frame
+        // and the move opens with a jump.
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted ||
+            generation != _verticalNavGeneration ||
+            !_scrollController.hasClients) {
+          return;
+        }
+        await _animateRowScroll(0);
       }
 
       if (!mounted ||
@@ -3341,11 +3346,41 @@ class _ContentRowsState extends State<_ContentRows>
     if (targetOffset == null) return;
     if ((targetOffset - _scrollController.offset).abs() <= 1.0) return;
 
-    await _scrollController.animateTo(
-      targetOffset,
+    await _animateRowScroll(targetOffset);
+  }
+
+  /// Scrolls the rows for a d-pad move. A stock animateTo blocks pointers
+  /// while it runs, and flipping that block rebuilds the semantics of every
+  /// row when an accessibility service is on, which can push the move's first
+  /// frame past its vsync. Without a touchscreen or a mouse in use there's
+  /// nothing to block.
+  Future<void> _animateRowScroll(double to) {
+    final position = _scrollController.position;
+    if (!PlatformDetection.isTV ||
+        PlatformDetection.canUsePhoneLayout ||
+        RendererBinding.instance.mouseTracker.mouseIsConnected ||
+        position is! ScrollPositionWithSingleContext) {
+      return _scrollController.animateTo(
+        to,
+        duration: _focusHandoffDuration,
+        curve: _focusHandoffCurve,
+      );
+    }
+    final tolerance = position.physics.toleranceFor(position).distance;
+    if ((to - position.pixels).abs() < tolerance) {
+      position.jumpTo(to);
+      return Future<void>.value();
+    }
+    final activity = _PointerFriendlyScrollActivity(
+      position,
+      from: position.pixels,
+      to: to,
       duration: _focusHandoffDuration,
       curve: _focusHandoffCurve,
+      vsync: position.context.vsync,
     );
+    position.beginActivity(activity);
+    return activity.done;
   }
 
   /// The offset [rowIndex] comes to rest at. Picks its band the same way
@@ -3478,7 +3513,10 @@ class _ContentRowsState extends State<_ContentRows>
   /// Runs before the pushed route's focus change lands, so the outgoing focus
   /// still reads true here.
   void noteLeavingHome() {
-    _returnFocusToMediaBar = _mediaBarFocusNode.hasFocus;
+    // Leaving from the top navbar returns to the media bar, like pressing
+    // down from it does.
+    _returnFocusToMediaBar =
+        _mediaBarFocusNode.hasFocus || TopToolbar.isFocusedNotifier.value;
     _returnScrollRowId = null;
     _returnScrollRowShift = null;
     // The media bar return path scrolls itself back to the top.
@@ -3770,15 +3808,9 @@ class _ContentRowsState extends State<_ContentRows>
                         rowTopInViewport -
                         _desktopRowFocusTargetTop())
                     .clamp(0.0, _scrollController.position.maxScrollExtent);
-            _scrollController
-                .animateTo(
-                  targetOffset,
-                  duration: _focusHandoffDuration,
-                  curve: _focusHandoffCurve,
-                )
-                .whenComplete(() {
-                  if (!navComplete.isCompleted) navComplete.complete();
-                });
+            _animateRowScroll(targetOffset).whenComplete(() {
+              if (!navComplete.isCompleted) navComplete.complete();
+            });
             return;
           }
         }
@@ -7371,3 +7403,19 @@ typedef _PreviewSource = ({
   String? audioLanguage,
   String label,
 });
+
+/// An animated scroll that leaves pointers enabled. See
+/// [_ContentRowsState._animateRowScroll].
+class _PointerFriendlyScrollActivity extends DrivenScrollActivity {
+  _PointerFriendlyScrollActivity(
+    super.delegate, {
+    required super.from,
+    required super.to,
+    required super.duration,
+    required super.curve,
+    required super.vsync,
+  });
+
+  @override
+  bool get shouldIgnorePointer => false;
+}

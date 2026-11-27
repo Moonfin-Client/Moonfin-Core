@@ -251,17 +251,9 @@ class ScreensaverController {
     await exitApp();
   }
 
-  static const _systemChannel = MethodChannel('moonfin/appletv_system');
-
   Future<void> _setWakeLockEnabled(bool enabled) async {
     try {
-      if (PlatformDetection.isAppleTV) {
-        await _systemChannel.invokeMethod('setIdleTimerDisabled', enabled);
-      } else if (enabled) {
-        await WakelockPlus.enable();
-      } else {
-        await WakelockPlus.disable();
-      }
+      await WakelockPlus.toggle(enable: enabled);
     } catch (_) {}
   }
 

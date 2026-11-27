@@ -27,6 +27,9 @@ class EmbyUsersApi implements UsersApi {
       const [];
 
   @override
+  Future<AccessWindow?> getAccessWindow() async => null;
+
+  @override
   Future<UserConfiguration> getUserConfiguration() async {
     final userId = _getUserId();
     final response = await _dio.get('/Users/$userId');

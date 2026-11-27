@@ -7,12 +7,14 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import 'unread_badge.dart';
 
+import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/input_mode_tracker.dart';
 import '../../util/platform_detection.dart';
 import 'focus/focus_theme.dart';
 import 'focus/glass_press_scale.dart';
+import 'nav_styles/nav_button_style.dart';
 
 const _kExpandDuration = Duration(milliseconds: 150);
 const _kSpacing = 10.0;
@@ -36,6 +38,15 @@ class ExpandableIconButton extends StatefulWidget {
   /// labels" preference.
   final bool forceExpanded;
 
+  /// Whether this button opens the page on screen. Only Tabline draws it.
+  final bool selected;
+
+  /// Drawn after the label, like the Atlas panel chevron.
+  final Widget? trailing;
+
+  /// Atlas draws the tab joined to the panel that hangs under it.
+  final bool attachedBelow;
+
   const ExpandableIconButton({
     super.key,
     this.icon,
@@ -49,6 +60,9 @@ class ExpandableIconButton extends StatefulWidget {
     this.baseColor,
     this.badgeCount = 0,
     this.forceExpanded = false,
+    this.selected = false,
+    this.trailing,
+    this.attachedBelow = false,
   });
 
   @override
@@ -157,6 +171,9 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
 
   @override
   Widget build(BuildContext context) {
+    final navStyle = NavButtonStyle.of(context);
+    final tabline = navStyle == TopNavbarStyle.tabline;
+    final atlas = navStyle == TopNavbarStyle.atlas;
     final isMobile = PlatformDetection.useMobileUi;
     final isTV = PlatformDetection.isTV;
     final desktopScale = _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
@@ -168,7 +185,8 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
     final focusVisible = InputModeTracker.showFocusVisuals(context, _isFocused);
     final hoverActive = _isHovered && !isTV;
     final leanbackFocused = focusVisible && !isMobile;
-    final isExpanded = widget.forceExpanded || focusVisible || hoverActive;
+    final isExpanded =
+        atlas || widget.forceExpanded || focusVisible || hoverActive;
     final effectiveBorderRadius = !isMobile ? 36.0 : (btnSize / 2);
     final baseColor = widget.baseColor ?? AppColorScheme.onSurface.withValues(alpha: 0.6);
     final useBaseForFocus = widget.baseColor != null;
@@ -194,9 +212,24 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
         focusNode: _focusNode,
         onKeyEvent: _onKeyEvent,
         child: GestureDetector(
+          behavior: tabline ? HitTestBehavior.opaque : null,
           onTap: widget.onPressed,
           onLongPress: widget.onLongPress,
-          child: GlassPressScale(
+          child: tabline
+              ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isMobile ? 4 : 10),
+                  child: TablineTabLabel(
+                    label: widget.label,
+                    focused: focusVisible,
+                    selected: widget.selected,
+                    hovered: hoverActive,
+                    badgeCount: widget.badgeCount,
+                    fontSize:
+                        tablineFontSize(isMobile: isMobile, isTV: isTV) *
+                        desktopScale,
+                  ),
+                )
+              : GlassPressScale(
             child: AnimatedContainer(
               duration: _kExpandDuration,
               curve: Curves.easeOut,
@@ -210,14 +243,27 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
                 minWidth: btnSize,
                 maxWidth: isExpanded ? 200 : btnSize,
               ),
-              decoration: FocusTheme.focusDecoration(
-                isFocused: focusVisible && isMobile,
-                radius: effectiveBorderRadius,
-                color: focusColor,
-                backgroundColor: bgColor,
-              ),
+              decoration: atlas
+                  ? BoxDecoration(
+                      color: widget.attachedBelow && !leanbackFocused
+                          ? kAtlasPanelColor
+                          : bgColor,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(14),
+                      ),
+                    )
+                  : FocusTheme.focusDecoration(
+                      isFocused: focusVisible && isMobile,
+                      radius: effectiveBorderRadius,
+                      color: focusColor,
+                      backgroundColor: bgColor,
+                    ),
               padding: EdgeInsets.symmetric(
-                horizontal: isExpanded ? (isMobile ? 18 : 24) : 0,
+                horizontal: atlas
+                    ? (isMobile ? 12 : 16)
+                    : isExpanded
+                    ? (isMobile ? 18 : 24)
+                    : 0,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -243,6 +289,13 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
                         maxLines: 1,
                       ),
                     ),
+                    if (widget.trailing case final trailing?) ...[
+                      const SizedBox(width: 6),
+                      IconTheme.merge(
+                        data: IconThemeData(color: fgColor),
+                        child: trailing,
+                      ),
+                    ],
                   ],
                 ],
               ),

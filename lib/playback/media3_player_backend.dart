@@ -15,6 +15,7 @@ import 'device_profile_builder.dart';
 import 'known_defects.dart';
 import 'media3_letterbox_crop.dart';
 import 'media3_playback_status.dart';
+import 'playback_network_stats.dart';
 import 'server_transcode_capabilities.dart';
 import 'subtitle_fonts.dart';
 
@@ -64,12 +65,19 @@ class Media3PlayerBackend extends PlayerBackend
   static Map<String, dynamic> audioDecoderPreferencesPayload(
     UserPreferences prefs,
   ) {
+    // A bitstream skips the processor chain, so Night Mode turns passthrough
+    // off to get decoded audio it can compress.
+    final nightMode = prefs.get(UserPreferences.audioNightMode);
     return <String, dynamic>{
-      'passthroughMode': prefs.get(UserPreferences.audioPassthroughMode).name,
-      'passthroughCodecs': prefs
-          .resolvedPassthroughCodecs()
-          .map((codec) => codec.wireName)
-          .toList(growable: false),
+      'passthroughMode': nightMode
+          ? AudioPassthroughMode.disabled.name
+          : prefs.get(UserPreferences.audioPassthroughMode).name,
+      'passthroughCodecs': nightMode
+          ? const <String>[]
+          : prefs
+                .resolvedPassthroughCodecs()
+                .map((codec) => codec.wireName)
+                .toList(growable: false),
       // 'platform' has the HAL pack raw encodings, 'iec' packs IEC 61937 in
       // the app. Only sent as 'iec' when the choke-point getter says the
       // mode is actually live here.
@@ -77,6 +85,7 @@ class Media3PlayerBackend extends PlayerBackend
           ? AudioPassthroughOutput.iecPacker.wireName
           : AudioPassthroughOutput.platform.wireName,
       'downmixToStereo': prefs.get(UserPreferences.downmixToStereo),
+      'nightMode': nightMode,
     };
   }
 
@@ -213,6 +222,10 @@ class Media3PlayerBackend extends PlayerBackend
   /// What the native player decided and is putting out for this source.
   final Media3PlaybackStatus playbackStatus = Media3PlaybackStatus();
 
+  /// The latest network and buffer reading, for the playback stats overlay.
+  PlaybackNetworkStats? get networkStats => _networkStats;
+  PlaybackNetworkStats? _networkStats;
+
   /// The frame rate the display is switching to while the start or a live
   /// correction waits for it, otherwise null. Never disposed: a screen can
   /// still be listening for a frame after the backend is replaced.
@@ -273,6 +286,22 @@ class Media3PlayerBackend extends PlayerBackend
     return false;
   }
 
+  PlaybackNetworkStats _networkStatsFrom(Map<String, dynamic> map) {
+    int? optional(String key) => map[key] == null ? null : _toInt(map[key]);
+    final maxBufferMs = optional('maxBufferMs');
+    final ahead = _toInt(map['bufferedMs']) - _toInt(map['positionMs']);
+    return PlaybackNetworkStats(
+      bufferAhead: Duration(milliseconds: ahead < 0 ? 0 : ahead),
+      activityBitsPerSecond: optional('networkActivityBps'),
+      bufferCeiling: maxBufferMs == null
+          ? null
+          : Duration(milliseconds: maxBufferMs),
+      bufferedBytes: optional('bufferedBytes'),
+      targetBufferBytes: optional('targetBufferBytes'),
+      rebuffers: optional('rebuffers'),
+    );
+  }
+
   void _handleEvent(dynamic event) {
     if (_disposed || event is! Map) return;
     final map = event.map((k, v) => MapEntry(k.toString(), v));
@@ -289,6 +318,7 @@ class Media3PlayerBackend extends PlayerBackend
         _position = reported;
         _duration = Duration(milliseconds: _toInt(map['durationMs']));
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
+        _networkStats = _networkStatsFrom(map);
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
         _setSubtitleLoading(_toBool(map['isSubtitleLoading']));
@@ -1378,6 +1408,7 @@ class Media3PlayerBackend extends PlayerBackend
     });
     _lastFrameRateLine = null;
     playbackStatus.reset();
+    _networkStats = null;
     displayMatchFps.value = null;
     _liveEdge = null;
     _sourceIsLive = payload['isLive'] == true;
@@ -1579,16 +1610,21 @@ class Media3PlayerBackend extends PlayerBackend
     final maxBitrate = int.tryParse(_prefs.get(UserPreferences.maxBitrate));
     final maxResolution = _prefs.get(UserPreferences.maxVideoResolution);
     final audioCapabilityProfile = _prefs.detectedAudioCapabilities;
+    // Night Mode turns passthrough off, so the server profile has to match.
+    final bitstream = !_prefs.get(UserPreferences.audioNightMode);
 
     return DeviceProfileBuilder.build(
       maxBitrateMbps: maxBitrate,
       audioCapabilityProfile: audioCapabilityProfile,
       audioFallbackCodec: _prefs.resolveAudioFallbackCodec(),
       transcodeAudioCodecs: _prefs.resolveTranscodeAudioCodecs(),
-      ac3PassthroughEnabled: _prefs.resolveAc3PassthroughEnabled(),
-      eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
-      dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
-      trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
+      ac3PassthroughEnabled: bitstream && _prefs.resolveAc3PassthroughEnabled(),
+      eac3PassthroughEnabled:
+          bitstream && _prefs.resolveEac3PassthroughEnabled(),
+      dtsCorePassthroughEnabled:
+          bitstream && _prefs.resolveDtsCorePassthroughEnabled(),
+      trueHdPassthroughEnabled:
+          bitstream && _prefs.resolveTrueHdPassthroughEnabled(),
       // The bundled FFmpeg decoder leaves the channel layout unset for stereo
       // TrueHD, so every packet is rejected and playback sits at 0ms with a
       // black screen. Surround decodes fine. See androidx/media#1843.

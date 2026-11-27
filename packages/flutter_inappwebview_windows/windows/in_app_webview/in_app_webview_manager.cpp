@@ -243,5 +243,13 @@ namespace flutter_inappwebview_plugin
     windowWebViews.clear();
     UnregisterClass(windowClass_.lpszClassName, nullptr);
     plugin = nullptr;
+
+    // The DLL's atexit destructors would release these after coremessaging.dll
+    // has already unloaded, which crashes on every exit. Moonfin only creates
+    // one engine, so nothing else still needs them.
+    compositor_ = nullptr;
+    graphics_context_ = nullptr;
+    dispatcher_queue_controller_ = nullptr;
+    rohelper_ = nullptr;
   }
 }

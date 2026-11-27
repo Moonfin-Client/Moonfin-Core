@@ -21,6 +21,34 @@ String? linuxFlatpakAppId() {
   return id;
 }
 
+/// Whether this binary is the snap's own. A native build started from a snap's
+/// terminal inherits SNAP but runs from somewhere else.
+bool linuxIsSnap() {
+  final snap = Platform.environment['SNAP'];
+  if (snap == null || snap.isEmpty) return false;
+  return Platform.resolvedExecutable.startsWith('$snap/');
+}
+
+/// The host's os-release for a Flatpak, whose /etc holds the runtime's own.
+/// A snap can't read the host's copy without the system-observe plug, so a
+/// snap still reports its base's.
+Future<Map<String, String>?> linuxHostOsRelease() async {
+  if (linuxFlatpakAppId() == null) return null;
+  try {
+    return parseOsRelease(await File('/run/host/os-release').readAsLines());
+  } on FileSystemException {
+    return null;
+  }
+}
+
+Map<String, String> parseOsRelease(List<String> lines) => {
+  for (final line in lines)
+    if (_osReleaseLine.firstMatch(line.trim()) case final match?)
+      match[1]!: match[3]!,
+};
+
+final _osReleaseLine = RegExp(r'''^([A-Z0-9_]+)=(["']?)(.*)\2$''');
+
 /// The CPU architecture this build targets, like x64 or arm64. On Windows it
 /// also names the PC's own when they differ, since an x64 build on an ARM PC
 /// runs emulated and nothing else in a report shows that.

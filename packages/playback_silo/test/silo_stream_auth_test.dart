@@ -142,6 +142,45 @@ void main() {
     },
   );
 
+  test('only a DLNA renderer goes by the stream reference alone', () async {
+    Future<String> urlFor(
+      String streamUrl, [
+      SiloPlayerTraits traits = SiloPlayerTraits.dlnaRenderer,
+    ]) async {
+      final server = _server(_decisionWithStream(streamUrl));
+      final result =
+          await SiloPlugin(
+            siloTestClient(server),
+            environment: () => SiloPlaybackEnvironment(
+              formFactor: 'tv',
+              platform: 'dlna',
+              traits: traits,
+            ),
+          ).createStreamResolver().resolve(
+            siloTestItem('silo/watch_movie.json'),
+            deviceProfile: _profile,
+          );
+      return result.streamUrl;
+    }
+
+    const hls = '/api/v2/playback/transcode/$_session/master.m3u8?st=c2lnbmVk';
+    expect(
+      await urlFor(hls),
+      'https://silo.example/api/v2/playback/transcode/$_session/master.m3u8'
+      '?st=c2lnbmVk',
+    );
+    // Chromecast and AirPlay keep the token, which older Silo servers need.
+    expect(
+      await urlFor(hls, SiloPlayerTraits.castReceiver),
+      endsWith('&token=access-1'),
+    );
+    // Without a reference it still needs the token.
+    expect(
+      await urlFor('/api/v2/stream/$_session'),
+      'https://silo.example/api/v2/stream/$_session?token=access-1',
+    );
+  });
+
   test('a cast receiver gets a nearly fresh token', () async {
     Future<int> refreshesWith(Duration left, SiloPlayerTraits traits) async {
       final server = _server(
@@ -326,6 +365,29 @@ void main() {
           reason: url,
         );
       }
+    });
+
+    test('none for a receiver when the URL carries a reference', () {
+      for (final url in [
+        '$base/api/v2/playback/transcode/s/master.m3u8?st=x',
+        '$base/api/v2/stream/s/subtitles/0.vtt?st=x',
+      ]) {
+        expect(
+          siloAuthorizeUrl(url, base, 't', allMedia: true, referenceOnly: true),
+          url,
+          reason: url,
+        );
+      }
+      expect(
+        siloAuthorizeUrl(
+          '$base/api/v2/stream/s',
+          base,
+          't',
+          allMedia: true,
+          referenceOnly: true,
+        ),
+        '$base/api/v2/stream/s?token=t',
+      );
     });
 
     test('a URL that has one keeps it; the token is encoded', () {

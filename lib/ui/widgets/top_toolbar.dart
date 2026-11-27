@@ -33,6 +33,9 @@ import 'downloads_nav_slot.dart';
 import 'friends_nav_slot.dart';
 import 'expandable_icon_button.dart';
 import 'marquee_text.dart';
+import 'nav_styles/atlas_panel.dart';
+import 'nav_styles/nav_back_guard.dart';
+import 'nav_styles/nav_button_style.dart';
 import 'overlay_sheet.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
@@ -73,8 +76,8 @@ class TopToolbar extends StatefulWidget {
   final bool showBackButton;
   final FocusNode? contentFocusNode;
 
-  /// True while focus is inside the toolbar, so screens can avoid stealing its
-  /// d-pad keys. Mirrors [LeftSidebar.isFocusedNotifier].
+  /// True while focus is inside the toolbar or its Atlas panel, so screens can
+  /// avoid stealing its d-pad keys. Mirrors [LeftSidebar.isFocusedNotifier].
   static final ValueNotifier<bool> isFocusedNotifier = ValueNotifier<bool>(
     false,
   );
@@ -136,6 +139,19 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     skipTraversal: true,
   );
   final _musicBarFocusNode = FocusNode(debugLabel: 'TopMusicBar');
+  final _atlasPortal = OverlayPortalController();
+  final _atlasLink = LayerLink();
+  final _atlasPanelScope = FocusScopeNode(debugLabel: 'AtlasPanel');
+  final _atlasFirstLink = FocusNode(debugLabel: 'AtlasPanelFirstLink');
+  final Map<String, FocusNode> _atlasTabFocus = {};
+  final Map<String, AtlasPanelSpec> _atlasSpecs = {};
+  String? _atlasOpenKey;
+  AtlasPanelSpec? _atlasSpec;
+  // A panel opened by hovering closes when the pointer leaves it. One opened
+  // with the d-pad follows focus along the tabs instead.
+  bool _atlasByHover = false;
+  Timer? _atlasHoverTimer;
+  Timer? _atlasCloseTimer;
   late final VoidCallback _focusNavbarCallback;
   late final VoidCallback _focusAvatarCallback;
   VoidCallback? _previousFocusNavbarCallback;
@@ -176,6 +192,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     NavigationLayout.chromeFocusRoots.add(_toolbarScopeNode);
     _avatarFocus.addListener(_onAvatarFocusChanged);
     FocusManager.instance.addListener(_trackPreviousFocus);
+    _atlasPanelScope.addListener(_syncFocusedFlag);
     _updateClock();
     _clockTimer = Timer.periodic(
       const Duration(seconds: 30),
@@ -223,6 +240,9 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
   }
 
   @override
+  void didPushNext() => _closeAtlas();
+
+  @override
   void dispose() {
     if (_observedRoute != null) {
       routeLifecycleObserver.unsubscribe(this);
@@ -259,6 +279,13 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     _friendsFocus.dispose();
     _inlineLibrariesTriggerFocus.dispose();
     _musicBarFocusNode.dispose();
+    _atlasHoverTimer?.cancel();
+    _atlasCloseTimer?.cancel();
+    _atlasPanelScope.dispose();
+    _atlasFirstLink.dispose();
+    for (final node in _atlasTabFocus.values) {
+      node.dispose();
+    }
     _userSub?.cancel();
     try {
       _viewsRepo.removeListener(_onUserViewsChanged);
@@ -297,6 +324,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
   void _onPrefsChanged() {
     if (!mounted) return;
+    if (_style != TopNavbarStyle.atlas) _closeAtlas();
     _updateClock();
     _scheduleLibrariesReload();
     setState(() {});
@@ -397,11 +425,22 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
   bool get _kidsMode => _prefs.get(UserPreferences.kidsModeEnabled);
 
+  void _syncFocusedFlag() {
+    final hasFocus = _toolbarScopeNode.hasFocus || _atlasPanelScope.hasFocus;
+    _toolbarHadFocus = hasFocus;
+    TopToolbar.isFocusedNotifier.value = hasFocus;
+  }
+
   void _trackPreviousFocus() {
+    _followAtlasFocus();
     final primary = FocusManager.instance.primaryFocus;
     if (primary == null) return;
     if (primary.skipTraversal) return;
-    if (_isInsideToolbar(primary)) return;
+    // The Atlas panel lives in the overlay, outside the toolbar's focus scope.
+    if (_isInsideToolbar(primary) ||
+        _isDescendantOf(primary, _atlasPanelScope)) {
+      return;
+    }
     _previousFocus = primary;
   }
 
@@ -633,6 +672,291 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
   bool get _showBackArrow => widget.showBackButton && !PlatformDetection.isTV;
 
+  TopNavbarStyle get _style =>
+      NavigationLayout.sanitizeNavbarPosition(
+            _prefs.get(UserPreferences.navbarPosition),
+          ) ==
+          NavbarPosition.top
+      ? _prefs.get(UserPreferences.topNavbarStyle)
+      : TopNavbarStyle.classic;
+
+  void _openAtlas(String key, {bool byHover = false, bool focusPanel = false}) {
+    final spec = _atlasSpecs[key];
+    if (spec == null || !mounted) return;
+    _atlasHoverTimer?.cancel();
+    _atlasCloseTimer?.cancel();
+    setState(() {
+      _atlasOpenKey = key;
+      _atlasSpec = spec;
+      _atlasByHover = byHover;
+    });
+    _atlasPortal.show();
+    if (focusPanel) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _atlasFirstLink.context != null) {
+          _atlasFirstLink.requestFocus();
+        }
+      });
+    }
+  }
+
+  void _closeAtlas({bool refocusTab = false}) {
+    _atlasHoverTimer?.cancel();
+    _atlasCloseTimer?.cancel();
+    final key = _atlasOpenKey;
+    if (key == null) return;
+    if (refocusTab) _atlasTabFocus[key]?.requestFocus();
+    _atlasOpenKey = null;
+    _atlasByHover = false;
+    if (_atlasPortal.isShowing) _atlasPortal.hide();
+    if (mounted) setState(() {});
+  }
+
+  void _scheduleAtlasClose() {
+    _atlasCloseTimer?.cancel();
+    _atlasCloseTimer = Timer(const Duration(milliseconds: 250), () {
+      if (mounted && _atlasByHover) _closeAtlas();
+    });
+  }
+
+  /// A panel opened from the d-pad follows focus along the tabs, and closes
+  /// on a tab without one or once focus leaves the bar.
+  void _followAtlasFocus() {
+    if (_atlasOpenKey == null || _atlasByHover) return;
+    final primary = FocusManager.instance.primaryFocus;
+    if (primary == null || _isDescendantOf(primary, _atlasPanelScope)) return;
+    for (final entry in _atlasTabFocus.entries) {
+      if (identical(entry.value, primary)) {
+        if (entry.key != _atlasOpenKey) _openAtlas(entry.key);
+        return;
+      }
+    }
+    _closeAtlas();
+  }
+
+  void _openFromAtlas(String route, {required bool topLevel}) {
+    _closeAtlas();
+    if (topLevel) {
+      context.navigateTopLevel(route);
+    } else {
+      context.push(route);
+    }
+  }
+
+  /// What an Atlas tab with a panel needs: its own focus node so the panel can
+  /// hand focus back, Down to open the panel, and the chevron that toggles it.
+  ({
+    FocusNode focusNode,
+    KeyEventResult Function(FocusNode, KeyEvent) onKeyEvent,
+    Widget trailing,
+    bool attached,
+  })
+  _atlasTabProps(String key, AtlasPanelSpec spec) {
+    _atlasSpecs[key] = spec;
+    final node = _atlasTabFocus.putIfAbsent(
+      key,
+      () => FocusNode(debugLabel: 'AtlasTab $key'),
+    );
+    final open = _atlasOpenKey == key;
+    return (
+      focusNode: node,
+      onKeyEvent: (_, event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          _openAtlas(key, focusPanel: true);
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      trailing: GestureDetector(
+        onTap: () => open ? _closeAtlas() : _openAtlas(key),
+        child: Icon(
+          open
+              ? Icons.keyboard_arrow_up_rounded
+              : Icons.keyboard_arrow_down_rounded,
+          size: 18,
+          color: open ? AppColorScheme.accent : null,
+        ),
+      ),
+      attached: open,
+    );
+  }
+
+  /// Hovering a tab for a moment opens its panel.
+  Widget _atlasHover(String key, Widget child) {
+    if (PlatformDetection.isTV || PlatformDetection.useMobileUi) return child;
+    return MouseRegion(
+      onEnter: (_) {
+        _atlasCloseTimer?.cancel();
+        if (_atlasOpenKey == key) return;
+        _atlasHoverTimer?.cancel();
+        _atlasHoverTimer = Timer(const Duration(milliseconds: 300), () {
+          if (mounted) _openAtlas(key, byHover: true);
+        });
+      },
+      onExit: (_) {
+        _atlasHoverTimer?.cancel();
+        if (_atlasByHover) _scheduleAtlasClose();
+      },
+      child: child,
+    );
+  }
+
+  /// Phones have no hover, so a tap there toggles the panel instead of opening
+  /// the section.
+  VoidCallback _atlasPress(String key, VoidCallback open) {
+    if (PlatformDetection.useMobileUi) {
+      return () => _atlasOpenKey == key ? _closeAtlas() : _openAtlas(key);
+    }
+    return () {
+      _closeAtlas();
+      open();
+    };
+  }
+
+  Widget _buildAtlasOverlay(BuildContext context) {
+    final spec = _atlasSpec;
+    if (spec == null || _atlasOpenKey == null) return const SizedBox.shrink();
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: CompositedTransformFollower(
+            link: _atlasLink,
+            targetAnchor: Alignment.bottomLeft,
+            showWhenUnlinked: false,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _closeAtlas,
+              child: const ColoredBox(color: Color(0x8C000000)),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          child: CompositedTransformFollower(
+            link: _atlasLink,
+            targetAnchor: Alignment.bottomLeft,
+            showWhenUnlinked: false,
+            child: MouseRegion(
+              onEnter: (_) => _atlasCloseTimer?.cancel(),
+              onExit: (_) {
+                if (_atlasByHover) _scheduleAtlasClose();
+              },
+              child: AtlasPanel(
+                spec: spec,
+                scopeNode: _atlasPanelScope,
+                firstFocus: _atlasFirstLink,
+                compact: PlatformDetection.useMobileUi,
+                onExit: () => _closeAtlas(refocusTab: true),
+                onOpen: _openFromAtlas,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTablineEnd({required bool showClock}) {
+    final l10n = AppLocalizations.of(context);
+    return NavButtonStyle(
+      style: TopNavbarStyle.classic,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _orderButton(
+            order: 95,
+            child: ExpandableIconButton(
+              key: const ValueKey('toolbar_search'),
+              icon: Icons.search_rounded,
+              label: l10n.search,
+              baseColor: Colors.white.withValues(alpha: 0.85),
+              onPressed: () {
+                if (_isActive(Destinations.search)) return;
+                context.navigateTopLevel(Destinations.search);
+              },
+            ),
+          ),
+          if (showClock && !PlatformDetection.useMobileUi) ...[
+            const SizedBox(width: 18),
+            Center(child: _buildEnd()),
+          ],
+          if (_showAvatar) ...[
+            const SizedBox(width: 18),
+            _orderButton(order: 100, child: Center(child: _buildAvatar())),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// [endsRow] keeps Right from leaving the bar on TV. [inlineLibrariesBefore]
+  /// sends Left back toward the inline libraries.
+  Widget _buildSettingsButton({
+    required bool endsRow,
+    bool inlineLibrariesBefore = false,
+    bool forceExpanded = false,
+    Color? baseColor,
+  }) {
+    return _orderButton(
+      order: 99,
+      child: ExpandableIconButton(
+        key: const ValueKey('toolbar_settings'),
+        forceExpanded: forceExpanded,
+        icon: Icons.settings_rounded,
+        label: AppLocalizations.of(context).settings,
+        baseColor: baseColor,
+        focusNode: _settingsFocus,
+        onKeyEvent: (_, event) {
+          final isRtl = Directionality.of(context) == TextDirection.rtl;
+          final outwardKey = isRtl
+              ? LogicalKeyboardKey.arrowLeft
+              : LogicalKeyboardKey.arrowRight;
+          final inwardKey = isRtl
+              ? LogicalKeyboardKey.arrowRight
+              : LogicalKeyboardKey.arrowLeft;
+          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+              PlatformDetection.isTV &&
+              endsRow &&
+              event.logicalKey == outwardKey) {
+            return KeyEventResult.handled;
+          }
+          if (event is KeyDownEvent &&
+              event.logicalKey == inwardKey &&
+              inlineLibrariesBefore) {
+            // Step onto whatever is actually alongside first, since
+            // downloads and server messages both sit between the
+            // libraries and here. Jumping to the trigger is the
+            // fallback for when nothing does, which is what keeps
+            // the inline libraries reachable from the end of the row.
+            if (!_moveWithinToolbar(TraversalDirection.left)) {
+              _inlineLibrariesTriggerFocus.requestFocus();
+            }
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onPressed: () async {
+          _closeAtlas();
+          await SettingsPanel.open(context, const SettingsSidePanel());
+          if (mounted) _settingsFocus.requestFocus();
+        },
+      ),
+    );
+  }
+
+  bool _isLibraryActive(AggregatedLibrary lib) {
+    final active = widget.activeRoute;
+    if (active == null) return false;
+    final path = Uri.parse(
+      libraryRoute(lib.id, lib.collectionType, lib.name, serverId: lib.serverId),
+    ).path;
+    return Uri.parse(active).path == path;
+  }
+
   @override
   void didUpdateWidget(covariant TopToolbar oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -681,8 +1005,9 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     final isMusicActive =
         currentItem is AggregatedItem && currentItem.isAudioLike;
     final totalHeight = toolbarHeight + TopToolbar.musicBarExtraHeight();
+    final style = _style;
 
-    return SafeArea(
+    final toolbar = SafeArea(
       // A TV's overscan margin below already keeps the toolbar off the edges,
       // so the system's side insets would count twice.
       left: !isTV,
@@ -691,13 +1016,13 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
       child: SizedBox(
         height: totalHeight,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+          // Atlas tabs reach the bottom edge, so an open one joins its panel.
+          padding: style == TopNavbarStyle.atlas
+              ? EdgeInsets.fromLTRB(hPad, vPad, hPad, 0)
+              : EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
           child: Focus(
             focusNode: _toolbarScopeNode,
-            onFocusChange: (hasFocus) {
-              _toolbarHadFocus = hasFocus;
-              TopToolbar.isFocusedNotifier.value = hasFocus;
-            },
+            onFocusChange: (_) => _syncFocusedFlag(),
             onKeyEvent: (_, event) {
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -800,7 +1125,14 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               children: [
                 FocusTraversalGroup(
                   policy: WidgetOrderTraversalPolicy(),
-                  child: isLandscape
+                  child: style != TopNavbarStyle.classic
+                      ? _buildStyledRow(
+                          style,
+                          toolbarHeight: toolbarHeight,
+                          vPad: vPad,
+                          showClock: showClock,
+                        )
+                      : isLandscape
                       ? SizedBox(
                           height: toolbarHeight - (vPad * 2),
                           child: Stack(
@@ -855,17 +1187,123 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         ),
       ),
     );
+    return _wrapStyle(style, toolbar, totalHeight);
   }
 
-  Widget _buildStart() {
+  Widget _wrapStyle(TopNavbarStyle style, Widget toolbar, double totalHeight) {
+    final scoped = NavButtonStyle(style: style, child: toolbar);
+    switch (style) {
+      case TopNavbarStyle.classic:
+        return scoped;
+      case TopNavbarStyle.tabline:
+        final top = MediaQuery.paddingOf(context).top;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: top + totalHeight * 1.9,
+              child: const IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(gradient: kTablineScrim),
+                ),
+              ),
+            ),
+            scoped,
+          ],
+        );
+      case TopNavbarStyle.atlas:
+        return NavBackGuard(
+          open: _atlasOpenKey != null,
+          onClose: () => _closeAtlas(refocusTab: true),
+          child: CompositedTransformTarget(
+            link: _atlasLink,
+            child: OverlayPortal(
+              controller: _atlasPortal,
+              overlayChildBuilder: _buildAtlasOverlay,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: atlasBarColor(_overlayColor(), _overlayOpacity()),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.06),
+                    ),
+                  ),
+                ),
+                child: scoped,
+              ),
+            ),
+          ),
+        );
+    }
+  }
+
+  Widget _buildStyledRow(
+    TopNavbarStyle style, {
+    required double toolbarHeight,
+    required double vPad,
+    required bool showClock,
+  }) {
+    final isMobile = PlatformDetection.useMobileUi;
+    final rowHeight = toolbarHeight - vPad * 2;
+    if (style == TopNavbarStyle.tabline) {
+      return SizedBox(
+        height: rowHeight,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_showBackArrow) ...[
+              Center(child: _buildStart(avatar: false)),
+              const SizedBox(width: 12),
+            ],
+            Expanded(child: _buildCenter()),
+            const SizedBox(width: 16),
+            _buildTablineEnd(showClock: showClock),
+          ],
+        ),
+      );
+    }
+    return SizedBox(
+      height: toolbarHeight - vPad,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(child: _buildStart()),
+          const SizedBox(width: 12),
+          Expanded(child: _buildCenter()),
+          if (showClock && !isMobile) ...[
+            const SizedBox(width: 16),
+            Center(child: _buildEnd()),
+          ],
+          // Phones reach settings from the avatar.
+          if (!isMobile) ...[
+            const SizedBox(width: 8),
+            Center(
+              child: SizedBox(
+                height: rowHeight,
+                child: NavButtonStyle(
+                  style: TopNavbarStyle.classic,
+                  child: _buildSettingsButton(endsRow: true),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStart({bool avatar = true}) {
     return FocusTraversalOrder(
       order: const NumericFocusOrder(0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (_showAvatar) _buildAvatar(),
+          if (_showAvatar && avatar) _buildAvatar(),
           if (_showBackArrow) ...[
-            if (_showAvatar) const SizedBox(width: 8),
+            if (_showAvatar && avatar) const SizedBox(width: 8),
             MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
@@ -1004,9 +1442,14 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         GetIt.instance<PluginSyncService>().calendarAvailable;
     final l10n = AppLocalizations.of(context);
     final seerrNavLabel = seerrPrefs.labelOrDefault(l10n.seerr);
+    final style = _style;
+    final atlas = style == TopNavbarStyle.atlas;
+    final tabline = style == TopNavbarStyle.tabline;
+    if (atlas) _atlasSpecs.clear();
     // Desktop/macOS keeps the dropdown; inline fan-out is only used where
     // horizontal scroll is natural (TV d-pad or touch).
     final useInlineLibraries =
+        !atlas &&
         !showLibrariesIndividually &&
         _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top &&
         ((alwaysExpanded &&
@@ -1022,7 +1465,10 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
       return c;
     }
 
-    return Center(
+    return Align(
+      alignment: style == TopNavbarStyle.classic
+          ? Alignment.center
+          : AlignmentDirectional.centerStart,
       child: _wrapPill(
         isNeon: isNeon,
         child: SingleChildScrollView(
@@ -1035,6 +1481,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 order: (order++).toDouble(),
                 child: ExpandableIconButton(
                   key: const ValueKey('toolbar_home'),
+                  selected: _isActive(Destinations.home),
                   forceExpanded: alwaysExpanded,
                   icon: Icons.home_rounded,
                   label: l10n.home,
@@ -1050,6 +1497,8 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   },
                 ),
               ),
+              // Tabline keeps search with the avatar on the right.
+              if (!tabline) ...[
               _gap(),
               _orderButton(
                 order: (order++).toDouble(),
@@ -1065,6 +1514,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   },
                 ),
               ),
+              ],
               if (showShuffle) ...[
                 _gap(),
                 _orderButton(
@@ -1085,6 +1535,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   order: (order++).toDouble(),
                   child: ExpandableIconButton(
                     key: const ValueKey('toolbar_genres'),
+                    selected: _isActive(Destinations.allGenres),
                     forceExpanded: alwaysExpanded,
                     baseColor: nextNavColor(),
                     iconBuilder: (size, color) => Image.asset(
@@ -1108,6 +1559,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   order: (order++).toDouble(),
                   child: ExpandableIconButton(
                     key: const ValueKey('toolbar_favorites'),
+                    selected: _isActive(Destinations.allFavorites),
                     forceExpanded: alwaysExpanded,
                     icon: Icons.favorite_rounded,
                     label: l10n.favorites,
@@ -1123,8 +1575,11 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 _gap(),
                 _orderButton(
                   order: (order++).toDouble(),
-                  child: ExpandableIconButton(
+                  child: _navButton(
                     key: const ValueKey('toolbar_livetv'),
+                    selected: _isActive(Destinations.liveTvGuide),
+                    atlasKey: 'livetv',
+                    atlasSpec: atlas ? atlasLiveTvSpec(l10n) : null,
                     forceExpanded: alwaysExpanded,
                     icon: Icons.live_tv_rounded,
                     label: l10n.liveTv,
@@ -1158,8 +1613,11 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 _gap(),
                 _orderButton(
                   order: (order++).toDouble(),
-                  child: ExpandableIconButton(
+                  child: _navButton(
                     key: const ValueKey('toolbar_seerr'),
+                    selected: _isActive(Destinations.seerrDiscover),
+                    atlasKey: 'seerr',
+                    atlasSpec: atlas ? atlasSeerrSpec(l10n, seerrNavLabel) : null,
                     forceExpanded: alwaysExpanded,
                     baseColor: nextNavColor(),
                     iconBuilder: (size, color) => seerrPrefs.isSeerrVariant
@@ -1179,6 +1637,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   order: (order++).toDouble(),
                   child: ExpandableIconButton(
                     key: const ValueKey('toolbar_calendar'),
+                    selected: _isActive(Destinations.calendar),
                     forceExpanded: alwaysExpanded,
                     baseColor: nextNavColor(),
                     icon: Icons.calendar_month_rounded,
@@ -1195,10 +1654,13 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   _gap(),
                   _orderButton(
                     order: (order++).toDouble(),
-                    child: ExpandableIconButton(
+                    child: _navButton(
                       // Two servers can share a library id, so the key is the
                       // library itself.
                       key: ObjectKey(lib),
+                      selected: _isLibraryActive(lib),
+                      atlasKey: 'lib:${lib.serverId}:${lib.id}',
+                      atlasSpec: atlas ? atlasLibrarySpec(l10n, lib) : null,
                       forceExpanded: alwaysExpanded,
                       icon: libraryIcon(lib),
                       label: lib.name,
@@ -1211,7 +1673,25 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 _gap(),
                 _orderButton(
                   order: (order++).toDouble(),
-                  child: useInlineLibraries
+                  child: atlas
+                      ? _navButton(
+                          key: const ValueKey('toolbar_libraries_atlas'),
+                          forceExpanded: alwaysExpanded,
+                          iconBuilder: (size, color) => Image.asset(
+                            'assets/icons/clapperboard.png',
+                            width: size,
+                            height: size,
+                            color: color,
+                            fit: BoxFit.contain,
+                          ),
+                          label: l10n.libraries,
+                          baseColor: nextNavColor(),
+                          atlasKey: 'libraries',
+                          atlasSpec: atlasLibrariesSpec(l10n, navLibraries),
+                          onPressed: () =>
+                              _openAtlas('libraries', focusPanel: true),
+                        )
+                      : useInlineLibraries
                       ? _buildInlineLibrariesButton(
                           l10n,
                           iconColor: nextNavColor(),
@@ -1259,55 +1739,21 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                     label: l10n.serverMessages,
                   ),
                 ),
-              _orderButton(
-                order: 99,
-                child: ExpandableIconButton(
-                  key: const ValueKey('toolbar_settings'),
+              // The TV avatar menu has no settings, so Tabline keeps a
+              // Settings tab there.
+              if (style == TopNavbarStyle.classic ||
+                  (tabline && PlatformDetection.isTV))
+                _buildSettingsButton(
+                  // Settings ends the classic row. Tabline has search and the
+                  // avatar after it.
+                  endsRow: style == TopNavbarStyle.classic,
+                  inlineLibrariesBefore:
+                      useInlineLibraries &&
+                      showLibraries &&
+                      navLibraries.isNotEmpty,
                   forceExpanded: alwaysExpanded,
-                  icon: Icons.settings_rounded,
-                  label: l10n.settings,
                   baseColor: nextNavColor(),
-                  focusNode: _settingsFocus,
-                  onKeyEvent: (_, event) {
-                    final isRtl =
-                        Directionality.of(context) == TextDirection.rtl;
-                    final outwardKey = isRtl
-                        ? LogicalKeyboardKey.arrowLeft
-                        : LogicalKeyboardKey.arrowRight;
-                    final inwardKey = isRtl
-                        ? LogicalKeyboardKey.arrowRight
-                        : LogicalKeyboardKey.arrowLeft;
-                    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-                        PlatformDetection.isTV &&
-                        event.logicalKey == outwardKey) {
-                      return KeyEventResult.handled;
-                    }
-                    if (event is KeyDownEvent &&
-                        event.logicalKey == inwardKey &&
-                        useInlineLibraries &&
-                        showLibraries &&
-                        navLibraries.isNotEmpty) {
-                      // Step onto whatever is actually alongside first, since
-                      // downloads and server messages both sit between the
-                      // libraries and here. Jumping to the trigger is the
-                      // fallback for when nothing does, which is what keeps
-                      // the inline libraries reachable from the end of the row.
-                      if (!_moveWithinToolbar(TraversalDirection.left)) {
-                        _inlineLibrariesTriggerFocus.requestFocus();
-                      }
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  onPressed: () async {
-                    await SettingsPanel.open(
-                      context,
-                      const SettingsSidePanel(),
-                    );
-                    if (mounted) _settingsFocus.requestFocus();
-                  },
                 ),
-              ),
             ],
           ),
         ),
@@ -1315,7 +1761,41 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     );
   }
 
+  /// A center button that, in Atlas, can also drop a panel.
+  Widget _navButton({
+    required Key key,
+    required String label,
+    IconData? icon,
+    Widget Function(double size, Color color)? iconBuilder,
+    bool forceExpanded = false,
+    Color? baseColor,
+    bool selected = false,
+    required String atlasKey,
+    AtlasPanelSpec? atlasSpec,
+    required VoidCallback onPressed,
+  }) {
+    final props = atlasSpec == null
+        ? null
+        : _atlasTabProps(atlasKey, atlasSpec);
+    final button = ExpandableIconButton(
+      key: key,
+      forceExpanded: forceExpanded,
+      icon: icon,
+      iconBuilder: iconBuilder,
+      label: label,
+      baseColor: baseColor,
+      selected: selected,
+      focusNode: props?.focusNode,
+      onKeyEvent: props?.onKeyEvent,
+      trailing: props?.trailing,
+      attachedBelow: props?.attached ?? false,
+      onPressed: props == null ? onPressed : _atlasPress(atlasKey, onPressed),
+    );
+    return props == null ? button : _atlasHover(atlasKey, button);
+  }
+
   Widget _wrapPill({required bool isNeon, required Widget child}) {
+    if (_style != TopNavbarStyle.classic) return child;
     if (AppColorScheme.isGlass) {
       return GlassSurface(
         cornerRadius: _kPillRadius,
@@ -1838,7 +2318,21 @@ class _ToolbarLibrariesTriggerButtonState
         },
         child: GestureDetector(
           onTap: widget.onPressed,
-          child: AnimatedContainer(
+          child: NavButtonStyle.of(context) == TopNavbarStyle.tabline
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: TablineTabLabel(
+                    label: widget.label,
+                    focused: InputModeTracker.showFocusVisuals(context, _focused),
+                    selected: widget.expanded,
+                    hovered: _hovered,
+                    fontSize: tablineFontSize(
+                      isMobile: PlatformDetection.useMobileUi,
+                      isTV: PlatformDetection.isTV,
+                    ),
+                  ),
+                )
+              : AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             curve: Curves.easeOut,
             constraints: const BoxConstraints(minHeight: 44),
@@ -1974,7 +2468,20 @@ class _ToolbarLibraryLabelButtonState
         },
         child: GestureDetector(
           onTap: widget.onPressed,
-          child: AnimatedContainer(
+          child: NavButtonStyle.of(context) == TopNavbarStyle.tabline
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: TablineTabLabel(
+                    label: widget.label,
+                    focused: InputModeTracker.showFocusVisuals(context, _focused),
+                    hovered: _hovered,
+                    fontSize: tablineFontSize(
+                      isMobile: PlatformDetection.useMobileUi,
+                      isTV: PlatformDetection.isTV,
+                    ),
+                  ),
+                )
+              : AnimatedContainer(
             duration: const Duration(milliseconds: 120),
             curve: Curves.easeOut,
             constraints: const BoxConstraints(minHeight: 44),

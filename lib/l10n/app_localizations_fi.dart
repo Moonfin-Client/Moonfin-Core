@@ -69,6 +69,35 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get absApiKey => 'API Key';
+
+  @override
+  String get absApiKeyHint =>
+      'Make one in Audiobookshelf under Settings > API Keys, then paste it here.';
+
+  @override
+  String get absOpenId => 'OpenID';
+
+  @override
+  String get absOpenIdIntro =>
+      'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.';
+
+  @override
+  String get absOpenIdWaiting =>
+      'Finish signing in on the page that opened in your browser.';
+
+  @override
+  String get absOpenIdOpen => 'Open Sign-in Page';
+
+  @override
+  String get absOpenIdOpenAgain => 'Open It Again';
+
+  @override
+  String absOpenIdRedirectRefused(String address) {
+    return 'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add $address to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.';
+  }
+
+  @override
   String get quickConnect => 'Pikayhdistys';
 
   @override
@@ -503,6 +532,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get showTechnicalDetailsSubtitle =>
       'Näytä kodekki , tarkkuus ja streamin tiedot bannerissa yhteenvetona';
+
+  @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
 
   @override
   String get recommendationSystem => 'Suositusjärjestelmä';
@@ -1968,6 +2004,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get carServerUnreachable => 'Palvelimeen ei saada yhteyttä';
 
   @override
+  String get carListenNow => 'Kuuntele nyt';
+
+  @override
+  String get carRecentlyPlayed => 'Äskettäin soitettu';
+
+  @override
+  String get carInstantMix => 'Välitön Sekoitus';
+
+  @override
   String downloadsCount(int count) {
     return '$count lataukset';
   }
@@ -2156,6 +2201,24 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get hideMpvStats => 'Piilota mpv-tilastot (Shift+I)';
+
+  @override
+  String get showPlaybackStats => 'Show Playback Stats';
+
+  @override
+  String get hidePlaybackStats => 'Hide Playback Stats';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Network Activity';
+
+  @override
+  String get playbackStatsBufferHealth => 'Buffer Health';
+
+  @override
+  String get playbackStatsBufferMemory => 'Buffer Memory';
+
+  @override
+  String get playbackStatsRebuffers => 'Rebuffers';
 
   @override
   String get keyboardShortcutsTitle => 'Pikanäppäimet';
@@ -3668,6 +3731,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Liu’uta soittimen ylä- tai alaosaa säätääksesi kirkkautta vasemmalla ja äänenvoimakkuutta oikealla';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Käännä eleiden ilmaisimet';
 
   @override
@@ -4236,6 +4306,14 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback =>
+      'Silent Passthrough toiminnon dekoodaus';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'Jos ulostulolaite ei pysty toistamaan passthrough-raitaa ja ääni pysyy mykkänä, dekoodaa se sen sijaan tällä laitteella.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -5827,11 +5905,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Onko palvelimen kirjastoon lisätty mitään uutta';
 
   @override
-  String get seerrTestNotification => 'Send Test Notification';
+  String get seerrTestNotification => 'Lähetä testiviesti';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Verify in-app and background push delivery';
+      'Tarkista sovelluksen sisäisten ja taustalla tapahtuvien push-ilmoitusten toimitus';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5844,29 +5922,30 @@ class AppLocalizationsFi extends AppLocalizations {
       count,
       locale: localeName,
       other: '$countString devices',
-      one: '1 device',
+      one: '1 laite',
     );
-    return 'Dispatched to $_temp0.';
+    return 'Toimitettu $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'In-app notification sent. Server push is not enabled.';
+      'Sovelluksen sisäinen ilmoitus lähetetty. Palvelimen push-ilmoitukset eivät ole käytössä.';
 
   @override
-  String get seerrTestNotificationFailed => 'Failed to send test notification';
+  String get seerrTestNotificationFailed =>
+      'Testiviestin lähettäminen epäonnistui';
 
   @override
-  String get seerrPushServerStatus => 'Server Push';
+  String get seerrPushServerStatus => 'Palvelimen lähetys';
 
   @override
-  String get seerrPushDeviceStatus => 'Device Push';
+  String get seerrPushDeviceStatus => 'Laitteen push-ilmoitus';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registered';
+  String get seerrPushDeviceRegistered => 'Rekisteröity';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Not registered';
+  String get seerrPushDeviceNotRegistered => 'Ei rekisteröity';
 
   @override
   String loggedInAs(String username) {
@@ -6174,6 +6253,27 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get keep => 'Pitää';
+
+  @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
 
   @override
   String get itemNotFoundInLibrary => 'Kohdetta ei löydy Moonfin kirjastostasi';
@@ -10190,7 +10290,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataPersonKindEngineer => 'Insinööri';
 
   @override
-  String get adminMetadataPersonKindMixer => 'Sekoitin';
+  String get adminMetadataPersonKindMixer => 'Mixeri';
 
   @override
   String get adminMetadataPersonKindRemixer => 'Remixaaja';
@@ -13130,6 +13230,54 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kun ”Match Frame Rate” -asetus on pois päältä, 24 fps:n videota toistetaan 0,1 % hitaammin, jotta se sopii televisioon ilman kuvanpudotuksia. Tätä asetusta ei käytetä, kun ääni välitetään suoraan vahvistimeen.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get upscaleAnimationLineArt => 'Upscale anime with line art';
+
+  @override
+  String get upscaleAnimationLineArtSubtitle =>
+      'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.';
+
+  @override
+  String get hdrToneMapping => 'HDR tone mapping';
+
+  @override
+  String get hdrToneMappingDescription =>
+      'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get binauralHeadphones => 'Binaural audio for headphones';
+
+  @override
+  String get binauralHeadphonesSubtitle =>
+      'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
+
+  @override
+  String get loudnessTarget => 'Loudness target';
+
+  @override
+  String get loudnessTargetDescription =>
+      'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.';
+
+  @override
+  String get loudnessTargetStandard => 'Standard (-24 LUFS)';
+
+  @override
+  String get loudnessTargetLoud => 'Loud (-16 LUFS)';
+
+  @override
   String get cadenceTipTitle => 'Ota käyttöön kuvataajuuden täsmäys';
 
   @override
@@ -13374,13 +13522,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get personWebsite => 'Virallinen verkkosivusto';
 
   @override
-  String get watchWithGroup => 'Katso ryhmän kanssa';
+  String get watchWithGroup => 'Katso ryhmässä';
 
   @override
-  String get watchPartyGroupSubtitles => 'Tekstitykset kaikille';
+  String get watchPartyGroupSubtitles => 'Tekstitys kaikille';
 
   @override
-  String get watchPartyOwnSubtitles => 'Jokaisen oma valinta';
+  String get watchPartyOwnSubtitles => 'Vapaa valinta';
 
   @override
   String get watchPartyLobby => 'Aulassa';
@@ -14225,7 +14373,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Seuraava suorittamasi tehtävä lasketaan kaksinkertaisesti merkeissä.';
 
   @override
-  String get achievementsStreakFreeze => 'Katselusarjan suojaus';
+  String get achievementsStreakFreeze => 'Streak Freeze';
 
   @override
   String get achievementsStreakFreezeBody =>
@@ -14311,9 +14459,9 @@ class AppLocalizationsFi extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count lukematonta viestiä',
-      one: '1 lukematon viesti',
-      zero: 'Ei lukemattomia viestejä',
+      other: '$count unread messages',
+      one: '1 unread message',
+      zero: 'No unread messages',
     );
     return '$_temp0';
   }
@@ -15662,6 +15810,18 @@ class AppLocalizationsFi extends AppLocalizations {
   String get personalRatingNumeric => 'Pisteet asteikolla 1–10';
 
   @override
+  String get personalRatingIntervals => 'Rating Intervals';
+
+  @override
+  String get personalRatingIntervalWhole => 'Whole (1)';
+
+  @override
+  String get personalRatingIntervalHalf => 'Half (0.5)';
+
+  @override
+  String get personalRatingIntervalQuarter => 'Quarter (0.25)';
+
+  @override
   String get rate => 'Arvosana';
 
   @override
@@ -15811,6 +15971,52 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Piilota elokuvan tai jakson kuvausteksti.';
+
+  @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
 
   @override
   String get detailUseSeriesThumbnails => 'Käytä sarjan pikkukuvia';
@@ -17426,6 +17632,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Toisto lopetettiin Silo-palvelimella.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return '$name:n PIN-koodi';
   }
@@ -18478,124 +18688,280 @@ class AppLocalizationsFi extends AppLocalizations {
   String get clickpadSeekingPausedOnly => 'Vain tauolla';
 
   @override
-  String get recordingsScopeMine => 'Mine';
+  String get topNavbarStyle => 'Yläpalkin tyyli';
 
   @override
-  String get recordingsScopeEveryone => 'Everyone';
+  String get topNavbarStyleClassic => 'Klassinen';
 
   @override
-  String get myRecordings => 'My Recordings';
+  String get topNavbarStyleTabline => 'Otsikkorivi';
 
   @override
-  String get myRecordingsEmpty => 'Recordings you schedule will show up here.';
+  String get topNavbarStyleAtlas => 'Atlas';
 
   @override
-  String get addToMyRecordings => 'Add to My Recordings';
+  String get topNavbarStyleClassicHint => 'Vakiopalkki';
 
   @override
-  String get addedToMyRecordings => 'Added to My Recordings';
+  String get topNavbarStyleTablineHint =>
+      'Alleviivatut tekstivälilehdet, ilman nappia';
 
   @override
-  String get addSeriesToMyRecordings => 'Add Series to My Recordings';
+  String get topNavbarStyleAtlasHint =>
+      'Välilehdet avaavat paneelin, jossa on pikakuvakkeita ja kuvamateriaalia';
 
   @override
-  String ownerRecordingOne(String name) {
-    return '$name is recording this';
+  String get sidebarStyle => 'Sivupalkin tyyli';
+
+  @override
+  String get sidebarStyleClassic => 'Klassinen';
+
+  @override
+  String get sidebarStyleReel => 'Reel';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'Vakiomuotoinen sivupalkki';
+
+  @override
+  String get sidebarStyleReelHint => 'Pyörä, joka pyörii määränpäiden läpi';
+
+  @override
+  String get sidebarStyleMosaicHint =>
+      'Laattapaneeli, jossa on kirjaston taideteoksia';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Jatka $section';
   }
 
   @override
-  String ownerRecordingTwo(String first, String second) {
-    return '$first and $second are recording this';
+  String navFeatured(String title) {
+    return 'Esittelyssä: $title';
   }
 
   @override
-  String ownerRecordingMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count other users are recording this',
-    );
-    return '$_temp0';
+  String get navOpenMenu => 'Avaa valikko';
+
+  @override
+  String get navReelSwipeHint =>
+      'Päivitä pyyhkäisemällä, napauta keskeltä siirtyäksesi eteenpäin';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Koska sinä nautit siitä $genres';
   }
 
   @override
-  String ownerWaitingOne(String name) {
-    return '$name is also waiting for this';
+  String get siloSectionBecauseYouWatched => 'Koska katsoit';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Koska katsoit $title';
   }
 
   @override
-  String ownerWaitingTwo(String first, String second) {
-    return '$first and $second are also waiting for this';
+  String get siloSectionForYou => 'Sinulle';
+
+  @override
+  String get siloSectionHiddenGems => 'Piilotetut aarteet';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary =>
+      'Korkeasti arvioitu kirjastossasi';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Sarjan seuraava osa';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Valittu selaushistoriastasi';
+
+  @override
+  String get siloSectionPopularOnServer => 'Suosittuja tällä palvelimella';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed =>
+      'Profiilit, joista olet pitänyt';
+
+  @override
+  String get siloSectionRandomPicks => 'Satunnaiset valinnat';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks =>
+      'Äskettäin lisätyt äänikirjat';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Äskettäin lisätyt e-kirjat';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Viime aikoina lisätty $library';
   }
 
   @override
-  String ownerWaitingMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count other users are also waiting for this',
-    );
-    return '$_temp0';
+  String get siloSectionRecentlyAddedManga => 'Äskettäin lisätyt mangat';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Äskettäin lisätyt elokuvat';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Äskettäin lisätyt TV-ohjelmat';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Äskettäin julkaistut äänikirjat';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks =>
+      'Äskettäin julkaistut e-kirjat';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Äskettäin julkaistut jaksot sarjassa $library';
   }
 
   @override
-  String sharedCancelOne(String name) {
-    return '$name also has this in My Recordings. Cancelling stops it for everyone.';
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Julkaistu äskettäin $library';
   }
 
   @override
-  String sharedCancelTwo(String first, String second) {
-    return '$first and $second also have this in My Recordings. Cancelling stops it for everyone.';
+  String get siloSectionRecentlyReleasedManga => 'Äskettäin julkaistut mangat';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies =>
+      'Äskettäin julkaistut elokuvat';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Suosituksia sinulle';
+
+  @override
+  String get siloSectionReturningShows => 'Palaavat sarjat';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Joulun klassikot';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Joulukomediat';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Perheen joulu';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Joulun suosikit';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmarkin joulu';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms =>
+      'Joulun romanttiset komediat';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Pääsiäistarinat';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Pääsiäiselokuvat';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Perheen suosikit';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Perheen elokuvailta';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animoitu Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Perheen halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloweenin suosikit';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween kauhu';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'Uudenvuoden elokuvat';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Lauantaiaamun piirretyt';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Lauantaiaamun suosikit';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90-luvun lauantaiaamut';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irlantilainen elokuva';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irlantilainen televisio';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Kesän suurhittielokuvat';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Klassisia kesäelokuvia';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Kesän nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites =>
+      'Kiitospäivän elokuvat';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood =>
+      'Hyvää oloa tuovat suosikit';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Ystävänpäivän suosikit';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories =>
+      'Klassisia rakkaustarinoita';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas =>
+      'Romanttiset draamat';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms =>
+      'Ystävänpäivän romanttiset komediat';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Kausisuositukset';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
   }
 
   @override
-  String sharedCancelMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other:
-          '$count other users also have this in My Recordings. Cancelling stops it for everyone.',
-    );
-    return '$_temp0';
-  }
+  String get siloSectionTopPicksToday => 'Päivän suosituimmat valinnat';
 
   @override
-  String sharedDeleteOne(String name) {
-    return '$name also has this in My Recordings. Deleting removes it for everyone.';
-  }
+  String get siloSectionTopRated => 'Parhaiten arvioidut';
 
   @override
-  String sharedDeleteTwo(String first, String second) {
-    return '$first and $second also have this in My Recordings. Deleting removes it for everyone.';
-  }
+  String get siloSectionTopRatedMovies => 'Parhaiten arvioidut elokuvat';
 
   @override
-  String sharedDeleteMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other:
-          '$count other users also have this in My Recordings. Deleting removes it for everyone.',
-    );
-    return '$_temp0';
-  }
+  String get siloSectionTopRatedTv => 'Parhaiten arvioidut televisiot';
 
   @override
-  String get sharedKeep => 'Keep';
+  String get siloSectionTrendingOnServer => 'Trendit palvelimella';
 
   @override
-  String get sharedCancelForEveryone => 'Cancel for Everyone';
-
-  @override
-  String get sharedDeleteForEveryone => 'Delete for Everyone';
-
-  @override
-  String get sharedSeriesChange =>
-      'Other users also record this series. Changes apply to everyone.';
-
-  @override
-  String get sharedKeepAsIs => 'Keep As Is';
-
-  @override
-  String get sharedChangeForEveryone => 'Change for Everyone';
+  String get siloSectionTrendingThisWeek => 'Tämän viikon trendit';
 }

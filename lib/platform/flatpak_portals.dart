@@ -7,14 +7,22 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 /// Routes network status and notifications through the desktop portals, so
 /// a Flatpak needs no access to NetworkManager or the notification server.
 void installFlatpakPortals() {
-  final portal = DBusRemoteObject(
-    DBusClient.session(),
-    name: 'org.freedesktop.portal.Desktop',
-    path: DBusObjectPath('/org/freedesktop/portal/desktop'),
-  );
+  final portal = _desktopPortal();
   ConnectivityPlatform.instance = PortalConnectivity(portal);
   FlutterLocalNotificationsPlatform.instance = PortalNotifications(portal);
 }
+
+/// A snap can reach the notification server, but NetworkManager sits behind a
+/// plug that never connects by itself, so only network status uses the portal.
+void installSnapPortals() {
+  ConnectivityPlatform.instance = PortalConnectivity(_desktopPortal());
+}
+
+DBusRemoteObject _desktopPortal() => DBusRemoteObject(
+  DBusClient.session(),
+  name: 'org.freedesktop.portal.Desktop',
+  path: DBusObjectPath('/org/freedesktop/portal/desktop'),
+);
 
 class PortalConnectivity extends ConnectivityPlatform {
   PortalConnectivity(this._portal);

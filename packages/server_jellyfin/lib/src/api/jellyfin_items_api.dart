@@ -322,6 +322,9 @@ class JellyfinItemsApi implements ItemsApi {
         'ImageTypeLimit': ?imageTypeLimit,
         'SortBy': 'PremiereDate',
         'SortOrder': 'Descending',
+        // With grouping into collections on, a movie in a collection would
+        // come back as the collection, which has no release of its own.
+        'CollapseBoxSetItems': false,
          'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
       },
     );

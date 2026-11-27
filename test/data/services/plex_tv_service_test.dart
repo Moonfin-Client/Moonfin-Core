@@ -68,6 +68,17 @@ void main() {
       expect(basement.connections, hasLength(3));
     });
 
+    test('tries the https address of a GDM host before its plain one', () {
+      final basement = server([
+        connection('192.168.50.45', local: true),
+      ]).withLanUris(['http://192.168.50.45:32400']);
+      expect(basement.connections.map((c) => c.uri), [
+        'https://192-168-50-45.hash.plex.direct:32400',
+        'http://192.168.50.45:32400',
+      ]);
+      expect(basement.address, '192.168.50.45:32400');
+    });
+
     test('has no address without connections', () {
       expect(server(const []).address, isNull);
     });

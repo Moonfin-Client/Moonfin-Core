@@ -35,6 +35,7 @@ import 'auto_download_downloader.dart';
 import '../repositories/offline_repository.dart';
 import '../utils/next_up_enrichment.dart';
 import 'background_download_coordinator.dart';
+import 'book_parts.dart';
 import 'book_reader_service.dart';
 import 'download_notification_service.dart';
 import 'legacy_download_engine.dart';
@@ -850,6 +851,8 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     String savePath,
     Directory offlineRoot,
   ) async {
+    // Before the file itself, since the parts only go with their playlist.
+    await _deleteBookParts(p.withoutExtension(savePath));
     final file = File(savePath);
     if (await file.exists()) {
       await file.delete();
@@ -858,6 +861,17 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     final parent = file.parent;
     await _deleteSubtitleFiles(parent, _fileNameBaseFromPath(savePath));
     await _deleteEmptyDirectoriesUpTo(parent, offlineRoot);
+  }
+
+  /// A book downloaded in several files keeps them in a `.parts` folder next
+  /// to the playlist that plays them. The folder only goes with its playlist,
+  /// so nothing else that shares the name is touched.
+  Future<void> _deleteBookParts(String base) async {
+    final playlist = File('$base$bookPartsPlaylistExtension');
+    if (!await playlist.exists()) return;
+    await playlist.delete();
+    final parts = Directory('$base.parts');
+    if (await parts.exists()) await parts.delete(recursive: true);
   }
 
   Future<void> _deleteCandidateFileArtifacts(
@@ -880,6 +894,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
 
     for (final fileNameBase in fileNameBases) {
       await _deleteSubtitleFiles(dir, fileNameBase);
+      await _deleteBookParts('${dir.path}/$fileNameBase');
     }
 
     await _deleteEmptyDirectoriesUpTo(dir, offlineRoot);
@@ -1420,6 +1435,24 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     required CancelToken cancelToken,
     required _ProgressCallback onReceiveProgress,
   }) async {
+    // One transmux runs at a time. Wait for it rather than fall back, since
+    // the other engines save the server's stream as-is, which can't seek.
+    final transmux = Media3TransmuxDownloader.instance;
+    while (transmux.isBusy && !cancelToken.isCancelled) {
+      await Future.any([transmux.idle, cancelToken.whenCancel]);
+      // The wait can be long, so the phone may have left Wi-Fi meanwhile.
+      // Check cancellation again after the await so a cancel isn't reported as
+      // a Wi-Fi failure.
+      if (!cancelToken.isCancelled &&
+          !await _checkWifiPolicy() &&
+          !cancelToken.isCancelled) {
+        throw DioException(
+          type: DioExceptionType.unknown,
+          requestOptions: RequestOptions(path: url),
+          message: 'WiFi-only mode enabled. Connect to WiFi to download.',
+        );
+      }
+    }
     if (cancelToken.isCancelled) {
       throw cancelToken.cancelError ??
           DioException(
@@ -1735,6 +1768,9 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       return const {};
     }
     if (_client.serverType == ServerType.plex) return {'X-Plex-Token': token};
+    if (_client.serverType == ServerType.audiobookshelf) {
+      return {'Authorization': 'Bearer $token'};
+    }
 
     return {
       'X-Emby-Token': token,
@@ -1955,7 +1991,10 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     required String primaryUrl,
   }) {
     // The other routes are all Jellyfin's.
-    if (_client.serverType == ServerType.plex) return const [];
+    if (_client.serverType == ServerType.plex ||
+        _client.serverType == ServerType.audiobookshelf) {
+      return const [];
+    }
     final candidates = <String>[
       if (item.type == 'Book')
         ...BookReaderService.buildDownloadUris(
@@ -2190,7 +2229,9 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
   }
 
   String _buildDirectItemDownloadUrl(AggregatedItem item) {
-    if (_client.serverType == ServerType.plex) {
+    // Plex and Audiobookshelf name the original file's route on the source.
+    if (_client.serverType == ServerType.plex ||
+        _client.serverType == ServerType.audiobookshelf) {
       final part = item.mediaSources.firstOrNull?['DirectStreamUrl'];
       final query = _encodeQuery({
         'download': '1',
@@ -2712,12 +2753,18 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         });
       }
 
+      // A book in several files shows as one download across all of them.
+      var partsDone = 0;
+      var partsTotal = 0;
+
       void onReceiveProgress(
-        int received,
-        int total, {
+        int partReceived,
+        int partTotal, {
         int? bytesPerSecond,
         int? etaSeconds,
       }) {
+        final received = partsDone + partReceived;
+        final total = partsTotal > 0 ? partsTotal : partTotal;
         var rawProgress = _calculateProgress(
           received: received,
           total: total,
@@ -2846,28 +2893,68 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       }
 
       Response? downloadResponse;
-      try {
-        downloadResponse = await engineDownload(url);
-      } on DioException catch (e) {
-        // The fallbacks are Jellyfin's own URLs. A server-prepared file has
-        // no other address.
-        if (serverTicket != null ||
-            !_shouldRetryWithFallback(fullItem, quality, e)) {
+      final parts = bookPartsOf(fullItem.rawData);
+      if (parts != null) {
+        // The background engine's restart recovery would finish one part as
+        // the whole book, so the parts download in process.
+        usePluginEngine = false;
+        partsTotal = parts.fold(0, (sum, part) => sum + part.size);
+        final base = p.withoutExtension(savePath);
+        final playlist = '$base$bookPartsPlaylistExtension';
+        final partsDir = Directory('$base.parts');
+        await partsDir.create(recursive: true);
+        final saved = <String>[];
+        try {
+          for (final part in parts) {
+            final partPath = '${partsDir.path}/${part.fileName}';
+            savePath = partPath;
+            final response = await engineDownload(
+              '${_client.baseUrl}${part.url}',
+            );
+            final size = await File(partPath).length();
+            await _validateDownloadedFile(
+              File(partPath),
+              quality,
+              bytesReceived: size,
+              response: response,
+            );
+            partsDone += size;
+            saved.add(partPath);
+          }
+        } catch (_) {
+          // The handlers below clean up one file, so the parts go here.
+          savePath = playlist;
+          try {
+            await partsDir.delete(recursive: true);
+          } catch (_) {}
           rethrow;
         }
+        savePath = playlist;
+        await File(playlist).writeAsString(bookPartsPlaylist(saved));
+      } else {
+        try {
+          downloadResponse = await engineDownload(url);
+        } on DioException catch (e) {
+          // The fallbacks are Jellyfin's own URLs. A server-prepared file has
+          // no other address.
+          if (serverTicket != null ||
+              !_shouldRetryWithFallback(fullItem, quality, e)) {
+            rethrow;
+          }
 
-        final fallbackResponse = await tryFallbackDownload();
-        if (fallbackResponse == null) {
-          rethrow;
+          final fallbackResponse = await tryFallbackDownload();
+          if (fallbackResponse == null) {
+            rethrow;
+          }
+          downloadResponse = fallbackResponse;
+        } on TimeoutException {
+          if (serverTicket != null) rethrow;
+          final fallbackResponse = await tryFallbackDownload();
+          if (fallbackResponse == null) {
+            rethrow;
+          }
+          downloadResponse = fallbackResponse;
         }
-        downloadResponse = fallbackResponse;
-      } on TimeoutException {
-        if (serverTicket != null) rethrow;
-        final fallbackResponse = await tryFallbackDownload();
-        if (fallbackResponse == null) {
-          rethrow;
-        }
-        downloadResponse = fallbackResponse;
       }
 
       final savedFile = File(savePath);
@@ -2884,12 +2971,15 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       );
       await _offlineRepo.updateDownloadStatus(item.id, 1, progress: 1.0);
       notifyListeners();
-      await _validateDownloadedFile(
-        savedFile,
-        quality,
-        bytesReceived: bytesReceived,
-        response: downloadResponse,
-      );
+      // Each part was checked as it landed, and the playlist is plain text.
+      if (parts == null) {
+        await _validateDownloadedFile(
+          savedFile,
+          quality,
+          bytesReceived: bytesReceived,
+          response: downloadResponse,
+        );
+      }
 
       if (fullItem.type == 'Book') {
         final corrected = await _correctBookExtension(
@@ -2901,7 +2991,9 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         }
       }
 
-      final finalSize = await File(savePath).length();
+      final finalSize = parts == null
+          ? await File(savePath).length()
+          : partsDone;
       await _offlineRepo.setLocalFilePath(
         item.id,
         savePath,

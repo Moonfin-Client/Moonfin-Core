@@ -184,6 +184,77 @@ void main() {
     expect(severance.mediaInfo!.requests!.single.requestedBy!.id, 7);
   });
 
+  test('search keeps what Silo\'s web app offers to request', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/search': (
+        200,
+        {
+          'page': 1,
+          'total_pages': 1,
+          'total_results': 3,
+          'results': [
+            _heat,
+            {
+              'media_type': 'series',
+              'tmdb_id': 456,
+              'title': 'The Simpsons',
+              'availability': 'partial',
+              'library_content_id': 'series-tvdb-71663',
+              'request': {'requestable': true, 'following': false},
+            },
+            {..._heat, 'tmdb_id': 950, 'availability': null},
+            {
+              'media_type': 'series',
+              'tmdb_id': 457,
+              'title': 'Futurama',
+              'availability': 'partial',
+              'library_content_id': 'series-tvdb-73871',
+              'request': {'state': 'available', 'request_id': '12'},
+            },
+            {
+              'media_type': 'movie',
+              'tmdb_id': 458,
+              'title': 'Gone Film',
+              'availability': 'missing',
+              'library_content_id': 'movie-tmdb-458',
+              'request': {'state': 'available', 'request_id': '13'},
+            },
+          ],
+        },
+      ),
+    });
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+    final page = SeerrDiscoverPage.fromJson(await client.search('the'));
+
+    expect(
+      page.results.map((r) => r.id),
+      [456, 457, 458],
+      reason: 'a partly available series stays for its missing seasons',
+    );
+    expect(
+      page.results.map((r) => r.mediaInfo!.status),
+      [4, 4, 1],
+      reason: 'partial after an earlier request was fulfilled, and a title '
+          'whose files are gone can be requested again',
+    );
+  });
+
+  test('the search screen sends Silo two letters or more, as its web app', () async {
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/search': (200, {'page': 1, 'results': <Object>[]}),
+    });
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+
+    expect(client.minSearchQueryLength, 2);
+    // A detail lookup by a one-letter title still asks Silo.
+    await client.search('M');
+    expect(silo.calls.where((c) => c.contains('/requests/search')), hasLength(1));
+  });
+
   test('an admin row on Silo is a slider that reads that row', () async {
     final silo = _Silo({
       ..._base(),
@@ -424,6 +495,74 @@ void main() {
       await client.getRequests(filter: 'pending', limit: 3),
     );
     expect(pending.results.map((r) => r.media!.tmdbId), [2, 4]);
+  });
+
+  test('a failed request that delivered nothing can be removed, where Silo '
+      'offers it', () async {
+    Map<String, Object> req(String id, String outcome, List<String> targets) => {
+      'id': id,
+      'media_type': 'movie',
+      'tmdb_id': id.length,
+      'title': id,
+      'status': 'queued',
+      'outcome': outcome,
+      'state': outcome == 'failed' ? 'failed' : 'processing',
+      'seasons': [],
+      'requested_by_user_id': '7',
+      'targets': [
+        for (final t in targets) {'id': '1', 'quality': '1080p', 'status': t},
+      ],
+      'created_at': '2026-01-02T03:04:05.000Z',
+      'updated_at': '2026-01-02T03:04:05.000Z',
+    };
+    final mine = (
+      200,
+      {
+        'items': [
+          req('7390012345678901234', 'failed', ['failed']),
+          req('r-partial', 'failed', ['completed', 'failed']),
+          req('r-active', 'active', ['queued']),
+        ],
+      },
+    );
+    final supported = (
+      200,
+      {
+        'state': 'enabled',
+        'allowed': true,
+        'requests_enabled': true,
+        'remove_failed_supported': true,
+      },
+    );
+    final silo = _Silo({
+      ..._base(),
+      'GET /api/v2/requests/status': supported,
+      'GET /api/v2/requests/mine': mine,
+      'DELETE /api/v2/requests/7390012345678901234': (204, null),
+      'DELETE /api/v2/requests/r-partial': _problem(409, 'conflict'),
+    });
+    final client = _client(silo);
+    await client.getMoonfinStatus();
+
+    final list = SeerrRequestListResponse.fromJson(await client.getRequests());
+    expect(list.results.map((r) => r.canRemove), [true, false, false]);
+
+    await client.removeFailedRequest(list.results.first.id);
+    expect(silo.calls.last, 'DELETE /api/v2/requests/7390012345678901234');
+    await expectLater(
+      client.removeFailedRequest(list.results[1].id),
+      throwsA(isA<SeerrRequestException>()),
+    );
+
+    // Already gone (removed on another device) is what was asked for.
+    await client.removeFailedRequest(list.results.last.id);
+    expect(silo.calls.last, 'DELETE /api/v2/requests/r-active');
+
+    // An older Silo doesn't say it has the route, so nothing offers it.
+    final old = _client(_Silo({..._base(), 'GET /api/v2/requests/mine': mine}));
+    await old.getMoonfinStatus();
+    final oldList = SeerrRequestListResponse.fromJson(await old.getRequests());
+    expect(oldList.results.any((r) => r.canRemove), isFalse);
   });
 
   test('an admin sees who made each request', () async {

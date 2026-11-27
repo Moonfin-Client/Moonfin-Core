@@ -47,6 +47,9 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   bool? _admin;
   int? _userId;
 
+  /// Older Silo servers leave this out of the request status.
+  bool _removeFailedSupported = false;
+
   final Random _random = Random();
 
   /// Pages skipped at the start of a row on this visit, by row key, so the
@@ -141,6 +144,16 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
 
   int get _me => _userId ?? 0;
 
+  /// Silo removes a request only when it failed with nothing delivered. It also
+  /// needs the owner or an admin, and these lists only hold the viewer's own
+  /// requests unless they're an admin.
+  bool _removable(Map r) {
+    if (!_removeFailedSupported || r['outcome'] != 'failed') return false;
+    final targets = r['targets'];
+    return !(targets is List &&
+        targets.any((t) => t is Map && t['status'] == 'completed'));
+  }
+
   // Silo's requests name their requester by account id only.
   String? _myName;
   final Map<int, String> _accountNames = {};
@@ -197,6 +210,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   @override
   Future<MoonfinStatusResponse> getMoonfinStatus() async {
     final status = await _get('/requests/status');
+    _removeFailedSupported = status['remove_failed_supported'] == true;
     final enabled = status['requests_enabled'] == true;
     final allowed = status['allowed'] != false;
     final user = enabled ? await getCurrentUser() : null;
@@ -285,14 +299,19 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
     };
   }
 
+  /// A fulfilled request counts only while the title is still there: a
+  /// partly available one stays partial, and one whose files are gone
+  /// (`missing`) can be requested again.
   static int _mediaStatusOf(Object? availability, String? state) {
     if (availability == 'available') return _mediaAvailable;
     return switch (state) {
       'pending' => _mediaPending,
       'approved' || 'processing' => _mediaProcessing,
       'partially_available' => _mediaPartial,
+      'available' when availability == 'partial' => _mediaPartial,
+      'available' when availability == 'missing' => _mediaUnknown,
       'available' => _mediaAvailable,
-      _ => _mediaUnknown,
+      _ => availability == 'partial' ? _mediaPartial : _mediaUnknown,
     };
   }
 
@@ -423,8 +442,13 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   Future<Map<String, dynamic>> getUpcomingTv({int page = 1}) =>
       _section('on_air_series', page);
 
-  /// Titles already in the library are left out: search lists them under
-  /// the library's own results, and opening one here led back there anyway.
+  /// Silo's web app asks nothing for a single character.
+  @override
+  int get minSearchQueryLength => 2;
+
+  /// Titles fully in the library are left out, as Silo's web app does:
+  /// search lists them under the library's own results. A partly available
+  /// series stays, so its missing seasons can be requested.
   @override
   Future<Map<String, dynamic>> search(
     String query, {
@@ -443,7 +467,10 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       if (results is List)
         'results': [
           for (final r in results.whereType<Map>())
-            if (r['library_content_id'] == null) r,
+            if (r['availability'] == null
+                ? r['library_content_id'] == null
+                : r['availability'] != 'available')
+              r,
         ],
     });
   }
@@ -933,6 +960,7 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
       'updatedAt': updatedAt,
       'type': type,
       'is4k': false,
+      'canRemove': _removable(r),
       'media': {
         'id': r['tmdb_id'],
         'mediaType': type,
@@ -1114,6 +1142,17 @@ class SiloSeerrHttpClient extends SeerrHttpClient {
   Future<void> deleteRequest(int requestId) async {
     final id = Uri.encodeComponent(_requestId(requestId));
     await _mutate(() => _dio.post<dynamic>('$_api/requests/$id/cancel', data: {}));
+  }
+
+  /// A 404 means the request is already gone, which is what was asked for.
+  @override
+  Future<void> removeFailedRequest(int requestId) async {
+    final id = Uri.encodeComponent(_requestId(requestId));
+    try {
+      await _mutate(() => _dio.delete<dynamic>('$_api/requests/$id'));
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 404) rethrow;
+    }
   }
 
   Future<void> _adminAction(int requestId, String action) async {

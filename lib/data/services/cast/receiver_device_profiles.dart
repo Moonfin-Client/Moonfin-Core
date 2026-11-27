@@ -105,6 +105,145 @@ Map<String, dynamic> chromecastDeviceProfile({int? maxBitrateMbps}) {
   };
 }
 
+/// A DLNA renderer, which is nearly always a TV. Its `GetProtocolInfo` lists
+/// containers with any codec, so this is what TVs of the last decade play:
+/// H264 and HEVC in MP4, Matroska or MPEG-TS, with AAC, MP3 and Dolby audio.
+/// DTS and TrueHD convert, since many TVs dropped them. Many renderers list
+/// no HLS, so the HLS profile is only the last resort, and it lists HEVC so a
+/// server that converts only the audio keeps the video as it is.
+Map<String, dynamic> dlnaDeviceProfile() {
+  const bitrate = 120000000;
+  return <String, dynamic>{
+    'Name': 'Moonfin DLNA',
+    'MaxStaticBitrate': bitrate,
+    'MaxStreamingBitrate': bitrate,
+    'MusicStreamingTranscodingBitrate': 384000,
+    'DirectPlayProfiles': <Map<String, dynamic>>[
+      <String, dynamic>{
+        'Type': 'Video',
+        // Emby names an MPEG-TS source mpegts and matches names exactly.
+        'Container': 'mp4,m4v,mkv,ts,mpegts',
+        'VideoCodec': 'h264,hevc',
+        'AudioCodec': 'aac,mp3,ac3,eac3',
+      },
+      <String, dynamic>{
+        'Type': 'Audio',
+        'Container': 'mp3,aac,m4a,flac,wav',
+        // Jellyfin and Emby name WAV audio by its PCM format.
+        'AudioCodec': 'mp3,aac,flac,wav,pcm_s16le,pcm_s24le',
+      },
+    ],
+    'TranscodingProfiles': <Map<String, dynamic>>[
+      // Jellyfin and Emby take the first profile, and many TVs (LG) can't
+      // open HLS, so a conversion goes out as one MPEG-TS stream. Silo only
+      // converts over HLS and skips this profile.
+      <String, dynamic>{
+        'Type': 'Video',
+        'Context': 'Streaming',
+        'Container': 'ts',
+        'Protocol': 'http',
+        'VideoCodec': 'h264,hevc',
+        'AudioCodec': 'aac,ac3',
+        'CopyTimestamps': false,
+      },
+      <String, dynamic>{
+        'Type': 'Video',
+        'Context': 'Streaming',
+        'Container': 'ts',
+        'Protocol': 'hls',
+        'VideoCodec': 'h264,hevc',
+        'AudioCodec': 'aac,ac3',
+        'CopyTimestamps': false,
+      },
+      <String, dynamic>{
+        'Type': 'Audio',
+        'Context': 'Streaming',
+        'Container': 'mp3',
+        'Protocol': 'http',
+        'AudioCodec': 'mp3',
+      },
+    ],
+    'ContainerProfiles': <Map<String, dynamic>>[],
+    'CodecProfiles': <Map<String, dynamic>>[
+      <String, dynamic>{
+        'Type': 'Video',
+        'Codec': 'h264',
+        'Conditions': <Map<String, dynamic>>[
+          // TVs decode eight-bit H264 only, so High 10 converts.
+          <String, dynamic>{
+            'Condition': 'EqualsAny',
+            'Property': 'VideoProfile',
+            'Value': 'high|main|baseline|constrained baseline',
+            'IsRequired': false,
+          },
+          <String, dynamic>{
+            'Condition': 'LessThanEqual',
+            'Property': 'VideoLevel',
+            'Value': '51',
+            'IsRequired': false,
+          },
+        ],
+      },
+      <String, dynamic>{
+        'Type': 'Video',
+        'Codec': 'hevc',
+        'Conditions': <Map<String, dynamic>>[
+          <String, dynamic>{
+            'Condition': 'EqualsAny',
+            'Property': 'VideoProfile',
+            'Value': 'main|main 10',
+            'IsRequired': false,
+          },
+          // Profile 5 has no fallback layer and comes out green and purple on
+          // a TV without Dolby Vision, and profile 7 needs its enhancement
+          // layer. Profile 8 keeps an HDR10 base any HDR set shows.
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVI',
+            'IsRequired': false,
+          },
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVIWithEL',
+            'IsRequired': false,
+          },
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVIWithELHDR10Plus',
+            'IsRequired': false,
+          },
+          <String, dynamic>{
+            'Condition': 'NotEquals',
+            'Property': 'VideoRangeType',
+            'Value': 'DOVIInvalid',
+            'IsRequired': false,
+          },
+          // Jellyfin writes each range condition to the same hevc-rangetype
+          // option of a conversion, so only the last one counts there: this
+          // allowlist keeps Dolby Vision 5 and 7 out of a copied stream too.
+          // Silo reads only the NotEquals conditions above.
+          <String, dynamic>{
+            'Condition': 'EqualsAny',
+            'Property': 'VideoRangeType',
+            'Value':
+                'SDR|HDR10|HDR10Plus|HLG|DOVIWithHDR10|DOVIWithHDR10Plus|DOVIWithHLG|DOVIWithSDR|Unknown',
+            'IsRequired': false,
+          },
+        ],
+      },
+    ],
+    // TVs draw a text track carried in the file, so a default subtitle
+    // doesn't force a burn-in transcode. Bitmap and styled tracks still burn.
+    'SubtitleProfiles': <Map<String, dynamic>>[
+      <String, dynamic>{'Format': 'srt', 'Method': 'Embed'},
+      <String, dynamic>{'Format': 'subrip', 'Method': 'Embed'},
+    ],
+  };
+}
+
 /// AirPlay video, where AVPlayer fetches the URL itself. It handles H264 and
 /// HEVC in the MP4 family plus HLS, and nothing Matroska. The 15 Mbps ceiling
 /// is the cap this path has always used.

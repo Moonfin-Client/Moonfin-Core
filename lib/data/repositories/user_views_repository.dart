@@ -53,9 +53,10 @@ Future<Set<String>?> _excludesFrom(Future<UserConfiguration> config) async {
 Future<Map<String, dynamic>> loadVisibleUserViews(
   MediaServerClient client,
 ) async {
-  final viewsFuture = client.userViewsApi.getUserViews(includeHidden: true);
-  final excludes = await _excludesFrom(client.usersApi.getUserConfiguration());
-  final response = await viewsFuture;
+  final (response, excludes) = await (
+    client.userViewsApi.getUserViews(includeHidden: true),
+    _excludesFrom(client.usersApi.getUserConfiguration()),
+  ).wait;
 
   if (excludes == null) return client.userViewsApi.getUserViews();
   return _filterExcludedViews(response, excludes);
@@ -120,9 +121,10 @@ class UserViewsRepository extends ChangeNotifier {
   /// The raw views response with anything hidden from My Media removed, for
   /// callers that build rows straight from the server shape.
   Future<Map<String, dynamic>> getVisibleViewsResponse() async {
-    final responseFuture = _hiddenResponse();
-    final excludes = await _excludesFrom(cachedUserConfiguration());
-    final response = await responseFuture;
+    final (response, excludes) = await (
+      _hiddenResponse(),
+      _excludesFrom(cachedUserConfiguration()),
+    ).wait;
     if (excludes == null) return _client.userViewsApi.getUserViews();
     return _filterExcludedViews(response, excludes);
   }

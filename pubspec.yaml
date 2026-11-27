@@ -103,7 +103,7 @@ dependencies:
   dbus: ^0.7.14
 
   # Utilities
-  device_info_plus: ^11.5.0
+  device_info_plus: ^12.4.0
   json_annotation: ^4.9.0
   logger: ^2.7.0
   intl: ^0.20.2
@@ -111,7 +111,7 @@ dependencies:
   collection: ^1.19.1
   package_info_plus: ^9.0.0
   uuid: ^4.5.3
-  cupertino_icons: ^1.0.9
+  cupertino_icons: ^2.0.0
   # Flutter bundles the older Material Icons font, which has no crown or owl
   # for the achievement avatars to wear. Tree shaking keeps only the glyphs
   # actually named.
@@ -133,6 +133,8 @@ dependencies:
     path: packages/server_plex
   server_silo:
     path: packages/server_silo
+  server_audiobookshelf:
+    path: packages/server_audiobookshelf
   playback_core:
     path: packages/playback_core
   playback_jellyfin:
@@ -143,6 +145,8 @@ dependencies:
     path: packages/playback_plex
   playback_silo:
     path: packages/playback_silo
+  playback_audiobookshelf:
+    path: packages/playback_audiobookshelf
   moonfin_design:
     path: packages/design
   jellyfin_preference:
@@ -159,7 +163,7 @@ dependencies:
   webview_flutter_wkwebview: ^3.25.1
   youtube_player_iframe: ^6.0.0
   pdfrx: ^2.6.1
-  flutter_widget_from_html_core: ^0.16.1
+  flutter_widget_from_html_core: ^0.17.4
   # Vendored fork of kindle_unpack 0.1.1 (MOBI/AZW/AZW3 -> EPUB), patched to
   # build against archive 4.x. See packages/kindle_unpack/pubspec.yaml.
   kindle_unpack:
@@ -187,6 +191,8 @@ dependencies:
   shared_preferences_tvos: 0.0.2
   flutter_secure_storage_tvos: 0.0.2
   sqflite_tvos: any
+  connectivity_plus_tvos: 0.0.2
+  wakelock_plus_tvos: 0.0.2
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
   firebase_app_installations: ^0.4.5
@@ -232,13 +238,15 @@ dependency_overrides:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
       path: libs/windows/media_kit_libs_windows_video
-      ref: 402fb2a3e19c77eaefb2737d0428d0cdc1a88ece
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
   # Vendored 0.6.0 with a Windows texture_bridge.cc fix for scroll/resize and
   # tab-switch crashes (null-visual guard + WGC Recreate moved off the
-  # capture-thread mutex). Both changed sites carry their reasoning inline in
-  # packages/flutter_inappwebview_windows/windows/custom_platform_view/
-  # texture_bridge.cc. On upgrade, re-vendor the matching version and diff that
-  # file against the pub.dev release to carry the fix forward.
+  # capture-thread mutex), and an exit crash fix in in_app_webview_manager.cpp
+  # that releases the manager's WinRT statics in its destructor. Each changed
+  # site carries its reasoning inline under
+  # packages/flutter_inappwebview_windows/windows/. On upgrade, re-vendor the
+  # matching version and diff those files against the pub.dev release to carry
+  # the fixes forward.
   flutter_inappwebview_windows:
     path: packages/flutter_inappwebview_windows
   # Vendored 0.1.2 that degrades instead of throwing from its detached input
@@ -265,14 +273,16 @@ dependency_overrides:
   # Fork of 2.0.1 carrying a Linux renderer fix: an EGLImage that NVIDIA leaves
   # idle under Wayland stops presenting, so a long gap between mpv frames
   # rebuilds the texture, and frame notifications move onto the main thread.
+  # It also keeps a size set with setSize when a video with new dimensions
+  # loads, which the desktop texture cap relies on.
   # The pinned commit sits ahead of the published release, so it also carries
   # unreleased upstream work on the Apple and Dart sides. Re-check those builds
-  # when moving the ref, and drop this once the fix reaches a published version.
+  # when moving the ref, and drop this once the fixes reach a published version.
   media_kit_video:
     git:
       url: https://github.com/RadicalMuffinMan/media-kit.git
       path: media_kit_video
-      ref: 402fb2a3e19c77eaefb2737d0428d0cdc1a88ece
+      ref: d739f693073a816f7d13afef1e3261aee7c46d9f
   synchronized: 3.3.1
   wakelock_plus: 1.5.2
   screen_brightness_android: 2.1.3

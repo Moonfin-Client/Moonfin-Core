@@ -147,6 +147,7 @@ class SiloMediaStreamResolver
       directPlayRequested: enableDirectPlay,
       auth: await _streamAuth(client),
       tokenInEveryUrl: !environment.traits.sendsRequestHeaders,
+      referenceOnly: environment.traits.authorizesByStreamReference,
       requestedSubtitleStreamIndex: subtitleStreamIndex,
     );
     _sessions.add(
@@ -275,11 +276,13 @@ class SiloMediaStreamResolver
         // Silo recorded the play when it ended the session.
         session.ended = true;
         client.notePlaybackEnded(session.itemId);
+        _sessions.noteEnded(session);
         throw siloEndedOnServerRefusal;
       }
       if (SiloPlaybackApi.isSessionGone(error) ||
           SiloPlaybackApi.isInstallationChanged(error)) {
         session.ended = true;
+        _sessions.noteEnded(session);
       }
       rethrow;
     }
@@ -302,6 +305,7 @@ class SiloMediaStreamResolver
       directPlayRequested: request.enableDirectPlay,
       auth: await _streamAuth(client),
       tokenInEveryUrl: !_environment().traits.sendsRequestHeaders,
+      referenceOnly: _environment().traits.authorizesByStreamReference,
       requestedSubtitleStreamIndex: request.subtitleStreamIndex,
     );
     session

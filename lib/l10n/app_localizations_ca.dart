@@ -69,6 +69,35 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
+  String get absApiKey => 'API Key';
+
+  @override
+  String get absApiKeyHint =>
+      'Make one in Audiobookshelf under Settings > API Keys, then paste it here.';
+
+  @override
+  String get absOpenId => 'OpenID';
+
+  @override
+  String get absOpenIdIntro =>
+      'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.';
+
+  @override
+  String get absOpenIdWaiting =>
+      'Finish signing in on the page that opened in your browser.';
+
+  @override
+  String get absOpenIdOpen => 'Open Sign-in Page';
+
+  @override
+  String get absOpenIdOpenAgain => 'Open It Again';
+
+  @override
+  String absOpenIdRedirectRefused(String address) {
+    return 'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add $address to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.';
+  }
+
+  @override
   String get quickConnect => 'Quick Connect';
 
   @override
@@ -499,6 +528,13 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get showTechnicalDetailsSubtitle =>
       'Mostra el còdec, la resolució i la informació del flux al resum del bàner';
+
+  @override
+  String get detailShowFullDate => 'Mostra la data completa';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Mostra la data completa d\'estrena o d\'emissió en lloc de només l\'any a les pàgines de detalls';
 
   @override
   String get recommendationSystem => 'Sistema de recomanacions';
@@ -1973,6 +2009,15 @@ class AppLocalizationsCa extends AppLocalizations {
   String get carServerUnreachable => 'No es pot connectar amb el teu servidor';
 
   @override
+  String get carListenNow => 'Escolta ara';
+
+  @override
+  String get carRecentlyPlayed => 'Reproduït recentment';
+
+  @override
+  String get carInstantMix => 'Mescla instantània';
+
+  @override
   String downloadsCount(int count) {
     return '$count baixades';
   }
@@ -2163,6 +2208,24 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get hideMpvStats => 'Amaga les estadístiques de mpv (Shift+I)';
+
+  @override
+  String get showPlaybackStats => 'Mostra les estadístiques de reproducció';
+
+  @override
+  String get hidePlaybackStats => 'Amaga les estadístiques de reproducció';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Activitat de xarxa';
+
+  @override
+  String get playbackStatsBufferHealth => 'Estat del búfer';
+
+  @override
+  String get playbackStatsBufferMemory => 'Memòria del búfer';
+
+  @override
+  String get playbackStatsRebuffers => 'Recàrregues del búfer';
 
   @override
   String get keyboardShortcutsTitle => 'Dreceres de teclat';
@@ -3689,6 +3752,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Desplaça el controlador cap amunt o cap avall per canviar la brillantor a l\'esquerra i el volum a la dreta';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Inverteix els indicadors de gestos';
 
   @override
@@ -4261,6 +4331,14 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'Aplicació (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback =>
+      'Descodifica el passthrough silenciós';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'Si la sortida no pot reproduir una pista de passthrough i queda en silenci, descodifica-la en aquest dispositiu.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -5867,11 +5945,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Qualsevol contingut multimèdia nou afegit a la biblioteca';
 
   @override
-  String get seerrTestNotification => 'Send Test Notification';
+  String get seerrTestNotification => 'Envia una notificació de prova';
 
   @override
   String get seerrTestNotificationDesc =>
-      'Verify in-app and background push delivery';
+      'Comprova el lliurament de notificacions push dins de l\'aplicació i en segon pla';
 
   @override
   String seerrTestNotificationSentBody(num count) {
@@ -5883,30 +5961,31 @@ class AppLocalizationsCa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString devices',
-      one: '1 device',
+      other: '$countString dispositius',
+      one: '1 dispositiu',
     );
-    return 'Dispatched to $_temp0.';
+    return 'S\'ha enviat a $_temp0.';
   }
 
   @override
   String get seerrTestNotificationPushDisabled =>
-      'In-app notification sent. Server push is not enabled.';
+      'S\'ha enviat la notificació dins de l\'aplicació. Les notificacions push del servidor no estan activades.';
 
   @override
-  String get seerrTestNotificationFailed => 'Failed to send test notification';
+  String get seerrTestNotificationFailed =>
+      'No s\'ha pogut enviar la notificació de prova';
 
   @override
-  String get seerrPushServerStatus => 'Server Push';
+  String get seerrPushServerStatus => 'Push del servidor';
 
   @override
-  String get seerrPushDeviceStatus => 'Device Push';
+  String get seerrPushDeviceStatus => 'Push del dispositiu';
 
   @override
-  String get seerrPushDeviceRegistered => 'Registered';
+  String get seerrPushDeviceRegistered => 'Registrat';
 
   @override
-  String get seerrPushDeviceNotRegistered => 'Not registered';
+  String get seerrPushDeviceNotRegistered => 'No registrat';
 
   @override
   String loggedInAs(String username) {
@@ -6218,6 +6297,27 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get keep => 'Mantenir';
+
+  @override
+  String get removeRequest => 'Elimina la sol·licitud';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'La teva sol·licitud fallida de «$title» s\'eliminarà. La pots tornar a sol·licitar més tard.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'La sol·licitud no s\'ha eliminat. S\'ha tornat a provar o n\'ha arribat una part.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'La sol·licitud fallida de «$title» feta per $name s\'eliminarà. La podrà tornar a sol·licitar més tard.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'No s\'ha pogut eliminar la sol·licitud. Torna-ho a provar.';
 
   @override
   String get itemNotFoundInLibrary =>
@@ -13270,6 +13370,54 @@ class AppLocalizationsCa extends AppLocalizations {
       'Quan Match Frame Rate està desactivat, reprodueix el vídeo de 24 fps un 0,1 % més lent perquè s\'ajusti al televisor sense perdre fotogrames. No s\'utilitza quan l\'àudio passa directament a un receptor.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get upscaleAnimationLineArt => 'Upscale anime with line art';
+
+  @override
+  String get upscaleAnimationLineArtSubtitle =>
+      'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.';
+
+  @override
+  String get hdrToneMapping => 'HDR tone mapping';
+
+  @override
+  String get hdrToneMappingDescription =>
+      'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get binauralHeadphones => 'Binaural audio for headphones';
+
+  @override
+  String get binauralHeadphonesSubtitle =>
+      'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
+
+  @override
+  String get loudnessTarget => 'Loudness target';
+
+  @override
+  String get loudnessTargetDescription =>
+      'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.';
+
+  @override
+  String get loudnessTargetStandard => 'Standard (-24 LUFS)';
+
+  @override
+  String get loudnessTargetLoud => 'Loud (-16 LUFS)';
+
+  @override
   String get cadenceTipTitle => 'Activa Match Frame Rate';
 
   @override
@@ -15816,6 +15964,18 @@ class AppLocalizationsCa extends AppLocalizations {
   String get personalRatingNumeric => 'Puntuació numèrica d\'1 a 10';
 
   @override
+  String get personalRatingIntervals => 'Intervals de valoració';
+
+  @override
+  String get personalRatingIntervalWhole => 'Enter (1)';
+
+  @override
+  String get personalRatingIntervalHalf => 'Mig (0,5)';
+
+  @override
+  String get personalRatingIntervalQuarter => 'Quart (0,25)';
+
+  @override
   String get rate => 'Puntuar';
 
   @override
@@ -15963,6 +16123,52 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Amaga el text descriptiu de la pel·lícula o de l\'episodi.';
+
+  @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
 
   @override
   String get detailUseSeriesThumbnails => 'Utilitza les miniatures de la sèrie';
@@ -17600,6 +17806,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'S\'ha finalitzat la reproducció al servidor Silo.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'PIN de $name';
   }
@@ -18654,124 +18864,285 @@ class AppLocalizationsCa extends AppLocalizations {
   String get clickpadSeekingPausedOnly => 'Només en pausa';
 
   @override
-  String get recordingsScopeMine => 'Mine';
+  String get topNavbarStyle => 'Estil de la barra superior';
 
   @override
-  String get recordingsScopeEveryone => 'Everyone';
+  String get topNavbarStyleClassic => 'Clàssic';
 
   @override
-  String get myRecordings => 'My Recordings';
+  String get topNavbarStyleTabline => 'Tabline';
 
   @override
-  String get myRecordingsEmpty => 'Recordings you schedule will show up here.';
+  String get topNavbarStyleAtlas => 'Atlas';
 
   @override
-  String get addToMyRecordings => 'Add to My Recordings';
+  String get topNavbarStyleClassicHint => 'La barra estàndard';
 
   @override
-  String get addedToMyRecordings => 'Added to My Recordings';
+  String get topNavbarStyleTablineHint =>
+      'Pestanyes de text amb un subratllat, sense píndola';
 
   @override
-  String get addSeriesToMyRecordings => 'Add Series to My Recordings';
+  String get topNavbarStyleAtlasHint =>
+      'Les pestanyes obren un panell amb dreceres i il·lustracions';
 
   @override
-  String ownerRecordingOne(String name) {
-    return '$name is recording this';
+  String get sidebarStyle => 'Estil de la barra lateral';
+
+  @override
+  String get sidebarStyleClassic => 'Clàssic';
+
+  @override
+  String get sidebarStyleReel => 'Bobina';
+
+  @override
+  String get sidebarStyleMosaic => 'Mosaic';
+
+  @override
+  String get sidebarStyleClassicHint => 'La barra lateral estàndard';
+
+  @override
+  String get sidebarStyleReelHint => 'Una roda que gira entre les destinacions';
+
+  @override
+  String get sidebarStyleMosaicHint =>
+      'Un panell de requadres amb il·lustracions de les biblioteques';
+
+  @override
+  String navContinueIn(String section) {
+    return 'Continua a $section';
   }
 
   @override
-  String ownerRecordingTwo(String first, String second) {
-    return '$first and $second are recording this';
+  String navFeatured(String title) {
+    return 'Destacat: $title';
   }
 
   @override
-  String ownerRecordingMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count other users are recording this',
-    );
-    return '$_temp0';
+  String get navOpenMenu => 'Obre el menú';
+
+  @override
+  String get navReelSwipeHint =>
+      'Llisca per fer-la girar i toca el centre per anar-hi';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Perquè t\'agraden $genres';
   }
 
   @override
-  String ownerWaitingOne(String name) {
-    return '$name is also waiting for this';
+  String get siloSectionBecauseYouWatched => 'Perquè vas veure';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Perquè vas veure $title';
   }
 
   @override
-  String ownerWaitingTwo(String first, String second) {
-    return '$first and $second are also waiting for this';
+  String get siloSectionForYou => 'Per a tu';
+
+  @override
+  String get siloSectionHiddenGems => 'Joies amagades';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary =>
+      'Molt ben valorat a la teva biblioteca';
+
+  @override
+  String get siloSectionNextInYourSeries => 'El següent de les teves sèries';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Triat del teu historial';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular en aquest servidor';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed =>
+      'Han agradat a perfils com el teu';
+
+  @override
+  String get siloSectionRandomPicks => 'Seleccions aleatòries';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks =>
+      'Audiollibres afegits recentment';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks =>
+      'Llibres electrònics afegits recentment';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Afegit recentment a $library';
   }
 
   @override
-  String ownerWaitingMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count other users are also waiting for this',
-    );
-    return '$_temp0';
+  String get siloSectionRecentlyAddedManga => 'Manga afegit recentment';
+
+  @override
+  String get siloSectionRecentlyAddedMovies =>
+      'Pel·lícules afegides recentment';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'TV afegida recentment';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Audiollibres publicats recentment';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks =>
+      'Llibres electrònics publicats recentment';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Episodis publicats recentment a $library';
   }
 
   @override
-  String sharedCancelOne(String name) {
-    return '$name also has this in My Recordings. Cancelling stops it for everyone.';
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Publicat recentment a $library';
   }
 
   @override
-  String sharedCancelTwo(String first, String second) {
-    return '$first and $second also have this in My Recordings. Cancelling stops it for everyone.';
+  String get siloSectionRecentlyReleasedManga => 'Manga publicat recentment';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies =>
+      'Pel·lícules publicades recentment';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recomanat per a tu';
+
+  @override
+  String get siloSectionReturningShows => 'Sèries en emissió';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Clàssics de Nadal';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Comèdies de Nadal';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Nadal en família';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Preferits de Nadal';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Nadal de Hallmark';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms =>
+      'Comèdies romàntiques de Nadal';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Històries de Pasqua';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Pel·lícules de Pasqua';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites =>
+      'Preferits de la família';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Nit de cinema en família';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Halloween animat';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Halloween en família';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Preferits de Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Terror de Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'TV de Halloween';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'Pel·lícules de Cap d\'Any';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Dibuixos animats de dissabte al matí';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Preferits de dissabte al matí';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      'Matins de dissabte dels anys 90';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Cinema irlandès';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'TV irlandesa';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters =>
+      'Èxits de taquilla d\'estiu';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer =>
+      'Pel·lícules clàssiques d\'estiu';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Nostàlgia d\'estiu';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites =>
+      'Pel·lícules d\'Acció de Gràcies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood =>
+      'Preferits que et fan sentir bé';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites =>
+      'Preferits de Sant Valentí';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories =>
+      'Històries d\'amor clàssiques';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Drames romàntics';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms =>
+      'Comèdies romàntiques de Sant Valentí';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seleccions de temporada';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'El millor de $genre';
   }
 
   @override
-  String sharedCancelMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other:
-          '$count other users also have this in My Recordings. Cancelling stops it for everyone.',
-    );
-    return '$_temp0';
-  }
+  String get siloSectionTopPicksToday => 'Millors recomanacions d\'avui';
 
   @override
-  String sharedDeleteOne(String name) {
-    return '$name also has this in My Recordings. Deleting removes it for everyone.';
-  }
+  String get siloSectionTopRated => 'Els més valorats';
 
   @override
-  String sharedDeleteTwo(String first, String second) {
-    return '$first and $second also have this in My Recordings. Deleting removes it for everyone.';
-  }
+  String get siloSectionTopRatedMovies => 'Pel·lícules més valorades';
 
   @override
-  String sharedDeleteMany(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other:
-          '$count other users also have this in My Recordings. Deleting removes it for everyone.',
-    );
-    return '$_temp0';
-  }
+  String get siloSectionTopRatedTv => 'Sèries més valorades';
 
   @override
-  String get sharedKeep => 'Keep';
+  String get siloSectionTrendingOnServer => 'Tendències al servidor';
 
   @override
-  String get sharedCancelForEveryone => 'Cancel for Everyone';
-
-  @override
-  String get sharedDeleteForEveryone => 'Delete for Everyone';
-
-  @override
-  String get sharedSeriesChange =>
-      'Other users also record this series. Changes apply to everyone.';
-
-  @override
-  String get sharedKeepAsIs => 'Keep As Is';
-
-  @override
-  String get sharedChangeForEveryone => 'Change for Everyone';
+  String get siloSectionTrendingThisWeek => 'Tendències d\'aquesta setmana';
 }

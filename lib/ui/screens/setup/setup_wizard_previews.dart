@@ -26,6 +26,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/date_format_util.dart';
 import '../../../util/game_library.dart' show libraryIcon;
 import '../../../util/live_tv_library.dart'
     show isLiveTvLibrary, librariesForNav;
@@ -50,7 +51,12 @@ import '../../widgets/poster_badges.dart';
 import '../../widgets/mediabar/makd_classic.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
 import '../../widgets/mediabar/media_bar_new_release_label.dart';
+import '../../widgets/left_sidebar.dart';
 import '../../widgets/modern_row.dart';
+import '../../widgets/nav_styles/mosaic_nav.dart';
+import '../../widgets/nav_styles/nav_button_style.dart';
+import '../../widgets/nav_styles/nav_entry.dart';
+import '../../widgets/nav_styles/reel_nav.dart';
 import '../../widgets/rating_display.dart';
 import '../../widgets/seerr_icons.dart';
 import '../../widgets/settings/settings_preview_scope.dart';
@@ -1878,9 +1884,13 @@ Widget settingsNavbarPreviewOver(Widget body) => _screen(
   ),
 );
 
+/// A panel button drops an Atlas panel.
+enum _NavRole { home, search, panel, settings, other }
+
 typedef _NavButton = ({
   Widget Function(double size, Color color) icon,
   String label,
+  _NavRole role,
 });
 
 bool get _seerrAvailable =>
@@ -1933,11 +1943,20 @@ List<_NavButton> _navButtons(
 ) {
   final l10n = AppLocalizations.of(context);
   bool on(Preference<bool> preference) => previewValue(context, preference);
-  _NavButton icon(IconData glyph, String label) => (
+  _NavButton icon(
+    IconData glyph,
+    String label, [
+    _NavRole role = _NavRole.other,
+  ]) => (
     icon: (size, color) => Icon(glyph, size: size, color: color),
     label: label,
+    role: role,
   );
-  _NavButton asset(String path, String label) => (
+  _NavButton asset(
+    String path,
+    String label, [
+    _NavRole role = _NavRole.other,
+  ]) => (
     icon: (size, color) => Image.asset(
       path,
       width: size,
@@ -1946,6 +1965,7 @@ List<_NavButton> _navButtons(
       fit: BoxFit.contain,
     ),
     label: label,
+    role: role,
   );
   final kids = on(UserPreferences.kidsModeEnabled);
   final libraries = !kids && on(UserPreferences.showLibrariesInToolbar);
@@ -1957,15 +1977,15 @@ List<_NavButton> _navButtons(
       ? GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr)
       : l10n.seerr;
   return [
-    icon(Icons.home_rounded, l10n.home),
-    icon(Icons.search_rounded, l10n.search),
+    icon(Icons.home_rounded, l10n.home, _NavRole.home),
+    icon(Icons.search_rounded, l10n.search, _NavRole.search),
     if (on(UserPreferences.showShuffleButton))
       icon(Icons.shuffle_rounded, l10n.shuffle),
     if (on(UserPreferences.showGenresButton))
       asset('assets/icons/genres.png', l10n.genres),
     if (on(UserPreferences.showFavoritesButton))
       icon(Icons.favorite_rounded, l10n.favorites),
-    if (liveTv) icon(Icons.live_tv_rounded, l10n.liveTv),
+    if (liveTv) icon(Icons.live_tv_rounded, l10n.liveTv, _NavRole.panel),
     if (!kids &&
         on(UserPreferences.syncPlayEnabled) &&
         on(UserPreferences.showSyncPlayButton))
@@ -1974,6 +1994,7 @@ List<_NavButton> _navButtons(
       (
         icon: (size, color) => SeerrIcon(size: size, color: color),
         label: seerrLabel,
+        role: _NavRole.panel,
       ),
     if (!kids && on(UserPreferences.showCalendarButton) && _calendarAvailable)
       icon(Icons.calendar_month_rounded, l10n.calendar),
@@ -1984,9 +2005,9 @@ List<_NavButton> _navButtons(
         liveTvButton: liveTv,
         kids: kids,
       ))
-        icon(glyph, label)
+        icon(glyph, label, _NavRole.panel)
     else if (libraries)
-      asset('assets/icons/clapperboard.png', l10n.libraries),
+      asset('assets/icons/clapperboard.png', l10n.libraries, _NavRole.panel),
     // The real Downloads and Messages buttons also wait for something saved
     // or posted. The preview leaves that out so their switches show a change.
     if (on(UserPreferences.showDownloadsButton) && _downloadsAvailable)
@@ -1995,7 +2016,7 @@ List<_NavButton> _navButtons(
       icon(Icons.people_alt_rounded, l10n.friends),
     if (on(UserPreferences.showServerMessagesButton))
       icon(Icons.info_outline_rounded, l10n.serverMessages),
-    icon(Icons.settings_rounded, l10n.settings),
+    icon(Icons.settings_rounded, l10n.settings, _NavRole.settings),
   ];
 }
 
@@ -2110,7 +2131,8 @@ Widget _navbarRows(
 
 /// The toolbar draws no band of its own. An avatar sits on the left, the
 /// buttons live in one translucent pill in the middle, and the clock keeps
-/// the right, all floating straight over the content.
+/// the right, all floating straight over the content. Tabline and Atlas lay
+/// the same buttons out their own way.
 Widget _topNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
@@ -2123,107 +2145,236 @@ Widget _topNavbarPreview(
   final vPad = _tv ? 27.0 : (_phone ? 8.0 : 10.0);
   final buttonWidth = _phone ? 40.0 : (_tv ? 44.0 : 56.0);
   final iconSize = _phone ? 22.0 : (_tv ? 24.0 : 30.0);
+  final gap = _tv ? 2.0 : (_phone ? 8.0 : 12.0);
   final buttons = _navButtons(context, items);
   final expanded =
       !_phone && previewValue(context, UserPreferences.navbarAlwaysExpanded);
   final clock = _previewClock(context);
+  final clockText = clock == null
+      ? null
+      : Text(
+          clock,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColorScheme.onSurface.withValues(alpha: 0.8),
+          ),
+        );
+  final style = previewValue(context, UserPreferences.topNavbarStyle);
 
-  // The real pill scrolls its buttons once they outgrow the room it's given,
-  // so the preview clips them where they'd scroll.
-  final pill = Container(
-    clipBehavior: Clip.antiAlias,
-    decoration: BoxDecoration(
-      color: _navbarSurface(context),
-      borderRadius: AppRadius.circular(36),
-    ),
+  // The real tabs scroll once they outgrow the bar, so they clip here.
+  Widget tabs(List<Widget> children) => Align(
+    alignment: AlignmentDirectional.centerStart,
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const NeverScrollableScrollPhysics(),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < buttons.length; i++)
-            if (expanded)
-              SizedBox(
-                height: buttonWidth,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      buttons[i].icon(iconSize, _navIconColor(i)),
-                      const SizedBox(width: 8),
-                      Text(
-                        buttons[i].label,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.8,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
-              SizedBox(
-                width: buttonWidth,
-                height: buttonWidth,
-                child: Center(
-                  child: buttons[i].icon(iconSize, _navIconColor(i)),
-                ),
-              ),
-        ],
+        spacing: gap,
+        children: children,
       ),
     ),
   );
+  Widget iconButton(Widget icon) => SizedBox(
+    width: buttonWidth,
+    height: buttonWidth,
+    child: Center(child: icon),
+  );
 
-  final screen = Column(
-    children: [
-      SizedBox(
-        height: toolbarHeight,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
-          child: Stack(
-            alignment: Alignment.center,
+  final Widget bar;
+  switch (style) {
+    case TopNavbarStyle.classic:
+      // The real pill scrolls its buttons once they outgrow the room it's
+      // given, so the preview clips them where they'd scroll.
+      final pill = Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: _navbarSurface(context),
+          borderRadius: AppRadius.circular(36),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Align(alignment: Alignment.centerLeft, child: _navAvatar()),
-              // A phone's buttons can outgrow its bar, so its pill shrinks to
-              // fit.
-              if (_phone)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 48),
-                  child: FittedBox(fit: BoxFit.scaleDown, child: pill),
-                )
-              else
-                // The room the real bar keeps clear of the avatar and the
-                // clock on both sides, so its pill stays centered.
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: (clock == null ? 44.0 : 96.0) + 14,
-                  ),
-                  child: pill,
-                ),
-              if (!_phone && clock != null)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    clock,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.8),
+              for (var i = 0; i < buttons.length; i++)
+                if (expanded)
+                  SizedBox(
+                    height: buttonWidth,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          buttons[i].icon(iconSize, _navIconColor(i)),
+                          const SizedBox(width: 8),
+                          Text(
+                            buttons[i].label,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColorScheme.onSurface.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  )
+                else
+                  iconButton(buttons[i].icon(iconSize, _navIconColor(i))),
             ],
           ),
         ),
-      ),
+      );
+      bar = Padding(
+        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Align(alignment: Alignment.centerLeft, child: _navAvatar()),
+            // A phone's buttons can outgrow its bar, so its pill shrinks to
+            // fit.
+            if (_phone)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 48),
+                child: FittedBox(fit: BoxFit.scaleDown, child: pill),
+              )
+            else
+              // The room the real bar keeps clear of the avatar and the
+              // clock on both sides, so its pill stays centered.
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: (clock == null ? 44.0 : 96.0) + 14,
+                ),
+                child: pill,
+              ),
+            if (!_phone && clockText != null)
+              Align(alignment: Alignment.centerRight, child: clockText),
+          ],
+        ),
+      );
+    case TopNavbarStyle.tabline:
+      bar = Padding(
+        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+        child: Row(
+          children: [
+            Expanded(
+              child: tabs([
+                for (final button in buttons)
+                  if (button.role != _NavRole.search &&
+                      (button.role != _NavRole.settings ||
+                          PlatformDetection.isTV))
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: _phone ? 4 : 10,
+                      ),
+                      child: TablineTabLabel(
+                        label: button.label,
+                        focused: false,
+                        selected: button.role == _NavRole.home,
+                        fontSize: tablineFontSize(
+                          isMobile: _phone,
+                          isTV: PlatformDetection.isTV,
+                        ),
+                      ),
+                    ),
+              ]),
+            ),
+            const SizedBox(width: 16),
+            iconButton(
+              Icon(
+                Icons.search_rounded,
+                size: iconSize,
+                color: Colors.white.withValues(alpha: 0.85),
+              ),
+            ),
+            if (!_phone && clockText != null) ...[
+              const SizedBox(width: 18),
+              clockText,
+            ],
+            const SizedBox(width: 18),
+            _navAvatar(),
+          ],
+        ),
+      );
+    case TopNavbarStyle.atlas:
+      final surface = _navbarSurface(context);
+      final settings = buttons.indexWhere(
+        (button) => button.role == _NavRole.settings,
+      );
+      bar = DecoratedBox(
+        decoration: BoxDecoration(
+          color: atlasBarColor(surface, surface.a),
+          border: Border(
+            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(hPad, vPad, hPad, 0),
+          child: Row(
+            children: [
+              _navAvatar(),
+              const SizedBox(width: 12),
+              Expanded(
+                child: tabs([
+                  for (var i = 0; i < buttons.length; i++)
+                    if (buttons[i].role != _NavRole.settings)
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: _phone ? 12 : 16,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            buttons[i].icon(iconSize, _navIconColor(i)),
+                            const SizedBox(width: 10),
+                            Text(
+                              buttons[i].label,
+                              maxLines: 1,
+                              style: TextStyle(
+                                color: _navIconColor(i),
+                                fontSize: _tv || _phone ? 14 : 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (buttons[i].role == _NavRole.panel) ...[
+                              const SizedBox(width: 6),
+                              Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                size: 18,
+                                color: _navIconColor(i),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                ]),
+              ),
+              if (!_phone && clockText != null) ...[
+                const SizedBox(width: 16),
+                clockText,
+              ],
+              // Phones reach settings from the avatar.
+              if (!_phone && settings >= 0) ...[
+                const SizedBox(width: 8),
+                iconButton(
+                  buttons[settings].icon(iconSize, _navIconColor(settings)),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+  }
+
+  final screen = Stack(
+    children: [
       if (body == null)
-        Expanded(
+        Positioned.fill(
+          top: toolbarHeight,
           child: _navbarRows(
             context,
             items,
@@ -2231,6 +2382,17 @@ Widget _topNavbarPreview(
             focusFirst: focusFirst,
           ),
         ),
+      if (style == TopNavbarStyle.tabline)
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          height: toolbarHeight * 1.9,
+          child: const DecoratedBox(
+            decoration: BoxDecoration(gradient: kTablineScrim),
+          ),
+        ),
+      Positioned(left: 0, right: 0, top: 0, height: toolbarHeight, child: bar),
     ],
   );
   if (body == null) return screen;
@@ -2245,7 +2407,8 @@ Widget _topNavbarPreview(
 }
 
 /// The collapsed rail is a bare 72 wide gutter of icons with no backdrop, so
-/// the preview keeps it transparent too and just moves the rows over.
+/// the preview keeps it transparent too and just moves the rows over. Reel and
+/// Mosaic rest as a single button instead.
 Widget _leftNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items, {
@@ -2259,9 +2422,99 @@ Widget _leftNavbarPreview(
   // Home starts its rows 56 in beside the rail where a TV's top bar takes
   // tvTopNavbarRowInset, and the rows' own inset is the top bar one.
   final railInset = _phone ? 0.0 : 56.0 - (_tv ? tvTopNavbarRowInset : 0.0);
-  // The real rail only widens while it has focus, whatever Always Expand
-  // Navbar Labels says, and scrolls once its buttons outgrow the screen. It
-  // floats over the screen rather than pushing it aside.
+  final design = _designSize();
+  final scale = navStyleScale(design, phone: _phone);
+  final Widget nav = switch (previewValue(
+    context,
+    UserPreferences.sidebarStyle,
+  )) {
+    // A phone's sidebar rests as a menu button in the corner.
+    SidebarStyle.classic when _phone => Positioned(
+      left: 8,
+      top: 8,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.4),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.menu,
+          size: 22,
+          color: Colors.white.withValues(alpha: 0.8),
+        ),
+      ),
+    ),
+    // The real rail only widens while it has focus, whatever Always Expand
+    // Navbar Labels says, and scrolls once its buttons outgrow the screen. It
+    // floats over the screen rather than pushing it aside.
+    SidebarStyle.classic => Positioned(
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: 72,
+      child: Center(
+        child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < buttons.length; i++)
+                SizedBox(
+                  height: itemHeight,
+                  child: Center(
+                    child: buttons[i].icon(iconSize, _navIconColor(i)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    // The real one sizes itself from the screen, which here is the preview's.
+    SidebarStyle.reel => Positioned.fill(
+      child: IgnorePointer(
+        child: ExcludeSemantics(
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              size: design,
+              padding: EdgeInsets.zero,
+              viewPadding: EdgeInsets.zero,
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ReelNav(
+                entries: [
+                  NavEntry(
+                    id: 'home',
+                    label: AppLocalizations.of(context).home,
+                    icon: Icons.home_rounded,
+                    kind: NavEntryKind.home,
+                    current: true,
+                    onSelect: () {},
+                  ),
+                ],
+                center: 0,
+                open: false,
+                phone: _phone,
+                onOpen: () {},
+                onClose: () {},
+                onTurn: (_) {},
+                onSelect: () {},
+                openLabel: '',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+    SidebarStyle.mosaic => Positioned(
+      left: _phone ? 8 : 20 * scale,
+      top: _phone ? 8 : 22 * scale,
+      child: mosaicMenuButton(focused: false, phone: _phone, scale: scale),
+    ),
+  };
   return Stack(
     children: [
       Positioned.fill(
@@ -2271,34 +2524,12 @@ Widget _leftNavbarPreview(
             _navbarRows(
               context,
               items,
-              topInset: 24,
+              topInset: _phone ? LeftSidebar.mobileMenuExtent : 24,
               modern: modern,
               focusFirst: focusFirst,
             ),
       ),
-      Positioned(
-        left: 0,
-        top: 0,
-        bottom: 0,
-        width: 72,
-        child: Center(
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < buttons.length; i++)
-                  SizedBox(
-                    height: itemHeight,
-                    child: Center(
-                      child: buttons[i].icon(iconSize, _navIconColor(i)),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      nav,
     ],
   );
 }
@@ -3105,8 +3336,42 @@ Widget _homeRowsColumn(
 
 Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
   live: (context, shown) {
-    final items =
-        previewValue(context, UserPreferences.hideDetailsMediaDescription)
+    final prefs = GetIt.instance<UserPreferences>();
+    final legacyHide = previewValue(
+      context,
+      UserPreferences.hideDetailsMediaDescription,
+    );
+    final movieHide =
+        prefs.containsPreference(
+          UserPreferences.hideDetailsMediaDescriptionMovie,
+        )
+        ? previewValue(
+            context,
+            UserPreferences.hideDetailsMediaDescriptionMovie,
+          )
+        : legacyHide;
+    final episodeHide =
+        prefs.containsPreference(
+          UserPreferences.hideDetailsMediaDescriptionEpisode,
+        )
+        ? previewValue(
+            context,
+            UserPreferences.hideDetailsMediaDescriptionEpisode,
+          )
+        : legacyHide;
+    final hideDescription =
+        movieHide ||
+        episodeHide ||
+        previewValue(context, UserPreferences.hideDetailsMediaDescriptionShow) ||
+        previewValue(
+          context,
+          UserPreferences.hideDetailsMediaDescriptionSeason,
+        ) ||
+        previewValue(
+          context,
+          UserPreferences.hideDetailsMediaDescriptionBoxSet,
+        );
+    final items = hideDescription
         ? [for (final item in shown) item.withoutOverview()]
         : shown;
     return switch (style) {
@@ -3175,13 +3440,25 @@ List<(IconData, String)> _detailButtons(
 /// without the entries they switch off. Status, the next episode and Seerr
 /// only show on series and requests, so a movie has none of them.
 List<(DetailMetadataItem, String)> _detailMeta(
+  BuildContext context,
   MediaBarSlideItem item, {
   String genreJoin = ' • ',
 }) {
   final prefs = GetIt.instance<UserPreferences>();
   final hidden = detailMetadataLayout.hidden(prefs);
+  final showFullDate = previewValue(context, UserPreferences.detailShowFullDate);
+  final locale = Localizations.maybeLocaleOf(context)?.toString();
+  String? yearText() {
+    final year = item.year;
+    if (year == null) return null;
+    if (showFullDate) {
+      return formatMediumDate(DateTime(year, 3, 15), locale: locale);
+    }
+    return year.toString();
+  }
+
   String? textOf(DetailMetadataItem entry) => switch (entry) {
-    DetailMetadataItem.year => item.year?.toString(),
+    DetailMetadataItem.year => yearText(),
     DetailMetadataItem.parentalRating => item.officialRating,
     DetailMetadataItem.runtimeAndSeasons =>
       item.runtime == null ? null : _runtimeText(item.runtime),
@@ -3201,7 +3478,7 @@ List<(DetailMetadataItem, String)> _detailMeta(
 }
 
 /// The metadata line Modern and Spotlight share, with a clock on the runtime.
-Widget _modernDetailMeta(MediaBarSlideItem item) {
+Widget _modernDetailMeta(BuildContext context, MediaBarSlideItem item) {
   final style = TextStyle(
     fontSize: 14,
     color: AppColorScheme.onSurface.withValues(alpha: 0.75),
@@ -3212,6 +3489,7 @@ Widget _modernDetailMeta(MediaBarSlideItem item) {
     crossAxisAlignment: WrapCrossAlignment.center,
     children: [
       for (final (i, (entry, text)) in _detailMeta(
+        context,
         item,
         genreJoin: ' · ',
       ).indexed) ...[
@@ -3570,7 +3848,7 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
     spacing: 2,
     runSpacing: 4,
     children: [
-      for (final (i, (entry, text)) in _detailMeta(item).indexed) ...[
+      for (final (i, (entry, text)) in _detailMeta(context, item).indexed) ...[
         if (i > 0)
           Text(
             ' • ',
@@ -3880,7 +4158,7 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      _modernDetailMeta(item),
+      _modernDetailMeta(context, item),
       ..._techChips(context),
       const SizedBox(height: 6),
       _sampleRatings(
@@ -4081,7 +4359,7 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      _modernDetailMeta(item),
+      _modernDetailMeta(context, item),
       ..._techChips(context),
       const SizedBox(height: 8),
       _sampleRatings(
@@ -4181,7 +4459,7 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
 Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
   final landscape = !_phone;
   final base = AppColorScheme.background;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' • ');
+  final meta = [for (final (_, text) in _detailMeta(context, item)) text].join(' • ');
   final buttons = _detailButtons(context, auto: 4);
   final titleStyle = TextStyle(
     fontSize: landscape ? 56 : 32,
@@ -4313,7 +4591,7 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
 Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
   final buttons = _detailButtons(context, auto: 4);
-  final meta = _modernDetailMeta(item);
+  final meta = _modernDetailMeta(context, item);
   const glass = Color(0xE6303036);
   const muted = Color(0x99EBEBF5);
 
@@ -4700,7 +4978,7 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final landscape = !_phone;
   final item = items.first;
-  final meta = [for (final (_, text) in _detailMeta(item)) text].join(' · ');
+  final meta = [for (final (_, text) in _detailMeta(context, item)) text].join(' · ');
   final buttons = _detailButtons(context, auto: 4);
   final surface = Color.alphaBlend(
     AppColorScheme.onSurface.withValues(alpha: 0.03),
@@ -4885,7 +5163,7 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
 
   // Genres sit in the eyebrow above the title, so they are left out here
   // rather than repeated, and hiding them hides the eyebrow.
-  final detailMeta = _detailMeta(item);
+  final detailMeta = _detailMeta(context, item);
   final showGenres = detailMeta.any(
     (part) => part.$1 == DetailMetadataItem.genres,
   );
@@ -5097,7 +5375,7 @@ Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      _modernDetailMeta(item),
+      _modernDetailMeta(context, item),
       ..._techChips(context, gap: 8),
       const SizedBox(height: 6),
       _sampleRatings(

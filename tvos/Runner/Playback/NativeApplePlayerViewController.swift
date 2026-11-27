@@ -323,6 +323,8 @@ final class NativeApplePlayerViewController: UIViewController {
     /// their indicators sit on the side opposite the swipe.
     private var swipeGesturesEnabled = false
     private var gestureIndicatorsInverted = false
+    private var swipeSeekEnabled = true
+    private var touchPanSeeks = true
     private var panDirectionDecided = false
     private var panStartInWindow = CGPoint.zero
     private var verticalSwipe: (isVolume: Bool, startValue: Float)?
@@ -356,6 +358,10 @@ final class NativeApplePlayerViewController: UIViewController {
     private let topGradientLayer = CAGradientLayer()
     private let headerStack = UIStackView()
     private let logoImageView = UIImageView()
+    private lazy var logoWidthConstraint = logoImageView.widthAnchor.constraint(
+        equalToConstant: Self.logoMaxWidth)
+    private static let logoHeight: CGFloat = 82
+    private static let logoMaxWidth: CGFloat = 480
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
 
@@ -586,9 +592,9 @@ final class NativeApplePlayerViewController: UIViewController {
 
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.contentMode = .scaleAspectFit
-        logoImageView.setContentHuggingPriority(.required, for: .horizontal)
-        logoImageView.heightAnchor.constraint(equalToConstant: 82).isActive = true
-        logoImageView.widthAnchor.constraint(lessThanOrEqualToConstant: 480).isActive = true
+        logoImageView.heightAnchor.constraint(equalToConstant: Self.logoHeight).isActive = true
+        // Sized to the logo's own shape, so aspect fit has no spare width to center it in.
+        logoWidthConstraint.isActive = true
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .systemFont(ofSize: 42, weight: .bold)
@@ -1587,6 +1593,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         swipeGesturesEnabled = (args["swipeGestures"] as? Bool) ?? false
         gestureIndicatorsInverted = (args["gestureIndicatorsInverted"] as? Bool) ?? false
+        swipeSeekEnabled = (args["swipeSeek"] as? Bool) ?? true
         #endif
         if let sync = args["syncPlay"] as? [String: Any] {
             syncPlayEnabled = true
@@ -1872,6 +1879,11 @@ final class NativeApplePlayerViewController: UIViewController {
             guard let self, self.logoUrlString == expected else { return }
             if let image {
                 self.logoImageView.image = image
+                if image.size.height > 0 {
+                    self.logoWidthConstraint.constant = min(
+                        Self.logoMaxWidth,
+                        Self.logoHeight * image.size.width / image.size.height)
+                }
                 self.hasLogo = true
             } else {
                 self.hasLogo = false
@@ -3550,10 +3562,17 @@ final class NativeApplePlayerViewController: UIViewController {
     /// that failed to tune. An action label adds a button that calls onAction.
     /// It goes over whatever is already up, like the channel strip.
     func presentMessage(
-        _ message: String, actionLabel: String?, closeLabel: String,
+        _ message: String, title: String? = nil, actionLabel: String?, closeLabel: String,
         onAction: @escaping () -> Void
     ) {
-        let alert = makePlayerMenu(title: message, message: nil, preferredStyle: .alert)
+        // A titled message (a server's) shows its title above the text;
+        // otherwise the text is the alert's title, as before.
+        let titled = !(title ?? "").isEmpty
+        let alert = makePlayerMenu(
+            title: titled ? title : message,
+            message: titled ? message : nil,
+            preferredStyle: .alert
+        )
         if let actionLabel, !actionLabel.isEmpty {
             alert.addAction(makePlayerAction(title: actionLabel, style: .default) { _ in onAction() })
         }
@@ -4052,6 +4071,11 @@ extension NativeApplePlayerViewController {
         doubleTap.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTap)
 
+        let twoFingerTap = UITapGestureRecognizer(
+            target: self, action: #selector(handleTouchTwoFingerTap))
+        twoFingerTap.numberOfTouchesRequired = 2
+        view.addGestureRecognizer(twoFingerTap)
+
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTouchTap))
         tap.require(toFail: doubleTap)
         view.addGestureRecognizer(tap)
@@ -4136,15 +4160,18 @@ extension NativeApplePlayerViewController {
         ])
     }
 
-    /// A drag sideways scrubs the way the remote's touch surface does. Up or
-    /// down changes brightness on the left half and volume on the right, the
-    /// same as the Flutter player, while that setting is on.
+    /// A drag sideways scrubs the way the remote's touch surface does. With
+    /// Swipe to Seek off it only scrubs while the controls show, since a drag
+    /// is the only way to scrub here. Up or down changes brightness on the
+    /// left half and volume on the right, the same as the Flutter player,
+    /// while that setting is on.
     @objc private func handleTouchPan(_ recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             panDirectionDecided = false
             verticalSwipe = nil
             panStartInWindow = recognizer.location(in: nil)
+            touchPanSeeks = swipeSeekEnabled || isOsdOnScreen
         case .changed:
             if !panDirectionDecided {
                 let t = recognizer.translation(in: nil)
@@ -4167,7 +4194,7 @@ extension NativeApplePlayerViewController {
         default:
             break
         }
-        handleScrubPan(recognizer)
+        if touchPanSeeks { handleScrubPan(recognizer) }
     }
 
     private func beginVerticalSwipe() {
@@ -4312,6 +4339,11 @@ extension NativeApplePlayerViewController {
             activate(x < third ? .skipBack : .skipForward)
         }
         showOsd()
+    }
+
+    @objc private func handleTouchTwoFingerTap() {
+        guard presentedViewController == nil, !nextUpVisible else { return }
+        togglePlayPause()
     }
 
     @objc private func handleControlTap(_ recognizer: UITapGestureRecognizer) {

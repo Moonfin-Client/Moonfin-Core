@@ -8,6 +8,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:moonfin/playback/media_kit_player_backend.dart';
 import 'package:moonfin/playback/subtitle_fonts.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -228,6 +229,44 @@ void main() {
     expect(other.opened, ['https://server/song.mp3']);
     await second.setSubtitleDelay(1.25);
     expect(second.subtitleDelaySeconds, 1.25);
+  });
+
+  test('night mode adds its labeled filter on load and decodes passthrough', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    await prefs.setAudioPassthroughMode(AudioPassthroughMode.manual);
+    await prefs.set(UserPreferences.ac3PassthroughEnabled, true);
+    expect(MediaKitPlayerBackend.passthroughCodecsFor(prefs), contains(PassthroughCodec.ac3));
+
+    await prefs.set(UserPreferences.audioNightMode, true);
+    expect(MediaKitPlayerBackend.passthroughCodecsFor(prefs), isEmpty);
+    await backend.play({'url': 'https://server/a.mkv', 'autoPlay': false});
+    expect(properties['audio-spdif'], '');
+    expect(player.native.commands.where((c) => c.first == 'af'), [
+      ['af', 'remove', '@moonfin-night'],
+      ['af', 'add', MediaKitPlayerBackend.nightModeFilter],
+    ]);
+
+    player.native.commands.clear();
+    await prefs.set(UserPreferences.audioNightMode, false);
+    await backend.play({'url': 'https://server/b.mkv', 'autoPlay': false});
+    expect(properties['audio-spdif'], contains('ac3'));
+    expect(player.native.commands.where((c) => c.first == 'af'), [
+      ['af', 'remove', '@moonfin-night'],
+    ]);
+  });
+
+  test('night mode is skipped on android, whose libmpv lacks the filters', () async {
+    await prefs.setAudioPassthroughMode(AudioPassthroughMode.manual);
+    await prefs.set(UserPreferences.ac3PassthroughEnabled, true);
+    await prefs.set(UserPreferences.audioNightMode, true);
+
+    expect(MediaKitPlayerBackend.passthroughCodecsFor(prefs), contains(PassthroughCodec.ac3));
+    await backend.play({'url': 'https://server/a.mkv', 'autoPlay': false});
+    expect(properties['audio-spdif'], contains('ac3'));
+    expect(player.native.commands.where((c) => c.first == 'af'), [
+      ['af', 'remove', '@moonfin-night'],
+    ]);
   });
 
   test('seeks and track changes clear placement while dialogue gaps keep it', () async {

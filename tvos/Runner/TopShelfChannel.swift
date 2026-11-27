@@ -6,6 +6,7 @@ import TVServices
 final class TopShelfChannel: NSObject {
     private let channel: FlutterMethodChannel
     private var pendingDeepLink: String?
+    private var initialDeepLinkRead = false
 
     private static let appGroupIdentifier = "group.org.moonfin.app"
     private static let cacheFileName = "topshelf_cache.json"
@@ -43,6 +44,7 @@ final class TopShelfChannel: NSObject {
             notifyChanged()
             result(nil)
         case "getInitialDeepLink":
+            initialDeepLinkRead = true
             let link = pendingDeepLink
             pendingDeepLink = nil
             result(link)
@@ -72,7 +74,9 @@ final class TopShelfChannel: NSObject {
 
     func deliverDeepLink(_ url: URL, isLaunch: Bool) {
         let value = url.absoluteString
-        if isLaunch {
+        // A scene can reconnect with a link while Dart is already running, after
+        // it has read the launch link, so only hold one until that read.
+        if isLaunch && !initialDeepLinkRead {
             pendingDeepLink = value
         } else {
             channel.invokeMethod("onDeepLink", arguments: value)

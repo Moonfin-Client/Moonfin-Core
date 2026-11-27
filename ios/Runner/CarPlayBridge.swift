@@ -170,9 +170,9 @@ final class CarPlayBridge: NSObject {
     }
     switch node.id {
     case "tab|home": return "play.circle"
-    case "tab|music": return "music.note"
+    case "tab|music": return "square.stack"
     case "tab|books": return "book"
-    case "tab|playlists": return "music.note.list"
+    case "tab|downloads": return "arrow.down.circle"
     default: return "music.note"
     }
   }
@@ -204,33 +204,186 @@ final class CarPlayBridge: NSObject {
         template.emptyViewTitleVariants = [items[0].title]
         return
       }
-      let maxCount = CPListTemplate.maximumItemCount
-      let listItems = items.prefix(maxCount).map { self.makeListItem(for: $0) }
-      template.updateSections([CPListSection(items: Array(listItems))])
-      if listItems.isEmpty {
+      let sections = self.makeSections(items)
+      template.updateSections(sections)
+      if sections.isEmpty {
         template.emptyViewTitleVariants = ["Nothing here yet"]
       }
     }
   }
 
+  /// Runs of items that share a shelf title become one section, as Android
+  /// Auto groups them.
+  private func makeSections(_ items: [BrowseItem]) -> [CPListSection] {
+    var shelves: [(title: String?, items: [BrowseItem])] = []
+    for item in items {
+      if let last = shelves.last, last.title == item.shelf {
+        shelves[shelves.count - 1].items.append(item)
+      } else {
+        shelves.append((item.shelf, [item]))
+      }
+    }
+    var budget = Int(CPListTemplate.maximumItemCount)
+    var sections: [CPListSection] = []
+    for shelf in shelves.prefix(Int(CPListTemplate.maximumSectionCount)) {
+      guard budget > 0 else { break }
+      if let row = makeShelfRow(title: shelf.title, items: shelf.items) {
+        sections.append(CPListSection(items: [row]))
+        budget -= 1
+      } else {
+        let rows = shelf.items.prefix(budget).map { makeListItem(for: $0) }
+        sections.append(
+          CPListSection(items: rows, header: shelf.title, sectionIndexTitle: nil))
+        budget -= rows.count
+      }
+    }
+    return sections
+  }
+
   private func makeListItem(for item: BrowseItem) -> CPListItem {
     let listItem = CPListItem(text: item.title, detailText: item.subtitle)
     listItem.accessoryType = item.browsable ? .disclosureIndicator : .none
+    if let progress = item.progress {
+      listItem.playbackProgress = CGFloat(min(max(progress, 0), 1))
+    }
     listItem.handler = { [weak self] _, completion in
+      self?.open(item, completion: completion) ?? completion()
+    }
+    if item.artUri == nil, let symbol = item.iconName {
+      listItem.setImage(symbolImage(symbol))
+    }
+    applyArtwork(from: item.artUri, to: listItem)
+    return listItem
+  }
+
+  // CarPlay doesn't tint list images, so a bare symbol comes out black on the
+  // dark car screen, and it drops images backed by a UIImageAsset. The symbol
+  // is drawn into a plain bitmap in the car screen's text color instead.
+  private func symbolImage(_ name: String, pointSize: CGFloat? = nil) -> UIImage? {
+    let config = pointSize.map { UIImage.SymbolConfiguration(pointSize: $0) }
+    guard let symbol = UIImage(systemName: name, withConfiguration: config) else {
+      return nil
+    }
+    let style = interfaceController?.carTraitCollection.userInterfaceStyle
+    let tinted = symbol.withTintColor(
+      style == .light ? .black : .white, renderingMode: .alwaysOriginal)
+    return UIGraphicsImageRenderer(size: tinted.size).image { _ in
+      tinted.draw(at: .zero)
+    }
+  }
+
+  private func open(_ item: BrowseItem, completion: @escaping () -> Void) {
+    if item.browsable {
+      pushChildList(for: item, completion: completion)
+    } else if item.playable {
+      play(item: item, completion: completion)
+    } else {
+      completion()
+    }
+  }
+
+  /// One row for a whole shelf, or nil when the shelf stays a list of rows.
+  /// Android Auto's icon tiles (the letters, the Listen Now shortcuts) need the
+  /// wrapping grid row that CarPlay only has from iOS 26, so earlier versions
+  /// keep them as rows.
+  private func makeShelfRow(title: String?, items: [BrowseItem]) -> CPListImageRowItem? {
+    guard items.count > 1 else { return nil }
+    let row: CPListImageRowItem
+    let tappable: [BrowseItem]
+    if #available(iOS 26.0, *), items.allSatisfy({ $0.tile }) {
+      row = makeTileGrid(title: title, items: items)
+      tappable = items
+    } else if items.allSatisfy({ $0.cover }) {
+      tappable = Array(items.prefix(Int(CPMaximumNumberOfGridImages)))
+      row = makeImageRow(title: title, items: tappable)
+    } else {
+      return nil
+    }
+    row.listImageRowHandler = { [weak self] _, index, completion in
+      guard let self, tappable.indices.contains(index) else {
+        completion()
+        return
+      }
+      self.open(tappable[index], completion: completion)
+    }
+    // CarPlay draws a chevron after the shelf title, so the title opens the
+    // whole shelf as a plain list.
+    row.handler = { [weak self] _, completion in
       guard let self else {
         completion()
         return
       }
-      if item.browsable {
-        self.pushChildList(for: item, completion: completion)
-      } else if item.playable {
-        self.play(item: item, completion: completion)
-      } else {
-        completion()
+      self.pushShelf(title: title, items: items, completion: completion)
+    }
+    return row
+  }
+
+  private func makeImageRow(title: String?, items: [BrowseItem]) -> CPListImageRowItem {
+    let placeholder = UIImage(systemName: "music.note") ?? UIImage()
+    let row: CPListImageRowItem
+    if #available(iOS 26.0, *) {
+      let cards = items.map { item in
+        CPListImageRowItemCardElement(
+          image: placeholder, showsImageFullHeight: false, title: item.title,
+          subtitle: item.subtitle, tintColor: nil)
+      }
+      row = CPListImageRowItem(text: title, cardElements: cards, allowsMultipleLines: false)
+      for (card, item) in zip(cards, items) {
+        loadArtwork(from: item.artUri) { [weak row] image in
+          card.image = image
+          // Assigning the elements again is what redraws the row.
+          if let row { row.elements = row.elements }
+        }
+      }
+    } else {
+      var images = items.map { _ in placeholder }
+      row = CPListImageRowItem(
+        text: title ?? "", images: images, imageTitles: items.map { $0.title })
+      for (index, item) in items.enumerated() {
+        loadArtwork(from: item.artUri) { [weak row] image in
+          images[index] = image
+          row?.update(images)
+        }
       }
     }
-    applyArtwork(from: item.artUri, to: listItem)
-    return listItem
+    return row
+  }
+
+  // A one-character title is already the glyph (the letter tiles), so those
+  // use the image-only element, which has no grey platter. Tiles that need a
+  // label take the labeled element, and CarPlay always draws its platter.
+  @available(iOS 26.0, *)
+  private func makeTileGrid(title: String?, items: [BrowseItem]) -> CPListImageRowItem {
+    func icon(_ item: BrowseItem, side: CGFloat) -> UIImage {
+      symbolImage(item.iconName ?? "music.note", pointSize: side * 0.5) ?? UIImage()
+    }
+    if items.allSatisfy({ $0.title.count == 1 }) {
+      let side = CPListImageRowItemGridElement.maximumImageSize.height
+      let tiles = items.map { CPListImageRowItemGridElement(image: icon($0, side: side)) }
+      return CPListImageRowItem(text: title, gridElements: tiles, allowsMultipleLines: true)
+    }
+    let side = CPListImageRowItemImageGridElement.maximumImageSize.height
+    let tiles = items.map {
+      CPListImageRowItemImageGridElement(
+        image: icon($0, side: side), imageShape: .roundedRectangle, title: $0.title,
+        accessorySymbolName: nil)
+    }
+    return CPListImageRowItem(text: title, imageGridElements: tiles, allowsMultipleLines: true)
+  }
+
+  private func pushShelf(
+    title: String?, items: [BrowseItem], completion: @escaping () -> Void
+  ) {
+    guard let interfaceController else {
+      completion()
+      return
+    }
+    let rows = items.prefix(Int(CPListTemplate.maximumItemCount))
+      .map { makeListItem(for: $0) }
+    let template = CPListTemplate(title: title, sections: [CPListSection(items: rows)])
+    interfaceController.pushTemplate(template, animated: true) { _, _ in
+      completion()
+    }
   }
 
   private func pushChildList(
@@ -323,17 +476,27 @@ final class CarPlayBridge: NSObject {
   // MARK: - Artwork
 
   private func applyArtwork(from urlString: String?, to listItem: CPListItem) {
+    loadArtwork(from: urlString) { image in
+      listItem.setImage(image)
+    }
+  }
+
+  /// Calls completion on the main queue once the image loads. It's never
+  /// called when there's no image.
+  private func loadArtwork(
+    from urlString: String?, completion: @escaping (UIImage) -> Void
+  ) {
     guard let urlString, let url = URL(string: urlString) else { return }
     let key = urlString as NSString
     if let cached = artworkCache.object(forKey: key) {
-      listItem.setImage(cached)
+      completion(cached)
       return
     }
     MoonfinURLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
       guard let self, let data, let image = UIImage(data: data) else { return }
       self.artworkCache.setObject(image, forKey: key)
       DispatchQueue.main.async {
-        listItem.setImage(image)
+        completion(image)
       }
     }.resume()
   }
@@ -348,6 +511,10 @@ final class CarPlayBridge: NSObject {
     let browsable: Bool
     let playable: Bool
     let iconName: String?
+    let shelf: String?
+    let cover: Bool
+    let tile: Bool
+    let progress: Double?
   }
 
   private static func browseItems(from response: Any?) -> [BrowseItem] {
@@ -366,7 +533,11 @@ final class CarPlayBridge: NSObject {
         artUri: dict["artUri"] as? String,
         browsable: dict["browsable"] as? Bool ?? false,
         playable: dict["playable"] as? Bool ?? false,
-        iconName: dict["iconName"] as? String
+        iconName: dict["iconName"] as? String,
+        shelf: dict["shelf"] as? String,
+        cover: dict["cover"] as? Bool ?? false,
+        tile: dict["tile"] as? Bool ?? false,
+        progress: (dict["progress"] as? NSNumber)?.doubleValue
       )
     }
   }

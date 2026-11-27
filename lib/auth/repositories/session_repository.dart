@@ -25,6 +25,7 @@ import 'package:go_router/go_router.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:playback_silo/playback_silo.dart' show siloEndedOnServerMessage;
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
     show SiloUsersApi, siloAccessChangedEvent;
@@ -47,6 +48,7 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/server_messages_service.dart';
+import '../../data/services/silo_playback_control_socket.dart';
 import '../../data/services/socket_handler.dart';
 import '../../playback/remote_media_notification_service.dart';
 import '../../data/services/user_data_sync.dart';
@@ -127,7 +129,13 @@ class SessionRepository {
   String? _activeServerId;
   String? _activeUserId;
   SessionState _state = SessionState.ready;
+  int _accountSelectionGeneration = 0;
+  int _accountChangesInProgress = 0;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
+
+  /// Silo's per-session control lane, for a Silo session playing from any
+  /// server. Made at the first sign-in.
+  SiloPlaybackControlSocket? _siloPlaybackControl;
   RemoteSearchSession? _remoteSearch;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
   StreamSubscription<ServerWebSocketMessage>? _accessChangedSubscription;
@@ -166,6 +174,11 @@ class SessionRepository {
 
   String? get activeServerId => _activeServerId;
   String? get activeUserId => _activeUserId;
+
+  /// Changes when the current account starts changing. No selection is stable
+  /// while a switch or sign-out is in progress.
+  int? get accountSelectionGeneration =>
+      _accountChangesInProgress == 0 ? _accountSelectionGeneration : null;
 
   // save or clear the auto login target based on the chosen behavior.
   Future<void> applyAutoLoginForBehavior(UserSelectBehavior behavior) async {
@@ -247,6 +260,22 @@ class SessionRepository {
     String? username,
     String? password,
     bool validateToken = false,
+  }) => _whileChangingAccount(
+    () => _switchCurrentSession(
+      serverId: serverId,
+      userId: userId,
+      username: username,
+      password: password,
+      validateToken: validateToken,
+    ),
+  );
+
+  Future<bool> _switchCurrentSession({
+    required String serverId,
+    required String userId,
+    required String? username,
+    required String? password,
+    required bool validateToken,
   }) async {
     if (serverId != _activeServerId || userId != _activeUserId) {
       await _stopPlaybackForSessionChange();
@@ -367,6 +396,7 @@ class SessionRepository {
       _socketHandler.connectTo(client);
     }
     _bindRemoteCommandHandling();
+    _bindSiloPlaybackControl();
     _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
     _bindAccessChanges(client);
@@ -666,9 +696,16 @@ class SessionRepository {
   /// and a joined group or a live cast session needs it too.
   bool _shouldKeepSocketAlive() {
     final getIt = GetIt.instance;
-    if (getIt.isRegistered<PlaybackManager>() &&
-        getIt<PlaybackManager>().state.isPlaying) {
-      return true;
+    if (getIt.isRegistered<PlaybackManager>()) {
+      final manager = getIt<PlaybackManager>();
+      // A paused stream still shows on the server, and the server only
+      // offers remote control (Stop included) while the socket is open. A
+      // phone keeps a paused video loaded in the background indefinitely, so
+      // it still drops the socket to save battery.
+      if (manager.state.isPlaying ||
+          (!PlatformDetection.isMobile && manager.currentResolution != null)) {
+        return true;
+      }
     }
     if (getIt.isRegistered<SyncPlayManager>() &&
         getIt<SyncPlayManager>().state.groupId != null) {
@@ -805,7 +842,12 @@ class SessionRepository {
     } catch (_) {}
   }
 
-  Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+  Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) =>
+      _whileChangingAccount(
+        () => _destroyCurrentSession(tokenKnownInvalid: tokenKnownInvalid),
+      );
+
+  Future<void> _destroyCurrentSession({required bool tokenKnownInvalid}) async {
     _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
@@ -849,15 +891,20 @@ class SessionRepository {
     // last profile too (AuthenticationStore.removeUser).
     final keepsSiloLogin =
         serverId != null && _siloSiblings(serverId, userId).isNotEmpty;
-    if (serverId != null && !tokenKnownInvalid && !keepsSiloLogin) {
+    final signedOut = serverId == null
+        ? null
+        : _clientFactory.getClientIfExists(serverId);
+    if (!tokenKnownInvalid && !keepsSiloLogin) {
       try {
-        final client = _clientFactory.getClientIfExists(serverId);
-        await client?.authApi.logout();
+        await signedOut?.authApi.logout();
       } catch (_) {}
     }
 
     _remoteCommandSubscription?.cancel();
     _remoteCommandSubscription = null;
+    // The lane outlives the sign-in: only a session on the server signed
+    // out of loses it (its stop normally closes it already).
+    if (signedOut != null) _siloPlaybackControl?.forget(signedOut);
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
     _accessChangedSubscription?.cancel();
@@ -922,6 +969,16 @@ class SessionRepository {
     } catch (_) {}
   }
 
+  Future<T> _whileChangingAccount<T>(Future<T> Function() change) async {
+    _accountSelectionGeneration++;
+    _accountChangesInProgress++;
+    try {
+      return await change();
+    } finally {
+      _accountChangesInProgress--;
+    }
+  }
+
   void _setState(SessionState state) {
     _state = state;
     _stateController.add(state);
@@ -935,6 +992,69 @@ class SessionRepository {
           _logger.w('Remote command failed: ${error.runtimeType}');
         }),
       ),
+    );
+  }
+
+  /// Silo sends an administrator's message, pause, resume and stop on a lane
+  /// of the playing session rather than on the events socket. It runs through
+  /// the same handling as a Jellyfin remote. Not tied to the events socket or
+  /// to the signed-in server: it is open only while a Silo session plays, on
+  /// the server that session is on, so a title from another signed-in server
+  /// gets its lane too.
+  void _bindSiloPlaybackControl() {
+    _siloPlaybackControl ??= SiloPlaybackControlSocket.forApp(
+      handle: (message) {
+        // In a watch party the room's controls take pause and resume, and a
+        // guest of a host-only room can't: say so rather than `completed`.
+        // Only that room's interceptor refuses; a cast or SyncPlay one
+        // carries the action on.
+        if (message is PlaystateMessage &&
+            message.command.toLowerCase() != 'stop' &&
+            GetIt.instance.isRegistered<PlaybackManager>() &&
+            GetIt.instance<PlaybackManager>().hasTransportInterceptor &&
+            GetIt.instance.isRegistered<SiloWatchPartyManager>() &&
+            GetIt.instance<SiloWatchPartyManager>().blocksTransport) {
+          throw StateError('Transport belongs to the watch party');
+        }
+        return _handleRemoteCommand(message);
+      },
+      terminate: (sessionId, reason) async {
+        if (!GetIt.instance.isRegistered<PlaybackManager>()) return;
+        // Like a remote Stop, it outdates any PlayNow still on its way.
+        _remoteNavigationGeneration++;
+        await GetIt.instance<PlaybackManager>().endSessionByServer(
+          sessionId,
+          reason == null
+              ? siloEndedOnServerMessage
+              : '$siloEndedOnServerMessage\n$reason',
+        );
+      },
+      // An admin's stop with a reason: the remote Stop runs as usual (sheets
+      // closed, player dismissed, position reported), then the reason is
+      // shown the way a server message is, so it lands with no player
+      // screen left to show it. In the foreground it shows in the app, so it
+      // doesn't depend on notification permission. Showing it doesn't hold
+      // up or fail the stop.
+      stopWithReason: (sessionId, reason) async {
+        await _handleRemoteCommand(const PlaystateMessage(command: 'Stop'));
+        unawaited(
+          _showRemoteMessage(
+            reason,
+            currentAppLocalizations().siloPlaybackStoppedOnServer,
+            inAppInForeground: true,
+          ).catchError((Object error) {
+            _logger.w('Showing a Silo stop reason failed: $error');
+          }),
+        );
+      },
+      // A replan clears the resolution until the new one is up, but the
+      // player still streams from its session.
+      playedHere: (sessionId) {
+        if (!GetIt.instance.isRegistered<PlaybackManager>()) return false;
+        final manager = GetIt.instance<PlaybackManager>();
+        return manager.currentResolution?.playSessionId == sessionId ||
+            manager.ownedPlaySessionId == sessionId;
+      },
     );
   }
 
@@ -1577,22 +1697,60 @@ class SessionRepository {
   /// Shows a message another client sent to this one. It takes the system
   /// notification where the device has them and an in-app banner where it
   /// doesn't, so a message the sender saw go through always lands somewhere.
-  Future<void> _showRemoteMessage(String text, String? header) async {
-    final delivered = await GetIt.instance<DownloadNotificationService>()
-        .showRemoteMessage(text: text, header: header);
+  ///
+  /// [inAppInForeground] skips the notification while the app is in the
+  /// foreground, for a message that must be seen even where notifications
+  /// are turned off.
+  Future<void> _showRemoteMessage(
+    String text,
+    String? header, {
+    bool inAppInForeground = false,
+  }) async {
+    // The Apple native player sits above every Flutter page, so while it is
+    // on screen a message drawn by Flutter would be hidden behind the video:
+    // the player's own alert shows it. In the background a notification is
+    // tried first, and the alert waits for the viewer where there is none
+    // (tvOS has no notifications).
+    final backend = GetIt.instance.isRegistered<PlaybackManager>()
+        ? GetIt.instance<PlaybackManager>().backend
+        : null;
+    final nativePlayer = backend is NativeApplePlayerBackend &&
+            backend.isPlayerOnScreen
+        ? backend
+        : null;
+    final background = switch (WidgetsBinding.instance.lifecycleState) {
+      AppLifecycleState.paused ||
+      AppLifecycleState.hidden ||
+      AppLifecycleState.detached => true,
+      _ => false,
+    };
+    final l10n = currentAppLocalizations();
+    final title = (header != null && header.trim().isNotEmpty)
+        ? header.trim()
+        : l10n.serverMessagesNotificationTitle;
+    Future<void> showOnPlayer(NativeApplePlayerBackend player) =>
+        player.showMessage(
+          text.trim(),
+          title: title,
+          closeLabel: l10n.close,
+        );
+
+    if (nativePlayer != null && !background) {
+      await showOnPlayer(nativePlayer);
+      return;
+    }
+    final delivered = !(inAppInForeground && !background) &&
+        await GetIt.instance<DownloadNotificationService>()
+            .showRemoteMessage(text: text, header: header);
     if (delivered) return;
+    if (nativePlayer != null) {
+      await showOnPlayer(nativePlayer);
+      return;
+    }
 
     final context = appRouter.routerDelegate.navigatorKey.currentContext;
     if (context == null || !context.mounted) return;
-    final l10n = currentAppLocalizations();
-    FloatingNotification.show(
-      context,
-      (header != null && header.trim().isNotEmpty)
-          ? header.trim()
-          : l10n.serverMessagesNotificationTitle,
-      text.trim(),
-      null,
-    );
+    FloatingNotification.show(context, title, text.trim(), null);
   }
 
   void dispose() {
@@ -1601,6 +1759,8 @@ class SessionRepository {
     _remoteKeys.releaseAll();
     _remoteSearch?.close();
     _remoteCommandSubscription?.cancel();
+    _siloPlaybackControl?.dispose();
+    _siloPlaybackControl = null;
     _pluginEventSubscription?.cancel();
     _accessChangedSubscription?.cancel();
     _stateController.close();

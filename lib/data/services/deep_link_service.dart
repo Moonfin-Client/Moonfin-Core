@@ -43,9 +43,15 @@ class DeepLinkService {
   ///    (starts playback)
   ///  - `moonfin://home[?serverId=<serverId>][&userId=<userId>]` (opens Home,
   ///    as that user when one is given)
-  ///  - `moonfin://search?query=<text>` (opens search with the query text)
-  ///  - `moonfin://live-tv/guide` and `moonfin://live-tv/recordings`, for
-  ///    remapping remote buttons the system keeps from apps (Guide, DVR)
+  ///  - `moonfin://search[?query=<text>]` (opens search, with the query text
+  ///    when there is one)
+  ///  - `moonfin://library?id=<libraryId>` (opens the library the way its
+  ///    sidebar entry does)
+  ///  - `moonfin://favorites` and `moonfin://settings`
+  ///  - `moonfin://live-tv`, `moonfin://live-tv/guide` and
+  ///    `moonfin://live-tv/recordings`, for remapping remote buttons the
+  ///    system keeps from apps (Guide, DVR). A plain link opens the guide, as
+  ///    the Live TV button does.
   ///  - `moonfin://party?server=<serverId>&code=<code>&address=<url>`, a
   ///    watch party invite. The server id is the server's own, so the watch
   ///    party link screen works out which saved server it is, if any.
@@ -76,12 +82,16 @@ class DeepLinkService {
     }
     if (uri.host == 'search') {
       final searchQuery = uri.queryParameters['query'];
-      if (searchQuery == null || searchQuery.isEmpty) return null;
+      if (searchQuery == null || searchQuery.isEmpty) {
+        return Destinations.search;
+      }
       return '/search?query=${Uri.encodeComponent(searchQuery)}';
     }
+    if (uri.host == 'favorites') return Destinations.allFavorites;
+    if (uri.host == 'settings') return Destinations.settings;
     if (uri.host == 'live-tv') {
       return switch (uri.path) {
-        '/guide' => Destinations.liveTvGuide,
+        '' || '/' || '/guide' => Destinations.liveTvGuide,
         '/recordings' => Destinations.liveTvRecordings,
         _ => null,
       };
@@ -89,6 +99,10 @@ class DeepLinkService {
     final isHome = uri.host == 'home';
     final id = uri.queryParameters['id'];
     if (!isHome && (id == null || id.isEmpty)) return null;
+    // The navigator looks the library up to pick its screen.
+    if (uri.host == 'library') {
+      return Destinations.library(Uri.encodeComponent(id!));
+    }
     final serverId = uri.queryParameters['serverId'];
     final userId = uri.queryParameters['userId'];
     final params = <String, String>{

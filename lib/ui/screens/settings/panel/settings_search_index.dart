@@ -339,6 +339,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.dashboard_customize_outlined,
     open: () => push(const _DetailSectionsScreen()),
   );
+  final mediaDescriptionVisibility = _SearchSection(
+    slug: 'media-description-visibility',
+    path: [
+      l10n.appearance,
+      l10n.detailsPage,
+      l10n.toggleMediaDescriptionVisibility,
+    ],
+    icon: Icons.description_outlined,
+    open: () => push(const _MediaDescriptionVisibilityScreen()),
+  );
   final ratingSources = _SearchSection(
     slug: 'rating-sources',
     path: [l10n.appearance, l10n.detailsPage, l10n.ratingSources],
@@ -712,6 +722,24 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'quick look',
       'frost',
     ]),
+    if (GetIt.instance.isRegistered<MediaServerClient>() &&
+        GetIt.instance<MediaServerClient>().features.supportsFractionalRatings &&
+        prefs.get(UserPreferences.personalRatingStyle) !=
+            PersonalRatingStyle.thumbs)
+      details.leaf(
+        'pref_personal_rating_intervals',
+        l10n.personalRatingIntervals,
+        keywords: [
+          'rating',
+          'stars',
+          'numeric',
+          'steps',
+          'half',
+          'quarter',
+          'precision',
+          'granularity',
+        ],
+      ),
     details.leaf(
       'pref_show_details_backdrop',
       l10n.detailsScreenBackdrop,
@@ -736,6 +764,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['codec', 'bitrate info'],
     ),
     details.leaf(
+      'pref_detail_show_full_date',
+      l10n.detailShowFullDate,
+      subtitle: l10n.detailShowFullDateSubtitle,
+      keywords: ['date', 'release date', 'air date', 'year'],
+    ),
+    details.leaf(
       'pref_detail_trailers_external',
       l10n.openTrailersExternally,
       subtitle: l10n.openTrailersExternallySubtitle,
@@ -746,12 +780,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.trailerCaptions,
       subtitle: l10n.trailerCaptionsDescription,
       keywords: ['subtitles'],
-    ),
-    details.leaf(
-      'pref_hide_details_media_description',
-      l10n.hideDetailsMediaDescription,
-      subtitle: l10n.hideDetailsMediaDescriptionSubtitle,
-      keywords: ['spoiler', 'description', 'overview'],
     ),
     details.leaf(
       'pref_detail_use_series_thumbnails',
@@ -849,6 +877,47 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'links',
       'social media',
     ]),
+    mediaDescriptionVisibility.screen(keywords: [
+      'spoilers',
+      'descriptions',
+      'overview',
+      'synopsis',
+      'movie description',
+      'show description',
+      'episode description',
+      'season description',
+      'collection description',
+    ]),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionMovie.key,
+      l10n.hideMediaDescriptionMovie,
+      subtitle: l10n.hideMediaDescriptionMovieSubtitle,
+      keywords: ['spoiler', 'movie', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionShow.key,
+      l10n.hideMediaDescriptionShow,
+      subtitle: l10n.hideMediaDescriptionShowSubtitle,
+      keywords: ['spoiler', 'show', 'series', 'tv', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionSeason.key,
+      l10n.hideMediaDescriptionSeason,
+      subtitle: l10n.hideMediaDescriptionSeasonSubtitle,
+      keywords: ['spoiler', 'season', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionEpisode.key,
+      l10n.hideMediaDescriptionEpisode,
+      subtitle: l10n.hideMediaDescriptionEpisodeSubtitle,
+      keywords: ['spoiler', 'episode', 'description', 'overview'],
+    ),
+    mediaDescriptionVisibility.leaf(
+      UserPreferences.hideDetailsMediaDescriptionBoxSet.key,
+      l10n.hideMediaDescriptionBoxSet,
+      subtitle: l10n.hideMediaDescriptionBoxSetSubtitle,
+      keywords: ['spoiler', 'collection', 'boxset', 'description', 'overview'],
+    ),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),
     navigation.leaf('pref_navbar_position', l10n.navigationStyle, keywords: [
@@ -857,6 +926,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'left',
       'bottom',
     ]),
+    navigation.leaf(
+      'pref_top_navbar_style',
+      l10n.topNavbarStyle,
+      keywords: ['tabline', 'atlas', 'top bar', 'tabs'],
+    ),
+    navigation.leaf(
+      'pref_sidebar_style',
+      l10n.sidebarStyle,
+      keywords: ['reel', 'mosaic', 'sidebar', 'tiles', 'wheel'],
+    ),
     // Device gate only: the entries stay findable while another position is
     // picked, like every other setting here.
     if (NavigationLayout.allowBottomNavbar) ...[
@@ -1685,6 +1764,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['swipe', 'gestures', 'volume', 'brightness'],
       ),
       video.leaf(
+        'pref_player_swipe_seek',
+        l10n.playerSwipeSeek,
+        subtitle: l10n.playerSwipeSeekDescription,
+        keywords: ['swipe', 'gestures', 'seek', 'scrub', 'rewind'],
+      ),
+      video.leaf(
         'pref_gesture_indicator_placement',
         l10n.invertGestureIndicators,
         subtitle: l10n.invertGestureIndicatorsDescription,
@@ -1753,6 +1838,33 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.av1SoftwareUhdDirectPlaySubtitle,
         keywords: ['av1', '4k', 'uhd', 'software decode'],
       ),
+    if (PlatformDetection.isApple || PlatformDetection.isAppleTV) ...[
+      quality.leaf(
+        'upscale_low_resolution_video',
+        l10n.upscaleLowResolutionVideo,
+        subtitle: l10n.upscaleLowResolutionVideoSubtitle,
+        keywords: ['upscale', 'sd', '720p', 'sharpen', 'super resolution'],
+      ),
+      quality.leaf(
+        'upscale_full_hd_video',
+        l10n.upscaleFullHdVideo,
+        subtitle: l10n.upscaleFullHdVideoSubtitle,
+        keywords: ['upscale', '1080p', 'full hd', '4k', 'sharpen', 'lanczos'],
+      ),
+      quality.leaf(
+        'upscale_animation_line_art',
+        l10n.upscaleAnimationLineArt,
+        subtitle: l10n.upscaleAnimationLineArtSubtitle,
+        keywords: ['upscale', 'anime', 'animation', 'cartoon', 'anime4k'],
+      ),
+    ],
+    if (PlatformDetection.isAppleTV || PlatformDetection.isMacOS)
+      quality.leaf(
+        'hdr_tone_map_peak_nits',
+        l10n.hdrToneMapping,
+        subtitle: l10n.hdrToneMappingDescription,
+        keywords: ['hdr', 'hdr10', 'tone mapping', 'nits', 'brightness'],
+      ),
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
       quality.leaf(
         'exoplayer_prefer_ffmpeg',
@@ -1820,6 +1932,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.compressDynamicRange,
       keywords: ['loudness', 'volume leveling'],
     ),
+    if (PlatformDetection.isApple || PlatformDetection.isAppleTV)
+      audio.leaf(
+        'loudness_target_lufs',
+        l10n.loudnessTarget,
+        subtitle: l10n.loudnessTargetDescription,
+        keywords: ['loudness', 'volume', 'quiet', 'lufs', 'normalize'],
+      ),
     audio.leaf(
       'pref_audio_language',
       l10n.defaultAudioLanguage,
@@ -1860,11 +1979,25 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
             'silence',
           ],
         ),
+      if (PlatformDetection.isLinux)
+        audio.leaf(
+          'pref_passthrough_silent_fallback',
+          l10n.settingsAudioPassthroughFallback,
+          subtitle: l10n.settingsAudioPassthroughFallbackDescription,
+          keywords: ['bitstream', 'decode', 'no sound', 'silent', 'silence'],
+        ),
       audio.leaf(
         'pref_downmix_to_stereo',
         l10n.downmixToStereo,
         keywords: ['stereo', 'downmix', '2.0'],
       ),
+      if (PlatformDetection.isIOS || PlatformDetection.isAppleTV)
+        audio.leaf(
+          'binaural_headphones',
+          l10n.binauralHeadphones,
+          subtitle: l10n.binauralHeadphonesSubtitle,
+          keywords: ['spatial', 'surround', '3d', 'airpods'],
+        ),
       audio.leaf(
         'pref_max_audio_channels',
         l10n.settingsMaxAudioChannels,

@@ -136,17 +136,30 @@ class _NativeApplePlayerBackend extends Fake implements NativeApplePlayerBackend
   @override
   Future<void> sendRemoteNavigation(String command) async =>
       navigation.add(command);
+  bool suspended = false;
   @override
   bool get isPlayerPresented => !dismissed;
   @override
+  bool get isPlayerOnScreen => !dismissed && !suspended;
+  @override
   Future<void> dismissPlayer() async => dismissed = true;
+  final alerts = <({String message, String? title})>[];
+  @override
+  Future<void> showMessage(
+    String message, {
+    String? title,
+    String? actionLabel,
+    required String closeLabel,
+  }) async => alerts.add((message: message, title: title));
 }
 
 class _FakeNotifications extends Fake implements DownloadNotificationService {
   final List<String> messages = [];
+  bool delivers = true;
 
   @override
   Future<bool> showRemoteMessage({required String text, String? header}) async {
+    if (!delivers) return false;
     messages.add(text);
     return true;
   }
@@ -1389,6 +1402,78 @@ void main() {
     await sendGeneral('DisplayMessage', args: {'Text': 'dinner is ready'});
 
     expect(notifications.messages, ['dinner is ready']);
+  });
+
+  test('a message during native Apple playback is the player\'s alert, '
+      'since the video covers anything Flutter draws', () async {
+    final backend = _NativeApplePlayerBackend();
+    manager.backend = backend;
+    await sendGeneral(
+      'DisplayMessage',
+      args: {'Text': 'restarting at 9', 'Header': 'From your admin'},
+    );
+
+    expect(backend.alerts.single.message, 'restarting at 9');
+    expect(backend.alerts.single.title, 'From your admin');
+    expect(notifications.messages, isEmpty);
+  });
+
+  test('while the Live TV guide has the native player off screen, a message '
+      'is a notification', () async {
+    final backend = _NativeApplePlayerBackend()..suspended = true;
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts, isEmpty);
+    expect(notifications.messages, ['hello']);
+  });
+
+  test('with the app in the background, a message is a notification even '
+      'with the native player presented', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    final before = binding.lifecycleState;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    // The binding can't go back to "not reported yet"; the code reads that
+    // and resumed alike (not in the background).
+    addTearDown(
+      () => binding.handleAppLifecycleStateChanged(
+        before ?? AppLifecycleState.resumed,
+      ),
+    );
+    final backend = _NativeApplePlayerBackend();
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts, isEmpty);
+    expect(notifications.messages, ['hello']);
+  });
+
+  test('in the background with no notifications (tvOS), the player\'s alert '
+      'waits for the viewer', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    final before = binding.lifecycleState;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    addTearDown(
+      () => binding.handleAppLifecycleStateChanged(
+        before ?? AppLifecycleState.resumed,
+      ),
+    );
+    notifications.delivers = false;
+    final backend = _NativeApplePlayerBackend();
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts.single.message, 'hello');
+  });
+
+  test('once the native player is gone, a message is a notification again',
+      () async {
+    final backend = _NativeApplePlayerBackend()..dismissed = true;
+    manager.backend = backend;
+    await sendGeneral('DisplayMessage', args: {'Text': 'hello'});
+
+    expect(backend.alerts, isEmpty);
+    expect(notifications.messages, ['hello']);
   });
 
   test("an empty message isn't shown at all", () async {
