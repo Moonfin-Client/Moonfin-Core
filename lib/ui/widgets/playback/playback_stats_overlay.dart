@@ -53,16 +53,8 @@ class _PlaybackStatsOverlayState extends State<PlaybackStatsOverlay> {
 
   void _sample() {
     final stats = widget.read();
-    if (stats == null) {
-      if (_stats != null) setState(() => _stats = null);
-      return;
-    }
+    if (stats == null) return;
     setState(() {
-      // A source reload starts a new reading, so the new source starts fresh.
-      if (stats.load != _stats?.load) {
-        _activityBps.clear();
-        _bufferSeconds.clear();
-      }
       _stats = stats;
       if (stats.activityBitsPerSecond case final bps?) {
         _push(_activityBps, bps.toDouble());

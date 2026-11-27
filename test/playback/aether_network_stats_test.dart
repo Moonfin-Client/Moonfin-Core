@@ -81,14 +81,9 @@ void main() {
 
   test('a new item starts without the last one\'s reading', () async {
     await _send(_state(networkActivityBps: 1900000));
-    final load = backend.networkStats!.load;
     await backend.play('http://example.invalid/next');
 
     expect(backend.networkStats, isNull);
-    // Its readings carry a new load, so the overlay starts fresh graphs even
-    // when it never samples the gap.
-    await _send(_state());
-    expect(backend.networkStats!.load, isNot(load));
   });
 
   test('leaves activity out when the route cannot count bytes', () async {

@@ -229,7 +229,6 @@ class Media3PlayerBackend extends PlayerBackend
   @override
   PlaybackNetworkStats? get networkStats => _networkStats;
   PlaybackNetworkStats? _networkStats;
-  int _sourceLoads = 0;
 
   /// The frame rate the display is switching to while the start or a live
   /// correction waits for it, otherwise null. Never disposed: a screen can
@@ -304,7 +303,6 @@ class Media3PlayerBackend extends PlayerBackend
       bufferedBytes: optional('bufferedBytes'),
       targetBufferBytes: optional('targetBufferBytes'),
       rebuffers: optional('rebuffers'),
-      load: _sourceLoads,
     );
   }
 
@@ -1425,7 +1423,6 @@ class Media3PlayerBackend extends PlayerBackend
     _lastFrameRateLine = null;
     playbackStatus.reset();
     _networkStats = null;
-    _sourceLoads++;
     displayMatchFps.value = null;
     _liveEdge = null;
     _sourceIsLive = payload['isLive'] == true;
