@@ -2044,11 +2044,11 @@
     "@themeSepia": {
         "description": "Reader theme option for sepia mode"
     },
-    "invertColorsFixedLayout": "Invert Colors (fixed layout)",
+    "invertColorsFixedLayout": "Invert Colours (fixed layout)",
     "@invertColorsFixedLayout": {
         "description": "Menu item to invert colors for fixed layout"
     },
-    "invertColorsPdf": "Invert Colors (PDF)",
+    "invertColorsPdf": "Invert Colours (PDF)",
     "@invertColorsPdf": {
         "description": "Menu item to invert colors for PDF"
     },
@@ -2649,7 +2649,7 @@
     "@themeAndAppearance": {
         "description": "Appearance settings title"
     },
-    "focusBorderColor": "Focus Border Color",
+    "focusBorderColor": "Focus Border Colour",
     "@focusBorderColor": {
         "description": "Setting for focus border color"
     },
@@ -3092,7 +3092,7 @@
     "@pathToMpvConf": {
         "description": "Hint text for mpv.conf path input"
     },
-    "subtitleStyleDescription": "Style settings (size, color, offset) apply to text-based subtitles (SRT, VTT, TTML). ASS/SSA subtitles use their own embedded styling unless \"ASS/SSA Direct Play\" is turned off. Bitmap subtitles (PGS, DVB, VobSub) cannot be restyled.",
+    "subtitleStyleDescription": "Style settings (size, colour, offset) apply to text-based subtitles (SRT, VTT, TTML). ASS/SSA subtitles use their own embedded styling unless \"ASS/SSA Direct Play\" is turned off. Bitmap subtitles (PGS, DVB, VobSub) cannot be restyled.",
     "@subtitleStyleDescription": {
         "description": "Info text about subtitle styling"
     },
@@ -3112,15 +3112,15 @@
     "@subtitleSize": {
         "description": "Setting for subtitle size"
     },
-    "textFillColor": "Text Fill Color",
+    "textFillColor": "Text Fill Colour",
     "@textFillColor": {
         "description": "Setting for subtitle text fill color"
     },
-    "backgroundColor": "Background Color",
+    "backgroundColor": "Background Colour",
     "@backgroundColor": {
         "description": "Setting for background color"
     },
-    "textStrokeColor": "Text Stroke Color",
+    "textStrokeColor": "Text Stroke Colour",
     "@textStrokeColor": {
         "description": "Setting for subtitle text stroke color"
     },
@@ -3391,7 +3391,7 @@
     "@navbarOpacity": {
         "description": "Setting for navbar opacity"
     },
-    "navbarColor": "Navbar Color",
+    "navbarColor": "Navbar Colour",
     "@navbarColor": {
         "description": "Setting for navbar color"
     },
@@ -4174,7 +4174,7 @@
     "@watchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on mobile"
     },
-    "focusColorWatchedIndicatorsBackdrops": "Focus color, watched indicators, backdrops",
+    "focusColorWatchedIndicatorsBackdrops": "Focus colour, watched indicators, backdrops",
     "@focusColorWatchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on desktop"
     },
@@ -12826,5 +12826,18 @@
     "siloSectionSeasonalValentinesFavorites": "Valentine's Favourites",
     "@siloSectionSeasonalValentinesFavorites": {
         "description": "Title of a seasonal row on a Silo server's Home (valentines)"
+    },
+    "bookFavoriteCount": "{count, plural, =1{1 favourite} other{{count}\nfavourites}}",
+    "@bookFavoriteCount": {
+        "description": "Book library Favorites screen header count",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "calendarSettingsColorBy": "Colour by",
+    "@calendarSettingsColorBy": {
+        "description": "Calendar setting for what the colors on calendar entries mean. The choices are Type and Status"
     }
 }
