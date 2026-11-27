@@ -254,6 +254,10 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// that DisplaySpecialsWithinSeasons lists inside a regular season.
   final String? contextSeasonId;
 
+  /// The copy of this item the card that opened the page already held. It
+  /// lets the page go up at once while the full item loads behind it.
+  AggregatedItem? _cardItem;
+
   String? _resolvedEpisodesSeasonId;
 
   /// The season [episodes] was actually loaded from, so callers queue playback
@@ -267,6 +271,11 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   ItemDetailState _state = ItemDetailState.loading;
   ItemDetailState get state => _state;
+
+  /// Whether [item] is still the card's copy rather than the full item, so
+  /// nothing should act on it yet.
+  bool _isCardCopy = false;
+  bool get isCardCopy => _isCardCopy;
 
   AggregatedItem? _item;
   AggregatedItem? get item => _item;
@@ -752,6 +761,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     required MdbListRepository mdbListRepository,
     required TmdbRepository tmdbRepository,
     String? libraryId,
+    this._cardItem,
   }) : _serverId = serverId,
        _libraryId = libraryId,
        _client = client,
@@ -1013,6 +1023,20 @@ class ItemDetailViewModel extends ChangeNotifier {
     _playlistHasMore = false;
     _playlistLoadingMore = false;
     _playlistItems = const [];
+    // Only the first load has a card behind it.
+    final card = _cardItem?.id == itemId ? _cardItem : null;
+    _cardItem = null;
+    final gate = GetIt.instance.isRegistered<BlockedContentGate>()
+        ? GetIt.instance<BlockedContentGate>()
+        : null;
+    if (card != null &&
+        gate != null &&
+        _cardCopyIsDecided(card) &&
+        !gate.isBlockedNow(card)) {
+      _item = card;
+      _isCardCopy = true;
+      _state = ItemDetailState.ready;
+    }
     notifyListeners();
 
     try {
@@ -1093,6 +1117,9 @@ class ItemDetailViewModel extends ChangeNotifier {
         _seriesBooks = series.books;
         _item = series.series;
       } else {
+        // Starts the series lookup an unrated episode needs alongside the item
+        // rather than after it. The check below then answers from its cache.
+        if (card != null && gate != null) unawaited(gate.isBlocked(card));
         final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
         final candidate = AggregatedItem(
           id: itemId,
@@ -1104,9 +1131,6 @@ class ItemDetailViewModel extends ChangeNotifier {
         // off fetching episodes for a page that will never be shown. No gate
         // registered means a boot ordering this knows nothing about, and
         // refusing the screen outright would be worse than the gap.
-        final gate = GetIt.instance.isRegistered<BlockedContentGate>()
-            ? GetIt.instance<BlockedContentGate>()
-            : null;
         if (gate != null && await gate.isBlocked(candidate)) {
           _item = null;
           _state = ItemDetailState.blocked;
@@ -1122,15 +1146,26 @@ class ItemDetailViewModel extends ChangeNotifier {
       _selectedSubtitleIndex = savedSubIndex == -2 ? null : savedSubIndex;
       final savedAudioIndex = prefs.getItemAudioStreamIndex(itemId);
       _selectedAudioIndex = savedAudioIndex == -2 ? null : savedAudioIndex;
+      _isCardCopy = false;
       _state = ItemDetailState.ready;
       notifyListeners();
 
       _loadSecondary();
     } catch (e) {
       _error = e;
+      _isCardCopy = false;
       _state = ItemDetailState.error;
       notifyListeners();
     }
+  }
+
+  // While any rating is blocked, only a card that carries its own rating is
+  // drawn. An unrated one may be rated on the full item or judged by its
+  // series, so it waits for that answer rather than flashing a title that's
+  // about to go.
+  static bool _cardCopyIsDecided(AggregatedItem card) {
+    final own = card.officialRating?.trim();
+    return !activeParentalFilter.isActive || (own != null && own.isNotEmpty);
   }
 
   static const _probedSourceTypes = {

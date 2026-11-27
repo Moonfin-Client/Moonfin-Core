@@ -562,6 +562,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               type: copy.type,
               channelId: copy.channelId,
             ),
+            extra: copy,
           )
           .then((result) {
             if (result == true && mounted) {

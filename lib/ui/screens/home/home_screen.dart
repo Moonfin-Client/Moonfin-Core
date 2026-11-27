@@ -6963,6 +6963,7 @@ class _ContentRowsState extends State<_ContentRows>
         type: copy.type,
         channelId: copy.channelId,
       ),
+      extra: copy,
     ),
   );
 

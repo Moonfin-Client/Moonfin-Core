@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart' show ServerType;
 import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
+import '../../data/models/aggregated_item.dart';
 import '../../data/services/connectivity_service.dart';
 import '../../data/services/remote_search_session.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
@@ -523,6 +524,10 @@ final appRouter = GoRouter(
           contextSeasonId: contextSeasonId,
           quickLook: quickLook,
           libraryId: libraryId,
+          // Autoplay starts from the full item, so it waits for it.
+          cardItem: autoPlay || state.extra is! AggregatedItem
+              ? null
+              : state.extra as AggregatedItem,
         );
       }),
       routes: [
