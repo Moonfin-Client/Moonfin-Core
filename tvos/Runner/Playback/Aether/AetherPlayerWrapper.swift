@@ -473,6 +473,19 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             }
             .store(in: &cancellables)
 
+        #if canImport(Libass)
+            // Matroska fonts arrive after the first frame, so libass is set up again once they land.
+            engine.$fontAttachments
+                .dropFirst()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self, weak engine] _ in
+                    guard let self, let engine, self.assConfiguredForTrackID != nil else { return }
+                    self.resetAssState()
+                    self.applySubtitleCues(engine.subtitleCues)
+                }
+                .store(in: &cancellables)
+        #endif
+
         engine.$secondarySubtitleCues
             .receive(on: DispatchQueue.main)
             .sink { [weak self, weak engine] _ in

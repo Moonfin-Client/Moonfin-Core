@@ -75,7 +75,7 @@ end
 # ship. An engine bump is a deliberate change rather than
 # something a resolve should pick up on its own.
 aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
-aether_revision = '34f149ba2dd483f490dca13a5a3027d58a9956f5'
+aether_revision = 'b0943d2ef124108e5abc316138dff3fe316f9ac9'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 
