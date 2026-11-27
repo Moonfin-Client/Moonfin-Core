@@ -1,4 +1,5 @@
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
@@ -51,8 +52,7 @@ void main() {
   late _CountingSocketHandler socket;
   late SessionRepository repository;
 
-  setUp(() async {
-    await GetIt.instance.reset();
+  setUp(() {
     manager = _FakeManager();
     socket = _CountingSocketHandler();
     GetIt.instance.registerSingleton<PlaybackManager>(manager);
@@ -68,9 +68,13 @@ void main() {
     );
   });
 
-  tearDown(() => GetIt.instance.reset());
+  tearDown(() {
+    debugDefaultTargetPlatformOverride = null;
+    return GetIt.instance.reset();
+  });
 
   test('a paused stream keeps the socket open in the background', () {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     fakeAsync((async) {
       manager.currentResolution = _FakeResolution();
       repository.onAppBackgrounded();
@@ -79,6 +83,16 @@ void main() {
 
       // Playback stops while the app stays in the background.
       manager.currentResolution = null;
+      async.elapse(const Duration(seconds: 61));
+      expect(socket.disconnects, 1);
+    });
+  });
+
+  test('a phone drops the socket while paused, to save battery', () {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    fakeAsync((async) {
+      manager.currentResolution = _FakeResolution();
+      repository.onAppBackgrounded();
       async.elapse(const Duration(seconds: 61));
       expect(socket.disconnects, 1);
     });

@@ -669,8 +669,11 @@ class SessionRepository {
     if (getIt.isRegistered<PlaybackManager>()) {
       final manager = getIt<PlaybackManager>();
       // A paused stream still shows on the server, and the server only
-      // offers remote control (Stop included) while the socket is open.
-      if (manager.state.isPlaying || manager.currentResolution != null) {
+      // offers remote control (Stop included) while the socket is open. A
+      // phone keeps a paused video loaded in the background indefinitely, so
+      // it still drops the socket to save battery.
+      if (manager.state.isPlaying ||
+          (!PlatformDetection.isMobile && manager.currentResolution != null)) {
         return true;
       }
     }
