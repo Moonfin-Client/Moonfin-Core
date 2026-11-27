@@ -127,6 +127,7 @@ void main() {
     when(() => vm.features).thenReturn([]);
     when(() => vm.seerr).thenReturn(null);
     when(() => vm.state).thenReturn(ItemDetailState.ready);
+    when(() => vm.isCardCopy).thenReturn(false);
     when(() => vm.error).thenReturn(null);
     when(() => vm.effectiveSeasonId).thenReturn(null);
     when(() => vm.selectedAudioIndex).thenReturn(null);

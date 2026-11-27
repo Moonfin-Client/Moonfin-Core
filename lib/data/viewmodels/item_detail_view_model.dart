@@ -1029,8 +1029,11 @@ class ItemDetailViewModel extends ChangeNotifier {
     final gate = GetIt.instance.isRegistered<BlockedContentGate>()
         ? GetIt.instance<BlockedContentGate>()
         : null;
+    // A person's page asks Seerr for their credits as soon as it's built, so a
+    // card copy would ask twice.
     if (card != null &&
         gate != null &&
+        card.type != 'Person' &&
         _cardCopyIsDecided(card) &&
         !gate.isBlockedNow(card)) {
       _item = card;

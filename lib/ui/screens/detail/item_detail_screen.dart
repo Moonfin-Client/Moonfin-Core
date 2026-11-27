@@ -570,6 +570,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         // out, after the full item's content has claimed it.
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted &&
+              _viewModel.state == ItemDetailState.ready &&
               !PlatformDetection.useMobileUi &&
               _initialContentFocusNode != null) {
             NavigationLayout.focusDetailsPlayButtonNotifier.value =

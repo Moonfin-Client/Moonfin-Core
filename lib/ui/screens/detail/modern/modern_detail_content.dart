@@ -307,6 +307,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   double _boxSetLastTriggerMaxExtent = -1;
   String? _seriesLogoTag;
   String? _seriesLogoId;
+
+  /// Built for the card's copy, which is replaced once the full item lands.
+  bool _builtForCardCopy = false;
   bool _showNavbarState = true;
   bool _audioExpanded = false;
   bool _subtitlesExpanded = false;
@@ -573,6 +576,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       return leftToSidebarHandler(node, event);
     };
 
+    _builtForCardCopy = _vm.isCardCopy;
     _vm.addListener(_onViewModelChanged);
     _scrollController.addListener(_onScroll);
     // With Expanded Tabs off the tabs start collapsed on every platform and are
@@ -742,7 +746,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Future<void> _loadSeriesLogo() async {
     final item = _vm.item;
-    if (item == null) return;
+    // The full item's content asks for the series once it's here, if the
+    // item doesn't carry the logo tag already.
+    if (item == null || _builtForCardCopy) return;
     final seriesId = item.seriesId;
     if (seriesId == null || _seriesLogoId == seriesId) return;
 

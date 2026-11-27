@@ -186,6 +186,18 @@ void main() {
     expect(vm.isCardCopy, isTrue);
   });
 
+  test("a person's card waits for the full item", () async {
+    await prefs.set(UserPreferences.blockedParentalRatings, '');
+    final vm = vmFor(
+      'person-1',
+      _card({'Id': 'person-1', 'Name': 'A person', 'Type': 'Person'}),
+    );
+    unawaited(vm.load());
+
+    expect(vm.state, ItemDetailState.loading);
+    expect(vm.item, isNull);
+  });
+
   test('a card for another item is ignored', () {
     final vm = vmFor('movie-2', _card({..._movie, 'OfficialRating': 'PG'}));
     unawaited(vm.load());
