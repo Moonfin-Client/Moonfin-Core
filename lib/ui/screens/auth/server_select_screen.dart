@@ -50,6 +50,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   final _authStore = GetIt.instance<AuthenticationStore>();
   final _authPrefs = GetIt.instance<AuthenticationPreferences>();
   final _deviceInfo = GetIt.instance<DeviceInfo>();
+  bool _removingServer = false;
   final _discoveryService = ServerDiscoveryService();
   // Separate nodes, because a node handed from a tile to the button keeps the
   // tile's key handler, which the button has none of its own to replace
@@ -473,6 +474,9 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   }
 
   Future<void> _deleteServer(Server server) async {
+    // Signing out of the removed server can take a moment; a second
+    // long-press meanwhile would start another removal.
+    if (_removingServer) return;
     final l10n = AppLocalizations.of(context);
     // Read before the dialog takes focus and hands it back a microtask later
     final tileHadFocus = _firstServerFocus.hasFocus;
@@ -488,12 +492,12 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       ),
     );
     if (confirmed == true) {
-      // Removing the signed-in server signs out of it first, so the session
-      // doesn't carry on against a server that's gone.
-      if (_sessionRepo.activeServerId == server.id) {
-        await _sessionRepo.destroyCurrentSession();
+      _removingServer = true;
+      try {
+        await _sessionRepo.removeServer(server.id);
+      } finally {
+        _removingServer = false;
       }
-      await _serverRepo.deleteServer(server.id);
       if (!mounted) return;
       setState(() {});
       // Removing the last tile drops its focus, so hand it to Add Server

@@ -91,6 +91,15 @@ class _Servers extends Fake implements ServerRepository {
 
   @override
   Future<Server> withCheckedType(Server server) async => server;
+
+  /// What the store held for the server when deleteServer ran.
+  final deleted = <(String, bool)>[];
+  AuthenticationStore? store;
+
+  @override
+  Future<void> deleteServer(String serverId) async {
+    deleted.add((serverId, store?.getSiloTokens(serverId, '9') != null));
+  }
 }
 
 class _Users extends Fake implements UserRepository {
@@ -140,6 +149,7 @@ void main() {
   late AuthenticationStore store;
   late _Factory factory;
   late SessionRepository repo;
+  late _Servers servers;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -152,7 +162,7 @@ void main() {
       _Credentials(),
       factory,
       _Socket(),
-      _Servers(_server),
+      servers = _Servers(_server)..store = store,
       _Users(),
       _PluginSync(),
     );
@@ -238,6 +248,27 @@ void main() {
       await repo.destroyCurrentSession();
 
       expect(factory.client.authApiFake.logouts, 1);
+    });
+
+    test('removing the signed-in server signs out and leaves its login '
+        'for deleteServer to end', () async {
+      await store.putUser(_profile('brady'));
+      repo.setActiveSessionForTest('s1', 'brady');
+
+      await repo.removeServer('s1');
+
+      expect(repo.activeServerId, isNull);
+      expect(factory.client.authApiFake.logouts, 0);
+      expect(servers.deleted, [('s1', true)]);
+    });
+
+    test('removing another server keeps the session', () async {
+      repo.setActiveSessionForTest('s1', 'brady');
+
+      await repo.removeServer('s2');
+
+      expect(repo.activeServerId, 's1');
+      expect(servers.deleted.map((d) => d.$1), ['s2']);
     });
   });
 }

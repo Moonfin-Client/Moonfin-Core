@@ -154,14 +154,60 @@ void main() {
         'POST /Sessions/Logout',
         'POST /Sessions/Logout',
       ]);
-      expect(
-        {for (final r in requests) r.$2.contains('token-1') ? 1 : 2},
-        {1, 2},
-      );
+      for (final token in ['token-1', 'token-2']) {
+        expect(
+          requests.where((r) => r.$2.contains(token)),
+          hasLength(1),
+          reason: token,
+        );
+      }
     });
   }
 
-  test('a server that does not answer leaves the removal done', () async {
+  test('a token another saved server holds is not ended', () async {
+    store.servers
+      ..add(_server('j1', ServerType.jellyfin, address))
+      ..add(_server('j2', ServerType.jellyfin, 'http://other.invalid'));
+    store.users['j1'] = [
+      _user('j1', 'u1', 'shared'),
+      _user('j1', 'u2', 'own'),
+    ];
+    store.users['j2'] = [_user('j2', 'u1', 'shared')];
+    await repo.loadStoredServers();
+
+    await repo.deleteServer('j1');
+    await waitForRequests(1);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(requests, hasLength(1));
+    expect(requests.single.$2, contains('own'));
+  });
+
+  test('a server that never answers does not hold the removal', () async {
+    // Accepts the connection and never replies.
+    final silent = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final held = <Socket>[];
+    silent.listen(held.add);
+    addTearDown(() async {
+      for (final s in held) {
+        s.destroy();
+      }
+      await silent.close();
+    });
+    store.servers.add(
+      _server('s1', ServerType.silo, 'http://127.0.0.1:${silent.port}'),
+    );
+    store.siloTokens['s1'] = {'a1': _pair('access-1', 'refresh-1')};
+    await repo.loadStoredServers();
+
+    final watch = Stopwatch()..start();
+    await repo.deleteServer('s1');
+
+    expect(watch.elapsed, lessThan(const Duration(seconds: 1)));
+    expect(store.servers, isEmpty);
+  });
+
+  test('a server that refuses the connection leaves the removal done', () async {
     await http.close(force: true);
     store.servers.add(_server('s1', ServerType.silo, address));
     store.siloTokens['s1'] = {'a1': _pair('access-1', 'refresh-1')};
