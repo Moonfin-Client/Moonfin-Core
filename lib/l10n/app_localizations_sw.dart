@@ -13182,6 +13182,13 @@ class AppLocalizationsSw extends AppLocalizations {
       'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.';
 
   @override
+  String get hdrToneMapping => 'HDR tone mapping';
+
+  @override
+  String get hdrToneMappingDescription =>
+      'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override

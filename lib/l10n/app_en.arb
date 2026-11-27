@@ -11941,6 +11941,14 @@
   "@upscaleAnimationLineArtSubtitle": {
     "description": "Subtitle for the line art upscaling setting. Anime and Animation are genre names from the media library"
   },
+  "hdrToneMapping": "HDR tone mapping",
+  "@hdrToneMapping": {
+    "description": "Apple TV and Mac player setting that picks the screen's peak brightness so Moonfin tone maps brighter HDR10 video to it"
+  },
+  "hdrToneMappingDescription": "Set this to your screen's peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.",
+  "@hdrToneMappingDescription": {
+    "description": "Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names"
+  },
   "cadenceTipTitle": "Turn On Match Frame Rate",
   "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
   "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",

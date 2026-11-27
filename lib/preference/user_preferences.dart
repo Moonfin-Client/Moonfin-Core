@@ -2638,6 +2638,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final hdrToneMapPeakNits = Preference(
+    key: 'hdr_tone_map_peak_nits',
+    defaultValue: 'off',
+  );
+
   static final media3SkipSilence = Preference(
     key: 'media3_skip_silence',
     defaultValue: false,
