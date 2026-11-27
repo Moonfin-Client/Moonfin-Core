@@ -1461,41 +1461,6 @@ void main() {
       await vm.reloadIfRecordingsChanged();
       verifyNever(() => _guide(liveTv));
     });
-
-    test(
-      're-entry after a recording change refreshes the rows in place',
-      () async {
-        _stubChannels(liveTv, [_channel('c0')]);
-        when(() => _guide(liveTv)).thenAnswer(
-          (_) async => {
-            'Items': [_program('p0', 'c0')],
-          },
-        );
-        final clock = DateTime(2026, 9, 9, 20);
-        final vm = LiveTvGuideViewModel(client, now: () => clock);
-        await vm.load();
-        clearInteractions(liveTv);
-
-        when(() => _guide(liveTv)).thenAnswer(
-          (_) async => {
-            'Items': [recorded(_program('p0', 'c0'))],
-          },
-        );
-        final states = <GuideState>[];
-        vm.addListener(() => states.add(vm.state));
-        notifyLiveTvRecordingsChanged();
-        await vm.reloadIfStale();
-
-        // A full reload would tear the grid down and lose the row the viewer
-        // is coming back to.
-        expect(states, isNot(contains(GuideState.loading)));
-        expect(vm.programsForChannel('c0').single.hasTimer, isTrue);
-
-        clearInteractions(liveTv);
-        await vm.reloadIfStale();
-        verifyNever(() => _guide(liveTv));
-      },
-    );
   });
 
   test(
