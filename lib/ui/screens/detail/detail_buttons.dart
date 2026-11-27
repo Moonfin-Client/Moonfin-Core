@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../data/services/incomplete_recordings_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/recording_owners_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/button_layout.dart';
 import '../../../preference/user_preferences.dart';
@@ -42,6 +43,7 @@ enum DetailButton {
   seerrReportIssue('seerrReportIssue'),
   seerrManage('seerrManage'),
   keepAsComplete('keepAsComplete'),
+  addToMyRecordings('addToMyRecordings'),
   admin('admin');
 
   const DetailButton(this.id, {this.canHide = true});
@@ -83,6 +85,7 @@ enum DetailButton {
       DetailButton.watchWithGroup => _syncPlayAvailable,
       DetailButton.keepAsComplete =>
         _incompleteRecordingsSupported && canManageLiveTv(),
+      DetailButton.addToMyRecordings => _recordingOwnersSupported,
       // Not when no signed-in server has playlists (all Silo, say).
       DetailButton.playlist => playlistsOnAnySignedInServer(),
       _ => true,
@@ -130,6 +133,15 @@ enum DetailButton {
     }
   }
 
+  /// Only a server whose plugin keeps recording owners can add to them.
+  static bool get _recordingOwnersSupported {
+    try {
+      return supportedRecordingOwners() != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static bool get _syncPlayAvailable {
     try {
       if (GetIt.instance.isRegistered<SyncPlayManager>()) {
@@ -167,6 +179,7 @@ enum DetailButton {
     DetailButton.seerrReportIssue => Icons.report_problem_outlined,
     DetailButton.seerrManage => Icons.rule,
     DetailButton.keepAsComplete => Icons.task_alt,
+    DetailButton.addToMyRecordings => Icons.bookmark_add_outlined,
     DetailButton.admin => Icons.settings,
   };
 
@@ -192,6 +205,7 @@ enum DetailButton {
     DetailButton.seerrReportIssue => l10n.reportIssue,
     DetailButton.seerrManage => l10n.manageRequests,
     DetailButton.keepAsComplete => l10n.keepAsComplete,
+    DetailButton.addToMyRecordings => l10n.addToMyRecordings,
     DetailButton.admin => l10n.admin,
   };
 }

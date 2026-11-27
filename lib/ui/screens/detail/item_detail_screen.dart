@@ -123,6 +123,8 @@ import '../../widgets/focus/can_claim_initial_focus.dart';
 import '../../widgets/focus/context_action.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/live_tv/incomplete_recording.dart';
+import '../../widgets/live_tv/shared_recording_warning.dart';
+import '../../../data/services/recording_owners_service.dart';
 import '../../widgets/focus/dpad_list_tile.dart';
 import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/menu_action_row.dart';
@@ -255,6 +257,22 @@ void _deleteItemInBackground(
   );
 }
 
+/// For a Live TV recording other users also own, asks the shared warning
+/// instead of the generic delete confirmation. Null when it isn't a shared
+/// recording, so the caller shows today's confirmation. Any item is asked
+/// about, since a finished recording comes back as an Episode, Movie or Video;
+/// the plugin only names owners for recordings.
+Future<bool?> _confirmSharedRecordingDelete(
+  BuildContext context,
+  AggregatedItem item,
+) async {
+  if (item.isFolder || item.type == 'Playlist') return null;
+  if (!ownersCoverServer(item.serverId)) return null;
+  final others = await freshOtherOwners(OwnedKind.item, item.id);
+  if (others.isEmpty || !context.mounted) return null;
+  return confirmSharedDelete(context, others);
+}
+
 Future<bool> _showDeleteConfirmationDialog(
   BuildContext context, {
   required String title,
@@ -302,6 +320,10 @@ class ItemDetailScreen extends StatefulWidget {
   /// see [ItemDetailViewModel.contextSeasonId].
   final String? contextSeasonId;
 
+  /// Opened from the user's own recordings: the episode lists keep only these
+  /// (see [ItemDetailViewModel.ownedEpisodeIds]).
+  final Set<String>? ownedEpisodeIds;
+
   /// Opens as Quick Look's drawer over the screen underneath, which keeps its
   /// own backdrop and theme music.
   final bool quickLook;
@@ -313,6 +335,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.autoPlay = false,
     this.seerrTitle,
     this.contextSeasonId,
+    this.ownedEpisodeIds,
     this.quickLook = false,
     this.libraryId,
   });
@@ -367,6 +390,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       itemId: widget.itemId,
       serverId: widget.serverId,
       contextSeasonId: widget.contextSeasonId,
+      ownedEpisodeIds: widget.ownedEpisodeIds,
       client: client,
       mutations: ItemMutationRepository(client),
       mdbListRepository: GetIt.instance<MdbListRepository>(),
@@ -3784,11 +3808,17 @@ class _DetailContentState extends State<_DetailContent> {
   ) async {
     final l10n = AppLocalizations.of(context);
     final isPlaylist = item.type == 'Playlist';
-    final confirmed = await _showDeleteConfirmationDialog(
-      context,
-      title: isPlaylist ? l10n.deletePlaylist : l10n.deleteItem,
-      message: isPlaylist ? l10n.deletePlaylistMessage : l10n.deleteItemMessage,
-    );
+    final confirmed =
+        await _confirmSharedRecordingDelete(context, item) ??
+        (context.mounted
+            ? await _showDeleteConfirmationDialog(
+                context,
+                title: isPlaylist ? l10n.deletePlaylist : l10n.deleteItem,
+                message: isPlaylist
+                    ? l10n.deletePlaylistMessage
+                    : l10n.deleteItemMessage,
+              )
+            : false);
     if (!confirmed) return;
 
     appRouter.go(Destinations.home);
@@ -6265,12 +6295,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       setState(() {});
     });
     _checkOffline();
+    _loadRecordingOwners();
     _maybeTriggerAutoPlay();
   }
 
   @override
   void dispose() {
     _downloadService?.removeListener(_onDownloadChanged);
+    _recordingOwners?.removeListener(_onOwnersChanged);
     _userSub?.cancel();
     _localTvPlayFocusNode.dispose();
     _overflowMoreFocusNode.dispose();
@@ -6944,6 +6976,104 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
   }
 
+  RecordingOwnersService? _recordingOwners;
+  String? _ownersLookedUpFor;
+  // The item whose owners lookup is in flight, and whether owners changed
+  // meanwhile (its answer may then be dropped, so one more read follows).
+  String? _ownersLookupPendingFor;
+  bool _ownersChangedDuringLookup = false;
+
+  /// Whether this recording can be added to the current user's own
+  /// recordings: the plugin keeps owners, the owners are known, the user isn't
+  /// one, and the item is a recording. A finished recording isn't typed
+  /// Recording, so the plugin's word or known owners also count.
+  bool _canClaimRecording(AggregatedItem item) {
+    final owners = _recordingOwners;
+    if (owners == null || !owners.supported) return false;
+    if (!ownersCoverServer(item.serverId)) return false;
+    if (owners.isMine(OwnedKind.item, item.id) != false) return false;
+    return item.type == 'Recording' ||
+        owners.isRecording(item.id) == true ||
+        owners.ownersOf(OwnedKind.item, item.id).isNotEmpty;
+  }
+
+  /// Reads who owns the shown item, once per item. The service is looked up
+  /// and listened to once, even before the plugin is known to keep owners, and
+  /// that same reference is released in dispose.
+  void _loadRecordingOwners() {
+    final item = viewModel.item;
+    if (item == null || item.isFolder || !ownersCoverServer(item.serverId)) {
+      return;
+    }
+    if (_recordingOwners == null) {
+      final getIt = GetIt.instance;
+      if (!getIt.isRegistered<RecordingOwnersService>()) return;
+      _recordingOwners = getIt<RecordingOwnersService>()
+        ..addListener(_onOwnersChanged);
+    }
+    final owners = _recordingOwners!;
+    if (!owners.supported) return;
+    if (_ownersLookedUpFor == item.id) return;
+    _ownersLookedUpFor = item.id;
+    _ownersLookupPendingFor = item.id;
+    _ownersChangedDuringLookup = false;
+    unawaited(
+      owners.lookup(itemIds: [item.id]).catchError((_) {}).then((_) {
+        if (_ownersLookupPendingFor != item.id) return;
+        _ownersLookupPendingFor = null;
+        if (!mounted) return;
+        if (_ownersChangedDuringLookup) {
+          _ownersChangedDuringLookup = false;
+          _rereadOwnersIfUnknown();
+        }
+        setState(() {});
+      }),
+    );
+  }
+
+  // Reads the shown item's owners again when they aren't known, unless a read
+  // for it is already in flight; that read then decides once it answers.
+  void _rereadOwnersIfUnknown() {
+    final owners = _recordingOwners;
+    final item = viewModel.item;
+    if (owners == null ||
+        !owners.supported ||
+        item == null ||
+        GetIt.instance<UserRepository>().currentUser == null ||
+        owners.isMine(OwnedKind.item, item.id) != null) {
+      return;
+    }
+    if (_ownersLookupPendingFor == item.id) {
+      _ownersChangedDuringLookup = true;
+      return;
+    }
+    _ownersLookedUpFor = null;
+    _loadRecordingOwners();
+  }
+
+  void _onOwnersChanged() {
+    if (!mounted) return;
+    // Owners dropped (a recording changed) or support arrived late: read them
+    // again. A failed lookup doesn't notify, so this can't loop.
+    _rereadOwnersIfUnknown();
+    setState(() {});
+  }
+
+  Future<void> _claimRecording(BuildContext context, AggregatedItem item) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await joinRecording(OwnedKind.item, item.id);
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.addedToMyRecordings)),
+      );
+    } catch (_) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.unableToCreateRecording)),
+      );
+    }
+  }
+
   @override
   void didUpdateWidget(covariant DetailActionButtons oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -6955,6 +7085,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     if (oldWidget.itemId != widget.itemId) {
       _availableOffline = false;
       _checkOffline();
+      _loadRecordingOwners();
     }
     // Auto play can be asked for again once the first has been used up.
     if (widget.autoPlay && !oldWidget.autoPlay) _autoPlayTriggered = false;
@@ -7646,6 +7777,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: DetailButton.keepAsComplete.icon,
           onPressed: () => keepRecordingAsComplete(context, item.id),
         ),
+      if (_canClaimRecording(item) && shows(DetailButton.addToMyRecordings))
+        DetailButton.addToMyRecordings: _DetailActionButton(
+          label: l10n.addToMyRecordings,
+          icon: DetailButton.addToMyRecordings.icon,
+          onPressed: () => _claimRecording(context, item),
+        ),
       if (_adminActionsFor(item).isNotEmpty && shows(DetailButton.admin))
         DetailButton.admin: _DetailActionButton(
           label: l10n.admin,
@@ -7959,9 +8096,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final buttonRunSpacing = compact ? 10.0 : 12.0 * desktopScale;
     final maxVisible = _calculateMaxVisibleButtons(context);
 
-    final List<Widget> primaryButtons;
-    final List<Widget> extraButtons;
-    final bool needsOverflow;
+    List<Widget> primaryButtons;
+    List<Widget> extraButtons;
+    bool needsOverflow;
 
     final bool isTvSeries = item.type == 'Series';
     final bool isTvSeason = item.type == 'Season';
@@ -8054,6 +8191,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final idOf = Map<Widget, Object>.identity();
     for (var i = 0; i < allButtons.length; i++) {
       idOf[allButtons[i]] = allIds[i];
+    }
+    // Add to My Recordings lives in the More menu only, so the visible row
+    // stays as it is even when a recording has few buttons.
+    final claimIndex = allIds.indexOf(DetailButton.addToMyRecordings);
+    if (claimIndex >= 0) {
+      final claim = allButtons[claimIndex];
+      if (primaryButtons.contains(claim)) {
+        primaryButtons = [
+          for (final button in primaryButtons)
+            if (!identical(button, claim)) button,
+        ];
+        extraButtons = [...extraButtons, claim];
+        needsOverflow = true;
+      }
     }
     _rowPrimaryIds = [for (final button in primaryButtons) idOf[button]!];
     _rowExtraIds = [for (final button in extraButtons) idOf[button]!];
@@ -8740,11 +8891,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     AggregatedItem item,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await _showDeleteConfirmationDialog(
-      context,
-      title: l10n.deleteItem,
-      message: l10n.deleteConfirmMessage(item.name),
-    );
+    final confirmed =
+        await _confirmSharedRecordingDelete(context, item) ??
+        (context.mounted
+            ? await _showDeleteConfirmationDialog(
+                context,
+                title: l10n.deleteItem,
+                message: l10n.deleteConfirmMessage(item.name),
+              )
+            : false);
     if (!confirmed) return;
 
     appRouter.go(Destinations.home);

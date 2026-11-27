@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../repositories/item_mutation_repository.dart';
+import '../services/recording_owners_service.dart';
 import '../services/user_data_sync.dart';
 import '../models/live_tv_recording_state.dart';
 import '../models/series_recording_episodes.dart';
@@ -612,17 +613,30 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     if (resort) unawaited(loadMorePrograms());
   }
 
-  Future<void> toggleProgramRecording(GuideProgram program) async {
+  /// Records the program, or cancels its recording. Returns false, having
+  /// changed nothing, when other users also own the timer and
+  /// [sharedCancelConfirmed] is not set: the caller shows the program dialog
+  /// or the shared warning instead, so one press never cancels other people's
+  /// recording.
+  Future<bool> toggleProgramRecording(
+    GuideProgram program, {
+    bool sharedCancelConfirmed = false,
+  }) async {
     if (program.hasTimer) {
       final timerId = program.rawData['TimerId']?.toString();
       if (timerId == null || timerId.isEmpty) {
         throw StateError('TimerId missing for scheduled program ${program.id}');
       }
+      if (!sharedCancelConfirmed &&
+          (await freshOtherOwners(OwnedKind.timer, timerId)).isNotEmpty) {
+        return false;
+      }
       await _client.liveTvApi.cancelTimer(timerId);
     } else {
-      await _client.liveTvApi.createTimer(program.id);
+      await createTimerWithOwner(_client.liveTvApi, program.id);
     }
     await recordingChanged();
+    return true;
   }
 
   LiveTvApi get liveTvApi => _client.liveTvApi;
@@ -694,7 +708,8 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       }
       await _client.liveTvApi.cancelSeriesTimer(seriesTimerId);
     } else {
-      await _client.liveTvApi.createSeriesTimer(
+      await createSeriesTimerWithOwner(
+        _client.liveTvApi,
         program.id,
         settings: episodes?.settings,
       );

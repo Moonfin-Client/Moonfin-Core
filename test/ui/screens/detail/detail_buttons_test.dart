@@ -84,6 +84,7 @@ void main() {
         'seerrReportIssue',
         'seerrManage',
         'keepAsComplete',
+        'addToMyRecordings',
         'admin',
       ]);
     });

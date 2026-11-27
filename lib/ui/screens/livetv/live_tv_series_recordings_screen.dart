@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/services/recording_owners_service.dart';
 import '../../../data/viewmodels/series_recordings_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
@@ -12,6 +13,7 @@ import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
+import '../../widgets/live_tv/shared_recording_warning.dart';
 import 'widgets/live_tv_section_header.dart';
 
 class LiveTvSeriesRecordingsScreen extends StatefulWidget {
@@ -150,11 +152,14 @@ class _LiveTvSeriesRecordingsScreenState
       context: context,
       name: timer.name,
       subtitle: timer.subtitle,
+      seriesTimerId: timer.id,
     );
     if (!mounted) return;
     switch (option) {
       case SeriesTimerOption.changeSettings:
         await _changeSeriesTimer(timer);
+      case SeriesTimerOption.join:
+        await _joinSeriesTimer(timer);
       case SeriesTimerOption.cancel:
         await _cancelSeriesTimer(timer);
       case null:
@@ -182,9 +187,48 @@ class _LiveTvSeriesRecordingsScreenState
     }
   }
 
+  Future<void> _joinSeriesTimer(SeriesTimerItem timer) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await joinRecording(OwnedKind.series, timer.id);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.seriesSetToRecord)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.unableToCreateSeriesRecording)),
+      );
+    }
+  }
+
   Future<void> _cancelSeriesTimer(SeriesTimerItem timer) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await showFocusRestoringDialog<bool>(
+    // Other owners get the shared warning in place of this question.
+    final confirmed = await confirmRecordingCancel(
+      context,
+      OwnedKind.series,
+      timer.id,
+      confirm: () async => await _askCancelSeriesTimer(timer) == true,
+    );
+
+    if (confirmed && mounted) {
+      try {
+        await _vm.cancelSeriesTimer(timer.id);
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.failedToCancelSeriesRecording)),
+          );
+        }
+      }
+    }
+  }
+
+  Future<bool?> _askCancelSeriesTimer(SeriesTimerItem timer) {
+    final l10n = AppLocalizations.of(context);
+    return showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
@@ -210,18 +254,6 @@ class _LiveTvSeriesRecordingsScreenState
         ],
       ),
     );
-
-    if (confirmed == true) {
-      try {
-        await _vm.cancelSeriesTimer(timer.id);
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.failedToCancelSeriesRecording)),
-          );
-        }
-      }
-    }
   }
 }
 
