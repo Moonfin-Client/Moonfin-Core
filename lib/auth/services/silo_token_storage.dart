@@ -177,6 +177,9 @@ class SiloTokenStorage {
     void Function()? onEnded,
   }) {
     client.session.onTokensChanged = (tokens) {
+      // A refresh that lands after the server was removed must not write
+      // it back as an entry of its own.
+      if (_store.getServer(serverId) == null) return;
       save(serverId, accountId, tokens).ignore();
     };
     client.session.onSessionEnded = (_) {

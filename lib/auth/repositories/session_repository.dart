@@ -123,7 +123,6 @@ class SessionRepository {
   final UserRepository _userRepository;
   final PluginSyncService _pluginSyncService;
   final _logger = Logger();
-  static const _logoutWait = Duration(seconds: 5);
 
   String? _activeServerId;
   String? _activeUserId;
@@ -702,6 +701,9 @@ class SessionRepository {
   /// refresh is unambiguous, since only a 401 on the refresh ends a session.
   void _onSiloLoginEnded(String serverId, String userId, String name) {
     if (_activeServerId != serverId || _activeUserId != userId) return;
+    // Ended by the removal's own sign-out: removeServer finishes it and the
+    // app stays on server select.
+    if (_removingServerId == serverId) return;
     _logger.w('Silo refused to renew the login. Signing out.');
     unawaited(() async {
       // The login was the whole account's: its other profiles can't act
@@ -816,11 +818,18 @@ class SessionRepository {
   /// Removes [serverId] with its saved users, and ends their logins on the
   /// server in the background (ServerRepository.deleteServer). The signed-in
   /// server is signed out of first, as with Sign Out.
+  String? _removingServerId;
+
   Future<void> removeServer(String serverId) async {
-    if (_activeServerId == serverId) {
-      await destroyCurrentSession();
+    _removingServerId = serverId;
+    try {
+      if (_activeServerId == serverId) {
+        await destroyCurrentSession();
+      }
+    } finally {
+      _removingServerId = null;
+      await _serverRepository.deleteServer(serverId);
     }
-    await _serverRepository.deleteServer(serverId);
   }
 
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
@@ -870,9 +879,11 @@ class SessionRepository {
     if (serverId != null && !tokenKnownInvalid && !keepsSiloLogin) {
       try {
         final client = _clientFactory.getClientIfExists(serverId);
-        // An unreachable server doesn't hold the sign-out; the request
-        // carries on and clears the client's session when it ends.
-        await client?.authApi.logout().timeout(_logoutWait);
+        // An unreachable server doesn't hold the sign-out; past the wait the
+        // login may stay valid there.
+        await client?.authApi.logout().timeout(
+          ServerRepository.logoutTimeout,
+        );
       } catch (_) {}
     }
 

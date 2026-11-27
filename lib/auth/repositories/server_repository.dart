@@ -337,9 +337,10 @@ class ServerRepository {
             ?SiloTokenStorage(_authStore).read(other.id, accountId)?.refreshToken,
         ],
     };
+    elsewhere.remove('');
     return [
       for (final login in logins)
-        if (login.$1.isEmpty || !elsewhere.contains(login.$1)) login,
+        if (!elsewhere.contains(login.$1)) login,
     ];
   }
 
@@ -364,7 +365,7 @@ class ServerRepository {
         } else {
           client.accessToken = token;
         }
-        await client.authApi.logout().timeout(_logoutTimeout);
+        await client.authApi.logout().timeout(logoutTimeout);
       } catch (e) {
         debugPrint('Ending a saved login of removed server ${server.id}: $e');
       } finally {
@@ -375,7 +376,8 @@ class ServerRepository {
     await Future.wait(logins.map(end));
   }
 
-  static const _logoutTimeout = Duration(seconds: 5);
+  /// How long a sign-out waits on the server's logout.
+  static const logoutTimeout = Duration(seconds: 5);
 
   Future<(Map<String, dynamic>, ServerType, String)> _probeServer(
     String baseUrl,
