@@ -180,7 +180,7 @@ Map<dynamic, dynamic>? _stereoAacFallbackProfile(Map<String, dynamic> profile) {
   for (final rawProfile in codecProfiles) {
     final codecProfile = rawProfile as Map<dynamic, dynamic>;
     if (codecProfile['Type'] != 'VideoAudio' ||
-        codecProfile['Codec'] != 'aac') {
+        codecProfile['Codec'] != 'aac,mp2,mp3') {
       continue;
     }
 
@@ -230,7 +230,7 @@ String? _videoAudioChannelsConditionCodec(Map<String, dynamic> profile) {
   for (final rawProfile in codecProfiles) {
     final codecProfile = rawProfile as Map<dynamic, dynamic>;
     if (codecProfile['Type'] != 'VideoAudio' ||
-        codecProfile['Codec'] == 'aac') {
+        codecProfile['Codec'] == 'aac,mp2,mp3') {
       continue;
     }
 
@@ -1695,6 +1695,17 @@ void main() {
         expect(codecs, equals(<String>{'aac', 'mp2', 'mp3'}));
       },
     );
+
+    test('downmix caps every stereo-safe codec at two channels', () {
+      final profile = DeviceProfileBuilder.build(downmixToStereo: true);
+
+      final stereo = _stereoAacFallbackProfile(profile);
+      expect(stereo, isNotNull);
+      expect(
+        (stereo!['Codec'] as String).split(',').toSet(),
+        equals(_videoDirectPlayAudioCodecs(profile)),
+      );
+    });
   });
 
   group('DeviceProfileBuilder universalAudioDecode', () {

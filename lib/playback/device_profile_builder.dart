@@ -1796,11 +1796,13 @@ class DeviceProfileBuilder {
       );
     }
 
+    // Every codec a stereo-only player direct plays, so none of them reaches
+    // it with more than two channels.
     if (forceStereo) {
       profiles.add(
         _codecProfile(
           type: 'VideoAudio',
-          codec: 'aac',
+          codec: _downmixSupportedAudioCodecs.join(','),
           conditions: <Map<String, dynamic>>[
             _condition(
               condition: 'LessThanEqual',
