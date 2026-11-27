@@ -178,9 +178,11 @@ void main() {
       () async {
         debugDefaultTargetPlatformOverride = TargetPlatform.android;
         PlatformDetection.setTvMode(true);
+        PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
         addTearDown(() {
           debugDefaultTargetPlatformOverride = null;
           PlatformDetection.setTvMode(false);
+          PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
         });
 
         final prefs = await _prefs();

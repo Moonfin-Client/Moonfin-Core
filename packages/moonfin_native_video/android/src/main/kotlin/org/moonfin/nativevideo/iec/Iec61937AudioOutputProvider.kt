@@ -40,7 +40,7 @@ import org.moonfin.nativevideo.stockAudioOutputProvider
 @RequiresApi(24)
 class Iec61937AudioOutputProvider(
     context: Context,
-    val trueHdOnly: Boolean = false,
+    private val trueHdOnly: Boolean = false,
 ) : AudioOutputProvider {
 
     private val appContext = context.applicationContext

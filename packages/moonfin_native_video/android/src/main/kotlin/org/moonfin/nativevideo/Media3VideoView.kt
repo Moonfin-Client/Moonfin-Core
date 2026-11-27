@@ -4342,9 +4342,8 @@ class Media3VideoView(
                 // App-side IEC packing writes PCM-shaped bursts that must
                 // never get HW_AV_SYNC headers, so tunneling stays off while
                 // the IEC output mode is live (it returns after the session
-                // fallback disables IEC). The TrueHD-only mode leaves the
-                // other codecs on the stock path, and TrueHD is lossless.
-                (iecOutputProvider?.let { it.trueHdOnly || it.sessionIecDisabled } != false)
+                // fallback disables IEC).
+                (iecOutputProvider?.sessionIecDisabled != false)
 
         tunnelingActive = shouldEnableTunneling
 
