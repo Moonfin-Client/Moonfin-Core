@@ -1,37 +1,11 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
 class JellyfinLiveTvApi implements LiveTvApi {
   final Dio _dio;
-  final Future<void> Function(Duration) _wait;
   static const _postChannelIdsThreshold = 1800;
 
-  /// [wait] stands in for real delays in tests.
-  JellyfinLiveTvApi(this._dio, {Future<void> Function(Duration)? wait})
-    : _wait = wait ?? Future<void>.delayed;
-
-  /// Jellyfin reads a cancel that had to kill a recording's ffmpeg (a stream
-  /// that ignores the polite stop) as a failed recording, and puts the same
-  /// timer back to retry it a minute later, so the recording keeps coming
-  /// back. The timer returns about ten seconds after the cancel and records
-  /// again about a minute after that; a cancel that lands in between has
-  /// nothing to kill, so it sticks. The Moonfin plugin does the same on the
-  /// server; this covers servers without it.
-  ///
-  /// The timer actually comes back moments after the server answers the
-  /// cancel, so the first check runs before [cancelTimer] returns. Callers
-  /// re-read the guide straight after, and would otherwise show the retry as
-  /// a recording.
-  static const cancelChecks = [
-    Duration(seconds: 2),
-    Duration(seconds: 20),
-    Duration(seconds: 20),
-    Duration(seconds: 20),
-    Duration(seconds: 30),
-    Duration(seconds: 30),
-  ];
+  JellyfinLiveTvApi(this._dio);
 
   @override
   Future<Map<String, dynamic>> getChannels({
@@ -221,69 +195,7 @@ class JellyfinLiveTvApi implements LiveTvApi {
 
   @override
   Future<void> cancelTimer(String timerId) async {
-    final before = await _timer(timerId);
     await _dio.delete('/LiveTv/Timers/$timerId');
-    final start = before?.start;
-    if (before?.status == 'InProgress' && start != null) {
-      final kept = await _cancelIfRetried(timerId, start, cancelChecks.first);
-      unawaited(_keepCancelled(timerId, kept));
-    }
-  }
-
-  /// The timer's status and start, or null when it is gone or can't be read.
-  Future<({String? status, DateTime? start})?> _timer(String timerId) async {
-    try {
-      final response = await _dio.get('/LiveTv/Timers/$timerId');
-      final data = response.data as Map?;
-      if (data == null) return null;
-      return (
-        status: data['Status'] as String?,
-        start: DateTime.tryParse(data['StartDate'] as String? ?? ''),
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  /// Cancels the timer again whenever the server puts it back to retry. The
-  /// retry moves its start to a minute out; recording the episode again (a
-  /// series rule reuses the cancelled timer, same id) keeps its own start,
-  /// padding included, and a fresh recording gets a new id. Only a start that
-  /// changed counts, compared with the server's own times, so when in doubt
-  /// the timer is left to record.
-  Future<void> _keepCancelled(String timerId, DateTime startBefore) async {
-    var kept = startBefore;
-    for (final wait in cancelChecks.skip(1)) {
-      kept = await _cancelIfRetried(timerId, kept, wait);
-    }
-  }
-
-  /// After [wait], cancels the timer again if the server put it back to
-  /// retry. Returns the start later checks compare with.
-  Future<DateTime> _cancelIfRetried(
-    String timerId,
-    DateTime kept,
-    Duration wait,
-  ) async {
-    await _wait(wait);
-    final now = await _timer(timerId);
-    final start = now?.start;
-    if (now == null ||
-        now.status == 'Cancelled' ||
-        now.status == 'Completed' ||
-        start == null ||
-        start.isAtSameMomentAs(kept)) {
-      return kept;
-    }
-    try {
-      await _dio.delete('/LiveTv/Timers/$timerId');
-      // A series rule keeps the timer with the retry's start, so a later
-      // deliberate recording of it is judged against that.
-      return start;
-    } catch (_) {
-      // Tried again at the next check.
-      return kept;
-    }
   }
 
   @override
