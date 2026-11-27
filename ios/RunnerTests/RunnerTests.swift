@@ -1,3 +1,4 @@
+import MediaPlayer
 import UIKit
 import QuartzCore
 import XCTest
@@ -678,5 +679,146 @@ final class DisplayCadenceTests: XCTestCase {
         XCTAssertFalse(slows(25, 60000.0 / 1001))
         XCTAssertFalse(fits(50, 60))
         XCTAssertFalse(slows(50, 60))
+    }
+}
+
+final class NowPlayingSubtitleTrackTests: XCTestCase {
+    private let tracks = [
+        NowPlayingSubtitleTrack(index: 2, label: "French Forced", language: "fre", forced: true),
+        NowPlayingSubtitleTrack(index: 3, label: "English", language: "eng"),
+        NowPlayingSubtitleTrack(index: 4, label: "French", language: "fre", hearingImpaired: true),
+    ]
+
+    private func option(_ id: String, type: MPNowPlayingInfoLanguageOptionType = .legible)
+        -> MPNowPlayingInfoLanguageOption
+    {
+        MPNowPlayingInfoLanguageOption(
+            type: type, languageTag: "en", characteristics: nil, displayName: id, identifier: id)
+    }
+
+    func testParsesFlutterTracks() {
+        let parsed = NowPlayingSubtitleTrack.parse([
+            ["index": 3, "label": "English", "language": "eng", "selected": false],
+            ["index": 4, "label": "French", "forced": true, "hearingImpaired": true, "selected": true],
+            ["label": "No index"],
+            ["index": -1, "label": "Missing stream index"],
+        ])
+
+        XCTAssertEqual(parsed.tracks, [
+            NowPlayingSubtitleTrack(index: 3, label: "English", language: "eng"),
+            NowPlayingSubtitleTrack(
+                index: 4, label: "French", forced: true, hearingImpaired: true),
+        ])
+        XCTAssertEqual(parsed.selected, 4)
+        XCTAssertNil(NowPlayingSubtitleTrack.parse(nil).selected)
+    }
+
+    func testLanguageOptionUsesCanonicalTagAndCharacteristics() {
+        let forced = tracks[0].languageOption
+        XCTAssertEqual(forced.languageTag, "fr")
+        XCTAssertEqual(forced.identifier, "2")
+        XCTAssertEqual(forced.displayName, "French Forced")
+        XCTAssertEqual(forced.languageOptionType, .legible)
+        XCTAssertEqual(
+            forced.languageOptionCharacteristics,
+            [MPLanguageOptionCharacteristicContainsOnlyForcedSubtitles])
+
+        let sdh = tracks[2].languageOption
+        XCTAssertEqual(
+            sdh.languageOptionCharacteristics,
+            [
+                MPLanguageOptionCharacteristicTranscribesSpokenDialog,
+                MPLanguageOptionCharacteristicDescribesMusicAndSound,
+            ])
+        XCTAssertNil(tracks[1].languageOption.languageOptionCharacteristics)
+        XCTAssertEqual(NowPlayingSubtitleTrack(index: 9, label: "Unknown").languageTag, "und")
+    }
+
+    func testChosenOptionMapsBackToItsTrack() {
+        XCTAssertEqual(NowPlayingSubtitleTrack.index(for: option("4"), in: tracks), 4)
+        XCTAssertNil(NowPlayingSubtitleTrack.index(for: option("7"), in: tracks))
+        XCTAssertNil(NowPlayingSubtitleTrack.index(for: option("3", type: .audible), in: tracks))
+    }
+
+    func testAutomaticChoicePrefersAFullTrackInThePreferredLanguage() {
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(in: tracks, preferredLanguages: ["fr-CA", "en"]),
+            4)
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(in: tracks, preferredLanguages: ["de", "en-GB"]),
+            3)
+        XCTAssertEqual(NowPlayingSubtitleTrack.automaticIndex(in: tracks, preferredLanguages: ["de"]), 3)
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(in: [tracks[0]], preferredLanguages: ["de"]), 2)
+        XCTAssertNil(NowPlayingSubtitleTrack.automaticIndex(in: [], preferredLanguages: ["en"]))
+    }
+
+    func testAutomaticChoicePrefersTheTrackThatWasLastOn() {
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(
+                in: tracks, previous: tracks[2], preferredLanguages: ["en"]),
+            4)
+        let earlierEpisode = NowPlayingSubtitleTrack(
+            index: 9, label: "French SDH", language: "fra", hearingImpaired: true)
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(
+                in: tracks, previous: earlierEpisode, preferredLanguages: ["en"]),
+            4)
+        let frenchFirst = [
+            NowPlayingSubtitleTrack(index: 6, label: "French", language: "fre"),
+            NowPlayingSubtitleTrack(index: 7, label: "French SDH", language: "fre", hearingImpaired: true),
+        ]
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(
+                in: frenchFirst, previous: earlierEpisode, preferredLanguages: ["en"]),
+            7)
+        let plainFrench = NowPlayingSubtitleTrack(index: 9, label: "Français", language: "fra")
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(
+                in: [tracks[2]], previous: plainFrench, preferredLanguages: ["en"]),
+            4)
+        let german = NowPlayingSubtitleTrack(index: 9, label: "German", language: "ger")
+        XCTAssertEqual(
+            NowPlayingSubtitleTrack.automaticIndex(
+                in: tracks, previous: german, preferredLanguages: ["en"]),
+            3)
+    }
+
+    @MainActor
+    func testRemoteChoiceReachesThePlayer() {
+        let controller = NowPlayingController()
+        controller.setSubtitleTracks(tracks, selected: nil)
+        var chosen: [Int] = []
+        controller.onSelectSubtitle = { index in
+            chosen.append(index)
+            return true
+        }
+
+        XCTAssertEqual(controller.selectLanguageOption(option("4"), enable: true), .success)
+        XCTAssertEqual(controller.selectLanguageOption(option("4"), enable: false), .success)
+        XCTAssertEqual(chosen, [4, -1])
+        XCTAssertEqual(controller.selectLanguageOption(option("7"), enable: true), .noSuchContent)
+        XCTAssertEqual(
+            controller.selectLanguageOption(option("3", type: .audible), enable: false),
+            .noSuchContent)
+        XCTAssertEqual(chosen, [4, -1])
+    }
+
+    @MainActor
+    func testRemoteChoiceFailsWithoutAPlayer() {
+        let controller = NowPlayingController()
+        controller.setSubtitleTracks(tracks, selected: 3)
+        XCTAssertEqual(
+            controller.selectLanguageOption(option("4"), enable: true),
+            .noActionableNowPlayingItem)
+
+        controller.onSelectSubtitle = { _ in false }
+        XCTAssertEqual(
+            controller.selectLanguageOption(option("4"), enable: true),
+            .noActionableNowPlayingItem)
+
+        controller.onSelectSubtitle = { _ in true }
+        controller.teardown()
+        XCTAssertEqual(controller.selectLanguageOption(option("4"), enable: true), .noSuchContent)
     }
 }

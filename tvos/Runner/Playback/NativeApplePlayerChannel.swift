@@ -359,6 +359,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         vc.onSelectSubtitle = { [weak self] index in
             self?.send(["event": "selectSubtitle", "index": index])
         }
+        created.nowPlaying.onSelectSubtitle = { [weak vc] index in
+            vc?.selectSubtitleFromRemote(index) ?? false
+        }
         vc.onSubtitleAction = { [weak self] action in
             self?.send(action)
         }
