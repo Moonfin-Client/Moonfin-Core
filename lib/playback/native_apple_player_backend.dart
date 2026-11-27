@@ -472,6 +472,7 @@ class NativeApplePlayerBackend
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       ...appleTvCadenceArgs(_prefs),
       ...videoProcessing,
+      'nightMode': _prefs.get(UserPreferences.audioNightMode),
     });
   }
 

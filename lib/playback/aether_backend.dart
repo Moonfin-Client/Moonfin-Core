@@ -356,6 +356,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
       ...appleTvCadenceArgs(_prefs),
       ...videoProcessing,
+      'nightMode': _prefs.get(UserPreferences.audioNightMode),
     });
   }
 

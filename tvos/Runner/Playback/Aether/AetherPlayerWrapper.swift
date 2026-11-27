@@ -936,6 +936,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var upscaleFullHD = false
         var upscaleLineArt = false
         var toneMapPeakNits: Double?
+        var nightMode = false
     }
 
     /// The Match Frame Rate hint, localized on the Dart side.
@@ -1184,7 +1185,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             probesize: isLiveSession ? Self.liveProbeBytes : nil,
             maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
             externalSubtitles: sourceConfiguration.externalSubtitles,
-            autoplay: sourceConfiguration.autoPlay
+            autoplay: sourceConfiguration.autoPlay,
+            audioShaping: AudioShaping(compressor: sourceConfiguration.nightMode ? .night : nil)
         )
 
         // Nothing else bounds the open. A load wedged on the network keeps
