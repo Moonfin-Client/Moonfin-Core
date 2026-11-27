@@ -72,47 +72,49 @@ class SiloMediaStreamResolver
     final server = await _playable(api);
 
     final environment = _environment();
-    final capabilities = siloCapabilitiesFromDeviceProfile(
-      deviceProfile ?? const {},
-      traits: environment.traits,
-      channelCeilingsByCodec: server.has('codec_channel_ceilings_v1'),
-    );
-    final context = siloPlaybackContext(
-      environment: environment,
-      appVersion: client.deviceInfo.appVersion,
-      capabilities: capabilities,
-    );
-    // A version the viewer picked plays as that version, on a server that
-    // can keep an attempt on one file.
-    final pinned = file.explicit && server.has('fixed_media_file_v1');
+    // Built from the features [server] advertises, so a retry under a new
+    // installation asks only for what that server reads.
+    Map<String, dynamic> body(SiloPlaybackCapabilities server) {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        deviceProfile ?? const {},
+        traits: environment.traits,
+        channelCeilingsByCodec: server.has('codec_channel_ceilings_v1'),
+      );
+      final context = siloPlaybackContext(
+        environment: environment,
+        appVersion: client.deviceInfo.appVersion,
+        capabilities: capabilities,
+      );
+      // A version the viewer picked plays as that version, on a server that
+      // can keep an attempt on one file.
+      final pinned = file.explicit && server.has('fixed_media_file_v1');
+      return {
+        'protocol_version': 3,
+        'client_features': capabilities.clientFeatures,
+        'file_id': file.fileId,
+        'profile_id': profileId,
+        'playback_attempt_id': siloNewUuid(),
+        'installation_id': server.installationId,
+        'quality_preference': 'auto',
+        // Moonfin draws ASS itself but can't fetch a sidecar's fonts, so a
+        // simplified rendering is acceptable.
+        'subtitle_fidelity_preference': 'compatible',
+        'metered': false,
+        'client_capabilities': capabilities.clientCapabilities,
+        'client_playback_context': context,
+        'start_position': siloStartPosition(startTimeTicks),
+        'audio_track_index': ?_audioOrdinal(file.source, audioStreamIndex),
+        // Off (-1) or no choice sends none, which plays without.
+        'subtitle_track_index': ?siloSubtitleCombinedIndex(
+          file.source,
+          subtitleStreamIndex,
+        ),
+        'bandwidth_cap_kbps': ?_kbps(maxStreamingBitrate),
+        if (pinned) 'allow_alternate_versions': false,
+      };
+    }
 
-    Map<String, dynamic> body(String installationId) => {
-      'protocol_version': 3,
-      'client_features': capabilities.clientFeatures,
-      'file_id': file.fileId,
-      'profile_id': profileId,
-      'playback_attempt_id': siloNewUuid(),
-      'installation_id': installationId,
-      'quality_preference': 'auto',
-      // Moonfin draws ASS itself but can't fetch a sidecar's fonts, so a
-      // simplified rendering is acceptable.
-      'subtitle_fidelity_preference': 'compatible',
-      'metered': false,
-      'client_capabilities': capabilities.clientCapabilities,
-      'client_playback_context': context,
-      'start_position': siloStartPosition(startTimeTicks),
-      'audio_track_index': ?_audioOrdinal(file.source, audioStreamIndex),
-      // Off (-1) or no choice sends none, which plays without.
-      'subtitle_track_index': ?siloSubtitleCombinedIndex(
-        file.source,
-        subtitleStreamIndex,
-      ),
-      'bandwidth_cap_kbps': ?_kbps(maxStreamingBitrate),
-      if (pinned) 'allow_alternate_versions': false,
-    };
-
-    var installation = server.installationId;
-    var request = body(installation);
+    var request = body(server);
     Map<String, dynamic> decision;
     try {
       decision = await _startOrRefuse(api, request);
@@ -120,8 +122,7 @@ class SiloMediaStreamResolver
       if (!SiloPlaybackApi.isInstallationChanged(error)) rethrow;
       // The server was reset or replaced since the capabilities were read:
       // read them again and start a new attempt under the new installation.
-      installation = (await _playable(api, refresh: true)).installationId;
-      request = body(installation);
+      request = body(await _playable(api, refresh: true));
       decision = await _startOrRefuse(api, request);
     }
 
@@ -155,7 +156,7 @@ class SiloMediaStreamResolver
       SiloPlaybackSession(
         sessionId: sessionId,
         attemptId: request['playback_attempt_id'] as String,
-        installationId: installation,
+        installationId: request['installation_id'] as String,
         itemId: itemId,
         plan: plan,
         startBody: request,
