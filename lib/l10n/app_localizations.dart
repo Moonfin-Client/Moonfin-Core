@@ -23002,6 +23002,30 @@ abstract class AppLocalizations {
   /// **'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.'**
   String get cadenceSlowdownSubtitle;
 
+  /// Apple player setting that sharpens SD and 720p video up to the screen's resolution on the device
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale video below 1080p'**
+  String get upscaleLowResolutionVideo;
+
+  /// Subtitle for the setting that upscales video below 1080p on Apple devices
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.'**
+  String get upscaleLowResolutionVideoSubtitle;
+
+  /// Apple player setting that sharpens 1080p video up to the resolution of a larger screen, such as a 4K TV
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale 1080p video'**
+  String get upscaleFullHdVideo;
+
+  /// Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
+  String get upscaleFullHdVideoSubtitle;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:
@@ -27523,6 +27547,84 @@ abstract class AppLocalizations {
   /// **'Hide the movie or episode descriptive text.'**
   String get hideDetailsMediaDescriptionSubtitle;
 
+  /// Setting title to open media description visibility subpage
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Media Description Visibility'**
+  String get toggleMediaDescriptionVisibility;
+
+  /// Setting description to open media description visibility subpage
+  ///
+  /// In en, this message translates to:
+  /// **'Hide media descriptions from various detail pages.'**
+  String get toggleMediaDescriptionVisibilityDescription;
+
+  /// Title for the media description visibility settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Media Description Visibility'**
+  String get mediaDescriptionVisibilityTitle;
+
+  /// Setting title to hide descriptions on movie pages
+  ///
+  /// In en, this message translates to:
+  /// **'Movie Pages'**
+  String get hideMediaDescriptionMovie;
+
+  /// Setting description to hide descriptions on movie detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on movie detail pages'**
+  String get hideMediaDescriptionMovieSubtitle;
+
+  /// Setting title to hide descriptions on show pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show Pages'**
+  String get hideMediaDescriptionShow;
+
+  /// Setting description to hide descriptions on TV show detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on TV show detail pages'**
+  String get hideMediaDescriptionShowSubtitle;
+
+  /// Setting title to hide descriptions on season pages
+  ///
+  /// In en, this message translates to:
+  /// **'Season Pages'**
+  String get hideMediaDescriptionSeason;
+
+  /// Setting description to hide descriptions on season detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on season detail pages'**
+  String get hideMediaDescriptionSeasonSubtitle;
+
+  /// Setting title to hide descriptions on episode pages
+  ///
+  /// In en, this message translates to:
+  /// **'Episode Pages'**
+  String get hideMediaDescriptionEpisode;
+
+  /// Setting description to hide descriptions on episode detail pages, season episode lists, and player drawer
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on episode detail pages, season episode lists, and player drawer'**
+  String get hideMediaDescriptionEpisodeSubtitle;
+
+  /// Setting title to hide descriptions on collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Pages'**
+  String get hideMediaDescriptionBoxSet;
+
+  /// Setting description to hide descriptions on collection and box set pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on collection and box set pages'**
+  String get hideMediaDescriptionBoxSetSubtitle;
+
   /// Setting title to replace thumbnails on Classic details page with series thumbnail
   ///
   /// In en, this message translates to:
@@ -30068,6 +30170,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Playback was ended on the Silo server.'**
   String get siloPlaybackEndedOnServer;
+
+  /// Player message above the administrator's reason: an administrator stopped this playback on the Silo server
+  ///
+  /// In en, this message translates to:
+  /// **'Playback was stopped on the Silo server.'**
+  String get siloPlaybackStoppedOnServer;
 
   /// Title of the dialog asking for a Silo household profile's PIN; name is the profile's name
   ///

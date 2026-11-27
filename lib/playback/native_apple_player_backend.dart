@@ -11,6 +11,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'aether_video_processing.dart';
 import 'apple_display_cadence.dart';
 import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
@@ -67,6 +68,10 @@ class NativeApplePlayerBackend
   EngineTrust? _trust;
   bool _playerPresented = false;
   bool _audioOnly = false;
+
+  /// Taken off screen by [suspendPlayer] (the Live TV guide) and not yet
+  /// put back.
+  bool _suspended = false;
   Timer? _audioDelayDebounce;
 
   final _positionStream = StreamController<Duration>.broadcast();
@@ -133,10 +138,16 @@ class NativeApplePlayerBackend
   /// Takes the player off screen without stopping it, so Flutter can draw
   /// over the live picture. Answers with a texture showing that picture, or
   /// null when the engine has no frames to share.
-  Future<int?> suspendPlayer() => _invoke<int>('suspend');
+  Future<int?> suspendPlayer() {
+    _suspended = true;
+    return _invoke<int>('suspend');
+  }
 
   /// Puts a suspended player back on screen, still on the same stream.
-  Future<void> resumePlayer() => _invoke<void>('resume');
+  Future<void> resumePlayer() {
+    _suspended = false;
+    return _invoke<void>('resume');
+  }
 
   /// The live recovery's "Reconnecting" line, or null to take it down.
   Future<void> setReconnecting(String? label) =>
@@ -150,19 +161,26 @@ class NativeApplePlayerBackend
   Future<void> showWatchPartyEvent(Map<String, dynamic> event) =>
       _invoke<void>('showWatchPartyEvent', event);
 
-  /// An alert over the player. [actionLabel] adds a button that answers with
-  /// a `messageAction` event.
+  /// An alert over the player, with [title] above [message] when given.
+  /// [actionLabel] adds a button that answers with a `messageAction` event.
   Future<void> showMessage(
     String message, {
+    String? title,
     String? actionLabel,
     required String closeLabel,
   }) => _invoke<void>('showMessage', {
     'message': message,
+    'title': ?title,
     'actionLabel': ?actionLabel,
     'closeLabel': closeLabel,
   });
 
   bool get isPlayerPresented => _playerPresented && !_audioOnly;
+
+  /// Whether the video covers the screen now: presented and not suspended
+  /// for the guide. Anything Flutter draws is then hidden behind it, so a
+  /// message for the viewer belongs in [showMessage].
+  bool get isPlayerOnScreen => isPlayerPresented && !_suspended;
 
   Future<void> sendRemoteNavigation(String command) =>
       _invoke<void>('remoteNavigation', {'command': command});
@@ -196,6 +214,7 @@ class NativeApplePlayerBackend
         _playerPresented = true;
       case 'dismissed':
         _playerPresented = false;
+        _suspended = false;
         _isPlaying = false;
         _isBuffering = false;
         _playingStream.add(false);
@@ -447,6 +466,7 @@ class NativeApplePlayerBackend
       'forceSubtitlesDisabledOnStart':
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       ...appleTvCadenceArgs(_prefs),
+      ...aetherVideoProcessingArgs(_prefs),
     });
   }
 

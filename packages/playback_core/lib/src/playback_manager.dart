@@ -1478,6 +1478,10 @@ class PlaybackManager implements AudioOwnable {
   /// to every member of the group as if the user had asked for it.
   bool get hasTransportInterceptor => _transportInterceptor != null;
 
+  /// The server session the player streams from, kept across replans and
+  /// given up when the item stops. Null when nothing streams from one.
+  String? get ownedPlaySessionId => _ownedPlaySessionId;
+
   Future<bool> _maybeIntercept(
     TransportAction action, {
     Duration? position,
@@ -4274,6 +4278,14 @@ class PlaybackManager implements AudioOwnable {
           error.reason == PlaybackRefusedException.sessionEndedReason
       ? error
       : null;
+
+  /// The server ended [playSessionId] on purpose and said so (Silo: an
+  /// administrator's terminate on the playback control socket). Ends it like
+  /// a refused progress report would, if it is still the one playing.
+  Future<void> endSessionByServer(String playSessionId, String message) async {
+    if (_ownedPlaySessionId != playSessionId) return;
+    await _stopEndedByServer(message);
+  }
 
   /// The server ended the current item's session on purpose, so what is
   /// buffered must not play on and nothing may reopen it: stop, say why, and

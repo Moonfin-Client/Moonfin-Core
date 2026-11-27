@@ -4272,11 +4272,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
 
   @override
-  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+  String get settingsAudioPassthroughFallback =>
+      'Silent Passthrough toiminnon dekoodaus';
 
   @override
   String get settingsAudioPassthroughFallbackDescription =>
-      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
+      'Jos ulostulolaite ei pysty toistamaan passthrough-raitaa ja ääni pysyy mykkänä, dekoodaa se sen sijaan tällä laitteella.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -13193,6 +13194,20 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kun ”Match Frame Rate” -asetus on pois päältä, 24 fps:n videota toistetaan 0,1 % hitaammin, jotta se sopii televisioon ilman kuvanpudotuksia. Tätä asetusta ei käytetä, kun ääni välitetään suoraan vahvistimeen.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
   String get cadenceTipTitle => 'Ota käyttöön kuvataajuuden täsmäys';
 
   @override
@@ -14288,7 +14303,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Seuraava suorittamasi tehtävä lasketaan kaksinkertaisesti merkeissä.';
 
   @override
-  String get achievementsStreakFreeze => 'Katselusarjan suojaus';
+  String get achievementsStreakFreeze => 'Streak Freeze';
 
   @override
   String get achievementsStreakFreezeBody =>
@@ -14374,9 +14389,9 @@ class AppLocalizationsFi extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count lukematonta viestiä',
-      one: '1 lukematon viesti',
-      zero: 'Ei lukemattomia viestejä',
+      other: '$count unread messages',
+      one: '1 unread message',
+      zero: 'No unread messages',
     );
     return '$_temp0';
   }
@@ -15886,6 +15901,52 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Piilota elokuvan tai jakson kuvausteksti.';
+
+  @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
 
   @override
   String get detailUseSeriesThumbnails => 'Käytä sarjan pikkukuvia';
@@ -17501,6 +17562,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Toisto lopetettiin Silo-palvelimella.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return '$name:n PIN-koodi';
   }
@@ -18616,185 +18681,196 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String siloSectionBecauseYouEnjoy(String genres) {
-    return 'Because you enjoy $genres';
+    return 'Koska sinä nautit siitä $genres';
   }
 
   @override
-  String get siloSectionBecauseYouWatched => 'Because You Watched';
+  String get siloSectionBecauseYouWatched => 'Koska katsoit';
 
   @override
   String siloSectionBecauseYouWatchedTitle(String title) {
-    return 'Because You Watched $title';
+    return 'Koska katsoit $title';
   }
 
   @override
-  String get siloSectionForYou => 'For You';
+  String get siloSectionForYou => 'Sinulle';
 
   @override
-  String get siloSectionHiddenGems => 'Hidden Gems';
+  String get siloSectionHiddenGems => 'Piilotetut aarteet';
 
   @override
-  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+  String get siloSectionHighlyRatedInLibrary =>
+      'Korkeasti arvioitu kirjastossasi';
 
   @override
-  String get siloSectionNextInYourSeries => 'Next in Your Series';
+  String get siloSectionNextInYourSeries => 'Sarjan seuraava osa';
 
   @override
-  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+  String get siloSectionPickedFromYourHistory => 'Valittu selaushistoriastasi';
 
   @override
-  String get siloSectionPopularOnServer => 'Popular on This Server';
+  String get siloSectionPopularOnServer => 'Suosittuja tällä palvelimella';
 
   @override
-  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+  String get siloSectionProfilesLikeYouEnjoyed =>
+      'Profiilit, joista olet pitänyt';
 
   @override
-  String get siloSectionRandomPicks => 'Random Picks';
+  String get siloSectionRandomPicks => 'Satunnaiset valinnat';
 
   @override
-  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+  String get siloSectionRecentlyAddedAudiobooks =>
+      'Äskettäin lisätyt äänikirjat';
 
   @override
-  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+  String get siloSectionRecentlyAddedEbooks => 'Äskettäin lisätyt e-kirjat';
 
   @override
   String siloSectionRecentlyAddedIn(String library) {
-    return 'Recently Added in $library';
+    return 'Viime aikoina lisätty $library';
   }
 
   @override
-  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+  String get siloSectionRecentlyAddedManga => 'Äskettäin lisätyt mangat';
 
   @override
-  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+  String get siloSectionRecentlyAddedMovies => 'Äskettäin lisätyt elokuvat';
 
   @override
-  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+  String get siloSectionRecentlyAddedTv => 'Äskettäin lisätyt TV-ohjelmat';
 
   @override
   String get siloSectionRecentlyReleasedAudiobooks =>
-      'Recently Released Audiobooks';
+      'Äskettäin julkaistut äänikirjat';
 
   @override
-  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+  String get siloSectionRecentlyReleasedEbooks =>
+      'Äskettäin julkaistut e-kirjat';
 
   @override
   String siloSectionRecentlyReleasedEpisodesIn(String library) {
-    return 'Recently Released Episodes in $library';
+    return 'Äskettäin julkaistut jaksot sarjassa $library';
   }
 
   @override
   String siloSectionRecentlyReleasedIn(String library) {
-    return 'Recently Released in $library';
+    return 'Julkaistu äskettäin $library';
   }
 
   @override
-  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+  String get siloSectionRecentlyReleasedManga => 'Äskettäin julkaistut mangat';
 
   @override
-  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+  String get siloSectionRecentlyReleasedMovies =>
+      'Äskettäin julkaistut elokuvat';
 
   @override
-  String get siloSectionRecommendedForYou => 'Recommended for You';
+  String get siloSectionRecommendedForYou => 'Suosituksia sinulle';
 
   @override
-  String get siloSectionReturningShows => 'Returning Shows';
+  String get siloSectionReturningShows => 'Palaavat sarjat';
 
   @override
-  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+  String get siloSectionSeasonalChristmasClassics => 'Joulun klassikot';
 
   @override
-  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+  String get siloSectionSeasonalChristmasComedies => 'Joulukomediat';
 
   @override
-  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+  String get siloSectionSeasonalChristmasFamily => 'Perheen joulu';
 
   @override
-  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+  String get siloSectionSeasonalChristmasFavorites => 'Joulun suosikit';
 
   @override
-  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmarkin joulu';
 
   @override
-  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+  String get siloSectionSeasonalChristmasRomcoms =>
+      'Joulun romanttiset komediat';
 
   @override
-  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+  String get siloSectionSeasonalEasterFaith => 'Pääsiäistarinat';
 
   @override
-  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+  String get siloSectionSeasonalEasterFamily => 'Pääsiäiselokuvat';
 
   @override
-  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Perheen suosikit';
 
   @override
-  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+  String get siloSectionSeasonalFamilyMovieNight => 'Perheen elokuvailta';
 
   @override
-  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+  String get siloSectionSeasonalHalloweenAnimated => 'Animoitu Halloween';
 
   @override
-  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+  String get siloSectionSeasonalHalloweenFamily => 'Perheen halloween';
 
   @override
-  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloweenin suosikit';
 
   @override
-  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween kauhu';
 
   @override
   String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
 
   @override
-  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+  String get siloSectionSeasonalNewYearFavorites => 'Uudenvuoden elokuvat';
 
   @override
   String get siloSectionSeasonalSaturdayMorningCartoons =>
-      'Saturday Morning Cartoons';
+      'Lauantaiaamun piirretyt';
 
   @override
   String get siloSectionSeasonalSaturdayMorningModern =>
-      'Saturday Morning Favorites';
+      'Lauantaiaamun suosikit';
 
   @override
   String get siloSectionSeasonalSaturdayMorningNineties =>
-      '90s Saturday Mornings';
+      '90-luvun lauantaiaamut';
 
   @override
-  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irlantilainen elokuva';
 
   @override
-  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irlantilainen televisio';
 
   @override
-  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+  String get siloSectionSeasonalSummerBlockbusters => 'Kesän suurhittielokuvat';
 
   @override
-  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+  String get siloSectionSeasonalSummerClassicSummer => 'Klassisia kesäelokuvia';
 
   @override
-  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+  String get siloSectionSeasonalSummerNostalgia => 'Kesän nostalgia';
 
   @override
-  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+  String get siloSectionSeasonalThanksgivingFavorites =>
+      'Kiitospäivän elokuvat';
 
   @override
-  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+  String get siloSectionSeasonalThanksgivingFeelGood =>
+      'Hyvää oloa tuovat suosikit';
 
   @override
-  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+  String get siloSectionSeasonalValentinesFavorites => 'Ystävänpäivän suosikit';
 
   @override
-  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+  String get siloSectionSeasonalValentinesLoveStories =>
+      'Klassisia rakkaustarinoita';
 
   @override
-  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+  String get siloSectionSeasonalValentinesRomanticDramas =>
+      'Romanttiset draamat';
 
   @override
-  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+  String get siloSectionSeasonalValentinesRomcoms =>
+      'Ystävänpäivän romanttiset komediat';
 
   @override
-  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+  String get siloSectionSeasonalPicks => 'Kausisuositukset';
 
   @override
   String siloSectionTopGenre(String genre) {
@@ -18802,20 +18878,20 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get siloSectionTopPicksToday => 'Top Picks Today';
+  String get siloSectionTopPicksToday => 'Päivän suosituimmat valinnat';
 
   @override
-  String get siloSectionTopRated => 'Top Rated';
+  String get siloSectionTopRated => 'Parhaiten arvioidut';
 
   @override
-  String get siloSectionTopRatedMovies => 'Top Rated Movies';
+  String get siloSectionTopRatedMovies => 'Parhaiten arvioidut elokuvat';
 
   @override
-  String get siloSectionTopRatedTv => 'Top Rated TV';
+  String get siloSectionTopRatedTv => 'Parhaiten arvioidut televisiot';
 
   @override
-  String get siloSectionTrendingOnServer => 'Trending on Server';
+  String get siloSectionTrendingOnServer => 'Trendit palvelimella';
 
   @override
-  String get siloSectionTrendingThisWeek => 'Trending This Week';
+  String get siloSectionTrendingThisWeek => 'Tämän viikon trendit';
 }

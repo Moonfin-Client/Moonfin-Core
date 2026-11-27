@@ -932,6 +932,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var secondarySubtitle = SecondarySubtitleConfiguration()
         var cadenceSlowdown = false
         var cadenceTip: CadenceTip?
+        var upscaleLowResolution = false
+        var upscaleFullHD = false
     }
 
     /// The Match Frame Rate hint, localized on the Dart side.
@@ -1163,6 +1165,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             httpHeaders: sourceConfiguration.headers,
             dolbyVisionHandling: sourceConfiguration.dolbyVisionBaseLayerOnly
                 ? .baseLayerOnly : .automatic,
+            upscalesLowResolutionVideo: sourceConfiguration.upscaleLowResolution,
+            upscalesFullHDVideo: sourceConfiguration.upscaleFullHD,
             matchContentEnabled: displayCriteriaMatchingEnabled(),
             panelIsInHDRMode: panelIsInHDRMode(),
             audioBridgeMode: sourceConfiguration.audioBridgeLossless ? .lossless : .surroundCompat,

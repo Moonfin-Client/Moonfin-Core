@@ -4270,11 +4270,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
 
   @override
-  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+  String get settingsAudioPassthroughFallback => 'Avkoda tyst genomströmning';
 
   @override
   String get settingsAudioPassthroughFallbackDescription =>
-      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
+      'Om utgången inte kan spela upp ett passthrough-spår och det förblir tyst, ska du istället avkoda det på den här enheten.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -13182,6 +13182,20 @@ class AppLocalizationsSv extends AppLocalizations {
       'När funktionen ”Match Frame Rate” är avstängd spelas videon med 24 fps upp 0,1 % långsammare så att den passar TV:n utan att bildrutor går förlorade. Används inte när ljudet skickas vidare till en receiver.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
   String get cadenceTipTitle => 'Aktivera anpassning till bildfrekvens';
 
   @override
@@ -13602,27 +13616,27 @@ class AppLocalizationsSv extends AppLocalizations {
       'Säg till när någon på den här servern startar en';
 
   @override
-  String get watchPartyJoinWithCode => 'Join with a code';
+  String get watchPartyJoinWithCode => 'Registrera dig med en kod';
 
   @override
-  String get watchPartyOnThisServer => 'On this server';
+  String get watchPartyOnThisServer => 'På den här servern';
 
   @override
   String watchPartyCountOnServer(int count) {
-    return '$count on this server';
+    return '$count på den här servern';
   }
 
   @override
   String get watchPartyRoomsHint =>
-      'You need access to the item to join. A room closes when its last person leaves.';
+      'Du måste ha tillgång till objektet för att kunna delta. Ett rum stängs när den sista personen lämnar det.';
 
   @override
   String get watchPartyRoomsEmpty =>
-      'Parties you can watch show up here. Got a code from someone? Pick Join with a code.';
+      'De fester du kan titta på visas här. Har du fått en kod av någon? Välj  Gå med med en kod.';
 
   @override
   String get watchPartyPasteHint =>
-      'Pasting an invite link here works too. On a phone, the link opens Moonfin straight into the party.';
+      'Det går också bra att klistra in en inbjudningslänk här. På en mobil öppnar länken Moonfin direkt i festen.';
 
   @override
   String watchPartyWatchingCount(int count) {
@@ -13630,7 +13644,7 @@ class AppLocalizationsSv extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count watching',
-      one: '$count watching',
+      one: '$count tittar på',
     );
     return '$_temp0';
   }
@@ -13641,80 +13655,80 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get watchPartyEveryoneControlsShort => 'Everyone controls';
+  String get watchPartyEveryoneControlsShort => 'Alla bestämmer';
 
   @override
-  String get watchPartyVotingNow => 'Voting on what to watch';
+  String get watchPartyVotingNow => 'Omröstning om vad vi ska titta på';
 
   @override
   String get watchPartyNeedsMoonbase =>
-      'Watch Parties need Moonbase on this server';
+      'Watch-grupper behöver Moonbase på den här servern';
 
   @override
   String get watchPartyNeedsMoonbaseHint =>
-      'Ask whoever runs the server to install the Moonbase plugin. On Jellyfin, SyncPlay still works without it.';
+      'Be den som sköter servern att installera Moonbase-pluginet. I Jellyfin fungerar SyncPlay fortfarande utan det.';
 
   @override
-  String get watchPartyWrongPin => 'That PIN didn\'t work. Try again.';
+  String get watchPartyWrongPin => 'Den PIN-koden fungerade inte. Försök igen.';
 
   @override
-  String get watchPartyTooManyTries => 'Too many tries. Wait a minute.';
+  String get watchPartyTooManyTries => 'För många försök. Vänta lite.';
 
   @override
-  String get watchPartyFull => 'This party is full.';
+  String get watchPartyFull => 'Det här kalaset är fullbokat.';
 
   @override
-  String get watchPartyNoSuchCode => 'No room has that code.';
+  String get watchPartyNoSuchCode => 'Inget rum har den koden.';
 
   @override
   String get watchPartyNoAccess =>
-      'You don\'t have access to what they\'re watching.';
+      'Du har inte tillgång till det de tittar på.';
 
   @override
-  String get watchPartyRemoved => 'The host removed you from the party.';
+  String get watchPartyRemoved => 'Värden har tagit bort dig från festen.';
 
   @override
-  String get watchPartyYours => 'Your watch party';
+  String get watchPartyYours => 'Din watch party';
 
   @override
   String get watchPartyInviteHint =>
-      'Paste it in any chat. It opens a page on this server with an Open in Moonfin button.';
+      'Klistra in den i valfri chatt. Då öppnas en sida på den här servern med en knapp som heter ”Öppna i Moonfin”.';
 
   @override
-  String get watchPartySendInvite => 'Send the invite';
+  String get watchPartySendInvite => 'Skicka inbjudan';
 
   @override
   String get watchPartyScanInvite =>
-      'Scan with your phone to get the invite link, then send it from there. Or just share the code.';
+      'Skanna med din mobil för att få inbjudningslänken och skicka den sedan därifrån. Eller dela helt enkelt koden.';
 
   @override
   String get watchPartyStartsTogether =>
-      'Play waits for everyone\'s player, 10 seconds at most, then counts down 3, 2, 1.';
+      'Spelet väntar på att alla spelare ska vara klara, högst 10 sekunder, och räknar sedan ned 3, 2, 1.';
 
   @override
-  String get watchPartyStatusInSync => 'In sync';
+  String get watchPartyStatusInSync => 'I synk';
 
   @override
-  String get watchPartyStatusCatchingUp => 'Catching up';
+  String get watchPartyStatusCatchingUp => 'Att komma ikapp';
 
   @override
-  String get watchPartyStatusBuffering => 'Buffering';
+  String get watchPartyStatusBuffering => 'Buffring';
 
   @override
-  String get watchPartyStatusNotWatching => 'Not watching';
+  String get watchPartyStatusNotWatching => 'Tittar inte';
 
   @override
-  String get watchPartyStatusReady => 'Ready';
+  String get watchPartyStatusReady => 'Klar';
 
   @override
-  String get watchPartyStatusJoining => 'Joining';
+  String get watchPartyStatusJoining => 'Ansluta sig till';
 
   @override
-  String get watchPartyHost => 'Host';
+  String get watchPartyHost => 'Värd';
 
   @override
   String watchPartyWaitingFor(String name) {
-    return 'Waiting for $name\'s player';
+    return 'Väntar på $name\'s spelare';
   }
 
   @override
@@ -13730,78 +13744,78 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String watchPartyStartingAnyway(int seconds) {
-    return 'Starting anyway in $seconds s';
+    return 'Börjar i alla fall i $seconds s';
   }
 
   @override
-  String get watchPartyStartingTogether => 'Starting together';
+  String get watchPartyStartingTogether => 'Att börja tillsammans';
 
   @override
   String watchPartyToastPaused(String name) {
-    return '$name paused';
+    return '$name pausad';
   }
 
   @override
   String watchPartyToastResumed(String name) {
-    return '$name resumed';
+    return '$name återupptogs';
   }
 
   @override
   String watchPartyToastSkipped(String name, String time) {
-    return '$name skipped to $time';
+    return '$name hoppade till $time';
   }
 
   @override
   String watchPartyToastJoined(String name) {
-    return '$name joined';
+    return '$name anslöt sig';
   }
 
   @override
   String watchPartyToastLeft(String name) {
-    return '$name left';
+    return '$name vänster';
   }
 
   @override
   String watchPartyToastSwitched(String name, String title) {
-    return '$name switched to $title';
+    return '$name bytte till $title';
   }
 
   @override
-  String get watchPartyToastYouAreHost => 'You\'re the host now';
+  String get watchPartyToastYouAreHost => 'Nu är det du som är värd';
 
   @override
   String watchPartyToastNewHost(String name) {
-    return '$name is the host now';
+    return '$name är programledare nu';
   }
 
   @override
   String get watchPartyToastEveryoneControls =>
-      'Everyone can control playback now';
+      'Nu kan alla styra uppspelningen';
 
   @override
   String get watchPartyToastHostControls =>
-      'Only the host controls playback now';
+      'Nu är det bara värden som styr uppspelningen';
 
   @override
   String get watchPartyOnlyHostControls =>
-      'Only the host can control playback.';
+      'Endast värden kan styra uppspelningen.';
 
   @override
-  String get watchPartyToastReconnecting => 'Reconnecting to the party...';
+  String get watchPartyToastReconnecting => 'Återansluter till festen...';
 
   @override
-  String get watchPartyToastReconnected => 'Back in the party';
+  String get watchPartyToastReconnected => 'Tillbaka på festen';
 
   @override
   String watchPartyToastEnded(String name) {
-    return '$name ended the party';
+    return '$name avslutade festen';
   }
 
   @override
-  String get watchPartyChat => 'Chat';
+  String get watchPartyChat => 'Chatta';
 
   @override
-  String get watchPartySendToParty => 'Send to the party';
+  String get watchPartySendToParty => 'Skicka till festen';
 
   @override
   String get watchPartyBackToClose => 'Tillbaka till stängning';
@@ -13816,7 +13830,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get watchPartyReplyNoWay => 'No way';
 
   @override
-  String get watchPartyReplyPausePlease => 'Pause please';
+  String get watchPartyReplyPausePlease => 'Vänta lite, tack';
 
   @override
   String get watchPartyReplyBrb => 'Brb';
@@ -13843,35 +13857,36 @@ class AppLocalizationsSv extends AppLocalizations {
   String get watchPartyReactionPopcorn => 'Popcorn';
 
   @override
-  String get watchPartyMakeHost => 'Make host';
+  String get watchPartyMakeHost => 'Skapa värd';
 
   @override
-  String get watchPartyEveryoneControls => 'Everyone can control playback';
+  String get watchPartyEveryoneControls => 'Alla kan styra uppspelningen';
 
   @override
   String get watchPartyEveryoneControlsHint =>
-      'Anyone can play, pause and skip';
+      'Vem som helst kan spela upp, pausa och hoppa över';
 
   @override
-  String get watchPartyRoomPin => 'Room PIN';
+  String get watchPartyRoomPin => 'Rums-PIN-kod';
 
   @override
-  String get watchPartyRoomPinHint => 'Ask for a PIN before anyone joins';
+  String get watchPartyRoomPinHint =>
+      'Be om en PIN-kod innan någon ansluter sig';
 
   @override
-  String get watchPartyPinDigits => '4 to 8 digits';
+  String get watchPartyPinDigits => '4 till 8 siffror';
 
   @override
-  String get watchPartyLeave => 'Leave';
+  String get watchPartyLeave => 'Ledighet';
 
   @override
   String watchPartyLeaveHandsOver(String name) {
-    return 'Leave · $name hosts';
+    return 'Ledighet · $name värdar';
   }
 
   @override
   String watchPartyStartedBy(String name) {
-    return '$name started a watch party';
+    return '$name startade en watch party';
   }
 
   @override
@@ -13886,11 +13901,12 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get watchPartyFirstOnHome => 'It\'s first in Watch Parties on Home';
+  String get watchPartyFirstOnHome =>
+      'Det är först i Watch Parties på startsidan';
 
   @override
   String watchPartyAddServerQuestion(String address) {
-    return 'This invite is for a server you have not added yet, $address. Add it and sign in to join.';
+    return 'Den här inbjudan gäller en server som du ännu inte har lagt till, $address. Lägg till det och logga in för att gå med.';
   }
 
   @override
@@ -13900,29 +13916,29 @@ class AppLocalizationsSv extends AppLocalizations {
   String get openInBrowser => 'Öppna i webbläsaren';
 
   @override
-  String get achievementBadges => 'Achievement Badges';
+  String get achievementBadges => 'Prestationsmärken';
 
   @override
   String get achievementBadgesSubtitle =>
-      'Badges, ranks and quests earned from what you watch';
+      'Märken, rangar och uppdrag som du tjänar in genom det du tittar på';
 
   @override
-  String get achievementsBadges => 'Badges';
+  String get achievementsBadges => 'Märken';
 
   @override
   String achievementsBadgeCount(int unlocked, int total) {
-    return '$unlocked of $total badges';
+    return '$unlocked of $total märken';
   }
 
   @override
-  String get achievementsUnlockToasts => 'Unlock Notifications';
+  String get achievementsUnlockToasts => 'Lås upp aviseringar';
 
   @override
   String get achievementsUnlockToastsSubtitle =>
-      'Show a notification when you unlock a badge';
+      'Visa ett meddelande när du låser upp en utmärkelse';
 
   @override
-  String get achievementsUnlockedNotification => 'Achievement unlocked';
+  String get achievementsUnlockedNotification => 'Prestation upplåst';
 
   @override
   String achievementsUnlockedCount(int count) {
@@ -13941,83 +13957,83 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get achievementsQuests => 'Quests';
+  String get achievementsQuests => 'Uppdrag';
 
   @override
   String achievementsQuestCount(int count) {
-    return '$count completed';
+    return '$count slutförd';
   }
 
   @override
-  String get achievementsLeaderboard => 'Leaderboard';
+  String get achievementsLeaderboard => 'Resultatlista';
 
   @override
   String get achievementsLeaderboardSubtitle =>
-      'How you compare with other users on this server';
+      'Hur du ligger till jämfört med andra användare på den här servern';
 
   @override
   String get achievementsRecap => 'Sammanfattning';
 
   @override
-  String get achievementsRecapSubtitle => 'What you watched recently';
+  String get achievementsRecapSubtitle => 'Vad du har tittat på nyligen';
 
   @override
-  String get achievementsLibraryCompletion => 'Library completion';
+  String get achievementsLibraryCompletion => 'Bibliotekets färdigställande';
 
   @override
   String achievementsLibraryCount(int count) {
-    return '$count libraries';
+    return '$count bibliotek';
   }
 
   @override
   String achievementsScore(int score) {
-    return '$score points';
+    return '$score poäng';
   }
 
   @override
-  String get achievementsScoreLabel => 'Score';
+  String get achievementsScoreLabel => 'Poäng';
 
   @override
-  String get achievementsTopRank => 'Top rank reached';
+  String get achievementsTopRank => 'Högsta nådda placering';
 
   @override
   String achievementsPointsToNextRank(int points, String tier) {
-    return '$points points to $tier';
+    return '$points pekar på $tier';
   }
 
   @override
   String achievementsCurrentStreak(int days) {
-    return '$days day streak';
+    return '$days dagars svit';
   }
 
   @override
   String achievementsBestStreak(int days) {
-    return 'Best: $days days';
+    return 'Bäst: $days dagar';
   }
 
   @override
-  String get achievementsShowcase => 'Showcase';
+  String get achievementsShowcase => 'Utställning';
 
   @override
-  String get achievementsUnlocked => 'Unlocked';
+  String get achievementsUnlocked => 'Upplåst';
 
   @override
-  String get achievementsLocked => 'Locked';
+  String get achievementsLocked => 'Låst';
 
   @override
-  String get achievementsNothingHere => 'Nothing here yet.';
+  String get achievementsNothingHere => 'Det finns inget här än.';
 
   @override
-  String get achievementsHiddenBadge => 'Hidden achievement';
+  String get achievementsHiddenBadge => 'Dold prestation';
 
   @override
   String achievementsUnlockedOn(String date) {
-    return 'Unlocked $date';
+    return 'Upplåst $date';
   }
 
   @override
   String achievementsPoints(int points) {
-    return '$points pts';
+    return '$points poäng';
   }
 
   @override
@@ -14032,79 +14048,82 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get achievementsRerollDaily => 'Reroll daily quests';
+  String get achievementsRerollDaily => 'Spela om dagliga uppdrag';
 
   @override
-  String get achievementsRerollWeekly => 'Reroll weekly quests';
+  String get achievementsRerollWeekly => 'Gör om veckouppdragen';
 
   @override
-  String get achievementsRerollOffer => 'Swap this set for a different one';
+  String get achievementsRerollOffer =>
+      'Byt ut den här uppsättningen mot en annan';
 
   @override
   String get achievementsRerollSpentDaily =>
-      'Used today, comes back at midnight UTC';
+      'Används idag, återlämnas vid midnatt UTC';
 
   @override
   String get achievementsRerollSpentWeekly =>
-      'Used this week, comes back Monday UTC';
+      'Används den här veckan, kommer tillbaka på måndag (UTC)';
 
   @override
-  String get achievementsRerollConfirm => 'Reroll these quests?';
+  String get achievementsRerollConfirm => 'Ska jag göra om dessa uppdrag?';
 
   @override
   String get achievementsRerollConfirmBody =>
-      'You get one daily and one weekly reroll, and this spends it.';
+      'Du får en omstart per dag och en per vecka, och den här använder upp den.';
 
   @override
-  String get achievementsRerollFailed => 'Could not reroll those quests.';
+  String get achievementsRerollFailed =>
+      'Det gick inte att göra om de där uppdragen.';
 
   @override
-  String get achievementsSuggested => 'Suggested items to watch';
+  String get achievementsSuggested => 'Förslag på saker att titta på';
 
   @override
-  String get achievementsNoSuggestions => 'Nothing to suggest for this badge.';
+  String get achievementsNoSuggestions =>
+      'Inget att föreslå för den här utmärkelsen.';
 
   @override
-  String get achievementsProgressLabel => 'Progress';
+  String get achievementsProgressLabel => 'Framsteg';
 
   @override
-  String get achievementsLoadout => 'Loadout';
+  String get achievementsLoadout => 'Utrustning';
 
   @override
   String get achievementsLoadoutSubtitle =>
-      'Score to spend and the boosts you hold';
+      'Poäng att spendera och de förstärkningar du har';
 
   @override
   String get achievementsAppearance => 'Utseende';
 
   @override
   String get achievementsAppearanceSubtitle =>
-      'The avatar and title on your profile';
+      'Avataren och titeln på din profil';
 
   @override
-  String get achievementsAvatars => 'Avatars';
+  String get achievementsAvatars => 'Avatarer';
 
   @override
   String get achievementsTitles => 'Titlar';
 
   @override
-  String get achievementsEquipped => 'Equipped';
+  String get achievementsEquipped => 'Utrustad';
 
   @override
-  String get achievementsOwned => 'Owned';
+  String get achievementsOwned => 'Ägs';
 
   @override
   String achievementsEarnedAt(int score) {
-    return 'Earned at $score lifetime score';
+    return 'Erhållet vid $score livstidsresultat';
   }
 
   @override
   String get achievementsAppearanceEmpty =>
-      'This server has no avatars or titles to wear.';
+      'Den här servern har inga avatarer eller titlar att använda.';
 
   @override
   String get achievementsAppearanceFailed =>
-      'Could not change how the profile looks.';
+      'Det gick inte att ändra profilens utseende.';
 
   @override
   String get achievementsPowerUps => 'Power-ups';
@@ -14114,118 +14133,119 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get achievementsStatsSubtitle =>
-      'Your records and how the server is doing';
+      'Dina loggar och hur servern fungerar';
 
   @override
   String get achievementsStatsWatched => 'Visad';
 
   @override
-  String get achievementsStatsBests => 'Bests';
+  String get achievementsStatsBests => 'Bäst';
 
   @override
-  String get achievementsStatsHabits => 'Habits';
+  String get achievementsStatsHabits => 'Vanor';
 
   @override
-  String get achievementsStatsVariety => 'Variety';
+  String get achievementsStatsVariety => 'Variation';
 
   @override
-  String get achievementsStatsServer => 'This server';
+  String get achievementsStatsServer => 'Den här servern';
 
   @override
-  String get achievementsStatsClock => 'When you watch';
+  String get achievementsStatsClock => 'När du tittar på';
 
   @override
-  String get achievementsStatItems => 'Items watched';
+  String get achievementsStatItems => 'Bevakade objekt';
 
   @override
-  String get achievementsStatMovies => 'Films watched';
+  String get achievementsStatMovies => 'Filmer jag har sett';
 
   @override
-  String get achievementsStatSeries => 'Series finished';
+  String get achievementsStatSeries => 'Serien är avslutad';
 
   @override
-  String get achievementsStatHours => 'Hours watched';
+  String get achievementsStatHours => 'Antal timmar som tittats på';
 
   @override
-  String get achievementsStatDays => 'Days watched';
+  String get achievementsStatDays => 'Antal visningsdagar';
 
   @override
-  String get achievementsStatRewatches => 'Rewatches';
+  String get achievementsStatRewatches => 'Omtittningar';
 
   @override
-  String get achievementsStatBestWatchStreak => 'Best watch streak';
+  String get achievementsStatBestWatchStreak => 'Längsta raden av tittande';
 
   @override
-  String get achievementsStatBestLoginStreak => 'Best login streak';
+  String get achievementsStatBestLoginStreak => 'Längsta inloggningssviten';
 
   @override
-  String get achievementsStatMostEpisodes => 'Most episodes in a day';
+  String get achievementsStatMostEpisodes => 'Flest avsnitt per dag';
 
   @override
-  String get achievementsStatMostMovies => 'Most films in a day';
+  String get achievementsStatMostMovies => 'Flest filmer på en dag';
 
   @override
-  String get achievementsStatLongestItem => 'Longest single item';
+  String get achievementsStatLongestItem => 'Den längsta enskilda artikeln';
 
   @override
-  String get achievementsStatBestCombo => 'Best combo';
+  String get achievementsStatBestCombo => 'Bästa kombinationen';
 
   @override
-  String get achievementsStatLateNight => 'Late night sessions';
+  String get achievementsStatLateNight => 'Sena kvällssessioner';
 
   @override
-  String get achievementsStatEarlyMorning => 'Early morning sessions';
+  String get achievementsStatEarlyMorning => 'Träningspass tidigt på morgonen';
 
   @override
-  String get achievementsStatWeekend => 'Weekend sessions';
+  String get achievementsStatWeekend => 'Helgkurser';
 
   @override
-  String get achievementsStatDaysSignedIn => 'Days signed in';
+  String get achievementsStatDaysSignedIn => 'Antal inloggningsdagar';
 
   @override
-  String get achievementsStatLibraries => 'Libraries visited';
+  String get achievementsStatLibraries => 'Besökta bibliotek';
 
   @override
-  String get achievementsStatGenres => 'Genres watched';
+  String get achievementsStatGenres => 'Genrer jag har tittat på';
 
   @override
-  String get achievementsStatDecades => 'Decades watched';
+  String get achievementsStatDecades => 'Årtionden har gått';
 
   @override
-  String get achievementsStatCountries => 'Countries watched';
+  String get achievementsStatCountries => 'Länder som övervakades';
 
   @override
-  String get achievementsStatLanguages => 'Languages watched';
+  String get achievementsStatLanguages => 'Språk som följs';
 
   @override
   String get achievementsStatUsers => 'Användare';
 
   @override
-  String get achievementsStatBadgesUnlocked => 'Badges unlocked';
+  String get achievementsStatBadgesUnlocked => 'Upplåsta märken';
 
   @override
-  String get achievementsStatScoreEarned => 'Score earned';
+  String get achievementsStatScoreEarned => 'Uppnått poängantal';
 
   @override
-  String get achievementsStatCommonBadge => 'Most common badge';
+  String get achievementsStatCommonBadge => 'Vanligaste märket';
 
   @override
   String get achievementsActivity => 'Aktivitet';
 
   @override
   String get achievementsActivitySubtitle =>
-      'What the server has unlocked lately';
+      'Vad servern har låst upp på sistone';
 
   @override
   String achievementsActivityUnlocked(String user, String badge) {
-    return '$user unlocked $badge';
+    return '$user olåst $badge';
   }
 
   @override
-  String get achievementsShop => 'Shop';
+  String get achievementsShop => 'Butik';
 
   @override
-  String get achievementsShopSubtitle => 'Spend score on more boosts';
+  String get achievementsShopSubtitle =>
+      'Använd poängen till fler förstärkningar';
 
   @override
   String achievementsShopPack(String name, int count) {
@@ -14233,41 +14253,41 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get achievementsShopEmpty => 'Nothing for sale right now.';
+  String get achievementsShopEmpty => 'Det finns inget till salu just nu.';
 
   @override
-  String get achievementsBuyConfirm => 'Buy this?';
+  String get achievementsBuyConfirm => 'Ska jag köpa den här?';
 
   @override
   String get achievementsBuyConfirmBody =>
-      'It comes straight out of your score bank.';
+      'Det dras direkt från din poängbank.';
 
   @override
-  String get achievementsBuyFailed => 'Could not buy that.';
+  String get achievementsBuyFailed => 'Det kunde jag inte gå med på.';
 
   @override
-  String get achievementsScoreBank => 'Score bank';
+  String get achievementsScoreBank => 'Poängbank';
 
   @override
   String get achievementsBoost => 'XP Boost';
 
   @override
   String get achievementsBoostBody =>
-      'Doubles score for an hour. Using it again restarts the hour.';
+      'Poängen i dubbelspel räknas under en timme. Om du använder funktionen igen startar timmen om från början.';
 
   @override
-  String get achievementsDoubleCredit => 'Double Credit';
+  String get achievementsDoubleCredit => 'Dubbel poäng';
 
   @override
   String get achievementsDoubleCreditBody =>
-      'The next thing you finish counts twice towards badges.';
+      'Nästa uppgift du slutför räknas dubbelt när det gäller märken.';
 
   @override
   String get achievementsStreakFreeze => 'Streak Freeze';
 
   @override
   String get achievementsStreakFreezeBody =>
-      'Covers one missed day. Only one can be banked.';
+      'Gäller för en förlorad dag. Endast en dag kan sparas.';
 
   @override
   String achievementsPowerUpHeld(int count) {
@@ -14282,68 +14302,70 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get achievementsPowerUpActive => 'Running now';
+  String get achievementsPowerUpActive => 'Pågår just nu';
 
   @override
-  String get achievementsUsePowerUp => 'Use this power-up?';
+  String get achievementsUsePowerUp => 'Ska jag använda den här power-upen?';
 
   @override
   String get achievementsUsePowerUpBody =>
-      'It\'s spent as soon as you confirm.';
+      'Beloppet dras så fort du bekräftar.';
 
   @override
-  String get achievementsPowerUpFailed => 'Could not use that power-up.';
+  String get achievementsPowerUpFailed =>
+      'Det gick inte att använda den där power-upen.';
 
   @override
-  String get achievementsHours => 'Hours';
+  String get achievementsHours => 'Öppettider';
 
   @override
   String get achievementsStreak => 'Streak';
 
   @override
-  String get achievementsPeriodWeek => 'Week';
+  String get achievementsPeriodWeek => 'Vecka';
 
   @override
-  String get achievementsPeriodMonth => 'Month';
+  String get achievementsPeriodMonth => 'Månad';
 
   @override
-  String get achievementsPeriodYear => 'Year';
+  String get achievementsPeriodYear => 'År';
 
   @override
   String achievementsDaysWatched(int count) {
-    return '$count days watched';
+    return '$count antal dagar som har tittats på';
   }
 
   @override
   String achievementsBadgesEarned(int count) {
-    return '$count badges earned';
+    return '$count uppnådda märken';
   }
 
   @override
-  String get achievementsTopDirectors => 'Top directors';
+  String get achievementsTopDirectors => 'Toppregissörer';
 
   @override
-  String get achievementsTopActors => 'Top actors';
+  String get achievementsTopActors => 'Toppskådespelare';
 
   @override
-  String get achievementsLoadFailed => 'Could not load your achievements.';
+  String get achievementsLoadFailed =>
+      'Det gick inte att ladda dina prestationer.';
 
   @override
-  String get friends => 'Friends';
+  String get friends => 'Vänner';
 
   @override
   String get friendsSubtitle =>
-      'See who\'s online and chat with people on this server';
+      'Se vilka som är online och chatta med användarna på den här servern';
 
   @override
-  String get friendsShowButton => 'Show Friends Button';
+  String get friendsShowButton => 'Knappen ”Visa vänner”';
 
   @override
   String get friendsShowButtonSubtitle =>
-      'Friends and chat from the Achievement Badges plugin';
+      'Vänner och chatt – från tillägget ”Achievement Badges”';
 
   @override
-  String get friendsMessages => 'Messages';
+  String get friendsMessages => 'Meddelanden';
 
   @override
   String friendsUnreadCount(int count) {
@@ -14358,7 +14380,7 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get friendsRequests => 'Friend requests';
+  String get friendsRequests => 'Vänförfrågningar';
 
   @override
   String friendsRequestCount(int count) {
@@ -14373,16 +14395,16 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get friendsAdd => 'Add friends';
+  String get friendsAdd => 'Lägg till vänner';
 
   @override
-  String get friendsAddSubtitle => 'Find people on this server';
+  String get friendsAddSubtitle => 'Hitta personer på den här servern';
 
   @override
   String get friendsPrivacy => 'Privacy';
 
   @override
-  String get friendsPrivacySubtitle => 'What your friends can see';
+  String get friendsPrivacySubtitle => 'Vad dina vänner kan se';
 
   @override
   String get friendsOnline => 'Online';
@@ -14392,51 +14414,51 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get friendsNone =>
-      'No friends yet. Add people from this server to see them here.';
+      'Inga vänner än. Lägg till personer från den här servern för att se dem här.';
 
   @override
   String friendsWatching(String title) {
-    return 'Watching $title';
+    return 'Titta på $title';
   }
 
   @override
   String friendsLastWatched(String title) {
-    return 'Last watched $title';
+    return 'Senast visade $title';
   }
 
   @override
   String friendsLastSeen(String time) {
-    return 'Last seen $time';
+    return 'Senast sett $time';
   }
 
   @override
   String get friendsLoadFailed =>
-      'Could not load this. Check your connection and try again.';
+      'Det gick inte att ladda detta. Kontrollera din anslutning och försök igen.';
 
   @override
-  String get friendsActionFailed => 'That didn\'t work. Try again in a moment.';
+  String get friendsActionFailed => 'Det gick inte. Försök igen om en stund.';
 
   @override
-  String get friendsIncoming => 'Waiting for you';
+  String get friendsIncoming => 'Väntar på dig';
 
   @override
-  String get friendsOutgoing => 'Sent by you';
+  String get friendsOutgoing => 'Skickat av dig';
 
   @override
-  String get friendsNoRequests => 'No friend requests.';
+  String get friendsNoRequests => 'Inga vänförfrågningar.';
 
   @override
-  String get friendsAccept => 'Accept';
+  String get friendsAccept => 'Godkänn';
 
   @override
   String get friendsDecline => 'Nedgång';
 
   @override
-  String get friendsCancelRequest => 'Cancel request';
+  String get friendsCancelRequest => 'Avbryt begäran';
 
   @override
   String friendsRequestFrom(String name) {
-    return '$name wants to be friends';
+    return '$name vill vara vänner';
   }
 
   @override
@@ -14445,118 +14467,118 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get friendsSearchHint => 'Search people';
+  String get friendsSearchHint => 'Sök efter personer';
 
   @override
-  String get friendsNoMatches => 'No one matches that name.';
+  String get friendsNoMatches => 'Det finns ingen som heter så.';
 
   @override
   String friendsRequestSent(String name) {
-    return 'Request sent to $name';
+    return 'Förfrågan skickad till $name';
   }
 
   @override
-  String get friendsSendRequest => 'Add as friend';
+  String get friendsSendRequest => 'Lägg till som vän';
 
   @override
-  String get friendsSendMessage => 'Send message';
+  String get friendsSendMessage => 'Skicka meddelande';
 
   @override
   String friendsOpenItem(String title) {
-    return 'Open $title';
+    return 'Öppna $title';
   }
 
   @override
-  String get friendsRemove => 'Remove friend';
+  String get friendsRemove => 'Ta bort vän';
 
   @override
   String friendsRemoveBody(String name) {
-    return 'Remove $name from your friends? You can add them again later.';
+    return 'Vill du ta bort $name från dina vänner? Du kan lägga till dem igen senare.';
   }
 
   @override
-  String get friendsBlock => 'Block';
+  String get friendsBlock => 'Blockera';
 
   @override
-  String get friendsUnblock => 'Unblock';
+  String get friendsUnblock => 'Avblockera';
 
   @override
   String friendsBlockBody(String name) {
-    return 'Block $name? Neither of you will be able to message the other directly. Group chats you share stay open.';
+    return 'Blockera $name? Ingen av er kommer att kunna skicka meddelanden direkt till den andra. De gruppchattar ni delar förblir öppna.';
   }
 
   @override
   String friendsUnblockBody(String name) {
-    return 'Unblock $name?';
+    return 'Avblockera $name?';
   }
 
   @override
-  String get friendsBlocked => 'Blocked users';
+  String get friendsBlocked => 'Blockerade användare';
 
   @override
   String friendsProfileHidden(String name) {
-    return '$name keeps their profile private.';
+    return '$name har ställt in sin profil som privat.';
   }
 
   @override
-  String get friendsAppearOffline => 'Appear Offline';
+  String get friendsAppearOffline => 'Visa som offline';
 
   @override
   String get friendsAppearOfflineSubtitle =>
-      'Friends always see you as offline';
+      'Dina vänner ser dig alltid som offline';
 
   @override
-  String get friendsHideNowPlaying => 'Hide What I\'m Watching';
+  String get friendsHideNowPlaying => 'Dölj vad jag tittar på';
 
   @override
   String get friendsHideNowPlayingSubtitle =>
-      'Friends still see you online, but not what\'s playing';
+      'Dina vänner ser fortfarande att du är online, men inte vad du spelar';
 
   @override
-  String get friendsHideLastWatched => 'Hide My Last Watched';
+  String get friendsHideLastWatched => 'Dölj ”Senast visade”';
 
   @override
   String get friendsHideLastWatchedSubtitle =>
-      'Friends won\'t see what you watched last while you\'re offline';
+      'Dina vänner kommer inte att kunna se vad du tittade på senast när du är offline';
 
   @override
-  String get friendsMessageNotifications => 'Message Notifications';
+  String get friendsMessageNotifications => 'Meddelandeaviseringar';
 
   @override
   String get friendsMessageNotificationsSubtitle =>
-      'Show a banner when a friend messages you';
+      'Visa en banner när en vän skickar ett meddelande till dig';
 
   @override
-  String get friendsMuteDuringPlayback => 'Mute During Playback';
+  String get friendsMuteDuringPlayback => 'Stäng av ljudet under uppspelning';
 
   @override
   String get friendsMuteDuringPlaybackSubtitle =>
-      'No message banners while a video or game is playing';
+      'Inga meddelandebanderoller medan en video eller ett spel spelas upp';
 
   @override
-  String get friendsSaveFailed => 'Could not save your settings.';
+  String get friendsSaveFailed => 'Det gick inte att spara dina inställningar.';
 
   @override
-  String get chatNew => 'New message';
+  String get chatNew => 'Nytt meddelande';
 
   @override
-  String get chatNewSubtitle => 'Start a chat with a friend';
+  String get chatNewSubtitle => 'Starta en chatt med en vän';
 
   @override
-  String get chatNewGroup => 'New group';
+  String get chatNewGroup => 'Ny grupp';
 
   @override
-  String get chatNewGroupSubtitle => 'Chat with several friends at once';
+  String get chatNewGroupSubtitle => 'Chatta med flera vänner samtidigt';
 
   @override
-  String get chatNone => 'No messages yet.';
+  String get chatNone => 'Inga meddelanden än.';
 
   @override
   String get chatYou => 'Du';
 
   @override
   String chatYouSaid(String text) {
-    return 'You: $text';
+    return 'Du: $text';
   }
 
   @override
@@ -14566,47 +14588,47 @@ class AppLocalizationsSv extends AppLocalizations {
   String get chatEmoji => 'Emoji';
 
   @override
-  String get chatEmojiSearch => 'Search emoji';
+  String get chatEmojiSearch => 'Sök emoji';
 
   @override
-  String get chatNoRecentEmoji => 'No recent emoji';
+  String get chatNoRecentEmoji => 'Inga nya emoji';
 
   @override
-  String get chatViewPhoto => 'View photo';
+  String get chatViewPhoto => 'Visa foto';
 
   @override
-  String get chatHint => 'Write a message';
+  String get chatHint => 'Skriv ett meddelande';
 
   @override
-  String get chatAttach => 'Send a photo';
+  String get chatAttach => 'Skicka en bild';
 
   @override
-  String get chatEdited => 'edited';
+  String get chatEdited => 'redigerad';
 
   @override
-  String get chatSeen => 'Seen';
+  String get chatSeen => 'Sett';
 
   @override
-  String get chatSent => 'Sent';
+  String get chatSent => 'Skickat';
 
   @override
-  String get chatEditing => 'Editing message';
+  String get chatEditing => 'Redigera meddelande';
 
   @override
-  String get chatMessageOptions => 'Message options';
+  String get chatMessageOptions => 'Meddelandealternativ';
 
   @override
-  String get chatDeleteBody => 'Delete this message for everyone?';
+  String get chatDeleteBody => 'Ska det här meddelandet raderas för alla?';
 
   @override
-  String get chatClear => 'Clear conversation';
+  String get chatClear => 'Tydlig konversation';
 
   @override
   String get chatClearBody =>
-      'Delete every message in this chat for everyone in it?';
+      'Vill du radera alla meddelanden i den här chatten för alla deltagare?';
 
   @override
-  String get chatGroupInfo => 'Group info';
+  String get chatGroupInfo => 'Gruppinformation';
 
   @override
   String get chatGroupName => 'Gruppnamn';
@@ -14623,50 +14645,50 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get chatOwner => 'Owner';
+  String get chatOwner => 'Ägare';
 
   @override
   String get chatAdmin => 'Administration';
 
   @override
-  String get chatMakeAdmin => 'Make admin';
+  String get chatMakeAdmin => 'Skapa administratör';
 
   @override
-  String get chatRemoveAdmin => 'Remove admin';
+  String get chatRemoveAdmin => 'Ta bort administratör';
 
   @override
-  String get chatRemoveMember => 'Remove from group';
+  String get chatRemoveMember => 'Ta bort från gruppen';
 
   @override
-  String get chatAddMember => 'Add people';
+  String get chatAddMember => 'Lägg till personer';
 
   @override
-  String get chatNobodyToAdd => 'No one left to add.';
+  String get chatNobodyToAdd => 'Det finns ingen kvar att lägga till.';
 
   @override
   String get chatLeave => 'Lämna gruppen';
 
   @override
   String get chatLeaveBody =>
-      'Leave this group? Someone will have to add you back to rejoin.';
+      'Vill du lämna den här gruppen? Då måste någon lägga till dig igen för att du ska kunna gå med igen.';
 
   @override
   String get chatCreate => 'Skapa grupp';
 
   @override
-  String get chatPickMembers => 'Pick at least two friends';
+  String get chatPickMembers => 'Välj minst två vänner';
 
   @override
   String chatNewMessageFrom(String name) {
-    return 'New message from $name';
+    return 'Nytt meddelande från $name';
   }
 
   @override
-  String get chatImageTooLarge => 'That image is over 8 MB.';
+  String get chatImageTooLarge => 'Den bilden är över 8 MB stor.';
 
   @override
   String get chatImageUnsupported =>
-      'Only PNG, JPEG, GIF and WebP images can be sent.';
+      'Endast bilder i formaten PNG, JPEG, GIF och WebP kan skickas.';
 
   @override
   String get embeddedBrowserNotAvailable =>
@@ -14750,17 +14772,17 @@ class AppLocalizationsSv extends AppLocalizations {
   String get analyticsNoLibrariesAvailable => 'Inga bibliotek är tillgängliga.';
 
   @override
-  String get analyticsLibraryShare => 'Share of items by library';
+  String get analyticsLibraryShare => 'Andel av poster per bibliotek';
 
   @override
-  String get analyticsTopRating => 'Most common rating';
+  String get analyticsTopRating => 'Vanligaste betyg';
 
   @override
-  String get analyticsTypicalRuntime => 'Typical runtime';
+  String get analyticsTypicalRuntime => 'Typisk drifttid';
 
   @override
   String analyticsShareOfItems(String percent) {
-    return '$percent% of items';
+    return '$percent% antal artiklar';
   }
 
   @override
@@ -15056,7 +15078,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fokuserad tidslinje';
 
   @override
-  String get audiobookFullTimeline => 'Full Timeline';
+  String get audiobookFullTimeline => 'Fullständig tidslinje';
 
   @override
   String get audiobookExportBookmarks => 'Exportera bokmärken';
@@ -15242,7 +15264,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String dateCreatedFormat(Object date) {
-    return 'Date Added: $date';
+    return 'Datum för tillägg: $date';
   }
 
   @override
@@ -15317,42 +15339,42 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String transcodeAudioCodecWithCodec(String codec) {
-    return 'Audio codec ($codec) is not supported directly.';
+    return 'Ljudkodek ($codec) stöds inte direkt.';
   }
 
   @override
   String transcodeAudioCodecHintPassthrough(String codec) {
-    return 'Tip: If your audio receiver or soundbar supports $codec, enable Audio Passthrough in Audio settings.';
+    return 'Tips: Om din ljudmottagare eller soundbar stöder $codec, aktivera då ”Audio Passthrough” i ljudinställningarna.';
   }
 
   @override
   String transcodeAudioChannelsExceeded(int channels) {
-    return 'Audio channel count (${channels}ch) exceeds the player limit.';
+    return 'Antalet ljudkanaler (${channels}ch) överskrider spelarens gräns.';
   }
 
   @override
   String get transcodeAudioChannelsHint =>
-      'Tip: Adjust \'Max Audio Channels\' or multichannel downmixing in Audio settings.';
+      'Tips: Justera inställningen ”Max antal ljudkanaler” eller nedmixning till flerkanaligt ljud i ljudinställningarna.';
 
   @override
   String get transcodeSubtitleBurnInAssDisabled =>
-      'ASS/SSA subtitles require transcoding because direct play is turned off.';
+      'Undertexter i ASS/SSA-format måste omkodas eftersom direktuppspelning är inaktiverad.';
 
   @override
   String get transcodeSubtitleBurnInAssHint =>
-      'Tip: Enable \'ASS/SSA Direct Play\' in Playback settings to play directly without transcoding.';
+      'Tips: Aktivera ”ASS/SSA Direct Play” i uppspelningsinställningarna för att spela upp direkt utan omkodning.';
 
   @override
   String get transcodeSubtitleBurnInPgsDisabled =>
-      'PGS subtitles require transcoding because direct play is turned off.';
+      'PGS-undertexter måste omkodas eftersom direktuppspelning är inaktiverad.';
 
   @override
   String get transcodeSubtitleBurnInPgsHint =>
-      'Tip: Enable \'PGS Direct Play\' in Playback settings to play directly without transcoding.';
+      'Tips: Aktivera ”PGS Direct Play” i uppspelningsinställningarna för att spela upp direkt utan omkodning.';
 
   @override
   String transcodeSubtitleNotSupportedWithCodec(String codec) {
-    return 'Subtitle format ($codec) is not supported directly and must be burned in.';
+    return 'Undertextformatet ($codec) stöds inte direkt och måste brännas in.';
   }
 
   @override
@@ -15360,75 +15382,75 @@ class AppLocalizationsSv extends AppLocalizations {
     String fileBitrate,
     String maxBitrate,
   ) {
-    return 'File bitrate ($fileBitrate) exceeds the configured streaming limit ($maxBitrate).';
+    return 'Filens bithastighet ($fileBitrate) överskrider den inställda strömningsgränsen ($maxBitrate).';
   }
 
   @override
   String get transcodeBitrateHint =>
-      'Tip: Increase \'Maximum Bitrate\' in Playback settings to allow direct streaming.';
+      'Tips: Öka ”Maximal bithastighet” i uppspelningsinställningarna för att möjliggöra direktströmning.';
 
   @override
   String get transcodeResolutionHint =>
-      'Tip: Increase \'Maximum Resolution\' in Playback settings to allow direct streaming.';
+      'Tips: Öka ”Maximal upplösning” i uppspelningsinställningarna för att möjliggöra direktströmning.';
 
   @override
   String get transcodeVideoRangeNotSupported =>
-      'Video dynamic range (e.g. Dolby Vision / HDR) is not supported by this display.';
+      'Dynamiskt omfång för video (t.ex. Dolby Vision/HDR) stöds inte av denna skärm.';
 
   @override
   String get transcodeDolbyVisionProfile7ElDisabled =>
-      'Dolby Vision Profile 7 enhancement layer direct play is disabled.';
+      'Direktuppspelning av förbättringslagret i Dolby Vision-profil 7 är inaktiverad.';
 
   @override
   String get transcodeDolbyVisionProfile7ElHint =>
-      'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback settings if your display supports it.';
+      'Tips: Aktivera ”Dolby Vision Profile 7 Direct Play” i uppspelningsinställningarna om din skärm stöder det.';
 
   @override
   String get transcodeDolbyVisionFallbackPreferenceTranscode =>
-      'Transcoding is preferred for Dolby Vision fallback per user settings.';
+      'Omkodning rekommenderas för Dolby Vision-fallback enligt användarens inställningar.';
 
   @override
   String get transcodeDolbyVisionFallbackHint =>
-      'Tip: Set \'Dolby Vision Fallback\' to \'Play as HDR10\' in Playback settings to avoid transcoding.';
+      'Tips: Ställ in ”Dolby Vision Fallback” på ”Spela upp som HDR10” i uppspelningsinställningarna för att undvika omkodning.';
 
   @override
   String get transcodeDisplayReportsNoHdr =>
-      'Connected display does not report support for HDR or Dolby Vision.';
+      'Den anslutna skärmen anger inte att den stöder HDR eller Dolby Vision.';
 
   @override
   String get transcodeDisplayLacksHdr10ForFallback =>
-      'Connected display lacks HDR10 support needed for Dolby Vision fallback.';
+      'Den anslutna skärmen saknar stöd för HDR10, vilket krävs för fallback till Dolby Vision.';
 
   @override
   String get transcodeAudioSampleRateNotSupported =>
-      'Audio sample rate is not supported.';
+      'Ljudsamplingsfrekvens stöds inte.';
 
   @override
   String get transcodeAudioBitDepthNotSupported =>
-      'Audio bit depth is not supported.';
+      'Ljudets bitdjup stöds inte.';
 
   @override
   String get transcodeRefFramesNotSupported =>
-      'Video reference frames exceed player limits.';
+      'Antalet referensramar i videon överskrider spelarens gränser.';
 
   @override
   String get transcodeAnamorphicVideoNotSupported =>
-      'Anamorphic video is not supported.';
+      'Anamorfisk video stöds inte.';
 
   @override
   String get transcodeInterlacedVideoNotSupported =>
-      'Interlaced video is not supported.';
+      'Interlaced-video stöds inte.';
 
   @override
   String get transcodeSecondaryAudioNotSupported =>
-      'Secondary audio stream requires transcoding.';
+      'Den sekundära ljudströmmen måste omkodas.';
 
   @override
   String get transcodeDirectPlayError =>
-      'Direct play is not supported for this media format.';
+      'Direktuppspelning stöds inte för detta medieformat.';
 
   @override
-  String get sortServerOrder => 'Server Order';
+  String get sortServerOrder => 'Serverbeställning';
 
   @override
   String get sortAlphabetical => 'Alfabetisk';
@@ -15444,7 +15466,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String sortCurrent(String option) {
-    return 'Sort: $option';
+    return 'Sortera: $option';
   }
 
   @override
@@ -15539,28 +15561,29 @@ class AppLocalizationsSv extends AppLocalizations {
       'IMDb Högst betygsatta engelskspråkiga filmer';
 
   @override
-  String get addToWatchlist => 'Add to Watchlist';
+  String get addToWatchlist => 'Lägg till i bevakningslistan';
 
   @override
-  String get removeFromWatchlist => 'Remove from Watchlist';
+  String get removeFromWatchlist => 'Ta bort från bevakningslistan';
 
   @override
-  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
+  String get watchlistUpdateFailed =>
+      'Det gick inte att uppdatera bevakningslistan';
 
   @override
-  String get adminSearchParameters => 'Search Parameters';
+  String get adminSearchParameters => 'Sökparametrar';
 
   @override
-  String get adminCurrentMetadata => 'Current Metadata';
+  String get adminCurrentMetadata => 'Aktuella metadata';
 
   @override
-  String get adminLabelYear => 'Year';
+  String get adminLabelYear => 'År';
 
   @override
-  String get adminReplaceImages => 'Replace existing images';
+  String get adminReplaceImages => 'Ersätt befintliga bilder';
 
   @override
-  String get adminBackToSearch => 'Back to Search Criteria';
+  String get adminBackToSearch => 'Tillbaka till sökkriterierna';
 
   @override
   String get grouping => 'Gruppering';
@@ -15575,7 +15598,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playlistTypeVideo => 'Video';
 
   @override
-  String get playlistTypeMusicVideo => 'Music Video';
+  String get playlistTypeMusicVideo => 'Musikvideo';
 
   @override
   String get playlistTypeAudio => 'Audio';
@@ -15596,7 +15619,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get videoPlaylistsSection => 'Spellistor (video)';
 
   @override
-  String get musicVideoPlaylistsSection => 'Music Video Playlists';
+  String get musicVideoPlaylistsSection => 'Spellistor med musikvideor';
 
   @override
   String get audioPlaylistsSection => 'Spellistor (audio)';
@@ -15614,61 +15637,61 @@ class AppLocalizationsSv extends AppLocalizations {
   String get mixedPlaylistsSection => 'Spellistor (blandat)';
 
   @override
-  String get currentTime => 'Current Time';
+  String get currentTime => 'Aktuell tid';
 
   @override
-  String get playbackTimeDisplay => 'Progress Bar Time';
+  String get playbackTimeDisplay => 'Tid för förloppsindikator';
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Choose which time labels appear around the playback progress bar.';
+      'Välj vilka tidsmarkeringar som ska visas runt uppspelningsindikatorn.';
 
   @override
-  String get playbackTimeTotal => 'Total duration';
+  String get playbackTimeTotal => 'Total varaktighet';
 
   @override
-  String get playbackTimeRemaining => 'Time remaining';
+  String get playbackTimeRemaining => 'Återstående tid';
 
   @override
-  String get playbackTimeEndsAt => 'Ends at';
+  String get playbackTimeEndsAt => 'Slutar vid';
 
   @override
-  String get playbackTimeElapsed => 'Time elapsed';
+  String get playbackTimeElapsed => 'Förfluten tid';
 
   @override
-  String get playbackTimeVideoSection => 'Video Player';
+  String get playbackTimeVideoSection => 'Videospelare';
 
   @override
-  String get playbackTimeMusicSection => 'Music Player';
+  String get playbackTimeMusicSection => 'Musikspelare';
 
   @override
   String get playbackTimeSlotDescription =>
-      'Choose what is shown here, or hide it.';
+      'Välj vad som ska visas här, eller dölj det.';
 
   @override
-  String get playbackTimeAboveBarLeft => 'Above bar, left';
+  String get playbackTimeAboveBarLeft => 'Ovanför stapeln, till vänster';
 
   @override
-  String get playbackTimeAboveBarCenter => 'Above bar, center';
+  String get playbackTimeAboveBarCenter => 'Ovanför stapeln, i mitten';
 
   @override
-  String get playbackTimeAboveBarRight => 'Above bar, right';
+  String get playbackTimeAboveBarRight => 'Ovanför stapeln, till höger';
 
   @override
-  String get playbackTimeBelowBarLeft => 'Below bar, left';
+  String get playbackTimeBelowBarLeft => 'Under stapeln, till vänster';
 
   @override
-  String get playbackTimeBelowBarCenter => 'Below bar, center';
+  String get playbackTimeBelowBarCenter => 'Under stapeln, i mitten';
 
   @override
-  String get playbackTimeBelowBarRight => 'Below bar, right';
+  String get playbackTimeBelowBarRight => 'Under stapeln, till höger';
 
   @override
   String get settingsMusicPlaybackTimeDescription =>
-      'Choose what is shown on the right side of the music progress bar.';
+      'Välj vad som ska visas till höger om musikens förloppsindikator.';
 
   @override
-  String get groupByTitle => 'Group By';
+  String get groupByTitle => 'Gruppera efter';
 
   @override
   String get groupByDecade => 'Årtionde';
@@ -15680,22 +15703,22 @@ class AppLocalizationsSv extends AppLocalizations {
   String get groupByStudio => 'Studio';
 
   @override
-  String get showAlphabeticalFilters => 'Show Alphabet';
+  String get showAlphabeticalFilters => 'Visa alfabetet';
 
   @override
-  String get libraryFolderView => 'Folder View';
+  String get libraryFolderView => 'Mappvy';
 
   @override
-  String get personalRatingStyle => 'Personal Rating Style';
+  String get personalRatingStyle => 'Personlig betygsättningsstil';
 
   @override
-  String get personalRatingThumbs => 'Like / dislike';
+  String get personalRatingThumbs => 'Gilla / ogilla';
 
   @override
   String get personalRatingStars => '5 stjärnor';
 
   @override
-  String get personalRatingNumeric => 'Numeric score out of 10';
+  String get personalRatingNumeric => 'Betyg på en skala från 1 till 10';
 
   @override
   String get personalRatingIntervals => 'Rating Intervals';
@@ -15710,7 +15733,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get personalRatingIntervalQuarter => 'Quarter (0.25)';
 
   @override
-  String get rate => 'Rate';
+  String get rate => 'Betyg';
 
   @override
   String get like => 'Gilla';
@@ -15719,16 +15742,16 @@ class AppLocalizationsSv extends AppLocalizations {
   String get dislike => 'Ogilla';
 
   @override
-  String get personalRatingClear => 'Clear rating';
+  String get personalRatingClear => 'Tydligt betyg';
 
   @override
-  String get personalRatingRated => 'Rated';
+  String get personalRatingRated => 'Betyg';
 
   @override
   String get personalRatingMine => 'Mitt betyg';
 
   @override
-  String get personalRatingSaveFailed => 'Could not save rating';
+  String get personalRatingSaveFailed => 'Det gick inte att spara betyget';
 
   @override
   String get increase => 'Öka';
@@ -15747,10 +15770,10 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get filterInProgress => 'In Progress';
+  String get filterInProgress => 'Pågår';
 
   @override
-  String get filterUnreleased => 'Unreleased';
+  String get filterUnreleased => 'Ej släppt';
 
   @override
   String get filterTrailers => 'Trailers';
@@ -15759,10 +15782,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get filterExtras => 'Extramaterial';
 
   @override
-  String get filterThemeSongs => 'Theme Songs';
+  String get filterThemeSongs => 'Temasånger';
 
   @override
-  String get filterThemeVideos => 'Theme Videos';
+  String get filterThemeVideos => 'Temavideor';
 
   @override
   String get source => 'Källa';
@@ -15771,25 +15794,25 @@ class AppLocalizationsSv extends AppLocalizations {
   String get years => 'Årtal';
 
   @override
-  String get audioLanguage => 'Audio Language';
+  String get audioLanguage => 'Ljudspråk';
 
   @override
-  String get subtitleLanguage => 'Subtitle Language';
+  String get subtitleLanguage => 'Språk på undertexterna';
 
   @override
-  String get clearFilters => 'Clear Filters';
+  String get clearFilters => 'Rensa filter';
 
   @override
-  String get seerrShortcutsRow => 'Seerr Browse';
+  String get seerrShortcutsRow => 'Seerr Bläddra';
 
   @override
-  String get seerrReleased => 'Released';
+  String get seerrReleased => 'Släppt';
 
   @override
-  String get seerrMinRating => 'Minimum Rating';
+  String get seerrMinRating => 'Lägsta betyg';
 
   @override
-  String get seerrMinVotes => 'Minimum Votes';
+  String get seerrMinVotes => 'Minsta antal röster';
 
   @override
   String get seerrOriginalLanguage => 'Originalspråk';
@@ -15798,122 +15821,170 @@ class AppLocalizationsSv extends AppLocalizations {
   String get seerrRuntime => 'Speltid';
 
   @override
-  String get subtitleHdrSeparate => 'Separate HDR Style';
+  String get subtitleHdrSeparate => 'Separat HDR-stil';
 
   @override
   String get subtitleHdrSeparateSubtitle =>
-      'White is much brighter in HDR than in SDR, so a dimmer style here avoids the glare';
+      'Vitt är betydligt ljusare i HDR än i SDR, så en mörkare inställning här förhindrar bländning';
 
   @override
-  String get subtitleBold => 'Bold Text';
+  String get subtitleBold => 'Fet text';
 
   @override
-  String get subtitleStrokeWidth => 'Text Stroke Width';
+  String get subtitleStrokeWidth => 'Textens streckbredd';
 
   @override
-  String get subtitleFont => 'Font';
+  String get subtitleFont => 'Teckensnitt';
 
   @override
   String get subtitleFontDescription =>
-      'Fonts are downloaded from Google Fonts the first time you pick them';
+      'Teckensnitt hämtas från Google Fonts första gången du väljer dem';
 
   @override
   String subtitleFontDownloadFailed(String font) {
-    return 'Couldn\'t download $font';
+    return 'Det gick inte att ladda ner $font';
   }
 
   @override
-  String get subtitleShadow => 'Text Shadow';
+  String get subtitleShadow => 'Textskugga';
 
   @override
-  String get subtitleShadowIntensity => 'Shadow Intensity';
+  String get subtitleShadowIntensity => 'Skuggintensitet';
 
   @override
-  String get subtitleShadowOffset => 'Shadow Offset';
+  String get subtitleShadowOffset => 'Skuggförskjutning';
 
   @override
-  String get subtitleShadowBlur => 'Shadow Blur';
+  String get subtitleShadowBlur => 'Skuggosuddighet';
 
   @override
-  String get scrollSensitivity => 'Scroll Sensitivity';
+  String get scrollSensitivity => 'Rullningskänslighet';
 
   @override
   String get scrollSensitivitySubtitle =>
-      'How far one mouse wheel notch scrolls';
+      'Hur långt man bläddrar per steg på mushjulet';
 
   @override
-  String get mediaDetailsAndSpoilers => 'Media Details and Spoilers';
+  String get mediaDetailsAndSpoilers => 'Information om medier och spoilers';
 
   @override
-  String get openTrailersExternally => 'Open Trailers in External App';
+  String get openTrailersExternally => 'Öppna trailrar i en extern app';
 
   @override
   String get openTrailersExternallySubtitle =>
-      'Trailers open in the YouTube app or browser instead of the built-in player';
+      'Trailers öppnas i YouTube-appen eller i webbläsaren istället för i den inbyggda spelaren';
 
   @override
-  String get hideDetailsMediaDescription => 'Hide Media Description';
+  String get hideDetailsMediaDescription => 'Dölj mediebeskrivningen';
 
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
-      'Hide the movie or episode descriptive text.';
+      'Dölj beskrivningen av filmen eller avsnittet.';
 
   @override
-  String get detailUseSeriesThumbnails => 'Use Series Thumbnails';
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
+
+  @override
+  String get detailUseSeriesThumbnails => 'Använd miniatyrbilder för serier';
 
   @override
   String get detailUseSeriesThumbnailsSubtitle =>
-      'Replace all thumbnails on Classic details page with series thumbnail';
+      'Ersätt alla miniatyrbilder på detaljsidan i Classic-läget med miniatyrbilder för serierl';
 
   @override
-  String get hideHomeMediaDescription => 'Hide Media Description';
+  String get hideHomeMediaDescription => 'Dölj mediebeskrivningen';
 
   @override
   String get hideHomeMediaDescriptionSubtitle =>
-      'Hide the movie or episode descriptive text.';
+      'Dölj beskrivningen av filmen eller avsnittet.';
 
   @override
-  String get hideHomeWatchProgress => 'Hide Watch Progress';
+  String get hideHomeWatchProgress => 'Dölj framstegsindikatorn';
 
   @override
   String get hideHomeWatchProgressSubtitle =>
-      'Hide the progress bar on posters you\'ve started watching.';
+      'Dölj förloppsindikatorn på affischer som du har börjat titta på.';
 
   @override
-  String get hideHomeUnwatchedCount => 'Hide Unwatched Count';
+  String get hideHomeUnwatchedCount => 'Dölj antalet icke-visade';
 
   @override
   String get hideHomeUnwatchedCountSubtitle =>
-      'Hide the badge showing how many episodes are left to watch.';
+      'Dölj ikonen som visar hur många avsnitt som återstår att titta på.';
 
   @override
-  String get continueWatchingAndNextUpHeader => 'Continue Watching and Next Up';
+  String get continueWatchingAndNextUpHeader =>
+      'Fortsätt titta och Nästa avsnitt';
 
   @override
-  String get setupSkip => 'Skip setup';
+  String get setupSkip => 'Hoppa över installationen';
 
   @override
-  String get setupNavbarQuestion => 'Where should navigation go?';
+  String get setupNavbarQuestion => 'Var ska navigeringsknappen placeras?';
 
   @override
   String get setupMediaBarQuestion =>
-      'How should the top of your Home screen look?';
+      'Hur ska den övre delen av din startskärm se ut?';
 
   @override
-  String get setupHomeRowsQuestion => 'How should your rows look?';
+  String get setupHomeRowsQuestion => 'Hur ska dina rader se ut?';
 
   @override
   String get setupDetailQuestion =>
-      'How should a movie or show look when you open it?';
+      'Hur ska en film eller en serie se ut när man öppnar den?';
 
   @override
-  String get setupTourQuestion => 'You\'re set. Here\'s what else is in here.';
+  String get setupTourQuestion =>
+      'Nu är du klar. Här är vad mer som finns här inne.';
 
   @override
-  String get setupPlaybackLanguages => 'Playback languages';
+  String get setupPlaybackLanguages => 'Språk för uppspelning';
 
   @override
-  String get setupOptional => 'Optional';
+  String get setupOptional => 'Valfritt';
 
   @override
   String get setupStyleClassic => 'Klassisk';
@@ -15922,147 +15993,150 @@ class AppLocalizationsSv extends AppLocalizations {
   String get setupStyleModern => 'Modern';
 
   @override
-  String get setupRowsClassicHint => 'Compact. More rows on screen at once.';
+  String get setupRowsClassicHint =>
+      'Kompakt. Fler rader syns på skärmen samtidigt.';
 
   @override
-  String get setupRowsModernHint => 'Larger cards with titles underneath.';
+  String get setupRowsModernHint => 'Större kort med rubriker under.';
 
   @override
   String get setupRowsCarouselHint =>
-      'Posters with a large details panel underneath.';
+      'Affischer med en stor informationsruta längst ner.';
 
   @override
-  String get setupDetailClassicHint => 'Everything centred in one stack.';
+  String get setupDetailClassicHint => 'Allt samlat i en enda stapel.';
 
   @override
   String get setupDetailModernHint =>
-      'Cinematic, with tabs for cast and extras.';
+      'Filmisk, med flikar för skådespelare och statister.';
 
   @override
   String get setupStyleSpotlight => 'Spotlight';
 
   @override
   String get setupDetailSpotlightHint =>
-      'Hero-first, with pop-up cards for cast and extras.';
+      'Hjälten i fokus, med popup-kort för skådespelare och statister.';
 
   @override
   String get setupStyleNouveau => 'Nouveau';
 
   @override
   String get setupDetailNouveauHint =>
-      'Full-screen, with sections stacked instead of tabs.';
+      'Helskärm, där avsnitten visas staplade istället för som flikar.';
 
   @override
   String get setupStyleMinimalist => 'Minimalistisk';
 
   @override
   String get setupDetailMinimalistHint =>
-      'Artwork, one play button and the episodes.';
+      'Omslagsbild, en uppspelningsknapp och avsnitten.';
 
   @override
   String get setupStyleStage => 'Stage';
 
   @override
   String get setupDetailStageHint =>
-      'The poster up front, with play under it and the details beside it.';
+      'Affischen längst fram, med programmet under och informationen bredvid.';
 
   @override
   String get setupStylePremiere => 'Premiär';
 
   @override
   String get setupDetailPremiereHint =>
-      'The title centered over a full screen backdrop, with everything else down the page.';
+      'Rubriken var centrerad mot en bakgrund som sträckte sig över hela skärmen, medan allt annat var placerat längre ner på sidan.';
 
   @override
   String get setupStyleQuickLook => 'Översikt';
 
   @override
   String get setupDetailQuickLookHint =>
-      'A drawer over the screen you were on, with play and the basics, and the full page a press away.';
+      'En meny ovanför den skärm du befann dig på, med uppspelningsknappen och de grundläggande funktionerna, och hela sidan bara ett tryck bort.';
 
   @override
   String get setupStyleFrost => 'Frost';
 
   @override
   String get setupDetailFrostHint =>
-      'The title in a glass window over its blurred art, with tabs under the buttons.';
+      'Titeln i ett glasfönster ovanför den suddiga konstbilden, med flikar under knapparna.';
 
   @override
-  String get setupNavbarStyleQuestion => 'How should the bottom bar look?';
+  String get setupNavbarStyleQuestion => 'Hur ska den nedre fältet se ut?';
 
   @override
   String get setupNavbarStyleDockHint =>
-      'A floating pill with labels under every tab.';
+      'En flytande tablett med etiketter under varje flik.';
 
   @override
   String get setupNavbarStyleSplitHint =>
-      'Search gets its own button, and the bar shrinks while you scroll.';
+      'Sökfunktionen får en egen knapp, och fältet krymper när du bläddrar.';
 
   @override
   String get setupNavbarStyleStripHint =>
-      'A full-width bar along the bottom edge.';
+      'En bar som sträcker sig över hela bredden längs den nedre kanten.';
 
   @override
-  String get setupPickALook => 'Pick a look';
+  String get setupPickALook => 'Välj en stil';
 
   @override
-  String get setupTourMoreHeader => 'There is more waiting in Settings';
+  String get setupTourMoreHeader =>
+      'Det finns mer att upptäcka under Inställningar';
 
   @override
-  String get setupTourBulletRequests => 'Seerr requests';
+  String get setupTourBulletRequests => 'Seerr-förfrågningar';
 
   @override
-  String get setupTourBulletSyncPlay => 'SyncPlay watch parties';
+  String get setupTourBulletSyncPlay => 'SyncPlay-tittarfester';
 
   @override
-  String get setupTourBulletThemes => 'Custom themes';
+  String get setupTourBulletThemes => 'Anpassade teman';
 
   @override
-  String get setupTourBulletDownloads => 'Offline downloads';
+  String get setupTourBulletDownloads => 'Nedladdningar offline';
 
   @override
-  String get setupTourBulletMore => 'And plenty more';
+  String get setupTourBulletMore => 'Och mycket mer';
 
   @override
   String setupStepOf(int current, int total) {
-    return 'Step $current of $total';
+    return 'Steg $current av $total';
   }
 
   @override
-  String get setupCurrent => 'Current';
+  String get setupCurrent => 'Aktuell';
 
   @override
-  String get setupMoonbaseTitle => 'Add Moonbase to your server';
+  String get setupMoonbaseTitle => 'Lägg till Moonbase på din server';
 
   @override
   String get setupMoonbaseHint =>
-      'A free server plugin that unlocks more of Moonfin';
+      'Ett kostnadsfritt serverplugin som ger tillgång till fler funktioner i Moonfin';
 
   @override
   String get setupMoonbaseIntro =>
-      'Moonbase is free and runs on your server. With it, Moonfin gets:';
+      'Moonbase är gratis och körs på din server. Med det får Moonfin:';
 
   @override
   String get setupMoonbaseAskAdmin =>
-      'Only a server admin can install it. Send them this link.';
+      'Endast en serveradministratör kan installera det. Skicka den här länken till dem.';
 
   @override
   String get setupMoonbaseManualSteps =>
-      'It takes a few steps on your server to install. They\'re all at this link.';
+      'Det krävs några steg på din server för att installera programmet. Du hittar dem alla via den här länken.';
 
   @override
-  String get setupMoonbaseInstalling => 'Installing Moonbase...';
+  String get setupMoonbaseInstalling => 'Installerar Moonbase...';
 
   @override
   String get setupMoonbaseInstalled =>
-      'Moonbase is installed. It turns on when the server restarts, which stops anything playing right now.';
+      'Moonbase är installerat. Det startas när servern startas om, vilket gör att allt som spelas upp just nu avbryts.';
 
   @override
   String get setupMoonbaseRestarting =>
-      'The server is restarting. Moonbase turns on once it\'s back.';
+      'Servern startas om. Moonbase startas när den är igång igen.';
 
   @override
-  String get moonbaseFeatureSync => 'Settings synced across your devices';
+  String get moonbaseFeatureSync =>
+      'Inställningarna synkroniseras mellan dina enheter';
 
   @override
   String get moonbaseFeatureRatings => 'Extra ratings and TMDB reviews';
@@ -16132,7 +16206,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get runSetupAgain => 'Run setup again';
 
   @override
-  String get serverMessages => 'Messages';
+  String get serverMessages => 'Meddelanden';
 
   @override
   String get serverMessagesEmpty => 'No messages from your server yet';
@@ -17460,6 +17534,10 @@ class AppLocalizationsSv extends AppLocalizations {
       'Playback was ended on the Silo server.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'PIN for $name';
   }
@@ -17675,7 +17753,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get libraryZToA => 'Z to A';
 
   @override
-  String get musicSortYear => 'Year';
+  String get musicSortYear => 'År';
 
   @override
   String get musicFilter => 'Filter';

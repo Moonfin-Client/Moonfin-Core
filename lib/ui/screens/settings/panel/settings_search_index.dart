@@ -1832,6 +1832,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.av1SoftwareUhdDirectPlaySubtitle,
         keywords: ['av1', '4k', 'uhd', 'software decode'],
       ),
+    if (PlatformDetection.isApple || PlatformDetection.isAppleTV) ...[
+      quality.leaf(
+        'upscale_low_resolution_video',
+        l10n.upscaleLowResolutionVideo,
+        subtitle: l10n.upscaleLowResolutionVideoSubtitle,
+        keywords: ['upscale', 'sd', '720p', 'sharpen', 'super resolution'],
+      ),
+      quality.leaf(
+        'upscale_full_hd_video',
+        l10n.upscaleFullHdVideo,
+        subtitle: l10n.upscaleFullHdVideoSubtitle,
+        keywords: ['upscale', '1080p', 'full hd', '4k', 'sharpen', 'lanczos'],
+      ),
+    ],
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
       quality.leaf(
         'exoplayer_prefer_ffmpeg',

@@ -13021,6 +13021,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
   String get cadenceTipTitle => 'Turn On Match Frame Rate';
 
   @override
@@ -15696,6 +15710,52 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hide the movie or episode descriptive text.';
 
   @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
+
+  @override
   String get detailUseSeriesThumbnails => 'Use Series Thumbnails';
 
   @override
@@ -17295,6 +17355,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get siloPlaybackEndedOnServer =>
       'Playback was ended on the Silo server.';
+
+  @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
 
   @override
   String siloPinTitle(String name) {
@@ -30643,6 +30707,9 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get setupTourBulletMore => 'And plenty more';
 
   @override
+  String get moonbaseFeatureRows => 'Custom rows from your favourite lists';
+
+  @override
   String get runSetupAgain => 'Run setup again';
 
   @override
@@ -31065,6 +31132,10 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get musicFilter => 'Filter';
 
   @override
+  String get musicMixRediscoverSubtitle =>
+      'Favourites you haven\'t played lately';
+
+  @override
   String get settingsPreviewSaved => 'Saved';
 
   @override
@@ -31072,6 +31143,10 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get calendarSettingsScope => 'Show';
+
+  @override
+  String get calendarSettingsScopeDescription =>
+      'My shows keeps the series you favourited or started watching';
 
   @override
   String get calendarSettingsSpecials => 'Specials';
@@ -31099,4 +31174,25 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get sidebarStyleClassic => 'Classic';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favourites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites =>
+      'Family Favourites';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favourites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favourites';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favourites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites =>
+      'Valentine\'s Favourites';
 }

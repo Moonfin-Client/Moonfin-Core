@@ -138,6 +138,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         case "showMessage":
             playerVC?.presentMessage(
                 (args["message"] as? String) ?? "",
+                title: args["title"] as? String,
                 actionLabel: args["actionLabel"] as? String,
                 closeLabel: (args["closeLabel"] as? String) ?? "OK"
             ) { [weak self] in
@@ -652,7 +653,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
                 secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args),
                 cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
-                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args)))
+                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args),
+                upscaleLowResolution: (args["upscaleLowResolution"] as? Bool) ?? false,
+                upscaleFullHD: (args["upscaleFullHD"] as? Bool) ?? false))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)
