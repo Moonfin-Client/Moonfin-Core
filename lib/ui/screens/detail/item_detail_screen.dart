@@ -9875,6 +9875,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               // skipped episode or a special counts as unwatched. A Next Up
               // marked played is stale until its refetch lands, so go on from
               // the first unwatched episode after it.
+              final shownNextUp = viewModel.nextUp;
               var nextUp = shownNextUp;
               if (shownNextUp != null && shownNextUp.isPlayed) {
                 final at = allEpisodes.indexWhere(
