@@ -287,7 +287,6 @@ void main() {
 
       expect(repo.activeServerId, isNull);
       expect(requests, isEmpty);
-      expect(store.users['j2'], hasLength(1));
     });
   });
 

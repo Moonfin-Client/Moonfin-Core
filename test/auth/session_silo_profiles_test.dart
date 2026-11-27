@@ -265,7 +265,7 @@ void main() {
     });
 
     test('removing the signed-in server keeps a sibling profile\'s login '
-        'for the removal to end', () async {
+        'out of the sign-out', () async {
       await store.putUser(_profile('brady'));
       await store.putUser(_profile('kid'));
       repo.setActiveSessionForTest('s1', 'brady');

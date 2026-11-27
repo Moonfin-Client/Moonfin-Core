@@ -989,12 +989,12 @@ class SessionRepository {
         ? null
         : _clientFactory.getClientIfExists(serverId);
     // A login another saved server holds stays valid, so that entry stays
-    // signed in.
-    if (!tokenKnownInvalid &&
-        !keepsSiloLogin &&
-        !(serverId != null &&
-            userId != null &&
-            _loginHeldElsewhere(serverId, userId))) {
+    // signed in. Checked only when a logout would be sent.
+    bool heldElsewhere() =>
+        serverId != null &&
+        userId != null &&
+        _loginHeldElsewhere(serverId, userId);
+    if (!tokenKnownInvalid && !keepsSiloLogin && !heldElsewhere()) {
       try {
         // An unreachable server doesn't hold the sign-out; past the wait the
         // login may stay valid there.

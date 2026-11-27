@@ -281,6 +281,9 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
+  /// Removes [serverId] and its saved users from this device only. Their
+  /// logins stay valid on the server: SessionRepository.removeServer ends
+  /// them, so removing a server the user had signed in to goes through it.
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);
     _servers.removeWhere((s) => s.id == serverId);
