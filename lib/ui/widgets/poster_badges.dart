@@ -249,6 +249,12 @@ class _BadgePill extends StatelessWidget {
     'record_voice_over': Icons.record_voice_over,
     'star': Icons.star,
     'check_circle': Icons.check_circle,
+    'person': Icons.person,
+    'family_restroom': Icons.family_restroom,
+    'child_care': Icons.child_care,
+    'escalator_warning': Icons.escalator_warning,
+    '18_up_rating': Icons.eighteen_up_rating,
+    'warning': Icons.warning,
   };
 
   static const _sizes = {
