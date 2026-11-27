@@ -4667,9 +4667,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         if (overview.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: widget.prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: widget.prefs,
+              isSeerr: _vm.isSeerrOnly,
             )) ...[
           if (!hideTitleAndLogo || tagline.isNotEmpty)
             const SizedBox(height: 8),
@@ -5017,9 +5016,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final progress = (episode.playedPercentage ?? 0) / 100.0;
     final hideOverview = hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: widget.prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: widget.prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
     return UpNextCard(
       label: combinedLabel,

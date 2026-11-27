@@ -353,7 +353,8 @@ mixin DetailPage<T extends StatefulWidget> on State<T> {
     final overview = cleanOverview(item.overview?.trim());
     final hidden = hidesMediaDescription(
       itemType: item.type,
-      hideMediaDescription: pagePrefs.effectiveHideDetailsMediaDescription,
+      prefs: pagePrefs,
+      isSeerr: pageViewModel.isSeerrOnly,
     );
     return overview.isEmpty || hidden ? null : overview;
   }

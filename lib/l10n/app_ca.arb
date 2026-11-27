@@ -19285,5 +19285,112 @@
     "siloSectionTrendingThisWeek": "Tendències d'aquesta setmana",
     "@siloSectionTrendingThisWeek": {
         "description": "Title of a row a Silo server offers for Home"
+    },
+    "detailShowFullDate": "Mostra la data completa",
+    "@detailShowFullDate": {
+        "description": "Label for the detail screen setting to show full release or air dates instead of only the year"
+    },
+    "detailShowFullDateSubtitle": "Mostra la data completa d'estrena o d'emissió en lloc de només l'any a les pàgines de detalls",
+    "@detailShowFullDateSubtitle": {
+        "description": "Explanation under the show full date setting"
+    },
+    "showPlaybackStats": "Mostra les estadístiques de reproducció",
+    "@showPlaybackStats": {
+        "description": "Button in the playback information sheet that shows live network and buffer stats with small graphs over the video"
+    },
+    "hidePlaybackStats": "Amaga les estadístiques de reproducció",
+    "@hidePlaybackStats": {
+        "description": "Button in the playback information sheet that hides the live network and buffer stats over the video"
+    },
+    "playbackStatsNetworkActivity": "Activitat de xarxa",
+    "@playbackStatsNetworkActivity": {
+        "description": "Row in the playback stats over the video: how much data arrived in the last second, like 12.4 Mbps"
+    },
+    "playbackStatsBufferHealth": "Estat del búfer",
+    "@playbackStatsBufferHealth": {
+        "description": "Row in the playback stats over the video: seconds of video loaded ahead of the play position, like 95.3 / 120 s"
+    },
+    "playbackStatsBufferMemory": "Memòria del búfer",
+    "@playbackStatsBufferMemory": {
+        "description": "Row in the playback stats over the video: memory the loaded video uses out of the most it may use, like 210 / 384 MB"
+    },
+    "playbackStatsRebuffers": "Recàrregues del búfer",
+    "@playbackStatsRebuffers": {
+        "description": "Row in the playback stats over the video: how many times playback stopped to load more, not counting seeks"
+    },
+    "removeRequest": "Elimina la sol·licitud",
+    "@removeRequest": {
+        "description": "Button and dialog title for deleting a failed Silo request"
+    },
+    "removeFailedRequestForTitle": "La teva sol·licitud fallida de «{title}» s'eliminarà. La pots tornar a sol·licitar més tard.",
+    "@removeFailedRequestForTitle": {
+        "description": "Confirmation message before deleting a failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestRefused": "La sol·licitud no s'ha eliminat. S'ha tornat a provar o n'ha arribat una part.",
+    "@removeFailedRequestRefused": {
+        "description": "Snackbar when Silo refuses to delete a failed request because it changed"
+    },
+    "removeOthersFailedRequestForTitle": "La sol·licitud fallida de «{title}» feta per {name} s'eliminarà. La podrà tornar a sol·licitar més tard.",
+    "@removeOthersFailedRequestForTitle": {
+        "description": "Confirmation message before an admin deletes another user's failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestError": "No s'ha pogut eliminar la sol·licitud. Torna-ho a provar.",
+    "@removeFailedRequestError": {
+        "description": "Snackbar when deleting a failed Silo request fails for a reason other than the request changing"
+    },
+    "personalRatingIntervals": "Intervals de valoració",
+    "@personalRatingIntervals": {
+        "description": "Selects the step granularity for personal ratings and their display precision."
+    },
+    "personalRatingIntervalWhole": "Enter (1)",
+    "@personalRatingIntervalWhole": {
+        "description": "Short label for whole-number personal rating steps."
+    },
+    "personalRatingIntervalHalf": "Mig (0,5)",
+    "@personalRatingIntervalHalf": {
+        "description": "Short label for half-step (0.5) personal rating intervals."
+    },
+    "personalRatingIntervalQuarter": "Quart (0,25)",
+    "@personalRatingIntervalQuarter": {
+        "description": "Short label for quarter-step (0.25) personal rating intervals."
+    },
+    "siloSectionBecauseYouEnjoy": "Perquè t'agraden {genres}",
+    "@siloSectionBecauseYouEnjoy": {
+        "description": "Title of a row a Silo server offers for Home. {genres}: one or more genre names joined by the server, not translated",
+        "placeholders": {
+            "genres": {
+                "type": "String"
+            }
+        }
+    },
+    "siloSectionSeasonalEasterFaith": "Històries de Pasqua",
+    "@siloSectionSeasonalEasterFaith": {
+        "description": "Title of a seasonal row on a Silo server's Home (easter)"
+    },
+    "siloSectionSeasonalNewYearFavorites": "Pel·lícules de Cap d'Any",
+    "@siloSectionSeasonalNewYearFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (newYear)"
+    },
+    "siloSectionTopGenre": "El millor de {genre}",
+    "@siloSectionTopGenre": {
+        "description": "Title of a row a Silo server offers for Home. {genre}: a genre name as the server sends it, not translated",
+        "placeholders": {
+            "genre": {
+                "type": "String"
+            }
+        }
     }
 }

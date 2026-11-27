@@ -14587,6 +14587,58 @@
   "@hideDetailsMediaDescriptionSubtitle": {
     "description": "Description for setting to hide media description on details page"
   },
+  "toggleMediaDescriptionVisibility": "Toggle Media Description Visibility",
+  "@toggleMediaDescriptionVisibility": {
+    "description": "Setting title to open media description visibility subpage"
+  },
+  "toggleMediaDescriptionVisibilityDescription": "Hide media descriptions from various detail pages.",
+  "@toggleMediaDescriptionVisibilityDescription": {
+    "description": "Setting description to open media description visibility subpage"
+  },
+  "mediaDescriptionVisibilityTitle": "Media Description Visibility",
+  "@mediaDescriptionVisibilityTitle": {
+    "description": "Title for the media description visibility settings screen"
+  },
+  "hideMediaDescriptionMovie": "Movie Pages",
+  "@hideMediaDescriptionMovie": {
+    "description": "Setting title to hide descriptions on movie pages"
+  },
+  "hideMediaDescriptionMovieSubtitle": "Hide descriptions on movie detail pages",
+  "@hideMediaDescriptionMovieSubtitle": {
+    "description": "Setting description to hide descriptions on movie detail pages"
+  },
+  "hideMediaDescriptionShow": "Show Pages",
+  "@hideMediaDescriptionShow": {
+    "description": "Setting title to hide descriptions on show pages"
+  },
+  "hideMediaDescriptionShowSubtitle": "Hide descriptions on TV show detail pages",
+  "@hideMediaDescriptionShowSubtitle": {
+    "description": "Setting description to hide descriptions on TV show detail pages"
+  },
+  "hideMediaDescriptionSeason": "Season Pages",
+  "@hideMediaDescriptionSeason": {
+    "description": "Setting title to hide descriptions on season pages"
+  },
+  "hideMediaDescriptionSeasonSubtitle": "Hide descriptions on season detail pages",
+  "@hideMediaDescriptionSeasonSubtitle": {
+    "description": "Setting description to hide descriptions on season detail pages"
+  },
+  "hideMediaDescriptionEpisode": "Episode Pages",
+  "@hideMediaDescriptionEpisode": {
+    "description": "Setting title to hide descriptions on episode pages"
+  },
+  "hideMediaDescriptionEpisodeSubtitle": "Hide descriptions on episode detail pages, season episode lists, and player drawer",
+  "@hideMediaDescriptionEpisodeSubtitle": {
+    "description": "Setting description to hide descriptions on episode detail pages, season episode lists, and player drawer"
+  },
+  "hideMediaDescriptionBoxSet": "Collection Pages",
+  "@hideMediaDescriptionBoxSet": {
+    "description": "Setting title to hide descriptions on collection pages"
+  },
+  "hideMediaDescriptionBoxSetSubtitle": "Hide descriptions on collection and box set pages",
+  "@hideMediaDescriptionBoxSetSubtitle": {
+    "description": "Setting description to hide descriptions on collection and box set pages"
+  },
   "detailUseSeriesThumbnails": "Use Series Thumbnails",
   "@detailUseSeriesThumbnails": {
     "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"

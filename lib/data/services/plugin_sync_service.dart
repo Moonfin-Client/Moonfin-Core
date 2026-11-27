@@ -2148,6 +2148,16 @@ class PluginSyncService extends ChangeNotifier {
     }
   }
 
+  /// An unset Movie or Episode toggle still follows the old single switch, so
+  /// sending its default would turn that off on the other devices.
+  bool _shouldExportSyncedField(SyncedField field) {
+    if (field.pref == UserPreferences.hideDetailsMediaDescriptionMovie ||
+        field.pref == UserPreferences.hideDetailsMediaDescriptionEpisode) {
+      return _prefs.containsPreference(field.pref);
+    }
+    return true;
+  }
+
   /// Serializes one table-driven field for the outgoing profile.
   dynamic _encodeSyncedField(SyncedField field) {
     switch (field.codec) {
@@ -2444,7 +2454,8 @@ class PluginSyncService extends ChangeNotifier {
       // Everything the field table describes. The bespoke entries below cover the
       // settings that need real logic rather than a straight codec.
       for (final field in syncedFields)
-        if (!field.receiveOnly) field.serverKey: _encodeSyncedField(field),
+        if (!field.receiveOnly && _shouldExportSyncedField(field))
+          field.serverKey: _encodeSyncedField(field),
       'sinceYouWatchedNumRows': _prefs.get(UserPreferences.sinceYouWatchedNumRows).value,
       'mediaBarEnabled': mediaBarEnabled,
       'mediaBarMode': mediaBarMode,
