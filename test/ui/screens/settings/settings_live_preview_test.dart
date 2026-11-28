@@ -1046,7 +1046,6 @@ void main() {
     setUp(() {
       debugDefaultTargetPlatformOverride = TargetPlatform.linux;
       PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-      usePreviewScreenOf(InterfaceLayout.desktop);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
       l10n = lookupAppLocalizations(const Locale('en'));
     });
@@ -3532,7 +3531,6 @@ void main() {
     }) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.linux;
       PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-      usePreviewScreenOf(InterfaceLayout.desktop);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.calendarStyle,

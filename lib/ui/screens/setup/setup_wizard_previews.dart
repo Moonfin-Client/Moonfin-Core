@@ -232,19 +232,19 @@ class SetupPreview extends StatelessWidget {
 }
 
 /// The logical size the preview screen is laid out at before being scaled
-/// down: the app's own window, so an iPad previews at iPad size and a resized
-/// desktop window at its own shape. Every measurement inside a preview is the
-/// real widget's measurement at this size, so the scaled result keeps the true
-/// proportions. A phone on its side keeps its upright screen, as it always
-/// has: the previews' landscape layouts are drawn for a tablet, desktop or TV
-/// and don't fit a phone's height. A TV gets the canvas TvUiScale lays every
-/// panel out on. With no window yet, a typical device of the interface stands
-/// in.
+/// down. Every measurement inside a preview is the real widget's measurement
+/// at this size, so the scaled result keeps the true proportions. A phone or
+/// tablet uses its own screen, so an iPad previews at iPad size. A phone on
+/// its side keeps its upright screen, since the previews' landscape layouts
+/// don't fit a phone's height. A TV gets the canvas TvUiScale lays every panel
+/// out on, and desktop and web a typical screen of their interface.
 Size _designSize() {
   if (PlatformDetection.useLeanbackUi) {
     return tvUiLogicalSize(const Size(1920, 1080));
   }
-  final screen = PlatformDetection.screenLogicalSize;
+  final screen = PlatformDetection.isMobile
+      ? PlatformDetection.screenLogicalSize
+      : null;
   if (screen != null && !screen.isEmpty) {
     if (PlatformDetection.useMobileUi &&
         !PlatformDetection.hasTabletSizedScreen(screen)) {

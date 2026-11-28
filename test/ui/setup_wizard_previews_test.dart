@@ -129,6 +129,21 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  testWidgets('desktop keeps its fixed screens whatever the window', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    usePreviewScreen(const Size(1920, 1080));
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    expect(setupPreviewSize(), const Size(1280, 800));
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 1280 / 800);
+
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    expect(setupPreviewSize(), const Size(390, 844));
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 844 / 390);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   group('a phone or tablet on its side', () {
     // iOS in the automatic layout, as an iPad or iPhone runs the app.
     void useDevice(Size screen) {
@@ -150,24 +165,6 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
-
-    testWidgets('the player previews the window web and desktop play in', (
-      tester,
-    ) async {
-      // The phone interface on a platform that doesn't lock playback
-      // sideways, as a phone browser or a narrow desktop window has it.
-      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
-      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
-      usePreviewScreen(const Size(844, 390));
-      // The other scenes stand the phone-sized window upright...
-      expect(setupPreviewSize(), const Size(390, 844));
-      // ...but playback fills it on its side.
-      expect(settingsPreviewAspect(SettingsPreviewScene.player), 844 / 390);
-
-      usePreviewScreen(const Size(390, 844));
-      expect(settingsPreviewAspect(SettingsPreviewScene.player), 390 / 844);
-      debugDefaultTargetPlatformOverride = null;
-    });
 
     testWidgets('a native phone previews the player on its side', (
       tester,
@@ -236,8 +233,8 @@ void main() {
       ) async {
         setPlatform();
         SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
-        // A TV lays out on the canvas TvUiScale gives every panel. A phone and
-        // a desktop lay out at the window's own size.
+        // A TV lays out on the canvas TvUiScale gives every panel. A phone
+        // lays out at its own screen and a desktop at a typical one.
         final canvas = switch (layout) {
           InterfaceLayout.tv => const Size(1150, 1150 * 1080 / 1920),
           InterfaceLayout.phone => const Size(390, 844),
