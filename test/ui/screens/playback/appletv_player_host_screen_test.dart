@@ -15,6 +15,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/ui/screens/playback/appletv_player_host_screen.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
+import 'package:moonfin/watch_party/silo_watch_party_manager.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../../../util/media_segment_fakes.dart';
@@ -38,6 +39,13 @@ class _SegmentClient extends Fake implements MediaServerClient {
 }
 
 class _EmptyImageApi extends Fake implements ImageApi {}
+
+class _InParty extends SiloWatchPartyManager {
+  _InParty(super.playbackManager);
+
+  @override
+  bool get controlsPlayback => true;
+}
 
 const _control = MethodChannel('moonfin/native_apple_player_control');
 const _events = MethodChannel('moonfin/native_apple_player_events');
@@ -191,6 +199,48 @@ void main() {
     expect(queue.currentIndex, 2);
     await send({'event': 'seek', 'positionMs': 13000, 'isForwardSkip': true});
     verify(() => manager.seekTo(const Duration(seconds: 13))).called(1);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('keeps the audio button in a Watch Party', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    final backend = NativeApplePlayerBackend(prefs);
+    addTearDown(backend.dispose);
+    GetIt.instance.registerSingleton<NativeApplePlayerBackend>(backend);
+    GetIt.instance.registerSingleton<SiloWatchPartyManager>(_InParty(manager));
+    when(() => manager.isOfflinePlayback).thenReturn(false);
+    when(() => manager.isTranscodeForced).thenReturn(false);
+
+    final calls = <MethodCall>[];
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(_control, (call) async {
+      calls.add(call);
+      return null;
+    });
+    messenger.setMockMethodCallHandler(_events, (_) async => null);
+    addTearDown(() {
+      messenger.setMockMethodCallHandler(_control, null);
+      messenger.setMockMethodCallHandler(_events, null);
+    });
+    queue.setQueue([
+      {'Id': 'movie', 'RunTimeTicks': 900000000},
+    ]);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const AppleTvPlayerHostScreen(),
+      ),
+    );
+    await tester.pump();
+
+    final metadata = calls.lastWhere((c) => c.method == 'setUiMetadata');
+    expect((metadata.arguments as Map)['osdButtons'], contains('audio'));
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpWidget(const SizedBox());
   });

@@ -1451,7 +1451,8 @@ class _TvAwareFieldState extends State<_TvAwareField> {
 /// The host's subtitles for everyone, as a button showing the choice. A
 /// member sees the choice. Members can still turn their own on or off in
 /// the player. Absent without Moonbase to keep the choice. Audio isn't
-/// offered: everyone hears the file's default track.
+/// offered here: everyone starts on the file's default track and can pick
+/// their own in the player.
 class _SubtitleButton extends StatelessWidget {
   const _SubtitleButton({
     required this.item,

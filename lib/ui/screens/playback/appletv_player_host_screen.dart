@@ -1468,11 +1468,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
   /// rather than reading an empty list as every button switched off.
   List<String>? _osdButtons() {
     try {
-      final ids = visibleOsdButtonIds(GetIt.instance<UserPreferences>());
-      // Everyone in a watch party hears the same track.
-      return _followingParty
-          ? ids.where((id) => id != OsdButton.audio.id).toList()
-          : ids;
+      return visibleOsdButtonIds(GetIt.instance<UserPreferences>());
     } catch (_) {
       return null;
     }

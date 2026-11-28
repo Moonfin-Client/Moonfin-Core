@@ -30,6 +30,7 @@ import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:moonfin/watch_party/silo_watch_party_manager.dart';
 
 import '../util/media_segment_fakes.dart';
 
@@ -138,6 +139,13 @@ class _Screensaver extends Fake implements ScreensaverController {
 }
 
 class _Lifecycle extends Fake implements PlaybackLifecycleHandler {}
+
+class _InParty extends SiloWatchPartyManager {
+  _InParty(super.playbackManager);
+
+  @override
+  bool get controlsPlayback => true;
+}
 
 class _Users extends Fake implements UserRepository {
   @override
@@ -1378,6 +1386,21 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Audio Track'), findsOneWidget);
 
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('keeps the audio button in a Watch Party', (tester) async {
+    GetIt.instance.registerSingleton<SiloWatchPartyManager>(_InParty(manager));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byIcon(Icons.audiotrack_outlined), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 

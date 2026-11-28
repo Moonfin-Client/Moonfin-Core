@@ -4191,7 +4191,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           }
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaAudioTrack:
-          if (event is KeyDownEvent && _watchParty?.controlsPlayback != true) {
+          if (event is KeyDownEvent) {
             _showTrackSelector(audio: true, closeKeys: {event.logicalKey});
           }
           return KeyEventResult.handled;
@@ -6375,8 +6375,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final subtitleButtonIcon = _hasSubtitleStreams
             ? Icons.subtitles_outlined
             : Icons.download_rounded;
-        // Everyone in a Watch Party hears the same track.
-        final showAudioButton = _watchParty?.controlsPlayback != true;
         final hidden = osdButtonLayout.hidden(_prefs);
         bool shows(OsdButton button) => !hidden.contains(button.id);
 
@@ -6468,7 +6466,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               extent: secondaryExtent,
               tooltip: l10n.subtitles,
             ),
-          if (showAudioButton && shows(OsdButton.audio))
+          if (shows(OsdButton.audio))
             OsdButton.audio: _controlButton(
               Icons.audiotrack_outlined,
               onPressed: () => _showTrackSelector(audio: true),
