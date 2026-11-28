@@ -4283,6 +4283,26 @@ class AppLocalizationsSi extends AppLocalizations {
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
 
   @override
+  String get settingsAudioPassthroughOutputIecTrueHd =>
+      'App packer for TrueHD only';
+
+  @override
+  String get settingsAudioPassthroughOutputIecTrueHdLabel =>
+      'App (TrueHD only)';
+
+  @override
+  String get settingsAudioPassthroughOutputPlatformHint =>
+      'Works with most TVs and receivers. Start here.';
+
+  @override
+  String get settingsAudioPassthroughOutputIecHint =>
+      'Try this if passthrough is silent or glitchy with Automatic.';
+
+  @override
+  String get settingsAudioPassthroughOutputIecTrueHdHint =>
+      'Try this if TrueHD plays without Atmos on Automatic, but other formats won\'t start with the app packer.';
+
+  @override
   String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
 
   @override

@@ -7552,6 +7552,36 @@ abstract class AppLocalizations {
   /// **'App (IEC)'**
   String get settingsAudioPassthroughOutputIecLabel;
 
+  /// Passthrough Output option where the app packs only TrueHD and the system handles every other format (Android TV, Media3 engine)
+  ///
+  /// In en, this message translates to:
+  /// **'App packer for TrueHD only'**
+  String get settingsAudioPassthroughOutputIecTrueHd;
+
+  /// Short value shown on the Passthrough Output setting row when the TrueHD-only app packer is selected
+  ///
+  /// In en, this message translates to:
+  /// **'App (TrueHD only)'**
+  String get settingsAudioPassthroughOutputIecTrueHdLabel;
+
+  /// Hint under the Automatic option in the Passthrough Output picker, saying when to use it
+  ///
+  /// In en, this message translates to:
+  /// **'Works with most TVs and receivers. Start here.'**
+  String get settingsAudioPassthroughOutputPlatformHint;
+
+  /// Hint under the App packer option in the Passthrough Output picker, saying when to use it
+  ///
+  /// In en, this message translates to:
+  /// **'Try this if passthrough is silent or glitchy with Automatic.'**
+  String get settingsAudioPassthroughOutputIecHint;
+
+  /// Hint under the TrueHD-only app packer option in the Passthrough Output picker, saying when to use it
+  ///
+  /// In en, this message translates to:
+  /// **'Try this if TrueHD plays without Atmos on Automatic, but other formats won\'t start with the app packer.'**
+  String get settingsAudioPassthroughOutputIecTrueHdHint;
+
   /// Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently
   ///
   /// In en, this message translates to:
