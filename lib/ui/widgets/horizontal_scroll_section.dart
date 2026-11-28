@@ -36,47 +36,31 @@ class HorizontalScrollSection extends StatefulWidget {
 
 class HorizontalScrollControls extends StatelessWidget {
   final ScrollController controller;
-  final double step;
   final VoidCallback? onScrollPastStart;
   final VoidCallback? onScrollPastEnd;
 
-  static const defaultStep = 480.0;
+  static const _scrollStep = 480.0;
   static const _scrollDuration = Duration(milliseconds: 380);
   static const _scrollCurve = Curves.easeInOut;
 
   const HorizontalScrollControls({
     super.key,
     required this.controller,
-    this.step = defaultStep,
     this.onScrollPastStart,
     this.onScrollPastEnd,
   });
 
   void _scrollBy(double delta) {
-    if (!controller.hasClients) {
-      if (delta < 0) {
-        onScrollPastStart?.call();
-      } else {
-        onScrollPastEnd?.call();
-      }
+    final target = controller.hasClients
+        ? (controller.offset + delta).clamp(
+            0.0,
+            controller.position.maxScrollExtent,
+          )
+        : null;
+    if (target == null || (target - controller.offset).abs() < 0.5) {
+      (delta < 0 ? onScrollPastStart : onScrollPastEnd)?.call();
       return;
     }
-
-    final current = controller.offset;
-    final target = (controller.offset + delta).clamp(
-      0.0,
-      controller.position.maxScrollExtent,
-    );
-
-    if ((target - current).abs() < 0.5) {
-      if (delta < 0) {
-        onScrollPastStart?.call();
-      } else {
-        onScrollPastEnd?.call();
-      }
-      return;
-    }
-
     controller.animateTo(
       target,
       duration: _scrollDuration,
@@ -86,29 +70,22 @@ class HorizontalScrollControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Pointer only, so D-pad and keyboard traversal never stops on them.
+    Widget button(IconData icon, double delta) => Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      descendantsAreFocusable: false,
+      child: IconButton(
+        icon: Icon(icon),
+        onPressed: () => _scrollBy(delta),
+        visualDensity: VisualDensity.compact,
+      ),
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Focus(
-          canRequestFocus: false,
-          skipTraversal: true,
-          descendantsAreFocusable: false,
-          child: IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () => _scrollBy(-step),
-            visualDensity: VisualDensity.compact,
-          ),
-        ),
-        Focus(
-          canRequestFocus: false,
-          skipTraversal: true,
-          descendantsAreFocusable: false,
-          child: IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () => _scrollBy(step),
-            visualDensity: VisualDensity.compact,
-          ),
-        ),
+        button(Icons.chevron_left, -_scrollStep),
+        button(Icons.chevron_right, _scrollStep),
       ],
     );
   }

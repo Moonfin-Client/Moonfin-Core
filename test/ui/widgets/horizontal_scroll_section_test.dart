@@ -152,4 +152,43 @@ void main() {
     await tester.pumpAndSettle();
     expect(controller.offset, lessThan(afterRight));
   });
+
+  testWidgets('a row with nowhere to go hands the press to its callbacks', (
+    tester,
+  ) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    final calls = <String>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              HorizontalScrollControls(
+                controller: controller,
+                onScrollPastStart: () => calls.add('start'),
+                onScrollPastEnd: () => calls.add('end'),
+              ),
+              SizedBox(
+                height: 80,
+                child: ListView(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  children: const [SizedBox(width: 100)],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.chevron_left));
+    await tester.tap(find.byIcon(Icons.chevron_right));
+    await tester.pumpAndSettle();
+
+    expect(calls, ['start', 'end']);
+    expect(controller.offset, 0);
+  });
 }
