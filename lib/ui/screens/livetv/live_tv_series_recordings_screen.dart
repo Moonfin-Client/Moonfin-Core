@@ -12,6 +12,7 @@ import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
+import 'live_tv_recordings_screen.dart';
 import 'widgets/live_tv_section_header.dart';
 
 class LiveTvSeriesRecordingsScreen extends StatefulWidget {
@@ -122,10 +123,10 @@ class _LiveTvSeriesRecordingsScreenState
                 ),
               ),
               SizedBox(
-                height: 160,
+                height: liveTvRowStripHeight,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  padding: liveTvRowStripPadding,
                   itemCount: _vm.seriesTimers.length,
                   separatorBuilder: (_, _) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {

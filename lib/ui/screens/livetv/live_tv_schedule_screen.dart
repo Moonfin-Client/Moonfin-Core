@@ -14,6 +14,7 @@ import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/offline_aware_image.dart';
+import 'live_tv_recordings_screen.dart';
 import 'widgets/live_tv_section_header.dart';
 
 class LiveTvScheduleScreen extends StatefulWidget {
@@ -232,10 +233,10 @@ class _ScheduleGroupRow extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 160,
+              height: liveTvRowStripHeight,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 60),
+                padding: liveTvRowStripPadding,
                 itemCount: group.items.length,
                 separatorBuilder: (_, _) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {

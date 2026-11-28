@@ -135,6 +135,19 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  void expectFocusedCardInsideRow(WidgetTester tester, String label) {
+    final row = find.byWidgetPredicate(
+      (w) => w is ListView && w.scrollDirection == Axis.horizontal,
+    );
+    final name = find.descendant(of: row, matching: find.text(label));
+    final card = tester.getRect(
+      find.ancestor(of: name, matching: find.byType(Opacity)).first,
+    );
+    final strip = tester.getRect(find.ancestor(of: name, matching: row).first);
+    expect(card.top, greaterThanOrEqualTo(strip.top));
+    expect(card.bottom, lessThanOrEqualTo(strip.bottom));
+  }
+
   group('recordings screen', () {
     testWidgets('a recording tile opens on Enter from a remote',
         (tester) async {
@@ -231,24 +244,7 @@ void main() {
 
       await focusCardShowing(tester, _recordingName);
 
-      final card = tester.getRect(
-        find
-            .ancestor(
-              of: find.text(_recordingName),
-              matching: find.byType(Opacity),
-            )
-            .first,
-      );
-      final row = tester.getRect(
-        find
-            .ancestor(
-              of: find.text(_recordingName),
-              matching: find.byType(ListView),
-            )
-            .first,
-      );
-      expect(card.top, greaterThanOrEqualTo(row.top));
-      expect(card.bottom, lessThanOrEqualTo(row.bottom));
+      expectFocusedCardInsideRow(tester, _recordingName);
     });
   });
 
@@ -282,6 +278,14 @@ void main() {
       await pressKey(tester, LogicalKeyboardKey.arrowRight);
 
       expect(find.text((await l10n()).cancelRecording), findsNothing);
+    });
+
+    testWidgets('a focused card fits inside its row', (tester) async {
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      await focusCardShowing(tester, _scheduledName);
+
+      expectFocusedCardInsideRow(tester, _scheduledName);
     });
   });
 
@@ -456,6 +460,14 @@ void main() {
       await pressKey(tester, LogicalKeyboardKey.arrowRight);
 
       expect(find.text((await l10n()).cancelSeriesRecording), findsNothing);
+    });
+
+    testWidgets('a focused card fits inside its row', (tester) async {
+      await pumpScreen(tester, const LiveTvSeriesRecordingsScreen());
+
+      await focusCardShowing(tester, _seriesTimerName);
+
+      expectFocusedCardInsideRow(tester, _seriesTimerName);
     });
   });
 }
