@@ -254,7 +254,7 @@ class _AccountDialogState extends State<_AccountDialog> {
     await _serverRepo.loadStoredServers();
     final serverIds = _serverRepo.servers.map((s) => s.id).toList();
     for (final id in serverIds) {
-      await _serverRepo.deleteServer(id);
+      await _sessionRepo.removeServer(id);
     }
 
     if (!mounted) return;

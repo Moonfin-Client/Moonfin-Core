@@ -28,7 +28,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:playback_silo/playback_silo.dart' show siloEndedOnServerMessage;
 import 'package:server_core/server_core.dart';
 import 'package:server_silo/server_silo.dart'
-    show SiloUsersApi, siloAccessChangedEvent;
+    show SiloTokens, SiloUsersApi, siloAccessChangedEvent;
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/carplay_service.dart';
@@ -731,6 +731,9 @@ class SessionRepository {
   /// refresh is unambiguous, since only a 401 on the refresh ends a session.
   void _onSiloLoginEnded(String serverId, String userId, String name) {
     if (_activeServerId != serverId || _activeUserId != userId) return;
+    // Ended by the removal's own sign-out: removeServer finishes it and the
+    // app stays on server select.
+    if (_removingServerId == serverId) return;
     _logger.w('Silo refused to renew the login. Signing out.');
     unawaited(() async {
       // The login was the whole account's: its other profiles can't act
@@ -842,6 +845,132 @@ class SessionRepository {
     } catch (_) {}
   }
 
+  String? _removingServerId;
+
+  /// Removes [serverId] with its saved users, and ends their logins on the
+  /// server in the background. The signed-in server is signed out of first,
+  /// as with Sign Out.
+  Future<void> removeServer(String serverId) async {
+    _removingServerId = serverId;
+    try {
+      if (_activeServerId == serverId) {
+        await destroyCurrentSession();
+      }
+    } finally {
+      _removingServerId = null;
+      final removed = _serverRepository.getServer(serverId);
+      // Read before the store entry goes. The sign-out above has already
+      // ended the signed-in login.
+      final logins = removed == null
+          ? const <(String, SiloTokens?)>[]
+          : _savedLogins(removed);
+      await _serverRepository.deleteServer(serverId);
+      if (removed != null && logins.isNotEmpty) {
+        unawaited(
+          _serverRepository.whileTrusted(
+            removed,
+            () => _endLogins(removed, logins),
+          ),
+        );
+      }
+    }
+  }
+
+  /// The logins saved for [server], each as its token and, for Silo, the
+  /// account's pair (its profiles share one). Jellyfin, Emby and
+  /// Audiobookshelf keep one access token per user. Plex has no server-side
+  /// sign-out. A token another saved server still holds (the same server
+  /// under a second address) is left alone, so that entry stays signed in.
+  List<(String, SiloTokens?)> _savedLogins(Server server) {
+    final List<(String, SiloTokens?)> logins = switch (server.serverType) {
+      ServerType.silo => [
+        for (final accountId in _authStore.getSiloAccountIds(server.id))
+          if (_siloTokens.read(server.id, accountId) case final pair?)
+            (pair.refreshToken, pair),
+      ],
+      ServerType.jellyfin ||
+      ServerType.emby ||
+      ServerType.audiobookshelf => [
+        for (final token in {
+          for (final user in _authStore.getUsers(server.id))
+            if (user.accessToken.isNotEmpty) user.accessToken,
+        })
+          (token, null),
+      ],
+      ServerType.plex => const [],
+    };
+    if (logins.isEmpty) return logins;
+    final elsewhere = _tokensElsewhere(server.id);
+    return [
+      for (final login in logins)
+        if (!elsewhere.contains(login.$1)) login,
+    ];
+  }
+
+  /// The tokens the saved servers other than [serverId] hold: each user's
+  /// access token and each Silo account's refresh token.
+  Set<String> _tokensElsewhere(String serverId) => {
+    for (final other in _authStore.getServers())
+      if (other.id != serverId) ...[
+        for (final user in _authStore.getUsers(other.id)) user.accessToken,
+        for (final accountId in _authStore.getSiloAccountIds(other.id))
+          ?_siloTokens.read(other.id, accountId)?.refreshToken,
+      ],
+  }..remove('');
+
+  /// Whether another saved server holds [userId]'s login on [serverId], so
+  /// ending it there would sign that entry out too.
+  bool _loginHeldElsewhere(String serverId, String userId) {
+    final user = _authStore
+        .getUsers(serverId)
+        .where((u) => u.id == userId)
+        .firstOrNull;
+    if (user == null) return false;
+    final accountId = user.siloAccountId;
+    final token = accountId == null
+        ? user.accessToken
+        : _siloTokens.read(serverId, accountId)?.refreshToken ?? '';
+    return token.isNotEmpty && _tokensElsewhere(serverId).contains(token);
+  }
+
+  /// Signs [logins] out on [server], each on a client of its own so nothing
+  /// is saved back for the removed server. Best effort: a server that is off
+  /// or slow only costs the wait, and the login stays valid there.
+  ///
+  /// The stored pair is gone by now, so the pair read before the removal is
+  /// set directly rather than through [SiloTokenStorage.putLogin].
+  Future<void> _endLogins(
+    Server server,
+    List<(String, SiloTokens?)> logins,
+  ) async {
+    Future<void> end((String, SiloTokens?) login) async {
+      MediaServerClient? client;
+      try {
+        client = _clientFactory.createStandaloneClient(
+          serverId: server.id,
+          serverType: server.serverType,
+          baseUrl: server.address,
+        );
+        final (token, pair) = login;
+        if (pair != null) {
+          siloClientOf(client)!.session.setTokens(pair);
+        } else {
+          client.accessToken = token;
+        }
+        await client.authApi.logout().timeout(logoutTimeout);
+      } catch (e) {
+        _logger.w('Ending a saved login of removed server ${server.id}: $e');
+      } finally {
+        client?.dispose();
+      }
+    }
+
+    await Future.wait(logins.map(end));
+  }
+
+  /// How long a sign-out waits on the server's logout.
+  static const logoutTimeout = Duration(seconds: 5);
+
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) =>
       _whileChangingAccount(
         () => _destroyCurrentSession(tokenKnownInvalid: tokenKnownInvalid),
@@ -894,9 +1023,17 @@ class SessionRepository {
     final signedOut = serverId == null
         ? null
         : _clientFactory.getClientIfExists(serverId);
-    if (!tokenKnownInvalid && !keepsSiloLogin) {
+    // A login another saved server holds stays valid, so that entry stays
+    // signed in. Checked only when a logout would be sent.
+    bool heldElsewhere() =>
+        serverId != null &&
+        userId != null &&
+        _loginHeldElsewhere(serverId, userId);
+    if (!tokenKnownInvalid && !keepsSiloLogin && !heldElsewhere()) {
       try {
-        await signedOut?.authApi.logout();
+        // An unreachable server doesn't hold up the sign-out. Past the wait,
+        // the login may stay valid there.
+        await signedOut?.authApi.logout().timeout(logoutTimeout);
       } catch (_) {}
     }
 
