@@ -381,7 +381,7 @@ class NouveauHeroState extends State<NouveauHero> {
 
     final itemName = series?.name ?? item.name;
     final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
-    final origTitle = eligibleOriginalTitle(item);
+    final origTitle = eligibleOriginalTitle(series ?? item);
 
     final branding = _NouveauBranding(
       title: formatInlineTitle(itemName, origTitle, origMode),

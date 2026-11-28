@@ -35,6 +35,7 @@ void main() {
       expect(distinctOriginalTitle('Goodfellas', '   '), isNull);
       expect(distinctOriginalTitle('Goodfellas', 'goodfellas'), isNull);
       expect(distinctOriginalTitle('Amelie', 'Amélie'), isNull);
+      expect(distinctOriginalTitle('Amelie', 'Ame\u0301lie'), isNull);
     });
 
     test('returns trimmed originalTitle when distinct, including non-Latin', () {

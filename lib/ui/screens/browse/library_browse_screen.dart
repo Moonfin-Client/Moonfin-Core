@@ -50,6 +50,7 @@ import '../../widgets/local_search_field.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
+import '../../widgets/marquee_text.dart';
 
 Color get _navyBackground => AppColorScheme.background;
 Color get _jellyfinBlue => AppColorScheme.accent;
@@ -2603,16 +2604,14 @@ class _FocusedItemHud extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    formatInlineTitle(
+                  MarqueeText(
+                    text: formatInlineTitle(
                       item!.name,
                       item!.originalTitle,
                       GetIt.instance<UserPreferences>().get(
                         UserPreferences.libraryOriginalTitleMode,
                       ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,

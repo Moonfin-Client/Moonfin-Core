@@ -696,6 +696,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     required bool showLogo,
     required bool showVersionBadge,
     String? realName,
+    AggregatedItem? titleItem,
   }) {
     final textTheme = Theme.of(context).textTheme;
     final logoScaleFactor = _desktopScale > 1.1 ? 0.70 : 1.0;
@@ -708,7 +709,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         : null;
     final itemName = realName ?? item.name;
     final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
-    final origTitle = eligibleOriginalTitle(item);
+    final origTitle = eligibleOriginalTitle(titleItem ?? item);
 
     final titleText = Text(
       formatInlineTitle(itemName, origTitle, origMode),
@@ -1212,6 +1213,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             showLogo: visibility.shows(DetailSection.logo),
             showVersionBadge: visibility.shows(DetailSection.versionBadge),
             realName: itemName,
+            titleItem: realItem,
           ),
         const SizedBox(height: 8),
         if (!isPerson) ...[

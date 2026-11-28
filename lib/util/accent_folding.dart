@@ -6,7 +6,8 @@
 /// results depending on which box ran it.
 library;
 
-/// [value] with every accented letter this knows replaced by its base letter.
+/// [value] with every accented letter this knows replaced by its base letter
+/// and combining diacritical marks (U+0300–U+036F) stripped.
 ///
 /// A letter it does not know is left exactly as it was, and the ones it does
 /// know come back upper case, so read the result through [foldForSearch] or
@@ -14,6 +15,7 @@ library;
 String foldAccents(String value) {
   final result = StringBuffer();
   for (final rune in value.runes) {
+    if (rune >= 0x0300 && rune <= 0x036F) continue;
     final character = String.fromCharCode(rune);
     result.write(_accentFolds[character.toUpperCase()] ?? character);
   }
