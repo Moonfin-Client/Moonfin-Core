@@ -586,7 +586,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _selectedMediaSourceId = null;
         }
       }
-      if (!_themeMusicStarted && !widget.quickLook) {
+      // The card's copy hasn't been through the parental gate yet.
+      if (!_themeMusicStarted && !widget.quickLook && !_viewModel.isCardCopy) {
         _themeMusicStarted = true;
         _themeMusicService.playForItem(item);
       }
