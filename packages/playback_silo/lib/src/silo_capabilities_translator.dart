@@ -309,7 +309,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
   final maxResolution = _maxResolution(codecProfiles);
   final ceilings = _channelCeilings(codecProfiles);
   // A server without per-codec ceilings, or a map past Silo's 32 entries,
-  // gets the lowest limit for every codec, as before.
+  // gets the lowest limit for every codec.
   final byCodec =
       channelCeilingsByCodec &&
       ceilings.byCodec.isNotEmpty &&
