@@ -772,6 +772,15 @@ class _ContentRowsState extends State<_ContentRows>
   );
   final _scrollController = ScrollController();
   final _mediaBarFocusNode = FocusNode(debugLabel: 'home_media_bar_focus');
+  // Holds focus while Back scrolls up to a top row that isn't built yet.
+  // Focusable only for that, so the scope's focus history never falls back to
+  // it later.
+  final _returnHoldFocusNode = FocusNode(
+    debugLabel: 'home_return_hold_focus',
+    skipTraversal: true,
+    canRequestFocus: false,
+  );
+  int _returnHoldGeneration = 0;
   final _playbackManager = GetIt.instance<PlaybackManager>();
   final _audioArbiter = GetIt.instance<PlaybackArbiter>();
   // The playback module only registers a Media3 backend on some platforms, so
@@ -1126,7 +1135,8 @@ class _ContentRowsState extends State<_ContentRows>
     final onIdleFocus =
         primary == null ||
         primary is FocusScopeNode ||
-        identical(primary, globalShortcutFocusNode);
+        identical(primary, globalShortcutFocusNode) ||
+        identical(primary, _returnHoldFocusNode);
     final onToolbar = TopToolbar.isFocusedNotifier.value;
     final chromeFocusActive =
         SettingsPanel.isOpenNotifier.value ||
@@ -1493,6 +1503,7 @@ class _ContentRowsState extends State<_ContentRows>
     _activeFocusedRowNotifier.removeListener(_updateIsScrolledToTop);
     _mediaBarFocusNode.removeListener(_updateIsScrolledToTop);
     _mediaBarFocusNode.dispose();
+    _returnHoldFocusNode.dispose();
     _activeFocusedRowNotifier.removeListener(_updateOffsets);
     widget.viewModel.removeListener(_onViewModelChanged);
     widget.mediaBarViewModel.removeListener(_onMediaBarStateChanged);
@@ -3773,7 +3784,9 @@ class _ContentRowsState extends State<_ContentRows>
             widget.prefs.get(UserPreferences.fullScreenRows);
         if (fullScreenRows && _scrollController.hasClients) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || !_scrollController.hasClients) {
+            if (!mounted ||
+                generation != _verticalNavGeneration ||
+                !_scrollController.hasClients) {
               if (!navComplete.isCompleted) navComplete.complete();
               return;
             }
@@ -3939,7 +3952,9 @@ class _ContentRowsState extends State<_ContentRows>
     final belowTopRow = _isMediaBarIncluded()
         ? !_mediaBarFocusNode.hasFocus && activeRow != null
         : activeRow != null && activeRow > 0;
-    final atStart = !scrolledPast && !belowTopRow;
+    // A Back still scrolling up to an unbuilt top row hasn't arrived yet.
+    final returning = _returnHoldFocusNode.canRequestFocus;
+    final atStart = !scrolledPast && !belowTopRow && !returning;
     if (atStart != _isScrolledToTop) {
       widget.onScrolledToTopChanged?.call(atStart);
     }
@@ -3947,30 +3962,84 @@ class _ContentRowsState extends State<_ContentRows>
 
   void returnToTop() {
     _returnScrollRowId = null;
+    // A row step still queued would start its own scroll and cut this one
+    // short.
+    _verticalNavGeneration++;
+    _verticalNavInFlight = false;
+    Future<void>? scroll;
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
+      scroll = _scrollController.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
       );
     }
     // Only carry focus back up if it was down in the rows to begin with. A
-    // pointer user who clicked the button has none to carry.
-    final hadRowFocus =
-        _activeFocusedRowIndex != null || _mediaBarFocusNode.hasFocus;
+    // pointer user who clicked the button has none to carry. Back pressed
+    // again while the list is still scrolling up carries on from the hold.
+    final hadRowFocus = _homeContentHasRealFocus() ||
+        _returnHoldFocusNode.hasPrimaryFocus;
     _activeFocusedRowIndex = null;
-    if (hadRowFocus) {
-      if (_isMediaBarIncluded() && _mediaBarFocusNode.context != null) {
-        _mediaBarFocusNode.requestFocus();
-      } else {
-        for (var i = 0; i < widget.viewModel.rows.length; i++) {
-          if (!_rowHasFocusableItems(widget.viewModel.rows[i])) continue;
-          _rowStateOf(i)?.requestFocusFromMemory();
-          break;
-        }
-      }
+    final focusTop = hadRowFocus ? _topOfRowsFocuser() : null;
+    if (focusTop != null) {
+      focusTop();
+    } else if (hadRowFocus && scroll != null) {
+      // The list only builds rows near the screen, so a top row scrolled far
+      // out of view comes back during the scroll. Take focus off the row
+      // being left now: once it's disposed its scope would hand focus back to
+      // the card focused before it, out of sight under the info area. The
+      // hold drops d-pad presses until the scroll lands, then the top row
+      // takes focus.
+      final generation = ++_returnHoldGeneration;
+      _returnHoldFocusNode
+        ..canRequestFocus = true
+        ..requestFocus();
+      unawaited(scroll.then((_) => _endReturnHold(generation)));
     }
     _updateIsScrolledToTop();
+  }
+
+  /// Hands focus from the hold to the top row once the return scroll ends,
+  /// giving the row one more frame to build if it isn't there yet. A newer
+  /// return takes over from an older one.
+  void _endReturnHold(int generation, {bool retried = false}) {
+    if (!mounted || generation != _returnHoldGeneration) return;
+    if (!_returnHoldFocusNode.hasPrimaryFocus) {
+      _returnHoldFocusNode.canRequestFocus = false;
+      _updateIsScrolledToTop();
+      return;
+    }
+    final focusTop = _topOfRowsFocuser();
+    if (focusTop == null && !retried) {
+      WidgetsBinding.instance
+        ..addPostFrameCallback((_) => _endReturnHold(generation, retried: true))
+        ..ensureVisualUpdate();
+      return;
+    }
+    // Let go of the hold first. Its unfocus asks for focus as well, and the
+    // last request made is the one that wins.
+    _returnHoldFocusNode.canRequestFocus = false;
+    if (focusTop != null) {
+      focusTop();
+    } else {
+      _requestFocusToNavbar();
+    }
+    _updateIsScrolledToTop();
+  }
+
+  /// What focuses the media bar, or else the first row with something to
+  /// focus. Null when it isn't built yet.
+  VoidCallback? _topOfRowsFocuser() {
+    if (_isMediaBarIncluded()) {
+      return _mediaBarFocusNode.context?.mounted == true
+          ? _mediaBarFocusNode.requestFocus
+          : null;
+    }
+    for (var i = 0; i < widget.viewModel.rows.length; i++) {
+      if (!_rowHasFocusableItems(widget.viewModel.rows[i])) continue;
+      return _rowStateOf(i)?.requestFocusFromMemory;
+    }
+    return null;
   }
 
   void _onScroll() {
@@ -4954,6 +5023,23 @@ class _ContentRowsState extends State<_ContentRows>
       },
       child: Stack(
         children: [
+        // Back's return to the top focuses this, and it drops d-pad presses
+        // until the scroll lands.
+        Positioned(
+          left: 0,
+          top: 0,
+          child: Focus(
+            focusNode: _returnHoldFocusNode,
+            onKeyEvent: (_, event) {
+              final key = event.logicalKey;
+              return event.isActionable &&
+                      (key.isDirectional || key.isSelectKey)
+                  ? KeyEventResult.handled
+                  : KeyEventResult.ignored;
+            },
+            child: const SizedBox.shrink(),
+          ),
+        ),
         Positioned.fill(
           child: Focus(
             canRequestFocus: false,
