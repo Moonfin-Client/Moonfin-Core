@@ -817,6 +817,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_home_backdrop_style',
     'pref_show_details_backdrop',
     'pref_details_backdrop_size',
+    'pref_details_backdrop_shuffle',
+    'pref_details_backdrop_interval_ms',
     'detailsBackgroundBlurAmount',
     'browsingBackgroundBlurAmount',
     'enableAdditionalRatings',
@@ -1481,6 +1483,16 @@ class UserPreferences extends ChangeNotifier {
   static final detailsBackdropSize = Preference(
     key: 'pref_details_backdrop_size',
     defaultValue: detailsBackdropFullScreen,
+  );
+
+  static final detailsBackdropShuffle = Preference(
+    key: 'pref_details_backdrop_shuffle',
+    defaultValue: true,
+  );
+
+  static final detailsBackdropIntervalMs = Preference(
+    key: 'pref_details_backdrop_interval_ms',
+    defaultValue: 15000,
   );
 
   /// Plays retro games through the native libretro backend instead of the

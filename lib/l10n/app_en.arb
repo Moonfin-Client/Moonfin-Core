@@ -16022,6 +16022,18 @@
   "@detailsScreenBackdrop": {
     "description": "Setting to show or hide the backdrop image behind the item details screen"
   },
+  "shuffleBackdrops": "Shuffle Backdrops",
+  "@shuffleBackdrops": {
+    "description": "Setting to randomize the order of cycling backdrop images on the details screen"
+  },
+  "shuffleBackdropsDescription": "Display backdrops in server or randomized order",
+  "@shuffleBackdropsDescription": {
+    "description": "Subtitle explaining the Shuffle Backdrops setting on the details screen"
+  },
+  "backdropDuration": "Backdrop Duration",
+  "@backdropDuration": {
+    "description": "Setting for how long each backdrop image is displayed before cycling to the next on the details screen"
+  },
   "detailsBackdropSize": "Backdrop Size",
   "@detailsBackdropSize": {
     "description": "Setting on phones for how big the backdrop image behind the item details screen is drawn"

@@ -464,6 +464,7 @@ void main() {
         'type': 'series',
         'content_id': 'series-y',
         'poster_url': '/own.webp',
+        'backdrop_urls': ['/own-bg0.webp'],
       }, images: images);
       siloItemToBaseItemDto({
         'type': 'episode',
@@ -471,10 +472,45 @@ void main() {
         'series_id': 'series-y',
         'poster_url': '/borrowed.webp',
         'poster_is_episode_still': false,
+        'backdrop_urls': ['/borrowed-bg0.webp', '/borrowed-bg1.webp'],
+        'backdrop_is_episode_still': false,
       }, images: images);
       expect(
         images.urlFor('series-y', SiloImageType.primary),
         'https://silo.example/own.webp',
+      );
+      expect(
+        images.urlFor('series-y', SiloImageType.backdrop, index: 0),
+        'https://silo.example/own-bg0.webp',
+      );
+      expect(images.urlFor('series-y', SiloImageType.backdrop, index: 1), isNull);
+    });
+
+    test('episode detail fills remaining series backdrops after a single-backdrop search seed', () {
+      // Compact search entry seeds index 0 only without marking the series known.
+      siloItemToBaseItemDto({
+        'type': 'episode',
+        'content_id': 'episode-s-1-1',
+        'series_id': 'series-s',
+        'backdrop_url': '/bg0.webp',
+        'backdrop_is_episode_still': false,
+      }, images: images);
+      // Later episode detail carries the full series backdrop_urls set.
+      final detail = siloItemToBaseItemDto({
+        'type': 'episode',
+        'content_id': 'episode-s-1-1',
+        'series_id': 'series-s',
+        'backdrop_urls': ['/bg0.webp', '/bg1.webp', '/bg2.webp'],
+        'backdrop_is_episode_still': false,
+      }, images: images)!;
+      expect(detail['ParentBackdropImageTags'], hasLength(3));
+      expect(
+        images.urlFor('series-s', SiloImageType.backdrop, index: 1),
+        'https://silo.example/bg1.webp',
+      );
+      expect(
+        images.urlFor('series-s', SiloImageType.backdrop, index: 2),
+        'https://silo.example/bg2.webp',
       );
     });
 

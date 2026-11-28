@@ -130,6 +130,29 @@ class _DetailsScreenSettingsScreenState
                     icon: Icons.photo,
                     onChanged: _pushPersonalizationSync,
                   ),
+                  if (prefs.get(UserPreferences.detailsBackdropEnabled) &&
+                      GetIt.instance<MediaServerClient>().serverType !=
+                          ServerType.plex) ...[
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.detailsBackdropShuffle,
+                      title: l10n.shuffleBackdrops,
+                      subtitle: l10n.shuffleBackdropsDescription,
+                      icon: Icons.shuffle,
+                      onChanged: _pushPersonalizationSync,
+                    ),
+                    IntPickerPreferenceTile(
+                      preference: UserPreferences.detailsBackdropIntervalMs,
+                      title: l10n.backdropDuration,
+                      icon: Icons.timer,
+                      options: {
+                        5000: l10n.fiveSeconds,
+                        10000: l10n.tenSeconds,
+                        15000: l10n.fifteenSeconds,
+                        30000: l10n.thirtySeconds,
+                      },
+                      onChanged: _pushPersonalizationSync,
+                    ),
+                  ],
                   if (PlatformDetection.useMobileUi)
                     StringPickerPreferenceTile(
                       preference: UserPreferences.detailsBackdropSize,

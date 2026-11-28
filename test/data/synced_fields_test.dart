@@ -78,6 +78,8 @@ void main() {
     'detailTrailersExternal',
     'detailUseSeriesThumbnails',
     'detailsBackdropEnabled',
+    'detailsBackdropIntervalMs',
+    'detailsBackdropShuffle',
     'detailsBackdropSize',
     'detailsScreenBlur',
     'diagnosticLoggingEnabled',

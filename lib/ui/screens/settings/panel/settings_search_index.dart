@@ -745,6 +745,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.detailsScreenBackdrop,
       keywords: ['background images'],
     ),
+    if (!(GetIt.instance.isRegistered<MediaServerClient>() &&
+        GetIt.instance<MediaServerClient>().serverType == ServerType.plex)) ...[
+      details.leaf(
+        'pref_details_backdrop_shuffle',
+        l10n.shuffleBackdrops,
+        keywords: ['random', 'randomize', 'order', 'cycle', 'background'],
+      ),
+      details.leaf(
+        'pref_details_backdrop_interval_ms',
+        l10n.backdropDuration,
+        keywords: ['interval', 'timer', 'cycle', 'slideshow', 'seconds', 'background'],
+      ),
+    ],
     if (PlatformDetection.useMobileUi)
       details.leaf(
         'pref_details_backdrop_size',

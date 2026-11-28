@@ -225,6 +225,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('homeBackdropStyle', UserPreferences.homeBackdropStyle, SyncCodec.text),
   SyncedField('detailsBackdropEnabled', UserPreferences.detailsBackdropEnabled, SyncCodec.boolean),
   SyncedField('detailsBackdropSize', UserPreferences.detailsBackdropSize, SyncCodec.text),
+  SyncedField('detailsBackdropShuffle', UserPreferences.detailsBackdropShuffle, SyncCodec.boolean),
+  SyncedField('detailsBackdropIntervalMs', UserPreferences.detailsBackdropIntervalMs, SyncCodec.integer),
   SyncedField('detailsScreenBlur', UserPreferences.detailsBackgroundBlurAmount, SyncCodec.intAsText),
   SyncedField('browsingBlur', UserPreferences.browsingBackgroundBlurAmount, SyncCodec.intAsText),
   SyncedField('mdblistEnabled', UserPreferences.enableAdditionalRatings, SyncCodec.boolean),
