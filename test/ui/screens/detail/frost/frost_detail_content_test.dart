@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -285,6 +288,113 @@ void main() {
       ],
     };
   }
+
+  testWidgets('fetches series episodes only when the Episodes tab opens', (
+    tester,
+  ) async {
+    final vm = viewModel('Series');
+    addTearDown(vm.dispose);
+    Future<Map<String, dynamic>> episodes() =>
+        itemsApi.getEpisodes('item-1', fields: any(named: 'fields'));
+    final pending = Completer<Map<String, dynamic>>();
+    when(episodes).thenAnswer((_) => pending.future);
+
+    await pumpContent(tester, vm);
+    verifyNever(episodes);
+
+    await tester.tap(find.text('Episodes'));
+    await tester.pump();
+    verify(episodes).called(1);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.text('Retry'), findsNothing);
+
+    pending.complete({
+      'Items': [
+        {
+          'Id': 'episode-1',
+          'Name': 'The first episode',
+          'Type': 'Episode',
+          'IndexNumber': 1,
+          'ParentIndexNumber': 1,
+        },
+      ],
+    });
+    await tester.pumpAndSettle();
+    expect(find.text('The first episode'), findsOneWidget);
+
+    await tester.tap(find.text('Overview'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Episodes'));
+    await tester.pumpAndSettle();
+    verifyNever(episodes);
+  });
+
+  testWidgets('Windows Frost applies the configured backdrop blur', (
+    tester,
+  ) async {
+    final originalTier = GlassSettings.tier;
+    addTearDown(() => GlassSettings.tier = originalTier);
+    GlassSettings.tier = GlassTier.frost;
+    final vm = viewModel(
+      'Movie',
+      data: {
+        ...itemData('Movie'),
+        'BackdropImageTags': ['backdrop'],
+      },
+    );
+    addTearDown(vm.dispose);
+    await pumpContent(tester, vm);
+
+    final backdrop = find.byWidgetPredicate(
+      (widget) => widget is ImageFiltered && widget.child is OfflineAwareImage,
+    );
+    final filteredImage = tester.widget<ImageFiltered>(backdrop);
+    expect(filteredImage.enabled, isTrue);
+    expect(filteredImage.imageFilter, ImageFilter.blur(sigmaX: 12, sigmaY: 12));
+
+    await prefs.set(UserPreferences.detailsBackdropEnabled, false);
+    await tester.pump();
+    expect(backdrop, findsNothing);
+  }, variant: const TargetPlatformVariant({TargetPlatform.windows}));
+
+  test(
+    'closing details stops a pending collection scan before the next batch',
+    () async {
+      final vm = viewModel('Series');
+      final boxSets = Completer<Map<String, dynamic>>();
+      when(() => itemsApi.getAncestors('item-1')).thenAnswer((_) async => []);
+      Future<Map<String, dynamic>> listBoxSets() => itemsApi.getItems(
+        includeItemTypes: ['BoxSet'],
+        recursive: true,
+        sortBy: 'SortName',
+        fields: 'BasicSyncInfo,PrimaryImageAspectRatio,ImageTags,ProviderIds',
+        startIndex: 0,
+        limit: 200,
+        enableTotalRecordCount: true,
+      );
+      when(listBoxSets).thenAnswer((_) => boxSets.future);
+
+      await vm.load();
+      verifyNever(listBoxSets);
+      final load = vm.loadParentCollections();
+      await pumpEventQueue();
+      verify(listBoxSets).called(1);
+      vm.dispose();
+      boxSets.complete({
+        'Items': [
+          {'Id': 'collection-1', 'Name': 'Collection', 'Type': 'BoxSet'},
+        ],
+      });
+
+      await load;
+      verifyNever(
+        () => itemsApi.getItems(
+          parentId: 'collection-1',
+          fields: 'BasicSyncInfo',
+        ),
+      );
+    },
+  );
 
   testWidgets('a TV draws the title in its window with the tabs under it', (
     tester,

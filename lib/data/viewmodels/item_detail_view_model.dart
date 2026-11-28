@@ -540,8 +540,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   List<ParentCollection> _parentCollections = const [];
 
-  /// Bumped on every publication of [_parentCollections], so a Seerr pass
-  /// started for an earlier load can tell it has gone stale.
+  bool _parentCollectionsRequested = false;
+
+  /// A reload invalidates both the membership scan and its Seerr follow-up.
   int _parentCollectionsLoad = 0;
   List<ParentCollection> get parentCollections => _parentCollections;
 
@@ -995,6 +996,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     _parentActors = const [];
     _collectionItems = const [];
     _missingCollectionItems = const [];
+    _parentCollectionsRequested = false;
+    _parentCollectionsLoad++;
     _parentCollections = const [];
     _flattenedIds = null;
     _customOrderIds = null;
@@ -1235,7 +1238,6 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(forActions(_loadNextUp()));
       futures.add(_loadSimilar());
       futures.add(forActions(_loadFeatures()));
-      futures.add(_loadParentCollection());
       unawaited(_loadUpcomingEpisode());
     } else if (type == 'Season') {
       unawaited(_syncSeriesTrackChoices());
@@ -1274,9 +1276,6 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadRatings());
       futures.add(_loadSimilar());
       futures.add(forActions(_loadFeatures()));
-      if (type != 'MusicVideo') {
-        futures.add(_loadParentCollection());
-      }
       if (type == 'Movie') unawaited(_loadReviews());
     } else {
       futures.add(_loadRatings());
@@ -1927,11 +1926,13 @@ class ItemDetailViewModel extends ChangeNotifier {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       await repo.ensureInitialized();
       for (final collection in collections) {
+        if (!_isParentCollectionsLoadCurrent(load)) return;
         final collectionId = await _resolveSeerrCollectionId(
           repo,
           boxSetTmdbId: collection.boxSetItem.tmdbId,
           members: collection.items,
         );
+        if (!_isParentCollectionsLoadCurrent(load)) return;
         if (collectionId == null) continue;
         final missing = await _fetchMissingCollectionItems(
           repo,
@@ -1939,7 +1940,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           collection.items,
         );
         if (missing.isEmpty) continue;
-        if (_isDisposed || load != _parentCollectionsLoad) return;
+        if (!_isParentCollectionsLoadCurrent(load)) return;
         _parentCollections = [
           for (final current in _parentCollections)
             current.id == collection.id
@@ -2337,23 +2338,34 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {}
   }
 
-  Future<void> _loadParentCollection() async {
+  bool _isParentCollectionsLoadCurrent(int load) =>
+      !_isDisposed && load == _parentCollectionsLoad;
+
+  /// Loads membership only for a detail layout that draws the collections row.
+  Future<void> loadParentCollections() async {
     final item = _item;
-    if (item == null) {
-      _parentCollections = const [];
-      notifyListeners();
+    if (_isDisposed ||
+        _state != ItemDetailState.ready ||
+        _parentCollectionsRequested ||
+        item == null ||
+        isSeerrOnly ||
+        !const {'Series', 'Movie', 'Trailer', 'Video'}.contains(item.type)) {
       return;
     }
+    _parentCollectionsRequested = true;
+    final load = _parentCollectionsLoad;
 
     try {
       final Map<String, ({String name, Map<String, dynamic> rawData})> boxSetInfo = {};
       final ancestors = await _client.itemsApi.getAncestors(item.id);
+      if (!_isParentCollectionsLoadCurrent(load)) return;
       for (final ancestor in ancestors) {
         if (ancestor['Type'] == 'BoxSet') {
           final boxSetId = ancestor['Id']?.toString();
           final name = ancestor['Name']?.toString();
           if (boxSetId != null && boxSetId.isNotEmpty && name != null) {
             final isMember = await _boxSetContainsItem(boxSetId, item.id);
+            if (!_isParentCollectionsLoadCurrent(load)) return;
             if (isMember && !boxSetInfo.containsKey(boxSetId)) {
               boxSetInfo[boxSetId] = (
                 name: name,
@@ -2364,14 +2376,14 @@ class ItemDetailViewModel extends ChangeNotifier {
         }
       }
 
-      final scannedCollections = await _findParentCollectionsByScanningBoxSets(item.id);
+      final scannedCollections = await _findParentCollectionsByScanningBoxSets(
+        item.id,
+        load,
+      );
+      if (!_isParentCollectionsLoadCurrent(load)) return;
       boxSetInfo.addAll(scannedCollections);
 
-      if (boxSetInfo.isEmpty) {
-        _parentCollections = const [];
-        notifyListeners();
-        return;
-      }
+      if (boxSetInfo.isEmpty) return;
 
       // Keep collections in a stable order so the rows don't shuffle around
       // between opens.
@@ -2408,13 +2420,13 @@ class ItemDetailViewModel extends ChangeNotifier {
         }());
       }
       await Future.wait(fetchFutures);
+      if (!_isParentCollectionsLoadCurrent(load)) return;
 
       final collections = ordered.whereType<ParentCollection>().toList();
 
       _parentCollections = collections;
 
       notifyListeners();
-      final load = ++_parentCollectionsLoad;
       unawaited(_loadMissingParentCollectionItems(collections, load));
     } catch (_) {}
   }
@@ -2438,13 +2450,14 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, ({String name, Map<String, dynamic> rawData})>> _findParentCollectionsByScanningBoxSets(String itemId) async {
+  Future<Map<String, ({String name, Map<String, dynamic> rawData})>>
+  _findParentCollectionsByScanningBoxSets(String itemId, int load) async {
     final Map<String, ({String name, Map<String, dynamic> rawData})> result = {};
     try {
       const pageSize = 200;
       var startIndex = 0;
 
-      while (true) {
+      while (_isParentCollectionsLoadCurrent(load)) {
         final data = await _client.itemsApi.getItems(
           includeItemTypes: ['BoxSet'],
           recursive: true,
@@ -2454,6 +2467,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           limit: pageSize,
           enableTotalRecordCount: true,
         );
+        if (!_isParentCollectionsLoadCurrent(load)) break;
         final boxSets = (data['Items'] as List?) ?? const [];
         if (boxSets.isEmpty) {
           break;
@@ -2470,10 +2484,10 @@ class ItemDetailViewModel extends ChangeNotifier {
           candidates.add((id: boxSetId, name: boxSetName, rawData: boxSet));
         }
 
-        // Cap how many membership lookups run at once so a large library
-        // doesn't fire a whole page of requests in one burst.
-        const maxConcurrent = 12;
+        // Leave room in the request queue for the page's other data.
+        const maxConcurrent = 3;
         for (var i = 0; i < candidates.length; i += maxConcurrent) {
+          if (!_isParentCollectionsLoadCurrent(load)) break;
           final batch = candidates.skip(i).take(maxConcurrent);
           await Future.wait(batch.map((candidate) async {
             final membership = await _client.itemsApi.getItems(

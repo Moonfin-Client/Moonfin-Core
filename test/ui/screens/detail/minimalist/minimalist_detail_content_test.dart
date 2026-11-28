@@ -358,7 +358,11 @@ void main() {
   testWidgets('a movie in a collection shows the Collections button which '
       'opens it', (tester) async {
     stubCollection();
-    await pumpContent(tester, viewModel('Movie'));
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    // The detail screen normally requests this data for the visible layout.
+    await vm.loadParentCollections();
+    await tester.pump();
 
     expect(find.byIcon(Icons.collections_bookmark_outlined), findsOneWidget);
 
