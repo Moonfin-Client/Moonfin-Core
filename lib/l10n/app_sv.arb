@@ -16564,5 +16564,309 @@
     "keepVideoClearOfDynamicIslandDescription": "I liggande läge täcker kamerahuset ena kanten av skärmen. Detta gör att bilden inte sträcker sig ända fram till kanten, vilket endast påverkar videoklipp som är tillräckligt breda för att nå så långt.",
     "@keepVideoClearOfDynamicIslandDescription": {
         "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "absApiKey": "API Nyckel",
+    "@absApiKey": {
+        "description": "Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password"
+    },
+    "absApiKeyHint": "Skapa en i Audiobookshelf under Inställningar > API-nycklar och klistra sedan in den här.",
+    "@absApiKeyHint": {
+        "description": "Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app"
+    },
+    "absOpenId": "OpenID",
+    "@absOpenId": {
+        "description": "Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name"
+    },
+    "absOpenIdIntro": "Logga in på serverns inloggningssida i webbläsaren. Moonfin slutför inloggningen så snart sidan skickar tillbaka dig.",
+    "@absOpenIdIntro": {
+        "description": "Audiobookshelf sign-in: what happens when signing in with OpenID"
+    },
+    "absOpenIdWaiting": "Slutför inloggningen på den sida som öppnades i din webbläsare.",
+    "@absOpenIdWaiting": {
+        "description": "Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page"
+    },
+    "absOpenIdOpen": "Öppna inloggningssidan",
+    "@absOpenIdOpen": {
+        "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser"
+    },
+    "absOpenIdOpenAgain": "Öppna den igen",
+    "@absOpenIdOpenAgain": {
+        "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once"
+    },
+    "absOpenIdRedirectRefused": "Audiobookshelf godkände inte Moonfins inloggningsadress. En administratör måste lägga till {address} under ”Tillåtna mobila omdirigerings-URI:er” i Audiobookshelfs autentiseringsinställningar.",
+    "@absOpenIdRedirectRefused": {
+        "description": "Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf",
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "moonfin://oauth"
+            }
+        }
+    },
+    "playerSwipeSeek": "Svep för att söka",
+    "@playerSwipeSeek": {
+        "description": "Setting that lets a sideways swipe on the video move playback back or ahead"
+    },
+    "playerSwipeSeekDescription": "Svep åt vänster eller höger på spelaren för att gå tillbaka eller framåt när kontrollerna är dolda",
+    "@playerSwipeSeekDescription": {
+        "description": "Description for the swipe to seek setting"
+    },
+    "settingsAudioPassthroughOutputIecTrueHd": "App-packer endast för TrueHD",
+    "@settingsAudioPassthroughOutputIecTrueHd": {
+        "description": "Passthrough Output option where the app packs only TrueHD and the system handles every other format (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputIecTrueHdLabel": "App (endast TrueHD)",
+    "@settingsAudioPassthroughOutputIecTrueHdLabel": {
+        "description": "Short value shown on the Passthrough Output setting row when the TrueHD-only app packer is selected"
+    },
+    "settingsAudioPassthroughOutputPlatformHint": "Fungerar med de flesta TV-apparater och mottagare. Börja här.",
+    "@settingsAudioPassthroughOutputPlatformHint": {
+        "description": "Hint under the Automatic option in the Passthrough Output picker, saying when to use it"
+    },
+    "settingsAudioPassthroughOutputIecHint": "Prova detta om passthrough inte ger något ljud eller fungerar ojämnt med inställningen ”Automatisk”.",
+    "@settingsAudioPassthroughOutputIecHint": {
+        "description": "Hint under the App packer option in the Passthrough Output picker, saying when to use it"
+    },
+    "settingsAudioPassthroughOutputIecTrueHdHint": "Prova detta om TrueHD spelas upp utan Atmos i läget ”Automatisk”, men andra format inte startar med app-packaren.",
+    "@settingsAudioPassthroughOutputIecTrueHdHint": {
+        "description": "Hint under the TrueHD-only app packer option in the Passthrough Output picker, saying when to use it"
+    },
+    "upscaleLowResolutionVideo": "Uppskalad video med upplösning lägre än 1080p",
+    "@upscaleLowResolutionVideo": {
+        "description": "Apple player setting that sharpens SD and 720p video up to the screen's resolution on the device"
+    },
+    "upscaleLowResolutionVideoSubtitle": "Anpassar SD- och 720p-video så att den passar din skärm. Kräver iOS, tvOS eller macOS 26 och förbrukar mer ström. HDR och Dolby Vision spelas upp som vanligt.",
+    "@upscaleLowResolutionVideoSubtitle": {
+        "description": "Subtitle for the setting that upscales video below 1080p on Apple devices"
+    },
+    "upscaleFullHdVideo": "Uppskalad 1080p-video",
+    "@upscaleFullHdVideo": {
+        "description": "Apple player setting that sharpens 1080p video up to the resolution of a larger screen, such as a 4K TV"
+    },
+    "upscaleFullHdVideoSubtitle": "Förbättrar 1080p-video på skärmar med högre upplösning än 1080p, till exempel en 4K-TV. Kräver iOS, tvOS eller macOS 26 och förbrukar mer ström. På Apple TV spelas Dolby Atmos i Dolby Digital Plus upp som vanlig surroundljud.",
+    "@upscaleFullHdVideoSubtitle": {
+        "description": "Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names"
+    },
+    "upscaleAnimationLineArt": "Exklusiv anime med konturteckningar",
+    "@upscaleAnimationLineArt": {
+        "description": "Apple player setting that upscales anime and other drawn animation with a scaler made for line art"
+    },
+    "upscaleAnimationLineArtSubtitle": "Använder en skalare avsedd för tecknad animation i animerade serier och allt inom anime-genren, upp till 1080p. Kräver iOS, tvOS eller macOS 26 och förbrukar mer ström.",
+    "@upscaleAnimationLineArtSubtitle": {
+        "description": "Subtitle for the line art upscaling setting. Anime and Animation are genre names from the media library"
+    },
+    "hdrToneMapping": "HDR-tonmappning",
+    "@hdrToneMapping": {
+        "description": "Apple TV and Mac player setting that picks the screen's peak brightness so Moonfin tone maps brighter HDR10 video to it"
+    },
+    "hdrToneMappingDescription": "Ställ in detta på skärmens högsta ljusstyrka, så kommer HDR10-titlar som har mastrats med högre ljusstyrka att tonmappas till detta värde i Moonfin istället för av skärmen. Kräver tvOS eller macOS 26. Dolby Vision och HDR10+ spelas upp som vanligt. På Apple TV spelas Dolby Atmos i Dolby Digital Plus upp som vanlig surroundljud.",
+    "@hdrToneMappingDescription": {
+        "description": "Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names"
+    },
+    "binauralHeadphones": "Binauralt ljud för hörlurar",
+    "@binauralHeadphones": {
+        "description": "iPhone, iPad and Apple TV audio setting that renders surround sound as 3D stereo for headphones"
+    },
+    "binauralHeadphonesSubtitle": "Spelar upp 5.1- och 7.1-ljud som 3D-stereo, så att surroundljudet kommer från alla håll runt dig. Fungerar endast när hörlurar är anslutna.",
+    "@binauralHeadphonesSubtitle": {
+        "description": "Subtitle for the binaural headphones setting"
+    },
+    "loudnessTarget": "Ljudstyrkemål",
+    "@loudnessTarget": {
+        "description": "Apple player setting that raises quietly mixed movies and shows to a chosen loudness"
+    },
+    "loudnessTargetDescription": "Justerar ljudnivån i filmer och program med varierande ljudnivå så att alla delar hörs lika högt. Det sänker aldrig ljudnivån på något. När funktionen är aktiverad spelas Atmos upp som vanligt surroundljud och genomkopplingsfunktionen är avstängd.",
+    "@loudnessTargetDescription": {
+        "description": "Description for the loudness target setting. Atmos is a product name"
+    },
+    "loudnessTargetStandard": "Standard (-24 LUFS)",
+    "@loudnessTargetStandard": {
+        "description": "Loudness target option at broadcast loudness. LUFS is a unit and stays as is"
+    },
+    "loudnessTargetLoud": "Loud (-16 LUFS)",
+    "@loudnessTargetLoud": {
+        "description": "Louder loudness target option. LUFS is a unit and stays as is"
+    },
+    "rewindSubtitles": "Undertexter i ”Short Rewind”",
+    "@rewindSubtitles": {
+        "description": "Setting that turns subtitles on for a moment after the viewer goes back a few seconds"
+    },
+    "rewindSubtitlesDescription": "Om undertexterna är avstängda visas de när man spolar tillbaka 30 sekunder eller mindre, tills uppspelningen hinner ikapp.",
+    "@rewindSubtitlesDescription": {
+        "description": "Description for the subtitles on short rewind setting"
+    },
+    "toggleMediaDescriptionVisibility": "Visa/dölj beskrivningen av mediet",
+    "@toggleMediaDescriptionVisibility": {
+        "description": "Setting title to open media description visibility subpage"
+    },
+    "toggleMediaDescriptionVisibilityDescription": "Dölj mediebeskrivningar på olika detaljsidor.",
+    "@toggleMediaDescriptionVisibilityDescription": {
+        "description": "Setting description to open media description visibility subpage"
+    },
+    "mediaDescriptionVisibilityTitle": "Mediebeskrivning – Synlighet",
+    "@mediaDescriptionVisibilityTitle": {
+        "description": "Title for the media description visibility settings screen"
+    },
+    "hideMediaDescriptionMovie": "Filmsidor",
+    "@hideMediaDescriptionMovie": {
+        "description": "Setting title to hide descriptions on movie pages"
+    },
+    "hideMediaDescriptionMovieSubtitle": "Dölj beskrivningar på filmsidorna",
+    "@hideMediaDescriptionMovieSubtitle": {
+        "description": "Setting description to hide descriptions on movie detail pages"
+    },
+    "hideMediaDescriptionShow": "Visa sidor",
+    "@hideMediaDescriptionShow": {
+        "description": "Setting title to hide descriptions on show pages"
+    },
+    "hideMediaDescriptionShowSubtitle": "Dölj beskrivningar på sidorna med information om TV-program",
+    "@hideMediaDescriptionShowSubtitle": {
+        "description": "Setting description to hide descriptions on TV show detail pages"
+    },
+    "hideMediaDescriptionSeason": "Säsongssidor",
+    "@hideMediaDescriptionSeason": {
+        "description": "Setting title to hide descriptions on season pages"
+    },
+    "hideMediaDescriptionSeasonSubtitle": "Dölj beskrivningarna på säsongsöversiktssidorna",
+    "@hideMediaDescriptionSeasonSubtitle": {
+        "description": "Setting description to hide descriptions on season detail pages"
+    },
+    "hideMediaDescriptionEpisode": "Avsnittssidor",
+    "@hideMediaDescriptionEpisode": {
+        "description": "Setting title to hide descriptions on episode pages"
+    },
+    "hideMediaDescriptionEpisodeSubtitle": "Dölj beskrivningar på avsnittsdetaljsidor, säsongs- och avsnittslistor samt i spelarfönstret",
+    "@hideMediaDescriptionEpisodeSubtitle": {
+        "description": "Setting description to hide descriptions on episode detail pages, season episode lists, and player drawer"
+    },
+    "hideMediaDescriptionBoxSet": "Samlingssidor",
+    "@hideMediaDescriptionBoxSet": {
+        "description": "Setting title to hide descriptions on collection pages"
+    },
+    "hideMediaDescriptionBoxSetSubtitle": "Dölj beskrivningarna på sidorna för samlingar och boxset",
+    "@hideMediaDescriptionBoxSetSubtitle": {
+        "description": "Setting description to hide descriptions on collection and box set pages"
+    },
+    "bottomNavbarStyle": "Stil på nedre fältet",
+    "@bottomNavbarStyle": {
+        "description": "Settings title for choosing how the mobile bottom navigation bar looks"
+    },
+    "bottomNavbarStyleDock": "Docka",
+    "@bottomNavbarStyleDock": {
+        "description": "Bottom bar style: a floating pill with labelled tabs"
+    },
+    "bottomNavbarStyleSplit": "Split",
+    "@bottomNavbarStyleSplit": {
+        "description": "Bottom bar style: tabs in one capsule with search as its own round button"
+    },
+    "bottomNavbarStyleStrip": "Strip",
+    "@bottomNavbarStyleStrip": {
+        "description": "Bottom bar style: a full-width bar along the bottom edge"
+    },
+    "bottomNavbarTabs": "Flikar i nedre fältet",
+    "@bottomNavbarTabs": {
+        "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
+    },
+    "bottomNavbarTabsDescription": "Du kan fästa upp till tre flikar mellan ”Hem” och ”Du”. Allt annat finns i navigeringsfältet längst ner.",
+    "@bottomNavbarTabsDescription": {
+        "description": "Explains the bottom bar tabs screen"
+    },
+    "bottomNavbarTabsPinned": "Fäst",
+    "@bottomNavbarTabsPinned": {
+        "description": "Section header for the tabs pinned to the bottom bar"
+    },
+    "bottomNavbarTabsReset": "Återställ till automatisk inställning",
+    "@bottomNavbarTabsReset": {
+        "description": "Action that clears the pinned bottom bar tabs so they are picked automatically again"
+    },
+    "bottomNavbarTabsLimit": "Du kan fästa upp till tre flikar. Ta bort en för att fästa en annan.",
+    "@bottomNavbarTabsLimit": {
+        "description": "Hint shown when the maximum number of bottom bar tabs is already pinned"
+    },
+    "bottomNavbarTabTurnedOff": "Avstängt under ”Knappar”",
+    "@bottomNavbarTabTurnedOff": {
+        "description": "Hint on a bottom bar tab that can't be pinned because its navigation button setting is off"
+    },
+    "bottomNavbarSplitSearchNote": "I Split-stilen har sökfunktionen alltid en egen knapp.",
+    "@bottomNavbarSplitSearchNote": {
+        "description": "Note on the bottom bar tabs screen about the Split style"
+    },
+    "bottomNavbarButtonsNote": "Dessa avgör vad som visas i navigeringsfältet längst ned och vilka flikar du kan fästa i det nedre fältet. Flikar som redan finns i fältet visas inte här.",
+    "@bottomNavbarButtonsNote": {
+        "description": "Note under the navigation buttons section while the bottom bar is in use"
+    },
+    "cinemaSkipPrerolls": "Knapp för att hoppa över i biografläge",
+    "cinemaSkipPrerollsDescription": "Visa en ”Hoppa över”-knapp under trailrar, reklamfilmer och andra pre-rolls i biografläge.",
+    "detailsPage": "Detaljsida",
+    "@detailsPage": {
+        "description": "Settings entry and screen for options that shape the details page"
+    },
+    "storageAndDownloads": "Lagring och nedladdningar",
+    "@storageAndDownloads": {
+        "description": "Settings root entry and screen for downloads, storage location and the image cache"
+    },
+    "settingsSync": "Synkronisering av inställningar",
+    "@settingsSync": {
+        "description": "Settings screen for syncing settings through the Moonbase plugin"
+    },
+    "settingsSyncSubtitle": "Synkroniserings- och anpassningsprofiler för Moonbase-tillägget",
+    "@settingsSyncSubtitle": {
+        "description": "Subtitle for the Settings Sync entry"
+    },
+    "navigationBar": "Navigeringsfält",
+    "@navigationBar": {
+        "description": "Settings screen for the navigation bar style and buttons"
+    },
+    "homeRows": "Rader",
+    "@homeRows": {
+        "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+    },
+    "homeRowsSubtitle": "Aktivera eller inaktivera rader och ändra deras ordning",
+    "@homeRowsSubtitle": {
+        "description": "Subtitle for the Home rows entry"
+    },
+    "rowOptions": "Radalternativ",
+    "@rowOptions": {
+        "description": "Settings screen with sorting and content options for each Home row"
+    },
+    "rowOptionsSubtitle": "Sortering och innehåll för varje rad",
+    "@rowOptionsSubtitle": {
+        "description": "Subtitle for the Row Options entry"
+    },
+    "imageTypePerRow": "Bildtyp per rad",
+    "@imageTypePerRow": {
+        "description": "Settings entry and screen for choosing the image type of each Home row"
+    },
+    "externalSources": "Externa källor",
+    "@externalSources": {
+        "description": "Section header on the Home Screen settings screen for rows that come from IMDb, TMDB, calendars, Seerr and custom lists"
+    },
+    "qualityAndDecoding": "Kvalitet & avkodning",
+    "@qualityAndDecoding": {
+        "description": "Settings screen for streaming limits, decoding, HDR and Dolby Vision"
+    },
+    "qualityAndDecodingSubtitle": "Bithastighet, upplösning, avkodning, HDR och Dolby Vision",
+    "@qualityAndDecodingSubtitle": {
+        "description": "Subtitle for the Quality & Decoding entry"
+    },
+    "skippingAndAutoplay": "Hoppa över & Autoplay",
+    "@skippingAndAutoplay": {
+        "description": "Settings screen for media segment skipping, cinema mode and autoplay"
+    },
+    "advancedPlayback": "Avancerad uppspelning",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "advancedPlaybackSubtitle": "Spelarvägledning, externa spelare och mpv",
+    "@advancedPlaybackSubtitle": {
+        "description": "Subtitle for the Advanced Playback entry"
+    },
+    "settingsAccountSubtitle": "Inloggning, PIN-kod, barnläge, föräldrakontroll och synkronisering av inställningar",
+    "@settingsAccountSubtitle": {
+        "description": "Subtitle for the Account settings root entry"
+    },
+    "settingsGeneralSubtitle": "Språk, klocka, inmatning och prestanda",
+    "@settingsGeneralSubtitle": {
+        "description": "Subtitle for the General settings root entry"
     }
 }
