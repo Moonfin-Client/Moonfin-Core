@@ -7436,6 +7436,7 @@ class _PreviewCardShell extends StatelessWidget {
     } else if (controller != null) {
       previewSurface = Video(
         controller: controller!,
+        wakelock: false,
         controls: NoVideoControls,
         fit: BoxFit.cover,
         pauseUponEnteringBackgroundMode: false,

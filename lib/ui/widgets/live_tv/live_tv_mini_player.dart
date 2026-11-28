@@ -309,6 +309,7 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
 
     return Video(
       controller: controller,
+      wakelock: false,
       controls: NoVideoControls,
       fit: BoxFit.cover,
       fill: Colors.black,
