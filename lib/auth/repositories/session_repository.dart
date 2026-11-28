@@ -872,10 +872,10 @@ class SessionRepository {
   }
 
   /// The logins saved for [server], each as its token and, for Silo, the
-  /// account's pair (its profiles share one). Jellyfin and Emby keep one
-  /// access token per user; Plex has no server-side sign-out. A token another
-  /// saved server still holds (the same server under a second address) is
-  /// left alone, so that entry stays signed in.
+  /// account's pair (its profiles share one). Jellyfin, Emby and
+  /// Audiobookshelf keep one access token per user. Plex has no server-side
+  /// sign-out. A token another saved server still holds (the same server
+  /// under a second address) is left alone, so that entry stays signed in.
   List<(String, SiloTokens?)> _savedLogins(Server server) {
     final List<(String, SiloTokens?)> logins = switch (server.serverType) {
       ServerType.silo => [
@@ -883,7 +883,9 @@ class SessionRepository {
           if (_siloTokens.read(server.id, accountId) case final pair?)
             (pair.refreshToken, pair),
       ],
-      ServerType.jellyfin || ServerType.emby => [
+      ServerType.jellyfin ||
+      ServerType.emby ||
+      ServerType.audiobookshelf => [
         for (final token in {
           for (final user in _authStore.getUsers(server.id))
             if (user.accessToken.isNotEmpty) user.accessToken,
