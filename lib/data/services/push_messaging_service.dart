@@ -77,19 +77,6 @@ class PushMessagingService extends ChangeNotifier {
       await messaging.requestPermission();
     } catch (_) {}
 
-    // On iOS the APNs token must be present before FCM will hand out a token.
-    if (PlatformDetection.isIOS) {
-      try {
-        final apns = await messaging.getAPNSToken();
-        if (apns == null) {
-          debugPrint('PushMessagingService: no APNs token; check the Push '
-              'Notifications capability and the APNs key in Firebase');
-        }
-      } catch (e) {
-        debugPrint('PushMessagingService: getAPNSToken failed: $e');
-      }
-    }
-
     messaging.onTokenRefresh.listen((token) {
       _registerToken(token);
     });
@@ -130,6 +117,15 @@ class PushMessagingService extends ChangeNotifier {
       final settings =
           await FirebaseMessaging.instance.getNotificationSettings();
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
+      // Info.plist turns auto-init off, and the iOS plugin won't ask for an
+      // APNs token until it's back on. getToken fails until that token lands.
+      if (PlatformDetection.isIOS) {
+        await FirebaseMessaging.instance.setAutoInitEnabled(true);
+        for (var i = 0; i < 10; i++) {
+          if (await FirebaseMessaging.instance.getAPNSToken() != null) break;
+          await Future.delayed(const Duration(milliseconds: 300));
+        }
+      }
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
         debugPrint('PushMessagingService: getToken returned null');
@@ -218,6 +214,11 @@ class PushMessagingService extends ChangeNotifier {
     if (deleteToken && started != null) {
       try {
         await started;
+        // iOS keeps this flag across launches, so turn it off before Firebase
+        // can make a new token by itself.
+        if (PlatformDetection.isIOS) {
+          await FirebaseMessaging.instance.setAutoInitEnabled(false);
+        }
         await FirebaseMessaging.instance.deleteToken();
         // Firebase keeps the installation ID until the app deletes it.
         await FirebaseInstallations.instance.delete();
