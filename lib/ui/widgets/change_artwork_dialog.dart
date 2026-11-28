@@ -54,7 +54,6 @@ class ChangeArtworkDialog extends StatefulWidget {
 
 class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   late AggregatedItem _item;
-  // The item fetch started on open.
   late final Future<void> _openingRefresh;
   late List<String> _supportedCategories;
   final Map<String, List<Map<String, dynamic>>> _remoteImages = {};
@@ -860,79 +859,63 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     setState(() {
       _actionInProgress.addAll(_supportedCategories);
     });
-    // A closed dialog stays mounted until its exit animation ends.
-    bool closed() => !mounted || !(ModalRoute.of(context)?.isActive ?? true);
-
-    // The dialog may close, or move to another item, while Clear All waits.
-    bool stopped() {
-      if (!closed() && _item.id == itemId) return false;
+    // Without the full item, Clear All would skip images the card leaves out.
+    if (itemId == widget.item.id) await _openingRefresh;
+    // Nothing is deleted if the dialog closed, or moved to another item, while
+    // that loaded. A closing dialog stays mounted until its exit animation ends.
+    if (!mounted ||
+        !(ModalRoute.of(context)?.isActive ?? true) ||
+        _item.id != itemId) {
       if (mounted) {
         setState(() {
           _actionInProgress.clear();
         });
       }
-      return true;
+      return;
     }
 
-    // Without the full item, Clear All would skip images the card leaves out.
-    if (itemId == widget.item.id) await _openingRefresh;
-    if (stopped()) return;
-
-    // Read the item's images once, before a link can move the dialog on.
+    // Counted once, so following a link while it deletes can't change what
+    // gets deleted.
     final counts = {
       for (final category in _supportedCategories)
         category: _getCurrentTags(category).length,
     };
 
-    var deleted = false;
-    var wasStopped = false;
     try {
       final client = GetIt.instance<MediaServerClient>();
-      deleting:
       for (final MapEntry(key: category, value: count) in counts.entries) {
         if (count == 0) continue;
 
         if (category == 'Backdrop') {
           for (int i = count - 1; i >= 0; i--) {
-            if (stopped()) break deleting;
             await client.adminItemsApi.deleteItemImage(
               itemId,
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
-            deleted = true;
             _markChanged();
           }
         } else {
-          if (stopped()) break deleting;
           await client.adminItemsApi.deleteItemImage(
             itemId,
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
-          deleted = true;
           _markChanged();
         }
       }
-      if (closed()) return;
-      // A stopped clear still refreshes the item if it deleted anything, so
-      // going Back does not show the deleted images again.
-      wasStopped = stopped();
-      if (wasStopped && !deleted) return;
 
       final updatedRaw = await client.itemsApi.getItem(itemId);
       if (mounted) {
         setState(() {
           _applyFetchedItem(itemId, updatedRaw);
-          // A stopped clear already unlocked the rows, which may now belong
-          // to a newer Clear All.
-          if (!wasStopped) _actionInProgress.clear();
+          _actionInProgress.clear();
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          if (!wasStopped) _actionInProgress.clear();
+          _actionInProgress.clear();
         });
         await _handleActionError(e, 'clear');
       }
