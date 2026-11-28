@@ -5,7 +5,7 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/l10n/app_localizations_zh.dart';
 import 'package:moonfin/l10n/current_app_localizations.dart';
 
-const _hans = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans');
+const _hans = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN');
 const _hant = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant');
 
 void main() {
@@ -20,6 +20,10 @@ void main() {
         ),
         _hans,
       );
+    });
+
+    test('sends Windows a Simplified Chinese locale string it recognises', () {
+      expect(resolveAppUiLocale(const Locale('zh')).toString(), 'zh_Hans_CN');
     });
 
     test('treats Taiwan, Hong Kong and Macau as Traditional', () {
@@ -52,7 +56,7 @@ void main() {
     ('the language picker', const Locale('zh'), const Locale('en', 'US')),
     ('a zh-CN system', null, const Locale('zh', 'CN')),
   ]) {
-    testWidgets('text gets zh-Hans for font fallback from $name', (tester) async {
+    testWidgets('text gets zh-Hans-CN for font fallback from $name', (tester) async {
       tester.platformDispatcher.localesTestValue = [system];
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);
       await tester.pumpWidget(
