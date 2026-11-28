@@ -90,15 +90,11 @@ class TvChannelsService {
       final signature = _signatureFor(channels);
       if (signature == _lastPublishedSignature) return;
 
-      if (channels.isEmpty) {
-        await _channel.invokeMethod('clearChannels');
-        _lastPublishedSignature = signature;
-        return;
-      }
       await CarArtwork.instance.persistHosts();
       if (generation != _generation) return;
       await _channel.invokeMethod('publishChannels', {'channels': channels});
-      _lastPublishedSignature = signature;
+      // If this was overtaken meanwhile, what the launcher shows isn't known.
+      _lastPublishedSignature = generation == _generation ? signature : null;
     } catch (_) {}
   }
 
