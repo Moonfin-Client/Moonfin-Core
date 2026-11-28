@@ -248,6 +248,12 @@ class _VideoPlaybackScreen extends StatelessWidget {
                               },
                             ),
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.playerSwipeSeek,
+                  title: l10n.playerSwipeSeek,
+                  subtitle: l10n.playerSwipeSeekDescription,
+                  icon: Icons.swipe,
+                ),
               ],
               _TvSettingsListTile(
                 leading: const Icon(Icons.tune),

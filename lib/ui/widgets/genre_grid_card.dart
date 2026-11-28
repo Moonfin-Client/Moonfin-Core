@@ -3,11 +3,27 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../preference/user_preferences.dart';
+import '../../util/artwork_request_size.dart';
 import 'bounded_network_image.dart';
 import 'marquee_text.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/key_event_utils.dart';
 import '../mixins/focus_state_mixin.dart';
+
+/// The genre grids' artwork request ceiling at 2x. [artworkCeiling] keeps it
+/// on phones and 1080p TVs and raises it on a 4K TV.
+const genreArtworkRequestCeilingAt2x = 720;
+
+/// The widest decode a genre card uses on a display of [devicePixelRatio]:
+/// the 1024 default, or the genre request ceiling where that is higher (a 4K
+/// TV), so the decode keeps the pixels the screen fetched.
+int genreCardDecodeMaxWidth(double devicePixelRatio) {
+  final ceiling = artworkCeiling(
+    genreArtworkRequestCeilingAt2x,
+    devicePixelRatio,
+  );
+  return ceiling > 1024 ? ceiling : 1024;
+}
 
 class GenreCardData {
   final String id;
@@ -168,6 +184,9 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                         BoundedNetworkImage(
                           imageUrl: imageUrl,
                           fadeInDuration: Duration.zero,
+                          maxWidth: genreCardDecodeMaxWidth(
+                            MediaQuery.devicePixelRatioOf(context),
+                          ),
                           errorBuilder: (_, _, _) => Container(
                             color: AppColorScheme.surface.withValues(alpha: 0.35),
                           ),

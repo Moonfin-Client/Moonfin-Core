@@ -72,6 +72,15 @@ class SubtitleSettingsScreen extends StatelessWidget {
                         SubtitleMode.none => l10n.subtitleModeNoneDescription,
                       },
                     ),
+                    // The web player restarts the stream for any subtitle
+                    // change, so it can't show one for a moment.
+                    if (!PlatformDetection.isWeb)
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.rewindSubtitles,
+                        title: l10n.rewindSubtitles,
+                        subtitle: l10n.rewindSubtitlesDescription,
+                        icon: Icons.replay_10,
+                      ),
                     MultiSelectPreferenceTile(
                       preference: UserPreferences.subtitleDownloadLanguages,
                       title: l10n.subtitleDownloadLanguages,

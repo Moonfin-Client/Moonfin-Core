@@ -385,7 +385,8 @@ class PlatformDetection {
     return 0;
   }
 
-  static Size? get _screenLogicalSize {
+  /// The app window's size in logical pixels, or null before there is one.
+  static Size? get screenLogicalSize {
     final view = WidgetsBinding.instance.platformDispatcher.implicitView;
     if (view == null) return null;
     final pixelRatio = view.devicePixelRatio == 0 ? 1.0 : view.devicePixelRatio;
@@ -406,7 +407,7 @@ class PlatformDetection {
     if (_interfaceLayout == InterfaceLayout.desktop) return false;
     if (isDesktop) return false;
     if (isAndroid || isIOS) return true;
-    final size = _screenLogicalSize;
+    final size = screenLogicalSize;
     if (size == null) return _isMobilePlatformSignal;
     if (size.shortestSide <= 0) return _isMobilePlatformSignal;
     return size.shortestSide < _mobileFormFactorBreakpoint;

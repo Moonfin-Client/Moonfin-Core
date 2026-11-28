@@ -6,6 +6,8 @@ class EmbyUserViewsApi implements UserViewsApi {
   final String Function() _getUserId;
   final UsersApi Function() _usersApi;
   final Map<bool, ({Map<String, dynamic> views, DateTime at})> _cache = {};
+  int _cacheRevision = 0;
+  int _accountRevision = 0;
   static const _cacheDuration = Duration(minutes: 5);
 
   EmbyUserViewsApi(this._dio, this._getUserId, this._usersApi);
@@ -19,26 +21,40 @@ class EmbyUserViewsApi implements UserViewsApi {
   Future<Map<String, dynamic>> getUserViews({
     bool includeHidden = false,
   }) async {
+    final userId = _getUserId();
+    final accountRevision = _accountRevision;
     final cached = _cache[includeHidden];
     if (cached != null &&
         DateTime.now().difference(cached.at) < _cacheDuration) {
       return cached.views;
     }
 
-    final userId = _getUserId();
-    final response = await _dio.get('/Users/$userId/Views');
-    var views = response.data as Map<String, dynamic>;
-    if (includeHidden) {
-      views = await _withExcludedViews(userId, views);
-    }
+    // The caller can cache a successful response for the entire session.
+    // Retry a concurrent configuration save once to avoid returning partial views.
+    for (var attempt = 0; attempt < 2; attempt++) {
+      final revision = _cacheRevision;
+      final response = await _dio.get('/Users/$userId/Views');
+      final views = response.data as Map<String, dynamic>;
+      final result = includeHidden && revision == _cacheRevision
+          ? await _withExcludedViews(userId, views, revision)
+          : views;
+      if (accountRevision != _accountRevision) {
+        throw StateError('Emby account changed while loading library views');
+      }
+      if (revision != _cacheRevision) continue;
 
-    _cache[includeHidden] = (views: views, at: DateTime.now());
-    return views;
+      _cache[includeHidden] = (views: result, at: DateTime.now());
+      return result;
+    }
+    throw StateError(
+      'Emby configuration kept changing while loading library views',
+    );
   }
 
   Future<Map<String, dynamic>> _withExcludedViews(
     String userId,
     Map<String, dynamic> views,
+    int revision,
   ) async {
     final items = (views['Items'] as List?) ?? const [];
     final present = items
@@ -48,7 +64,7 @@ class EmbyUserViewsApi implements UserViewsApi {
         .toSet();
 
     final config = await _userConfiguration();
-    if (config == null) return views;
+    if (config == null || revision != _cacheRevision) return views;
 
     final missing = config.myMediaExcludes
         .where((id) => id.isNotEmpty && !present.contains(id))
@@ -125,5 +141,13 @@ class EmbyUserViewsApi implements UserViewsApi {
     }
   }
 
-  void invalidateCache() => _cache.clear();
+  void accountChanged() {
+    _accountRevision++;
+    invalidateCache();
+  }
+
+  void invalidateCache() {
+    _cacheRevision++;
+    _cache.clear();
+  }
 }

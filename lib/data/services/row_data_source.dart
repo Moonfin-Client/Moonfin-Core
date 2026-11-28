@@ -344,12 +344,20 @@ class RowDataSource {
         return (
           response: retryResponse,
           raw: retryRaw,
-          items: normalize(retryRaw, wanted > _maxItems ? _maxItems : wanted),
+          items: await withSeriesUserData(
+            normalize(retryRaw, wanted > _maxItems ? _maxItems : wanted),
+            (_) => _client.itemsApi,
+          ),
           fetchLimit: _fullRowFetchLimit,
         );
       } catch (_) {}
     }
-    return (response: response, raw: raw, items: items, fetchLimit: fetchLimit);
+    return (
+      response: response,
+      raw: raw,
+      items: await withSeriesUserData(items, (_) => _client.itemsApi),
+      fetchLimit: fetchLimit,
+    );
   }
 
   /// The server may hold more while it filled the page it was asked for, until
@@ -1587,31 +1595,33 @@ class RowDataSource {
     );
   }
 
-  static _ParsedStableId? _parseStableId(String id) {
+  /// The section Core and Moonbase write for a picked collection, playlist or
+  /// genre row.
+  static const _pickedSections = {
+    HomeSectionPluginSource.collections: 'collection',
+    HomeSectionPluginSource.playlists: 'playlist',
+    HomeSectionPluginSource.genres: 'genre',
+  };
+
+  /// A plugin row's source and the id it was saved with. A picked row's id is
+  /// everything after its section, since Silo's ids have colons of their own.
+  /// Any other row's is its last part.
+  static ({HomeSectionPluginSource source, String additionalData})?
+  _parseStableId(String id) {
     if (!id.startsWith('pluginDynamic:')) return null;
-    final lastColon = id.lastIndexOf(':');
-    if (lastColon < 0) return null;
-    final additionalData = id.substring(lastColon + 1);
-
-    final rest = id.substring(0, lastColon);
-    final secondLastColon = rest.lastIndexOf(':');
-    if (secondLastColon < 0) return null;
-    final section = rest.substring(secondLastColon + 1);
-
-    final rest2 = rest.substring(0, secondLastColon);
-    const prefix = 'pluginDynamic:';
-    if (rest2.length <= prefix.length) return null;
-    final sub = rest2.substring(prefix.length);
-    final sourceEnd = sub.indexOf(':');
+    final body = id.substring('pluginDynamic:'.length);
+    final sourceEnd = body.indexOf(':');
     if (sourceEnd < 0) return null;
-    final sourceName = sub.substring(0, sourceEnd);
-    final serverIdPart = sub.substring(sourceEnd + 1);
-
-    return _ParsedStableId(
-      source: HomeSectionPluginSource.fromSerialized(sourceName),
-      serverId: serverIdPart,
-      section: section,
-      additionalData: additionalData,
+    final source = HomeSectionPluginSource.fromSerialized(
+      body.substring(0, sourceEnd),
+    );
+    final section = _pickedSections[source];
+    final marker = section == null ? -1 : body.indexOf(':$section:', sourceEnd);
+    return (
+      source: source,
+      additionalData: marker < 0
+          ? body.substring(body.lastIndexOf(':') + 1)
+          : body.substring(marker + section!.length + 2),
     );
   }
 
@@ -3587,7 +3597,7 @@ class RowDataSource {
             }
           }
         } catch (e) {
-          print('[RowDataSource] Failed to resolve TMDB ID for online recommendations: $e');
+          debugPrint('[RowDataSource] Failed to resolve TMDB ID for online recommendations: $e');
         }
       }
 
@@ -3699,7 +3709,7 @@ class RowDataSource {
                 }).take(limit).toList();
               }
             } catch (e) {
-              print('[RowDataSource] Direct TMDB recommendation query failed: $e');
+              debugPrint('[RowDataSource] Direct TMDB recommendation query failed: $e');
             }
           }
         }
@@ -4181,18 +4191,4 @@ class RowDataSource {
 
     return false;
   }
-}
-
-class _ParsedStableId {
-  final HomeSectionPluginSource source;
-  final String serverId;
-  final String section;
-  final String additionalData;
-
-  _ParsedStableId({
-    required this.source,
-    required this.serverId,
-    required this.section,
-    required this.additionalData,
-  });
 }

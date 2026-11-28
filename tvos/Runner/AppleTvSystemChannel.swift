@@ -24,10 +24,6 @@ final class AppleTvSystemChannel: NSObject, UITextFieldDelegate {
 
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
-        case "setIdleTimerDisabled":
-            let disabled = (call.arguments as? Bool) ?? false
-            UIApplication.shared.isIdleTimerDisabled = disabled
-            result(nil)
         case "setGamepadNavigationEnabled":
             gamepadHost?.controllerUserInteractionEnabled = (call.arguments as? Bool) ?? false
             result(nil)

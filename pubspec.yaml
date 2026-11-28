@@ -133,6 +133,8 @@ dependencies:
     path: packages/server_plex
   server_silo:
     path: packages/server_silo
+  server_audiobookshelf:
+    path: packages/server_audiobookshelf
   playback_core:
     path: packages/playback_core
   playback_jellyfin:
@@ -143,6 +145,8 @@ dependencies:
     path: packages/playback_plex
   playback_silo:
     path: packages/playback_silo
+  playback_audiobookshelf:
+    path: packages/playback_audiobookshelf
   moonfin_design:
     path: packages/design
   jellyfin_preference:
@@ -187,6 +191,8 @@ dependencies:
   shared_preferences_tvos: 0.0.2
   flutter_secure_storage_tvos: 0.0.2
   sqflite_tvos: any
+  connectivity_plus_tvos: 0.0.2
+  wakelock_plus_tvos: 0.0.2
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
   firebase_app_installations: ^0.4.5

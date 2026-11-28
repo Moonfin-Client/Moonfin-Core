@@ -39,10 +39,11 @@ class ImpellerPolicyTest {
     }
 
     @Test
-    fun `PowerVR stays on Vulkan only from the B-Series on`() {
+    fun `PowerVR stays on Vulkan only from the C-Series on`() {
         assertFalse(ImpellerPolicy.gpuStaysOnVulkan("PowerVR Rogue GE8300"))
         assertFalse(ImpellerPolicy.gpuStaysOnVulkan("PowerVR Rogue GE9215"))
-        assertTrue(ImpellerPolicy.gpuStaysOnVulkan("PowerVR B-Series BXE-4-32"))
+        assertFalse(ImpellerPolicy.gpuStaysOnVulkan("PowerVR B-Series BXE-4-32"))
+        assertTrue(ImpellerPolicy.gpuStaysOnVulkan("PowerVR C-Series CXT-48-1536"))
     }
 
     @Test

@@ -88,6 +88,8 @@ import 'package:server_core/server_core.dart'
     show ImageApi, ItemsApi, MediaServerClient, ServerType;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../support/preview_screen.dart';
+
 class _Users extends Mock implements UserRepository {}
 
 class _Saved extends Mock implements SavedMediaPresence {}
@@ -652,6 +654,7 @@ void main() {
           ? TargetPlatform.linux
           : TargetPlatform.android;
       PlatformDetection.setInterfaceLayout(layout);
+      usePreviewScreenOf(layout);
       SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
       final controller = SettingsPreviewController();
 
@@ -1225,7 +1228,7 @@ void main() {
       expect(find.text('3.9/5'), findsOneWidget);
       expect(find.text('87%'), findsNothing);
       // The media bar never shows the viewer's own rating.
-      expect(find.text('8.0'), findsNothing);
+      expect(find.text('8'), findsNothing);
       expect(
         tester.getTopLeft(find.text(l10n.letterboxd)).dx,
         lessThan(tester.getTopLeft(find.text(l10n.imdb)).dx),
@@ -1251,7 +1254,7 @@ void main() {
         ..tryValue('pref_home_rows_style', HomeRowsStyle.v2);
       await pumpPreview(tester, controller);
       expect(find.byType(RatingsRow), findsOneWidget);
-      expect(find.text('8.0'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
 
       controller
         ..focus(
@@ -2055,19 +2058,19 @@ void main() {
         ..tryValue('pref_detail_screen_style', DetailScreenStyle.modern);
       await pumpPreview(tester, controller);
       expect(controller.scene, SettingsPreviewScene.details);
-      expect(find.text('8.0'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
 
       controller.tryValue(
         'pref_personal_rating_style',
         PersonalRatingStyle.stars,
       );
       await pumpPreview(tester, controller);
-      expect(find.text('4.0/5'), findsOneWidget);
-      expect(find.text('8.0'), findsNothing);
+      expect(find.text('4/5'), findsOneWidget);
+      expect(find.text('8'), findsNothing);
 
       controller.clearTry('pref_personal_rating_style');
       await pumpPreview(tester, controller);
-      expect(find.text('8.0'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
       debugDefaultTargetPlatformOverride = null;
     });
   });
@@ -2260,6 +2263,7 @@ void main() {
   ) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    usePreviewScreenOf(InterfaceLayout.phone);
     SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
     final controller = SettingsPreviewController()
       ..tryValue('pref_home_rows_style', HomeRowsStyle.v2)
@@ -4501,6 +4505,7 @@ void main() {
     ) async {
       tv();
       PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      usePreviewScreenOf(InterfaceLayout.phone);
       final prefs = GetIt.instance<UserPreferences>();
       await prefs.set(UserPreferences.homeRowsStyle, HomeRowsStyle.v2);
       await prefs.set(UserPreferences.posterSize, PosterSize.extraLarge);

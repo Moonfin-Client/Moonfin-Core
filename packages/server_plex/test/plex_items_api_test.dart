@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart'
-    show ImageType, MetadataRefreshMode, UserPolicy;
+    show ImageType, MetadataRefreshMode, UserConfiguration, UserPolicy;
 import 'package:server_plex/src/api/plex_admin_items_api.dart';
 import 'package:server_plex/src/api/plex_apis.dart';
 import 'package:server_plex/src/api/plex_items_api.dart';
 import 'package:server_plex/src/api/plex_trickplay_api.dart';
+import 'package:server_plex/src/plex_item_mapper.dart' show plexSectionPrefix;
 import 'package:test/test.dart';
 
 class _FakeServer extends Interceptor {
@@ -460,6 +461,79 @@ void main() {
           401,
         ),
       ),
+    );
+  });
+
+  test('the user configuration is saved to the store and read back by user, '
+      'with Plex defaults until one is saved', () async {
+    final saved = <String, Map<String, dynamic>>{};
+    final PlexUserConfigurationStore store = (
+      read: (userId) => saved[userId],
+      write: (userId, json) async => saved[userId] = json,
+    );
+    final (dio, requests) = _recordingDio(const {});
+    var userId = 'owner';
+    final api = PlexUsersApi(dio, () => userId, (_) {}, configStore: store);
+
+    expect((await api.getUserConfiguration()).hidePlayedInLatest, isFalse);
+    await api.updateUserConfiguration(
+      const UserConfiguration(
+        orderedViews: ['plex-section-2', 'plex-section-1'],
+        myMediaExcludes: ['plex-section-3'],
+      ),
+    );
+    final config = await api.getUserConfiguration();
+    expect(config.orderedViews, ['plex-section-2', 'plex-section-1']);
+    expect(config.myMediaExcludes, ['plex-section-3']);
+
+    userId = 'home-member';
+    expect((await api.getUserConfiguration()).orderedViews, isEmpty);
+    expect(requests, isEmpty);
+  });
+
+  test('views follow the saved order, with the rest after in server order, '
+      'and leave out hidden libraries unless asked', () async {
+    final (dio, _) = _recordingDio({
+      'Directory': [
+        {'key': '1', 'title': 'Movies', 'type': 'movie'},
+        {'key': '2', 'title': 'TV Shows', 'type': 'show'},
+        {'key': '3', 'title': 'Docs', 'type': 'movie'},
+      ],
+    });
+    Future<List<Object?>> idsFor(
+      List<String> order, {
+      List<String> hidden = const [],
+      bool includeHidden = false,
+    }) async {
+      final response = await PlexUserViewsApi(
+        dio,
+        () async =>
+            UserConfiguration(orderedViews: order, myMediaExcludes: hidden),
+      ).getUserViews(includeHidden: includeHidden);
+      return [for (final view in response['Items'] as List) view['Id']];
+    }
+
+    expect(await idsFor(const []), [
+      '${plexSectionPrefix}1',
+      '${plexSectionPrefix}2',
+      '${plexSectionPrefix}3',
+      'livetv',
+    ]);
+    expect(await idsFor(['livetv', '${plexSectionPrefix}3']), [
+      'livetv',
+      '${plexSectionPrefix}3',
+      '${plexSectionPrefix}1',
+      '${plexSectionPrefix}2',
+    ]);
+    final hidden = ['${plexSectionPrefix}2'];
+    expect(await idsFor(const [], hidden: hidden), [
+      '${plexSectionPrefix}1',
+      '${plexSectionPrefix}3',
+      'livetv',
+    ]);
+    expect(
+      await idsFor(const [], hidden: hidden, includeHidden: true),
+      hasLength(4),
     );
   });
 

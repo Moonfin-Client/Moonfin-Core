@@ -81,16 +81,24 @@ class PlexServer {
   }
 
   /// [lanUris] answered GDM on this network, which plex.tv can't see past a
-  /// container or NAT, so they go first.
+  /// container or NAT, so they go first, each after plex.tv's https address
+  /// for the same host, when it lists one. Each address is kept once.
   PlexServer withLanUris(Iterable<String> lanUris) => PlexServer(
     id: id,
     name: name,
     version: version,
     accessToken: accessToken,
-    connections: [
-      for (final uri in lanUris) (uri: uri, address: Uri.parse(uri).authority),
+    connections: {
+      for (final uri in lanUris) ...[
+        ...connections.where(
+          (c) =>
+              c.uri.startsWith('https:') &&
+              c.address == Uri.parse(uri).authority,
+        ),
+        (uri: uri, address: Uri.parse(uri).authority),
+      ],
       ...connections,
-    ],
+    }.toList(),
   );
 
   String? get address => connections.firstOrNull?.address;

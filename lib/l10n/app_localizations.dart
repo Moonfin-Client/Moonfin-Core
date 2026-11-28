@@ -334,6 +334,54 @@ abstract class AppLocalizations {
   /// **'Connecting to {serverName}'**
   String connectingToServer(String serverName);
 
+  /// Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get absApiKey;
+
+  /// Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app
+  ///
+  /// In en, this message translates to:
+  /// **'Make one in Audiobookshelf under Settings > API Keys, then paste it here.'**
+  String get absApiKeyHint;
+
+  /// Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'OpenID'**
+  String get absOpenId;
+
+  /// Audiobookshelf sign-in: what happens when signing in with OpenID
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.'**
+  String get absOpenIdIntro;
+
+  /// Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page
+  ///
+  /// In en, this message translates to:
+  /// **'Finish signing in on the page that opened in your browser.'**
+  String get absOpenIdWaiting;
+
+  /// Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser
+  ///
+  /// In en, this message translates to:
+  /// **'Open Sign-in Page'**
+  String get absOpenIdOpen;
+
+  /// Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once
+  ///
+  /// In en, this message translates to:
+  /// **'Open It Again'**
+  String get absOpenIdOpenAgain;
+
+  /// Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf
+  ///
+  /// In en, this message translates to:
+  /// **'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add {address} to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.'**
+  String absOpenIdRedirectRefused(String address);
+
   /// Quick Connect toggle button label
   ///
   /// In en, this message translates to:
@@ -897,6 +945,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show codec, resolution, and stream information in banner summary'**
   String get showTechnicalDetailsSubtitle;
+
+  /// Label for the detail screen setting to show full release or air dates instead of only the year
+  ///
+  /// In en, this message translates to:
+  /// **'Show Full Date'**
+  String get detailShowFullDate;
+
+  /// Explanation under the show full date setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show the full release or air date instead of only the year on details pages'**
+  String get detailShowFullDateSubtitle;
 
   /// Label for the Recommendation System setting
   ///
@@ -3736,6 +3796,42 @@ abstract class AppLocalizations {
   /// **'Hide mpv Statistics (Shift+I)'**
   String get hideMpvStats;
 
+  /// Button in the playback information sheet that shows live network and buffer stats with small graphs over the video
+  ///
+  /// In en, this message translates to:
+  /// **'Show Playback Stats'**
+  String get showPlaybackStats;
+
+  /// Button in the playback information sheet that hides the live network and buffer stats over the video
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Playback Stats'**
+  String get hidePlaybackStats;
+
+  /// Row in the playback stats over the video: how much data arrived in the last second, like 12.4 Mbps
+  ///
+  /// In en, this message translates to:
+  /// **'Network Activity'**
+  String get playbackStatsNetworkActivity;
+
+  /// Row in the playback stats over the video: seconds of video loaded ahead of the play position, like 95.3 / 120 s
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer Health'**
+  String get playbackStatsBufferHealth;
+
+  /// Row in the playback stats over the video: memory the loaded video uses out of the most it may use, like 210 / 384 MB
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer Memory'**
+  String get playbackStatsBufferMemory;
+
+  /// Row in the playback stats over the video: how many times playback stopped to load more, not counting seeks
+  ///
+  /// In en, this message translates to:
+  /// **'Rebuffers'**
+  String get playbackStatsRebuffers;
+
   /// Title of the screen and dialog that list every keyboard shortcut
   ///
   /// In en, this message translates to:
@@ -6406,6 +6502,18 @@ abstract class AppLocalizations {
   /// **'Slide up or down on the player to change brightness on the left and volume on the right'**
   String get playerSwipeGesturesDescription;
 
+  /// Setting that lets a sideways swipe on the video move playback back or ahead
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to Seek'**
+  String get playerSwipeSeek;
+
+  /// Description for the swipe to seek setting
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left or right on the player to go back or ahead while the controls are hidden'**
+  String get playerSwipeSeekDescription;
+
   /// Setting title for inverting placement of brightness and volume gesture indicators
   ///
   /// In en, this message translates to:
@@ -7443,6 +7551,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'App (IEC)'**
   String get settingsAudioPassthroughOutputIecLabel;
+
+  /// Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently
+  ///
+  /// In en, this message translates to:
+  /// **'Decode Silent Passthrough'**
+  String get settingsAudioPassthroughFallback;
+
+  /// Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently
+  ///
+  /// In en, this message translates to:
+  /// **'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.'**
+  String get settingsAudioPassthroughFallbackDescription;
 
   /// No description provided for @settingsDownmixToStereoDescription.
   ///
@@ -10839,6 +10959,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep'**
   String get keep;
+
+  /// Button and dialog title for deleting a failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Request'**
+  String get removeRequest;
+
+  /// Confirmation message before deleting a failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'Your failed request for \"{title}\" will be deleted. You can request it again later.'**
+  String removeFailedRequestForTitle(String title);
+
+  /// Snackbar when Silo refuses to delete a failed request because it changed
+  ///
+  /// In en, this message translates to:
+  /// **'The request wasn\'t removed. It was retried, or part of it arrived.'**
+  String get removeFailedRequestRefused;
+
+  /// Confirmation message before an admin deletes another user's failed Silo request
+  ///
+  /// In en, this message translates to:
+  /// **'The failed request for \"{title}\" by {name} will be deleted. They can request it again later.'**
+  String removeOthersFailedRequestForTitle(String title, String name);
+
+  /// Snackbar when deleting a failed Silo request fails for a reason other than the request changing
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t remove the request. Try again.'**
+  String get removeFailedRequestError;
 
   /// Snackbar when Seerr item cannot be found in Jellyfin
   ///
@@ -22912,6 +23062,90 @@ abstract class AppLocalizations {
   /// **'When Match Frame Rate is off, play 24 fps video 0.1% slower so it fits the TV without dropped frames. Not used when audio is passed through to a receiver.'**
   String get cadenceSlowdownSubtitle;
 
+  /// Apple player setting that sharpens SD and 720p video up to the screen's resolution on the device
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale video below 1080p'**
+  String get upscaleLowResolutionVideo;
+
+  /// Subtitle for the setting that upscales video below 1080p on Apple devices
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.'**
+  String get upscaleLowResolutionVideoSubtitle;
+
+  /// Apple player setting that sharpens 1080p video up to the resolution of a larger screen, such as a 4K TV
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale 1080p video'**
+  String get upscaleFullHdVideo;
+
+  /// Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
+  String get upscaleFullHdVideoSubtitle;
+
+  /// Apple player setting that upscales anime and other drawn animation with a scaler made for line art
+  ///
+  /// In en, this message translates to:
+  /// **'Upscale anime with line art'**
+  String get upscaleAnimationLineArt;
+
+  /// Subtitle for the line art upscaling setting. Anime and Animation are genre names from the media library
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.'**
+  String get upscaleAnimationLineArtSubtitle;
+
+  /// Apple TV and Mac player setting that picks the screen's peak brightness so Moonfin tone maps brighter HDR10 video to it
+  ///
+  /// In en, this message translates to:
+  /// **'HDR tone mapping'**
+  String get hdrToneMapping;
+
+  /// Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names
+  ///
+  /// In en, this message translates to:
+  /// **'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
+  String get hdrToneMappingDescription;
+
+  /// iPhone, iPad and Apple TV audio setting that renders surround sound as 3D stereo for headphones
+  ///
+  /// In en, this message translates to:
+  /// **'Binaural audio for headphones'**
+  String get binauralHeadphones;
+
+  /// Subtitle for the binaural headphones setting
+  ///
+  /// In en, this message translates to:
+  /// **'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.'**
+  String get binauralHeadphonesSubtitle;
+
+  /// Apple player setting that raises quietly mixed movies and shows to a chosen loudness
+  ///
+  /// In en, this message translates to:
+  /// **'Loudness target'**
+  String get loudnessTarget;
+
+  /// Description for the loudness target setting. Atmos is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.'**
+  String get loudnessTargetDescription;
+
+  /// Loudness target option at broadcast loudness. LUFS is a unit and stays as is
+  ///
+  /// In en, this message translates to:
+  /// **'Standard (-24 LUFS)'**
+  String get loudnessTargetStandard;
+
+  /// Louder loudness target option. LUFS is a unit and stays as is
+  ///
+  /// In en, this message translates to:
+  /// **'Loud (-16 LUFS)'**
+  String get loudnessTargetLoud;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:
@@ -22995,6 +23229,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prioritize external subtitle files over embedded tracks.'**
   String get preferExternalSubtitlesSubtitle;
+
+  /// Setting that turns subtitles on for a moment after the viewer goes back a few seconds
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles on Short Rewind'**
+  String get rewindSubtitles;
+
+  /// Description for the subtitles on short rewind setting
+  ///
+  /// In en, this message translates to:
+  /// **'With subtitles off, going back 30 seconds or less shows them until playback catches up.'**
+  String get rewindSubtitlesDescription;
 
   /// No description provided for @webDiagnostics.
   ///
@@ -27133,6 +27379,30 @@ abstract class AppLocalizations {
   /// **'Numeric score out of 10'**
   String get personalRatingNumeric;
 
+  /// Selects the step granularity for personal ratings and their display precision.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating Intervals'**
+  String get personalRatingIntervals;
+
+  /// Short label for whole-number personal rating steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole (1)'**
+  String get personalRatingIntervalWhole;
+
+  /// Short label for half-step (0.5) personal rating intervals.
+  ///
+  /// In en, this message translates to:
+  /// **'Half (0.5)'**
+  String get personalRatingIntervalHalf;
+
+  /// Short label for quarter-step (0.25) personal rating intervals.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter (0.25)'**
+  String get personalRatingIntervalQuarter;
+
   /// Action that opens the personal rating control.
   ///
   /// In en, this message translates to:
@@ -27408,6 +27678,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide the movie or episode descriptive text.'**
   String get hideDetailsMediaDescriptionSubtitle;
+
+  /// Setting title to open media description visibility subpage
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Media Description Visibility'**
+  String get toggleMediaDescriptionVisibility;
+
+  /// Setting description to open media description visibility subpage
+  ///
+  /// In en, this message translates to:
+  /// **'Hide media descriptions from various detail pages.'**
+  String get toggleMediaDescriptionVisibilityDescription;
+
+  /// Title for the media description visibility settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Media Description Visibility'**
+  String get mediaDescriptionVisibilityTitle;
+
+  /// Setting title to hide descriptions on movie pages
+  ///
+  /// In en, this message translates to:
+  /// **'Movie Pages'**
+  String get hideMediaDescriptionMovie;
+
+  /// Setting description to hide descriptions on movie detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on movie detail pages'**
+  String get hideMediaDescriptionMovieSubtitle;
+
+  /// Setting title to hide descriptions on show pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show Pages'**
+  String get hideMediaDescriptionShow;
+
+  /// Setting description to hide descriptions on TV show detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on TV show detail pages'**
+  String get hideMediaDescriptionShowSubtitle;
+
+  /// Setting title to hide descriptions on season pages
+  ///
+  /// In en, this message translates to:
+  /// **'Season Pages'**
+  String get hideMediaDescriptionSeason;
+
+  /// Setting description to hide descriptions on season detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on season detail pages'**
+  String get hideMediaDescriptionSeasonSubtitle;
+
+  /// Setting title to hide descriptions on episode pages
+  ///
+  /// In en, this message translates to:
+  /// **'Episode Pages'**
+  String get hideMediaDescriptionEpisode;
+
+  /// Setting description to hide descriptions on episode detail pages, season episode lists, and player drawer
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on episode detail pages, season episode lists, and player drawer'**
+  String get hideMediaDescriptionEpisodeSubtitle;
+
+  /// Setting title to hide descriptions on collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Pages'**
+  String get hideMediaDescriptionBoxSet;
+
+  /// Setting description to hide descriptions on collection and box set pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on collection and box set pages'**
+  String get hideMediaDescriptionBoxSetSubtitle;
 
   /// Setting title to replace thumbnails on Classic details page with series thumbnail
   ///
@@ -29955,6 +30303,12 @@ abstract class AppLocalizations {
   /// **'Playback was ended on the Silo server.'**
   String get siloPlaybackEndedOnServer;
 
+  /// Player message above the administrator's reason: an administrator stopped this playback on the Silo server
+  ///
+  /// In en, this message translates to:
+  /// **'Playback was stopped on the Silo server.'**
+  String get siloPlaybackStoppedOnServer;
+
   /// Title of the dialog asking for a Silo household profile's PIN; name is the profile's name
   ///
   /// In en, this message translates to:
@@ -31780,6 +32134,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Swipe to turn it, tap the middle to go'**
   String get navReelSwipeHint;
+
+  /// Title of a row a Silo server offers for Home. {genres}: one or more genre names joined by the server, not translated
+  ///
+  /// In en, this message translates to:
+  /// **'Because you enjoy {genres}'**
+  String siloSectionBecauseYouEnjoy(String genres);
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Because You Watched'**
+  String get siloSectionBecauseYouWatched;
+
+  /// Title of a row a Silo server offers for Home. {title}: the title of a movie or show the profile watched
+  ///
+  /// In en, this message translates to:
+  /// **'Because You Watched {title}'**
+  String siloSectionBecauseYouWatchedTitle(String title);
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'For You'**
+  String get siloSectionForYou;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Gems'**
+  String get siloSectionHiddenGems;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Highly Rated in Your Library'**
+  String get siloSectionHighlyRatedInLibrary;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Next in Your Series'**
+  String get siloSectionNextInYourSeries;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Picked from your history'**
+  String get siloSectionPickedFromYourHistory;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Popular on This Server'**
+  String get siloSectionPopularOnServer;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Profiles Like You Enjoyed'**
+  String get siloSectionProfilesLikeYouEnjoyed;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Random Picks'**
+  String get siloSectionRandomPicks;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added Audiobooks'**
+  String get siloSectionRecentlyAddedAudiobooks;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added Ebooks'**
+  String get siloSectionRecentlyAddedEbooks;
+
+  /// Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added in {library}'**
+  String siloSectionRecentlyAddedIn(String library);
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added Manga'**
+  String get siloSectionRecentlyAddedManga;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added Movies'**
+  String get siloSectionRecentlyAddedMovies;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added TV'**
+  String get siloSectionRecentlyAddedTv;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released Audiobooks'**
+  String get siloSectionRecentlyReleasedAudiobooks;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released Ebooks'**
+  String get siloSectionRecentlyReleasedEbooks;
+
+  /// Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released Episodes in {library}'**
+  String siloSectionRecentlyReleasedEpisodesIn(String library);
+
+  /// Title of a row a Silo server offers for Home. {library}: the name of a library on the server, as the server names it
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released in {library}'**
+  String siloSectionRecentlyReleasedIn(String library);
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released Manga'**
+  String get siloSectionRecentlyReleasedManga;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released Movies'**
+  String get siloSectionRecentlyReleasedMovies;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for You'**
+  String get siloSectionRecommendedForYou;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Returning Shows'**
+  String get siloSectionReturningShows;
+
+  /// Title of a seasonal row on a Silo server's Home (christmas)
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Classics'**
+  String get siloSectionSeasonalChristmasClassics;
+
+  /// Title of a seasonal row on a Silo server's Home (christmas)
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Comedies'**
+  String get siloSectionSeasonalChristmasComedies;
+
+  /// Title of a seasonal row on a Silo server's Home (christmas)
+  ///
+  /// In en, this message translates to:
+  /// **'Family Christmas'**
+  String get siloSectionSeasonalChristmasFamily;
+
+  /// Title of a seasonal row on a Silo server's Home (christmas)
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Favorites'**
+  String get siloSectionSeasonalChristmasFavorites;
+
+  /// Title of a seasonal row on a Silo server's Home (christmas)
+  ///
+  /// In en, this message translates to:
+  /// **'Hallmark Christmas'**
+  String get siloSectionSeasonalChristmasHallmark;
+
+  /// Title of a seasonal row on a Silo server's Home (christmas)
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Rom-Coms'**
+  String get siloSectionSeasonalChristmasRomcoms;
+
+  /// Title of a seasonal row on a Silo server's Home (easter)
+  ///
+  /// In en, this message translates to:
+  /// **'Easter Stories'**
+  String get siloSectionSeasonalEasterFaith;
+
+  /// Title of a seasonal row on a Silo server's Home (easter)
+  ///
+  /// In en, this message translates to:
+  /// **'Easter Movies'**
+  String get siloSectionSeasonalEasterFamily;
+
+  /// Title of a seasonal row on a Silo server's Home (familyMovieNight)
+  ///
+  /// In en, this message translates to:
+  /// **'Family Favorites'**
+  String get siloSectionSeasonalFamilyMovieNightFavorites;
+
+  /// Title of a seasonal row on a Silo server's Home (familyMovieNight)
+  ///
+  /// In en, this message translates to:
+  /// **'Family Movie Night'**
+  String get siloSectionSeasonalFamilyMovieNight;
+
+  /// Title of a seasonal row on a Silo server's Home (halloween)
+  ///
+  /// In en, this message translates to:
+  /// **'Animated Halloween'**
+  String get siloSectionSeasonalHalloweenAnimated;
+
+  /// Title of a seasonal row on a Silo server's Home (halloween)
+  ///
+  /// In en, this message translates to:
+  /// **'Family Halloween'**
+  String get siloSectionSeasonalHalloweenFamily;
+
+  /// Title of a seasonal row on a Silo server's Home (halloween)
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween Favorites'**
+  String get siloSectionSeasonalHalloweenFavorites;
+
+  /// Title of a seasonal row on a Silo server's Home (halloween)
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween Horror'**
+  String get siloSectionSeasonalHalloweenHorror;
+
+  /// Title of a seasonal row on a Silo server's Home (halloween)
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween TV'**
+  String get siloSectionSeasonalHalloweenTv;
+
+  /// Title of a seasonal row on a Silo server's Home (newYear)
+  ///
+  /// In en, this message translates to:
+  /// **'New Year\'s Movies'**
+  String get siloSectionSeasonalNewYearFavorites;
+
+  /// Title of a seasonal row on a Silo server's Home (saturdayMorning)
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday Morning Cartoons'**
+  String get siloSectionSeasonalSaturdayMorningCartoons;
+
+  /// Title of a seasonal row on a Silo server's Home (saturdayMorning)
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday Morning Favorites'**
+  String get siloSectionSeasonalSaturdayMorningModern;
+
+  /// Title of a seasonal row on a Silo server's Home (saturdayMorning)
+  ///
+  /// In en, this message translates to:
+  /// **'90s Saturday Mornings'**
+  String get siloSectionSeasonalSaturdayMorningNineties;
+
+  /// Title of a seasonal row on a Silo server's Home (stPatricks)
+  ///
+  /// In en, this message translates to:
+  /// **'Irish Film'**
+  String get siloSectionSeasonalStPatricksIrishFilm;
+
+  /// Title of a seasonal row on a Silo server's Home (stPatricks)
+  ///
+  /// In en, this message translates to:
+  /// **'Irish TV'**
+  String get siloSectionSeasonalStPatricksIrishTv;
+
+  /// Title of a seasonal row on a Silo server's Home (summer)
+  ///
+  /// In en, this message translates to:
+  /// **'Summer Blockbusters'**
+  String get siloSectionSeasonalSummerBlockbusters;
+
+  /// Title of a seasonal row on a Silo server's Home (summer)
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Summer Movies'**
+  String get siloSectionSeasonalSummerClassicSummer;
+
+  /// Title of a seasonal row on a Silo server's Home (summer)
+  ///
+  /// In en, this message translates to:
+  /// **'Summer Nostalgia'**
+  String get siloSectionSeasonalSummerNostalgia;
+
+  /// Title of a seasonal row on a Silo server's Home (thanksgiving)
+  ///
+  /// In en, this message translates to:
+  /// **'Thanksgiving Movies'**
+  String get siloSectionSeasonalThanksgivingFavorites;
+
+  /// Title of a seasonal row on a Silo server's Home (thanksgiving)
+  ///
+  /// In en, this message translates to:
+  /// **'Feel-Good Favorites'**
+  String get siloSectionSeasonalThanksgivingFeelGood;
+
+  /// Title of a seasonal row on a Silo server's Home (valentines)
+  ///
+  /// In en, this message translates to:
+  /// **'Valentine\'s Favorites'**
+  String get siloSectionSeasonalValentinesFavorites;
+
+  /// Title of a seasonal row on a Silo server's Home (valentines)
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Love Stories'**
+  String get siloSectionSeasonalValentinesLoveStories;
+
+  /// Title of a seasonal row on a Silo server's Home (valentines)
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Dramas'**
+  String get siloSectionSeasonalValentinesRomanticDramas;
+
+  /// Title of a seasonal row on a Silo server's Home (valentines)
+  ///
+  /// In en, this message translates to:
+  /// **'Valentine\'s Rom-Coms'**
+  String get siloSectionSeasonalValentinesRomcoms;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal Picks'**
+  String get siloSectionSeasonalPicks;
+
+  /// Title of a row a Silo server offers for Home. {genre}: a genre name as the server sends it, not translated
+  ///
+  /// In en, this message translates to:
+  /// **'Top {genre}'**
+  String siloSectionTopGenre(String genre);
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Top Picks Today'**
+  String get siloSectionTopPicksToday;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated'**
+  String get siloSectionTopRated;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated Movies'**
+  String get siloSectionTopRatedMovies;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated TV'**
+  String get siloSectionTopRatedTv;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Trending on Server'**
+  String get siloSectionTrendingOnServer;
+
+  /// Title of a row a Silo server offers for Home
+  ///
+  /// In en, this message translates to:
+  /// **'Trending This Week'**
+  String get siloSectionTrendingThisWeek;
 }
 
 class _AppLocalizationsDelegate

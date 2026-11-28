@@ -81,6 +81,9 @@ object Media3Bridge {
     private var downmixToStereo = false
 
     @Volatile
+    private var nightMode = false
+
+    @Volatile
     private var activeView: Media3VideoView? = null
 
     // Audio needs no surface, so it plays on this host rather than a platform
@@ -275,6 +278,8 @@ object Media3Bridge {
 
     fun downmixToStereoEnabled(): Boolean = downmixToStereo
 
+    fun nightModeEnabled(): Boolean = nightMode
+
     fun setSessionTunnelingDisabledEnabled(value: Boolean) {
         sessionTunnelingDisabled = value
     }
@@ -360,6 +365,9 @@ object Media3Bridge {
                     ?: "platform"
             (args?.get("downmixToStereo") as? Boolean)?.let {
                 downmixToStereo = it
+            }
+            (args?.get("nightMode") as? Boolean)?.let {
+                nightMode = it
             }
 
             val view = activeView

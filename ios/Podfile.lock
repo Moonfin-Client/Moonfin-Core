@@ -10,8 +10,6 @@ PODS:
   - flutter_inappwebview_ios/Core (0.0.1):
     - Flutter
     - OrderedSet (~> 6.0.3)
-  - gamepads_ios (0.1.1):
-    - Flutter
   - google-cast-sdk-no-bluetooth-xcframework (4.8.0):
     - Protobuf (~> 3.13)
   - libretro_host (0.1.0)
@@ -32,7 +30,6 @@ DEPENDENCIES:
   - archive_extract (from `.symlinks/plugins/archive_extract/ios`)
   - Flutter (from `Flutter`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
-  - gamepads_ios (from `.symlinks/plugins/gamepads_ios/ios`)
   - google-cast-sdk-no-bluetooth-xcframework (~> 4.8.0)
   - libretro_host (from `../native/libretro_host`)
   - moonfin_game_host (from `game_host`)
@@ -53,8 +50,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_inappwebview_ios:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
-  gamepads_ios:
-    :path: ".symlinks/plugins/gamepads_ios/ios"
   libretro_host:
     :path: "../native/libretro_host"
   moonfin_game_host:
@@ -66,7 +61,6 @@ SPEC CHECKSUMS:
   archive_extract: acd7ac4b098e5adc7af644e1d70e6df4ff6f9a28
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
-  gamepads_ios: c75c6d31377d275b0effb9174c619e2705678c09
   google-cast-sdk-no-bluetooth-xcframework: 1783f52a1b2dc0293ac3ae995db5435989a87da7
   libretro_host: becbc28b6e0d23dffeef32b0d432ab4990798f1a
   LzmaSDK-ObjC: 6c68c37743a658fc9a4c7b70f7d6045b587aa42b
@@ -78,4 +72,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f332424600a990d23eed21672c388fb970089ace
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0

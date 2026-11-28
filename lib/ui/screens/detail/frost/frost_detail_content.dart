@@ -19,6 +19,7 @@ import '../../../../preference/seerr_preferences.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/media_source_summary.dart';
+import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../navigation/destinations.dart';
@@ -1901,7 +1902,12 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     ),
                   ),
                   if (episode.overview case final text?
-                      when text.isNotEmpty) ...[
+                      when text.isNotEmpty &&
+                          !hidesMediaDescription(
+                            itemType: episode.type,
+                            prefs: widget.prefs,
+                            isSeerr: episode.serverId == 'seerr',
+                          )) ...[
                     const SizedBox(height: 3),
                     Text(
                       text,

@@ -561,6 +561,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   bool get supportsPersonalRating => _client.features.supportsPersonalRatings;
 
+  bool get supportsFractionalRatings =>
+      _client.features.supportsFractionalRatings;
+
   bool get supportsPersonFavorites => _client.features.supportsPersonFavorites;
 
   /// Plex keeps no YouTube links, so a trailer it doesn't have is searched

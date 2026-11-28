@@ -12790,5 +12790,41 @@
     "sidebarStyleClassic": "Classic",
     "@sidebarStyleClassic": {
         "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "musicMixRediscoverSubtitle": "Favourites you haven't played lately",
+    "@musicMixRediscoverSubtitle": {
+        "description": "Line under the Rediscover mix card"
+    },
+    "calendarSettingsScopeDescription": "My shows keeps the series you favourited or started watching",
+    "@calendarSettingsScopeDescription": {
+        "description": "Description of the calendar Show setting"
+    },
+    "moonbaseFeatureRows": "Custom rows from your favourite lists",
+    "@moonbaseFeatureRows": {
+        "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+    },
+    "siloSectionSeasonalChristmasFavorites": "Christmas Favourites",
+    "@siloSectionSeasonalChristmasFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (christmas)"
+    },
+    "siloSectionSeasonalFamilyMovieNightFavorites": "Family Favourites",
+    "@siloSectionSeasonalFamilyMovieNightFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (familyMovieNight)"
+    },
+    "siloSectionSeasonalHalloweenFavorites": "Halloween Favourites",
+    "@siloSectionSeasonalHalloweenFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (halloween)"
+    },
+    "siloSectionSeasonalSaturdayMorningModern": "Saturday Morning Favourites",
+    "@siloSectionSeasonalSaturdayMorningModern": {
+        "description": "Title of a seasonal row on a Silo server's Home (saturdayMorning)"
+    },
+    "siloSectionSeasonalThanksgivingFeelGood": "Feel-Good Favourites",
+    "@siloSectionSeasonalThanksgivingFeelGood": {
+        "description": "Title of a seasonal row on a Silo server's Home (thanksgiving)"
+    },
+    "siloSectionSeasonalValentinesFavorites": "Valentine's Favourites",
+    "@siloSectionSeasonalValentinesFavorites": {
+        "description": "Title of a seasonal row on a Silo server's Home (valentines)"
     }
 }

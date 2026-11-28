@@ -14,7 +14,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RadicalMuffinMan/AetherEngine",
       "state" : {
-        "revision" : "34f149ba2dd483f490dca13a5a3027d58a9956f5"
+        "revision" : "b0943d2ef124108e5abc316138dff3fe316f9ac9"
       }
     },
     {
@@ -24,6 +24,14 @@
       "state" : {
         "revision" : "bb4002485ff867768dec13bf904a2ddb050bd1b1",
         "version" : "11.3.0"
+      }
+    },
+    {
+      "identity" : "csqlite",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/simolus3/CSQLite.git",
+      "state" : {
+        "revision" : "1ee46d19a4f451a7aa64ffc64fc99b4748131e62"
       }
     },
     {
@@ -40,8 +48,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/superuser404notfound/FFmpegBuild",
       "state" : {
-        "revision" : "2ff2238f6b65d7686e71c8aa9e45fa4e26f33e1d",
-        "version" : "3.14.0"
+        "revision" : "6169df99e21e80fb20cbda6ec79c634366a28dd0",
+        "version" : "3.19.2"
       }
     },
     {

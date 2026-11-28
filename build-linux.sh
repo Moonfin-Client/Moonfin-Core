@@ -360,7 +360,7 @@ collect_transitive_libs() {
 runtime_skip_pattern() {
   local skip='linux-vdso|ld-linux|libc[.]so|libm[.]so|libpthread|libdl[.]so|librt[.]so'
   skip="$skip"'|libstdc[+][+]|libgcc_s'
-  skip="$skip"'|libX[a-z]|libxcb|libxkb|libxshmfence|libICE|libSM'
+  skip="$skip"'|libX[a-z0-9]|libxcb|libxkb|libxshmfence|libICE|libSM'
   skip="$skip"'|libwayland|libffi|libpcre'
   skip="$skip"'|libGL[.]so|libGLX|libGLdispatch|libGLESv|libEGL|libOpenGL'
   skip="$skip"'|libdrm|libgbm'
@@ -1002,6 +1002,7 @@ EOF
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0, xdg-user-dirs"
   depends="$depends, libva2, libva-drm2, libva-x11-2, libva-wayland2"
+  depends="$depends, libjack-jackd2-0 | libjack-0.125, libxss1, libxcb-shape0"
   local glibc
   glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
   if [ -n "$glibc" ]; then

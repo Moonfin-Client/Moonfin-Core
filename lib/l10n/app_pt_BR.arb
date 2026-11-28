@@ -14933,5 +14933,13 @@
     "sidebarStyleClassic": "Clássico",
     "@sidebarStyleClassic": {
         "description": "Sidebar style: the standard rail that grows into a labeled list"
+    },
+    "siloSectionTopRatedMovies": "Filmes mais bem avaliados",
+    "@siloSectionTopRatedMovies": {
+        "description": "Title of a row a Silo server offers for Home"
+    },
+    "siloSectionTopRatedTv": "TV mais bem avaliada",
+    "@siloSectionTopRatedTv": {
+        "description": "Title of a row a Silo server offers for Home"
     }
 }

@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.audio.AudioOutputProvider.FormatConfig
 import androidx.media3.exoplayer.audio.AudioOutputProvider.FormatSupport
 import androidx.media3.exoplayer.audio.AudioOutputProvider.OutputConfig
 import androidx.media3.exoplayer.audio.AudioTrackAudioOutputProvider
+import org.moonfin.nativevideo.stockAudioOutputProvider
 
 /**
  * The app-side IEC 61937 output path ("AudioTrack (IEC)").
@@ -39,7 +40,7 @@ class Iec61937AudioOutputProvider(context: Context) : AudioOutputProvider {
     private val appContext = context.applicationContext
     private val prober = Iec61937CapabilityProber()
 
-    private val stockProvider = AudioTrackAudioOutputProvider.Builder(appContext).build()
+    private val stockProvider = stockAudioOutputProvider(appContext)
     private val iecTrackProvider = AudioTrackAudioOutputProvider.Builder(appContext)
         .setAudioTrackBuilderModifier { trackBuilder, outputConfig ->
             // The sink-side accounting stays PCM16-shaped. Only the platform

@@ -27,6 +27,7 @@ SeerrRequest _$SeerrRequestFromJson(Map<String, dynamic> json) => SeerrRequest(
   seasons: (json['seasons'] as List<dynamic>?)
       ?.map((e) => SeerrSeasonRequest.fromJson(e as Map<String, dynamic>))
       .toList(),
+  canRemove: json['canRemove'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$SeerrRequestToJson(SeerrRequest instance) =>
@@ -43,6 +44,7 @@ Map<String, dynamic> _$SeerrRequestToJson(SeerrRequest instance) =>
       'externalId': instance.externalId,
       'is4k': instance.is4k,
       'seasons': instance.seasons,
+      'canRemove': instance.canRemove,
     };
 
 SeerrSeasonRequest _$SeerrSeasonRequestFromJson(Map<String, dynamic> json) =>

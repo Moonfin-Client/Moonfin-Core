@@ -37,7 +37,7 @@ internal object ImpellerPolicy {
     /** Vulkan 1.1, in the encoding of FEATURE_VULKAN_HARDWARE_VERSION. */
     const val VULKAN_1_1 = 0x401000
 
-    private val powerVrOnVulkan = listOf("BXE", "BXM", "BXS", "BXT", "CXT", "DXT")
+    private val powerVrOnVulkan = listOf("CXT", "DXT")
     private val adrenoModel = Regex("""Adreno \(TM\) (\d+)""")
 
     fun deviceQualifies(
@@ -54,7 +54,7 @@ internal object ImpellerPolicy {
 
     /**
      * Whether Impeller keeps this GPU on Vulkan. The engine moves PowerVR
-     * before the B-Series and Adreno 650 and older onto OpenGL ES, which is
+     * before the C-Series and Adreno 650 and older onto OpenGL ES, which is
      * the backend that stutters on TV boxes, so only GPUs known to stay on
      * Vulkan qualify and anything unfamiliar keeps Skia.
      */

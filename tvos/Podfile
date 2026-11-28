@@ -36,6 +36,11 @@ target 'Runner' do
             'and cannot keep a signed in session. Check that python3 is on ' \
             'PATH and that flutter pub get has fetched the tvos packages.'
     end
+    # Pods point at links under .symlinks so Podfile.lock holds a relative
+    # path instead of one machine's pub cache.
+    symlinks_dir = File.join(File.dirname(__FILE__), '.symlinks', 'plugins')
+    system('rm', '-rf', symlinks_dir)
+    system('mkdir', '-p', symlinks_dir)
     tvos_plugins.each do |plugin|
       plugin_name = plugin['name']
       plugin_path = plugin['path']
@@ -45,7 +50,8 @@ target 'Runner' do
       # them here so they are never linked twice (SPM + CocoaPods).
       has_spm = File.exist?(File.join(tvos_dir, 'Package.swift'))
       if File.directory?(tvos_dir) && !has_spm && File.exist?(File.join(tvos_dir, "#{plugin_name}.podspec"))
-        pod plugin_name, :path => tvos_dir
+        File.symlink(plugin_path, File.join(symlinks_dir, plugin_name))
+        pod plugin_name, :path => File.join('.symlinks', 'plugins', plugin_name, 'tvos')
       end
     end
   end

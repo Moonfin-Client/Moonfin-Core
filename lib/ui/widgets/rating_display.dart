@@ -3,8 +3,8 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/rating_icon_provider.dart';
-import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/personal_rating_intervals.dart';
 import '../../util/tv_ui_scale.dart';
 import 'settings/settings_preview_scope.dart';
 
@@ -121,13 +121,14 @@ class RatingsRow extends StatelessWidget {
   }
 
   /// The viewer picked how ratings read on the detail screen, so the row
-  /// speaks the same dialect: five-star users see their score out of five.
+  /// speaks the same dialect and precision.
   static String _formatPersonal(BuildContext context, double value) {
-    if (previewValue(context, UserPreferences.personalRatingStyle) ==
-        PersonalRatingStyle.stars) {
-      return '${(value / 2).toStringAsFixed(1)}/5';
-    }
-    return value.toStringAsFixed(1);
+    final style = previewValue(context, UserPreferences.personalRatingStyle);
+    final intervals = previewValue(
+      context,
+      UserPreferences.personalRatingIntervals,
+    );
+    return formatPersonalRatingBadge(value, style, intervals);
   }
 
   @override

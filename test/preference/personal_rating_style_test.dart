@@ -54,4 +54,19 @@ void main() {
       PersonalRatingStyle.thumbs,
     );
   });
+
+  test('personal rating intervals defaults to 11 and is server/user scoped',
+      () async {
+    final prefs = await _prefs();
+    expect(prefs.get(UserPreferences.personalRatingIntervals), 11);
+
+    await prefs.set(UserPreferences.lastServerId, 'server-1');
+    await prefs.set(UserPreferences.lastUserId, 'user-1');
+    await prefs.set(UserPreferences.personalRatingIntervals, 21);
+    expect(prefs.get(UserPreferences.personalRatingIntervals), 21);
+
+    await prefs.set(UserPreferences.lastServerId, 'server-2');
+    await prefs.set(UserPreferences.lastUserId, 'user-2');
+    expect(prefs.get(UserPreferences.personalRatingIntervals), 11);
+  });
 }

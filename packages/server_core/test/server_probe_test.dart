@@ -117,6 +117,42 @@ void main() {
         throwsA(isA<DioException>()),
       );
     });
+
+    test('finds Audiobookshelf by its status once the others refuse', () async {
+      final dio = _dioWith((uri) {
+        if (uri.path == '/abs/status') {
+          return _json({
+            'app': 'audiobookshelf',
+            'serverVersion': '2.38.0',
+            'isInit': true,
+          });
+        }
+        // Audiobookshelf answers Silo's route with 401 and Jellyfin's with
+        // an HTML 404.
+        if (uri.path.startsWith('/abs/api/')) return _status(401);
+        return _status(404);
+      });
+
+      final result = await probeServerPublicInfo(dio, 'https://host/abs');
+
+      expect(result, isNotNull);
+      expect(result!.serverType, ServerType.audiobookshelf);
+      expect(result.resolvedBaseUrl, 'https://host/abs');
+      expect(result.info['Version'], '2.38.0');
+      expect(result.info['ProductName'], 'Audiobookshelf');
+    });
+
+    test("doesn't take any JSON status for Audiobookshelf", () async {
+      final dio = _dioWith((uri) {
+        if (uri.path == '/status') return _json({'app': 'something else'});
+        return _status(404);
+      });
+
+      expect(
+        () => probeServerPublicInfo(dio, 'https://host'),
+        throwsA(isA<DioException>()),
+      );
+    });
   });
 
   group('probeServerPublicInfo on Silo', () {

@@ -133,6 +133,10 @@ void main() {
         (f) => f.supportsPersonalRatings,
         [true, true, false, true],
       ),
+      'supportsFractionalRatings': (
+        (f) => f.supportsFractionalRatings,
+        [true, true, false, false],
+      ),
       'supportsPersonFavorites': (
         (f) => f.supportsPersonFavorites,
         [true, true, false, false],

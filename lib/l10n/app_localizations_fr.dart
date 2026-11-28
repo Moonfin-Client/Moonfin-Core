@@ -69,6 +69,35 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get absApiKey => 'API Key';
+
+  @override
+  String get absApiKeyHint =>
+      'Make one in Audiobookshelf under Settings > API Keys, then paste it here.';
+
+  @override
+  String get absOpenId => 'OpenID';
+
+  @override
+  String get absOpenIdIntro =>
+      'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.';
+
+  @override
+  String get absOpenIdWaiting =>
+      'Finish signing in on the page that opened in your browser.';
+
+  @override
+  String get absOpenIdOpen => 'Open Sign-in Page';
+
+  @override
+  String get absOpenIdOpenAgain => 'Open It Again';
+
+  @override
+  String absOpenIdRedirectRefused(String address) {
+    return 'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add $address to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.';
+  }
+
+  @override
   String get quickConnect => 'Quick Connect';
 
   @override
@@ -502,6 +531,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get showTechnicalDetailsSubtitle =>
       'Afficher le codec, la résolution et les informations de flux dans le résumé de la bannière';
+
+  @override
+  String get detailShowFullDate => 'Show Full Date';
+
+  @override
+  String get detailShowFullDateSubtitle =>
+      'Show the full release or air date instead of only the year on details pages';
 
   @override
   String get recommendationSystem => 'Système de recommandation';
@@ -2179,6 +2215,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hideMpvStats => 'Masquer les statistiques mpv (Maj+I)';
 
   @override
+  String get showPlaybackStats => 'Show Playback Stats';
+
+  @override
+  String get hidePlaybackStats => 'Hide Playback Stats';
+
+  @override
+  String get playbackStatsNetworkActivity => 'Network Activity';
+
+  @override
+  String get playbackStatsBufferHealth => 'Buffer Health';
+
+  @override
+  String get playbackStatsBufferMemory => 'Buffer Memory';
+
+  @override
+  String get playbackStatsRebuffers => 'Rebuffers';
+
+  @override
   String get keyboardShortcutsTitle => 'Raccourcis clavier';
 
   @override
@@ -3697,6 +3751,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Glissez vers le haut ou le bas sur le lecteur : à gauche pour la luminosité, à droite pour le volume';
 
   @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
+
+  @override
   String get invertGestureIndicators => 'Inverser les indicateurs de geste';
 
   @override
@@ -4270,6 +4331,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+
+  @override
+  String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
+
+  @override
+  String get settingsAudioPassthroughFallbackDescription =>
+      'If the output can\'t play a passthrough track and stays silent, decode it on this device instead.';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -6224,6 +6292,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get keep => 'Conserver';
+
+  @override
+  String get removeRequest => 'Remove Request';
+
+  @override
+  String removeFailedRequestForTitle(String title) {
+    return 'Your failed request for \"$title\" will be deleted. You can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestRefused =>
+      'The request wasn\'t removed. It was retried, or part of it arrived.';
+
+  @override
+  String removeOthersFailedRequestForTitle(String title, String name) {
+    return 'The failed request for \"$title\" by $name will be deleted. They can request it again later.';
+  }
+
+  @override
+  String get removeFailedRequestError =>
+      'Couldn\'t remove the request. Try again.';
 
   @override
   String get itemNotFoundInLibrary =>
@@ -13240,6 +13329,54 @@ class AppLocalizationsFr extends AppLocalizations {
       'Quand « Adapter la fréquence d\'images » est désactivé, lit la vidéo 24 fps 0,1 % plus lentement pour l\'adapter au téléviseur sans perte d\'images. Inutilisé quand l\'audio est transmis en Passthrough vers un ampli AV.';
 
   @override
+  String get upscaleLowResolutionVideo => 'Upscale video below 1080p';
+
+  @override
+  String get upscaleLowResolutionVideoSubtitle =>
+      'Sharpens SD and 720p video to fit your screen. Needs iOS, tvOS or macOS 26 and uses more power. HDR and Dolby Vision play as usual.';
+
+  @override
+  String get upscaleFullHdVideo => 'Upscale 1080p video';
+
+  @override
+  String get upscaleFullHdVideoSubtitle =>
+      'Sharpens 1080p video on screens above 1080p, like a 4K TV. Needs iOS, tvOS or macOS 26 and uses more power. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get upscaleAnimationLineArt => 'Upscale anime with line art';
+
+  @override
+  String get upscaleAnimationLineArtSubtitle =>
+      'Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.';
+
+  @override
+  String get hdrToneMapping => 'HDR tone mapping';
+
+  @override
+  String get hdrToneMappingDescription =>
+      'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
+
+  @override
+  String get binauralHeadphones => 'Binaural audio for headphones';
+
+  @override
+  String get binauralHeadphonesSubtitle =>
+      'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
+
+  @override
+  String get loudnessTarget => 'Loudness target';
+
+  @override
+  String get loudnessTargetDescription =>
+      'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.';
+
+  @override
+  String get loudnessTargetStandard => 'Standard (-24 LUFS)';
+
+  @override
+  String get loudnessTargetLoud => 'Loud (-16 LUFS)';
+
+  @override
   String get cadenceTipTitle => 'Activer « Adapter la fréquence d\'images »';
 
   @override
@@ -13287,6 +13424,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get preferExternalSubtitlesSubtitle =>
       'Donnez la priorité aux fichiers de sous-titres externes plutôt qu\'aux pistes intégrées.';
+
+  @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
 
   @override
   String get webDiagnostics => 'Diagnostic Web';
@@ -15778,6 +15922,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get personalRatingNumeric => 'Note sur 10';
 
   @override
+  String get personalRatingIntervals => 'Rating Intervals';
+
+  @override
+  String get personalRatingIntervalWhole => 'Whole (1)';
+
+  @override
+  String get personalRatingIntervalHalf => 'Half (0.5)';
+
+  @override
+  String get personalRatingIntervalQuarter => 'Quarter (0.25)';
+
+  @override
   String get rate => 'Noter';
 
   @override
@@ -15926,6 +16082,52 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Masque le texte descriptif du film ou de l\'épisode.';
+
+  @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
 
   @override
   String get detailUseSeriesThumbnails => 'Utiliser les miniatures de la série';
@@ -17564,6 +17766,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'La lecture a été arrêtée sur le serveur Silo.';
 
   @override
+  String get siloPlaybackStoppedOnServer =>
+      'Playback was stopped on the Silo server.';
+
+  @override
   String siloPinTitle(String name) {
     return 'Code PIN pour $name';
   }
@@ -18624,7 +18830,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get topNavbarStyle => 'Top Bar Style';
 
   @override
-  String get topNavbarStyleClassic => 'Classic';
+  String get topNavbarStyleClassic => 'Classique';
 
   @override
   String get topNavbarStyleTabline => 'Tabline';
@@ -18647,7 +18853,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sidebarStyle => 'Sidebar Style';
 
   @override
-  String get sidebarStyleClassic => 'Classic';
+  String get sidebarStyleClassic => 'Classique';
 
   @override
   String get sidebarStyleReel => 'Reel';
@@ -18680,4 +18886,209 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get navReelSwipeHint => 'Swipe to turn it, tap the middle to go';
+
+  @override
+  String siloSectionBecauseYouEnjoy(String genres) {
+    return 'Because you enjoy $genres';
+  }
+
+  @override
+  String get siloSectionBecauseYouWatched => 'Because You Watched';
+
+  @override
+  String siloSectionBecauseYouWatchedTitle(String title) {
+    return 'Because You Watched $title';
+  }
+
+  @override
+  String get siloSectionForYou => 'For You';
+
+  @override
+  String get siloSectionHiddenGems => 'Hidden Gems';
+
+  @override
+  String get siloSectionHighlyRatedInLibrary => 'Highly Rated in Your Library';
+
+  @override
+  String get siloSectionNextInYourSeries => 'Next in Your Series';
+
+  @override
+  String get siloSectionPickedFromYourHistory => 'Picked from your history';
+
+  @override
+  String get siloSectionPopularOnServer => 'Popular on This Server';
+
+  @override
+  String get siloSectionProfilesLikeYouEnjoyed => 'Profiles Like You Enjoyed';
+
+  @override
+  String get siloSectionRandomPicks => 'Random Picks';
+
+  @override
+  String get siloSectionRecentlyAddedAudiobooks => 'Recently Added Audiobooks';
+
+  @override
+  String get siloSectionRecentlyAddedEbooks => 'Recently Added Ebooks';
+
+  @override
+  String siloSectionRecentlyAddedIn(String library) {
+    return 'Recently Added in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyAddedManga => 'Recently Added Manga';
+
+  @override
+  String get siloSectionRecentlyAddedMovies => 'Recently Added Movies';
+
+  @override
+  String get siloSectionRecentlyAddedTv => 'Recently Added TV';
+
+  @override
+  String get siloSectionRecentlyReleasedAudiobooks =>
+      'Recently Released Audiobooks';
+
+  @override
+  String get siloSectionRecentlyReleasedEbooks => 'Recently Released Ebooks';
+
+  @override
+  String siloSectionRecentlyReleasedEpisodesIn(String library) {
+    return 'Recently Released Episodes in $library';
+  }
+
+  @override
+  String siloSectionRecentlyReleasedIn(String library) {
+    return 'Recently Released in $library';
+  }
+
+  @override
+  String get siloSectionRecentlyReleasedManga => 'Recently Released Manga';
+
+  @override
+  String get siloSectionRecentlyReleasedMovies => 'Recently Released Movies';
+
+  @override
+  String get siloSectionRecommendedForYou => 'Recommended for You';
+
+  @override
+  String get siloSectionReturningShows => 'Returning Shows';
+
+  @override
+  String get siloSectionSeasonalChristmasClassics => 'Christmas Classics';
+
+  @override
+  String get siloSectionSeasonalChristmasComedies => 'Christmas Comedies';
+
+  @override
+  String get siloSectionSeasonalChristmasFamily => 'Family Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasFavorites => 'Christmas Favorites';
+
+  @override
+  String get siloSectionSeasonalChristmasHallmark => 'Hallmark Christmas';
+
+  @override
+  String get siloSectionSeasonalChristmasRomcoms => 'Christmas Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalEasterFaith => 'Easter Stories';
+
+  @override
+  String get siloSectionSeasonalEasterFamily => 'Easter Movies';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNightFavorites => 'Family Favorites';
+
+  @override
+  String get siloSectionSeasonalFamilyMovieNight => 'Family Movie Night';
+
+  @override
+  String get siloSectionSeasonalHalloweenAnimated => 'Animated Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFamily => 'Family Halloween';
+
+  @override
+  String get siloSectionSeasonalHalloweenFavorites => 'Halloween Favorites';
+
+  @override
+  String get siloSectionSeasonalHalloweenHorror => 'Halloween Horror';
+
+  @override
+  String get siloSectionSeasonalHalloweenTv => 'Halloween TV';
+
+  @override
+  String get siloSectionSeasonalNewYearFavorites => 'New Year\'s Movies';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningCartoons =>
+      'Saturday Morning Cartoons';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningModern =>
+      'Saturday Morning Favorites';
+
+  @override
+  String get siloSectionSeasonalSaturdayMorningNineties =>
+      '90s Saturday Mornings';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishFilm => 'Irish Film';
+
+  @override
+  String get siloSectionSeasonalStPatricksIrishTv => 'Irish TV';
+
+  @override
+  String get siloSectionSeasonalSummerBlockbusters => 'Summer Blockbusters';
+
+  @override
+  String get siloSectionSeasonalSummerClassicSummer => 'Classic Summer Movies';
+
+  @override
+  String get siloSectionSeasonalSummerNostalgia => 'Summer Nostalgia';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFavorites => 'Thanksgiving Movies';
+
+  @override
+  String get siloSectionSeasonalThanksgivingFeelGood => 'Feel-Good Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesFavorites => 'Valentine\'s Favorites';
+
+  @override
+  String get siloSectionSeasonalValentinesLoveStories => 'Classic Love Stories';
+
+  @override
+  String get siloSectionSeasonalValentinesRomanticDramas => 'Romantic Dramas';
+
+  @override
+  String get siloSectionSeasonalValentinesRomcoms => 'Valentine\'s Rom-Coms';
+
+  @override
+  String get siloSectionSeasonalPicks => 'Seasonal Picks';
+
+  @override
+  String siloSectionTopGenre(String genre) {
+    return 'Top $genre';
+  }
+
+  @override
+  String get siloSectionTopPicksToday => 'Top Picks Today';
+
+  @override
+  String get siloSectionTopRated => 'Top Rated';
+
+  @override
+  String get siloSectionTopRatedMovies => 'Films les mieux notés';
+
+  @override
+  String get siloSectionTopRatedTv => 'Séries les mieux notées';
+
+  @override
+  String get siloSectionTrendingOnServer => 'Trending on Server';
+
+  @override
+  String get siloSectionTrendingThisWeek => 'Trending This Week';
 }

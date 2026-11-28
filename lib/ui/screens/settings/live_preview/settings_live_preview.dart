@@ -217,10 +217,15 @@ Widget _libraryScene(String? focusedKey) => Builder(
   },
 );
 
-/// The player lays out landscape even on a phone, where playback rotates. A TV
-/// is landscape already, so it shares the other scenes' canvas.
+/// The player lays out landscape even with the phone interface, where
+/// playback rotates, so a phone or tablet gets its own screen on its side. A
+/// TV is landscape already, so it shares the other scenes' canvas.
 Size get _playerDesignSize {
   if (PlatformDetection.useLeanbackUi) return setupPreviewSize();
+  if (PlatformDetection.isMobile) {
+    final screen = setupPreviewSize();
+    return Size(screen.longestSide, screen.shortestSide);
+  }
   if (PlatformDetection.useMobileUi) return const Size(844, 390);
   return const Size(1280, 800);
 }

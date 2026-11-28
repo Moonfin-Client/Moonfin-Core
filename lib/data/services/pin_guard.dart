@@ -61,8 +61,11 @@ class PinGuard {
   }) => PinGuard(
     pin: PinCodeUtil(store, userId),
     service: service,
+    // Audiobookshelf can't run Moonbase, which keeps server PINs.
     account:
-        (server?.address ?? '').isEmpty || (accessToken ?? '').isEmpty
+        (server?.address ?? '').isEmpty ||
+            (accessToken ?? '').isEmpty ||
+            server?.serverType == ServerType.audiobookshelf
         ? null
         : ServerPinAccount(
             baseUrl: server!.address,

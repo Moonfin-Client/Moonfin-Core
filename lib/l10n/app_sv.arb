@@ -13943,5 +13943,1968 @@
                 "type": "String"
             }
         }
+    },
+    "settingsAudioPassthroughFallback": "Avkoda tyst genomströmning",
+    "@settingsAudioPassthroughFallback": {
+        "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "settingsAudioPassthroughFallbackDescription": "Om utgången inte kan spela upp ett passthrough-spår och det förblir tyst, ska du istället avkoda det på den här enheten.",
+    "@settingsAudioPassthroughFallbackDescription": {
+        "description": "Subtitle of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
+    },
+    "watchPartyJoinWithCode": "Registrera dig med en kod",
+    "@watchPartyJoinWithCode": {
+        "description": "TV button on the Watch Parties screen that opens the room code field"
+    },
+    "watchPartyOnThisServer": "På den här servern",
+    "@watchPartyOnThisServer": {
+        "description": "Heading of the list of rooms on the Watch Parties screen"
+    },
+    "watchPartyCountOnServer": "{count} på den här servern",
+    "@watchPartyCountOnServer": {
+        "description": "TV heading of the Watch Parties screen: how many rooms the user can join",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyRoomsHint": "Du måste ha tillgång till objektet för att kunna delta. Ett rum stängs när den sista personen lämnar det.",
+    "@watchPartyRoomsHint": {
+        "description": "Note under the room list on the Watch Parties screen"
+    },
+    "watchPartyRoomsEmpty": "De fester du kan titta på visas här. Har du fått en kod av någon? Välj  Gå med med en kod.",
+    "@watchPartyRoomsEmpty": {
+        "description": "Empty room list on the Watch Parties screen"
+    },
+    "watchPartyPasteHint": "Det går också bra att klistra in en inbjudningslänk här. På en mobil öppnar länken Moonfin direkt i festen.",
+    "@watchPartyPasteHint": {
+        "description": "Hint under the room code field on the Watch Parties screen"
+    },
+    "watchPartyWatchingCount": "{count, plural, one{{count} tittar på} other{{count} watching}}",
+    "@watchPartyWatchingCount": {
+        "description": "How many people are in a room, on room cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyHostsParty": "{name}'s party",
+    "@watchPartyHostsParty": {
+        "description": "Who hosts a room, on room cards and in the player, like \"Maya's party\"",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyEveryoneControlsShort": "Alla bestämmer",
+    "@watchPartyEveryoneControlsShort": {
+        "description": "Room card tag: every member can play, pause and skip"
+    },
+    "watchPartyVotingNow": "Omröstning om vad vi ska titta på",
+    "@watchPartyVotingNow": {
+        "description": "Room card line: the lobby is voting on what to watch"
+    },
+    "watchPartyNeedsMoonbase": "Watch-grupper behöver Moonbase på den här servern",
+    "@watchPartyNeedsMoonbase": {
+        "description": "Title when the server has no Moonbase plugin to host watch parties"
+    },
+    "watchPartyNeedsMoonbaseHint": "Be den som sköter servern att installera Moonbase-pluginet. I Jellyfin fungerar SyncPlay fortfarande utan det.",
+    "@watchPartyNeedsMoonbaseHint": {
+        "description": "Body under the Watch Parties need Moonbase title"
+    },
+    "watchPartyWrongPin": "Den PIN-koden fungerade inte. Försök igen.",
+    "@watchPartyWrongPin": {
+        "description": "Join error: wrong room PIN"
+    },
+    "watchPartyTooManyTries": "För många försök. Vänta lite.",
+    "@watchPartyTooManyTries": {
+        "description": "Join error: too many wrong PINs"
+    },
+    "watchPartyFull": "Det här kalaset är fullbokat.",
+    "@watchPartyFull": {
+        "description": "Join error: the room has no space left"
+    },
+    "watchPartyNoSuchCode": "Inget rum har den koden.",
+    "@watchPartyNoSuchCode": {
+        "description": "Join error: no room with that code"
+    },
+    "watchPartyNoAccess": "Du har inte tillgång till det de tittar på.",
+    "@watchPartyNoAccess": {
+        "description": "Join error, and a notice in the room, when the user cannot play the room's item"
+    },
+    "watchPartyRemoved": "Värden har tagit bort dig från festen.",
+    "@watchPartyRemoved": {
+        "description": "Shown after the host removed this member"
+    },
+    "watchPartyYours": "Din watch party",
+    "@watchPartyYours": {
+        "description": "Title of the lobby and party controls"
+    },
+    "watchPartyInviteHint": "Klistra in den i valfri chatt. Då öppnas en sida på den här servern med en knapp som heter ”Öppna i Moonfin”.",
+    "@watchPartyInviteHint": {
+        "description": "Hint under Copy invite link in the lobby"
+    },
+    "watchPartySendInvite": "Skicka inbjudan",
+    "@watchPartySendInvite": {
+        "description": "TV lobby heading over the invite QR code"
+    },
+    "watchPartyScanInvite": "Skanna med din mobil för att få inbjudningslänken och skicka den sedan därifrån. Eller dela helt enkelt koden.",
+    "@watchPartyScanInvite": {
+        "description": "TV lobby line next to the invite QR code"
+    },
+    "watchPartyStartsTogether": "Spelet väntar på att alla spelare ska vara klara, högst 10 sekunder, och räknar sedan ned 3, 2, 1.",
+    "@watchPartyStartsTogether": {
+        "description": "Lobby note on how a party starts"
+    },
+    "watchPartyStatusInSync": "I synk",
+    "@watchPartyStatusInSync": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusCatchingUp": "Att komma ikapp",
+    "@watchPartyStatusCatchingUp": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusBuffering": "Buffring",
+    "@watchPartyStatusBuffering": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusNotWatching": "Tittar inte",
+    "@watchPartyStatusNotWatching": {
+        "description": "Member status in a watch party"
+    },
+    "watchPartyStatusReady": "Klar",
+    "@watchPartyStatusReady": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyStatusJoining": "Ansluta sig till",
+    "@watchPartyStatusJoining": {
+        "description": "Member status in a watch party lobby"
+    },
+    "watchPartyHost": "Värd",
+    "@watchPartyHost": {
+        "description": "Tag on the host in a watch party's people list"
+    },
+    "watchPartyWaitingFor": "Väntar på {name}'s spelare",
+    "@watchPartyWaitingFor": {
+        "description": "Shown while a party waits for one member's player to load",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyWaitingForCount": "{count, plural, one{Waiting for {count} player} other{Waiting for {count} players}}",
+    "@watchPartyWaitingForCount": {
+        "description": "Shown while a party waits for several members' players to load",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingAnyway": "Börjar i alla fall i {seconds} s",
+    "@watchPartyStartingAnyway": {
+        "description": "Countdown until the party starts without the players still loading",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyStartingTogether": "Att börja tillsammans",
+    "@watchPartyStartingTogether": {
+        "description": "Under the 3, 2, 1 countdown when a party starts"
+    },
+    "watchPartyToastPaused": "{name} pausad",
+    "@watchPartyToastPaused": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastResumed": "{name} återupptogs",
+    "@watchPartyToastResumed": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSkipped": "{name} hoppade till {time}",
+    "@watchPartyToastSkipped": {
+        "description": "Toast in a watch party, the time like 1:14:02",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastJoined": "{name} anslöt sig",
+    "@watchPartyToastJoined": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastLeft": "{name} vänster",
+    "@watchPartyToastLeft": {
+        "description": "Toast and chat line in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastSwitched": "{name} bytte till {title}",
+    "@watchPartyToastSwitched": {
+        "description": "Toast and chat line when the host picks another item",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastYouAreHost": "Nu är det du som är värd",
+    "@watchPartyToastYouAreHost": {
+        "description": "Toast in a watch party"
+    },
+    "watchPartyToastNewHost": "{name} är programledare nu",
+    "@watchPartyToastNewHost": {
+        "description": "Toast in a watch party",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyToastEveryoneControls": "Nu kan alla styra uppspelningen",
+    "@watchPartyToastEveryoneControls": {
+        "description": "Toast when the host lets everyone control playback"
+    },
+    "watchPartyToastHostControls": "Nu är det bara värden som styr uppspelningen",
+    "@watchPartyToastHostControls": {
+        "description": "Toast when the host takes playback control back"
+    },
+    "watchPartyOnlyHostControls": "Endast värden kan styra uppspelningen.",
+    "@watchPartyOnlyHostControls": {
+        "description": "Toast when a Watch Party guest presses play, pause or skip while only the host may"
+    },
+    "watchPartyToastReconnecting": "Återansluter till festen...",
+    "@watchPartyToastReconnecting": {
+        "description": "Toast when the connection to the room drops"
+    },
+    "watchPartyToastReconnected": "Tillbaka på festen",
+    "@watchPartyToastReconnected": {
+        "description": "Toast when the connection to the room is back"
+    },
+    "watchPartyToastEnded": "{name} avslutade festen",
+    "@watchPartyToastEnded": {
+        "description": "Toast when the host closes the room",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyChat": "Chatta",
+    "@watchPartyChat": {
+        "description": "Tab and button for a watch party's chat"
+    },
+    "watchPartySendToParty": "Skicka till festen",
+    "@watchPartySendToParty": {
+        "description": "Hint in the watch party chat field"
+    },
+    "watchPartyReplyHaha": "Haha",
+    "@watchPartyReplyHaha": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyNoWay": "No way",
+    "@watchPartyReplyNoWay": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyPausePlease": "Vänta lite, tack",
+    "@watchPartyReplyPausePlease": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReplyBrb": "Brb",
+    "@watchPartyReplyBrb": {
+        "description": "TV quick reply in a watch party chat, short for be right back"
+    },
+    "watchPartyReplyAgain": "Again!",
+    "@watchPartyReplyAgain": {
+        "description": "TV quick reply in a watch party chat"
+    },
+    "watchPartyReactionLove": "Love",
+    "@watchPartyReactionLove": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionHaha": "Haha",
+    "@watchPartyReactionHaha": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionWow": "Wow",
+    "@watchPartyReactionWow": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionSad": "Sad",
+    "@watchPartyReactionSad": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionFire": "Fire",
+    "@watchPartyReactionFire": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyReactionPopcorn": "Popcorn",
+    "@watchPartyReactionPopcorn": {
+        "description": "Name of a watch party reaction"
+    },
+    "watchPartyMakeHost": "Skapa värd",
+    "@watchPartyMakeHost": {
+        "description": "Host action on a member of the watch party"
+    },
+    "watchPartyEveryoneControls": "Alla kan styra uppspelningen",
+    "@watchPartyEveryoneControls": {
+        "description": "Host setting of a watch party"
+    },
+    "watchPartyEveryoneControlsHint": "Vem som helst kan spela upp, pausa och hoppa över",
+    "@watchPartyEveryoneControlsHint": {
+        "description": "Line under Everyone can control playback"
+    },
+    "watchPartyRoomPin": "Rums-PIN-kod",
+    "@watchPartyRoomPin": {
+        "description": "Host setting of a watch party, and the title of the PIN dialog"
+    },
+    "watchPartyRoomPinHint": "Be om en PIN-kod innan någon ansluter sig",
+    "@watchPartyRoomPinHint": {
+        "description": "Line under Room PIN"
+    },
+    "watchPartyPinDigits": "4 till 8 siffror",
+    "@watchPartyPinDigits": {
+        "description": "Hint in the room PIN field"
+    },
+    "watchPartyLeave": "Ledighet",
+    "@watchPartyLeave": {
+        "description": "Button that leaves the watch party"
+    },
+    "watchPartyLeaveHandsOver": "Ledighet · {name} värdar",
+    "@watchPartyLeaveHandsOver": {
+        "description": "Host button that leaves, naming who takes over",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyStartedBy": "{name} startade en watch party",
+    "@watchPartyStartedBy": {
+        "description": "Party alert title",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "watchPartyInLobbyCount": "{count, plural, one{{title} · {count} in the lobby} other{{title} · {count} in the lobby}}",
+    "@watchPartyInLobbyCount": {
+        "description": "Party alert body",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "watchPartyFirstOnHome": "Det är först i Watch Parties på startsidan",
+    "@watchPartyFirstOnHome": {
+        "description": "Line on the TV party alert banner"
+    },
+    "watchPartyAddServerQuestion": "Den här inbjudan gäller en server som du ännu inte har lagt till, {address}. Lägg till det och logga in för att gå med.",
+    "@watchPartyAddServerQuestion": {
+        "description": "Dialog when a party link names a server the app does not have",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementBadges": "Prestationsmärken",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "achievementBadgesSubtitle": "Märken, rangar och uppdrag som du tjänar in genom det du tittar på",
+    "@achievementBadgesSubtitle": {
+        "description": "Subtitle of the Achievement Badges entry in Integrations"
+    },
+    "achievementsBadges": "Märken",
+    "@achievementsBadges": {
+        "description": "Badges section title"
+    },
+    "achievementsBadgeCount": "{unlocked} of {total} märken",
+    "@achievementsBadgeCount": {
+        "description": "How many badges are unlocked out of the total",
+        "placeholders": {
+            "unlocked": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsUnlockToasts": "Lås upp aviseringar",
+    "@achievementsUnlockToasts": {
+        "description": "Switch that shows a notification when the user unlocks a badge"
+    },
+    "achievementsUnlockToastsSubtitle": "Visa ett meddelande när du låser upp en utmärkelse",
+    "@achievementsUnlockToastsSubtitle": {
+        "description": "Subtitle of the unlock notifications switch"
+    },
+    "achievementsUnlockedNotification": "Prestation upplåst",
+    "@achievementsUnlockedNotification": {
+        "description": "Title of the notification for one newly unlocked badge"
+    },
+    "achievementsUnlockedCount": "{count, plural, one{{count} achievement unlocked} other{{count} achievements unlocked}}",
+    "@achievementsUnlockedCount": {
+        "description": "Title of the notification for several badges unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsQuests": "Uppdrag",
+    "@achievementsQuests": {
+        "description": "Quests section title"
+    },
+    "achievementsQuestCount": "{count} slutförd",
+    "@achievementsQuestCount": {
+        "description": "How many quests are completed",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsLeaderboard": "Resultatlista",
+    "@achievementsLeaderboard": {
+        "description": "Leaderboard section title"
+    },
+    "achievementsLeaderboardSubtitle": "Hur du ligger till jämfört med andra användare på den här servern",
+    "@achievementsLeaderboardSubtitle": {
+        "description": "Leaderboard section subtitle"
+    },
+    "achievementsRecapSubtitle": "Vad du har tittat på nyligen",
+    "@achievementsRecapSubtitle": {
+        "description": "Recap section subtitle"
+    },
+    "achievementsLibraryCompletion": "Bibliotekets färdigställande",
+    "@achievementsLibraryCompletion": {
+        "description": "Library completion section title"
+    },
+    "achievementsLibraryCount": "{count} bibliotek",
+    "@achievementsLibraryCount": {
+        "description": "How many libraries have a completion percentage",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsScore": "{score} poäng",
+    "@achievementsScore": {
+        "description": "The score a user has earned",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsScoreLabel": "Poäng",
+    "@achievementsScoreLabel": {
+        "description": "Leaderboard category: overall score"
+    },
+    "achievementsTopRank": "Högsta nådda placering",
+    "@achievementsTopRank": {
+        "description": "Shown instead of progress when the user is at the highest rank"
+    },
+    "achievementsPointsToNextRank": "{points} pekar på {tier}",
+    "@achievementsPointsToNextRank": {
+        "description": "Points needed to reach the next rank tier",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            },
+            "tier": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsCurrentStreak": "{days} dagars svit",
+    "@achievementsCurrentStreak": {
+        "description": "The current watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBestStreak": "Bäst: {days} dagar",
+    "@achievementsBestStreak": {
+        "description": "The best watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShowcase": "Utställning",
+    "@achievementsShowcase": {
+        "description": "The badges a user pinned to their profile"
+    },
+    "achievementsUnlocked": "Upplåst",
+    "@achievementsUnlocked": {
+        "description": "Badge filter: unlocked only"
+    },
+    "achievementsLocked": "Låst",
+    "@achievementsLocked": {
+        "description": "Badge filter: locked only"
+    },
+    "achievementsNothingHere": "Det finns inget här än.",
+    "@achievementsNothingHere": {
+        "description": "Empty state for an achievements list"
+    },
+    "achievementsHiddenBadge": "Dold prestation",
+    "@achievementsHiddenBadge": {
+        "description": "Placeholder name for a secret badge that is still locked"
+    },
+    "achievementsUnlockedOn": "Upplåst {date}",
+    "@achievementsUnlockedOn": {
+        "description": "When a badge was unlocked",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsPoints": "{points} poäng",
+    "@achievementsPoints": {
+        "description": "Points a badge is worth",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsQuestReward": "+{points}",
+    "@achievementsQuestReward": {
+        "description": "Points a quest pays out",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsRerollDaily": "Spela om dagliga uppdrag",
+    "@achievementsRerollDaily": {
+        "description": "Action that swaps the daily quest set for a new one"
+    },
+    "achievementsRerollWeekly": "Gör om veckouppdragen",
+    "@achievementsRerollWeekly": {
+        "description": "Action that swaps the weekly quest set for a new one"
+    },
+    "achievementsRerollOffer": "Byt ut den här uppsättningen mot en annan",
+    "@achievementsRerollOffer": {
+        "description": "Subtitle on the reroll row while a reroll is still available"
+    },
+    "achievementsRerollSpentDaily": "Används idag, återlämnas vid midnatt UTC",
+    "@achievementsRerollSpentDaily": {
+        "description": "Subtitle on the reroll row once the daily reroll is spent"
+    },
+    "achievementsRerollSpentWeekly": "Används den här veckan, kommer tillbaka på måndag (UTC)",
+    "@achievementsRerollSpentWeekly": {
+        "description": "Subtitle on the reroll row once the weekly reroll is spent"
+    },
+    "achievementsRerollConfirm": "Ska jag göra om dessa uppdrag?",
+    "@achievementsRerollConfirm": {
+        "description": "Title of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollConfirmBody": "Du får en omstart per dag och en per vecka, och den här använder upp den.",
+    "@achievementsRerollConfirmBody": {
+        "description": "Body of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollFailed": "Det gick inte att göra om de där uppdragen.",
+    "@achievementsRerollFailed": {
+        "description": "Message shown when a quest reroll did not go through"
+    },
+    "achievementsSuggested": "Förslag på saker att titta på",
+    "@achievementsSuggested": {
+        "description": "Header above the items the plugin suggests for a badge"
+    },
+    "achievementsNoSuggestions": "Inget att föreslå för den här utmärkelsen.",
+    "@achievementsNoSuggestions": {
+        "description": "Shown when the plugin has no items to recommend for a badge"
+    },
+    "achievementsProgressLabel": "Framsteg",
+    "@achievementsProgressLabel": {
+        "description": "Label above a badge's current progress figure"
+    },
+    "achievementsLoadout": "Utrustning",
+    "@achievementsLoadout": {
+        "description": "Screen holding the score bank and the power-ups a user owns"
+    },
+    "achievementsLoadoutSubtitle": "Poäng att spendera och de förstärkningar du har",
+    "@achievementsLoadoutSubtitle": {
+        "description": "Subtitle on the row that opens the loadout"
+    },
+    "achievementsAppearanceSubtitle": "Avataren och titeln på din profil",
+    "@achievementsAppearanceSubtitle": {
+        "description": "Subtitle on the row that opens the appearance screen"
+    },
+    "achievementsAvatars": "Avatarer",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsOwned": "Ägs",
+    "@achievementsOwned": {
+        "description": "State of an avatar or title that is held but not worn"
+    },
+    "achievementsEarnedAt": "Erhållet vid {score} livstidsresultat",
+    "@achievementsEarnedAt": {
+        "description": "What a user has to reach to unlock a cosmetic without paying",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsAppearanceEmpty": "Den här servern har inga avatarer eller titlar att använda.",
+    "@achievementsAppearanceEmpty": {
+        "description": "Shown when the plugin carries no cosmetics this panel can draw"
+    },
+    "achievementsAppearanceFailed": "Det gick inte att ändra profilens utseende.",
+    "@achievementsAppearanceFailed": {
+        "description": "Shown when equipping or removing an avatar or title fails"
+    },
+    "achievementsPowerUps": "Power-ups",
+    "@achievementsPowerUps": {
+        "description": "Section header above the consumable boosts a user holds"
+    },
+    "achievementsStatsSubtitle": "Dina loggar och hur servern fungerar",
+    "@achievementsStatsSubtitle": {
+        "description": "Subtitle on the row that opens stats"
+    },
+    "achievementsStatsBests": "Bäst",
+    "@achievementsStatsBests": {
+        "description": "Section of a user's highest counters"
+    },
+    "achievementsStatsHabits": "Vanor",
+    "@achievementsStatsHabits": {
+        "description": "Section of counters for when a user watches"
+    },
+    "achievementsStatsVariety": "Variation",
+    "@achievementsStatsVariety": {
+        "description": "Section of counters for how widely a user watches"
+    },
+    "achievementsStatsServer": "Den här servern",
+    "@achievementsStatsServer": {
+        "description": "Section of figures covering every user"
+    },
+    "achievementsStatsClock": "När du tittar på",
+    "@achievementsStatsClock": {
+        "description": "Header above the hour of day chart"
+    },
+    "achievementsStatItems": "Bevakade objekt",
+    "@achievementsStatItems": {
+        "description": "Counter label"
+    },
+    "achievementsStatMovies": "Filmer jag har sett",
+    "@achievementsStatMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatSeries": "Serien är avslutad",
+    "@achievementsStatSeries": {
+        "description": "Counter label"
+    },
+    "achievementsStatHours": "Antal timmar som tittats på",
+    "@achievementsStatHours": {
+        "description": "Counter label"
+    },
+    "achievementsStatDays": "Antal visningsdagar",
+    "@achievementsStatDays": {
+        "description": "Counter label"
+    },
+    "achievementsStatRewatches": "Omtittningar",
+    "@achievementsStatRewatches": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestWatchStreak": "Längsta raden av tittande",
+    "@achievementsStatBestWatchStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestLoginStreak": "Längsta inloggningssviten",
+    "@achievementsStatBestLoginStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostEpisodes": "Flest avsnitt per dag",
+    "@achievementsStatMostEpisodes": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostMovies": "Flest filmer på en dag",
+    "@achievementsStatMostMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatLongestItem": "Den längsta enskilda artikeln",
+    "@achievementsStatLongestItem": {
+        "description": "Counter label, a run time in minutes"
+    },
+    "achievementsStatBestCombo": "Bästa kombinationen",
+    "@achievementsStatBestCombo": {
+        "description": "Counter label"
+    },
+    "achievementsStatLateNight": "Sena kvällssessioner",
+    "@achievementsStatLateNight": {
+        "description": "Counter label"
+    },
+    "achievementsStatEarlyMorning": "Träningspass tidigt på morgonen",
+    "@achievementsStatEarlyMorning": {
+        "description": "Counter label"
+    },
+    "achievementsStatWeekend": "Helgkurser",
+    "@achievementsStatWeekend": {
+        "description": "Counter label"
+    },
+    "achievementsStatDaysSignedIn": "Antal inloggningsdagar",
+    "@achievementsStatDaysSignedIn": {
+        "description": "Counter label"
+    },
+    "achievementsStatLibraries": "Besökta bibliotek",
+    "@achievementsStatLibraries": {
+        "description": "Counter label"
+    },
+    "achievementsStatGenres": "Genrer jag har tittat på",
+    "@achievementsStatGenres": {
+        "description": "Counter label"
+    },
+    "achievementsStatDecades": "Årtionden har gått",
+    "@achievementsStatDecades": {
+        "description": "Counter label"
+    },
+    "achievementsStatCountries": "Länder som övervakades",
+    "@achievementsStatCountries": {
+        "description": "Counter label"
+    },
+    "achievementsStatLanguages": "Språk som följs",
+    "@achievementsStatLanguages": {
+        "description": "Counter label"
+    },
+    "achievementsStatBadgesUnlocked": "Upplåsta märken",
+    "@achievementsStatBadgesUnlocked": {
+        "description": "Counter label"
+    },
+    "achievementsStatScoreEarned": "Uppnått poängantal",
+    "@achievementsStatScoreEarned": {
+        "description": "Counter label"
+    },
+    "achievementsStatCommonBadge": "Vanligaste märket",
+    "@achievementsStatCommonBadge": {
+        "description": "Label for the badge the most users hold"
+    },
+    "achievementsActivitySubtitle": "Vad servern har låst upp på sistone",
+    "@achievementsActivitySubtitle": {
+        "description": "Subtitle on the row that opens the activity feed"
+    },
+    "achievementsActivityUnlocked": "{user} olåst {badge}",
+    "@achievementsActivityUnlocked": {
+        "description": "One line of the activity feed",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "badge": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsShop": "Butik",
+    "@achievementsShop": {
+        "description": "Screen selling power-ups for score"
+    },
+    "achievementsShopSubtitle": "Använd poängen till fler förstärkningar",
+    "@achievementsShopSubtitle": {
+        "description": "Subtitle on the row that opens the shop"
+    },
+    "achievementsShopPack": "{name} ×{count}",
+    "@achievementsShopPack": {
+        "description": "A shop item that grants more than one of a power-up",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShopEmpty": "Det finns inget till salu just nu.",
+    "@achievementsShopEmpty": {
+        "description": "Shown when the shop catalogue came back with nothing"
+    },
+    "achievementsBuyConfirm": "Ska jag köpa den här?",
+    "@achievementsBuyConfirm": {
+        "description": "Title of the dialog confirming a purchase"
+    },
+    "achievementsBuyConfirmBody": "Det dras direkt från din poängbank.",
+    "@achievementsBuyConfirmBody": {
+        "description": "Body of the dialog confirming a purchase"
+    },
+    "achievementsBuyFailed": "Det kunde jag inte gå med på.",
+    "@achievementsBuyFailed": {
+        "description": "Message shown when a purchase did not go through"
+    },
+    "achievementsScoreBank": "Poängbank",
+    "@achievementsScoreBank": {
+        "description": "Label for the score a user still has to spend"
+    },
+    "achievementsBoost": "XP Boost",
+    "@achievementsBoost": {
+        "description": "Power-up that doubles score for an hour"
+    },
+    "achievementsBoostBody": "Poängen i dubbelspel räknas under en timme. Om du använder funktionen igen startar timmen om från början.",
+    "@achievementsBoostBody": {
+        "description": "What the XP Boost power-up does"
+    },
+    "achievementsDoubleCredit": "Dubbel poäng",
+    "@achievementsDoubleCredit": {
+        "description": "Power-up that makes the next item count twice"
+    },
+    "achievementsDoubleCreditBody": "Nästa uppgift du slutför räknas dubbelt när det gäller märken.",
+    "@achievementsDoubleCreditBody": {
+        "description": "What the Double Credit power-up does"
+    },
+    "achievementsEquipped": "Utrustad",
+    "@achievementsEquipped": {
+        "description": "State of the avatar or title a profile is wearing"
+    },
+    "achievementsStreakFreeze": "Streak Freeze",
+    "@achievementsStreakFreeze": {
+        "description": "Power-up that protects a watch streak"
+    },
+    "achievementsStreakFreezeBody": "Gäller för en förlorad dag. Endast en dag kan sparas.",
+    "@achievementsStreakFreezeBody": {
+        "description": "What the Streak Freeze power-up does"
+    },
+    "achievementsPowerUpHeld": "{count, plural, =0{None held} =1{1 held} other{{count} held}}",
+    "@achievementsPowerUpHeld": {
+        "description": "How many of a power-up the user owns",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsPowerUpActive": "Pågår just nu",
+    "@achievementsPowerUpActive": {
+        "description": "Marker on a power-up that is currently in effect"
+    },
+    "achievementsUsePowerUp": "Ska jag använda den här power-upen?",
+    "@achievementsUsePowerUp": {
+        "description": "Title of the dialog confirming a power-up is spent"
+    },
+    "achievementsUsePowerUpBody": "Beloppet dras så fort du bekräftar.",
+    "@achievementsUsePowerUpBody": {
+        "description": "Body of the dialog confirming a power-up is spent"
+    },
+    "achievementsPowerUpFailed": "Det gick inte att använda den där power-upen.",
+    "@achievementsPowerUpFailed": {
+        "description": "Message shown when using a power-up did not go through"
+    },
+    "achievementsHours": "Öppettider",
+    "@achievementsHours": {
+        "description": "Leaderboard category: hours watched"
+    },
+    "achievementsStreak": "Streak",
+    "@achievementsStreak": {
+        "description": "Leaderboard category: best watch streak"
+    },
+    "achievementsPeriodWeek": "Vecka",
+    "@achievementsPeriodWeek": {
+        "description": "Recap period: the last week"
+    },
+    "achievementsPeriodMonth": "Månad",
+    "@achievementsPeriodMonth": {
+        "description": "Recap period: the last month"
+    },
+    "achievementsPeriodYear": "År",
+    "@achievementsPeriodYear": {
+        "description": "Recap period: the last year"
+    },
+    "achievementsDaysWatched": "{count} antal dagar som har tittats på",
+    "@achievementsDaysWatched": {
+        "description": "How many days the user watched something",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBadgesEarned": "{count} uppnådda märken",
+    "@achievementsBadgesEarned": {
+        "description": "How many badges were earned in the recap period",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsTopDirectors": "Toppregissörer",
+    "@achievementsTopDirectors": {
+        "description": "Recap list of most-watched directors"
+    },
+    "achievementsTopActors": "Toppskådespelare",
+    "@achievementsTopActors": {
+        "description": "Recap list of most-watched actors"
+    },
+    "achievementsLoadFailed": "Det gick inte att ladda dina prestationer.",
+    "@achievementsLoadFailed": {
+        "description": "Shown when the Achievement Badges plugin data fails to load"
+    },
+    "friends": "Vänner",
+    "@friends": {
+        "description": "Title of the friends panel from the Achievement Badges plugin"
+    },
+    "friendsSubtitle": "Se vilka som är online och chatta med användarna på den här servern",
+    "@friendsSubtitle": {
+        "description": "Subtitle of the Friends entry"
+    },
+    "friendsShowButton": "Knappen ”Visa vänner”",
+    "@friendsShowButton": {
+        "description": "Navigation setting that adds a Friends button"
+    },
+    "friendsShowButtonSubtitle": "Vänner och chatt – från tillägget ”Achievement Badges”",
+    "@friendsShowButtonSubtitle": {
+        "description": "Subtitle of the setting that adds a Friends button"
+    },
+    "friendsMessages": "Meddelanden",
+    "@friendsMessages": {
+        "description": "Entry that opens the list of chats"
+    },
+    "friendsUnreadCount": "{count, plural, =0{No unread messages} =1{1 unread message} other{{count} unread messages}}",
+    "@friendsUnreadCount": {
+        "description": "How many chat messages are unread",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsRequests": "Vänförfrågningar",
+    "@friendsRequests": {
+        "description": "Entry that opens pending friend requests"
+    },
+    "friendsRequestCount": "{count, plural, =0{Nothing waiting} =1{1 waiting for you} other{{count} waiting for you}}",
+    "@friendsRequestCount": {
+        "description": "How many friend requests wait for an answer",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsAdd": "Lägg till vänner",
+    "@friendsAdd": {
+        "description": "Entry that opens the people search"
+    },
+    "friendsAddSubtitle": "Hitta personer på den här servern",
+    "@friendsAddSubtitle": {
+        "description": "Subtitle of the Add friends entry"
+    },
+    "friendsPrivacy": "Privacy",
+    "@friendsPrivacy": {
+        "description": "Entry that opens the friends privacy settings"
+    },
+    "friendsPrivacySubtitle": "Vad dina vänner kan se",
+    "@friendsPrivacySubtitle": {
+        "description": "Subtitle of the friends Privacy entry"
+    },
+    "friendsOnline": "Online",
+    "@friendsOnline": {
+        "description": "Section header and status for friends who are online"
+    },
+    "friendsOffline": "Offline",
+    "@friendsOffline": {
+        "description": "Section header and status for friends who are offline"
+    },
+    "friendsNone": "Inga vänner än. Lägg till personer från den här servern för att se dem här.",
+    "@friendsNone": {
+        "description": "Shown when the friends list is empty"
+    },
+    "friendsWatching": "Titta på {title}",
+    "@friendsWatching": {
+        "description": "Status line of a friend who is playing something",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastWatched": "Senast visade {title}",
+    "@friendsLastWatched": {
+        "description": "Status line of an offline friend with the last thing they played",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastSeen": "Senast sett {time}",
+    "@friendsLastSeen": {
+        "description": "Status line of an offline friend, with a relative time such as 5m ago",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLoadFailed": "Det gick inte att ladda detta. Kontrollera din anslutning och försök igen.",
+    "@friendsLoadFailed": {
+        "description": "Shown when a friends or chat screen fails to load"
+    },
+    "friendsActionFailed": "Det gick inte. Försök igen om en stund.",
+    "@friendsActionFailed": {
+        "description": "Shown when a friends or chat action fails without a reason from the server"
+    },
+    "friendsIncoming": "Väntar på dig",
+    "@friendsIncoming": {
+        "description": "Section header for friend requests others sent"
+    },
+    "friendsOutgoing": "Skickat av dig",
+    "@friendsOutgoing": {
+        "description": "Section header for friend requests the user sent"
+    },
+    "friendsNoRequests": "Inga vänförfrågningar.",
+    "@friendsNoRequests": {
+        "description": "Shown when there are no pending friend requests"
+    },
+    "friendsAccept": "Godkänn",
+    "@friendsAccept": {
+        "description": "Accept a friend request"
+    },
+    "friendsCancelRequest": "Avbryt begäran",
+    "@friendsCancelRequest": {
+        "description": "Take back a friend request the user sent"
+    },
+    "friendsRequestFrom": "{name} vill vara vänner",
+    "@friendsRequestFrom": {
+        "description": "Title of the dialog answering a friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsCancelRequestBody": "Take back the request you sent to {name}?",
+    "@friendsCancelRequestBody": {
+        "description": "Body of the dialog cancelling a sent friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsSearchHint": "Sök efter personer",
+    "@friendsSearchHint": {
+        "description": "Hint of the people search field"
+    },
+    "friendsNoMatches": "Det finns ingen som heter så.",
+    "@friendsNoMatches": {
+        "description": "Shown when the people search finds nobody"
+    },
+    "friendsRequestSent": "Förfrågan skickad till {name}",
+    "@friendsRequestSent": {
+        "description": "Shown after sending a friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsSendRequest": "Lägg till som vän",
+    "@friendsSendRequest": {
+        "description": "Action that sends a friend request to someone"
+    },
+    "friendsSendMessage": "Skicka meddelande",
+    "@friendsSendMessage": {
+        "description": "Action that opens a chat with a friend"
+    },
+    "friendsOpenItem": "Öppna {title}",
+    "@friendsOpenItem": {
+        "description": "Action that opens what a friend is watching",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsRemove": "Ta bort vän",
+    "@friendsRemove": {
+        "description": "Action that removes a friend"
+    },
+    "friendsRemoveBody": "Vill du ta bort {name} från dina vänner? Du kan lägga till dem igen senare.",
+    "@friendsRemoveBody": {
+        "description": "Body of the dialog removing a friend",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsBlock": "Blockera",
+    "@friendsBlock": {
+        "description": "Action that blocks a user from messaging"
+    },
+    "friendsUnblock": "Avblockera",
+    "@friendsUnblock": {
+        "description": "Action that unblocks a user"
+    },
+    "friendsBlockBody": "Blockera {name}? Ingen av er kommer att kunna skicka meddelanden direkt till den andra. De gruppchattar ni delar förblir öppna.",
+    "@friendsBlockBody": {
+        "description": "Body of the dialog blocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsUnblockBody": "Avblockera {name}?",
+    "@friendsUnblockBody": {
+        "description": "Body of the dialog unblocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsBlocked": "Blockerade användare",
+    "@friendsBlocked": {
+        "description": "Section header listing blocked users"
+    },
+    "friendsProfileHidden": "{name} har ställt in sin profil som privat.",
+    "@friendsProfileHidden": {
+        "description": "Shown when another user hides their profile",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsAppearOffline": "Visa som offline",
+    "@friendsAppearOffline": {
+        "description": "Privacy setting that always shows the user as offline"
+    },
+    "friendsAppearOfflineSubtitle": "Dina vänner ser dig alltid som offline",
+    "@friendsAppearOfflineSubtitle": {
+        "description": "Subtitle of the Appear offline setting"
+    },
+    "friendsHideNowPlaying": "Dölj vad jag tittar på",
+    "@friendsHideNowPlaying": {
+        "description": "Privacy setting that hides what is playing"
+    },
+    "friendsHideNowPlayingSubtitle": "Dina vänner ser fortfarande att du är online, men inte vad du spelar",
+    "@friendsHideNowPlayingSubtitle": {
+        "description": "Subtitle of the Hide what I am watching setting"
+    },
+    "friendsHideLastWatched": "Dölj ”Senast visade”",
+    "@friendsHideLastWatched": {
+        "description": "Privacy setting that hides the last played item while offline"
+    },
+    "friendsHideLastWatchedSubtitle": "Dina vänner kommer inte att kunna se vad du tittade på senast när du är offline",
+    "@friendsHideLastWatchedSubtitle": {
+        "description": "Subtitle of the Hide my last watched setting"
+    },
+    "friendsMessageNotifications": "Meddelandeaviseringar",
+    "@friendsMessageNotifications": {
+        "description": "Setting that shows a banner for new chat messages"
+    },
+    "friendsMessageNotificationsSubtitle": "Visa en banner när en vän skickar ett meddelande till dig",
+    "@friendsMessageNotificationsSubtitle": {
+        "description": "Subtitle of the Message notifications setting"
+    },
+    "friendsMuteDuringPlayback": "Stäng av ljudet under uppspelning",
+    "@friendsMuteDuringPlayback": {
+        "description": "Setting that hides new message banners while a video or game plays"
+    },
+    "friendsMuteDuringPlaybackSubtitle": "Inga meddelandebanderoller medan en video eller ett spel spelas upp",
+    "@friendsMuteDuringPlaybackSubtitle": {
+        "description": "Subtitle of the Mute during playback setting"
+    },
+    "friendsSaveFailed": "Det gick inte att spara dina inställningar.",
+    "@friendsSaveFailed": {
+        "description": "Shown when the friends privacy settings fail to save"
+    },
+    "chatNew": "Nytt meddelande",
+    "@chatNew": {
+        "description": "Entry that starts a chat with one friend"
+    },
+    "chatNewSubtitle": "Starta en chatt med en vän",
+    "@chatNewSubtitle": {
+        "description": "Subtitle of the New message entry"
+    },
+    "chatNewGroup": "Ny grupp",
+    "@chatNewGroup": {
+        "description": "Entry that creates a group chat"
+    },
+    "chatNewGroupSubtitle": "Chatta med flera vänner samtidigt",
+    "@chatNewGroupSubtitle": {
+        "description": "Subtitle of the New group entry"
+    },
+    "chatNone": "Inga meddelanden än.",
+    "@chatNone": {
+        "description": "Shown when there are no chats or no messages in a chat"
+    },
+    "chatYouSaid": "Du: {text}",
+    "@chatYouSaid": {
+        "description": "Preview of the last chat message when the user sent it",
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "chatEmoji": "Emoji",
+    "@chatEmoji": {
+        "description": "Button that opens the emoji picker in a chat"
+    },
+    "chatEmojiSearch": "Sök emoji",
+    "@chatEmojiSearch": {
+        "description": "Hint of the search field in the emoji picker"
+    },
+    "chatNoRecentEmoji": "Inga nya emoji",
+    "@chatNoRecentEmoji": {
+        "description": "Shown in the emoji picker's recent tab before any emoji was used"
+    },
+    "chatViewPhoto": "Visa foto",
+    "@chatViewPhoto": {
+        "description": "Action that opens a photo sent in a chat at full size"
+    },
+    "chatHint": "Skriv ett meddelande",
+    "@chatHint": {
+        "description": "Hint of the chat message field"
+    },
+    "chatAttach": "Skicka en bild",
+    "@chatAttach": {
+        "description": "Button that picks an image to send in a chat"
+    },
+    "chatEdited": "redigerad",
+    "@chatEdited": {
+        "description": "Marks a chat message that was changed after sending"
+    },
+    "chatSeen": "Sett",
+    "@chatSeen": {
+        "description": "Read receipt on a sent chat message"
+    },
+    "chatSent": "Skickat",
+    "@chatSent": {
+        "description": "Delivery mark on a sent chat message nobody has read yet"
+    },
+    "chatEditing": "Redigera meddelande",
+    "@chatEditing": {
+        "description": "Banner above the chat field while changing a sent message"
+    },
+    "chatMessageOptions": "Meddelandealternativ",
+    "@chatMessageOptions": {
+        "description": "Title of the dialog with actions for a chat message"
+    },
+    "chatDeleteBody": "Ska det här meddelandet raderas för alla?",
+    "@chatDeleteBody": {
+        "description": "Body of the dialog deleting a chat message"
+    },
+    "chatClear": "Tydlig konversation",
+    "@chatClear": {
+        "description": "Action that deletes every message in a chat"
+    },
+    "chatClearBody": "Vill du radera alla meddelanden i den här chatten för alla deltagare?",
+    "@chatClearBody": {
+        "description": "Body of the dialog clearing a chat"
+    },
+    "chatGroupInfo": "Gruppinformation",
+    "@chatGroupInfo": {
+        "description": "Screen and action with a group chat name and members"
+    },
+    "chatMemberCount": "{count, plural, =1{1 member} other{{count} members}}",
+    "@chatMemberCount": {
+        "description": "How many people are in a group chat",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatOwner": "Ägare",
+    "@chatOwner": {
+        "description": "Marks the person who created a group chat"
+    },
+    "chatMakeAdmin": "Skapa administratör",
+    "@chatMakeAdmin": {
+        "description": "Action that makes a group member an admin"
+    },
+    "chatRemoveAdmin": "Ta bort administratör",
+    "@chatRemoveAdmin": {
+        "description": "Action that takes admin away from a group member"
+    },
+    "chatRemoveMember": "Ta bort från gruppen",
+    "@chatRemoveMember": {
+        "description": "Action that removes someone from a group chat"
+    },
+    "chatAddMember": "Lägg till personer",
+    "@chatAddMember": {
+        "description": "Action that adds friends to a group chat"
+    },
+    "chatNobodyToAdd": "Det finns ingen kvar att lägga till.",
+    "@chatNobodyToAdd": {
+        "description": "Shown when every friend is already in the group"
+    },
+    "chatLeaveBody": "Vill du lämna den här gruppen? Då måste någon lägga till dig igen för att du ska kunna gå med igen.",
+    "@chatLeaveBody": {
+        "description": "Body of the dialog leaving a group chat"
+    },
+    "chatPickMembers": "Välj minst två vänner",
+    "@chatPickMembers": {
+        "description": "Hint on the new group screen"
+    },
+    "chatNewMessageFrom": "Nytt meddelande från {name}",
+    "@chatNewMessageFrom": {
+        "description": "Title of the banner for a new chat message",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "chatImageTooLarge": "Den bilden är över 8 MB stor.",
+    "@chatImageTooLarge": {
+        "description": "Shown when a picked chat image is too big"
+    },
+    "chatImageUnsupported": "Endast bilder i formaten PNG, JPEG, GIF och WebP kan skickas.",
+    "@chatImageUnsupported": {
+        "description": "Shown when a picked chat image has an unsupported type"
+    },
+    "analyticsLibraryShare": "Andel av poster per bibliotek",
+    "analyticsTopRating": "Vanligaste betyg",
+    "analyticsTypicalRuntime": "Typisk drifttid",
+    "analyticsShareOfItems": "{percent}% antal artiklar",
+    "@analyticsShareOfItems": {
+        "placeholders": {
+            "percent": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookFullTimeline": "Fullständig tidslinje",
+    "dateCreatedFormat": "Datum för tillägg: {date}",
+    "@dateCreatedFormat": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "transcodeAudioCodecWithCodec": "Ljudkodek ({codec}) stöds inte direkt.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioCodecHintPassthrough": "Tips: Om din ljudmottagare eller soundbar stöder {codec}, aktivera då ”Audio Passthrough” i ljudinställningarna.",
+    "@transcodeAudioCodecHintPassthrough": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioChannelsExceeded": "Antalet ljudkanaler ({channels}ch) överskrider spelarens gräns.",
+    "@transcodeAudioChannelsExceeded": {
+        "placeholders": {
+            "channels": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeAudioChannelsHint": "Tips: Justera inställningen ”Max antal ljudkanaler” eller nedmixning till flerkanaligt ljud i ljudinställningarna.",
+    "transcodeSubtitleBurnInAssDisabled": "Undertexter i ASS/SSA-format måste omkodas eftersom direktuppspelning är inaktiverad.",
+    "transcodeSubtitleBurnInAssHint": "Tips: Aktivera ”ASS/SSA Direct Play” i uppspelningsinställningarna för att spela upp direkt utan omkodning.",
+    "transcodeSubtitleBurnInPgsDisabled": "PGS-undertexter måste omkodas eftersom direktuppspelning är inaktiverad.",
+    "transcodeSubtitleBurnInPgsHint": "Tips: Aktivera ”PGS Direct Play” i uppspelningsinställningarna för att spela upp direkt utan omkodning.",
+    "transcodeSubtitleNotSupportedWithCodec": "Undertextformatet ({codec}) stöds inte direkt och måste brännas in.",
+    "@transcodeSubtitleNotSupportedWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateExceededWithValues": "Filens bithastighet ({fileBitrate}) överskrider den inställda strömningsgränsen ({maxBitrate}).",
+    "@transcodeBitrateExceededWithValues": {
+        "placeholders": {
+            "fileBitrate": {
+                "type": "String"
+            },
+            "maxBitrate": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateHint": "Tips: Öka ”Maximal bithastighet” i uppspelningsinställningarna för att möjliggöra direktströmning.",
+    "transcodeResolutionHint": "Tips: Öka ”Maximal upplösning” i uppspelningsinställningarna för att möjliggöra direktströmning.",
+    "transcodeVideoRangeNotSupported": "Dynamiskt omfång för video (t.ex. Dolby Vision/HDR) stöds inte av denna skärm.",
+    "transcodeDolbyVisionProfile7ElDisabled": "Direktuppspelning av förbättringslagret i Dolby Vision-profil 7 är inaktiverad.",
+    "transcodeDolbyVisionProfile7ElHint": "Tips: Aktivera ”Dolby Vision Profile 7 Direct Play” i uppspelningsinställningarna om din skärm stöder det.",
+    "transcodeDolbyVisionFallbackPreferenceTranscode": "Omkodning rekommenderas för Dolby Vision-fallback enligt användarens inställningar.",
+    "transcodeDolbyVisionFallbackHint": "Tips: Ställ in ”Dolby Vision Fallback” på ”Spela upp som HDR10” i uppspelningsinställningarna för att undvika omkodning.",
+    "transcodeDisplayReportsNoHdr": "Den anslutna skärmen anger inte att den stöder HDR eller Dolby Vision.",
+    "transcodeDisplayLacksHdr10ForFallback": "Den anslutna skärmen saknar stöd för HDR10, vilket krävs för fallback till Dolby Vision.",
+    "transcodeAudioSampleRateNotSupported": "Ljudsamplingsfrekvens stöds inte.",
+    "transcodeAudioBitDepthNotSupported": "Ljudets bitdjup stöds inte.",
+    "transcodeRefFramesNotSupported": "Antalet referensramar i videon överskrider spelarens gränser.",
+    "transcodeAnamorphicVideoNotSupported": "Anamorfisk video stöds inte.",
+    "transcodeInterlacedVideoNotSupported": "Interlaced-video stöds inte.",
+    "transcodeSecondaryAudioNotSupported": "Den sekundära ljudströmmen måste omkodas.",
+    "transcodeDirectPlayError": "Direktuppspelning stöds inte för detta medieformat.",
+    "sortServerOrder": "Serverbeställning",
+    "sortCurrent": "Sortera: {option}",
+    "@sortCurrent": {
+        "description": "Label beside a sort button showing the sort that is active",
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        }
+    },
+    "addToWatchlist": "Lägg till i bevakningslistan",
+    "@addToWatchlist": {
+        "description": "Button label to add media to the user's Seerr watchlist"
+    },
+    "removeFromWatchlist": "Ta bort från bevakningslistan",
+    "@removeFromWatchlist": {
+        "description": "Button label to remove media from the user's Seerr watchlist"
+    },
+    "watchlistUpdateFailed": "Det gick inte att uppdatera bevakningslistan",
+    "@watchlistUpdateFailed": {
+        "description": "Snackbar shown when adding/removing a Seerr watchlist item fails"
+    },
+    "adminSearchParameters": "Sökparametrar",
+    "@adminSearchParameters": {
+        "description": "Column header above the editable fields used to search metadata providers in the Identify dialog"
+    },
+    "adminCurrentMetadata": "Aktuella metadata",
+    "@adminCurrentMetadata": {
+        "description": "Column header above the read-only values currently stored on the item in the Identify dialog"
+    },
+    "adminLabelYear": "År",
+    "@adminLabelYear": {
+        "description": "Label for the release year field in the Identify dialog"
+    },
+    "adminReplaceImages": "Ersätt befintliga bilder",
+    "@adminReplaceImages": {
+        "description": "Checkbox label in the confirmation dialog shown before applying an identified metadata match"
+    },
+    "adminBackToSearch": "Tillbaka till sökkriterierna",
+    "@adminBackToSearch": {
+        "description": "Tooltip on the button that returns from the Identify results list to the search form"
+    },
+    "playlistTypeMusicVideo": "Musikvideo",
+    "@playlistTypeMusicVideo": {
+        "description": "Filter checkbox label for music video playlists"
+    },
+    "musicVideoPlaylistsSection": "Spellistor med musikvideor",
+    "@musicVideoPlaylistsSection": {
+        "description": "Section header above music video playlists when Group by Type is enabled"
+    },
+    "currentTime": "Aktuell tid",
+    "@currentTime": {
+        "description": "The current time as it appears on a clock"
+    },
+    "playbackTimeDisplay": "Tid för förloppsindikator",
+    "@playbackTimeDisplay": {
+        "description": "Setting title for what is shown next to the playback progress bar"
+    },
+    "settingsPlaybackTimeDisplayDescription": "Välj vilka tidsmarkeringar som ska visas runt uppspelningsindikatorn.",
+    "@settingsPlaybackTimeDisplayDescription": {
+        "description": "Setting description for the progress bar time option"
+    },
+    "playbackTimeTotal": "Total varaktighet",
+    "@playbackTimeTotal": {
+        "description": "Progress bar time option showing the full runtime"
+    },
+    "playbackTimeRemaining": "Återstående tid",
+    "@playbackTimeRemaining": {
+        "description": "Progress bar time option showing how much is left to play"
+    },
+    "playbackTimeEndsAt": "Slutar vid",
+    "@playbackTimeEndsAt": {
+        "description": "Progress bar time option showing the clock time playback finishes"
+    },
+    "playbackTimeElapsed": "Förfluten tid",
+    "@playbackTimeElapsed": {
+        "description": "Progress bar time option showing how far into the item playback is"
+    },
+    "playbackTimeVideoSection": "Videospelare",
+    "@playbackTimeVideoSection": {
+        "description": "Section header above the video progress bar time slots"
+    },
+    "playbackTimeMusicSection": "Musikspelare",
+    "@playbackTimeMusicSection": {
+        "description": "Section header above the music progress bar time option"
+    },
+    "playbackTimeSlotDescription": "Välj vad som ska visas här, eller dölj det.",
+    "@playbackTimeSlotDescription": {
+        "description": "Setting description for a single progress bar time slot"
+    },
+    "playbackTimeAboveBarLeft": "Ovanför stapeln, till vänster",
+    "@playbackTimeAboveBarLeft": {
+        "description": "Progress bar time slot above the bar on the left"
+    },
+    "playbackTimeAboveBarCenter": "Ovanför stapeln, i mitten",
+    "@playbackTimeAboveBarCenter": {
+        "description": "Progress bar time slot above the bar in the center"
+    },
+    "playbackTimeAboveBarRight": "Ovanför stapeln, till höger",
+    "@playbackTimeAboveBarRight": {
+        "description": "Progress bar time slot above the bar on the right"
+    },
+    "playbackTimeBelowBarLeft": "Under stapeln, till vänster",
+    "@playbackTimeBelowBarLeft": {
+        "description": "Progress bar time slot below the bar on the left"
+    },
+    "playbackTimeBelowBarCenter": "Under stapeln, i mitten",
+    "@playbackTimeBelowBarCenter": {
+        "description": "Progress bar time slot below the bar in the center"
+    },
+    "playbackTimeBelowBarRight": "Under stapeln, till höger",
+    "@playbackTimeBelowBarRight": {
+        "description": "Progress bar time slot below the bar on the right"
+    },
+    "settingsMusicPlaybackTimeDescription": "Välj vad som ska visas till höger om musikens förloppsindikator.",
+    "@settingsMusicPlaybackTimeDescription": {
+        "description": "Setting description for the music progress bar time option"
+    },
+    "groupByTitle": "Gruppera efter",
+    "@groupByTitle": {
+        "description": "Dialog title and button label for library group by options"
+    },
+    "showAlphabeticalFilters": "Visa alfabetet",
+    "@showAlphabeticalFilters": {
+        "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
+    },
+    "libraryFolderView": "Mappvy",
+    "@libraryFolderView": {
+        "description": "Checkbox in a library's Sort and Filter options that lists the library one folder at a time instead of all its items at once"
+    },
+    "personalRatingStyle": "Personlig betygsättningsstil",
+    "@personalRatingStyle": {
+        "description": "Selects how personal ratings are displayed and entered on media details."
+    },
+    "personalRatingThumbs": "Gilla / ogilla",
+    "@personalRatingThumbs": {
+        "description": "Personal rating style using like and dislike actions."
+    },
+    "personalRatingNumeric": "Betyg på en skala från 1 till 10",
+    "@personalRatingNumeric": {
+        "description": "Personal rating style using a numeric score out of ten."
+    },
+    "rate": "Betyg",
+    "@rate": {
+        "description": "Action that opens the personal rating control."
+    },
+    "personalRatingClear": "Tydligt betyg",
+    "@personalRatingClear": {
+        "description": "Action that removes the personal rating from the media item."
+    },
+    "personalRatingRated": "Betyg",
+    "@personalRatingRated": {
+        "description": "Tooltip for a media item that has a numeric personal rating."
+    },
+    "personalRatingSaveFailed": "Det gick inte att spara betyget",
+    "@personalRatingSaveFailed": {
+        "description": "Error shown when saving a personal rating fails."
+    },
+    "personalRatingOutOfTen": "{rating} / 10",
+    "@personalRatingOutOfTen": {
+        "description": "Numeric personal rating displayed on a scale out of ten.",
+        "placeholders": {
+            "rating": {
+                "type": "String"
+            }
+        }
+    },
+    "personalRatingOutOfFive": "{rating} / 5",
+    "@personalRatingOutOfFive": {
+        "description": "Personal rating displayed on a five-star scale.",
+        "placeholders": {
+            "rating": {
+                "type": "String"
+            }
+        }
+    },
+    "filterInProgress": "Pågår",
+    "@filterInProgress": {
+        "description": "Library filter for items the viewer has started but not finished."
+    },
+    "filterUnreleased": "Ej släppt",
+    "@filterUnreleased": {
+        "description": "Series status filter for shows that have not started airing."
+    },
+    "filterThemeSongs": "Temasånger",
+    "@filterThemeSongs": {
+        "description": "Library filter for items that have a theme song."
+    },
+    "filterThemeVideos": "Temavideor",
+    "@filterThemeVideos": {
+        "description": "Library filter for items that have a theme video."
+    },
+    "audioLanguage": "Ljudspråk",
+    "@audioLanguage": {
+        "description": "Heading for the audio language filters in the library filter picker."
+    },
+    "subtitleLanguage": "Språk på undertexterna",
+    "@subtitleLanguage": {
+        "description": "Heading for the subtitle language filters in the library filter picker."
+    },
+    "clearFilters": "Rensa filter",
+    "@clearFilters": {
+        "description": "Action that turns every library filter back off."
+    },
+    "seerrShortcutsRow": "Seerr Bläddra",
+    "@seerrShortcutsRow": {
+        "description": "Title of the Seerr shortcuts row that jumps to Discover, Movies, Series, Requests and Issues."
+    },
+    "seerrReleased": "Släppt",
+    "@seerrReleased": {
+        "description": "Heading for the release window filter in the Seerr browse dialog."
+    },
+    "seerrMinRating": "Lägsta betyg",
+    "@seerrMinRating": {
+        "description": "Heading for the TMDB score floor filter in the Seerr browse dialog."
+    },
+    "seerrMinVotes": "Minsta antal röster",
+    "@seerrMinVotes": {
+        "description": "Heading for the TMDB vote count floor filter in the Seerr browse dialog."
+    },
+    "subtitleHdrSeparate": "Separat HDR-stil",
+    "@subtitleHdrSeparate": {
+        "description": "Toggle for a second subtitle appearance used only while HDR is playing."
+    },
+    "subtitleHdrSeparateSubtitle": "Vitt är betydligt ljusare i HDR än i SDR, så en mörkare inställning här förhindrar bländning",
+    "@subtitleHdrSeparateSubtitle": {
+        "description": "Explains why a separate HDR subtitle style is worth setting."
+    },
+    "subtitleBold": "Fet text",
+    "@subtitleBold": {
+        "description": "Toggle that draws subtitles in a bold weight."
+    },
+    "subtitleStrokeWidth": "Textens streckbredd",
+    "@subtitleStrokeWidth": {
+        "description": "Setting for how thick the outline around subtitle text is."
+    },
+    "subtitleFont": "Teckensnitt",
+    "@subtitleFont": {
+        "description": "Setting for which font subtitles are drawn in."
+    },
+    "subtitleFontDescription": "Teckensnitt hämtas från Google Fonts första gången du väljer dem",
+    "@subtitleFontDescription": {
+        "description": "Explains that subtitle fonts are not built in and are downloaded when chosen."
+    },
+    "subtitleFontDownloadFailed": "Det gick inte att ladda ner {font}",
+    "@subtitleFontDownloadFailed": {
+        "description": "Shown when a subtitle font could not be downloaded.",
+        "placeholders": {
+            "font": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleShadow": "Textskugga",
+    "@subtitleShadow": {
+        "description": "Toggle for a drop shadow behind subtitle text."
+    },
+    "subtitleShadowIntensity": "Skuggintensitet",
+    "@subtitleShadowIntensity": {
+        "description": "How dark the subtitle drop shadow is."
+    },
+    "subtitleShadowOffset": "Skuggförskjutning",
+    "@subtitleShadowOffset": {
+        "description": "How far the subtitle drop shadow sits from the text."
+    },
+    "subtitleShadowBlur": "Skuggosuddighet",
+    "@subtitleShadowBlur": {
+        "description": "How soft the edge of the subtitle drop shadow is."
+    },
+    "scrollSensitivity": "Rullningskänslighet",
+    "@scrollSensitivity": {
+        "description": "Title of the desktop setting that scales mouse wheel scrolling."
+    },
+    "scrollSensitivitySubtitle": "Hur långt man bläddrar per steg på mushjulet",
+    "@scrollSensitivitySubtitle": {
+        "description": "Explains the desktop scroll sensitivity slider."
+    },
+    "mediaDetailsAndSpoilers": "Information om medier och spoilers",
+    "@mediaDetailsAndSpoilers": {
+        "description": "Section header for media details and spoiler settings"
+    },
+    "openTrailersExternally": "Öppna trailrar i en extern app",
+    "@openTrailersExternally": {
+        "description": "Details screen setting that hands trailers to the system"
+    },
+    "openTrailersExternallySubtitle": "Trailers öppnas i YouTube-appen eller i webbläsaren istället för i den inbyggda spelaren",
+    "@openTrailersExternallySubtitle": {
+        "description": "Subtitle for the external trailers setting"
+    },
+    "hideDetailsMediaDescription": "Dölj mediebeskrivningen",
+    "@hideDetailsMediaDescription": {
+        "description": "Setting title to hide media description on details screen"
+    },
+    "hideDetailsMediaDescriptionSubtitle": "Dölj beskrivningen av filmen eller avsnittet.",
+    "@hideDetailsMediaDescriptionSubtitle": {
+        "description": "Description for setting to hide media description on details page"
+    },
+    "detailUseSeriesThumbnails": "Använd miniatyrbilder för serier",
+    "@detailUseSeriesThumbnails": {
+        "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
+    },
+    "detailUseSeriesThumbnailsSubtitle": "Ersätt alla miniatyrbilder på detaljsidan i Classic-läget med miniatyrbilder för serierl",
+    "@detailUseSeriesThumbnailsSubtitle": {
+        "description": "Description for setting to use series thumbnails on Classic details page"
+    },
+    "hideHomeMediaDescription": "Dölj mediebeskrivningen",
+    "@hideHomeMediaDescription": {
+        "description": "Setting title to hide media description on home screen"
+    },
+    "hideHomeMediaDescriptionSubtitle": "Dölj beskrivningen av filmen eller avsnittet.",
+    "@hideHomeMediaDescriptionSubtitle": {
+        "description": "Description for setting to hide media description on home screen"
+    },
+    "hideHomeWatchProgress": "Dölj framstegsindikatorn",
+    "@hideHomeWatchProgress": {
+        "description": "Setting title to hide the playback progress bar on home screen and library posters"
+    },
+    "hideHomeWatchProgressSubtitle": "Dölj förloppsindikatorn på affischer som du har börjat titta på.",
+    "@hideHomeWatchProgressSubtitle": {
+        "description": "Description for setting to hide the playback progress bar on home screen and library posters"
+    },
+    "hideHomeUnwatchedCount": "Dölj antalet icke-visade",
+    "@hideHomeUnwatchedCount": {
+        "description": "Setting title to hide the unwatched episode count badge on home screen and library posters"
+    },
+    "hideHomeUnwatchedCountSubtitle": "Dölj ikonen som visar hur många avsnitt som återstår att titta på.",
+    "@hideHomeUnwatchedCountSubtitle": {
+        "description": "Description for setting to hide the unwatched episode count badge on home screen and library posters"
+    },
+    "continueWatchingAndNextUpHeader": "Fortsätt titta och Nästa avsnitt",
+    "@continueWatchingAndNextUpHeader": {
+        "description": "Header for settings section containing Continue Watching and Next Up options"
+    },
+    "setupSkip": "Hoppa över installationen",
+    "@setupSkip": {
+        "description": "Leaves the first-run setup wizard without answering anything"
+    },
+    "setupNavbarQuestion": "Var ska navigeringsknappen placeras?",
+    "@setupNavbarQuestion": {
+        "description": "Setup question asking where the navigation bar should sit"
+    },
+    "setupMediaBarQuestion": "Hur ska den övre delen av din startskärm se ut?",
+    "@setupMediaBarQuestion": {
+        "description": "Setup wizard question for the media bar style"
+    },
+    "setupHomeRowsQuestion": "Hur ska dina rader se ut?",
+    "@setupHomeRowsQuestion": {
+        "description": "Setup wizard question for the home row style"
+    },
+    "setupDetailQuestion": "Hur ska en film eller en serie se ut när man öppnar den?",
+    "@setupDetailQuestion": {
+        "description": "Setup wizard question for the detail screen style"
+    },
+    "setupTourQuestion": "Nu är du klar. Här är vad mer som finns här inne.",
+    "@setupTourQuestion": {
+        "description": "Heading of the final setup wizard screen"
+    },
+    "setupPlaybackLanguages": "Språk för uppspelning",
+    "@setupPlaybackLanguages": {
+        "description": "Heading of the optional audio and subtitle language section on the last setup wizard screen"
+    },
+    "setupOptional": "Valfritt",
+    "@setupOptional": {
+        "description": "Tag beside an optional section in the setup wizard"
+    },
+    "setupRowsClassicHint": "Kompakt. Fler rader syns på skärmen samtidigt.",
+    "@setupRowsClassicHint": {
+        "description": "What the classic home row style gives you"
+    },
+    "setupRowsModernHint": "Större kort med rubriker under.",
+    "@setupRowsModernHint": {
+        "description": "What the modern home row style gives you"
+    },
+    "setupRowsCarouselHint": "Affischer med en stor informationsruta längst ner.",
+    "@setupRowsCarouselHint": {
+        "description": "What the carousel home row style gives you"
+    },
+    "setupDetailClassicHint": "Allt samlat i en enda stapel.",
+    "@setupDetailClassicHint": {
+        "description": "What the classic detail screen style gives you"
+    },
+    "setupDetailModernHint": "Filmisk, med flikar för skådespelare och statister.",
+    "@setupDetailModernHint": {
+        "description": "What the modern detail screen style gives you"
+    },
+    "setupDetailSpotlightHint": "Hjälten i fokus, med popup-kort för skådespelare och statister.",
+    "@setupDetailSpotlightHint": {
+        "description": "What the spotlight detail screen style gives you"
+    },
+    "setupStyleNouveau": "Nouveau",
+    "@setupStyleNouveau": {
+        "description": "Name of the full-screen stacked detail layout, offered in the setup wizard"
+    },
+    "setupDetailNouveauHint": "Helskärm, där avsnitten visas staplade istället för som flikar.",
+    "@setupDetailNouveauHint": {
+        "description": "What the nouveau detail screen style gives you"
+    },
+    "setupDetailMinimalistHint": "Omslagsbild, en uppspelningsknapp och avsnitten.",
+    "@setupDetailMinimalistHint": {
+        "description": "What the minimalist detail screen style gives you"
+    },
+    "setupDetailStageHint": "Affischen längst fram, med programmet under och informationen bredvid.",
+    "@setupDetailStageHint": {
+        "description": "What the Stage detail screen style gives you"
+    },
+    "setupDetailPremiereHint": "Rubriken var centrerad mot en bakgrund som sträckte sig över hela skärmen, medan allt annat var placerat längre ner på sidan.",
+    "@setupDetailPremiereHint": {
+        "description": "What the Premiere detail screen style gives you"
+    },
+    "setupDetailQuickLookHint": "En meny ovanför den skärm du befann dig på, med uppspelningsknappen och de grundläggande funktionerna, och hela sidan bara ett tryck bort.",
+    "@setupDetailQuickLookHint": {
+        "description": "What the Quick Look detail screen style gives you"
+    },
+    "setupDetailFrostHint": "Titeln i ett glasfönster ovanför den suddiga konstbilden, med flikar under knapparna.",
+    "@setupDetailFrostHint": {
+        "description": "What the Frost detail screen style gives you"
+    },
+    "setupNavbarStyleQuestion": "Hur ska den nedre fältet se ut?",
+    "@setupNavbarStyleQuestion": {
+        "description": "Setup question asking which style the bottom navigation bar should use"
+    },
+    "setupNavbarStyleDockHint": "En flytande tablett med etiketter under varje flik.",
+    "@setupNavbarStyleDockHint": {
+        "description": "What the Dock bottom bar style gives you"
+    },
+    "setupNavbarStyleSplitHint": "Sökfunktionen får en egen knapp, och fältet krymper när du bläddrar.",
+    "@setupNavbarStyleSplitHint": {
+        "description": "What the Split bottom bar style gives you"
+    },
+    "setupNavbarStyleStripHint": "En bar som sträcker sig över hela bredden längs den nedre kanten.",
+    "@setupNavbarStyleStripHint": {
+        "description": "What the Strip bottom bar style gives you"
+    },
+    "setupPickALook": "Välj en stil",
+    "@setupPickALook": {
+        "description": "Label above the theme swatches on the final setup screen"
+    },
+    "setupTourMoreHeader": "Det finns mer att upptäcka under Inställningar",
+    "@setupTourMoreHeader": {
+        "description": "Heading of the closing setup screen block that lists features found in settings"
+    },
+    "setupTourBulletRequests": "Seerr-förfrågningar",
+    "@setupTourBulletRequests": {
+        "description": "Bullet on the closing setup screen for the Seerr request feature"
+    },
+    "setupTourBulletSyncPlay": "SyncPlay-tittarfester",
+    "@setupTourBulletSyncPlay": {
+        "description": "Bullet on the closing setup screen for SyncPlay"
+    },
+    "setupTourBulletThemes": "Anpassade teman",
+    "@setupTourBulletThemes": {
+        "description": "Bullet on the closing setup screen for custom themes"
+    },
+    "setupTourBulletDownloads": "Nedladdningar offline",
+    "@setupTourBulletDownloads": {
+        "description": "Bullet on the closing setup screen for downloads"
+    },
+    "setupTourBulletMore": "Och mycket mer",
+    "@setupTourBulletMore": {
+        "description": "Closing bullet on the setup screen settings list"
+    },
+    "setupStepOf": "Steg {current} av {total}",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupCurrent": "Aktuell",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "setupMoonbaseTitle": "Lägg till Moonbase på din server",
+    "@setupMoonbaseTitle": {
+        "description": "Row on the last setup wizard step that opens the Moonbase server plugin dialog"
+    },
+    "setupMoonbaseHint": "Ett kostnadsfritt serverplugin som ger tillgång till fler funktioner i Moonfin",
+    "@setupMoonbaseHint": {
+        "description": "Line under the Moonbase row on the last setup wizard step"
+    },
+    "setupMoonbaseIntro": "Moonbase är gratis och körs på din server. Med det får Moonfin:",
+    "@setupMoonbaseIntro": {
+        "description": "First line of the Moonbase dialog, followed by a list of features"
+    },
+    "setupMoonbaseAskAdmin": "Endast en serveradministratör kan installera det. Skicka den här länken till dem.",
+    "@setupMoonbaseAskAdmin": {
+        "description": "Moonbase dialog line for users who aren't a server admin, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseManualSteps": "Det krävs några steg på din server för att installera programmet. Du hittar dem alla via den här länken.",
+    "@setupMoonbaseManualSteps": {
+        "description": "Moonbase dialog line for admins of servers the app can't install it on, above a QR code or link to the install steps"
+    },
+    "setupMoonbaseInstalling": "Installerar Moonbase...",
+    "@setupMoonbaseInstalling": {
+        "description": "Shown in the Moonbase dialog while the plugin installs"
+    },
+    "setupMoonbaseInstalled": "Moonbase är installerat. Det startas när servern startas om, vilket gör att allt som spelas upp just nu avbryts.",
+    "@setupMoonbaseInstalled": {
+        "description": "Shown in the Moonbase dialog after the plugin installed, above a Restart Server button"
+    },
+    "setupMoonbaseRestarting": "Servern startas om. Moonbase startas när den är igång igen.",
+    "@setupMoonbaseRestarting": {
+        "description": "Shown while the server restarts after Moonbase was installed"
+    },
+    "moonbaseFeatureSync": "Inställningarna synkroniseras mellan dina enheter",
+    "@moonbaseFeatureSync": {
+        "description": "Moonbase dialog feature"
+    },
+    "serverMessages": "Meddelanden",
+    "@serverMessages": {
+        "description": "Menu button and window title for messages sent by the server admin"
+    },
+    "musicSortYear": "År",
+    "@musicSortYear": {
+        "description": "Albums screen sort: by release year, newest first"
     }
 }

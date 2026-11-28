@@ -82,7 +82,9 @@ class MultiServerRepository {
   static const _genreArtworkConcurrency = 6;
 
   List<ServerUserSession>? _cachedSessions;
+  int? _cachedSessionGeneration;
   DateTime _cacheExpiry = DateTime(0);
+  final Set<String> _warnedFallbackServers = {};
   final Map<String, int> _rowOffsets = {};
   final Map<String, int> _rowTotals = {};
   // Playlists a server returned on the first page that didn't make the cut
@@ -114,12 +116,21 @@ class MultiServerRepository {
   }
 
   Future<List<ServerUserSession>> getLoggedInServers() async {
-    if (_cachedSessions != null && DateTime.now().isBefore(_cacheExpiry)) {
+    final generation = _sessionRepo.accountSelectionGeneration;
+    if (generation == null) return const [];
+    if (_cachedSessionGeneration == generation &&
+        _cachedSessions != null &&
+        DateTime.now().isBefore(_cacheExpiry)) {
       return _cachedSessions!;
     }
 
     final servers = _authStore.getServers();
     final activeServerId = _sessionRepo.activeServerId;
+    final activeUserId = _sessionRepo.activeUserId;
+    final activeUser = activeServerId == null || activeUserId == null
+        ? null
+        : _authStore.getUser(activeServerId, activeUserId);
+    final activeName = activeUser?.name.toLowerCase();
 
     final sessions = <ServerUserSession>[];
     final siloTokens = SiloTokenStorage(_authStore);
@@ -129,22 +140,34 @@ class MultiServerRepository {
         final users = _authStore.getUsers(server.id);
         if (users.isEmpty) continue;
 
-        String? userId;
         String? accessToken;
         PrivateUser? chosenUser;
 
-        if (server.id == activeServerId && _sessionRepo.activeUserId != null) {
-          final activeUser = users
-              .where((u) => u.id == _sessionRepo.activeUserId)
-              .firstOrNull;
-          if (activeUser != null && activeUser.accessToken.isNotEmpty) {
-            userId = activeUser.id;
-            accessToken = activeUser.accessToken;
-            chosenUser = activeUser;
+        final matchSecondaryUser =
+            activeServerId != null &&
+            server.id != activeServerId &&
+            (server.serverType == ServerType.jellyfin ||
+                server.serverType == ServerType.emby ||
+                server.serverType == ServerType.audiobookshelf);
+        if (server.id == activeServerId &&
+            activeUser != null &&
+            activeUser.accessToken.isNotEmpty) {
+          accessToken = activeUser.accessToken;
+          chosenUser = activeUser;
+        } else if (matchSecondaryUser &&
+            activeName != null &&
+            activeName.isNotEmpty) {
+          final match = users
+              .where((user) => user.name.toLowerCase() == activeName)
+              .singleOrNull;
+          if (match != null && match.accessToken.isNotEmpty) {
+            chosenUser = match;
+            accessToken = match.accessToken;
           }
         }
 
-        if (userId == null) {
+        final useFallback = chosenUser == null;
+        if (useFallback) {
           final token = await _credentialStore.getToken(server.id);
           // Another Silo server: its most recently used profile that needs
           // no PIN now, not whichever profile was stored first.
@@ -156,7 +179,6 @@ class MultiServerRepository {
           for (final user in candidates) {
             final userToken = token ?? user.accessToken;
             if (userToken.isNotEmpty) {
-              userId = user.id;
               accessToken = userToken;
               chosenUser = user;
               break;
@@ -164,13 +186,23 @@ class MultiServerRepository {
           }
         }
 
-        if (userId == null ||
-            chosenUser == null ||
-            accessToken == null ||
-            accessToken.isEmpty) {
+        // Credentials are written on shared clients. A lookup that waited on
+        // secure storage must never replace the new viewer's login.
+        if (_sessionRepo.accountSelectionGeneration != generation) {
+          return const [];
+        }
+        if (chosenUser == null || accessToken == null) {
           continue;
         }
 
+        if (useFallback &&
+            matchSecondaryUser &&
+            _warnedFallbackServers.add(server.id)) {
+          _logger.w(
+            'MultiServer: No usable username match on ${server.name}. '
+            'Using the default account selection.',
+          );
+        }
         final client = _clientFactory.getClient(
           serverId: server.id,
           serverType: server.serverType,
@@ -183,32 +215,52 @@ class MultiServerRepository {
           user: chosenUser,
           accessToken: accessToken,
         );
-        client.userId = userId;
+        client.userId = chosenUser.id;
 
         sessions.add(
-          ServerUserSession(server: server, userId: userId, client: client),
+          ServerUserSession(
+            server: server,
+            userId: chosenUser.id,
+            client: client,
+          ),
         );
       } catch (e) {
         _logger.w('MultiServer: Error checking server ${server.name}: $e');
       }
     }
 
+    if (_sessionRepo.accountSelectionGeneration != generation) return const [];
     _cachedSessions = sessions;
+    _cachedSessionGeneration = generation;
     _cacheExpiry = DateTime.now().add(_sessionCacheDuration);
     return sessions;
   }
 
-  // Concurrent callers share one in-flight aggregation instead of each
-  // fanning out to every server.
-  Future<List<AggregatedLibrary>>? _inFlightLibraries;
+  // Share an in-flight aggregation only within the same account generation.
+  ({int generation, Future<List<AggregatedLibrary>> result})? _inFlightLibraries;
 
-  Future<List<AggregatedLibrary>> getAggregatedLibraries() =>
-      _inFlightLibraries ??= _getAggregatedLibrariesNow().whenComplete(
-        () => _inFlightLibraries = null,
-      );
+  Future<List<AggregatedLibrary>> getAggregatedLibraries() {
+    final generation = _sessionRepo.accountSelectionGeneration;
+    if (generation == null) return Future.value(const []);
+    final pending = _inFlightLibraries;
+    if (pending != null && pending.generation == generation) {
+      return pending.result;
+    }
 
-  Future<List<AggregatedLibrary>> _getAggregatedLibrariesNow() async {
+    final result = _getAggregatedLibrariesNow(generation).whenComplete(() {
+      if (_inFlightLibraries?.generation == generation) {
+        _inFlightLibraries = null;
+      }
+    });
+    _inFlightLibraries = (generation: generation, result: result);
+    return result;
+  }
+
+  Future<List<AggregatedLibrary>> _getAggregatedLibrariesNow(
+    int generation,
+  ) async {
     final sessions = await getLoggedInServers();
+    if (_sessionRepo.accountSelectionGeneration != generation) return const [];
     final hasMultiple = sessions.length > 1;
 
     final results = await Future.wait(
@@ -241,6 +293,7 @@ class MultiServerRepository {
       ),
     );
 
+    if (_sessionRepo.accountSelectionGeneration != generation) return const [];
     final libraries = results.expand((e) => e).toList();
     if (!_mergesLibraries) return libraries;
     return mergeLibrariesByType(libraries, nameOf: _mergedLibraryName);
@@ -1052,6 +1105,14 @@ class MultiServerRepository {
     var uniqueCombined = combined
         .where((item) => seen.add('${item.serverId}_${item.id}'))
         .toList();
+    // Looked up once the servers have answered, so a slow lookup can't push a
+    // server past its time limit and lose its page.
+    if (row.rowType == HomeRowType.latestMedia) {
+      uniqueCombined = await withSeriesUserData(
+        uniqueCombined,
+        _itemsApiAmong(sessions),
+      );
+    }
 
     final List<AggregatedItem> sortedCombined;
     if (row.rowType == HomeRowType.playlists ||
@@ -1339,11 +1400,14 @@ class MultiServerRepository {
               continue;
             }
 
-            var items = normalizeLatestMediaItems(
-              parsed,
-              collectionType: collectionType,
-              limit: _defaultLimit,
-              hideWatched: hideWatched,
+            final items = await withSeriesUserData(
+              normalizeLatestMediaItems(
+                parsed,
+                collectionType: collectionType,
+                limit: _defaultLimit,
+                hideWatched: hideWatched,
+              ),
+              (_) => session.client.itemsApi,
             );
             if (items.isEmpty) continue;
 
@@ -1405,9 +1469,12 @@ class MultiServerRepository {
         hideWatched: hideWatched,
       );
       // A title several servers hold shows once, carrying the rest as copies.
-      final items = foldsCopies
-          ? foldCopies(normalized).take(_defaultLimit).toList()
-          : normalized;
+      final items = await withSeriesUserData(
+        foldsCopies
+            ? foldCopies(normalized).take(_defaultLimit).toList()
+            : normalized,
+        _itemsApiAmong(sessions),
+      );
       if (items.isEmpty) continue;
 
       final rowId = '${mergedTypeRowIdPrefix}latest_$collectionType';
@@ -1429,6 +1496,14 @@ class MultiServerRepository {
 
     return rows;
   }
+
+  static ItemsApi? Function(String serverId) _itemsApiAmong(
+    List<ServerUserSession> sessions,
+  ) => (serverId) => sessions
+      .where((s) => s.server.id == serverId)
+      .firstOrNull
+      ?.client
+      .itemsApi;
 
   Future<T> _withTimeout<T>(
     Future<T> Function() fn, {

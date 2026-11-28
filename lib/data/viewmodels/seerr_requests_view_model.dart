@@ -10,6 +10,7 @@ import '../services/plugin_sync_service.dart';
 import '../services/seerr/arr_queue.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_download_progress.dart';
+import '../services/seerr/seerr_error.dart';
 import '../services/seerr/seerr_models.dart';
 
 enum SeerrRequestFilter { all, pending, approved, processing, available, failed }
@@ -19,6 +20,8 @@ extension SeerrRequestFilterApi on SeerrRequestFilter {
 }
 
 const _pageSize = 20;
+
+enum SeerrRemoveResult { removed, refused, failed }
 
 class SeerrRequestsState {
   final bool isLoading;
@@ -539,6 +542,31 @@ class SeerrRequestsViewModel extends ChangeNotifier {
 
   Future<void> retryRequest(int requestId) =>
       _runAction(requestId, () => _repo.retryRequest(requestId));
+
+  /// Silo refuses with a 409 once the request was retried or part of it
+  /// arrived, and the card is read again to show where it stands.
+  Future<SeerrRemoveResult> removeFailedRequest(int requestId) async {
+    _state = _state.copyWith(actioningRequestId: requestId);
+    notifyListeners();
+    try {
+      await _repo.removeFailedRequest(requestId);
+    } catch (e) {
+      if (e is SeerrRequestException &&
+          e.kind == SeerrRequestErrorKind.duplicate) {
+        await _patchRequest(requestId);
+        return SeerrRemoveResult.refused;
+      }
+      _state = _state.copyWith(actioningRequestId: null);
+      notifyListeners();
+      return SeerrRemoveResult.failed;
+    }
+    _state = _state.copyWith(
+      actioningRequestId: null,
+      requests: _state.requests.where((r) => r.id != requestId).toList(),
+    );
+    notifyListeners();
+    return SeerrRemoveResult.removed;
+  }
 
   Future<void> _runAction(int requestId, Future<void> Function() action) async {
     _state = _state.copyWith(actioningRequestId: requestId);

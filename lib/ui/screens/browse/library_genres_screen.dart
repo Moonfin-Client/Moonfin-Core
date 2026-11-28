@@ -13,6 +13,7 @@ import '../../../data/services/log_service.dart';
 import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -344,10 +345,13 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
   }
 
   int _genreCardRequestMaxWidth() {
-    final requestScale = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final requestScale = artworkDevicePixelRatio(dpr);
     final widthPx = (_cardWidth() * requestScale).round();
+    // 720 up to 2x; grows only on a display denser than that (a 4K TV).
+    final maxPx = artworkCeiling(genreArtworkRequestCeilingAt2x, dpr);
     if (widthPx < 160) return 160;
-    if (widthPx > 720) return 720;
+    if (widthPx > maxPx) return maxPx;
     return widthPx;
   }
 

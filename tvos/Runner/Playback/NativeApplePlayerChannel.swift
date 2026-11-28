@@ -138,6 +138,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         case "showMessage":
             playerVC?.presentMessage(
                 (args["message"] as? String) ?? "",
+                title: args["title"] as? String,
                 actionLabel: args["actionLabel"] as? String,
                 closeLabel: (args["closeLabel"] as? String) ?? "OK"
             ) { [weak self] in
@@ -416,8 +417,8 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 "generation": generation,
             ])
         }
-        vc.onUserSeek = { [weak self] positionMs in
-            self?.send(["event": "userSeeked", "positionMs": positionMs])
+        vc.onUserSeek = { [weak self] positionMs, fromMs in
+            self?.send(["event": "userSeeked", "positionMs": positionMs, "fromMs": fromMs])
         }
         vc.onSearchSubtitles = { [weak self] in
             self?.send(["event": "searchSubtitles"])
@@ -652,7 +653,14 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
                 secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args),
                 cadenceSlowdown: (args["cadenceSlowdown"] as? Bool) ?? false,
-                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args)))
+                cadenceTip: AetherPlayerWrapper.cadenceTip(from: args),
+                upscaleLowResolution: (args["upscaleLowResolution"] as? Bool) ?? false,
+                upscaleFullHD: (args["upscaleFullHD"] as? Bool) ?? false,
+                upscaleLineArt: (args["upscaleLineArt"] as? Bool) ?? false,
+                toneMapPeakNits: (args["toneMapPeakNits"] as? NSNumber)?.doubleValue,
+                nightMode: (args["nightMode"] as? Bool) ?? false,
+                binaural: (args["binaural"] as? Bool) ?? false,
+                loudnessTargetLUFS: (args["loudnessTargetLufs"] as? NSNumber)?.doubleValue))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

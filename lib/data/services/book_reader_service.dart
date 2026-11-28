@@ -123,6 +123,17 @@ class BookReaderService {
   }
 
   static List<Uri> buildDownloadUris(MediaServerClient client, AggregatedItem item) {
+    if (client.serverType == ServerType.audiobookshelf) {
+      final token = client.accessToken;
+      return [
+        Uri.parse('${client.baseUrl}/api/items/${Uri.encodeComponent(item.id)}/ebook')
+            .replace(
+              queryParameters: token == null || token.isEmpty
+                  ? null
+                  : {'token': token},
+            ),
+      ];
+    }
     final itemId = Uri.encodeComponent(item.id);
     final sourceId = _firstMediaSourceId(item);
     final token = client.accessToken;
@@ -157,6 +168,9 @@ class BookReaderService {
       return const {};
     }
 
+    if (client.serverType == ServerType.audiobookshelf) {
+      return {'Authorization': 'Bearer $token'};
+    }
     return {
       'X-Emby-Token': token,
       'Authorization': 'MediaBrowser Token="$token"',

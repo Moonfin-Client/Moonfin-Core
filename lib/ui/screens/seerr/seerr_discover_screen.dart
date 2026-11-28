@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
@@ -23,6 +24,7 @@ import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/modern_row.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
+import '../../widgets/carousel_panel.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../l10n/app_localizations.dart';
@@ -75,9 +77,17 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   final _modernExpansion = ModernCardExpansion();
   final _modernRatings = ValueNotifier<Map<String, Map<String, double>>>({});
   final Set<String> _modernRatingsRequested = {};
+  final Map<int, ValueNotifier<int>> _carouselIndexes = {};
 
   bool get _isModern =>
       _prefs.get(UserPreferences.homeRowsStyle).usesModernCards;
+
+  /// Carousel rows are Modern rows with a details panel under the cards.
+  bool get _isCarousel =>
+      _prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.carousel;
+
+  ValueNotifier<int> _carouselIndex(int rowIndex) =>
+      _carouselIndexes.putIfAbsent(rowIndex, () => ValueNotifier(0));
 
   GlobalKey<LockedFocusRowState> _getRowKey(int index) {
     return _rowKeys.putIfAbsent(index, () => GlobalKey<LockedFocusRowState>());
@@ -201,6 +211,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     _searchEntryFocusNode.dispose();
     _modernExpansion.dispose();
     _modernRatings.dispose();
+    for (final notifier in _carouselIndexes.values) {
+      notifier.dispose();
+    }
     super.dispose();
   }
 
@@ -642,6 +655,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     required ScrollController scrollController,
     required Widget child,
     bool modernRow = false,
+    bool carouselRow = false,
   }) {
     final l10n = AppLocalizations.of(context);
     final slider = row.slider;
@@ -653,9 +667,13 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         .scaleFactor;
     final showControls = hasItems && PlatformDetection.useDesktopUi;
     final contentHeight = (rowHeight + 10) * desktopScale;
+    // The Carousel panel fills the room under the cards, so the next row has
+    // to start below it.
     final spacing = expandedHomeRows(_prefs)
         ? 0.0
-        : (modernRow ? modernRowPadding(_prefs) : classicRowPadding(_prefs));
+        : carouselRow
+            ? carouselRowPadding(_prefs, desktopScale)
+            : (modernRow ? modernRowPadding(_prefs) : classicRowPadding(_prefs));
     final headerTop = homeRowHeaderTop(_isModern);
     final headerBottom = _isModern ? 1.0 : 8.0;
 
@@ -853,6 +871,11 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   static String _modernKey(SeerrDiscoverItem item) =>
       '${item.mediaType}:${item.id}';
 
+  /// The same title can sit in several rows, so a card's grow state is keyed
+  /// by its row too. Ratings stay cached under [_modernKey].
+  static String _expansionKey(int rowIndex, SeerrDiscoverItem item) =>
+      '$rowIndex|${_modernKey(item)}';
+
   static String? _posterUrl(SeerrDiscoverItem item) =>
       item.posterPath != null ? '$_tmdbPosterBase${item.posterPath}' : null;
 
@@ -912,11 +935,20 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final focusedWidth = PlatformDetection.useMobileUi
         ? sizes.focusedWidth.clamp(sizes.portraitWidth, maxDetailsWidth).toDouble()
         : sizes.focusedWidth;
+    final isCarousel = _isCarousel;
     final rowPadding = 5.0 * desktopScale;
-    final rowHeight = sizes.imageHeight +
-        modernMetadataBudget(_prefs, UserPreferences.detailsRatings) *
-            desktopScale +
+    // Carousel cards carry no label or details, since the panel under the
+    // row shows them.
+    final cardsHeight = sizes.imageHeight +
+        (isCarousel
+            ? 0.0
+            : modernMetadataBudget(_prefs, UserPreferences.detailsRatings) *
+                desktopScale) +
         2 * rowPadding;
+    final panelExtent = isCarousel
+        ? carouselPanelGap(desktopScale) + carouselPanelHeight(desktopScale)
+        : 0.0;
+    final rowHeight = cardsHeight + panelExtent;
     final scrollController = _getRowScroll(rowIndex);
 
     final child = NotificationListener<ScrollNotification>(
@@ -929,7 +961,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         itemExtent: sizes.portraitWidth,
         itemSpacing: itemSpacing,
         leadingPadding: sideInset,
-        height: rowHeight,
+        height: cardsHeight,
         clipBehavior: Clip.none,
         padding: EdgeInsets.fromLTRB(sideInset, rowPadding, sideInset, rowPadding),
         onLeftEdge: _onRowLeftEdge,
@@ -937,8 +969,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         onTap: (index, item) => _onItemTap(item),
         onIndexChanged: (index, item) {
           _onItemSelected(item);
+          if (isCarousel) _carouselIndex(rowIndex).value = index;
           _modernExpansion.settle(
-            _modernKey(item),
+            _expansionKey(rowIndex, item),
             delayExpansion: delayExpansion,
           );
           _primeModernRatings(item);
@@ -955,7 +988,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         autofocus: autofocusFirst,
         focusNode: autofocusFirst ? firstFocusNode : null,
         itemBuilder: (context, item, index, isFocused) {
-          final key = _modernKey(item);
+          final key = _expansionKey(rowIndex, item);
           final isTouch = PlatformDetection.useMobileUi &&
               InputModeTracker.of(context) == InputMode.pointer;
           return SelectorBuilder<bool>(
@@ -969,8 +1002,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
             builder: (context, expanded) {
               final width = expanded ? focusedWidth : sizes.portraitWidth;
               final card = MediaCard(
-                title: item.displayTitle,
-                subtitle: _yearFromItem(item),
+                title: isCarousel ? null : item.displayTitle,
+                subtitle: isCarousel ? null : _yearFromItem(item),
+                showLabel: !isCarousel,
                 imageUrl: expanded ? _modernFocusedImageUrl(item) : _posterUrl(item),
                 width: width,
                 aspectRatio: expanded ? 16 / 9 : 2 / 3,
@@ -987,6 +1021,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                     } else {
                       _onItemSelected(item);
                       _primeModernRatings(item);
+                      if (isCarousel) _carouselIndex(rowIndex).value = index;
                     }
                     return;
                   }
@@ -995,6 +1030,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                 },
                 onHoverStart: () {
                   _onItemSelected(item);
+                  if (isCarousel) _carouselIndex(rowIndex).value = index;
                   _modernExpansion.hoveredKey.value = key;
                   _primeModernRatings(item);
                 },
@@ -1007,7 +1043,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
               return ModernExpandingCard(
                 card: card,
                 prefs: _prefs,
-                details: expanded
+                details: expanded && !isCarousel
                     ? ModernHoverBuilder(
                         expansion: _modernExpansion,
                         cardKey: key,
@@ -1035,7 +1071,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                             communityRating: (item.voteAverage ?? 0) > 0
                                 ? item.voteAverage
                                 : null,
-                            additionalRatings: ratings[key] ?? const {},
+                            additionalRatings:
+                                ratings[_modernKey(item)] ?? const {},
                           ),
                         ),
                       )
@@ -1055,7 +1092,91 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       hasItems: row.items.isNotEmpty,
       scrollController: scrollController,
       modernRow: true,
-      child: child,
+      carouselRow: isCarousel,
+      child: !isCarousel
+          ? child
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                child,
+                SizedBox(height: carouselPanelGap(desktopScale)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: sideInset),
+                  child: SizedBox(
+                    height: carouselPanelHeight(desktopScale),
+                    child: _buildCarouselPanel(row, rowIndex, desktopScale),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  /// Shows the row's focused or hovered title.
+  Widget _buildCarouselPanel(
+    SeerrDiscoverRow row,
+    int rowIndex,
+    double desktopScale,
+  ) {
+    final duration =
+        _prefs.get(UserPreferences.modernCardTransitionSpeed).duration;
+    return ValueListenableBuilder<int>(
+      valueListenable: _carouselIndex(rowIndex),
+      builder: (context, index, _) {
+        if (row.items.isEmpty) return const SizedBox.shrink();
+        final item = row.items[index.clamp(0, row.items.length - 1)];
+        final key = _modernKey(item);
+        _primeModernRatings(item);
+        // Only this item's ratings, so other rows' fetches don't rebuild it.
+        return SelectorBuilder<Map<String, double>?>(
+          listenable: _modernRatings,
+          select: () => _modernRatings.value[key],
+          builder: (context, ratings) {
+            final panelItem = _carouselPanelItem(item);
+            final backdrop = item.backdropPath;
+            return AnimatedSwitcher(
+              duration: duration,
+              layoutBuilder: (current, previous) => Stack(
+                fit: StackFit.expand,
+                children: [...previous, ?current],
+              ),
+              child: CarouselPanel(
+                key: ValueKey(key),
+                item: panelItem,
+                desktopScale: desktopScale,
+                backdropUrl: backdrop != null && backdrop.isNotEmpty
+                    ? '$_tmdbBackdropBase$backdrop'
+                    : null,
+                ratings: CarouselPanel.homeRatings(
+                  panelItem,
+                  _prefs,
+                  additionalRatings: ratings ?? const {},
+                  settings: UserPreferences.detailsRatings,
+                ),
+                showOverview:
+                    !_prefs.get(UserPreferences.hideHomeMediaDescription),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  static AggregatedItem _carouselPanelItem(SeerrDiscoverItem item) {
+    final rating = item.contentRating;
+    return AggregatedItem(
+      id: '${item.id}',
+      serverId: 'seerr',
+      rawData: {
+        'Name': item.displayTitle,
+        'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+        'Overview': item.overview ?? '',
+        'ProductionYear': ?int.tryParse(_yearFromItem(item) ?? ''),
+        if (rating != null && rating.isNotEmpty) 'OfficialRating': rating,
+        if ((item.voteAverage ?? 0) > 0) 'CommunityRating': item.voteAverage,
+      },
     );
   }
 

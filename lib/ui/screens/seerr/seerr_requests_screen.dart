@@ -21,6 +21,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -117,6 +118,11 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   final _animatedRequestIds = <int>{};
   final _animatedIssueIds = <int>{};
 
+  /// The card that takes focus after a removal, so the remote doesn't lose it.
+  int? _refocusRequestId;
+  int _refocusTick = 0;
+  bool _removeConfirmOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -167,6 +173,11 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
 
   @override
   void didPopNext() {
+    // A reload when the Remove confirm closes would race the removal.
+    if (_removeConfirmOpen) {
+      _removeConfirmOpen = false;
+      return;
+    }
     // Coming back from a detail screen where a request may have changed.
     if (_tab == 0) {
       _requestsVm?.refresh();
@@ -446,6 +457,8 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           onApprove: () => vm.approveRequest(req.id),
           onDecline: () => vm.declineRequest(req.id),
           onRetry: () => vm.retryRequest(req.id),
+          onRemove: () => _confirmRemove(vm, req),
+          focusToken: _refocusRequestId == req.id ? _refocusTick : 0,
           onFocusGained: () => _snapToTileRow(index),
           splitRequester: _splitRequester,
         ),
@@ -522,12 +535,101 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 onApprove: () => vm.approveRequest(req.id),
                 onDecline: () => vm.declineRequest(req.id),
                 onRetry: () => vm.retryRequest(req.id),
+                onRemove: () => _confirmRemove(vm, req),
+                focusToken: _refocusRequestId == req.id ? _refocusTick : 0,
               ),
             );
           },
         ),
       ),
     );
+  }
+
+  /// With a remote, focus goes to the card that takes the removed one's place,
+  /// or back to the card when the removal didn't happen.
+  Future<void> _confirmRemove(
+    SeerrRequestsViewModel vm,
+    SeerrRequest request,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final media = request.media;
+    final title =
+        media?.title ??
+        media?.name ??
+        vm.state.summaryFor(request)?.title ??
+        l10n.unknown;
+    final me = vm.state.currentUser?.id;
+    final requester = request.requestedBy;
+    // An admin can remove anyone's, so say whose it is when it isn't theirs.
+    final message = requester != null && me != null && requester.id != me
+        ? l10n.removeOthersFailedRequestForTitle(title, requester.bestName)
+        : l10n.removeFailedRequestForTitle(title);
+    _removeConfirmOpen = true;
+    final confirmed = await showFocusRestoringDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog.adaptive(
+        backgroundColor: const Color(0xFF1A1A2E),
+        title: Text(
+          l10n.removeRequest,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(message, style: const TextStyle(color: Colors.white70)),
+        actions: [
+          adaptiveDialogAction(
+            onPressed: () => Navigator.pop(ctx, false),
+            autofocus: true,
+            focusRingColor: AppColorScheme.accent,
+            child: Text(l10n.keep),
+          ),
+          adaptiveDialogAction(
+            onPressed: () => Navigator.pop(ctx, true),
+            isDestructive: true,
+            backgroundColor: const Color(0xFFB71C1C),
+            focusedBackgroundColor: const Color(0xFFD32F2F),
+            child: Text(
+              l10n.removeRequest,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+    _removeConfirmOpen = false;
+    if (confirmed != true || !mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final remote =
+        FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
+    final before = vm.state.requests;
+    final at = before.indexWhere((r) => r.id == request.id);
+    final result = await vm.removeFailedRequest(request.id);
+    if (!mounted) return;
+    switch (result) {
+      case SeerrRemoveResult.removed:
+        if (remote && at >= 0 && before.length > 1) {
+          _refocus(before[at + 1 < before.length ? at + 1 : at - 1].id);
+        }
+      case SeerrRemoveResult.refused:
+        if (remote) _refocus(request.id);
+        messenger?.showSnackBar(
+          SnackBar(content: Text(l10n.removeFailedRequestRefused)),
+        );
+      case SeerrRemoveResult.failed:
+        if (remote) _refocus(request.id);
+        messenger?.showSnackBar(
+          SnackBar(content: Text(l10n.removeFailedRequestError)),
+        );
+    }
+  }
+
+  /// The tick lets the same card take focus a second time.
+  void _refocus(int requestId) {
+    setState(() {
+      _refocusRequestId = requestId;
+      _refocusTick++;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refocusRequestId = null;
+    });
   }
 
   void _onRequestTap(SeerrRequest request) {
@@ -1463,6 +1565,10 @@ class _RequestCard extends StatefulWidget {
   final VoidCallback? onApprove;
   final VoidCallback? onDecline;
   final VoidCallback? onRetry;
+  final VoidCallback? onRemove;
+
+  /// The card takes focus whenever this changes to a value other than zero.
+  final int focusToken;
 
   /// Fired when this card takes focus, so the grid can slide its row to a
   /// whole-row offset instead of leaving the next one half cut.
@@ -1482,6 +1588,8 @@ class _RequestCard extends StatefulWidget {
     this.onApprove,
     this.onDecline,
     this.onRetry,
+    this.onRemove,
+    this.focusToken = 0,
     this.onFocusGained,
     this.splitRequester = false,
   });
@@ -1495,8 +1603,30 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   final _approveFocus = FocusNode(debugLabel: 'request-approve');
   final _declineFocus = FocusNode(debugLabel: 'request-decline');
   final _retryFocus = FocusNode(debugLabel: 'request-retry');
+  final _removeFocus = FocusNode(debugLabel: 'request-remove');
 
   SeerrRequest get request => widget.request;
+
+  // A card shifted up by a removal can be built anew, so this runs from
+  // initState as well as didUpdateWidget.
+  void _takeFocus(int previousToken) {
+    if (widget.focusToken == 0 || widget.focusToken == previousToken) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _cardFocus.requestFocus();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _takeFocus(0);
+  }
+
+  @override
+  void didUpdateWidget(_RequestCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _takeFocus(oldWidget.focusToken);
+  }
 
   @override
   void dispose() {
@@ -1504,6 +1634,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     _approveFocus.dispose();
     _declineFocus.dispose();
     _retryFocus.dispose();
+    _removeFocus.dispose();
     super.dispose();
   }
 
@@ -1519,7 +1650,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
 
     return _CardActionFocus(
       cardFocus: _cardFocus,
-      actionFocuses: [_approveFocus, _declineFocus, _retryFocus],
+      actionFocuses: [_approveFocus, _declineFocus, _retryFocus, _removeFocus],
       child: MouseRegion(
         onEnter: (_) => setHovered(true),
         onExit: (_) => setHovered(false),
@@ -1782,8 +1913,9 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   }
 
   /// The phone card's action row: approve and decline side by side, each half
-  /// the width with its label, or retry, or the spinner. Empty when there is
-  /// nothing to do, so those cards keep the provenance at the foot.
+  /// the width with its label, or retry and remove the same way, or the
+  /// spinner. Empty when there is nothing to do, so those cards keep the
+  /// provenance at the foot.
   List<Widget> _phoneActions(
     AppLocalizations l10n,
     double scale,
@@ -1823,15 +1955,35 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           ),
         ],
       );
-    } else if (widget.canManage &&
-        request.status == SeerrRequest.statusFailed) {
-      row = _CardActionButton(
-        label: l10n.retry,
-        icon: Icons.refresh,
-        color: AppColorScheme.statusPending,
-        focusNode: _retryFocus,
-        onPressed: widget.onRetry,
-      );
+    } else if (request.status == SeerrRequest.statusFailed &&
+        (widget.canManage || request.canRemove)) {
+      final retry = widget.canManage
+          ? _CardActionButton(
+              label: l10n.retry,
+              icon: Icons.refresh,
+              color: AppColorScheme.statusPending,
+              focusNode: _retryFocus,
+              onPressed: widget.onRetry,
+            )
+          : null;
+      final remove = request.canRemove
+          ? _CardActionButton(
+              label: l10n.remove,
+              icon: Icons.delete_outline,
+              color: AppColorScheme.statusError,
+              focusNode: _removeFocus,
+              onPressed: widget.onRemove,
+            )
+          : null;
+      row = retry != null && remove != null
+          ? Row(
+              children: [
+                Expanded(child: retry),
+                SizedBox(width: 8 * scale),
+                Expanded(child: remove),
+              ],
+            )
+          : (retry ?? remove)!;
     } else {
       return const [];
     }
@@ -1843,9 +1995,9 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     ];
   }
 
-  /// The buttons over the poster's foot: approve and decline, retry, or the
-  /// spinner. Icon only, since a TV tile is too narrow for two labelled
-  /// buttons. The stacked card builds its own labelled pair inline.
+  /// The buttons over the poster's foot: approve and decline, retry and
+  /// remove, or the spinner. Icon only, since a TV tile is too narrow for two
+  /// labeled buttons. The stacked card builds its own labeled pair inline.
   List<Widget> _actions(AppLocalizations l10n) {
     if (widget.isActioning) {
       final scale = _uiScale();
@@ -1885,16 +2037,26 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
         ),
       ];
     }
-    if (widget.canManage && request.status == SeerrRequest.statusFailed) {
+    if (request.status == SeerrRequest.statusFailed) {
       return [
-        _CardActionButton(
-          label: l10n.retry,
-          icon: Icons.refresh,
-          color: AppColorScheme.statusPending,
-          focusNode: _retryFocus,
-          onPressed: widget.onRetry,
-          compact: true,
-        ),
+        if (widget.canManage)
+          _CardActionButton(
+            label: l10n.retry,
+            icon: Icons.refresh,
+            color: AppColorScheme.statusPending,
+            focusNode: _retryFocus,
+            onPressed: widget.onRetry,
+            compact: true,
+          ),
+        if (request.canRemove)
+          _CardActionButton(
+            label: l10n.removeRequest,
+            icon: Icons.delete_outline,
+            color: AppColorScheme.statusError,
+            focusNode: _removeFocus,
+            onPressed: widget.onRemove,
+            compact: true,
+          ),
       ];
     }
     return const [];

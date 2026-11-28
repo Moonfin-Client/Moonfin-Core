@@ -8,7 +8,6 @@ import 'api/silo_admin_items_api.dart';
 import 'api/silo_instant_mix_api.dart';
 import 'api/silo_items_api.dart';
 import 'api/silo_user_library_api.dart';
-import 'api/silo_live_tv_api.dart';
 import 'api/silo_auth_api.dart';
 import 'api/silo_image_api.dart';
 import 'api/silo_display_preferences_api.dart';
@@ -18,6 +17,7 @@ import 'api/silo_watch_party_api.dart';
 import 'api/silo_images_api.dart';
 import 'api/silo_unsupported.dart';
 import 'api/silo_playback_api.dart';
+import 'api/silo_playback_control_api.dart';
 import 'api/silo_profiles_api.dart';
 import 'api/silo_system_api.dart';
 import 'api/silo_user_views_api.dart';
@@ -127,6 +127,7 @@ class SiloMediaServerClient extends MediaServerClient
     itemsApi.noteProfileChanged();
     downloadsApi.invalidateCapability();
     playbackApi.forgetCapabilities();
+    playbackControlApi.forget();
   }
 
   /// Proof that a PIN-locked profile was unlocked (`X-Profile-Token`).
@@ -382,6 +383,13 @@ class SiloMediaServerClient extends MediaServerClient
     baseUrl: () => _baseUrl,
   );
 
+  /// Silo's playback control socket: its capability, tickets and URL (no
+  /// Moonfin interface, see [SiloPlaybackControlApi]).
+  late final SiloPlaybackControlApi playbackControlApi = SiloPlaybackControlApi(
+    _dio,
+    baseUrl: () => _baseUrl,
+  );
+
   /// Silo's Watch Party rooms (no Moonfin interface, see
   /// [SiloWatchPartyApi]).
   late final SiloWatchPartyApi watchPartyApi = SiloWatchPartyApi(
@@ -431,7 +439,7 @@ class SiloMediaServerClient extends MediaServerClient
   );
 
   @override
-  final LiveTvApi liveTvApi = const SiloLiveTvApi();
+  final LiveTvApi liveTvApi = const NoLiveTvApi();
 
   @override
   final InstantMixApi instantMixApi = const SiloInstantMixApi();

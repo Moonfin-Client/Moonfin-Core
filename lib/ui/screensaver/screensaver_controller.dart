@@ -252,13 +252,9 @@ class ScreensaverController {
     await exitApp();
   }
 
-  static const _systemChannel = MethodChannel('moonfin/appletv_system');
-
   Future<void> _setWakeLockEnabled(bool enabled) async {
     try {
-      if (PlatformDetection.isAppleTV) {
-        await _systemChannel.invokeMethod('setIdleTimerDisabled', enabled);
-      } else if (enabled) {
+      if (enabled) {
         // Asking twice while the lock is held gives the platform a second
         // inhibition. The plugin tracks only the newest handle, so the older
         // one is never released and the desktop stops idling for the rest of

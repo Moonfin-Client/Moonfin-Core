@@ -125,6 +125,10 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       _sleep.onExpired.listen((_) => _onSleepTimerExpired()),
     ]);
     _sleep.addListener(_rebuild);
+    // Playback often starts before this view opens, so none of the streams
+    // above fire to load the full book (chapters, bookmarks, notes).
+    _updateStreamSubscriptions();
+    unawaited(_maybeApplyResume());
     _positionNotifier.value = _state.position;
     _resumeTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (_state.isPlaying) _saveResume();
