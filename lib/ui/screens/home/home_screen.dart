@@ -1019,6 +1019,23 @@ class _ContentRowsState extends State<_ContentRows>
   static const _focusHandoffCurve = Curves.easeOutSine;
   static const _mediaBarFadeDuration = Duration(milliseconds: 220);
   static const double _activeRowRecalcDistance = 48.0;
+  static const double _rowsCacheExtent = 600.0;
+  // Where the rows rested when the running d-pad moves began, and the cache
+  // extent those moves have shrunk the rows to. See [_onScroll].
+  double? _rowMoveAnchor;
+  double? _rowMoveCacheExtent;
+  RenderViewportBase? _rowsViewport;
+  int _rowMoveSerial = 0;
+
+  /// On TV the rows build one extra row ahead while they rest, and a d-pad
+  /// move uses that up instead of building a row mid-scroll. The reduced tier
+  /// keeps the plain extent, since its decode cache can't hold the extra row.
+  double get _rowsRestingCacheExtent =>
+      PlatformDetection.isTV &&
+          widget.prefs.resolveDevicePerformanceTier() !=
+              DevicePerformanceTier.reduced
+      ? 1200.0
+      : _rowsCacheExtent;
 
   void _markUserGesture() {
     if (!kIsWeb) return;
@@ -3387,6 +3404,8 @@ class _ContentRowsState extends State<_ContentRows>
       position.jumpTo(to);
       return Future<void>.value();
     }
+    _rowMoveAnchor ??= position.pixels;
+    _rowsViewport = _findRowsViewport(position);
     final activity = _PointerFriendlyScrollActivity(
       position,
       from: position.pixels,
@@ -3396,7 +3415,44 @@ class _ContentRowsState extends State<_ContentRows>
       vsync: position.context.vsync,
     );
     position.beginActivity(activity);
+    final move = ++_rowMoveSerial;
+    activity.done.whenComplete(() {
+      // A newer move took over and keeps the anchor.
+      if (move != _rowMoveSerial) return;
+      // The move's last step is still being drawn, so the rows it held back
+      // build in the frame after it.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || move != _rowMoveSerial) return;
+        _rowMoveAnchor = null;
+        _rowMoveCacheExtent = null;
+        final viewport = _rowsViewport;
+        if (viewport != null && viewport.attached) {
+          viewport.scrollCacheExtent = ScrollCacheExtent.pixels(
+            _rowsRestingCacheExtent,
+          );
+        }
+      });
+    });
     return activity.done;
+  }
+
+  /// The rows' viewport. Its cache extent is set on it directly, because
+  /// rebuilding the list with a new one would rebuild every built row.
+  RenderViewportBase? _findRowsViewport(ScrollPosition position) {
+    RenderViewportBase? found;
+    void visit(RenderObject child) {
+      if (found != null) return;
+      if (child is RenderViewportBase) {
+        found = child;
+      } else {
+        child.visitChildren(visit);
+      }
+    }
+
+    position.context.notificationContext?.findRenderObject()?.visitChildren(
+      visit,
+    );
+    return found;
   }
 
   /// The offset [rowIndex] comes to rest at. Picks its band the same way
@@ -4047,6 +4103,18 @@ class _ContentRowsState extends State<_ContentRows>
   void _onScroll() {
     _lastScrollTime = DateTime.now();
     final offset = _scrollController.offset;
+    final anchor = _rowMoveAnchor;
+    if (anchor != null) {
+      // Shrink the cache as the move goes, so the edge the rows are built out
+      // to stays put and a row coming into it waits for the scroll to end.
+      // Building one mid-move takes 20 to 35 ms on a Shield and drops frames.
+      final extent = math.max(
+        _rowsCacheExtent,
+        _rowsRestingCacheExtent - (offset - anchor).abs(),
+      );
+      _rowMoveCacheExtent = extent;
+      _rowsViewport?.scrollCacheExtent = ScrollCacheExtent.pixels(extent);
+    }
     final previousOffset = _scrollOffset;
     final scrollingUp = offset < previousOffset;
     _updateIsScrolledToTop();
@@ -5058,7 +5126,10 @@ class _ContentRowsState extends State<_ContentRows>
                     bottom: neededBottomPadding,
                   ),
                   itemCount: rows.length + headerCount,
-                  scrollCacheExtent: const ScrollCacheExtent.pixels(600.0),
+                  // A rebuild mid-move keeps the extent the move set.
+                  scrollCacheExtent: ScrollCacheExtent.pixels(
+                    _rowMoveCacheExtent ?? _rowsRestingCacheExtent,
+                  ),
                   itemBuilder: (context, index) {
                     if (includeMediaBar && index == 0) {
                       return ValueListenableBuilder<bool>(
