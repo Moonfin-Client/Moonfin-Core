@@ -52,6 +52,9 @@ class TvChannelsService {
   bool _pending = false;
   AppLifecycleListener? _lifecycle;
   String? _lastPublishedSignature;
+  // Bumped by every publish and by clear(), so a slower publish that started
+  // earlier, or before sign-out, can't write over what came after it.
+  int _generation = 0;
 
   bool get _enabled => PlatformDetection.isAndroid && PlatformDetection.isTV;
 
@@ -79,9 +82,11 @@ class TvChannelsService {
 
   Future<void> publish() async {
     if (!_enabled) return;
+    final generation = ++_generation;
     try {
       final client = GetIt.instance<MediaServerClient>();
       final channels = await buildChannels(client, serverId: _serverIdFor(client));
+      if (generation != _generation) return;
       final signature = _signatureFor(channels);
       if (signature == _lastPublishedSignature) return;
 
@@ -91,6 +96,7 @@ class TvChannelsService {
         return;
       }
       await CarArtwork.instance.persistHosts();
+      if (generation != _generation) return;
       await _channel.invokeMethod('publishChannels', {'channels': channels});
       _lastPublishedSignature = signature;
     } catch (_) {}
@@ -99,6 +105,7 @@ class TvChannelsService {
   void clear() {
     if (!_enabled) return;
     _pending = false;
+    _generation++;
     _lastPublishedSignature = null;
     unawaited(_channel.invokeMethod('clearChannels').catchError((_) {}));
   }
