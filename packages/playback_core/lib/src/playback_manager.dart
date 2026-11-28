@@ -1430,11 +1430,26 @@ class PlaybackManager implements AudioOwnable {
 
   /// Empty unless the starts belong to the item playing now. This manager is
   /// one instance shared with the audio screens, which never set chapters, so
-  /// a song must not inherit a film's.
+  /// a song must not inherit a film's. An episode gets none either, so next
+  /// and previous move between episodes instead of through its chapters.
   List<Duration> get _currentChapterStarts =>
-      identical(queueService.currentItem, _chapterStartsItem)
+      identical(queueService.currentItem, _chapterStartsItem) &&
+          !_isEpisode(queueService.currentItem)
       ? _chapterStarts
       : const [];
+
+  bool _isEpisode(dynamic item) {
+    try {
+      final Map? meta = switch (item) {
+        String url => _offlineMetadataByUrl[url],
+        Map map => map,
+        _ => (item as dynamic)?.rawData as Map?,
+      };
+      return meta?['Type'] == 'Episode';
+    } catch (_) {
+      return false;
+    }
+  }
 
   void setStartupRecoveryDecider(
     Future<PlaybackStartupRecoveryDecision> Function(
