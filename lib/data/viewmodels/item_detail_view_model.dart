@@ -1156,6 +1156,8 @@ class ItemDetailViewModel extends ChangeNotifier {
       _loadSecondary();
     } catch (e) {
       _error = e;
+      // The card was only standing in for the item, so a failed load drops it.
+      if (_isCardCopy) _item = null;
       _isCardCopy = false;
       _state = ItemDetailState.error;
       notifyListeners();

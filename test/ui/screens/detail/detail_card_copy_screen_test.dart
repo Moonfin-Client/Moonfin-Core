@@ -76,6 +76,12 @@ class _ThemeMusic extends Fake implements ThemeMusicService {
   dynamic noSuchMethod(Invocation invocation) => null;
 }
 
+const _movieCard = AggregatedItem(
+  id: 'item-1',
+  serverId: 'srv1',
+  rawData: {'Id': 'item-1', 'Name': 'From the card', 'Type': 'Movie'},
+);
+
 void main() {
   late _ItemsApi itemsApi;
   late _ThemeMusic themeMusic;
@@ -219,6 +225,32 @@ void main() {
     await tester.pump();
     expect(named('From the card'), findsNothing);
     expect(themeMusic.played, isEmpty);
+
+    await unmount(tester);
+  });
+
+  testWidgets('theme music stays off when the full item fails to load', (
+    tester,
+  ) async {
+    await pumpScreen(tester, _movieCard);
+    itemsApi.pending['item-1']!.completeError(Exception('offline'));
+    await tester.pump();
+    expect(named('From the card'), findsNothing);
+    expect(themeMusic.played, isEmpty);
+
+    await unmount(tester);
+  });
+
+  testWidgets("coming back to the app doesn't play the card's theme", (
+    tester,
+  ) async {
+    await pumpScreen(tester, _movieCard);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    expect(themeMusic.played, isEmpty);
+
+    itemsApi.pending['item-1']!.complete(_movieCard.rawData);
+    await tester.pump();
+    expect(themeMusic.played, ['item-1']);
 
     await unmount(tester);
   });

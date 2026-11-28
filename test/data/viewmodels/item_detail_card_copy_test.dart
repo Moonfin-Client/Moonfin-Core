@@ -138,6 +138,17 @@ void main() {
     expect(vm.item, isNull);
   });
 
+  test('a card whose full item fails to load leaves no item behind', () async {
+    final vm = vmFor('movie-1', _card({..._movie, 'OfficialRating': 'PG'}));
+    final loading = vm.load();
+    expect(vm.isCardCopy, isTrue);
+
+    itemsApi.pending['movie-1']!.completeError(Exception('offline'));
+    await loading;
+    expect(vm.state, ItemDetailState.error);
+    expect(vm.item, isNull);
+  });
+
   test('an unrated card waits while ratings are blocked', () {
     final vm = vmFor('movie-1', _card(_movie));
     unawaited(vm.load());
