@@ -12039,6 +12039,14 @@
   "preferTextSubtitlesSubtitle": "Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).",
   "preferExternalSubtitles": "Prefer External Subtitles",
   "preferExternalSubtitlesSubtitle": "Prioritize external subtitle files over embedded tracks.",
+  "rewindSubtitles": "Subtitles on Short Rewind",
+  "@rewindSubtitles": {
+    "description": "Setting that turns subtitles on for a moment after the viewer goes back a few seconds"
+  },
+  "rewindSubtitlesDescription": "With subtitles off, going back 30 seconds or less shows them until playback catches up.",
+  "@rewindSubtitlesDescription": {
+    "description": "Description for the subtitles on short rewind setting"
+  },
   "webDiagnostics": "Web diagnostics",
   "webDiagnosticsTitle": "Moonfin Web Diagnostics",
   "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",

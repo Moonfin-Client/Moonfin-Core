@@ -13467,6 +13467,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Prioritza els fitxers de subtítols externs per sobre de les pistes incrustades.';
 
   @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
+
+  @override
   String get webDiagnostics => 'Diagnòstic web';
 
   @override

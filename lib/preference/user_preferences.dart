@@ -718,6 +718,7 @@ class UserPreferences extends ChangeNotifier {
     'prefer_sdh_subtitles',
     'prefer_text_subtitles',
     'prefer_external_subtitles',
+    'pref_rewind_subtitles',
     'app_theme_id',
     'pref_custom_theme_id',
     'pref_glass_quality',
@@ -3148,6 +3149,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final preferExternalSubtitles = Preference(
     key: 'prefer_external_subtitles',
+    defaultValue: false,
+  );
+
+  static final rewindSubtitles = Preference(
+    key: 'pref_rewind_subtitles',
     defaultValue: false,
   );
 

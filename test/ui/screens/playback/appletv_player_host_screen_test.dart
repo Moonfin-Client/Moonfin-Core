@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/ui/screens/playback/appletv_player_host_screen.dart';
 import 'package:moonfin/ui/widgets/playback/player_loading_overlay.dart';
@@ -232,4 +233,54 @@ void main() {
 
     expect(find.byType(CupertinoActivityIndicator), findsNothing);
   });
+
+  testWidgets('closes a paused player left in the background on iOS', (
+    tester,
+  ) async {
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (_) async => null,
+    );
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+    when(() => manager.playbackDeferredToExternalPlayer).thenReturn(false);
+    final router = GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(path: '/home', builder: (_, _) => const SizedBox()),
+        GoRoute(
+          path: '/play',
+          builder: (_, _) => const AppleTvPlayerHostScreen(),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    router.push('/play');
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump(const Duration(seconds: 16));
+    verify(() => manager.stop(userInitiated: false)).called(1);
+
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(AppleTvPlayerHostScreen), findsNothing);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 }

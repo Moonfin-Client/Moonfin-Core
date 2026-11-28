@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/playback/display_hdr_probe.dart';
+import 'package:moonfin/playback/media3_player_backend.dart';
 import 'package:moonfin/playback/silo_playback_environment.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -65,6 +69,73 @@ void main() {
     expect(media3.loadsFontAttachments, isFalse);
     expect(media3.managesDynamicRange, isFalse);
     expect(SiloPlayerTraits.mpvAndroid.managesDynamicRange, isFalse);
+  });
+
+  test('a Dolby Vision transcode the viewer chose isn\'t offered as a strip', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    // A Fire TV Cube: profile 8 but no profile 7 decoder.
+    Media3DoviCompatMode mode({bool isTv = true, bool dolbyVision = false}) =>
+        siloMedia3DoviMode(
+          prefs,
+          isTv: isTv,
+          supportsP7: false,
+          supportsP8: true,
+          displaySupportsDolbyVision: dolbyVision,
+        );
+    expect(mode(), Media3DoviCompatMode.strip);
+    expect(mode(dolbyVision: true), Media3DoviCompatMode.convert);
+    await prefs.set(
+      UserPreferences.dolbyVisionFallbackBehavior,
+      DolbyVisionFallbackBehavior.transcode,
+    );
+    expect(mode(), Media3DoviCompatMode.off);
+    // The fallback setting only acts on an Android TV without Dolby Vision.
+    expect(mode(isTv: false), Media3DoviCompatMode.strip);
+    // A Dolby Vision display converts, which the setting doesn't touch.
+    expect(mode(dolbyVision: true), Media3DoviCompatMode.convert);
+    await prefs.set(
+      UserPreferences.dolbyVisionFallbackBehavior,
+      DolbyVisionFallbackBehavior.hdr10Fallback,
+    );
+    expect(mode(), Media3DoviCompatMode.strip);
+  });
+
+  test('Media3 tells Silo what it does to Dolby Vision 7', () {
+    SiloDolbyVision7Transform? transformFor(Media3DoviCompatMode mode) =>
+        siloAndroidTraits(
+          PlaybackEnginePreference.media3,
+          doviMode: mode,
+        ).dolbyVision7Transform;
+    expect(
+      transformFor(Media3DoviCompatMode.convert),
+      SiloDolbyVision7Transform.toProfile81,
+    );
+    expect(
+      transformFor(Media3DoviCompatMode.strip),
+      SiloDolbyVision7Transform.toHdr10,
+    );
+    // No transformation fits a profile 7 decoder (Silo converts the file
+    // itself), and off converts nothing.
+    expect(transformFor(Media3DoviCompatMode.native), isNull);
+    expect(transformFor(Media3DoviCompatMode.off), isNull);
+    final converting = siloAndroidTraits(
+      PlaybackEnginePreference.media3,
+      doviMode: Media3DoviCompatMode.convert,
+    );
+    expect(converting.selectsAnyAudioTrack, isTrue);
+    expect(converting.drawsAssStyling, isFalse);
+    expect(converting.loadsFontAttachments, isFalse);
+    // libmpv has no compat chain.
+    expect(
+      siloAndroidTraits(
+        PlaybackEnginePreference.mpv,
+        doviMode: Media3DoviCompatMode.convert,
+      ).dolbyVision7Transform,
+      isNull,
+    );
   });
 
   test('an Android phone whose panel named HDR10 tells Silo so', () async {

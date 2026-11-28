@@ -5,6 +5,10 @@
 # to add an ABI. The JNI shim dlopens the library at runtime, so a tree
 # without it still builds and profile 7 just falls back to stripping.
 #
+# Every patch in patches/ is applied on top of the tag first. That's LibDovi's
+# polynomial mapping setter, which the FEL curve fold writes its luma curves
+# with. A library built without it still converts, it just never folds.
+#
 # Requirements: rustup (with cargo), cargo-c, and an Android NDK. Run from
 # anywhere.
 #
@@ -26,6 +30,11 @@ TOOLCHAIN="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
 
 git clone --depth 1 --branch "$DOVI_TOOL_TAG" \
     https://github.com/quietvoid/dovi_tool "$WORK_DIR/dovi_tool"
+for patch in "$SCRIPT_DIR"/patches/*.patch
+do
+    git -C "$WORK_DIR/dovi_tool" apply "$patch"
+    echo "applied $(basename "$patch")"
+done
 cd "$WORK_DIR/dovi_tool/dolby_vision"
 
 build_abi() {

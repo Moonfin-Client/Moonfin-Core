@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_silo/playback_silo.dart';
 
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
+import 'media3_player_backend.dart';
 
 /// This device as a Silo playback start describes it: form factor,
 /// platform, OS version and model, the display's HDR formats when they're
@@ -89,23 +91,74 @@ SiloPlayerTraits _traits() {
     return SiloPlayerTraits.mpv;
   }
   if (PlatformDetection.isAndroid) {
-    return siloAndroidTraits(_androidEngine());
+    final prefs = _prefs();
+    final engine =
+        prefs?.get(UserPreferences.playbackEnginePreference) ??
+        PlaybackEnginePreference.media3;
+    return siloAndroidTraits(
+      engine,
+      doviMode: prefs == null || engine != PlaybackEnginePreference.media3
+          ? Media3DoviCompatMode.off
+          : siloMedia3DoviMode(prefs),
+    );
   }
   return const SiloPlayerTraits();
 }
 
-SiloPlayerTraits siloAndroidTraits(PlaybackEnginePreference engine) =>
-    switch (engine) {
-      PlaybackEnginePreference.media3 => SiloPlayerTraits.media3,
-      PlaybackEnginePreference.mpv => SiloPlayerTraits.mpvAndroid,
-    };
+/// [engine]'s traits. Media3 also says what its compat chain does to a
+/// Dolby Vision profile 7 file ([doviMode]): converted to 8.1 or stripped to
+/// HDR10 on the device, Silo can send the original file instead of
+/// converting it over HLS, which re-encodes TrueHD and DTS audio.
+SiloPlayerTraits siloAndroidTraits(
+  PlaybackEnginePreference engine, {
+  Media3DoviCompatMode doviMode = Media3DoviCompatMode.off,
+}) => switch (engine) {
+  PlaybackEnginePreference.media3 => switch (doviMode) {
+    Media3DoviCompatMode.convert => SiloPlayerTraits.media3
+        .withDolbyVision7Transform(SiloDolbyVision7Transform.toProfile81),
+    Media3DoviCompatMode.strip => SiloPlayerTraits.media3
+        .withDolbyVision7Transform(SiloDolbyVision7Transform.toHdr10),
+    // No client transformation describes a player that decodes profile 7
+    // as it is, so Silo still converts it itself; off converts nothing.
+    Media3DoviCompatMode.native ||
+    Media3DoviCompatMode.off => SiloPlayerTraits.media3,
+  },
+  PlaybackEnginePreference.mpv => SiloPlayerTraits.mpvAndroid,
+};
 
-PlaybackEnginePreference _androidEngine() {
+/// What Media3 does to a profile 7 file, as far as Silo should be told. An
+/// Android TV whose display has no Dolby Vision and whose viewer chose a
+/// transcode over the HDR10 fallback gets no strip offered, so Silo keeps
+/// serving it a stream of its own.
+@visibleForTesting
+Media3DoviCompatMode siloMedia3DoviMode(
+  UserPreferences prefs, {
+  bool? isTv,
+  bool? supportsP7,
+  bool? supportsP8,
+  bool? displaySupportsDolbyVision,
+}) {
+  final mode = Media3PlayerBackend.doviCompatMode(
+    prefs,
+    supportsP7: supportsP7,
+    supportsP8: supportsP8,
+    displaySupportsDolbyVision: displaySupportsDolbyVision,
+  );
+  final transcodeChosen =
+      (isTv ?? PlatformDetection.isTV) &&
+      !(displaySupportsDolbyVision ?? PlatformDetection.supportsDolbyVision) &&
+      prefs.get(UserPreferences.dolbyVisionFallbackBehavior) ==
+          DolbyVisionFallbackBehavior.transcode;
+  return mode == Media3DoviCompatMode.strip && transcodeChosen
+      ? Media3DoviCompatMode.off
+      : mode;
+}
+
+UserPreferences? _prefs() {
   final getIt = GetIt.instance;
-  if (!getIt.isRegistered<UserPreferences>()) {
-    return PlaybackEnginePreference.media3;
-  }
-  return getIt<UserPreferences>().get(UserPreferences.playbackEnginePreference);
+  return getIt.isRegistered<UserPreferences>()
+      ? getIt<UserPreferences>()
+      : null;
 }
 
 String _formFactor() {

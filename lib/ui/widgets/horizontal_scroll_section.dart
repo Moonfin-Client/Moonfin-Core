@@ -34,13 +34,66 @@ class HorizontalScrollSection extends StatefulWidget {
       _HorizontalScrollSectionState();
 }
 
-class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
-  late ScrollController _controller;
-  late bool _ownsController;
+class HorizontalScrollControls extends StatelessWidget {
+  final ScrollController controller;
+  final VoidCallback? onScrollPastStart;
+  final VoidCallback? onScrollPastEnd;
 
   static const _scrollStep = 480.0;
   static const _scrollDuration = Duration(milliseconds: 380);
   static const _scrollCurve = Curves.easeInOut;
+
+  const HorizontalScrollControls({
+    super.key,
+    required this.controller,
+    this.onScrollPastStart,
+    this.onScrollPastEnd,
+  });
+
+  void _scrollBy(double delta) {
+    final target = controller.hasClients
+        ? (controller.offset + delta).clamp(
+            0.0,
+            controller.position.maxScrollExtent,
+          )
+        : null;
+    if (target == null || (target - controller.offset).abs() < 0.5) {
+      (delta < 0 ? onScrollPastStart : onScrollPastEnd)?.call();
+      return;
+    }
+    controller.animateTo(
+      target,
+      duration: _scrollDuration,
+      curve: _scrollCurve,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Pointer only, so D-pad and keyboard traversal never stops on them.
+    Widget button(IconData icon, double delta) => Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      descendantsAreFocusable: false,
+      child: IconButton(
+        icon: Icon(icon),
+        onPressed: () => _scrollBy(delta),
+        visualDensity: VisualDensity.compact,
+      ),
+    );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        button(Icons.chevron_left, -_scrollStep),
+        button(Icons.chevron_right, _scrollStep),
+      ],
+    );
+  }
+}
+
+class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
+  late ScrollController _controller;
+  late bool _ownsController;
 
   @override
   void initState() {
@@ -69,38 +122,6 @@ class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
       _controller.dispose();
     }
     super.dispose();
-  }
-
-  void _scrollBy(double delta) {
-    if (!_controller.hasClients) {
-      if (delta < 0) {
-        widget.onScrollPastStart?.call();
-      } else {
-        widget.onScrollPastEnd?.call();
-      }
-      return;
-    }
-
-    final current = _controller.offset;
-    final target = (_controller.offset + delta).clamp(
-      0.0,
-      _controller.position.maxScrollExtent,
-    );
-
-    if ((target - current).abs() < 0.5) {
-      if (delta < 0) {
-        widget.onScrollPastStart?.call();
-      } else {
-        widget.onScrollPastEnd?.call();
-      }
-      return;
-    }
-
-    _controller.animateTo(
-      target,
-      duration: _scrollDuration,
-      curve: _scrollCurve,
-    );
   }
 
   @override
@@ -139,30 +160,10 @@ class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
                     maintainSize: true,
                     maintainAnimation: true,
                     maintainState: true,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Focus(
-                          canRequestFocus: false,
-                          skipTraversal: true,
-                          descendantsAreFocusable: false,
-                          child: IconButton(
-                            icon: const Icon(Icons.chevron_left),
-                            onPressed: () => _scrollBy(-_scrollStep),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ),
-                        Focus(
-                          canRequestFocus: false,
-                          skipTraversal: true,
-                          descendantsAreFocusable: false,
-                          child: IconButton(
-                            icon: const Icon(Icons.chevron_right),
-                            onPressed: () => _scrollBy(_scrollStep),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ),
-                      ],
+                    child: HorizontalScrollControls(
+                      controller: _controller,
+                      onScrollPastStart: widget.onScrollPastStart,
+                      onScrollPastEnd: widget.onScrollPastEnd,
                     ),
                   ),
               ],

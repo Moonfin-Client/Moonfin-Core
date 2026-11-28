@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:playback_core/playback_core.dart';
 
 class _TestBackend extends Fake implements PlayerBackend {
@@ -136,6 +137,42 @@ void main() {
       [const Duration(minutes: 5)],
       reason: 'a restart mid item dropped back to queue stepping',
     );
+  });
+
+  group('an episode skips its chapters', () {
+    const episode = <String, dynamic>{'Id': 'e1', 'Type': 'Episode'};
+
+    test('next goes past them', () async {
+      manager.queueService.setQueue([episode], startIndex: 0);
+      manager.setChapterStarts(_chapters);
+      manager.state.setPosition(const Duration(minutes: 2));
+
+      await manager.next();
+
+      expect(backend.seeks, [const Duration(minutes: 20)]);
+    });
+
+    test('previous restarts it', () async {
+      manager.queueService.setQueue([episode], startIndex: 0);
+      manager.setChapterStarts(_chapters);
+      manager.state.setPosition(const Duration(minutes: 7));
+
+      await manager.previous();
+
+      expect(backend.seeks, [Duration.zero]);
+    });
+
+    test('when queued as an app item', () async {
+      manager.queueService.setQueue([
+        AggregatedItem(id: 'e1', serverId: 'server', rawData: episode),
+      ], startIndex: 0);
+      manager.setChapterStarts(_chapters);
+      manager.state.setPosition(const Duration(minutes: 2));
+
+      await manager.next();
+
+      expect(backend.seeks, [const Duration(minutes: 20)]);
+    });
   });
 
   // One manager serves the audio screens too, and they never set chapters.

@@ -54,6 +54,7 @@ class ChangeArtworkDialog extends StatefulWidget {
 
 class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   late AggregatedItem _item;
+  late final Future<void> _openingRefresh;
   late List<String> _supportedCategories;
   final Map<String, List<Map<String, dynamic>>> _remoteImages = {};
   final Map<String, bool> _loadingCategories = {};
@@ -182,7 +183,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     for (final category in _supportedCategories) {
       _fetchRemoteImages(category);
     }
-    _refreshItemMetadata();
+    _openingRefresh = _refreshItemMetadata();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusFirstItem();
       _checkLibrariesWriteAccess();
@@ -222,23 +223,36 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   Future<void> _refreshItemMetadata() async {
+    final itemId = _item.id;
     try {
       final client = GetIt.instance<MediaServerClient>();
-      final updatedRaw = await client.itemsApi.getItem(_item.id);
+      final updatedRaw = await client.itemsApi.getItem(itemId);
       if (mounted) {
-        setState(() {
-          _item = AggregatedItem(
-            id: _item.id,
-            serverId: _item.serverId,
-            rawData: updatedRaw,
-          );
-          if (_historyIndex >= 0 && _historyIndex < _history.length) {
-            _history[_historyIndex] = _item;
-          }
-        });
+        setState(() => _applyFetchedItem(itemId, updatedRaw));
       }
     } catch (e) {
       debugPrint('Failed to refresh item metadata: $e');
+    }
+  }
+
+  // The admin may have moved to another item while the fetch loaded, so only
+  // the entries for the fetched item take it.
+  void _applyFetchedItem(String itemId, Map<String, dynamic> rawData) {
+    for (var i = 0; i < _history.length; i++) {
+      if (_history[i].id == itemId) {
+        _history[i] = AggregatedItem(
+          id: itemId,
+          serverId: _history[i].serverId,
+          rawData: rawData,
+        );
+      }
+    }
+    if (_item.id == itemId) {
+      _item = AggregatedItem(
+        id: itemId,
+        serverId: _item.serverId,
+        rawData: rawData,
+      );
     }
   }
 
@@ -817,6 +831,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   Future<void> _clearAllArtwork() async {
     final l10n = AppLocalizations.of(context);
+    final itemId = _item.id;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog.adaptive(
@@ -844,17 +859,37 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     setState(() {
       _actionInProgress.addAll(_supportedCategories);
     });
+    // Without the full item, Clear All would skip images the card leaves out.
+    if (itemId == widget.item.id) await _openingRefresh;
+    // Nothing is deleted if the dialog closed, or moved to another item, while
+    // that loaded. A closing dialog stays mounted until its exit animation ends.
+    if (!mounted ||
+        !(ModalRoute.of(context)?.isActive ?? true) ||
+        _item.id != itemId) {
+      if (mounted) {
+        setState(() {
+          _actionInProgress.clear();
+        });
+      }
+      return;
+    }
+
+    // Counted once, so following a link while it deletes can't change what
+    // gets deleted.
+    final counts = {
+      for (final category in _supportedCategories)
+        category: _getCurrentTags(category).length,
+    };
 
     try {
       final client = GetIt.instance<MediaServerClient>();
-      for (final category in _supportedCategories) {
-        final tags = _getCurrentTags(category);
-        if (tags.isEmpty) continue;
+      for (final MapEntry(key: category, value: count) in counts.entries) {
+        if (count == 0) continue;
 
         if (category == 'Backdrop') {
-          for (int i = tags.length - 1; i >= 0; i--) {
+          for (int i = count - 1; i >= 0; i--) {
             await client.adminItemsApi.deleteItemImage(
-              _item.id,
+              itemId,
               imageType: ImageType.backdrop,
               imageIndex: i,
             );
@@ -862,7 +897,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           }
         } else {
           await client.adminItemsApi.deleteItemImage(
-            _item.id,
+            itemId,
             imageType: ImageType.fromServerString(category),
             imageIndex: null,
           );
@@ -870,17 +905,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         }
       }
 
-      final updatedRaw = await client.itemsApi.getItem(_item.id);
+      final updatedRaw = await client.itemsApi.getItem(itemId);
       if (mounted) {
         setState(() {
-          _item = AggregatedItem(
-            id: _item.id,
-            serverId: _item.serverId,
-            rawData: updatedRaw,
-          );
-          if (_historyIndex >= 0 && _historyIndex < _history.length) {
-            _history[_historyIndex] = _item;
-          }
+          _applyFetchedItem(itemId, updatedRaw);
           _actionInProgress.clear();
         });
       }
@@ -2128,20 +2156,24 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             style: BorderStyle.solid,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.image_not_supported,
-              color: Colors.white30,
-              size: 28,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              l10n.missing,
-              style: const TextStyle(fontSize: 12, color: Colors.white30),
-            ),
-          ],
+        // Shrinks to fit short cards such as Banner.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.image_not_supported,
+                color: Colors.white30,
+                size: 28,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.missing,
+                style: const TextStyle(fontSize: 12, color: Colors.white30),
+              ),
+            ],
+          ),
         ),
       );
     } else {

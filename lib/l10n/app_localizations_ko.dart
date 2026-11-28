@@ -12836,6 +12836,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get preferExternalSubtitlesSubtitle => '내장 트랙보다 외부 자막 파일을 우선합니다.';
 
   @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
+
+  @override
   String get webDiagnostics => '웹 진단';
 
   @override

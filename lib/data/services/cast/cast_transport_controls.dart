@@ -1,3 +1,4 @@
+import '../../models/aggregated_item.dart';
 import 'cast_target.dart';
 
 /// What a receiver says about the item it is playing.
@@ -9,10 +10,14 @@ class RemotePlaybackSnapshot {
   /// A fraction, or null when the receiver reports no volume of its own.
   final double? volume;
 
+  /// The item currently playing on the receiver, when reported.
+  final AggregatedItem? item;
+
   const RemotePlaybackSnapshot({
     this.state,
     this.positionTicks = 0,
     this.volume,
+    this.item,
   });
 }
 
@@ -30,6 +35,14 @@ abstract class CastTransportControls {
   Future<double?> getVolume(CastTargetKind kind);
 
   Future<void> setVolume(CastTargetKind kind, {required double volume});
+}
+
+/// Optional queue navigation for receivers that support track/item skipping
+/// (such as Jellyfin remote sessions).
+abstract class CastTrackSkipControls {
+  Future<void> nextTrack(CastTargetKind kind);
+
+  Future<void> previousTrack(CastTargetKind kind);
 }
 
 /// A transport whose receiver has to be asked where it is. Cast, DLNA and

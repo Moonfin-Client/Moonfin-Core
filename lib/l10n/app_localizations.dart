@@ -23230,6 +23230,18 @@ abstract class AppLocalizations {
   /// **'Prioritize external subtitle files over embedded tracks.'**
   String get preferExternalSubtitlesSubtitle;
 
+  /// Setting that turns subtitles on for a moment after the viewer goes back a few seconds
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles on Short Rewind'**
+  String get rewindSubtitles;
+
+  /// Description for the subtitles on short rewind setting
+  ///
+  /// In en, this message translates to:
+  /// **'With subtitles off, going back 30 seconds or less shows them until playback catches up.'**
+  String get rewindSubtitlesDescription;
+
   /// No description provided for @webDiagnostics.
   ///
   /// In en, this message translates to:

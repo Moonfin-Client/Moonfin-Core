@@ -1,3 +1,4 @@
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/calendar_entry.dart';
 import 'package:moonfin/ui/screens/calendar/calendar_agenda_view.dart';
@@ -39,9 +40,9 @@ void main() {
       lineHeight: 20,
     );
 
-    test('are two at most, however tall the cell', () {
-      expect(count(5, 200), 2);
-      expect(count(2, 200), 2);
+    test('are as many as fit in a tall cell', () {
+      expect(count(5, 200), 5);
+      expect(count(12, 200), 9);
       expect(count(1, 200), 1);
     });
 
@@ -53,6 +54,13 @@ void main() {
       // Room for one line: the title when it is alone, the count otherwise.
       expect(count(1, 25), 1);
       expect(count(2, 25), 0);
+    });
+
+    test('keep a full row for each line when the text is shrunk', () {
+      expect(calendarCellLineHeight(const TextScaler.linear(0.6)), 17);
+      expect(calendarCellLineHeight(const TextScaler.linear(0.9)), 18);
+      expect(calendarCellLineHeight(TextScaler.noScaling), 20);
+      expect(calendarCellLineHeight(const TextScaler.linear(1.5)), 30);
     });
 
     test('are none in a cell with no room for a line', () {

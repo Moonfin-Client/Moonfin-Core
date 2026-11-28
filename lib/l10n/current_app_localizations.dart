@@ -13,11 +13,13 @@ Locale currentAppLocale([Locale? deviceLocale]) =>
 
 /// The locale MaterialApp runs in. Flutter hands it to the system when a
 /// character needs a fallback font, and Windows answers a bare `zh` with a
-/// Japanese font, so Simplified Chinese always carries its script.
+/// Japanese font. Flutter sends the locale as `toString()`, and Windows
+/// reads `zh_Hans` like bare `zh` but `zh_Hans_CN` as Simplified Chinese,
+/// so Simplified Chinese carries its script and country.
 Locale resolveAppUiLocale(Locale? target) {
   final locale = _resolveSupportedLocale(target ?? const Locale('en'));
   return locale == const Locale('zh')
-      ? const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')
+      ? const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN')
       : locale;
 }
 

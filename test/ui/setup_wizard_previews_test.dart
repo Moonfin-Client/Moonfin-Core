@@ -7,9 +7,13 @@ import 'package:moonfin/data/models/media_bar_slide_item.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/settings/live_preview/settings_live_preview.dart';
 import 'package:moonfin/ui/screens/setup/setup_wizard_previews.dart';
+import 'package:moonfin/ui/widgets/settings/settings_preview_scope.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../support/preview_screen.dart';
 
 /// Items with no artwork URLs, so every image resolves to the placeholder and
 /// nothing touches the network. The layout code runs exactly the same either
@@ -103,6 +107,91 @@ void main() {
     expect(ids(SetupPreviewData.keepDrawn(const [], reloaded)), ids(reloaded));
   });
 
+  testWidgets('an iPad previews at its own size, not a phone\'s', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    // An iPad uses the phone interface on its own wide screen.
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    expect(PlatformDetection.useMobileUi, isTrue);
+
+    usePreviewScreen(const Size(1024, 1366));
+    expect(setupPreviewSize(), const Size(1024, 1366));
+    // Playback turns the screen sideways, so the player previews landscape.
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 1366 / 1024);
+
+    usePreviewScreen(const Size(1366, 1024));
+    expect(setupPreviewSize(), const Size(1366, 1024));
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 1366 / 1024);
+
+    SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    await pumpPreview(tester, homeRowsPreview(modern: true));
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('desktop keeps its fixed screens whatever the window', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    usePreviewScreen(const Size(1920, 1080));
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    expect(setupPreviewSize(), const Size(1280, 800));
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 1280 / 800);
+
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    expect(setupPreviewSize(), const Size(390, 844));
+    expect(settingsPreviewAspect(SettingsPreviewScene.player), 844 / 390);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  group('a phone or tablet on its side', () {
+    // iOS in the automatic layout, as an iPad or iPhone runs the app.
+    void useDevice(Size screen) {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+      usePreviewScreen(screen);
+      SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+    }
+
+    for (final (device, screen) in [
+      ('an iPad', const Size(1194, 834)),
+      ('a phone', const Size(844, 390)),
+    ]) {
+      testWidgets('$device lays out every detail style', (tester) async {
+        useDevice(screen);
+        for (final style in DetailScreenStyle.values) {
+          await pumpPreview(tester, detailStylePreview(style));
+        }
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+
+    testWidgets('a native phone previews the player on its side', (
+      tester,
+    ) async {
+      useDevice(const Size(390, 844));
+      expect(settingsPreviewAspect(SettingsPreviewScene.player), 844 / 390);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('Modern draws the layout the real page does', (tester) async {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      // Only the landscape layout has a More Like This tab beside the others.
+      Future<Finder> moreLikeThis(Size screen) async {
+        useDevice(screen);
+        await pumpPreview(tester, detailStylePreview(DetailScreenStyle.modern));
+        return find.text(l10n.moreLikeThis);
+      }
+
+      expect(await moreLikeThis(const Size(1194, 834)), findsOneWidget);
+      expect(await moreLikeThis(const Size(834, 1194)), findsNothing);
+      // A phone on its side keeps its upright canvas and portrait mock.
+      expect(await moreLikeThis(const Size(844, 390)), findsNothing);
+      expect(setupPreviewSize(), const Size(390, 844));
+      debugDefaultTargetPlatformOverride = null;
+    });
+  });
+
   for (final layout in [
     InterfaceLayout.tv,
     InterfaceLayout.desktop,
@@ -116,6 +205,7 @@ void main() {
             ? TargetPlatform.linux
             : TargetPlatform.android;
         PlatformDetection.setInterfaceLayout(layout);
+        usePreviewScreenOf(layout);
       }
 
       testWidgets('live previews lay out with real items', (tester) async {
@@ -143,8 +233,8 @@ void main() {
       ) async {
         setPlatform();
         SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
-        // A TV lays out on the canvas TvUiScale gives every panel. A phone and
-        // a desktop have no such canvas, so they stand in a typical screen.
+        // A TV lays out on the canvas TvUiScale gives every panel. A phone
+        // lays out at its own screen and a desktop at a typical one.
         final canvas = switch (layout) {
           InterfaceLayout.tv => const Size(1150, 1150 * 1080 / 1920),
           InterfaceLayout.phone => const Size(390, 844),

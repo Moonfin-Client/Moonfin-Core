@@ -13315,6 +13315,13 @@ class AppLocalizationsSv extends AppLocalizations {
       'Prioritera externa undertextfiler framför inbäddade spår.';
 
   @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
+
+  @override
   String get webDiagnostics => 'Webbdiagnostik';
 
   @override

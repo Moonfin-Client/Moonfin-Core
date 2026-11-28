@@ -89,8 +89,9 @@ class Media3PlayerBackend extends PlayerBackend
     };
   }
 
-  /// How the native side should treat a Dolby Vision profile 7 stream.
-  @visibleForTesting
+  /// How the native side should treat a Dolby Vision profile 7 stream. A
+  /// Silo start tells Silo the same (`siloMedia3DoviMode`), except a strip
+  /// the viewer turned down for a transcode.
   static Media3DoviCompatMode doviCompatMode(
     UserPreferences prefs, {
     bool? supportsP7,
@@ -796,6 +797,8 @@ class Media3PlayerBackend extends PlayerBackend
     final applied = map['mode']?.toString() ?? 'none';
     final requested = map['requestedMode']?.toString() ?? 'none';
     final detail = map['detail']?.toString();
+    final fold = map['fold']?.toString();
+    final enhancementLayer = map['enhancementLayer']?.toString();
     final codecs = map['codecs']?.toString() ?? '';
     final profile = codecs.startsWith('dvhe.08') || codecs.startsWith('dvh1.08')
         ? 'P8'
@@ -806,6 +809,9 @@ class Media3PlayerBackend extends PlayerBackend
       'progress' => 'DoVi $profile still handled as $applied',
       'converterFailed' => 'DoVi $profile conversion stopped working',
       'disarmed' => 'DoVi $profile rewriting stood down',
+      'foldStarted' => 'DoVi $profile FEL curve fold fitted its first scene',
+      'foldStopped' => 'DoVi $profile FEL curve fold stopped',
+      'ended' => 'DoVi $profile reached the end as $applied',
       _ =>
         applied == requested
             ? 'DoVi $profile handled as $applied'
@@ -826,9 +832,14 @@ class Media3PlayerBackend extends PlayerBackend
       'Media3: $headline${detail == null ? '' : ' ($detail)'}. '
       'Codecs ${map['codecs']}, RPU source ${map['rpuSource']}, '
       'converter ${map['converterStatus']}. $counts. '
-      'NAL types ${map['nalCensus']}, layout ${map['sampleLayout']}. '
-      'Format ${map['formatSummary']}',
-      level: reason == 'converterFailed' || reason == 'disarmed'
+      'NAL types ${map['nalCensus']}, layout ${map['sampleLayout']}'
+      '${enhancementLayer == null ? '' : ', EL $enhancementLayer'}. '
+      'Format ${map['formatSummary']}'
+      '${fold == null ? '' : '. FEL fold $fold'}',
+      level:
+          reason == 'converterFailed' ||
+              reason == 'disarmed' ||
+              reason == 'foldStopped'
           ? LogLevel.warning
           : LogLevel.info,
     );

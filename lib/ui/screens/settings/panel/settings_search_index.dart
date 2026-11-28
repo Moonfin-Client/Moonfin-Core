@@ -2042,6 +2042,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'forced',
       'none',
     ]),
+    if (!PlatformDetection.isWeb)
+      subtitles.leaf(
+        'pref_rewind_subtitles',
+        l10n.rewindSubtitles,
+        subtitle: l10n.rewindSubtitlesDescription,
+        keywords: ['rewind', 'skip back', 'captions', 'dialogue'],
+      ),
     subtitles.leaf('pref_subtitle_language', l10n.defaultSubtitleLanguage),
     subtitles.leaf(
       'pref_subtitle_download_languages',

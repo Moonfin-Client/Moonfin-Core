@@ -128,10 +128,25 @@ class MediaServerClientFactory {
     );
   }
 
+  /// A client of its own for requests outside the app's session, such as
+  /// ending a saved login of a server being removed. It isn't cached and has
+  /// no 403 hook, and the caller disposes it.
+  MediaServerClient createStandaloneClient({
+    required String serverId,
+    required ServerType serverType,
+    required String baseUrl,
+  }) => _createRawClient(
+    serverId: serverId,
+    serverType: serverType,
+    baseUrl: baseUrl,
+    forbiddenHook: false,
+  );
+
   MediaServerClient _createRawClient({
     required String serverId,
     required ServerType serverType,
     required String baseUrl,
+    bool forbiddenHook = true,
   }) {
     switch (serverType) {
       case ServerType.jellyfin:
@@ -139,7 +154,7 @@ class MediaServerClientFactory {
           baseUrl: baseUrl,
           deviceInfo: deviceInfo,
           interceptors: [
-            if (onForbidden != null)
+            if (forbiddenHook && onForbidden != null)
               InterceptorsWrapper(
                 onError: (error, handler) {
                   if (error.response?.statusCode == 403) onForbidden!();

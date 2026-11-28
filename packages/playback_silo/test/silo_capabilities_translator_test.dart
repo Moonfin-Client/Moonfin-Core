@@ -89,6 +89,30 @@ void _expectFitsContract(SiloClientCapabilities caps) {
   }
 }
 
+/// [_expectFitsContract] for a server newer than the pinned contract, which
+/// predates `max_channels_by_codec`: the rest of each delivery must fit.
+void _expectFitsPinnedContract(SiloClientCapabilities caps) {
+  expect(
+    siloSchemaErrors('ClientCodecCapabilitiesV3', caps.clientCapabilities),
+    isEmpty,
+  );
+  for (final entry in caps.deliveries.entries) {
+    final byCodec =
+        entry.value['max_channels_by_codec'] as Map<String, int>? ?? {};
+    expect(byCodec.length, lessThanOrEqualTo(32));
+    expect(byCodec.keys, everyElement(hasLength(inInclusiveRange(1, 64))));
+    expect(byCodec.values, everyElement(inInclusiveRange(1, 64)));
+    expect(
+      siloSchemaErrors(
+        'DeliveryCapabilityV3',
+        {...entry.value}..remove('max_channels_by_codec'),
+      ),
+      isEmpty,
+      reason: entry.key,
+    );
+  }
+}
+
 void main() {
   group('the libmpv backend', () {
     final caps = siloCapabilitiesFromDeviceProfile(
@@ -217,6 +241,87 @@ void main() {
     test('fits Silo\'s start-request schema', () => _expectFitsContract(caps));
   });
 
+  group('channel ceilings on a server with per-codec ceilings', () {
+    Map<String, dynamic> audio(String? codec, int channels) => {
+      'Type': 'VideoAudio',
+      'Codec': ?codec,
+      'Conditions': [
+        {
+          'Condition': 'LessThanEqual',
+          'Property': 'AudioChannels',
+          'Value': '$channels',
+        },
+      ],
+    };
+    SiloClientCapabilities caps(List<Map<String, dynamic>> audioProfiles) =>
+        siloCapabilitiesFromDeviceProfile({
+          ..._mpvProfile(),
+          'CodecProfiles': audioProfiles,
+        }, channelCeilingsByCodec: true);
+
+    test('a cap that leaves passthrough codecs out only caps the rest', () {
+      // Stereo PCM with AC-3, DTS and TrueHD bitstreamed, plus the forced
+      // stereo cap on what the player direct plays.
+      final c = caps([audio('aac,flac,opus', 2), audio('aac,mp2,mp3', 2)]);
+      for (final d in c.deliveries.values) {
+        expect(d, isNot(contains('max_channels')));
+        expect(d['max_channels_by_codec'], {
+          'aac': 2,
+          'flac': 2,
+          'opus': 2,
+          'mp2': 2,
+          'mp3': 2,
+        });
+      }
+      _expectFitsPinnedContract(c);
+    });
+
+    test('Downmix to Stereo on Auto caps every codec it direct plays', () {
+      // A player that can't downmix: the channel setting leaves no general
+      // cap, and the forced stereo cap names AAC, MP2 and MP3.
+      final c = caps([audio(null, 8), audio('aac,mp2,mp3', 2)]);
+      for (final d in c.deliveries.values) {
+        expect(d, isNot(contains('max_channels')));
+        expect(d['max_channels_by_codec'], {'aac': 2, 'mp2': 2, 'mp3': 2});
+      }
+      _expectFitsPinnedContract(c);
+    });
+
+    test('a cap on every codec stays one ceiling', () {
+      final c = caps([audio(null, 2), audio('aac', 2)]);
+      for (final d in c.deliveries.values) {
+        expect(d['max_channels'], 2);
+        expect(d['max_channels_by_codec'], {'aac': 2});
+      }
+      _expectFitsPinnedContract(c);
+    });
+
+    test('a codec takes its lowest limit, and six or more is none', () {
+      final c = caps([audio('aac,eac3', 6), audio('aac', 2), audio(null, 8)]);
+      final d = c.deliveries['original_http']!;
+      expect(d, isNot(contains('max_channels')));
+      expect(d['max_channels_by_codec'], {'aac': 2});
+    });
+
+    test('more codecs than Silo takes fall back to one ceiling', () {
+      final codecs = [for (var i = 0; i < 33; i++) 'codec$i'].join(',');
+      final d = caps([audio(codecs, 2)]).deliveries['original_http']!;
+      expect(d['max_channels'], 2);
+      expect(d, isNot(contains('max_channels_by_codec')));
+    });
+
+    test('an older server gets the lowest limit for every codec', () {
+      final c = siloCapabilitiesFromDeviceProfile({
+        ..._mpvProfile(),
+        'CodecProfiles': [audio('aac,flac', 2)],
+      });
+      for (final d in c.deliveries.values) {
+        expect(d['max_channels'], 2);
+        expect(d, isNot(contains('max_channels_by_codec')));
+      }
+    });
+  });
+
   test('a player without embedded subtitle rendering opts out of it', () {
     final caps = siloCapabilitiesFromDeviceProfile(
       _mpvProfile(),
@@ -251,6 +356,57 @@ void main() {
     final remux = caps.deliveries['progressive']!['subtitles'] as Map;
     expect(remux['ass_styling'], isFalse);
     _expectFitsContract(caps);
+  });
+
+  test('Media3 converting Dolby Vision 7 itself says so for the original', () {
+    for (final transform in SiloDolbyVision7Transform.values) {
+      final caps = siloCapabilitiesFromDeviceProfile(
+        _mpvProfile(),
+        traits: SiloPlayerTraits.media3.withDolbyVision7Transform(transform),
+      );
+      expect(caps.clientFeatures, contains('client_video_transformations_v1'));
+      final original = caps.deliveries['original_http']!;
+      expect(original['transformations'], [
+        {
+          'name': transform.transformation,
+          'executor': 'client',
+          'recipe_version': '1',
+          'validated_claims': [
+            switch (transform) {
+              SiloDolbyVision7Transform.toProfile81 =>
+                'profile7_rpu_converted_to_profile81',
+              SiloDolbyVision7Transform.toHdr10 =>
+                'dolby_vision_metadata_removed',
+            },
+            'hdr10_base_layer_preserved',
+            'enhancement_layer_discarded',
+          ],
+        },
+      ]);
+      // A remux or HLS stream is Silo's to convert, never the player's.
+      for (final name in ['progressive', 'hls']) {
+        expect(caps.deliveries[name]!['transformations'], isEmpty);
+      }
+      _expectFitsContract(caps);
+    }
+    expect(
+      SiloDolbyVision7Transform.toProfile81.transformation,
+      'client_dv7_to_dv81',
+    );
+    expect(
+      SiloDolbyVision7Transform.toHdr10.transformation,
+      'client_dv7_to_hdr10',
+    );
+
+    final plain = siloCapabilitiesFromDeviceProfile(
+      _mpvProfile(),
+      traits: SiloPlayerTraits.media3,
+    );
+    expect(
+      plain.clientFeatures,
+      isNot(contains('client_video_transformations_v1')),
+    );
+    expect(plain.deliveries['original_http']!['transformations'], isEmpty);
   });
 
   test('libmpv and AetherEngine send the stream\'s headers', () {

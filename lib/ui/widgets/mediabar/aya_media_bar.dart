@@ -208,16 +208,16 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 
     final showGlow = isHighlighted && borders.focusGlow.isNotEmpty;
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => _setHovered(true),
-      onExit: (_) => _setHovered(false),
-      child: AnimatedScale(
-        scale: shouldExpand ? AyaMediaBar._focusScale : 1.0,
-        duration: AyaMediaBar._focusScaleDuration,
-        curve: Curves.easeOutCubic,
-        child: Padding(
-          padding: widget.padding,
+    return AnimatedScale(
+      scale: shouldExpand ? AyaMediaBar._focusScale : 1.0,
+      duration: AyaMediaBar._focusScaleDuration,
+      curve: Curves.easeOutCubic,
+      child: Padding(
+        padding: widget.padding,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onEnter: (_) => _setHovered(true),
+          onExit: (_) => _setHovered(false),
           child: Stack(
             fit: StackFit.passthrough,
             clipBehavior: Clip.none,
