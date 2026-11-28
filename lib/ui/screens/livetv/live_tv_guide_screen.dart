@@ -2664,13 +2664,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ],
             ),
           ),
-          actions: slidingFocusDialogActions(
-              surface: AppColorScheme.surface,
-              children: [
+          actions: [
             // That airing is over. Single-episode recording no longer applies.
             if (!isEnded)
               adaptiveDialogAction(
-                solidFocusOn: AppColorScheme.surface,
+                focusRingColor: AppColorScheme.accent,
                 autofocus: isRecordingNow,
                 focusNode: isRecordingNow ? defaultActionFocusNode : null,
                 onPressed: () async {
@@ -2733,7 +2731,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             if (hasSeriesTimer)
               adaptiveDialogAction(
-                solidFocusOn: AppColorScheme.surface,
+                focusRingColor: AppColorScheme.accent,
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   final seriesTimerId = program.rawData['SeriesTimerId']
@@ -2772,7 +2770,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             if (program.isSeries)
               adaptiveDialogAction(
-                solidFocusOn: AppColorScheme.surface,
+                focusRingColor: AppColorScheme.accent,
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   dialogActionInProgress = true;
@@ -2827,7 +2825,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 ),
               ),
             adaptiveDialogAction(
-              solidFocusOn: AppColorScheme.surface,
+              focusRingColor: AppColorScheme.accent,
               onPressed: channel == null
                   ? null
                   : () async {
@@ -2865,7 +2863,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             ),
             adaptiveDialogAction(
-              solidFocusOn: AppColorScheme.surface,
+              focusRingColor: AppColorScheme.accent,
               autofocus: !isRecordingNow,
               focusNode: isRecordingNow ? null : defaultActionFocusNode,
               onPressed: () {
@@ -2880,7 +2878,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             ),
             adaptiveDialogAction(
-              solidFocusOn: AppColorScheme.surface,
+              focusRingColor: AppColorScheme.accent,
               onPressed: () {
                 if (dialogActionInProgress) return;
                 dialogActionInProgress = true;
@@ -2888,8 +2886,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               },
               child: Text(l10n.close),
             ),
-              ],
-          ),
+          ],
         );
       },
     ).whenComplete(defaultActionFocusNode.dispose);
