@@ -45,6 +45,7 @@ void main() {
       );
       expect(distinctOriginalTitle('Spirited Away', '千と千尋の神隠し'), '千と千尋の神隠し');
       expect(distinctOriginalTitle('Parasite', '기생충'), '기생충');
+      expect(distinctOriginalTitle('и', 'и\u0306'), 'и\u0306');
     });
   });
 
