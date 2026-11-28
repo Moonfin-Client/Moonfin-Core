@@ -292,6 +292,10 @@ final class NowPlayingController {
             info[MPMediaItemPropertyPlaybackDuration] = durationSeconds
         }
         info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue
+        if artworkURL?.isEmpty ?? true {
+            info[MPMediaItemPropertyArtwork] = nil
+            artworkURLString = nil
+        }
         publish(info)
         loadArtwork(artworkURL)
     }
