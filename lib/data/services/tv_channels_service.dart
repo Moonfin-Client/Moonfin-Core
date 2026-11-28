@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart'
+    show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
@@ -38,49 +40,68 @@ enum _ReleaseCollection {
 /// wrapping, and deep link plumbing, so the only new surface is the channel
 /// data itself.
 class TvChannelsService {
-  // One instance app wide so signing out cancels the debounce the home screen
-  // scheduled, rather than leaving a publish to fire against a torn down client.
+  // One instance app wide so signing out cancels the publish the home screen
+  // asked for, rather than leaving it to fire against a torn down client.
   factory TvChannelsService() => _instance;
   TvChannelsService._();
   static final TvChannelsService _instance = TvChannelsService._();
 
   static const _channel = MethodChannel('org.moonfin.androidtv/watch_next');
   static const _maxItems = 20;
-  static const _debounceDelay = Duration(seconds: 5);
 
-  Timer? _debounce;
+  bool _pending = false;
+  AppLifecycleListener? _lifecycle;
   String? _lastPublishedSignature;
+  // Bumped by every publish and by clear(), so a slower publish that started
+  // earlier, or before sign-out, can't write over what came after it.
+  int _generation = 0;
 
   bool get _enabled => PlatformDetection.isAndroid && PlatformDetection.isTV;
 
+  /// Building the channels asks the server for every row again, which slows
+  /// whatever the user opens next. The launcher only shows them once the app
+  /// is in the background, so they're published then.
   void update() {
     if (!_enabled) return;
-    _debounce?.cancel();
-    _debounce = Timer(_debounceDelay, () => unawaited(publish()));
+    _pending = true;
+    _lifecycle ??= AppLifecycleListener(onHide: _publishPending);
+    // A load that finishes after the app was hidden has no hide left to wait
+    // for.
+    final state = WidgetsBinding.instance.lifecycleState;
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
+      _publishPending();
+    }
+  }
+
+  void _publishPending() {
+    if (!_pending) return;
+    _pending = false;
+    unawaited(publish());
   }
 
   Future<void> publish() async {
     if (!_enabled) return;
+    final generation = ++_generation;
     try {
       final client = GetIt.instance<MediaServerClient>();
       final channels = await buildChannels(client, serverId: _serverIdFor(client));
+      if (generation != _generation) return;
       final signature = _signatureFor(channels);
       if (signature == _lastPublishedSignature) return;
 
-      if (channels.isEmpty) {
-        await _channel.invokeMethod('clearChannels');
-        _lastPublishedSignature = signature;
-        return;
-      }
       await CarArtwork.instance.persistHosts();
+      if (generation != _generation) return;
       await _channel.invokeMethod('publishChannels', {'channels': channels});
-      _lastPublishedSignature = signature;
+      // If this was overtaken meanwhile, what the launcher shows isn't known.
+      _lastPublishedSignature = generation == _generation ? signature : null;
     } catch (_) {}
   }
 
   void clear() {
     if (!_enabled) return;
-    _debounce?.cancel();
+    _pending = false;
+    _generation++;
     _lastPublishedSignature = null;
     unawaited(_channel.invokeMethod('clearChannels').catchError((_) {}));
   }
