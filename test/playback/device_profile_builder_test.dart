@@ -174,13 +174,24 @@ Set<String> _hlsHevcRangeTypes(Map<String, dynamic> profile) {
   return (condition['Value'] as String).split('|').toSet();
 }
 
-Map<dynamic, dynamic>? _stereoAacFallbackProfile(Map<String, dynamic> profile) {
+// The stereo-safe codecs a downmixing profile direct plays. The general
+// channel cap always names more (FLAC at least), so this tells them apart.
+const _stereoSafeCodecs = {'aac', 'mp2', 'mp3', 'vorbis'};
+
+bool _isStereoCap(Map<dynamic, dynamic> codecProfile) {
+  final codecs = (codecProfile['Codec'] as String?)?.split(',').toSet();
+  return codecs != null &&
+      codecs.contains('aac') &&
+      codecs.every(_stereoSafeCodecs.contains);
+}
+
+// The cap a stereo-only player gets on every codec it direct plays.
+Map<dynamic, dynamic>? _stereoCapProfile(Map<String, dynamic> profile) {
   final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
 
   for (final rawProfile in codecProfiles) {
     final codecProfile = rawProfile as Map<dynamic, dynamic>;
-    if (codecProfile['Type'] != 'VideoAudio' ||
-        codecProfile['Codec'] != 'aac') {
+    if (codecProfile['Type'] != 'VideoAudio' || !_isStereoCap(codecProfile)) {
       continue;
     }
 
@@ -223,14 +234,13 @@ String? _videoAudioChannelsConditionValue(Map<String, dynamic> profile) {
 }
 
 // The codec scope of the general channel cap, or null when it applies to every
-// audio codec. The stereo AAC fallback carries its own cap and is skipped.
+// audio codec. The stereo cap carries its own limit and is skipped.
 String? _videoAudioChannelsConditionCodec(Map<String, dynamic> profile) {
   final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
 
   for (final rawProfile in codecProfiles) {
     final codecProfile = rawProfile as Map<dynamic, dynamic>;
-    if (codecProfile['Type'] != 'VideoAudio' ||
-        codecProfile['Codec'] == 'aac') {
+    if (codecProfile['Type'] != 'VideoAudio' || _isStereoCap(codecProfile)) {
       continue;
     }
 
@@ -1490,13 +1500,13 @@ void main() {
     test('adds stereo AAC fallback profile when enabled', () {
       final profile = DeviceProfileBuilder.build(maxAudioChannels: 2);
 
-      expect(_stereoAacFallbackProfile(profile), isNotNull);
+      expect(_stereoCapProfile(profile), isNotNull);
     });
 
     test('does not add stereo AAC fallback profile when disabled', () {
       final profile = DeviceProfileBuilder.build(maxAudioChannels: 6);
 
-      expect(_stereoAacFallbackProfile(profile), isNull);
+      expect(_stereoCapProfile(profile), isNull);
     });
   });
 
@@ -1695,6 +1705,17 @@ void main() {
         expect(codecs, equals(<String>{'aac', 'mp2', 'mp3'}));
       },
     );
+
+    test('downmix caps every stereo-safe codec at two channels', () {
+      final profile = DeviceProfileBuilder.build(downmixToStereo: true);
+
+      final stereo = _stereoCapProfile(profile);
+      expect(stereo, isNotNull);
+      expect(
+        (stereo!['Codec'] as String).split(',').toSet(),
+        equals(_videoDirectPlayAudioCodecs(profile)),
+      );
+    });
   });
 
   group('DeviceProfileBuilder universalAudioDecode', () {
@@ -1744,7 +1765,7 @@ void main() {
           codecs,
           containsAll(<String>['ac3', 'eac3', 'dts', 'truehd', 'flac', 'opus']),
         );
-        expect(_stereoAacFallbackProfile(profile), isNull);
+        expect(_stereoCapProfile(profile), isNull);
         expect(_videoAudioChannelsConditionValue(profile), '8');
       },
     );
@@ -1766,7 +1787,7 @@ void main() {
           codecs,
           containsAll(<String>['aac', 'ac3', 'eac3', 'dts', 'truehd', 'flac']),
         );
-        expect(_stereoAacFallbackProfile(profile), isNull);
+        expect(_stereoCapProfile(profile), isNull);
         expect(_videoAudioChannelsConditionValue(profile), '8');
       },
     );
@@ -1782,7 +1803,7 @@ void main() {
         expect(_videoAudioChannelsConditionValue(profile), '2');
         final codecs = _videoDirectPlayAudioCodecs(profile);
         expect(codecs, contains('ac3'));
-        expect(_stereoAacFallbackProfile(profile), isNull);
+        expect(_stereoCapProfile(profile), isNull);
       },
     );
 
@@ -1874,7 +1895,7 @@ void main() {
           _videoDirectPlayAudioCodecs(profile),
           equals(<String>{'aac', 'mp2', 'mp3'}),
         );
-        expect(_stereoAacFallbackProfile(profile), isNotNull);
+        expect(_stereoCapProfile(profile), isNotNull);
         final channels = _transcodingMaxAudioChannels(profile);
         expect(channels, isNotEmpty);
         expect(channels, everyElement('2'));
@@ -1896,7 +1917,7 @@ void main() {
         _videoDirectPlayAudioCodecs(profile),
         containsAll(<String>['aac', 'ac3', 'eac3', 'dts', 'truehd', 'flac']),
       );
-      expect(_stereoAacFallbackProfile(profile), isNull);
+      expect(_stereoCapProfile(profile), isNull);
       expect(_transcodingMaxAudioChannels(profile), isEmpty);
     });
 

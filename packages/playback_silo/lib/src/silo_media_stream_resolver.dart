@@ -68,56 +68,60 @@ class SiloMediaStreamResolver
     }
     final file = await _file(mediaItem, itemId, mediaSourceId);
 
-    final environment = _environment();
-    // Silo plans no differently for enableDirectPlay, but a profile 7
-    // conversion of the player's own would win it the original file, so a
-    // start that asks for a server stream (a Dolby Vision transcode the
-    // viewer picked) offers none.
-    final capabilities = siloCapabilitiesFromDeviceProfile(
-      deviceProfile ?? const {},
-      traits: enableDirectPlay
-          ? environment.traits
-          : environment.traits.withDolbyVision7Transform(null),
-    );
-    final context = siloPlaybackContext(
-      environment: environment,
-      appVersion: client.deviceInfo.appVersion,
-      capabilities: capabilities,
-    );
-
     final api = client.playbackApi;
     final server = await _playable(api);
-    // A version the viewer picked plays as that version, on a server that
-    // can keep an attempt on one file.
-    final pinned = file.explicit && server.has('fixed_media_file_v1');
 
-    Map<String, dynamic> body(String installationId) => {
-      'protocol_version': 3,
-      'client_features': capabilities.clientFeatures,
-      'file_id': file.fileId,
-      'profile_id': profileId,
-      'playback_attempt_id': siloNewUuid(),
-      'installation_id': installationId,
-      'quality_preference': 'auto',
-      // Moonfin draws ASS itself but can't fetch a sidecar's fonts, so a
-      // simplified rendering is acceptable.
-      'subtitle_fidelity_preference': 'compatible',
-      'metered': false,
-      'client_capabilities': capabilities.clientCapabilities,
-      'client_playback_context': context,
-      'start_position': siloStartPosition(startTimeTicks),
-      'audio_track_index': ?_audioOrdinal(file.source, audioStreamIndex),
-      // Off (-1) or no choice sends none, which plays without.
-      'subtitle_track_index': ?siloSubtitleCombinedIndex(
-        file.source,
-        subtitleStreamIndex,
-      ),
-      'bandwidth_cap_kbps': ?_kbps(maxStreamingBitrate),
-      if (pinned) 'allow_alternate_versions': false,
-    };
+    final environment = _environment();
+    // Built from the features [playable] advertises, so a retry under a new
+    // installation asks only for what that server reads.
+    Map<String, dynamic> body(SiloPlaybackCapabilities playable) {
+      final capabilities = siloCapabilitiesFromDeviceProfile(
+        deviceProfile ?? const {},
+        // Silo plans no differently for enableDirectPlay, but a profile 7
+        // conversion of the player's own would win it the original file, so
+        // a start that asks for a server stream (a Dolby Vision transcode the
+        // viewer picked) offers none.
+        traits: enableDirectPlay
+            ? environment.traits
+            : environment.traits.withDolbyVision7Transform(null),
+        channelCeilingsByCodec: playable.has('codec_channel_ceilings_v1'),
+      );
+      final context = siloPlaybackContext(
+        environment: environment,
+        appVersion: client.deviceInfo.appVersion,
+        capabilities: capabilities,
+      );
+      // A version the viewer picked plays as that version, on a server that
+      // can keep an attempt on one file.
+      final pinned = file.explicit && playable.has('fixed_media_file_v1');
+      return {
+        'protocol_version': 3,
+        'client_features': capabilities.clientFeatures,
+        'file_id': file.fileId,
+        'profile_id': profileId,
+        'playback_attempt_id': siloNewUuid(),
+        'installation_id': playable.installationId,
+        'quality_preference': 'auto',
+        // Moonfin draws ASS itself but can't fetch a sidecar's fonts, so a
+        // simplified rendering is acceptable.
+        'subtitle_fidelity_preference': 'compatible',
+        'metered': false,
+        'client_capabilities': capabilities.clientCapabilities,
+        'client_playback_context': context,
+        'start_position': siloStartPosition(startTimeTicks),
+        'audio_track_index': ?_audioOrdinal(file.source, audioStreamIndex),
+        // Off (-1) or no choice sends none, which plays without.
+        'subtitle_track_index': ?siloSubtitleCombinedIndex(
+          file.source,
+          subtitleStreamIndex,
+        ),
+        'bandwidth_cap_kbps': ?_kbps(maxStreamingBitrate),
+        if (pinned) 'allow_alternate_versions': false,
+      };
+    }
 
     var installation = server.installationId;
-    var request = body(installation);
+    var request = body(server);
     Map<String, dynamic> decision;
     try {
       decision = await _startOrRefuse(api, request);
@@ -125,8 +129,9 @@ class SiloMediaStreamResolver
       if (!SiloPlaybackApi.isInstallationChanged(error)) rethrow;
       // The server was reset or replaced since the capabilities were read:
       // read them again and start a new attempt under the new installation.
-      installation = (await _playable(api, refresh: true)).installationId;
-      request = body(installation);
+      final replaced = await _playable(api, refresh: true);
+      installation = replaced.installationId;
+      request = body(replaced);
       decision = await _startOrRefuse(api, request);
     }
 
