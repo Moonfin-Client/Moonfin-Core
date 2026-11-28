@@ -19416,5 +19416,191 @@
     "personalRatingIntervalQuarter": "Neljännes (0,25)",
     "@personalRatingIntervalQuarter": {
         "description": "Short label for quarter-step (0.25) personal rating intervals."
+    },
+    "absApiKey": "API Avain",
+    "@absApiKey": {
+        "description": "Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password"
+    },
+    "absApiKeyHint": "Luo avain Audiobookshelf-palvelun Asetukset > API-avaimet -kohdassa ja liitä se sitten tähän.",
+    "@absApiKeyHint": {
+        "description": "Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app"
+    },
+    "absOpenId": "OpenID",
+    "@absOpenId": {
+        "description": "Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name"
+    },
+    "absOpenIdIntro": "Kirjaudu sisään selaimessa palvelimesi kirjautumissivulla. Moonfin viimeistelee kirjautumisen, kun sivu ohjaa sinut takaisin.",
+    "@absOpenIdIntro": {
+        "description": "Audiobookshelf sign-in: what happens when signing in with OpenID"
+    },
+    "absOpenIdWaiting": "Viimeistele kirjautuminen selaimessasi avautuneella sivulla.",
+    "@absOpenIdWaiting": {
+        "description": "Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page"
+    },
+    "absOpenIdOpen": "Avaa kirjautumissivu",
+    "@absOpenIdOpen": {
+        "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser"
+    },
+    "absOpenIdOpenAgain": "Avaa se uudelleen",
+    "@absOpenIdOpenAgain": {
+        "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once"
+    },
+    "absOpenIdRedirectRefused": "Audiobookshelf ei hyväksynyt Moonfinin kirjautumisosoitetta. Järjestelmänvalvojan on lisättävä {address} Audiobookshelf-palvelun todennusasetusten ”Sallitut mobiili-uudelleenohjaus-URI:t” -kohtaan.",
+    "@absOpenIdRedirectRefused": {
+        "description": "Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf",
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "moonfin://oauth"
+            }
+        }
+    },
+    "playerSwipeSeek": "Pyyhkäise etsiäksesi",
+    "@playerSwipeSeek": {
+        "description": "Setting that lets a sideways swipe on the video move playback back or ahead"
+    },
+    "playerSwipeSeekDescription": "Kun ohjauspainikkeet ovat piilossa, pyyhkäise soittimessa vasemmalle tai oikealle siirtyäksesi edelliseen tai seuraavaan kappaleeseen",
+    "@playerSwipeSeekDescription": {
+        "description": "Description for the swipe to seek setting"
+    },
+    "settingsAudioPassthroughOutputIecTrueHd": "Sovelluspakkaaja vain TrueHD:lle",
+    "@settingsAudioPassthroughOutputIecTrueHd": {
+        "description": "Passthrough Output option where the app packs only TrueHD and the system handles every other format (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputIecTrueHdLabel": "Sovellus (vain TrueHD)",
+    "@settingsAudioPassthroughOutputIecTrueHdLabel": {
+        "description": "Short value shown on the Passthrough Output setting row when the TrueHD-only app packer is selected"
+    },
+    "settingsAudioPassthroughOutputPlatformHint": "Toimii useimpien televisioiden ja digisovittimien kanssa. Aloita tästä.",
+    "@settingsAudioPassthroughOutputPlatformHint": {
+        "description": "Hint under the Automatic option in the Passthrough Output picker, saying when to use it"
+    },
+    "settingsAudioPassthroughOutputIecHint": "Kokeile tätä, jos passthrough-toiminto ei toimi lainkaan tai toimii epävakaasti Automaattinen asetuksella.",
+    "@settingsAudioPassthroughOutputIecHint": {
+        "description": "Hint under the App packer option in the Passthrough Output picker, saying when to use it"
+    },
+    "settingsAudioPassthroughOutputIecTrueHdHint": "Kokeile tätä, jos TrueHD toistuu ilman Atmosia Automatic -asetuksella, mutta muut formaatit eivät käynnisty sovelluksen pakkaajan avulla.",
+    "@settingsAudioPassthroughOutputIecTrueHdHint": {
+        "description": "Hint under the TrueHD-only app packer option in the Passthrough Output picker, saying when to use it"
+    },
+    "upscaleLowResolutionVideo": "Paranna alla olevan videon tarkkuutta yli 1080p:n",
+    "@upscaleLowResolutionVideo": {
+        "description": "Apple player setting that sharpens SD and 720p video up to the screen's resolution on the device"
+    },
+    "upscaleLowResolutionVideoSubtitle": "Skaalaa SD- ja 720p-videot näytön kokoon sopiviksi. Vaatii iOS-, tvOS- tai macOS 26 -käyttöjärjestelmän ja kuluttaa enemmän virtaa. HDR- ja Dolby Vision -sisältö toistuu normaalisti.",
+    "@upscaleLowResolutionVideoSubtitle": {
+        "description": "Subtitle for the setting that upscales video below 1080p on Apple devices"
+    },
+    "upscaleFullHdVideo": "Paranna 1080p-videon laatua",
+    "@upscaleFullHdVideo": {
+        "description": "Apple player setting that sharpens 1080p video up to the resolution of a larger screen, such as a 4K TV"
+    },
+    "upscaleFullHdVideoSubtitle": "Terävöittää 1080p-videota yli 1080p-tarkkuudella varustetuilla näytöillä, kuten 4K-televisiossa. Vaatii iOS-, tvOS- tai macOS 26 -käyttöjärjestelmän ja kuluttaa enemmän virtaa. Apple TV:ssä Dolby Atmos -ääni Dolby Digital Plus -muodossa toistetaan tavallisena surround-ääninä.",
+    "@upscaleFullHdVideoSubtitle": {
+        "description": "Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names"
+    },
+    "upscaleAnimationLineArt": "Korkeatasoinen anime, jossa on viivapiirroksia",
+    "@upscaleAnimationLineArt": {
+        "description": "Apple player setting that upscales anime and other drawn animation with a scaler made for line art"
+    },
+    "upscaleAnimationLineArtSubtitle": "Käyttää piirrosanimaatioille suunniteltua skaalaajaa animaatiosarjoissa ja kaikissa anime-genren teoksissa, jopa 1080p-tarkkuudella. Vaatii iOS-, tvOS- tai macOS 26 -käyttöjärjestelmän ja kuluttaa enemmän virtaa.",
+    "@upscaleAnimationLineArtSubtitle": {
+        "description": "Subtitle for the line art upscaling setting. Anime and Animation are genre names from the media library"
+    },
+    "hdrToneMapping": "HDR-sävyjen kartoitus",
+    "@hdrToneMapping": {
+        "description": "Apple TV and Mac player setting that picks the screen's peak brightness so Moonfin tone maps brighter HDR10 video to it"
+    },
+    "hdrToneMappingDescription": "Aseta tämä asetukseksi näytön suurimmalle kirkkaudelle, jolloin kirkkaammin masteroidut HDR10-sisällöt sävymääritetään Moonfin-sovelluksessa tämän kirkkauden mukaan sen sijaan, että näytön omat asetukset hoitaisivat sen. Vaatii tvOS:n tai macOS 26:n. Dolby Vision ja HDR10+ toistuvat tavalliseen tapaan. Apple TV:ssä Dolby Digital Plus -formaatissa oleva Dolby Atmos toistuu tavallisena surround-ääninä.",
+    "@hdrToneMappingDescription": {
+        "description": "Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names"
+    },
+    "binauralHeadphones": "Binauraalinen ääni kuulokkeille",
+    "@binauralHeadphones": {
+        "description": "iPhone, iPad and Apple TV audio setting that renders surround sound as 3D stereo for headphones"
+    },
+    "binauralHeadphonesSubtitle": "Toistaa 5.1- ja 7.1-äänen 3D-stereona, jolloin surround-ääni kuuluu ympäriltäsi. Toiminto on käytössä vain, kun kuulokkeet on kytketty.",
+    "@binauralHeadphonesSubtitle": {
+        "description": "Subtitle for the binaural headphones setting"
+    },
+    "loudnessTarget": "Äänenvoimakkuustavoite",
+    "@loudnessTarget": {
+        "description": "Apple player setting that raises quietly mixed movies and shows to a chosen loudness"
+    },
+    "loudnessTargetDescription": "Tasoittaa äänenvoimakkuuden hiljaisesti vaihtelevissa elokuvissa ja ohjelmissa tasaiseksi. Se ei koskaan vaimenna ääntä. Kun toiminto on päällä, Atmos toistaa äänen tavallisena surround-ääninä ja läpivienti on pois päältä.",
+    "@loudnessTargetDescription": {
+        "description": "Description for the loudness target setting. Atmos is a product name"
+    },
+    "loudnessTargetStandard": "Standard (-24 LUFS)",
+    "@loudnessTargetStandard": {
+        "description": "Loudness target option at broadcast loudness. LUFS is a unit and stays as is"
+    },
+    "loudnessTargetLoud": "Loud (-16 LUFS)",
+    "@loudnessTargetLoud": {
+        "description": "Louder loudness target option. LUFS is a unit and stays as is"
+    },
+    "rewindSubtitles": "Tekstitykset Short Rewind -sovelluksessa",
+    "@rewindSubtitles": {
+        "description": "Setting that turns subtitles on for a moment after the viewer goes back a few seconds"
+    },
+    "rewindSubtitlesDescription": "Kun tekstitys on pois päältä, 30 sekuntia tai vähemmän taaksepäin kelattaessa tekstitys näkyy, kunnes toisto saavuttaa kyseisen kohdan.",
+    "@rewindSubtitlesDescription": {
+        "description": "Description for the subtitles on short rewind setting"
+    },
+    "toggleMediaDescriptionVisibility": "Näytä tai piilota median kuvaus",
+    "@toggleMediaDescriptionVisibility": {
+        "description": "Setting title to open media description visibility subpage"
+    },
+    "toggleMediaDescriptionVisibilityDescription": "Piilota mediakuvaukset eri tietosivuilta.",
+    "@toggleMediaDescriptionVisibilityDescription": {
+        "description": "Setting description to open media description visibility subpage"
+    },
+    "mediaDescriptionVisibilityTitle": "Median kuvaus Näkyvyys",
+    "@mediaDescriptionVisibilityTitle": {
+        "description": "Title for the media description visibility settings screen"
+    },
+    "hideMediaDescriptionMovie": "Elokuvasivut",
+    "@hideMediaDescriptionMovie": {
+        "description": "Setting title to hide descriptions on movie pages"
+    },
+    "hideMediaDescriptionMovieSubtitle": "Piilota kuvaukset elokuvien tietosivuilta",
+    "@hideMediaDescriptionMovieSubtitle": {
+        "description": "Setting description to hide descriptions on movie detail pages"
+    },
+    "hideMediaDescriptionShow": "Näytä sivut",
+    "@hideMediaDescriptionShow": {
+        "description": "Setting title to hide descriptions on show pages"
+    },
+    "hideMediaDescriptionShowSubtitle": "Piilota kuvaukset TV-ohjelmien tietosivuilta",
+    "@hideMediaDescriptionShowSubtitle": {
+        "description": "Setting description to hide descriptions on TV show detail pages"
+    },
+    "hideMediaDescriptionSeason": "Kausisivut",
+    "@hideMediaDescriptionSeason": {
+        "description": "Setting title to hide descriptions on season pages"
+    },
+    "hideMediaDescriptionSeasonSubtitle": "Piilota kuvaukset kauden tietosivuilta",
+    "@hideMediaDescriptionSeasonSubtitle": {
+        "description": "Setting description to hide descriptions on season detail pages"
+    },
+    "hideMediaDescriptionEpisode": "Jaksojen sivut",
+    "@hideMediaDescriptionEpisode": {
+        "description": "Setting title to hide descriptions on episode pages"
+    },
+    "hideMediaDescriptionEpisodeSubtitle": "Piilota kuvaukset jaksojen tietosivuilta, kausien jaksoluetteloista ja soittimen valikosta",
+    "@hideMediaDescriptionEpisodeSubtitle": {
+        "description": "Setting description to hide descriptions on episode detail pages, season episode lists, and player drawer"
+    },
+    "hideMediaDescriptionBoxSet": "Kokoelmasivut",
+    "@hideMediaDescriptionBoxSet": {
+        "description": "Setting title to hide descriptions on collection pages"
+    },
+    "hideMediaDescriptionBoxSetSubtitle": "Piilota kuvaukset kokoelma- ja boksisarjasivuilta",
+    "@hideMediaDescriptionBoxSetSubtitle": {
+        "description": "Setting description to hide descriptions on collection and box set pages"
+    },
+    "siloPlaybackStoppedOnServer": "Toisto keskeytettiin Silo-palvelimella.",
+    "@siloPlaybackStoppedOnServer": {
+        "description": "Player message above the administrator's reason: an administrator stopped this playback on the Silo server"
     }
 }
