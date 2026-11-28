@@ -14042,6 +14042,24 @@
   "@audiobookSleepMinutes": {
     "placeholders": {"count": {"type": "int"}}
   },
+  "playerSleepEndOfItem": "End of this video",
+  "@playerSleepEndOfItem": {
+    "description": "Sleep timer choice in the video player that pauses just before the current episode or movie ends, so the next one doesn't autoplay"
+  },
+  "playerSleepEndOfNextItem": "End of next video",
+  "@playerSleepEndOfNextItem": {
+    "description": "Sleep timer choice in the video player that lets the current episode autoplay into the next one, then pauses just before that one ends"
+  },
+  "playerSleepCustomLess": "{count} min less",
+  "@playerSleepCustomLess": {
+    "description": "Button in the custom sleep timer picker that shortens the time",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "playerSleepCustomMore": "{count} min more",
+  "@playerSleepCustomMore": {
+    "description": "Button in the custom sleep timer picker that lengthens the time",
+    "placeholders": {"count": {"type": "int"}}
+  },
   "audiobookPlaybackSpeed": "Playback speed",
   "audiobookRemainingTime": "Remaining",
   "audiobookElapsedTime": "Elapsed",

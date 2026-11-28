@@ -18,6 +18,7 @@ import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
 import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/playback/sleep_timer_controller.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_player_screen.dart';
@@ -201,6 +202,7 @@ void main() {
     manager = _Manager(backend);
     GetIt.instance
       ..registerSingleton<PlaybackManager>(manager)
+      ..registerSingleton<SleepTimerController>(SleepTimerController(manager))
       ..registerSingleton<UserPreferences>(UserPreferences(store))
       ..registerSingleton<MediaServerClient>(client)
       ..registerSingleton<ScreensaverController>(_Screensaver())
@@ -405,6 +407,40 @@ void main() {
 
     expect(manager.stops, 1);
     expect(topLocation(router), Destinations.liveTvGuide);
+  });
+
+  testWidgets('sleep timer offers lengths but no end on a channel', (
+    tester,
+  ) async {
+    await pumpPlayer(tester);
+    final sleepButton = find.byTooltip(l10n.audiobookSleepTimer);
+    expect(sleepButton, findsOneWidget);
+    expect(find.byIcon(Icons.bedtime_outlined), findsOneWidget);
+
+    await tester.tap(sleepButton);
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text(l10n.playerSleepEndOfItem), findsNothing);
+    expect(find.text(l10n.audiobookSleepCustom), findsOneWidget);
+
+    await tester.tap(find.text(l10n.audiobookSleepMinutes(30)));
+    await tester.pump(const Duration(milliseconds: 500));
+    final sleep = GetIt.instance<SleepTimerController>();
+    expect(sleep.mode, SleepTimerMode.duration);
+    expect(sleep.totalRequested, const Duration(minutes: 30));
+    expect(find.byIcon(Icons.bedtime), findsOneWidget);
+    sleep.cancel();
+  });
+
+  testWidgets('a sleep timer running out closes the player', (tester) async {
+    final router = await pumpRoutedPlayer(tester, Destinations.home);
+    GetIt.instance<SleepTimerController>().startDuration(
+      const Duration(seconds: 1),
+    );
+    manager.state.setPlaying(true);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(topLocation(router), Destinations.home);
   });
 
   testWidgets('Audio with one track or none says so', (tester) async {

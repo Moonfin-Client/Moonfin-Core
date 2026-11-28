@@ -28,6 +28,7 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/platform/pip_service.dart';
 import 'package:moonfin/playback/aether_backend.dart';
 import 'package:moonfin/playback/playback_lifecycle_handler.dart';
+import 'package:moonfin/playback/sleep_timer_controller.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/playback/video_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
@@ -112,6 +113,9 @@ void main() {
     manager.state.setPlaying(true);
     manager.state.setDuration(const Duration(minutes: 30));
     GetIt.instance.registerSingleton<PlaybackManager>(manager);
+    GetIt.instance.registerSingleton<SleepTimerController>(
+      SleepTimerController(manager),
+    );
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
     GetIt.instance.registerSingleton<UserRepository>(UserRepository());
     GetIt.instance.registerSingleton<MediaServerClient>(_Client());

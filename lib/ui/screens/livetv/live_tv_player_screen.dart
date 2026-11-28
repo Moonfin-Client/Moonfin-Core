@@ -20,6 +20,7 @@ import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
+import '../../../playback/sleep_timer_controller.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/live_tv_recording_state.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
@@ -44,6 +45,7 @@ import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
+import '../../widgets/playback/sleep_timer_menu.dart';
 import '../../widgets/player_volume_control.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
@@ -83,6 +85,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _client = GetIt.instance<MediaServerClient>();
   final _prefs = GetIt.instance<UserPreferences>();
   final _screensaverController = GetIt.instance<ScreensaverController>();
+  final _sleep = GetIt.instance<SleepTimerController>();
+  late bool _sleepActive = _sleep.isActive;
+  StreamSubscription<void>? _sleepExpirySub;
   SubtitleStyle? _lastSubtitleStyle;
 
   MediaKitPlayerBackend? get _activeMediaKitBackend {
@@ -215,6 +220,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
   final _tvRecordFocus = FocusNode(debugLabel: 'LiveTvRecord');
   final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
+  final _tvSleepFocus = FocusNode(debugLabel: 'LiveTvSleepTimer');
   final _tvFavoriteFocus = FocusNode(debugLabel: 'LiveTvFavorite');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
   final _tvSkipBackFocus = FocusNode(debugLabel: 'LiveTvSkipBack');
@@ -265,6 +271,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
     _applySubtitleStyle();
     _prefs.addListener(_applySubtitleStyle);
+    _sleep.addListener(_onSleepTimerChanged);
+    _sleepExpirySub = _sleep.onExpired.listen((_) => _onSleepTimerExpired());
     _backendSub = _manager.backendChangedStream.listen((backend) {
       // A new backend starts at its own default, so it gets the level back.
       if (_usesPlayerVolume) unawaited(backend.setVolume(_playerVolume));
@@ -295,6 +303,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.addListener(_onControlFocusChanged);
     _tvRecordFocus.addListener(_onControlFocusChanged);
     _tvBitrateFocus.addListener(_onControlFocusChanged);
+    _tvSleepFocus.addListener(_onControlFocusChanged);
     _tvFavoriteFocus.addListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.addListener(_onControlFocusChanged);
     _tvSkipBackFocus.addListener(_onControlFocusChanged);
@@ -346,6 +355,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _liveRecoveryStatusSub?.cancel();
     _retryFocus.dispose();
     _prefs.removeListener(_applySubtitleStyle);
+    _sleep.removeListener(_onSleepTimerChanged);
+    _sleepExpirySub?.cancel();
     FocusManager.instance.removeListener(_onGlobalFocusChanged);
     _tracksChangedSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
@@ -384,6 +395,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.removeListener(_onControlFocusChanged);
     _tvRecordFocus.removeListener(_onControlFocusChanged);
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
+    _tvSleepFocus.removeListener(_onControlFocusChanged);
     _tvFavoriteFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _tvSkipBackFocus.removeListener(_onControlFocusChanged);
@@ -397,6 +409,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvSubtitleFocus.dispose();
     _tvRecordFocus.dispose();
     _tvBitrateFocus.dispose();
+    _tvSleepFocus.dispose();
     _tvFavoriteFocus.dispose();
     _tvPlaybackInfoFocus.dispose();
     _tvSkipBackFocus.dispose();
@@ -1285,6 +1298,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (_streamsOfType('Audio').length > 1) _tvAudioFocus,
     if (_hasSubtitleChoices) _tvSubtitleFocus,
     _tvBitrateFocus,
+    _tvSleepFocus,
     if (_canRecordCurrentProgram) _tvRecordFocus,
     _tvFavoriteFocus,
     _tvPlaybackInfoFocus,
@@ -1775,6 +1789,36 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       }
       final index = streams[streamPosition]['Index'] as int?;
       if (index != null) unawaited(_manager.changeSubtitleTrack(index));
+    }());
+    _showInfo();
+  }
+
+  /// Rebuilds only when the timer starts or stops, which is all the button
+  /// shows. The countdown ticks every second and the remaining time is read
+  /// when the menu opens.
+  void _onSleepTimerChanged() {
+    if (!mounted || _sleep.isActive == _sleepActive) return;
+    setState(() => _sleepActive = _sleep.isActive);
+  }
+
+  /// Closes the player rather than leaving a paused channel open, which would
+  /// keep the server's tuner held for nobody.
+  void _onSleepTimerExpired() {
+    if (!mounted) return;
+    // A menu or the guide left open over the player would take the exit's
+    // pop instead of the player.
+    final playerRoute = ModalRoute.of(context);
+    if (playerRoute != null) {
+      Navigator.of(context).popUntil((route) => route == playerRoute);
+    }
+    unawaited(_exitPlayback());
+  }
+
+  /// A channel has no end, so the menu offers lengths only.
+  void _showSleepTimerMenu() {
+    unawaited(() async {
+      await showPlayerSleepTimerMenu(context, controller: _sleep);
+      if (mounted) _suppressBackNavigation();
     }());
     _showInfo();
   }
@@ -2743,6 +2787,14 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             icon: Icons.video_settings_outlined,
             tooltip: l10n.bitrate,
             onPressed: _showBitrateSelector,
+          ),
+          const SizedBox(width: AppSpacing.spaceSm),
+          _buildOverlayControlButton(
+            focusNode: PlatformDetection.isTV ? _tvSleepFocus : null,
+            icon: _sleepActive ? Icons.bedtime : Icons.bedtime_outlined,
+            iconColor: _sleepActive ? AppColorScheme.accent : Colors.white,
+            tooltip: l10n.audiobookSleepTimer,
+            onPressed: _showSleepTimerMenu,
           ),
           if (_canRecordCurrentProgram) ...[
             const SizedBox(width: AppSpacing.spaceSm),
