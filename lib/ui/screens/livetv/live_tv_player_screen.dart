@@ -12,6 +12,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 import 'package:volume_controller/volume_controller.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../../../data/services/log_service.dart';
 import '../../../data/services/user_data_sync.dart';
@@ -32,6 +33,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/fullscreen_helper.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/platform_detection.dart';
@@ -69,7 +71,7 @@ class LiveTvPlayerScreen extends StatefulWidget {
 }
 
 class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
-    with WidgetsBindingObserver, ImmersiveSystemUi {
+    with WidgetsBindingObserver, ImmersiveSystemUi, WindowListener {
   late List<GuideChannel> _syncedChannels;
   final _manager = GetIt.instance<PlaybackManager>();
   // media_kit isn't registered on platforms that run a different backend, so
@@ -117,6 +119,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   int _carouselPriorControlIndex = 0;
   DateTime? _suppressBackUntil;
   bool _forcedLandscape = true;
+  bool _isFullscreen = false;
+  bool? _wasFullscreenOnEntry;
 
   GuideProgram? _currentProgram;
   LiveTvRecordingState? _recordingState;
@@ -255,6 +259,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
     _currentIndex = widget.startIndex;
     _applyPlayerDisplayMode();
+    if (PlatformDetection.useDesktopUi) {
+      unawaited(_syncFullscreen());
+      if (PlatformDetection.isDesktop) windowManager.addListener(this);
+    }
     _applySubtitleStyle();
     _prefs.addListener(_applySubtitleStyle);
     _backendSub = _manager.backendChangedStream.listen((backend) {
@@ -398,6 +406,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       _manager.stop(userInitiated: false);
     }
     unawaited(_releasePlayerDisplayMode());
+    if (PlatformDetection.isDesktop) windowManager.removeListener(this);
+    // Done here and not in _releasePlayerDisplayMode, since the guide calls
+    // that too and should stay fullscreen.
+    if (_wasFullscreenOnEntry == false) {
+      unawaited(FullscreenHelper.setFullscreen(false));
+    }
     super.dispose();
   }
 
@@ -1540,6 +1554,27 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     setState(() => _forcedLandscape = !_forcedLandscape);
     _applyPlayerDisplayMode();
   }
+
+  Future<void> _toggleFullscreen() async {
+    await FullscreenHelper.toggle();
+    await _syncFullscreen();
+  }
+
+  Future<void> _syncFullscreen() async {
+    try {
+      final full = await FullscreenHelper.isFullscreen();
+      _wasFullscreenOnEntry ??= full;
+      if (mounted) setState(() => _isFullscreen = full);
+    } catch (_) {}
+  }
+
+  // F11, Alt+Enter, a remote's fullscreen command and the title bar change
+  // fullscreen without the button.
+  @override
+  void onWindowEnterFullScreen() => unawaited(_syncFullscreen());
+
+  @override
+  void onWindowLeaveFullScreen() => unawaited(_syncFullscreen());
 
   void _applyPlayerDisplayMode() {
     setImmersive(true);
@@ -2790,6 +2825,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             )
           else
             const Spacer(),
+          if (PlatformDetection.useDesktopUi) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              icon: _isFullscreen
+                  ? Icons.fullscreen_exit_rounded
+                  : Icons.fullscreen_rounded,
+              tooltip: _isFullscreen
+                  ? l10n.playerTooltipExitFullscreen
+                  : l10n.playerTooltipEnterFullscreen,
+              onPressed: () => unawaited(_toggleFullscreen()),
+            ),
+          ],
         ],
       ),
     );
