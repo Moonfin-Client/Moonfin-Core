@@ -2702,6 +2702,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             // That airing is over. Single-episode recording no longer applies.
             if (!isEnded)
               adaptiveDialogAction(
+                focusRingColor: AppColorScheme.accent,
                 autofocus: isRecordingNow,
                 focusNode: isRecordingNow ? defaultActionFocusNode : null,
                 onPressed: () async {
@@ -2764,6 +2765,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             if (hasSeriesTimer)
               adaptiveDialogAction(
+                focusRingColor: AppColorScheme.accent,
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   final seriesTimerId = program.rawData['SeriesTimerId']
@@ -2802,6 +2804,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             if (program.isSeries)
               adaptiveDialogAction(
+                focusRingColor: AppColorScheme.accent,
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   dialogActionInProgress = true;
@@ -2856,6 +2859,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                 ),
               ),
             adaptiveDialogAction(
+              focusRingColor: AppColorScheme.accent,
               onPressed: channel == null
                   ? null
                   : () async {
@@ -2893,6 +2897,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             ),
             adaptiveDialogAction(
+              focusRingColor: AppColorScheme.accent,
               autofocus: !isRecordingNow,
               focusNode: isRecordingNow ? null : defaultActionFocusNode,
               onPressed: () {
@@ -2907,6 +2912,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
               ),
             ),
             adaptiveDialogAction(
+              focusRingColor: AppColorScheme.accent,
               onPressed: () {
                 if (dialogActionInProgress) return;
                 dialogActionInProgress = true;
