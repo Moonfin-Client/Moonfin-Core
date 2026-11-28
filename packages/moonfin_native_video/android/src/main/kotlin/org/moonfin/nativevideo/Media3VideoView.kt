@@ -2925,8 +2925,8 @@ class Media3VideoView(
             passthroughMode,
             passthroughCodecs,
         )
-        iecOutputProvider = if (passthroughOutput == "iec" && Build.VERSION.SDK_INT >= 24) {
-            Iec61937AudioOutputProvider(context)
+        iecOutputProvider = if (passthroughOutput != "platform" && Build.VERSION.SDK_INT >= 24) {
+            Iec61937AudioOutputProvider(context, trueHdOnly = passthroughOutput == "iec-truehd")
         } else {
             null
         }
