@@ -544,20 +544,39 @@ class SessionRepository {
       final canManageLiveTv =
           serverUser.policy?.enableLiveTvManagement ?? false;
 
+      // The avatar URLs carry the tag, so a picture changed elsewhere (the
+      // server's web app, another device) shows. Plex reads no tag here. The
+      // client is shared by the server's users, so after a switch the reply
+      // can be another user's: the tag is kept then.
+      final imageTag =
+          client.serverType == ServerType.plex || serverUser.id != user.id
+          ? user.imageTag
+          : serverUser.primaryImageTag;
+      final imageTagChanged = (imageTag ?? '') != (user.imageTag ?? '');
+
       if (isAdmin != user.isAdministrator ||
           canDownload != user.canDownload ||
           canManageSubtitles != user.canManageSubtitles ||
           canManageCollections != user.canManageCollections ||
-          canManageLiveTv != user.canManageLiveTv) {
-        final updatedUser = user.copyWith(
+          canManageLiveTv != user.canManageLiveTv ||
+          imageTagChanged) {
+        // From the stored copy: a Silo profile's last-used time was set
+        // after [user] was read.
+        final stored = _authStore.getUser(serverId, user.id) ?? user;
+        final updatedUser = stored.copyWith(
           isAdministrator: isAdmin,
           canDownload: canDownload,
           canManageSubtitles: canManageSubtitles,
           canManageCollections: canManageCollections,
           canManageLiveTv: canManageLiveTv,
+          imageTag: imageTag,
+          clearImageTag: imageTag == null || imageTag.isEmpty,
         );
         await _authStore.putUser(updatedUser);
-        _userRepository.setCurrentUser(updatedUser);
+        // A switch during the save leaves another user active.
+        if (_activeServerId == serverId && _activeUserId == user.id) {
+          _userRepository.setCurrentUser(updatedUser);
+        }
       }
 
       // init language prefs if not already set
@@ -771,11 +790,13 @@ class SessionRepository {
 
   bool _hasOtherSignedInUser(String? serverId, String? userId) =>
       _authStore.getServers().any(
-        (server) => _authStore.getUsers(server.id).any(
-          (u) =>
-              u.accessToken.isNotEmpty &&
-              !(u.serverId == serverId && u.id == userId),
-        ),
+        (server) => _authStore
+            .getUsers(server.id)
+            .any(
+              (u) =>
+                  u.accessToken.isNotEmpty &&
+                  !(u.serverId == serverId && u.id == userId),
+            ),
       );
 
   /// The other stored profiles of [userId]'s Silo account on [serverId].
@@ -1003,9 +1024,7 @@ class SessionRepository {
     _pluginSyncService.resetState();
     ItemMembershipService.instance.clearCache();
     if (GetIt.instance.isRegistered<SiloWatchPartyManager>()) {
-      GetIt.instance<SiloWatchPartyManager>().onSessionChanged(
-        signedOut: true,
-      );
+      GetIt.instance<SiloWatchPartyManager>().onSessionChanged(signedOut: true);
     }
     if (GetIt.instance.isRegistered<AchievementsService>()) {
       GetIt.instance<AchievementsService>().reset();
@@ -1101,7 +1120,9 @@ class SessionRepository {
         GetIt.instance<MoonfinAudioHandler>().notifyChildrenChanged();
       }
       if (GetIt.instance.isRegistered<CarPlayService>()) {
-        GetIt.instance<CarPlayService>().notifySignInChanged(signedIn: signedIn);
+        GetIt.instance<CarPlayService>().notifySignInChanged(
+          signedIn: signedIn,
+        );
       }
     } catch (_) {}
   }
@@ -1545,9 +1566,7 @@ class SessionRepository {
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    _router.push(
-      isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
-    );
+    _router.push(isAudio ? Destinations.audioPlayer : Destinations.videoPlayer);
     return true;
   }
 
@@ -1783,8 +1802,7 @@ class SessionRepository {
           // Another controller's text has no Search to land in yet, so it
           // opens one. Edits from a phone whose input session ended stay
           // dropped.
-          final opened = RemoteSearchSession(null)
-            ..receive(message.arguments);
+          final opened = RemoteSearchSession(null)..receive(message.arguments);
           await _openRemoteSearch(manager, opened);
         }
       default:

@@ -115,21 +115,40 @@ class SiloImageRegistry {
 
   /// Records [url] as image [index] of [type] for [itemId], and returns its
   /// tag. Returns null, and records nothing, when [url] is null or blank.
+  ///
+  /// [version] is for a picture Silo replaces at the same path (a profile's
+  /// uploaded avatar): it goes into the tag and, as a `#v=` fragment the
+  /// server never sees, into the URL, so caches keyed by either load the new
+  /// picture.
   String? register(
     String itemId,
     SiloImageType type,
     String? url, {
     int index = 0,
+    String? version,
   }) {
-    final resolved = resolveSiloUrl(url, _baseUrl());
+    var resolved = resolveSiloUrl(url, _baseUrl());
     if (resolved == null) return null;
     // Tagged as Silo sent it, before the base URL goes in front: the same
     // picture reached at a LAN and a public address keeps one tag.
-    final tag = siloImageTag(url!.trim());
+    var tag = siloImageTag(url!.trim());
+    if (version != null && version.isNotEmpty) {
+      tag = siloImageTag('$tag@$version');
+      // A URL Dart can't parse keeps its old form: the picture still loads,
+      // only without the version.
+      resolved =
+          Uri.tryParse(resolved)?.replace(fragment: 'v=$version').toString() ??
+          resolved;
+    }
     _images[_key(itemId, type, index)] = _SiloImage(resolved, tag);
     _byTag[tag] = resolved;
     return tag;
   }
+
+  /// Drops image [index] of [type] for [itemId], for an image Silo no longer
+  /// has (a profile whose avatar was removed).
+  void forget(String itemId, SiloImageType type, {int index = 0}) =>
+      _images.remove(_key(itemId, type, index));
 
   /// The loadable URL of image [index] of [type] for [itemId], or null when
   /// none was registered.

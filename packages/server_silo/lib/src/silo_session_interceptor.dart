@@ -91,8 +91,11 @@ class SiloSessionInterceptor extends Interceptor {
 
     try {
       // Replay a copy: the failed request stays exactly as it was sent, and
-      // the header interceptor stamps the new bearer token on the copy.
+      // the header interceptor stamps the new bearer token on the copy. A
+      // multipart body can be sent only once, so the copy gets a clone.
+      final data = options.data;
       final replay = options.copyWith(
+        data: data is FormData ? data.clone() : data,
         headers: Map.of(options.headers)..remove('Authorization'),
         extra: {...options.extra, _retriedExtra: true},
       );

@@ -37,4 +37,19 @@ void main() {
       isNull,
     );
   });
+
+  test('an avatar replaced at the same path keys by its version', () {
+    const avatar =
+        'https://silo.example/api/v2/artwork/profile-avatars/1/p1/w256.webp';
+    expect(
+      siloImageCacheKey('$avatar?exp=1&sig=a#v=2026-11-24T19:54:29.000Z'),
+      siloImageCacheKey('$avatar?exp=2&sig=b#v=2026-11-24T19:54:29.000Z'),
+    );
+    expect(
+      siloImageCacheKey('$avatar?exp=1&sig=a#v=2026-11-24T19:54:29.000Z'),
+      isNot(
+        siloImageCacheKey('$avatar?exp=1&sig=a#v=2026-11-24T20:00:00.000Z'),
+      ),
+    );
+  });
 }

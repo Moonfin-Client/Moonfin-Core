@@ -44,6 +44,24 @@ class OfflineUsersApi implements UsersApi {
     throw offlineUnavailable('/Users/$userId');
   }
 
+  /// Nothing can be changed on a server that isn't there.
+  @override
+  Future<UserImageUpload?> userImageUpload(String userId) async => null;
+
+  @override
+  Future<void> uploadUserImage(
+    String userId, {
+    required List<int> bytes,
+    required String contentType,
+  }) async {
+    throw offlineUnavailable('/Users/$userId/Images/Primary');
+  }
+
+  @override
+  Future<void> deleteUserImage(String userId) async {
+    throw offlineUnavailable('/Users/$userId/Images/Primary');
+  }
+
   // Answering null would read as a server that can't say, and lose the
   // window for the session. Failing keeps the last answer.
   @override

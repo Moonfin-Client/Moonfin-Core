@@ -130,6 +130,53 @@ void main() {
     });
   });
 
+  group('profile picture', () {
+    test('an admin may change it even without preference access', () async {
+      final server = _FakeServer(200, {
+        'Policy': {
+          'IsAdministrator': true,
+          'EnableUserPreferenceAccess': false,
+        },
+      });
+      expect(
+        await JellyfinUsersApi(_dio(server)).userImageUpload('u1'),
+        same(UserImageUpload.jellyfinAndEmby),
+      );
+      expect(server.requests.single.path, '/Users/u1');
+    });
+
+    test('a user without preference access may not', () async {
+      final server = _FakeServer(200, {
+        'Policy': {'EnableUserPreferenceAccess': false},
+      });
+      expect(
+        await JellyfinUsersApi(_dio(server)).userImageUpload('u1'),
+        isNull,
+      );
+    });
+
+    test('an upload posts base64 to the user image', () async {
+      final server = _FakeServer(204);
+      await JellyfinUsersApi(
+        _dio(server),
+      ).uploadUserImage('u1', bytes: [1, 2, 3], contentType: 'image/webp');
+
+      final request = server.requests.single;
+      expect(request.method, 'POST');
+      expect(request.path, '/Users/u1/Images/Primary');
+      expect(request.data, 'AQID');
+      expect(request.contentType, 'image/webp');
+    });
+
+    test('remove deletes the user image', () async {
+      final server = _FakeServer(204);
+      await JellyfinUsersApi(_dio(server)).deleteUserImage('u1');
+
+      expect(server.requests.single.method, 'DELETE');
+      expect(server.requests.single.path, '/Users/u1/Images/Primary');
+    });
+  });
+
   group('getAccessWindow', () {
     test('reads the plugin window', () async {
       final server = _FakeServer(200, {

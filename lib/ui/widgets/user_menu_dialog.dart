@@ -18,6 +18,7 @@ import '../../auth/store/authentication_store.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
 import '../../data/services/pin_guard.dart';
+import '../../data/services/profile_picture_service.dart';
 import '../../data/services/server_pin_service.dart';
 import '../../util/platform_detection.dart';
 import '../../util/signed_in_server_features.dart';
@@ -32,8 +33,12 @@ import 'pin_entry_dialog.dart';
 import 'remote_control_dialog.dart';
 import 'settings/settings_panel.dart';
 import 'profile_carousel.dart';
+import 'focus/menu_action_row.dart';
+import 'focus/focus_theme.dart';
 
 enum _AccountDialogAction { quickConnect }
+
+enum _PictureAction { change, remove }
 
 void showUserMenu(BuildContext context) {
   final shown = PlatformDetection.useMobileUi
@@ -86,6 +91,20 @@ class _AccountDialogState extends State<_AccountDialog> {
 
   bool _busy = false;
   final _carouselFocus = FocusNode();
+
+  /// Changes the signed-in profile's picture, with what its server takes;
+  /// both null when it can't be changed here (TV, Plex, not allowed).
+  ProfilePictureService? _picture;
+  UserImageUpload? _pictureRules;
+
+  /// A picture change is under way, from the picker to the refresh: other
+  /// actions wait, so the change can't land on a profile switched to
+  /// meanwhile.
+  bool _pictureBusy = false;
+
+  /// The picture is being sent: the avatar shows a spinner.
+  bool _pictureSending = false;
+  String? _pictureError;
   int _selected = 0;
 
   String? get _activeServerId => _sessionRepo.activeServerId;
@@ -95,6 +114,116 @@ class _AccountDialogState extends State<_AccountDialog> {
   void initState() {
     super.initState();
     _loadAccounts();
+    _loadPictureRules();
+  }
+
+  /// TVs have no file picker, so the picture is changed on a phone or
+  /// computer.
+  Future<void> _loadPictureRules() async {
+    final serverId = _activeServerId;
+    final userId = _activeUserId;
+    if (PlatformDetection.isTV ||
+        serverId == null ||
+        userId == null ||
+        !GetIt.instance.isRegistered<MediaServerClient>() ||
+        !GetIt.instance.isRegistered<UserRepository>()) {
+      return;
+    }
+    final service = ProfilePictureService(
+      GetIt.instance<MediaServerClient>(),
+      _authStore,
+      GetIt.instance<UserRepository>(),
+      serverId: serverId,
+      userId: userId,
+    );
+    final UserImageUpload? rules;
+    try {
+      rules = await service.rules();
+    } catch (e) {
+      // Unreadable just now: what was read before (if anything) stands.
+      ServerLog.network(
+        'Profile picture support unreadable',
+        level: ServerLogLevel.warning,
+        error: e,
+      );
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _picture = rules == null ? null : service;
+      _pictureRules = rules;
+    });
+  }
+
+  Future<void> _openPictureMenu(Offset position) async {
+    final service = _picture;
+    final rules = _pictureRules;
+    final account = _activeAccount;
+    if (service == null || rules == null || account == null) return;
+    if (_busy || _pictureBusy) return;
+    final hasPicture = account.user.imageTag?.isNotEmpty ?? false;
+    final action = await OverlaySheetController.show<_PictureAction>(
+      context,
+      anchor: PlatformDetection.useMobileUi ? null : position,
+      builder: (_) => _PictureMenu(canRemove: hasPicture && rules.removable),
+    );
+    if (action == null || !mounted || _busy || _pictureBusy) return;
+
+    setState(() {
+      _pictureError = null;
+      _pictureBusy = true;
+    });
+    // Busy until the new picture and what it allows (Silo removes only an
+    // upload) are read back, so the menu offers what fits it.
+    try {
+      if (!await _sendPicture(service, rules, action, account)) return;
+      if (mounted) await _loadAccounts();
+      if (mounted) await _loadPictureRules();
+    } finally {
+      if (mounted) setState(() => _pictureBusy = false);
+    }
+  }
+
+  /// Sends the change. False when nothing was sent (no file picked) or it
+  /// failed, which is shown under the profile.
+  Future<bool> _sendPicture(
+    ProfilePictureService service,
+    UserImageUpload rules,
+    _PictureAction action,
+    _StoredAccount account,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      if (action == _PictureAction.change) {
+        final file = await service.pick(rules);
+        if (file == null || !mounted) return false;
+        setState(() => _pictureSending = true);
+        await service.upload(file);
+      } else {
+        setState(() => _pictureSending = true);
+        await service.remove();
+      }
+      return true;
+    } on ProfilePictureUnsupported {
+      if (mounted) {
+        setState(
+          () => _pictureError = l10n.profilePictureUnsupported(
+            account.server.serverType.productName,
+          ),
+        );
+      }
+      return false;
+    } catch (e) {
+      ServerLog.network(
+        'Profile picture change failed',
+        level: ServerLogLevel.error,
+        error: e,
+      );
+      if (mounted) setState(() => _pictureError = l10n.profilePictureFailed);
+      return false;
+    } finally {
+      if (mounted) setState(() => _pictureSending = false);
+    }
   }
 
   Future<void> _loadAccounts() async {
@@ -157,7 +286,7 @@ class _AccountDialogState extends State<_AccountDialog> {
   }
 
   Future<void> _switchAccount(_StoredAccount account) async {
-    if (_busy) return;
+    if (_busy || _pictureBusy) return;
 
     if (_isActive(account)) {
       if (mounted) Navigator.of(context).pop();
@@ -290,6 +419,8 @@ class _AccountDialogState extends State<_AccountDialog> {
         : account.user.siloHasPin
         ? ProfileBadge.pin
         : ProfileBadge.none,
+    canEditPicture: _isActive(account) && _pictureRules != null,
+    pictureBusy: _isActive(account) && _pictureSending,
   );
 
   Widget _buildAccountSubtitle(_StoredAccount account) {
@@ -306,6 +437,14 @@ class _AccountDialogState extends State<_AccountDialog> {
             l10n.accountActive,
             color: Theme.of(context).colorScheme.primary,
           ),
+          if (_pictureError case final error?) ...[
+            const SizedBox(height: 4),
+            ProfileStatusLine(
+              error,
+              icon: Icons.error_outline,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ],
         ] else if (account.user.siloHasPin) ...[
           const SizedBox(height: 4),
           ProfileStatusLine(l10n.pinRequired, icon: Icons.lock_outline),
@@ -334,7 +473,7 @@ class _AccountDialogState extends State<_AccountDialog> {
       icon: icon,
       danger: danger,
       compact: compact,
-      onPressed: _busy ? null : onPressed,
+      onPressed: _busy || _pictureBusy ? null : onPressed,
       focusColor: danger ? _danger : focusColor,
     );
 
@@ -429,6 +568,9 @@ class _AccountDialogState extends State<_AccountDialog> {
                       focusNode: _carouselFocus,
                       onSelected: (index) => setState(() => _selected = index),
                       onActivate: (index) => _switchAccount(_accounts[index]),
+                      onEditPicture: (_, position) =>
+                          _openPictureMenu(position),
+                      editPictureLabel: l10n.profilePictureEditHint,
                       subtitle: _accounts.isEmpty
                           ? null
                           : _buildAccountSubtitle(_accounts[_selected]),
@@ -491,6 +633,8 @@ class _AccountDialogState extends State<_AccountDialog> {
                 onNext: _selected < _accounts.length - 1
                     ? () => setState(() => _selected++)
                     : null,
+                onEditPicture: _openPictureMenu,
+                editPictureLabel: l10n.profilePictureEditHint,
               ),
               const SizedBox(height: 24),
             ],
@@ -498,7 +642,7 @@ class _AccountDialogState extends State<_AccountDialog> {
               entries: entries,
               selected: _selected,
               onSelected: (index) => setState(() => _selected = index),
-              onAdd: _busy ? null : _addUser,
+              onAdd: _busy || _pictureBusy ? null : _addUser,
               addLabel: l10n.addUser,
             ),
             if (selected != null) ...[
@@ -507,7 +651,9 @@ class _AccountDialogState extends State<_AccountDialog> {
                 label: _isActive(selected)
                     ? l10n.continueAsUser(selected.user.name)
                     : l10n.switchToUser(selected.user.name),
-                onPressed: _busy ? null : () => _switchAccount(selected),
+                onPressed: _busy || _pictureBusy
+                    ? null
+                    : () => _switchAccount(selected),
               ),
             ],
             const SizedBox(height: 16),
@@ -910,6 +1056,69 @@ class _ActionButtonState extends State<_ActionButton> {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Change or remove the signed-in profile's picture.
+class _PictureMenu extends StatelessWidget {
+  const _PictureMenu({required this.canRemove});
+
+  final bool canRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    Widget row(_PictureAction action, IconData icon, String label) =>
+        MenuActionRow(
+          icon: icon,
+          label: label,
+          autofocus: action == _PictureAction.change,
+          color: action == _PictureAction.remove
+              ? theme.colorScheme.error
+              : null,
+          onPressed: () => OverlaySheetController.closeAdaptive<_PictureAction>(
+            context,
+            result: action,
+          ),
+        );
+    return Material(
+      color: Colors.transparent,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 300),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: AppRadius.circular(FocusTheme.defaultBorderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: AppColorScheme.scrim.withValues(alpha: 0.4),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              row(
+                _PictureAction.change,
+                Icons.photo_camera_outlined,
+                l10n.profilePictureChange,
+              ),
+              if (canRemove)
+                row(
+                  _PictureAction.remove,
+                  Icons.delete_outline,
+                  l10n.profilePictureRemove,
+                ),
+            ],
           ),
         ),
       ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
@@ -43,5 +45,36 @@ class EmbyUsersApi implements UsersApi {
     final userId = _getUserId();
     await _dio.post('/Users/$userId/Configuration', data: config.toJson());
     _onConfigurationUpdated?.call();
+  }
+
+  /// Emby lets a user change their own picture unless their policy turns
+  /// off preference access (admins always can).
+  @override
+  Future<UserImageUpload?> userImageUpload(String userId) async {
+    final response = await _dio.get('/Users/$userId');
+    final policy = asJsonMap(asJsonMap(response.data)?['Policy']) ?? const {};
+    final allowed =
+        policy['IsAdministrator'] == true ||
+        policy['EnableUserPreferenceAccess'] != false;
+    return allowed ? UserImageUpload.jellyfinAndEmby : null;
+  }
+
+  /// The body is the file in base64, as Emby reads it.
+  @override
+  Future<void> uploadUserImage(
+    String userId, {
+    required List<int> bytes,
+    required String contentType,
+  }) async {
+    await _dio.post(
+      '/Users/$userId/Images/Primary',
+      data: base64Encode(bytes),
+      options: Options(contentType: contentType),
+    );
+  }
+
+  @override
+  Future<void> deleteUserImage(String userId) async {
+    await _dio.delete('/Users/$userId/Images/Primary');
   }
 }

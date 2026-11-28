@@ -126,6 +126,7 @@ class PrivateUser extends User {
     bool? canManageLiveTv,
     String? siloAccountId,
     bool? siloHasPin,
+    bool clearImageTag = false,
   }) {
     return PrivateUser(
       id: id ?? this.id,
@@ -134,7 +135,7 @@ class PrivateUser extends User {
       accessToken: accessToken ?? this.accessToken,
       plexToken: plexToken ?? this.plexToken,
       lastUsed: lastUsed ?? this.lastUsed,
-      imageTag: imageTag ?? this.imageTag,
+      imageTag: clearImageTag ? null : imageTag ?? this.imageTag,
       isAdministrator: isAdministrator ?? this.isAdministrator,
       canDownload: canDownload ?? this.canDownload,
       canManageSubtitles: canManageSubtitles ?? this.canManageSubtitles,

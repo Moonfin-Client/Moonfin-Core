@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -12,12 +15,21 @@ class ProfileEntry {
     required this.name,
     this.avatarUrl,
     this.badge = ProfileBadge.none,
+    this.canEditPicture = false,
+    this.pictureBusy = false,
   });
 
   final String id;
   final String name;
   final String? avatarUrl;
   final ProfileBadge badge;
+
+  /// Whether the picture can be changed from here (the signed-in profile, on
+  /// a server that lets it).
+  final bool canEditPicture;
+
+  /// A new picture is being sent: the avatar shows a spinner.
+  final bool pictureBusy;
 }
 
 const _initialsColors = [
@@ -101,6 +113,23 @@ class ProfileAvatar extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (entry.pictureBusy)
+                  Positioned.fill(
+                    child: ClipOval(
+                      child: ColoredBox(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        child: Center(
+                          child: SizedBox.square(
+                            dimension: size * 0.3,
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 if (ringColor != null)
                   Positioned(
                     left: -2 * ring,
@@ -198,6 +227,46 @@ class ProfileStatusLine extends StatelessWidget {
   }
 }
 
+/// The round camera button shown on the signed-in profile's avatar while the
+/// pointer is over it. It reports where it was pressed, for the menu.
+class _EditPictureButton extends StatelessWidget {
+  const _EditPictureButton({required this.label, required this.onPressed});
+
+  final String label;
+  final ValueChanged<Offset> onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Tooltip(
+        message: label,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTapUp: (details) => onPressed(details.globalPosition),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF1C2238),
+                border: Border.all(color: _badgeCutout, width: 3),
+              ),
+              child: const Icon(
+                Icons.photo_camera_outlined,
+                size: 22,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The TV and desktop account picker: the selected profile big in the
 /// middle, a fainter neighbor either side, and as many small, faint ones past
 /// those as fit the width.
@@ -211,6 +280,8 @@ class ProfileCarousel extends StatefulWidget {
     required this.selected,
     required this.onSelected,
     required this.onActivate,
+    this.onEditPicture,
+    this.editPictureLabel = '',
     this.subtitle,
     this.focusNode,
     this.autofocus = false,
@@ -220,6 +291,14 @@ class ProfileCarousel extends StatefulWidget {
   final int selected;
   final ValueChanged<int> onSelected;
   final ValueChanged<int> onActivate;
+
+  /// Opens the picture menu for the middle profile when its entry
+  /// [ProfileEntry.canEditPicture]: from the camera button that shows while
+  /// the pointer is over it, a right click or a long press, at that point.
+  final void Function(int index, Offset position)? onEditPicture;
+
+  /// The camera button's label.
+  final String editPictureLabel;
 
   /// Lines under the selected profile's name.
   final Widget? subtitle;
@@ -264,8 +343,61 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
   FocusNode get _node => widget.focusNode ?? (_ownNode ??= FocusNode());
   bool _focused = false;
 
+  /// The slot under the pointer. Kept per slot, not for "the middle one", so
+  /// moving the selection doesn't leave the camera button out.
+  int? _hovered;
+
+  /// Where the picture menu opens from the keyboard: the middle avatar.
+  Offset _heroCenter() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return Offset.zero;
+    return box.localToGlobal(
+      Offset(box.size.width / 2, _ringRoom + ProfileCarousel.heroSize / 2),
+    );
+  }
+
+  bool _canEdit(int index) =>
+      widget.onEditPicture != null &&
+      index < widget.entries.length &&
+      widget.entries[index].canEditPicture;
+
+  /// Whether this carousel turned the browser's own menu off, so a right
+  /// click opens only the picture menu.
+  bool _browserMenuOff = false;
+
+  /// The browser menu is off only over the editable avatar, so a right click
+  /// on another profile still gets it. With the pointer on no avatar it
+  /// follows focus, so the menu key opens only the picture menu.
+  void _syncBrowserMenu() {
+    final selected = widget.selected;
+    final off =
+        kIsWeb &&
+        _canEdit(selected) &&
+        (_hovered == selected || (_hovered == null && _focused));
+    if (off == _browserMenuOff) return;
+    _browserMenuOff = off;
+    unawaited(
+      off
+          ? BrowserContextMenu.disableContextMenu()
+          : BrowserContextMenu.enableContextMenu(),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _syncBrowserMenu();
+  }
+
+  @override
+  void didUpdateWidget(ProfileCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncBrowserMenu();
+  }
+
   @override
   void dispose() {
+    if (_browserMenuOff) unawaited(BrowserContextMenu.enableContextMenu());
     _ownNode?.dispose();
     super.dispose();
   }
@@ -289,6 +421,15 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
       widget.onActivate(widget.selected);
       return KeyEventResult.handled;
     }
+    // The menu key, or Shift+F10, as for a right click.
+    final menuKey =
+        key == LogicalKeyboardKey.contextMenu ||
+        (key == LogicalKeyboardKey.f10 &&
+            HardwareKeyboard.instance.isShiftPressed);
+    if (event is KeyDownEvent && menuKey && _canEdit(widget.selected)) {
+      widget.onEditPicture!(widget.selected, _heroCenter());
+      return KeyEventResult.handled;
+    }
     return KeyEventResult.ignored;
   }
 
@@ -304,7 +445,10 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
     return Focus(
       focusNode: _node,
       autofocus: widget.autofocus,
-      onFocusChange: (focused) => setState(() => _focused = focused),
+      onFocusChange: (focused) {
+        setState(() => _focused = focused);
+        _syncBrowserMenu();
+      },
       onKeyEvent: _onKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -407,6 +551,20 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
             1 => 0.55,
             _ => 0.3,
           };
+    final editable = distance == 0 && _canEdit(index);
+    final shown = editable && _hovered == index;
+    // A screen reader's long press comes with no position: the avatar's
+    // middle stands in.
+    void edit(Offset position) => widget.onEditPicture?.call(
+      index,
+      position == Offset.zero ? _heroCenter() : position,
+    );
+    final avatar = ProfileAvatar(
+      entry: widget.entries[index],
+      ringColor: distance == 0
+          ? (_focused ? accent : onSurface.withValues(alpha: 0.25))
+          : null,
+    );
     return AnimatedPositioned(
       key: ValueKey(index),
       duration: _slide,
@@ -422,6 +580,18 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
           ignoring: !visible,
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
+            onEnter: (_) {
+              if (widget.onEditPicture != null && _hovered != index) {
+                setState(() => _hovered = index);
+                _syncBrowserMenu();
+              }
+            },
+            onExit: (_) {
+              if (_hovered == index) {
+                setState(() => _hovered = null);
+                _syncBrowserMenu();
+              }
+            },
             child: GestureDetector(
               onTap: () {
                 _node.requestFocus();
@@ -431,11 +601,33 @@ class _ProfileCarouselState extends State<ProfileCarousel> {
                   widget.onSelected(index);
                 }
               },
-              child: ProfileAvatar(
-                entry: widget.entries[index],
-                ringColor: distance == 0
-                    ? (_focused ? accent : onSurface.withValues(alpha: 0.25))
-                    : null,
+              onLongPressStart: editable
+                  ? (details) => edit(details.globalPosition)
+                  : null,
+              onSecondaryTapUp: editable
+                  ? (details) => edit(details.globalPosition)
+                  : null,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(child: avatar),
+                  if (editable)
+                    Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 120),
+                        opacity: shown ? 1 : 0,
+                        child: IgnorePointer(
+                          ignoring: !shown,
+                          child: _EditPictureButton(
+                            label: widget.editPictureLabel,
+                            onPressed: edit,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -524,13 +716,15 @@ class ProfileDots extends StatelessWidget {
 
 /// The phone picker's big avatar with the name under it. A horizontal swipe
 /// moves to the previous or next profile.
-class ProfileHero extends StatelessWidget {
+class ProfileHero extends StatefulWidget {
   const ProfileHero({
     super.key,
     required this.entry,
     this.subtitle,
     this.onPrevious,
     this.onNext,
+    this.onEditPicture,
+    this.editPictureLabel = '',
   });
 
   final ProfileEntry entry;
@@ -538,13 +732,89 @@ class ProfileHero extends StatelessWidget {
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
 
+  /// Opens the picture menu, at the press, when the entry
+  /// [ProfileEntry.canEditPicture]: from a long press on the avatar, or from
+  /// the camera button a tap on the avatar shows.
+  final ValueChanged<Offset>? onEditPicture;
+
+  /// The camera button's label.
+  final String editPictureLabel;
+
+  @override
+  State<ProfileHero> createState() => _ProfileHeroState();
+}
+
+class _ProfileHeroState extends State<ProfileHero> {
+  /// The camera button is out: a tap on the avatar shows it, another tap
+  /// hides it, as hovering does on desktop.
+  bool _editShown = false;
+
+  @override
+  void didUpdateWidget(covariant ProfileHero oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Another profile, or one that can no longer change its picture.
+    if (oldWidget.entry.id != widget.entry.id || !widget.entry.canEditPicture) {
+      _editShown = false;
+    }
+  }
+
+  Widget _editable(Widget avatar) {
+    final onEdit = widget.onEditPicture;
+    if (onEdit == null || !widget.entry.canEditPicture) return avatar;
+    void edit(Offset position) {
+      setState(() => _editShown = false);
+      onEdit(position);
+    }
+
+    return Builder(
+      builder: (context) => GestureDetector(
+        onTap: () => setState(() => _editShown = !_editShown),
+        onLongPressStart: (details) {
+          HapticFeedback.mediumImpact();
+          var position = details.globalPosition;
+          // A screen reader's long press comes with no position.
+          if (position == Offset.zero) {
+            final box = context.findRenderObject() as RenderBox?;
+            if (box != null) {
+              position = box.localToGlobal(box.size.center(Offset.zero));
+            }
+          }
+          edit(position);
+        },
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            avatar,
+            Positioned(
+              left: 0,
+              bottom: 0,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 120),
+                opacity: _editShown ? 1 : 0,
+                child: IgnorePointer(
+                  ignoring: !_editShown,
+                  child: _EditPictureButton(
+                    label: widget.editPictureLabel,
+                    onPressed: edit,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final entry = widget.entry;
+    final subtitle = widget.subtitle;
     final onSurface = AppColorScheme.onSurface;
     return _SwipeDetector(
       behavior: HitTestBehavior.opaque,
-      onPrevious: onPrevious,
-      onNext: onNext,
+      onPrevious: widget.onPrevious,
+      onNext: widget.onNext,
       // Full width, so a swipe that starts beside the avatar still counts.
       child: SizedBox(
         width: double.infinity,
@@ -554,12 +824,14 @@ class ProfileHero extends StatelessWidget {
             key: ValueKey(entry.id),
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox.square(
-                dimension: 120,
-                child: ProfileAvatar(
-                  entry: entry,
-                  ringColor: Theme.of(context).colorScheme.primary,
-                  decodeSize: 120,
+              _editable(
+                SizedBox.square(
+                  dimension: 120,
+                  child: ProfileAvatar(
+                    entry: entry,
+                    ringColor: Theme.of(context).colorScheme.primary,
+                    decodeSize: 120,
+                  ),
                 ),
               ),
               const SizedBox(height: 22),
@@ -583,7 +855,7 @@ class ProfileHero extends StatelessWidget {
                     color: onSurface.withValues(alpha: 0.65),
                   ),
                   textAlign: TextAlign.center,
-                  child: subtitle!,
+                  child: subtitle,
                 ),
               ],
             ],

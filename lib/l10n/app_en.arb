@@ -276,6 +276,18 @@
   "@accountActive": {
     "description": "Marks the account that is signed in now in the Switch User screen"
   },
+  "profilePictureChange": "Change picture",
+  "profilePictureRemove": "Remove picture",
+  "profilePictureEditHint": "Change profile picture",
+  "profilePictureUnsupported": "This image can't be used as a profile picture on {server}",
+  "@profilePictureUnsupported": {
+    "placeholders": {
+      "server": {
+        "type": "String"
+      }
+    }
+  },
+  "profilePictureFailed": "Couldn't update the profile picture",
   "addUser": "Add User",
   "@addUser": {
     "description": "Button to add a new user on the server screen"

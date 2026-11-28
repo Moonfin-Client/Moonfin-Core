@@ -343,12 +343,7 @@ class SiloMediaServerClient extends MediaServerClient
     if (id.contains('-')) {
       // Profile ids are UUIDs, and person and library ids are numbers.
       for (final profile in await profilesApi.list()) {
-        images.note(profile.id);
-        images.register(
-          profile.id,
-          SiloImageType.primary,
-          profile.json['avatar_url'] as String?,
-        );
+        registerSiloProfileAvatar(images, profile);
       }
       return;
     }
