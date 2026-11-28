@@ -936,11 +936,15 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   /// still correct, since background refresh elsewhere avoids it.
   Future<void> reloadIfStale({Duration? window, DateTime? windowStart}) async {
     if (_reloadOnEntry ||
-        _loadedRecordingRevision != liveTvRecordingRevision.value ||
         _windowStart.add(const Duration(minutes: 30)).isBefore(_now())) {
       _guideDate = _now();
       await load(window: window, windowStart: windowStart, livePosition: true);
+      return;
     }
+    // A recording changed elsewhere (in the player, say) only needs the rows
+    // read again. A full reload would tear the grid down and lose the row
+    // the viewer is coming back to.
+    await reloadIfRecordingsChanged();
   }
 
   /// Call when the guide is left after paging the window ahead or to another

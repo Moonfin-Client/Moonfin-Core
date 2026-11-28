@@ -503,6 +503,38 @@ void main() {
     expect(_focusedLabel(), 'GuideFilter:0');
   });
 
+  testWidgets('DOWN from the controls row re-enters the grid after a full '
+      'reload put the rows back at the top', (tester) async {
+    await pumpGuide(tester);
+    _nodeLabelled(tester, 'GuideProgramRow0:0').requestFocus();
+    await tester.pumpAndSettle();
+    await pressDown(tester, 20);
+    expect(_focusedCell()?.row, 20);
+
+    // Cancelling a recording on the Cube reloaded the guide and brought the
+    // rows back scrolled to the top while the guide still remembered row 20.
+    // Put the rows in that state directly.
+    for (final state in tester.stateList<ScrollableState>(
+      find.byType(Scrollable),
+    )) {
+      if (state.position.axis == Axis.vertical && state.position.pixels > 0) {
+        state.position.jumpTo(0);
+      }
+    }
+    _nodeLabelled(tester, 'GuideWindowBar:1').requestFocus();
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+
+    final label = _focusedLabel() ?? '';
+    expect(
+      label == 'GuideChannel:20' || label.startsWith('GuideProgramRow20:'),
+      isTrue,
+      reason: 'focus stayed on $label instead of entering row 20',
+    );
+  });
+
   testWidgets('LEFT from the channel column jumps to the genre rail', (
     tester,
   ) async {
