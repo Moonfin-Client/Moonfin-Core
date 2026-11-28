@@ -225,6 +225,31 @@ void main() {
 
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('a focused card fits inside its row', (tester) async {
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+
+      await focusCardShowing(tester, _recordingName);
+
+      final card = tester.getRect(
+        find
+            .ancestor(
+              of: find.text(_recordingName),
+              matching: find.byType(Opacity),
+            )
+            .first,
+      );
+      final row = tester.getRect(
+        find
+            .ancestor(
+              of: find.text(_recordingName),
+              matching: find.byType(ListView),
+            )
+            .first,
+      );
+      expect(card.top, greaterThanOrEqualTo(row.top));
+      expect(card.bottom, lessThanOrEqualTo(row.bottom));
+    });
   });
 
   group('schedule screen', () {
