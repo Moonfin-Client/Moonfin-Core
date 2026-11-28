@@ -134,6 +134,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         private var audioNowPlayingInfo: [String: Any] = [:]
         private var audioArtworkURL: String?
         private var audioArtwork: MPMediaItemArtwork?
+        private var audioArtworkTask: Task<Void, Never>?
         private var pendingAudioMetadata: [String: Any]?
     #endif
     private var isLiveSession = false
@@ -800,10 +801,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             guard wanted != audioArtworkURL else { return }
             audioArtworkURL = wanted
             audioArtwork = nil
+            audioArtworkTask?.cancel()
             guard let urlString = wanted, let url = URL(string: urlString) else { return }
-            Task { [weak self] in
+            audioArtworkTask = Task { [weak self] in
                 let data = try? await MoonfinURLSession.shared.data(from: url).0
-                guard let self, self.audioArtworkURL == urlString else { return }
+                guard !Task.isCancelled, let self, self.audioArtworkURL == urlString else {
+                    return
+                }
                 guard let artwork = data.flatMap(Self.audioArtwork(from:)) else {
                     self.audioArtworkURL = nil
                     return
