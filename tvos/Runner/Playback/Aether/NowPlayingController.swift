@@ -42,6 +42,7 @@ final class NowPlayingController {
     private var registeredTargets: [(MPRemoteCommand, Any)] = []
     private var info: [String: Any] = [:]
     private var artworkURLString: String?
+    private var artworkTask: Task<Void, Never>?
     private var attachedPlayer: AVPlayer?
     private var queueHasNext = false
     private var queueHasPrevious = false
@@ -292,9 +293,11 @@ final class NowPlayingController {
             info[MPMediaItemPropertyPlaybackDuration] = durationSeconds
         }
         info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue
-        if artworkURL?.isEmpty ?? true {
+        let artworkURL = artworkURL?.isEmpty == false ? artworkURL : nil
+        if artworkURL != artworkURLString {
             info[MPMediaItemPropertyArtwork] = nil
             artworkURLString = nil
+            artworkTask?.cancel()
         }
         publish(info)
         loadArtwork(artworkURL)
@@ -315,6 +318,7 @@ final class NowPlayingController {
     func clear() {
         info = [:]
         artworkURLString = nil
+        artworkTask?.cancel()
         publish(nil)
     }
 
@@ -359,18 +363,25 @@ final class NowPlayingController {
             return
         }
         artworkURLString = urlString
-        Task { @MainActor [weak self] in
-            guard let (data, _) = try? await MoonfinURLSession.shared.data(from: url) else { return }
+        artworkTask = Task { @MainActor [weak self] in
+            let data = try? await MoonfinURLSession.shared.data(from: url).0
+            guard !Task.isCancelled else { return }
             self?.applyArtworkData(data, for: urlString)
         }
     }
 
-    private func applyArtworkData(_ data: Data, for urlString: String) {
+    private func applyArtworkData(_ data: Data?, for urlString: String) {
+        guard artworkURLString == urlString else { return }
         #if canImport(UIKit)
-            guard artworkURLString == urlString, let image = UIImage(data: data) else { return }
+            let image = data.flatMap { UIImage(data: $0) }
         #else
-            guard artworkURLString == urlString, let image = NSImage(data: data) else { return }
+            let image = data.flatMap { NSImage(data: $0) }
         #endif
+        guard let image else {
+            // Forget the URL so the next update for this item tries again.
+            artworkURLString = nil
+            return
+        }
         info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
             image
         }

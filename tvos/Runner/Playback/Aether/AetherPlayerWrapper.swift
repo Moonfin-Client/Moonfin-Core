@@ -783,7 +783,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             title: title,
             subtitle: subtitle,
             durationSeconds: duration,
-            artworkURL: (artwork?.isEmpty ?? true) ? nil : artwork)
+            artworkURL: artwork)
         nowPlaying.updatePlaybackState(
             isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
     }
@@ -795,17 +795,19 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             Self.sharedEngine()?.setAudioNowPlayingInfo(info)
         }
 
-        private func loadAudioArtwork(_ logo: String?) {
-            let wanted = logo?.isEmpty == false ? logo : nil
+        private func loadAudioArtwork(_ artwork: String?) {
+            let wanted = artwork?.isEmpty == false ? artwork : nil
             guard wanted != audioArtworkURL else { return }
             audioArtworkURL = wanted
             audioArtwork = nil
             guard let urlString = wanted, let url = URL(string: urlString) else { return }
             Task { [weak self] in
-                guard let (data, _) = try? await MoonfinURLSession.shared.data(from: url),
-                    let artwork = Self.audioArtwork(from: data),
-                    let self, self.audioArtworkURL == urlString
-                else { return }
+                let data = try? await MoonfinURLSession.shared.data(from: url).0
+                guard let self, self.audioArtworkURL == urlString else { return }
+                guard let artwork = data.flatMap(Self.audioArtwork(from:)) else {
+                    self.audioArtworkURL = nil
+                    return
+                }
                 self.audioArtwork = artwork
                 self.publishAudioNowPlaying()
             }
