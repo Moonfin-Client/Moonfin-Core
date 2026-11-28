@@ -10787,7 +10787,7 @@
             }
         }
     },
-    "downloadNotificationCompleteTitle": "{count, plural, =1{Lataa kokonaan} other{Lataukset valmiit}}",
+    "downloadNotificationCompleteTitle": "{count, plural, =1{Download complete} other{Downloads complete}}",
     "@downloadNotificationCompleteTitle": {
         "description": "System notification title once a download or a batch has finished",
         "placeholders": {
@@ -10854,7 +10854,7 @@
     "@downloadStorageLimitReached": {
         "description": "Error shown when a download would exceed the storage limit set in the download settings"
     },
-    "downloadNotEnoughStorage": "Tallennustilaa ei ole tarpeeksi: {needed} needed, {free} free",
+    "downloadNotEnoughStorage": "Tallennustilaa ei ole tarpeeksi: {needed} tarvitaan, {free} vapaana",
     "@downloadNotEnoughStorage": {
         "description": "Error shown when a download would not fit on the device; needed and free are formatted sizes",
         "placeholders": {
@@ -10870,7 +10870,7 @@
     "@autoDownloadStorageFullTitle": {
         "description": "System notification title when the automatic check has to hold new episodes back"
     },
-    "autoDownloadStorageFullBody": "{count, plural, =1{{name} needs {size}.} other{{count} episodes are waiting for space.}} Vapauta tilaa tai nosta latausrajaa.",
+    "autoDownloadStorageFullBody": "{count, plural, =1{{name} tarvitaan{size}.} other{{count} jaksoja odottaa tilaa.}} Vapauta tilaa tai nosta latausrajaa.",
     "@autoDownloadStorageFullBody": {
         "description": "System notification body when the automatic check has to hold new episodes back; name is the label of the first one (for example Series S1E1) and size its formatted size",
         "placeholders": {
@@ -19335,5 +19335,86 @@
     "siloSectionTrendingThisWeek": "Tämän viikon trendit",
     "@siloSectionTrendingThisWeek": {
         "description": "Title of a row a Silo server offers for Home"
+    },
+    "detailShowFullDate": "Näytä koko päivämäärä",
+    "@detailShowFullDate": {
+        "description": "Label for the detail screen setting to show full release or air dates instead of only the year"
+    },
+    "detailShowFullDateSubtitle": "Näytä yksityiskohdasivuilla koko julkaisu- tai esityspäivä pelkän vuoden sijaan",
+    "@detailShowFullDateSubtitle": {
+        "description": "Explanation under the show full date setting"
+    },
+    "showPlaybackStats": "Näytä toistotilastot",
+    "@showPlaybackStats": {
+        "description": "Button in the playback information sheet that shows live network and buffer stats with small graphs over the video"
+    },
+    "hidePlaybackStats": "Piilota toistotilastot",
+    "@hidePlaybackStats": {
+        "description": "Button in the playback information sheet that hides the live network and buffer stats over the video"
+    },
+    "playbackStatsNetworkActivity": "Verkon toiminta",
+    "@playbackStatsNetworkActivity": {
+        "description": "Row in the playback stats over the video: how much data arrived in the last second, like 12.4 Mbps"
+    },
+    "playbackStatsBufferHealth": "Bufferin Kunto",
+    "@playbackStatsBufferHealth": {
+        "description": "Row in the playback stats over the video: seconds of video loaded ahead of the play position, like 95.3 / 120 s"
+    },
+    "playbackStatsBufferMemory": "Puskurimuisti",
+    "@playbackStatsBufferMemory": {
+        "description": "Row in the playback stats over the video: memory the loaded video uses out of the most it may use, like 210 / 384 MB"
+    },
+    "playbackStatsRebuffers": "Rebufferit",
+    "@playbackStatsRebuffers": {
+        "description": "Row in the playback stats over the video: how many times playback stopped to load more, not counting seeks"
+    },
+    "removeRequest": "Poista pyyntö",
+    "@removeRequest": {
+        "description": "Button and dialog title for deleting a failed Silo request"
+    },
+    "removeFailedRequestForTitle": "Epäonnistunut pyyntösi koskien ”{title}” poistetaan. Voit pyytää sitä uudelleen myöhemmin.",
+    "@removeFailedRequestForTitle": {
+        "description": "Confirmation message before deleting a failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestRefused": "Pyyntöä ei poistettu. Sitä yritettiin uudelleen, tai osa siitä saapui perille.",
+    "@removeFailedRequestRefused": {
+        "description": "Snackbar when Silo refuses to delete a failed request because it changed"
+    },
+    "removeOthersFailedRequestForTitle": "{name}:n epäonnistunut pyyntö koskien ”{title}” poistetaan. Hän voi pyytää sitä uudelleen myöhemmin.",
+    "@removeOthersFailedRequestForTitle": {
+        "description": "Confirmation message before an admin deletes another user's failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestError": "Pyyntöä ei voitu poistaa. Yritä uudelleen.",
+    "@removeFailedRequestError": {
+        "description": "Snackbar when deleting a failed Silo request fails for a reason other than the request changing"
+    },
+    "personalRatingIntervals": "Pisteytysvälit",
+    "@personalRatingIntervals": {
+        "description": "Selects the step granularity for personal ratings and their display precision."
+    },
+    "personalRatingIntervalWhole": "Kokonaisuus (1)",
+    "@personalRatingIntervalWhole": {
+        "description": "Short label for whole-number personal rating steps."
+    },
+    "personalRatingIntervalHalf": "Puolet (0,5)",
+    "@personalRatingIntervalHalf": {
+        "description": "Short label for half-step (0.5) personal rating intervals."
+    },
+    "personalRatingIntervalQuarter": "Neljännes (0,25)",
+    "@personalRatingIntervalQuarter": {
+        "description": "Short label for quarter-step (0.25) personal rating intervals."
     }
 }
