@@ -40,6 +40,31 @@ class _SegmentClient extends Fake implements MediaServerClient {
 
 class _EmptyImageApi extends Fake implements ImageApi {}
 
+class _ArtClient extends Fake implements MediaServerClient {
+  @override
+  ServerType get serverType => ServerType.jellyfin;
+
+  @override
+  ImageApi get imageApi => _EchoImageApi();
+
+  @override
+  TrickplayApi? get trickplayApi => null;
+}
+
+class _EchoImageApi extends Fake implements ImageApi {
+  @override
+  String getPrimaryImageUrl(
+    String itemId, {
+    int? maxWidth,
+    int? maxHeight,
+    String? tag,
+  }) => 'Primary/$itemId/$tag';
+
+  @override
+  String getLogoImageUrl(String itemId, {int? maxWidth, String? tag}) =>
+      'Logo/$itemId/$tag';
+}
+
 class _InParty extends SiloWatchPartyManager {
   _InParty(super.playbackManager);
 
@@ -241,6 +266,60 @@ void main() {
 
     final metadata = calls.lastWhere((c) => c.method == 'setUiMetadata');
     expect((metadata.arguments as Map)['osdButtons'], contains('audio'));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('sends the episode picture as Now Playing artwork', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    final backend = NativeApplePlayerBackend(prefs);
+    addTearDown(backend.dispose);
+    GetIt.instance.registerSingleton<NativeApplePlayerBackend>(backend);
+    GetIt.instance.registerSingleton<MediaServerClient>(_ArtClient());
+    when(() => manager.isOfflinePlayback).thenReturn(false);
+    when(() => manager.isTranscodeForced).thenReturn(false);
+
+    final calls = <MethodCall>[];
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(_control, (call) async {
+      calls.add(call);
+      return null;
+    });
+    messenger.setMockMethodCallHandler(_events, (_) async => null);
+    addTearDown(() {
+      messenger.setMockMethodCallHandler(_control, null);
+      messenger.setMockMethodCallHandler(_events, null);
+    });
+    queue.setQueue([
+      {
+        'Id': 'episode',
+        'Type': 'Episode',
+        'RunTimeTicks': 900000000,
+        'ImageTags': {'Primary': 'still'},
+        'SeriesId': 'series',
+        'ParentLogoItemId': 'series',
+        'ParentLogoImageTag': 'logo',
+      },
+    ]);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const AppleTvPlayerHostScreen(),
+      ),
+    );
+    await tester.pump();
+
+    final metadata =
+        calls.lastWhere((c) => c.method == 'setUiMetadata').arguments as Map;
+    expect(metadata['artworkUrl'], 'Primary/episode/still');
+    expect(metadata['logoUrl'], 'Logo/series/logo');
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpWidget(const SizedBox());
   });

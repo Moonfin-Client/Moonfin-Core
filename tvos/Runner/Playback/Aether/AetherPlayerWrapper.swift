@@ -134,6 +134,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         private var audioNowPlayingInfo: [String: Any] = [:]
         private var audioArtworkURL: String?
         private var audioArtwork: MPMediaItemArtwork?
+        private var audioArtworkTask: Task<Void, Never>?
         private var pendingAudioMetadata: [String: Any]?
     #endif
     private var isLiveSession = false
@@ -748,7 +749,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     func applyNowPlayingMetadata(_ args: [String: Any]) {
         let title = (args["topTitle"] as? String) ?? ""
         let subtitle = (args["topSubtitle"] as? String) ?? ""
-        let logo = args["logoUrl"] as? String
+        let artwork = args["artworkUrl"] as? String
         // The engine's music session only exists on iOS and tvOS.
         #if os(iOS) || os(tvOS)
             nowPlaying.setQueueCapabilities(
@@ -766,7 +767,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                     info[MPMediaItemPropertyPlaybackDuration] = duration
                 }
                 audioNowPlayingInfo = info
-                loadAudioArtwork(logo)
+                loadAudioArtwork(artwork)
                 publishAudioNowPlaying()
                 return
             }
@@ -783,7 +784,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             title: title,
             subtitle: subtitle,
             durationSeconds: duration,
-            artworkURL: (logo?.isEmpty ?? true) ? nil : logo)
+            artworkURL: artwork)
         nowPlaying.updatePlaybackState(
             isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
     }
@@ -795,17 +796,22 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             Self.sharedEngine()?.setAudioNowPlayingInfo(info)
         }
 
-        private func loadAudioArtwork(_ logo: String?) {
-            let wanted = logo?.isEmpty == false ? logo : nil
+        private func loadAudioArtwork(_ artwork: String?) {
+            let wanted = artwork?.isEmpty == false ? artwork : nil
             guard wanted != audioArtworkURL else { return }
             audioArtworkURL = wanted
             audioArtwork = nil
+            audioArtworkTask?.cancel()
             guard let urlString = wanted, let url = URL(string: urlString) else { return }
-            Task { [weak self] in
-                guard let (data, _) = try? await MoonfinURLSession.shared.data(from: url),
-                    let artwork = Self.audioArtwork(from: data),
-                    let self, self.audioArtworkURL == urlString
-                else { return }
+            audioArtworkTask = Task { [weak self] in
+                let data = try? await MoonfinURLSession.shared.data(from: url).0
+                guard !Task.isCancelled, let self, self.audioArtworkURL == urlString else {
+                    return
+                }
+                guard let artwork = data.flatMap(Self.audioArtwork(from:)) else {
+                    self.audioArtworkURL = nil
+                    return
+                }
                 self.audioArtwork = artwork
                 self.publishAudioNowPlaying()
             }

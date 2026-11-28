@@ -28,6 +28,7 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
+import '../../../playback/now_playing_artwork.dart';
 import '../../../playback/paused_background_exit.dart';
 import '../../../playback/appletv_subtitles.dart';
 import '../../../playback/rewind_subtitles.dart';
@@ -503,6 +504,22 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
   }
 
 
+
+  String? _nowPlayingArtworkUrlForItem(dynamic item) {
+    if (item is! AggregatedItem && item is! Map) return null;
+    final raw = _rawDataForQueueItem(item);
+    final client = _clientForQueueItem(item);
+    if (raw == null || client == null) return null;
+    try {
+      return nowPlayingArtworkUrl(
+        client.imageApi,
+        raw,
+        itemId: _itemIdForQueueItem(item),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
 
   Map<String, dynamic>? _rawDataForQueueItem(dynamic item) {
     if (item is AggregatedItem) return item.rawData;
@@ -1426,6 +1443,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
         sourceStreams: subtitleStreams,
       ),
       logoUrl: _logoUrlForItem(item),
+      artworkUrl: _nowPlayingArtworkUrlForItem(item),
       streamInfoSections: _streamInfoSections(manager),
       streamInfoTitle: AppLocalizations.of(context).playbackInformation,
       streamInfoDroppedFramesLabel: AppLocalizations.of(

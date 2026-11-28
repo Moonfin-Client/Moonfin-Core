@@ -81,6 +81,26 @@ void main() {
     expect(url, isNot(contains('album-1')));
   });
 
+  test('an episode with no still falls back to the series thumb, not the logo', () {
+    final url = audioArtUrl(
+      _item({
+        'Id': 'episode-2',
+        'Type': 'Episode',
+        'ImageTags': {},
+        'ParentLogoItemId': 'series-1',
+        'ParentLogoImageTag': 'logotag',
+        'ParentThumbItemId': 'series-1',
+        'ParentThumbImageTag': 'thumbtag',
+      }),
+      clientFactory: _factory(),
+      maxHeight: 300,
+    );
+
+    expect(url, contains('series-1'));
+    expect(url, contains('/Thumb'));
+    expect(url, isNot(contains('Logo')));
+  });
+
   test('an item carrying no artwork at all answers null', () {
     final url = audioArtUrl(
       _item({'Id': 'track-3', 'Type': 'Audio'}),
