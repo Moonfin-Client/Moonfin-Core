@@ -29,6 +29,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     @Published var currentTime: TimeInterval = 0
     @Published var duration: TimeInterval = 0
     @Published var bufferProgress: Float = 0
+    /// The engine's buffer frontier in seconds, on the same axis as
+    /// `currentTime`. Unlike `bufferProgress` it doesn't need a duration, so
+    /// it still reads on live streams.
+    private(set) var bufferedPosition: TimeInterval = 0
     @Published var audioTracks: [PlayerTrack] = []
     @Published var subtitleTracks: [PlayerTrack] = []
     /// Broadcast captions the engine found inside the video, offered
@@ -138,6 +142,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var didEmitAudioDrop = false
     private var lastPhase: PlaybackPhase = .idle
     private var sawPlaybackThisLoad = false
+    /// Stalls to buffer since this load opened, for the playback stats overlay.
+    private(set) var rebufferCount = 0
+    /// Bits received from the server over the last telemetry tick, nil when
+    /// this route can't count them.
+    private(set) var networkActivityBps: Int?
+    private var lastSourceBytes: (bytes: Int64, at: CFTimeInterval)?
     private var lastClockAdvanceAt = CACurrentMediaTime()
     private var stallCheckTimer: Timer?
 
@@ -298,6 +308,15 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] phase in self?.applyPhase(phase) }
             .store(in: &cancellables)
 
+        engine.diagnostics.$liveTelemetry
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] telemetry in
+                guard let self, let engine else { return }
+                self.updateNetworkActivity(
+                    telemetry, remoteHLS: engine.videoRoute == .remoteBypass)
+            }
+            .store(in: &cancellables)
+
         // The server refused the session's credentials (an expired token).
         // The engine holds the session a few seconds for new ones, so Dart is
         // told to renew them rather than wait for the failure.
@@ -381,6 +400,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self else { return }
+                self.bufferedPosition = value
                 self.bufferProgress =
                     self.duration > 0
                     ? Float(min(max(value / self.duration, 0), 1)) : 0
@@ -587,6 +607,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         case .loading:
             state = .opening
             sawPlaybackThisLoad = false
+            rebufferCount = 0
         case .playing:
             state = .playing
             if !sawPlaybackThisLoad { scheduleCadenceCheck() }
@@ -594,6 +615,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         case .paused: state = .paused
         case .seeking: state = .buffering(bufferProgress)
         case .rebuffering:
+            // Only a stall out of playback counts. A seek already shows
+            // buffering, so one landing short of buffered media isn't counted.
+            if state == .playing { rebufferCount += 1 }
             state = .buffering(bufferProgress)
             sawPlaybackThisLoad = true
         case .stalled: applyStalledState()
@@ -644,15 +668,18 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     private func applyStalledState() {
         guard case .stalled = lastPhase, let engine = Self.sharedEngine() else { return }
+        let isSeeking = engine.isSeeking || engine.state == .seeking
         let next = Self.stalledState(
             isNativePath: engine.playbackBackend == .native,
             sawPlayback: sawPlaybackThisLoad,
-            isSeeking: engine.isSeeking || engine.state == .seeking,
+            isSeeking: isSeeking,
             isPlaying: engine.state == .playing,
             isPaused: engine.state == .paused,
             isBuffering: engine.isBuffering,
             secondsSinceClockAdvanced: CACurrentMediaTime() - lastClockAdvanceAt,
             bufferProgress: bufferProgress)
+        // A stall that drains the buffer out of playback is a rebuffer too.
+        if state == .playing, case .buffering = next, !isSeeking { rebufferCount += 1 }
         if next != state { state = next }
     }
 
@@ -2452,6 +2479,25 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// can't count them.
     var droppedFrameCount: Int? {
         Self.sharedEngine()?.liveTelemetry?.droppedFrameCount
+    }
+
+    /// Turns the session's byte count from the server into a rate. The
+    /// remote HLS route has no demuxer, but there AVPlayer fetches from the
+    /// server itself, so its own count is the same link.
+    private func updateNetworkActivity(_ telemetry: LiveTelemetry?, remoteHLS: Bool) {
+        let bytes =
+            remoteHLS ? telemetry?.networkTransferredBytes : telemetry?.demuxerBytesFetched
+        let now = CACurrentMediaTime()
+        defer { lastSourceBytes = bytes.map { ($0, now) } }
+        // A new session restarts the count, and a reader that counts nothing
+        // (MPEG-TS ingest, local files) stays at zero.
+        guard let bytes, bytes > 0, let last = lastSourceBytes, bytes >= last.bytes,
+            now > last.at
+        else {
+            networkActivityBps = nil
+            return
+        }
+        networkActivityBps = Int((Double(bytes - last.bytes) * 8 / (now - last.at)).rounded())
     }
 }
 

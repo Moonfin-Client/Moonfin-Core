@@ -299,6 +299,31 @@ void main() {
       expect(prefs.resolveTrueHdPassthroughEnabled(iecOnly), isTrue);
     });
 
+    test('TrueHD-only follows IEC for TrueHD and raw for the rest', () async {
+      final prefs = await iecPrefs();
+      await prefs.set(
+        UserPreferences.audioPassthroughOutput,
+        AudioPassthroughOutput.iecTrueHd,
+      );
+      final rawWithHbr = _profile(
+        canPassthroughAc3: true,
+        canPassthroughEac3: true,
+        canPassthroughDts: true,
+        canPassthroughDtsHd: true,
+        canIecHbr: true,
+      );
+
+      expect(prefs.media3IecPackerSelected, isFalse);
+      expect(prefs.resolveAc3PassthroughEnabled(rawWithHbr), isTrue);
+      expect(prefs.resolveEac3PassthroughEnabled(rawWithHbr), isTrue);
+      expect(prefs.resolveDtsCorePassthroughEnabled(rawWithHbr), isTrue);
+      expect(prefs.resolveDtsHdPassthroughEnabled(rawWithHbr), isTrue);
+      expect(prefs.resolveTrueHdPassthroughEnabled(rawWithHbr), isTrue);
+
+      final rawTrueHdOnly = _profile(canPassthroughTrueHd: true);
+      expect(prefs.resolveTrueHdPassthroughEnabled(rawTrueHdOnly), isFalse);
+    });
+
     test('the HBR carrier is gated to HDMI and eARC routes', () async {
       final prefs = await iecPrefs();
       final arcRoute = _profile(

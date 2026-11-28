@@ -64,6 +64,12 @@ const _kMiniPlayerHeight = 168.0;
 // never moves under an in-progress navigation.
 const _kReanchorInputQuiet = Duration(seconds: 1);
 
+// Holding up or down moves a row at a time for this long, then a page at a
+// time, but no faster than one page per [_kHeldPageEvery] however quickly the
+// remote repeats.
+const _kHoldBeforePaging = Duration(milliseconds: 1500);
+const _kHeldPageEvery = Duration(milliseconds: 350);
+
 /// Indices of the controls row's buttons, left to right. LEFT/RIGHT walk this
 /// range, so a button added to the row must take the next index in order.
 const int _kWindowBarPrevious = 0;
@@ -212,6 +218,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
 
   /// The single deferred vertical move, or null when nothing is pending.
   _PendingVerticalMove? _pendingVerticalMove;
+
+  Timer? _verticalHold;
+  bool _verticalHoldPages = false;
 
   /// One-shot timer to the next half hour. Rescheduled when it fires.
   Timer? _reanchorTimer;
@@ -834,6 +843,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     widget.backController?._onBackPressed = null;
     _reanchorTimer?.cancel();
     _displayClockTimer?.cancel();
+    _verticalHold?.cancel();
     _artworkLookupDebounce?.cancel();
     _artworkPrefetchScrollDebounce?.cancel();
     WidgetsBinding.instance.removeObserver(this);
@@ -1890,7 +1900,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       onPressed: () => _watchChannel(channel.id),
       onKeyEvent: (_, event) {
         if (!event.isActionable) return KeyEventResult.ignored;
-        final pageDirection = event.logicalKey.pageDirection;
+        final pageDirection = _pageDirectionFor(event);
+        if (pageDirection == null) return KeyEventResult.handled;
         if (pageDirection != 0) {
           _onNavigationKey();
           _focusChannelRow(
@@ -2051,6 +2062,28 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _applyPendingVerticalMove();
     });
+  }
+
+  /// Which way [event] pages: a page key's own way, or a held up or down's
+  /// once it has built up. 0 moves a single row, and null lets a repeat pass
+  /// while the last page settles.
+  int? _pageDirectionFor(KeyEvent event) {
+    final key = event.logicalKey;
+    if (key.pageDirection != 0) return key.pageDirection;
+    if (!key.isUpKey && !key.isDownKey) return 0;
+    if (event is! KeyRepeatEvent) {
+      _verticalHold?.cancel();
+      _verticalHoldPages = false;
+      _verticalHold = Timer(
+        _kHoldBeforePaging,
+        () => _verticalHoldPages = true,
+      );
+      return 0;
+    }
+    if (!_verticalHoldPages) return 0;
+    if (_verticalHold?.isActive ?? false) return null;
+    _verticalHold = Timer(_kHeldPageEvery, () {});
+    return key.isUpKey ? -1 : 1;
   }
 
   /// Records the input so a re-anchor can stay out of the way, then drops the
@@ -2413,6 +2446,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       selection: _selection,
       onVerticalMove: _moveSelectionVertically,
       onPageRows: _pageChannelRows,
+      pageDirectionFor: _pageDirectionFor,
       onNavigationKey: _onNavigationKey,
       onRowMounted: _scheduleApplyPendingVerticalMove,
       windowStart: _vm.windowStart,
@@ -3087,6 +3121,9 @@ class _GuideProgramRow extends StatefulWidget {
   /// Pages whole channel rows. Like any vertical move it preserves the anchor.
   final void Function(int fromRowIndex, int direction) onPageRows;
 
+  /// Asked of the screen, since a held key carries across rows as focus moves.
+  final int? Function(KeyEvent event) pageDirectionFor;
+
   /// Fired before any arrow key is acted on, so a deferred move the user has
   /// moved past can be dropped.
   final VoidCallback onNavigationKey;
@@ -3119,6 +3156,7 @@ class _GuideProgramRow extends StatefulWidget {
     required this.selection,
     required this.onVerticalMove,
     required this.onPageRows,
+    required this.pageDirectionFor,
     required this.onNavigationKey,
     required this.onRowMounted,
     required this.windowStart,
@@ -3241,8 +3279,9 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
     if (selected != KeyEventResult.ignored) return selected;
     if (!event.isActionable) return KeyEventResult.ignored;
 
+    final pageDirection = widget.pageDirectionFor(event);
+    if (pageDirection == null) return KeyEventResult.handled;
     final key = event.logicalKey;
-    final pageDirection = key.pageDirection;
     if (pageDirection != 0) {
       widget.onNavigationKey();
       widget.onPageRows(widget.rowIndex, pageDirection);

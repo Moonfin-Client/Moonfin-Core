@@ -28,7 +28,9 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
+import '../../../playback/paused_background_exit.dart';
 import '../../../playback/appletv_subtitles.dart';
+import '../../../playback/rewind_subtitles.dart';
 import '../../../playback/subtitle_cue_loader.dart';
 import '../../../playback/playback_info_sections.dart';
 import '../../../syncplay/syncplay_manager.dart';
@@ -46,6 +48,7 @@ import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/overview_text.dart';
+import '../../../platform/pip_service.dart';
 import '../../../util/platform_detection.dart';
 import 'appletv_playback_prompt_controller.dart';
 import 'episode_browser.dart';
@@ -60,7 +63,8 @@ class AppleTvPlayerHostScreen extends StatefulWidget {
       _AppleTvPlayerHostScreenState();
 }
 
-class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
+class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
+    with WidgetsBindingObserver {
   StreamSubscription<void>? _exitSub;
   StreamSubscription<void>? _queueSub;
   StreamSubscription<void>? _sessionEndedSub;
@@ -82,6 +86,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   String? _deviceLabel;
   final _chaptersFetchedItemIds = <String>{};
   StreamSubscription<Duration>? _positionSub;
+  RewindSubtitles? _rewindSubtitles;
   UserPreferences? _prefsListened;
   (SubtitleStyle, double, double, int)? _lastSubtitleStyle;
   String _lastTrickplayPrefs = '';
@@ -106,6 +111,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   EpisodeBrowserController? _episodeBrowser;
   bool _episodeBrowserShown = false;
   late final CinemaSkipController _cinemaSkip;
+  late final _pausedBackgroundExit = PausedBackgroundExit(
+    // Picture in picture or a group still needs the player.
+    mayClose: () =>
+        !_exiting &&
+        (_manager?.state.isPaused ?? false) &&
+        !(GetIt.instance.isRegistered<PipService>() &&
+            GetIt.instance<PipService>().isInPiP) &&
+        _syncPlay?.state.enabled != true &&
+        !_followingParty,
+    close: () => unawaited(_closeInBackground()),
+  );
 
   bool get _isCinemaPreroll =>
       _rawDataForQueueItem(_manager?.queueService.currentItem)?['__moonfinIsPreroll'] ==
@@ -173,6 +189,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   @override
   void initState() {
     super.initState();
+    if (PlatformDetection.isIOS) WidgetsBinding.instance.addObserver(this);
     unawaited(playbackDeviceLabel().then((label) => _deviceLabel = label));
     _cinemaSkip = CinemaSkipController(
       onSkip: () => _manager?.nextInQueue() ?? Future<void>.value(),
@@ -243,6 +260,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           _prompts?.onPositionTick(position, manager.state.duration);
         }
         _syncCinemaSkip();
+        _rewindSubtitles?.onPosition(position);
       });
     }
     try {
@@ -256,6 +274,15 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         queueSnapshot: _queueSnapshot,
         segmentService: () => _segmentService,
       );
+      if (manager != null) {
+        _rewindSubtitles = RewindSubtitles(
+          manager,
+          prefs,
+          onChanged: () {
+            if (mounted) _pushMetadata();
+          },
+        );
+      }
       _prefsListened = prefs;
       _lastTrickplayPrefs = _trickplayPrefsSnapshot(prefs);
       _lastTimeSlots = _timeSlotsSnapshot(prefs);
@@ -1441,11 +1468,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   /// rather than reading an empty list as every button switched off.
   List<String>? _osdButtons() {
     try {
-      final ids = visibleOsdButtonIds(GetIt.instance<UserPreferences>());
-      // Everyone in a watch party hears the same track.
-      return _followingParty
-          ? ids.where((id) => id != OsdButton.audio.id).toList()
-          : ids;
+      return visibleOsdButtonIds(GetIt.instance<UserPreferences>());
     } catch (_) {
       return null;
     }
@@ -1776,11 +1799,22 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   void _onQueueChanged() {
     _lastMarkedPlayedItemId = null;
+    _rewindSubtitles?.reset();
     _closeEpisodeBrowser(hideNative: true);
     _prompts?.onQueueChanged();
     _syncCinemaSkip();
     _loadSegmentsForCurrentItem();
     _pushMetadata();
+  }
+
+  void _noteSeekForSubtitles(Duration from, Duration to) {
+    _rewindSubtitles?.onSeek(
+      from,
+      to,
+      streams:
+          _manager?.currentResolution?.mediaStreams ??
+          const <Map<String, dynamic>>[],
+    );
   }
 
   void _handleUiAction(Map<String, dynamic> action) {
@@ -1813,7 +1847,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         }
         final positionMs = (action['positionMs'] as num?)?.toInt();
         if (positionMs != null) {
-          unawaited(manager.seekTo(Duration(milliseconds: positionMs)));
+          final to = Duration(milliseconds: positionMs);
+          _noteSeekForSubtitles(manager.state.position, to);
+          unawaited(manager.seekTo(to));
           _prompts?.onUserSeeked();
         }
       case 'userSeeked':
@@ -1822,9 +1858,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         // about it without the player being moved a second time.
         final seekedToMs = (action['positionMs'] as num?)?.toInt();
         if (seekedToMs != null) {
-          unawaited(
-            manager.notifyExternalSeek(Duration(milliseconds: seekedToMs)),
-          );
+          final to = Duration(milliseconds: seekedToMs);
+          final fromMs = (action['fromMs'] as num?)?.toInt();
+          if (fromMs != null) {
+            _noteSeekForSubtitles(Duration(milliseconds: fromMs), to);
+          }
+          unawaited(manager.notifyExternalSeek(to));
         }
         _prompts?.onUserSeeked();
       case 'nextUpPlay':
@@ -1953,6 +1992,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     Future<void>.delayed(const Duration(milliseconds: 300), _pushMetadata);
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) =>
+      _pausedBackgroundExit.onLifecycleChanged(state);
+
+  // The route can't finish leaving until the app is back, so the stop goes
+  // out first while the app is still running.
+  Future<void> _closeInBackground() async {
+    await _manager?.stop(userInitiated: false);
+    _handleExit();
+  }
+
   void _handleExit({bool finished = false}) {
     if (_exiting || !mounted) return;
     _exiting = true;
@@ -1965,6 +2015,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pausedBackgroundExit.dispose();
     _cinemaSkip.removeListener(_syncCinemaSkipButton);
     _cinemaSkip.dispose();
     _trickplayLoadGeneration++;

@@ -8,7 +8,11 @@ import 'cast_target.dart';
 import 'cast_transport_controls.dart';
 
 class RemoteSessionCastProvider
-    implements CastProvider, CastTransportControls, PollableRemoteState {
+    implements
+        CastProvider,
+        CastTransportControls,
+        CastTrackSkipControls,
+        PollableRemoteState {
   final MediaServerClientFactory _clientFactory;
 
   String? _activeSessionId;
@@ -141,6 +145,23 @@ class RemoteSessionCastProvider
   }
 
   @override
+  Future<void> nextTrack(CastTargetKind kind) async {
+    final sessionId = _activeSessionId;
+    if (sessionId == null) return;
+    await _activeClient.sessionApi.sendPlayStateCommand(sessionId, 'NextTrack');
+  }
+
+  @override
+  Future<void> previousTrack(CastTargetKind kind) async {
+    final sessionId = _activeSessionId;
+    if (sessionId == null) return;
+    await _activeClient.sessionApi.sendPlayStateCommand(
+      sessionId,
+      'PreviousTrack',
+    );
+  }
+
+  @override
   Future<void> stop(CastTargetKind kind) async {
     final sessionId = _activeSessionId;
     if (sessionId == null) return;
@@ -182,6 +203,16 @@ class RemoteSessionCastProvider
 
     final playState = session['PlayState'] as Map<String, dynamic>?;
     final nowPlaying = session['NowPlayingItem'] as Map<String, dynamic>?;
+    final nowPlayingId = nowPlaying?['Id']?.toString();
+    final item = (nowPlaying != null &&
+            nowPlayingId != null &&
+            nowPlayingId.isNotEmpty)
+        ? AggregatedItem(
+            id: nowPlayingId,
+            serverId: _activeServerId ?? '',
+            rawData: nowPlaying,
+          )
+        : null;
     return RemotePlaybackSnapshot(
       // Nothing playing reads as no state at all rather than as paused, which
       // is what the mini player shows an idle receiver.
@@ -192,6 +223,7 @@ class RemoteSessionCastProvider
                 : 'playing',
       positionTicks: (playState?['PositionTicks'] as num?)?.toInt() ?? 0,
       volume: _volumeFrom(session) ?? _lastSentVolume,
+      item: item,
     );
   }
 

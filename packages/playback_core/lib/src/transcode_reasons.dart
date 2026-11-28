@@ -572,8 +572,18 @@ List<Map<String, dynamic>> _codecProfiles(
       .where((e) {
         final profileType = e['Type']?.toString().toLowerCase();
         if (profileType != type.toLowerCase()) return false;
-        final profileCodec = e['Codec']?.toString().toLowerCase();
-        if (codec != null && profileCodec != null && profileCodec != codec.toLowerCase()) {
+        // A profile can name several codecs, comma separated.
+        final profileCodecs = e['Codec']
+            ?.toString()
+            .toLowerCase()
+            .split(',')
+            .map((c) => c.trim())
+            .where((c) => c.isNotEmpty)
+            .toSet();
+        if (codec != null &&
+            profileCodecs != null &&
+            profileCodecs.isNotEmpty &&
+            !profileCodecs.contains(codec.toLowerCase())) {
           return false;
         }
         return true;

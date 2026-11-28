@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:playback_core/playback_core.dart' show TransportAction;
 
 import '../../models/aggregated_item.dart';
 import '../log_service.dart';
@@ -27,6 +28,9 @@ class CastService {
   final ValueNotifier<int> remotePositionNotifier = ValueNotifier(0);
   final ValueNotifier<double?> remoteVolumeNotifier = ValueNotifier(null);
   Timer? _remotePollTimer;
+  int _castSessionId = 0;
+  int _nextPollSeq = 0;
+  int _appliedPollSeq = 0;
 
   /// Reports a cast to its server session where the server needs it (Silo).
   late final CastSessionReporter sessionReporter = CastSessionReporter(
@@ -97,6 +101,8 @@ class CastService {
         }
       case 'disconnected':
         if (activeKindNotifier.value == castKind) {
+          _castSessionId++;
+          _appliedPollSeq = 0;
           activeKindNotifier.value = null;
           activeTargetNotifier.value = null;
           castItemNotifier.value = null;
@@ -158,11 +164,38 @@ class CastService {
     PollableRemoteState pollable,
   ) async {
     if (activeKindNotifier.value != kind) return;
+    final sessionId = _castSessionId;
+    final seq = ++_nextPollSeq;
     try {
       final snapshot = await pollable.fetchRemoteSnapshot(kind);
-      // The target can be dropped while the request is out, and writing then
-      // would light the mini player back up for a session nobody is on.
-      if (snapshot == null || activeKindNotifier.value != kind) return;
+      // Discard responses from replaced sessions or older polls that
+      // arrive after a newer snapshot has already been applied.
+      if (snapshot == null ||
+          sessionId != _castSessionId ||
+          seq <= _appliedPollSeq ||
+          activeKindNotifier.value != kind) {
+        return;
+      }
+      _appliedPollSeq = seq;
+      if (snapshot.item != null) {
+        final current = castItemNotifier.value;
+        if (current == null || snapshot.item!.id != current.id) {
+          castItemNotifier.value = snapshot.item;
+        } else {
+          final additions = <String, dynamic>{
+            for (final e in snapshot.item!.rawData.entries)
+              if (e.value != null && current.rawData[e.key] == null)
+                e.key: e.value,
+          };
+          if (additions.isNotEmpty) {
+            castItemNotifier.value = AggregatedItem(
+              id: current.id,
+              serverId: current.serverId,
+              rawData: {...current.rawData, ...additions},
+            );
+          }
+        }
+      }
       remoteStateNotifier.value = snapshot.state;
       remotePositionNotifier.value = snapshot.positionTicks;
       remoteVolumeNotifier.value = snapshot.volume;
@@ -272,6 +305,8 @@ class CastService {
       subtitleStreamIndex: subtitleStreamIndex,
     );
 
+    _castSessionId++;
+    _appliedPollSeq = 0;
     activeTargetNotifier.value = target;
     castItemNotifier.value = item;
     activeKindNotifier.value = target.kind;
@@ -301,24 +336,57 @@ class CastService {
   }
 
   Future<void> play(CastTargetKind kind) async {
+    final sessionId = _castSessionId;
     final provider = _controlProviderForKind(kind);
     await provider.play(kind);
+    if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
+      _appliedPollSeq = _nextPollSeq;
+      remoteStateNotifier.value = 'playing';
+    }
   }
 
   Future<void> pause(CastTargetKind kind) async {
+    final sessionId = _castSessionId;
     final provider = _controlProviderForKind(kind);
     await provider.pause(kind);
+    if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
+      _appliedPollSeq = _nextPollSeq;
+      remoteStateNotifier.value = 'paused';
+    }
   }
 
   Future<void> seek(CastTargetKind kind, {required int positionTicks}) async {
+    final sessionId = _castSessionId;
     final provider = _controlProviderForKind(kind);
     await provider.seek(kind, positionTicks: positionTicks);
+    if (sessionId == _castSessionId && activeKindNotifier.value == kind) {
+      _appliedPollSeq = _nextPollSeq;
+      remotePositionNotifier.value = positionTicks;
+    }
+  }
+
+  Future<void> nextTrack(CastTargetKind kind) async {
+    final provider = _trackSkipProviderForKind(kind);
+    if (provider == null) return;
+    await provider.nextTrack(kind);
+    final pollable = _pollableForKind(kind);
+    if (pollable != null) unawaited(_pollRemoteState(kind, pollable));
+  }
+
+  Future<void> previousTrack(CastTargetKind kind) async {
+    final provider = _trackSkipProviderForKind(kind);
+    if (provider == null) return;
+    await provider.previousTrack(kind);
+    final pollable = _pollableForKind(kind);
+    if (pollable != null) unawaited(_pollRemoteState(kind, pollable));
   }
 
   Future<void> stop(CastTargetKind kind) async {
     final provider = _controlProviderForKind(kind);
     await provider.stop(kind);
     if (activeKindNotifier.value == kind) {
+      _castSessionId++;
+      _appliedPollSeq = 0;
       unawaited(sessionReporter.end());
       _stopRemotePolling();
       activeKindNotifier.value = null;
@@ -338,6 +406,15 @@ class CastService {
   Future<void> setVolume(CastTargetKind kind, {required double volume}) async {
     final provider = _controlProviderForKind(kind);
     await provider.setVolume(kind, volume: volume);
+  }
+
+  CastTrackSkipControls? _trackSkipProviderForKind(CastTargetKind kind) {
+    try {
+      final Object provider = _controlProviderForKind(kind);
+      return provider is CastTrackSkipControls ? provider : null;
+    } on UnsupportedError {
+      return null;
+    }
   }
 
   CastTransportControls _controlProviderForKind(CastTargetKind kind) {
@@ -364,4 +441,39 @@ class CastService {
     remoteVolumeNotifier.dispose();
     remoteErrorNotifier.dispose();
   }
+}
+
+/// Whether [cast]'s receiver reports playing, buffering included.
+bool castReportsPlaying(CastService cast) =>
+    switch (cast.remoteStateNotifier.value) {
+      'playing' || 'buffering' => true,
+      _ => false,
+    };
+
+/// Sends a player's transport [action] to [cast]'s receiver through [run],
+/// which reports a failed command. Stop isn't handled here, so the player
+/// stops and ends the cast itself.
+Future<bool> runCastTransport(
+  CastService cast,
+  TransportAction action,
+  Future<void> Function(Future<void> Function(CastTargetKind kind)) run, {
+  Duration? position,
+}) async {
+  switch (action) {
+    case TransportAction.resume:
+      await run(cast.play);
+    case TransportAction.pause:
+      await run(cast.pause);
+    case TransportAction.seek:
+      await run(
+        (k) => cast.seek(k, positionTicks: position!.inMicroseconds * 10),
+      );
+    case TransportAction.next || TransportAction.nextAsFinished:
+      await run(cast.nextTrack);
+    case TransportAction.previous:
+      await run(cast.previousTrack);
+    case TransportAction.stop:
+      return false;
+  }
+  return true;
 }

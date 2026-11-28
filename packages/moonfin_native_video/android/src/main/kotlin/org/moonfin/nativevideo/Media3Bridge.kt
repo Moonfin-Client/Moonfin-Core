@@ -73,7 +73,8 @@ object Media3Bridge {
     private var passthroughCodecs: Set<String> = emptySet()
 
     // How bitstreams reach the AudioTrack: "platform" (raw codec encodings,
-    // the Android HAL packs) or "iec" (app-side IEC 61937 packing).
+    // the Android HAL packs), "iec" (app-side IEC 61937 packing) or
+    // "iec-truehd" (app-side packing for TrueHD only).
     @Volatile
     private var passthroughOutput = "platform"
 
@@ -361,7 +362,7 @@ object Media3Bridge {
                     ?: emptySet()
             passthroughOutput =
                 (args?.get("passthroughOutput")?.toString()?.trim()?.lowercase())
-                    .takeIf { it == "platform" || it == "iec" }
+                    .takeIf { it == "platform" || it == "iec" || it == "iec-truehd" }
                     ?: "platform"
             (args?.get("downmixToStereo") as? Boolean)?.let {
                 downmixToStereo = it

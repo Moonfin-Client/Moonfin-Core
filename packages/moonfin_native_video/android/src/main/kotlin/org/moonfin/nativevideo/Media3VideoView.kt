@@ -971,6 +971,10 @@ class Media3VideoView(
     private var doviCompatMode = DoviCompatMode.fromWire(Media3Bridge.doviCompatMode())
     @Volatile
     private var stripDolbyVision = false
+    // The FEL fold reads this on the loading thread and waits for the
+    // player's own video decoder before it opens one of its own.
+    @Volatile
+    private var videoDecoderLive = false
     private var allowExternalAudioEffects = Media3Bridge.allowExternalAudioEffectsEnabled()
     private var frameRateSwitchingBehavior = Media3Bridge.frameRateSwitchingBehavior()
     private var passthroughMode = Media3Bridge.passthroughMode()
@@ -1766,6 +1770,7 @@ class Media3VideoView(
             initializedTimestampMs: Long,
             initializationDurationMs: Long,
         ) {
+            videoDecoderLive = true
             Media3Bridge.emitEvent(
                 mapOf(
                     "event" to "videoDecoderInit",
@@ -1774,6 +1779,9 @@ class Media3VideoView(
             )
         }
 
+        override fun onVideoDecoderReleased(eventTime: AnalyticsListener.EventTime, decoderName: String) {
+            videoDecoderLive = false
+        }
 
         override fun onVideoFrameProcessingOffset(
             eventTime: AnalyticsListener.EventTime,
@@ -2842,6 +2850,8 @@ class Media3VideoView(
                 "formatSummary" to report.formatSummary,
                 "converterStatus" to DoviRpu.statusText(),
                 "detail" to report.detail,
+                "enhancementLayer" to report.enhancementLayer,
+                "fold" to report.fold,
             ),
         )
     }
@@ -2915,8 +2925,8 @@ class Media3VideoView(
             passthroughMode,
             passthroughCodecs,
         )
-        iecOutputProvider = if (passthroughOutput == "iec" && Build.VERSION.SDK_INT >= 24) {
-            Iec61937AudioOutputProvider(context)
+        iecOutputProvider = if (passthroughOutput != "platform" && Build.VERSION.SDK_INT >= 24) {
+            Iec61937AudioOutputProvider(context, trueHdOnly = passthroughOutput == "iec-truehd")
         } else {
             null
         }
@@ -2990,7 +3000,8 @@ class Media3VideoView(
             ),
             mode = { doviCompatMode },
             stripDolbyVision = { stripDolbyVision },
-            convertNal62 = DoviRpu::convertP7NalToP8,
+            converter = DoviRpu,
+            videoDecoderReady = { videoDecoderLive },
             onReport = ::onDoviCompatReport,
         )
         bootVideoExtractorsFactory = doviExtractorsFactory

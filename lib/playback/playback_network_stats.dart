@@ -28,3 +28,9 @@ class PlaybackNetworkStats {
   /// Times playback stalled to buffer this item, seeks left out.
   final int? rebuffers;
 }
+
+/// A player engine that can fill the playback stats overlay.
+abstract interface class PlaybackNetworkStatsSource {
+  /// The latest reading, or null before the engine has one.
+  PlaybackNetworkStats? get networkStats;
+}

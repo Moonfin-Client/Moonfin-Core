@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,15 +16,25 @@ class _MockMediaServerClient extends Mock implements MediaServerClient {}
 
 /// An album with a cover and no backdrop until one is uploaded.
 class _FakeItemsApi extends Fake implements ItemsApi {
-  Map<String, dynamic> item = {
-    'Id': 'a1',
-    'Type': 'MusicAlbum',
-    'Name': 'AlbumRed',
-    'ImageTags': {'Primary': 'cover'},
-    'BackdropImageTags': <String>[],
+  /// The server's items by id.
+  final library = <String, Map<String, dynamic>>{
+    'a1': {
+      'Id': 'a1',
+      'Type': 'MusicAlbum',
+      'Name': 'AlbumRed',
+      'ImageTags': {'Primary': 'cover'},
+      'BackdropImageTags': <String>[],
+    },
   };
 
+  /// The item the dialog opens on.
+  Map<String, dynamic> get item => library['a1']!;
+  set item(Map<String, dynamic> value) => library['a1'] = value;
+
   bool failing = false;
+
+  /// Holds back the next fetch until it completes.
+  Completer<void>? hold;
 
   @override
   Future<Map<String, dynamic>> getItem(
@@ -30,8 +42,11 @@ class _FakeItemsApi extends Fake implements ItemsApi {
     String? mediaSourceId,
     String? fields,
   }) async {
+    final held = hold;
+    hold = null;
+    if (held != null) await held.future;
     if (failing) throw Exception('connection lost');
-    return Map<String, dynamic>.from(item);
+    return Map<String, dynamic>.from(library[itemId]!);
   }
 }
 
@@ -42,6 +57,12 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
   final uploads = <ImageType>[];
   final downloads = <ImageType>[];
   List<Map<String, dynamic>> remoteBackdrops = const [];
+
+  /// Every delete sent, as "itemId Type index".
+  final deletes = <String>[];
+
+  /// Holds back the next delete until it completes.
+  Completer<void>? deleteHold;
 
   @override
   Future<Map<String, dynamic>> getRemoteImages(
@@ -70,10 +91,32 @@ class _FakeAdminItemsApi extends Fake implements AdminItemsApi {
     required String contentType,
   }) async {
     uploads.add(imageType);
-    items.item = {
-      ...items.item,
+    items.library[itemId] = {
+      ...items.library[itemId]!,
       'BackdropImageTags': ['uploaded'],
     };
+  }
+
+  @override
+  Future<void> deleteItemImage(
+    String itemId, {
+    required ImageType imageType,
+    int? imageIndex,
+  }) async {
+    deletes.add('$itemId ${imageType.toServerString()} $imageIndex');
+    final held = deleteHold;
+    deleteHold = null;
+    if (held != null) await held.future;
+    final item = items.library[itemId]!;
+    if (imageType == ImageType.backdrop) {
+      final backdrops = List<String>.from(item['BackdropImageTags'] as List);
+      backdrops.removeAt(imageIndex!);
+      items.library[itemId] = {...item, 'BackdropImageTags': backdrops};
+    } else {
+      final tags = Map<String, dynamic>.from(item['ImageTags'] as Map);
+      tags.remove(imageType.toServerString());
+      items.library[itemId] = {...item, 'ImageTags': tags};
+    }
   }
 }
 
@@ -130,7 +173,10 @@ void main() {
     }
   }
 
-  Future<Future<bool>> open(WidgetTester tester) async {
+  Future<Future<bool>> open(
+    WidgetTester tester, {
+    Map<String, dynamic>? card,
+  }) async {
     tester.view.physicalSize = const Size(1400, 2400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -148,7 +194,7 @@ void main() {
                 item: AggregatedItem(
                   id: 'a1',
                   serverId: 'server',
-                  rawData: items.item,
+                  rawData: card ?? items.item,
                 ),
               ),
               child: const Text('open'),
@@ -227,6 +273,357 @@ void main() {
     await settle(tester);
     expect(await result, isTrue);
   });
+
+  // A library card carries one backdrop tag and leaves out images such as the
+  // disc, so Clear All has to work from the dialog's own fetch of the item.
+  final fetchLandings = [
+    'before Clear All',
+    'while it asks',
+    'after confirming',
+  ];
+  for (final landing in fetchLandings) {
+    testWidgets('Clear All removes every image when the fetch lands $landing', (
+      tester,
+    ) async {
+      items.item = {
+        ...items.item,
+        'ImageTags': {'Primary': 'cover', 'Disc': 'disc'},
+        'BackdropImageTags': ['blue', 'green', 'yellow'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      await open(
+        tester,
+        card: {
+          ...items.item,
+          'ImageTags': {'Primary': 'cover'},
+          'BackdropImageTags': ['blue'],
+        },
+      );
+
+      if (landing == 'before Clear All') fetch.complete();
+      await settle(tester);
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      if (landing == 'while it asks') fetch.complete();
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      if (landing == 'after confirming') {
+        expect(admin.deletes, isEmpty);
+        fetch.complete();
+      }
+      await settle(tester);
+
+      expect(items.item['ImageTags'], isEmpty);
+      expect(items.item['BackdropImageTags'], isEmpty);
+    });
+  }
+
+  testWidgets(
+    'Clear All after following the series link clears only the series',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'still'},
+        'BackdropImageTags': <String>[],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+        'BackdropImageTags': ['blue', 'green'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      await open(tester);
+
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      expect(items.library['s1']!['ImageTags'], isEmpty);
+      expect(items.library['s1']!['BackdropImageTags'], isEmpty);
+      fetch.complete();
+      await settle(tester);
+
+      expect(items.item['ImageTags'], {'Primary': 'still'});
+    },
+  );
+
+  testWidgets(
+    'Clear All deletes nothing when the series link is followed while it waits',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'still'},
+        'BackdropImageTags': <String>[],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+        'BackdropImageTags': ['blue', 'green'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      await open(tester);
+
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      fetch.complete();
+      await settle(tester);
+
+      expect(items.item['ImageTags'], {'Primary': 'still'});
+      expect(items.library['s1']!['ImageTags'], {
+        'Primary': 'poster',
+        'Logo': 'logo',
+      });
+      expect(items.library['s1']!['BackdropImageTags'], ['blue', 'green']);
+    },
+  );
+
+  testWidgets(
+    'Clear All after going back to the episode removes every episode image',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'still'},
+        'BackdropImageTags': <String>[],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+        'BackdropImageTags': ['blue', 'green'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      await open(
+        tester,
+        card: {...items.item, 'ImageTags': <String, dynamic>{}},
+      );
+
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      fetch.complete();
+      await settle(tester);
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+
+      expect(items.item['ImageTags'], isEmpty);
+      expect(items.library['s1']!['ImageTags'], {
+        'Primary': 'poster',
+        'Logo': 'logo',
+      });
+      expect(items.library['s1']!['BackdropImageTags'], ['blue', 'green']);
+    },
+  );
+
+  testWidgets(
+    'Clear All finishes the season when the series link is followed between '
+    'deletes',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Season',
+        'Name': 'Season 1',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'cover'},
+        'BackdropImageTags': ['red'],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster'},
+        'BackdropImageTags': ['blue', 'green', 'yellow'],
+      };
+      await open(tester);
+
+      final primaryDelete = Completer<void>();
+      admin.deleteHold = primaryDelete;
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      primaryDelete.complete();
+      await settle(tester);
+
+      expect(admin.deletes, ['a1 Primary null', 'a1 Backdrop 0']);
+      expect(items.item['ImageTags'], isEmpty);
+      expect(items.item['BackdropImageTags'], isEmpty);
+      expect(items.library['s1']!['ImageTags'], {'Primary': 'poster'});
+      expect(items.library['s1']!['BackdropImageTags'], [
+        'blue',
+        'green',
+        'yellow',
+      ]);
+
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+
+      expect(find.text('Season 1'), findsOneWidget);
+      // Primary, Backdrop and Banner are all cleared on the season.
+      expect(find.text(l10n.missing), findsNWidgets(3));
+    },
+  );
+
+  testWidgets(
+    'Clear All refetch stays on the season when the series link was followed',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Season',
+        'Name': 'Season 1',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'cover'},
+        'BackdropImageTags': ['red'],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo', 'Thumb': 'thumb'},
+        'BackdropImageTags': ['blue'],
+      };
+      await open(tester);
+
+      final refetch = Completer<void>();
+      items.hold = refetch;
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      expect(items.item['ImageTags'], isEmpty);
+      expect(items.item['BackdropImageTags'], isEmpty);
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      refetch.complete();
+      await settle(tester);
+
+      expect(find.text('Season 1'), findsNothing);
+      expect(find.text('ShowBlue'), findsOneWidget);
+      // Banner and Art are the series' only empty rows.
+      expect(find.text(l10n.missing), findsNWidgets(2));
+
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+
+      expect(find.text('Season 1'), findsOneWidget);
+      // Primary, Backdrop and Banner are all cleared on the season.
+      expect(find.text(l10n.missing), findsNWidgets(3));
+    },
+  );
+
+  testWidgets(
+    'Clear All refreshes every history entry for the item it cleared',
+    (tester) async {
+      items.item = {
+        'Id': 'a1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesName': 'ShowBlue',
+        'SeriesId': 's1',
+        'ImageTags': {'Primary': 'still'},
+        'BackdropImageTags': <String>[],
+      };
+      items.library['s1'] = {
+        'Id': 's1',
+        'Type': 'Series',
+        'Name': 'ShowBlue',
+        'ImageTags': {'Primary': 'poster', 'Logo': 'logo'},
+        'BackdropImageTags': ['blue'],
+      };
+      await open(tester);
+
+      // Two taps on the series link before the first one loads.
+      final firstTap = Completer<void>();
+      items.hold = firstTap;
+      await tester.tap(find.text('ShowBlue'));
+      await tester.pump();
+      await tester.tap(find.text('ShowBlue'));
+      await settle(tester);
+      firstTap.complete();
+      await settle(tester);
+
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      await tester.tap(find.byIcon(Icons.chevron_left).first);
+      await settle(tester);
+
+      expect(find.text('ShowBlue'), findsOneWidget);
+      expect(find.text('Pilot'), findsNothing);
+      // Every series row: Primary, Backdrop, Banner, Logo, Thumb and Art.
+      expect(find.text(l10n.missing), findsNWidgets(6));
+    },
+  );
+
+  testWidgets(
+    'Clear All deletes nothing once the dialog closes while it waits',
+    (tester) async {
+      items.item = {
+        ...items.item,
+        'ImageTags': {'Primary': 'cover', 'Disc': 'disc'},
+        'BackdropImageTags': ['blue', 'green'],
+      };
+      final fetch = Completer<void>();
+      items.hold = fetch;
+      final result = await open(
+        tester,
+        card: {
+          ...items.item,
+          'ImageTags': {'Primary': 'cover'},
+          'BackdropImageTags': ['blue'],
+        },
+      );
+
+      await tester.tap(find.text(l10n.clearAllArtworkButton));
+      await settle(tester);
+      await tester.tap(find.text(l10n.yes));
+      await settle(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
+      expect(find.byType(ChangeArtworkDialog), findsNothing);
+      fetch.complete();
+      await settle(tester);
+
+      expect(await result, isFalse);
+      expect(items.item['ImageTags'], {'Primary': 'cover', 'Disc': 'disc'});
+      expect(items.item['BackdropImageTags'], ['blue', 'green']);
+    },
+  );
 
   testWidgets('closing without a change reports none', (tester) async {
     final result = await open(tester);

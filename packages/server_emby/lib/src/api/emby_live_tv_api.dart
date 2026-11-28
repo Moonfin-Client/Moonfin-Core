@@ -93,7 +93,11 @@ class EmbyLiveTvApi implements LiveTvApi {
   }) async {
     final response = await _dio.get(
       '/LiveTv/Programs/Recommended',
-      queryParameters: {'Limit': ?limit, 'IsAiring': ?isAiring},
+      queryParameters: {
+        'Limit': ?limit,
+        'IsAiring': ?isAiring,
+        'Fields': 'PrimaryImageAspectRatio',
+      },
     );
     return response.data as Map<String, dynamic>;
   }

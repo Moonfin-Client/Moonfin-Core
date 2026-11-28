@@ -18,8 +18,6 @@ import 'package:moonfin/util/platform_detection.dart';
 
 class _Factory extends Fake implements MediaServerClientFactory {}
 
-class _Cast extends Fake implements CastService {}
-
 class _Mutations extends Fake implements ItemMutationRepository {}
 
 class _Manager extends PlaybackManager {
@@ -37,22 +35,25 @@ class _Manager extends PlaybackManager {
 
 void main() {
   late _Manager manager;
+  late CastService castService;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
     manager = _Manager();
+    castService = CastService(const []);
     GetIt.instance.registerSingleton<PlaybackManager>(manager);
     GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
     GetIt.instance.registerSingleton<MediaServerClientFactory>(_Factory());
-    GetIt.instance.registerSingleton<CastService>(_Cast());
+    GetIt.instance.registerSingleton<CastService>(castService);
     GetIt.instance.registerSingleton<ItemMutationRepository>(_Mutations());
     PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
   });
 
   tearDown(() async {
     PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    await castService.dispose();
     manager.dispose();
     await GetIt.instance.reset();
   });

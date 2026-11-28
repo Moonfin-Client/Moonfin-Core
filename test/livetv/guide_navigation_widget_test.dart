@@ -594,6 +594,56 @@ void main() {
     },
   );
 
+  testWidgets('holding DOWN steps rows, then pages at a steady pace', (
+    tester,
+  ) async {
+    await pumpGuide(tester);
+    await establishAnchor(tester);
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 100));
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pump(const Duration(milliseconds: 180));
+    }
+    expect(_focusedCell()!.row, 4, reason: 'the first repeats move a row each');
+
+    await tester.pump(const Duration(seconds: 1));
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 16));
+    // Comes right behind a page, so it moves nothing.
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+    await _pumpFrames(tester);
+    final page = _focusedCell()!.row - 4;
+    expect(page, greaterThan(1));
+
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+    await _pumpFrames(tester);
+    expect(_focusedCell()!.row, 4 + 2 * page);
+
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('holding DOWN pages the channel column too', (tester) async {
+    await pumpGuide(tester);
+    _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 1600));
+    expect(_focusedLabel(), 'GuideChannel:1');
+
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+    await _pumpFrames(tester);
+    final label = _focusedLabel()!;
+    expect(label, startsWith('GuideChannel:'));
+    expect(int.parse(label.split(':').last), greaterThan(2));
+
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('the channel column handles ordinary vertical arrows', (
     tester,
   ) async {

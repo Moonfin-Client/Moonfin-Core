@@ -2903,7 +2903,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         final playlist = '$base$bookPartsPlaylistExtension';
         final partsDir = Directory('$base.parts');
         await partsDir.create(recursive: true);
-        final saved = <String>[];
+        final saved = <BookPartFile>[];
         try {
           for (final part in parts) {
             final partPath = '${partsDir.path}/${part.fileName}';
@@ -2919,7 +2919,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
               response: response,
             );
             partsDone += size;
-            saved.add(partPath);
+            saved.add((path: partPath, length: part.length));
           }
         } catch (_) {
           // The handlers below clean up one file, so the parts go here.

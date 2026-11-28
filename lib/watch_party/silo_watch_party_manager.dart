@@ -937,7 +937,7 @@ class SiloWatchPartyManager extends ChangeNotifier {
         s,
   ];
 
-  /// The file's default audio track, so every member hears the same one
+  /// The file's default audio track, so every member starts on the same one
   /// whatever their own language preferences.
   static int? defaultAudioIndex(Map<String, dynamic>? source) {
     final audio = streamsOf(source, 'Audio');

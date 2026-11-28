@@ -87,10 +87,24 @@ class _Servers extends Fake implements ServerRepository {
   final Server server;
 
   @override
-  Server? getServer(String id) => server;
+  Server? getServer(String id) => id == server.id ? server : null;
 
   @override
   Future<Server> withCheckedType(Server server) async => server;
+
+  /// Whether the store still held the account's login when deleteServer
+  /// ran. The removal reads the logins it ends before that.
+  final deleted = <(String, bool)>[];
+  AuthenticationStore? store;
+
+  @override
+  Future<void> deleteServer(String serverId) async {
+    deleted.add((serverId, store?.getSiloTokens(serverId, '9') != null));
+  }
+
+  @override
+  Future<void> whileTrusted(Server server, Future<void> Function() work) =>
+      work();
 }
 
 class _Users extends Fake implements UserRepository {
@@ -140,6 +154,7 @@ void main() {
   late AuthenticationStore store;
   late _Factory factory;
   late SessionRepository repo;
+  late _Servers servers;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -152,7 +167,7 @@ void main() {
       _Credentials(),
       factory,
       _Socket(),
-      _Servers(_server),
+      servers = _Servers(_server)..store = store,
       _Users(),
       _PluginSync(),
     );
@@ -238,6 +253,41 @@ void main() {
       await repo.destroyCurrentSession();
 
       expect(factory.client.authApiFake.logouts, 1);
+    });
+
+    test('removing the signed-in server signs out of it, then removes it',
+        () async {
+      await store.putUser(_profile('brady'));
+      repo.setActiveSessionForTest('s1', 'brady');
+
+      await repo.removeServer('s1');
+
+      expect(repo.activeServerId, isNull);
+      expect(factory.client.authApiFake.logouts, 1);
+      // The sign-out ended this login, so the removal has none left to end.
+      expect(servers.deleted, [('s1', false)]);
+    });
+
+    test('removing the signed-in server keeps a sibling profile\'s login '
+        'out of the sign-out', () async {
+      await store.putUser(_profile('brady'));
+      await store.putUser(_profile('kid'));
+      repo.setActiveSessionForTest('s1', 'brady');
+
+      await repo.removeServer('s1');
+
+      expect(repo.activeServerId, isNull);
+      expect(factory.client.authApiFake.logouts, 0);
+      expect(servers.deleted, [('s1', true)]);
+    });
+
+    test('removing another server keeps the session', () async {
+      repo.setActiveSessionForTest('s1', 'brady');
+
+      await repo.removeServer('s2');
+
+      expect(repo.activeServerId, 's1');
+      expect(servers.deleted.map((d) => d.$1), ['s2']);
     });
   });
 }

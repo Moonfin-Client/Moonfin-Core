@@ -4288,6 +4288,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsAudioPassthroughOutputIecLabel => 'Uygulama (IEC)';
 
   @override
+  String get settingsAudioPassthroughOutputIecTrueHd =>
+      'App packer for TrueHD only';
+
+  @override
+  String get settingsAudioPassthroughOutputIecTrueHdLabel =>
+      'App (TrueHD only)';
+
+  @override
+  String get settingsAudioPassthroughOutputPlatformHint =>
+      'Works with most TVs and receivers. Start here.';
+
+  @override
+  String get settingsAudioPassthroughOutputIecHint =>
+      'Try this if passthrough is silent or glitchy with Automatic.';
+
+  @override
+  String get settingsAudioPassthroughOutputIecTrueHdHint =>
+      'Try this if TrueHD plays without Atmos on Automatic, but other formats won\'t start with the app packer.';
+
+  @override
   String get settingsAudioPassthroughFallback => 'Decode Silent Passthrough';
 
   @override
@@ -13267,6 +13287,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get preferExternalSubtitlesSubtitle =>
       'Harici altyazı dosyalarına gömülü izlerden öncelik verir.';
+
+  @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
 
   @override
   String get webDiagnostics => 'Web Tanılama';

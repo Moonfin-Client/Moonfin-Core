@@ -3039,6 +3039,7 @@ class _MediaBarState extends State<MediaBar>
                     )
                   : Video(
                       controller: _trailerController!,
+                      wakelock: false,
                       controls: NoVideoControls,
                       fit: BoxFit.cover,
                       pauseUponEnteringBackgroundMode: false,

@@ -955,6 +955,7 @@ class _MpvVideoSurface extends StatelessWidget {
     }
     return Video(
       controller: videoController,
+      wakelock: false,
       controls: NoVideoControls,
       fill: Colors.black,
       // The full player paused on backgrounding; a thumbnail must not.

@@ -3,12 +3,13 @@
 // ignore_for_file: experimental_member_use
 library;
 
-// Re-exported so the app can wire the adaptive scope, the startup shader
-// warm-up and the jelly indicator without depending on liquid_glass_widgets
-// directly.
+// Re-exported so the app can wire the adaptive and accessibility scopes, the
+// startup shader warm-up and the jelly indicator without depending on
+// liquid_glass_widgets directly.
 export 'package:liquid_glass_widgets/liquid_glass_widgets.dart'
     show
         AnimatedGlassIndicator,
+        GlassAccessibilityScope,
         GlassAdaptiveScope,
         GlassQuality,
         GlassSpring,
