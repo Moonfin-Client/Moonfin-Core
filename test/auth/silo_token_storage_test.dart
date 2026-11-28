@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/auth/models/server.dart';
 import 'package:moonfin/auth/services/silo_token_storage.dart';
 import 'package:moonfin/auth/store/authentication_store.dart';
 import 'package:server_core/server_core.dart';
@@ -89,6 +90,17 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     store = AuthenticationStore();
     await store.init();
+    await store.putServer(
+      Server(
+        id: 's1',
+        name: 'Silo',
+        address: 'http://silo.test',
+        version: '1',
+        serverType: ServerType.silo,
+        dateAdded: DateTime.utc(2026),
+        dateLastAccessed: DateTime.utc(2026),
+      ),
+    );
     storage = SiloTokenStorage(store);
   });
 
@@ -148,6 +160,20 @@ void main() {
     await pumpEventQueue();
 
     // Silo refused it, so nothing should ever restore it again.
+    expect(storage.read('s1', '9'), isNull);
+  });
+
+  test('a refresh after the server was removed does not bring it back',
+      () async {
+    final server = _RefreshServer();
+    final client = _silo(server);
+    storage.bind(client: client, serverId: 's1', accountId: '9');
+    await store.removeServer('s1');
+
+    await client.refreshSession();
+    await pumpEventQueue();
+
+    expect(store.getServers(), isEmpty);
     expect(storage.read('s1', '9'), isNull);
   });
 

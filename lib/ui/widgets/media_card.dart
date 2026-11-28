@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import 'seerr/seerr_media_type_badge.dart';
 import '../../preference/preference_constants.dart';
+import '../../util/artwork_request_size.dart';
 import '../../util/platform_detection.dart';
 import '../../util/tv_ui_scale.dart';
 import '../../util/focus/dpad_keys.dart';
@@ -61,8 +62,11 @@ class MediaCard extends StatefulWidget {
   /// Public so a prefetch of a card's image uses the same cap the card does.
   /// A prefetch capped differently lands under a different cache key and the
   /// card decodes the image a second time.
+  ///
+  /// 960 and 640 at the 2x phone cap, scaled with the density cap so a 4K TV
+  /// can hold the wide banners and thumbs it requests.
   static int decodeMaxWidthFor(double aspectRatio) =>
-      aspectRatio > 1.2 ? 960 : 640;
+      ((aspectRatio > 1.2 ? 480 : 320) * artworkDevicePixelRatioCap()).round();
 
   static const double _labelGap = 6;
 
@@ -130,6 +134,10 @@ class MediaCard extends StatefulWidget {
   final Color? titleColor;
   final Color? subtitleColor;
   final bool isGenreFallback;
+
+  /// Shows the whole image inside the card instead of filling the card and
+  /// cropping it.
+  final bool fitImage;
 
   /// Puts the title and subtitle on one line, which is what the very wide
   /// banner artwork has room for. The caller sets this rather than having the
@@ -212,6 +220,7 @@ class MediaCard extends StatefulWidget {
     this.imageSourceAspectRatio,
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.fitImage = false,
     this.isBanner = false,
     this.showLabel = true,
     this.classicHomeLabel = false,
@@ -495,6 +504,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       posterBadgeItemId: widget.posterBadgeItemId,
                       recordingItemId: widget.recordingItemId,
                       isGenreFallback: widget.isGenreFallback,
+                      fitImage: widget.fitImage,
                     ),
                   ),
                 ),
@@ -750,6 +760,7 @@ class _CardImage extends StatelessWidget {
   final double? imageSourceAspectRatio;
   final bool overlayOccupiesTopLeft;
   final bool isGenreFallback;
+  final bool fitImage;
   final String? animeMarkerItemId;
   final String? posterBadgeItemId;
   final String? recordingItemId;
@@ -777,6 +788,7 @@ class _CardImage extends StatelessWidget {
     this.imageSourceAspectRatio,
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.fitImage = false,
     this.animeMarkerItemId,
     this.posterBadgeItemId,
     this.recordingItemId,
@@ -858,8 +870,9 @@ class _CardImage extends StatelessWidget {
                             BoundedNetworkImage(
                               imageUrl: imageUrl!,
                               fit:
-                                  (itemType == 'Network' ||
-                                      itemType == 'Studio')
+                                  fitImage ||
+                                      itemType == 'Network' ||
+                                      itemType == 'Studio'
                                   ? BoxFit.contain
                                   : BoxFit.cover,
                               fadeInDuration: Duration.zero,

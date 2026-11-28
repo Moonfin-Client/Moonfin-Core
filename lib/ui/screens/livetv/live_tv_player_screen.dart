@@ -2276,6 +2276,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
     return Video(
       controller: controller,
+      wakelock: false,
       controls: NoVideoControls,
       fit: BoxFit.contain,
       fill: Colors.black,

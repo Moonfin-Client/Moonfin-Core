@@ -100,6 +100,17 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   double _volumeBeforeMute = 100.0;
   bool _radioFetchInFlight = false;
   String? _radioSeededItemId;
+  bool _castOwnsTransport = false;
+  bool _castDragStarted = false;
+  double? _castDragPositionMs;
+  String? _castDragTargetId;
+  String? _castDragItemId;
+  late final Listenable _castChanges = Listenable.merge([
+    _castService.activeKindNotifier,
+    _castService.castItemNotifier,
+    _castService.remoteStateNotifier,
+    _castService.remotePositionNotifier,
+  ]);
 
   PlayerState get _state => _manager.state;
   QueueService get _queue => _manager.queueService;
@@ -156,6 +167,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         _tvOverlayFocus.requestFocus();
       });
     }
+    _castChanges.addListener(_onCastChanged);
+    _takeCastTransport(notify: false);
     _loadLyricsIfNeeded();
   }
 
@@ -172,9 +185,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   void _seekTvRelative(int deltaMs) {
-    final totalMs = _state.duration.inMilliseconds;
+    final totalMs = _transportDuration(_resolveCurrentItem()).inMilliseconds;
     if (totalMs <= 0) return;
-    final currentMs = _state.position.inMilliseconds;
+    final currentMs = _transportPosition.inMilliseconds;
     final targetMs = (currentMs + deltaMs).clamp(0, totalMs).toInt();
     unawaited(_manager.seekTo(Duration(milliseconds: targetMs)));
   }
@@ -202,7 +215,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   int _currentLyricLineIndex() {
     final lyrics = _lyrics;
     if (lyrics == null || !lyrics.isSynced) return 0;
-    final pos = _state.position;
+    final pos = _transportPosition;
     var idx = 0;
     for (var i = lyrics.lines.length - 1; i >= 0; i--) {
       if (pos >= lyrics.lines[i].start) {
@@ -321,7 +334,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       case _DockAction.previous:
         unawaited(_manager.previous());
       case _DockAction.playPause:
-        unawaited(_state.isPlaying ? _manager.pause() : _manager.resume());
+        unawaited(_isPlayingShown ? _manager.pause() : _manager.resume());
       case _DockAction.next:
         unawaited(_manager.next());
       case _DockAction.repeat:
@@ -802,6 +815,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
 
   @override
   void dispose() {
+    _castChanges.removeListener(_onCastChanged);
+    if (_castOwnsTransport) _manager.setTransportInterceptor(null);
     for (final sub in _subs) {
       sub.cancel();
     }
@@ -815,6 +830,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   AggregatedItem? _resolveCurrentItem() {
+    if (_castOwnsTransport) {
+      final castItem = _castService.castItemNotifier.value;
+      if (castItem != null) return castItem;
+    }
     final currentItem = _queue.currentItem;
     if (currentItem is AggregatedItem) return currentItem;
     final meta = _manager.currentOfflineMetadata;
@@ -952,7 +971,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         ? LyricsView(
             lyrics: _lyrics!,
             positionStream: _state.positionStream,
-            position: _state.position,
+            position: _transportPosition,
             onSeekToLine: (d) => unawaited(_manager.seekTo(d)),
           )
         : null;
@@ -1029,7 +1048,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                   ],
                 ),
         ),
-        _buildProgressBar(),
+        _buildProgressBar(item),
         _buildTransportControls(item),
         _buildMobileActions(item),
         const SizedBox(height: AppSpacing.spaceLg),
@@ -1329,7 +1348,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildProgressBar(),
+              _buildProgressBar(item),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.spaceLg,
@@ -1498,7 +1517,65 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       subtitleStreamIndex: _manager.subtitleStreamIndex,
     );
     await pauseLocalPlaybackForCastHandoff();
+    _takeCastTransport();
   }
+
+  // Routes transport and now-playing display to the active cast receiver
+  // rather than the paused local player. AirPlay plays through the local
+  // player, so it needs none of this.
+  void _takeCastTransport({bool notify = true}) {
+    if (!mounted || _castOwnsTransport || _manager.hasTransportInterceptor) {
+      return;
+    }
+    final kind = _castService.activeKind;
+    if (kind == null || kind == CastTargetKind.airPlay) return;
+    _manager.setTransportInterceptor(_castTransport);
+    if (notify) {
+      setState(() => _castOwnsTransport = true);
+    } else {
+      _castOwnsTransport = true;
+    }
+  }
+
+  void _onCastChanged() {
+    if (!_castOwnsTransport) return;
+    if (_castService.activeKind == null) {
+      _manager.setTransportInterceptor(null);
+      _castOwnsTransport = false;
+      _castDragPositionMs = null;
+      _castDragTargetId = null;
+      _castDragItemId = null;
+    } else if (_castDragPositionMs != null &&
+        (_castService.activeTargetNotifier.value?.id != _castDragTargetId ||
+            _castService.castItemNotifier.value?.id != _castDragItemId)) {
+      _castDragPositionMs = null;
+      _castDragTargetId = null;
+      _castDragItemId = null;
+    }
+    if (mounted) {
+      setState(() {});
+      unawaited(_loadLyricsIfNeeded());
+    }
+  }
+
+  Future<bool> _castTransport(TransportAction action, {Duration? position}) =>
+      runCastTransport(
+        _castService,
+        action,
+        _runCastAction,
+        position: position,
+      );
+
+  bool get _isPlayingShown => _castOwnsTransport
+      ? castReportsPlaying(_castService)
+      : _state.isPlaying;
+
+  Duration get _transportPosition => _castOwnsTransport
+      ? Duration(microseconds: _castService.remotePositionNotifier.value ~/ 10)
+      : _state.position;
+
+  Duration _transportDuration(AggregatedItem? item) =>
+      _castOwnsTransport ? (item?.runtime ?? _state.duration) : _state.duration;
 
   IconData _castIcon(CastTargetKind? kind) => switch (kind) {
     CastTargetKind.googleCast => Icons.cast_connected,
@@ -1764,7 +1841,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         lyrics: lyrics,
         textAlign: TextAlign.start,
         positionStream: _state.positionStream,
-        position: _state.position,
+        position: _transportPosition,
         onSeekToLine: (d) => unawaited(_manager.seekTo(d)),
       );
     }
@@ -1804,9 +1881,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     );
   }
 
-  Widget _buildProgressBar() {
-    final pos = _state.position;
-    final dur = _state.duration;
+  Widget _buildProgressBar(AggregatedItem? item) {
+    final pos = _castOwnsTransport && _castDragPositionMs != null
+        ? Duration(milliseconds: _castDragPositionMs!.round())
+        : _transportPosition;
+    final dur = _transportDuration(item);
     final maxMs = dur.inMilliseconds.toDouble();
     final isTvFocused =
         _isWidePlayer &&
@@ -1835,8 +1914,41 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                   ? pos.inMilliseconds.toDouble().clamp(0, maxMs)
                   : 0,
               max: maxMs > 0 ? maxMs : 1,
+              onChangeStart: (v) {
+                if (!_castOwnsTransport) return;
+                _castDragStarted = true;
+                _castDragTargetId =
+                    _castService.activeTargetNotifier.value?.id;
+                _castDragItemId = _castService.castItemNotifier.value?.id;
+                setState(() => _castDragPositionMs = v);
+              },
               onChanged: (v) {
+                if (_castDragStarted) {
+                  if (_castOwnsTransport && _castDragPositionMs != null) {
+                    setState(() => _castDragPositionMs = v);
+                  }
+                  return;
+                }
                 _manager.seekTo(Duration(milliseconds: v.toInt()));
+              },
+              onChangeEnd: (v) {
+                if (!_castDragStarted) return;
+                final valid = _castOwnsTransport &&
+                    _castDragPositionMs != null &&
+                    _castService.activeTargetNotifier.value?.id ==
+                        _castDragTargetId &&
+                    _castService.castItemNotifier.value?.id == _castDragItemId;
+                _castDragStarted = false;
+                setState(() {
+                  _castDragPositionMs = null;
+                  _castDragTargetId = null;
+                  _castDragItemId = null;
+                });
+                if (valid) {
+                  unawaited(
+                    _manager.seekTo(Duration(milliseconds: v.toInt())),
+                  );
+                }
               },
             ),
           ),
@@ -1956,7 +2068,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         height: playSize,
         decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
         child: button(
-          _state.isPlaying ? Icons.pause : Icons.play_arrow,
+          _isPlayingShown ? Icons.pause : Icons.play_arrow,
           size: playSize * 0.62,
         ),
       ),

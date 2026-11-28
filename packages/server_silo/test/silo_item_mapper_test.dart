@@ -621,9 +621,19 @@ void main() {
       expect(ud['LastPlayedDate'], '2026-10-09T01:54:33.0000000Z');
     });
 
-    test('a played item has no resume position', () {
+    test('a played item being rewatched keeps its position', () {
       final ud = userData({
         'user_data': {'position_seconds': 600, 'duration_seconds': 2400},
+        'user_state': {'played': true},
+      });
+      expect(ud['PlaybackPositionTicks'], secondsToTicks(600));
+      expect(ud['PlayedPercentage'], 25);
+      expect(ud['Played'], isTrue);
+    });
+
+    test('a played item with no position has none', () {
+      final ud = userData({
+        'user_data': {'duration_seconds': 2400},
         'user_state': {'played': true},
       });
       expect(ud['PlaybackPositionTicks'], 0);
@@ -659,7 +669,7 @@ void main() {
 
     test('a completed progress entry is played, at 0', () {
       final ud = siloProgressToUserData({
-        'position_seconds': 2800,
+        'position_seconds': 0,
         'duration_seconds': 2832,
         'completed': true,
       });
@@ -667,6 +677,17 @@ void main() {
       expect(ud['PlayCount'], 1);
       expect(ud['PlaybackPositionTicks'], 0);
       expect(ud.containsKey('PlayedPercentage'), isFalse);
+    });
+
+    test('a completed progress entry being rewatched keeps its position', () {
+      final ud = siloProgressToUserData({
+        'position_seconds': 708,
+        'duration_seconds': 2832,
+        'completed': true,
+      });
+      expect(ud['Played'], isTrue);
+      expect(ud['PlaybackPositionTicks'], secondsToTicks(708));
+      expect(ud['PlayedPercentage'], 25);
     });
   });
 

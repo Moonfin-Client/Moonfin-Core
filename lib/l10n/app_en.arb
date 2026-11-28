@@ -5695,6 +5695,26 @@
   "settingsAudioPassthroughOutputPlatform": "Automatic, system packer (AudioTrack RAW)",
   "settingsAudioPassthroughOutputIec": "App packer (AudioTrack IEC)",
   "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+  "settingsAudioPassthroughOutputIecTrueHd": "App packer for TrueHD only",
+  "@settingsAudioPassthroughOutputIecTrueHd": {
+    "description": "Passthrough Output option where the app packs only TrueHD and the system handles every other format (Android TV, Media3 engine)"
+  },
+  "settingsAudioPassthroughOutputIecTrueHdLabel": "App (TrueHD only)",
+  "@settingsAudioPassthroughOutputIecTrueHdLabel": {
+    "description": "Short value shown on the Passthrough Output setting row when the TrueHD-only app packer is selected"
+  },
+  "settingsAudioPassthroughOutputPlatformHint": "Works with most TVs and receivers. Start here.",
+  "@settingsAudioPassthroughOutputPlatformHint": {
+    "description": "Hint under the Automatic option in the Passthrough Output picker, saying when to use it"
+  },
+  "settingsAudioPassthroughOutputIecHint": "Try this if passthrough is silent or glitchy with Automatic.",
+  "@settingsAudioPassthroughOutputIecHint": {
+    "description": "Hint under the App packer option in the Passthrough Output picker, saying when to use it"
+  },
+  "settingsAudioPassthroughOutputIecTrueHdHint": "Try this if TrueHD plays without Atmos on Automatic, but other formats won't start with the app packer.",
+  "@settingsAudioPassthroughOutputIecTrueHdHint": {
+    "description": "Hint under the TrueHD-only app packer option in the Passthrough Output picker, saying when to use it"
+  },
   "settingsAudioPassthroughFallback": "Decode Silent Passthrough",
   "@settingsAudioPassthroughFallback": {
     "description": "Title of the Linux switch that decodes a passthrough track on the device when the output plays it silently"
@@ -12039,6 +12059,14 @@
   "preferTextSubtitlesSubtitle": "Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).",
   "preferExternalSubtitles": "Prefer External Subtitles",
   "preferExternalSubtitlesSubtitle": "Prioritize external subtitle files over embedded tracks.",
+  "rewindSubtitles": "Subtitles on Short Rewind",
+  "@rewindSubtitles": {
+    "description": "Setting that turns subtitles on for a moment after the viewer goes back a few seconds"
+  },
+  "rewindSubtitlesDescription": "With subtitles off, going back 30 seconds or less shows them until playback catches up.",
+  "@rewindSubtitlesDescription": {
+    "description": "Description for the subtitles on short rewind setting"
+  },
   "webDiagnostics": "Web diagnostics",
   "webDiagnosticsTitle": "Moonfin Web Diagnostics",
   "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",

@@ -30,11 +30,28 @@ class ServerRepository {
   /// they're being added.
   final Set<String> _typedHosts = {};
 
+  /// Hosts of removed servers whose saved logins are still being ended. A
+  /// list, so two removals on the same host each keep it until they finish.
+  final List<String> _leavingHosts = [];
+
+  /// Keeps [server]'s host trusted while [work] runs, so the logins of a
+  /// server that was just removed still end over its self-signed certificate.
+  Future<void> whileTrusted(Server server, Future<void> Function() work) async {
+    final host = Uri.tryParse(server.address)?.host ?? '';
+    _leavingHosts.add(host);
+    try {
+      await work();
+    } finally {
+      _leavingHosts.remove(host);
+    }
+  }
+
   /// Whether [host] belongs to a saved server at any address it's reached on,
   /// or to one the user typed. Self-signed certificates are only accepted for
   /// these.
   bool _isOwnServerHost(String host) =>
       _typedHosts.contains(host) ||
+      _leavingHosts.contains(host) ||
       _servers.any(
         (s) => [
           s.address,
@@ -281,6 +298,9 @@ class ServerRepository {
     await _authStore.putServer(server);
   }
 
+  /// Removes [serverId] and its saved users from this device only. Their
+  /// logins stay valid on the server: SessionRepository.removeServer ends
+  /// them, so removing a server the user had signed in to goes through it.
   Future<void> deleteServer(String serverId) async {
     final removed = getServer(serverId);
     _servers.removeWhere((s) => s.id == serverId);

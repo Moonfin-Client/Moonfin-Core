@@ -634,6 +634,10 @@ class NativeApplePlayerBackend
       supportsAv1Hdr10Plus: PlatformDetection.supportsAv1Hdr10Plus,
       rendersAv1DoviViaHdr10BaseLayer: true,
       supportsVc1: PlatformDetection.supportsVc1,
+      // AetherEngine demuxes AVI and decodes MPEG-4 Part 2 in software.
+      supportsMpeg4: true,
+      directPlayVideoContainers:
+          '${DeviceProfileBuilder.defaultDirectPlayVideoContainers},avi',
       maxResolutionAvcWidth: PlatformDetection.maxResolutionAvcWidth,
       maxResolutionAvcHeight: PlatformDetection.maxResolutionAvcHeight,
       maxResolutionHevcWidth: PlatformDetection.maxResolutionHevcWidth,

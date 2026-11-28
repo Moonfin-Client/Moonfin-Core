@@ -30,6 +30,7 @@ import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin/ui/widgets/playback/next_up_overlay.dart';
 import 'package:moonfin/ui/widgets/playback/skip_segment_overlay.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:moonfin/watch_party/silo_watch_party_manager.dart';
 
 import '../util/media_segment_fakes.dart';
 
@@ -138,6 +139,13 @@ class _Screensaver extends Fake implements ScreensaverController {
 }
 
 class _Lifecycle extends Fake implements PlaybackLifecycleHandler {}
+
+class _InParty extends SiloWatchPartyManager {
+  _InParty(super.playbackManager);
+
+  @override
+  bool get controlsPlayback => true;
+}
 
 class _Users extends Fake implements UserRepository {
   @override
@@ -1381,6 +1389,21 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('keeps the audio button in a Watch Party', (tester) async {
+    GetIt.instance.registerSingleton<SiloWatchPartyManager>(_InParty(manager));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byIcon(Icons.audiotrack_outlined), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('a mobile surface tap still waits out a double-tap skip', (
     tester,
   ) async {
@@ -1415,6 +1438,105 @@ void main() {
       findsNothing,
       reason: 'a double tap leaves the controls as they were',
     );
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  group('an iOS player left in the background', () {
+    Future<void> background(WidgetTester tester) async {
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      await tester.pump();
+    }
+
+    Future<void> foreground(WidgetTester tester) async {
+      for (final state in [
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      // Coming back through hidden asks for picture in picture again, which
+      // waits a moment before giving up.
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    Future<void> playing(WidgetTester tester, {required bool paused}) async {
+      await mountRoutedPlayer(tester);
+      manager.state.setDuration(const Duration(minutes: 40));
+      manager.state.setPosition(const Duration(minutes: 12));
+      manager.state.setPlaying(!paused);
+      await tester.pump();
+    }
+
+    testWidgets('closes once it has sat paused for a while', (tester) async {
+      await playing(tester, paused: true);
+      await background(tester);
+
+      await tester.pump(const Duration(seconds: 14));
+      expect(manager.stopCalls, 0, reason: 'a quick app switch keeps it');
+      await tester.pump(const Duration(seconds: 2));
+      expect(manager.stopCalls, 1);
+
+      await foreground(tester);
+      await tester.pumpAndSettle();
+      expect(find.byType(VideoPlayerScreen), findsNothing);
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+
+    testWidgets('leaves playing video alone', (tester) async {
+      await playing(tester, paused: false);
+      await background(tester);
+
+      await tester.pump(const Duration(seconds: 20));
+      expect(manager.stopCalls, 0);
+      await foreground(tester);
+      await tester.pumpWidget(const SizedBox());
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+  });
+
+  testWidgets('quick skips each move a full step', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    manager.state.setDuration(const Duration(hours: 2));
+    manager.state.setPosition(const Duration(minutes: 30));
+    manager.state.setPlaying(true);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 10));
+
+    // The fake player never reports where a seek landed, like a real one in
+    // the moment after it.
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    expect(manager.seeks, const [
+      Duration(minutes: 30, seconds: 30),
+      Duration(minutes: 31),
+      Duration(minutes: 31, seconds: 30),
+    ]);
+
+    manager.state.setPosition(const Duration(minutes: 31, seconds: 30));
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.pump();
+    expect(manager.seeks.last, const Duration(minutes: 31, seconds: 20));
+
+    // A seek that never lands stops counting after a moment.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(manager.seeks.last, const Duration(minutes: 32));
 
     await tester.pumpWidget(const SizedBox());
   });

@@ -335,12 +335,24 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                       AudioPassthroughOutput.platform => l10n.auto,
                       AudioPassthroughOutput.iecPacker =>
                         l10n.settingsAudioPassthroughOutputIecLabel,
+                      AudioPassthroughOutput.iecTrueHd =>
+                        l10n.settingsAudioPassthroughOutputIecTrueHdLabel,
                     },
                     dialogLabelOf: (output) => switch (output) {
                       AudioPassthroughOutput.platform =>
                         l10n.settingsAudioPassthroughOutputPlatform,
                       AudioPassthroughOutput.iecPacker =>
                         l10n.settingsAudioPassthroughOutputIec,
+                      AudioPassthroughOutput.iecTrueHd =>
+                        l10n.settingsAudioPassthroughOutputIecTrueHd,
+                    },
+                    dialogSubtitleOf: (output) => switch (output) {
+                      AudioPassthroughOutput.platform =>
+                        l10n.settingsAudioPassthroughOutputPlatformHint,
+                      AudioPassthroughOutput.iecPacker =>
+                        l10n.settingsAudioPassthroughOutputIecHint,
+                      AudioPassthroughOutput.iecTrueHd =>
+                        l10n.settingsAudioPassthroughOutputIecTrueHdHint,
                     },
                   ),
                 if (PlatformDetection.isLinux)

@@ -350,6 +350,14 @@ class _MoonfinAppState extends State<MoonfinApp> {
                             onQualityChanged: _onGlassQualityChanged,
                             child: content,
                           );
+                          // The package reads Increase Contrast as Reduce
+                          // Transparency and swaps every pane for a whitened
+                          // frost, which washes out light text on Moonfin's
+                          // dark surfaces.
+                          content = GlassAccessibilityScope(
+                            reduceTransparency: false,
+                            child: content,
+                          );
                         }
                         // Has to sit inside MaterialApp for ScrollIntent to
                         // resolve, above the router so every route is covered,
@@ -933,8 +941,8 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final paused = state != AppLifecycleState.resumed;
-    _screensaverController.activityPaused = paused;
+    _screensaverController.activityPaused =
+        ScreensaverController.pausesActivity(state);
     _maybePausePlaybackForBackground(state);
     if (_restoresWindowFocus) _carryFocusAcrossWindowSwitch(state);
   }

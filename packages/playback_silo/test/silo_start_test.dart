@@ -37,6 +37,45 @@ SiloMediaStreamResolver _resolver(SiloTestServer server) => SiloPlugin(
 
 void main() {
   group('the start request', () {
+    test('Media3\'s profile 7 conversion, offered unless a server stream '
+        'was asked for', () async {
+      Future<Map<String, dynamic>> start({required bool directPlay}) async {
+        final server = _server();
+        await SiloPlugin(
+          siloTestClient(server),
+          environment: () => SiloPlaybackEnvironment(
+            platform: 'android',
+            traits: SiloPlayerTraits.media3.withDolbyVision7Transform(
+              SiloDolbyVision7Transform.toHdr10,
+            ),
+          ),
+        ).createStreamResolver().resolve(
+          siloTestItem('silo/watch_movie.json'),
+          deviceProfile: _profile,
+          enableDirectPlay: directPlay,
+        );
+        return server.bodies(startPath).single;
+      }
+
+      List<dynamic> transformations(Map<String, dynamic> body) =>
+          ((body['client_playback_context'] as Map)['deliveries']
+                  as Map)['original_http']['transformations']
+              as List;
+
+      final direct = await start(directPlay: true);
+      expect(siloSchemaErrors('PlaybackStartBody', direct), isEmpty);
+      expect(direct['client_features'], contains('client_video_transformations_v1'));
+      expect(transformations(direct).single['name'], 'client_dv7_to_hdr10');
+
+      final server = await start(directPlay: false);
+      expect(siloSchemaErrors('PlaybackStartBody', server), isEmpty);
+      expect(
+        server['client_features'],
+        isNot(contains('client_video_transformations_v1')),
+      );
+      expect(transformations(server), isEmpty);
+    });
+
     test('what Moonfin asks for, in Silo\'s contract', () async {
       final server = _server();
       await _resolver(server).resolve(

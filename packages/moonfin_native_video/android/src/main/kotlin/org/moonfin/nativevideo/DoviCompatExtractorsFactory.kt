@@ -7,12 +7,14 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.ParsableByteArray
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.extractor.Extractor
+import androidx.media3.extractor.ExtractorInput
 import androidx.media3.extractor.ExtractorOutput
 import androidx.media3.extractor.ExtractorsFactory
 import androidx.media3.extractor.ForwardingExtractor
 import androidx.media3.extractor.ForwardingExtractorOutput
 import androidx.media3.extractor.ForwardingExtractorsFactory
 import androidx.media3.extractor.ForwardingTrackOutput
+import androidx.media3.extractor.PositionHolder
 import androidx.media3.extractor.TrackOutput
 import androidx.media3.extractor.text.SubtitleParser
 import android.net.Uri
@@ -53,6 +55,17 @@ data class DoviCompatReport(
     /** The track format before and after the rewrite. */
     val formatSummary: String,
     val detail: String?,
+    /**
+     * What the first RPU says the enhancement layer is: "FEL", "MEL", "no
+     * residual", "unknown", or "unreadable" with the reason. Null until that
+     * RPU is read, which only happens while converting.
+     */
+    val enhancementLayer: String?,
+    /**
+     * How the FEL curve fold is doing, null for a stream it doesn't apply to
+     * (anything but a full enhancement layer converted to profile 8.1).
+     */
+    val fold: String?,
 )
 
 /** How this player handles a Dolby Vision profile 7 stream. */
@@ -128,7 +141,9 @@ class DoviCompatExtractorsFactory(
     delegate: ExtractorsFactory,
     private val mode: () -> DoviCompatMode,
     private val stripDolbyVision: () -> Boolean,
-    private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
+    private val converter: DoviRpuConverter,
+    /** True while the player's own video decoder exists, which the fold waits for. */
+    private val videoDecoderReady: () -> Boolean,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingExtractorsFactory(delegate) {
 
@@ -169,7 +184,9 @@ class DoviCompatExtractorsFactory(
 
     private fun wrap(extractors: Array<Extractor>): Array<Extractor> =
         Array(extractors.size) { index ->
-            DoviCompatExtractor(extractors[index], mode, stripDolbyVision, convertNal62, onReport)
+            DoviCompatExtractor(
+                extractors[index], mode, stripDolbyVision, converter, videoDecoderReady, onReport,
+            )
         }
 }
 
@@ -178,15 +195,17 @@ private class DoviCompatExtractor(
     private val delegate: Extractor,
     private val mode: () -> DoviCompatMode,
     private val stripDolbyVision: () -> Boolean,
-    private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
+    private val converter: DoviRpuConverter,
+    private val videoDecoderReady: () -> Boolean,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingExtractor(delegate) {
 
     private var output: DoviCompatExtractorOutput? = null
 
     override fun init(output: ExtractorOutput) {
-        val wrapped =
-            DoviCompatExtractorOutput(output, mode, stripDolbyVision, convertNal62, onReport)
+        val wrapped = DoviCompatExtractorOutput(
+            output, mode, stripDolbyVision, converter, videoDecoderReady, onReport,
+        )
         this.output = wrapped
         (delegate as? MoonfinMatroskaExtractor)?.doviBlockAdditionalListener =
             wrapped::onDoviBlockAdditional
@@ -197,6 +216,19 @@ private class DoviCompatExtractor(
         output?.resetSampleState()
         super.seek(position, timeUs)
     }
+
+    // A track output can be holding a GOP back for the FEL fold, and nothing
+    // else tells it the source has ended.
+    override fun read(input: ExtractorInput, seekPosition: PositionHolder): Int {
+        val result = super.read(input, seekPosition)
+        if (result == Extractor.RESULT_END_OF_INPUT) output?.endOfInput()
+        return result
+    }
+
+    override fun release() {
+        output?.release()
+        super.release()
+    }
 }
 
 @UnstableApi
@@ -204,7 +236,8 @@ private class DoviCompatExtractorOutput(
     delegate: ExtractorOutput,
     private val mode: () -> DoviCompatMode,
     private val stripDolbyVision: () -> Boolean,
-    private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
+    private val converter: DoviRpuConverter,
+    private val videoDecoderReady: () -> Boolean,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingExtractorOutput(delegate) {
 
@@ -216,7 +249,7 @@ private class DoviCompatExtractorOutput(
             return inner
         }
         return videoTracks.getOrPut(id) {
-            DoviCompatTrackOutput(inner, mode, stripDolbyVision, convertNal62, onReport)
+            DoviCompatTrackOutput(inner, mode, stripDolbyVision, converter, videoDecoderReady, onReport)
         }
     }
 
@@ -232,6 +265,18 @@ private class DoviCompatExtractorOutput(
     fun resetSampleState() {
         for (track in videoTracks.values) {
             track.resetSampleState()
+        }
+    }
+
+    fun endOfInput() {
+        for (track in videoTracks.values) {
+            track.endOfInput()
+        }
+    }
+
+    fun release() {
+        for (track in videoTracks.values) {
+            track.release()
         }
     }
 }
@@ -257,7 +302,8 @@ private class DoviCompatTrackOutput(
     delegate: TrackOutput,
     private val mode: () -> DoviCompatMode,
     private val stripDolbyVision: () -> Boolean,
-    private val convertNal62: (ByteArray, Int, Int) -> ByteArray?,
+    private val converter: DoviRpuConverter,
+    private val videoDecoderReady: () -> Boolean,
     private val onReport: (DoviCompatReport) -> Unit,
 ) : ForwardingTrackOutput(delegate) {
 
@@ -288,6 +334,22 @@ private class DoviCompatTrackOutput(
     private var nextProgressReport = 10
     private var bytesAwaitingFirstSample = 0L
 
+    /**
+     * Whether the stream's enhancement layer is a full one, settled by its
+     * first RPU. An FEL RPU converts with its own mapping kept, since mode 2
+     * alone sets it to no-op and the picture comes out too dim.
+     */
+    private var fel: Boolean? = null
+    private var enhancementLayer: String? = null
+    /** Holds GOPs back for the curve fold while it runs. */
+    private var folder: FelGopFolder? = null
+    private var stoppedFolder: FelGopFolder? = null
+    private var foldOffReason: String? = null
+    private var reportedFoldStart = false
+    private var heldRpu: ByteArray? = null
+    private var heldRpuInfo: FelRpuInfo? = null
+    private val heldEnhancement = java.io.ByteArrayOutputStream()
+
     /** What samples are filtered as, before and after the format settles. */
     private val effectiveMode: DoviCompatMode?
         get() = applied ?: requested
@@ -313,9 +375,14 @@ private class DoviCompatTrackOutput(
                 bytesOut = bytesOut,
                 formatSummary = describeFormats(),
                 detail = detail,
+                enhancementLayer = enhancementLayer,
+                fold = describeFold(),
             ),
         )
     }
+
+    private fun describeFold(): String? =
+        if (fel != true) null else (folder ?: stoppedFolder)?.summary() ?: "off ($foldOffReason)"
 
     private fun describeNalCensus(): String = buildString {
         for (type in nalCounts.indices) {
@@ -421,6 +488,12 @@ private class DoviCompatTrackOutput(
             DoviCompatMode.STRIP
         } else {
             requested
+        }
+        if (applied != DoviCompatMode.CONVERT && folder != null) {
+            folder?.release()
+            folder = null
+            foldOffReason = "the stream isn't converted"
+            clearHeldUnit()
         }
         emitDecidedFormat()
         report(
@@ -563,15 +636,13 @@ private class DoviCompatTrackOutput(
         if (effectiveMode == DoviCompatMode.CONVERT && !wroteRpu &&
             pendingRpuLength > 0 && !convertBroken
         ) {
-            val converted = convertNal62(pendingRpu, 0, pendingRpuLength)
+            if (fel == null) settleFel(pendingRpu, 0, pendingRpuLength, inBand = false)
+            val converted = convertRpu(pendingRpu, 0, pendingRpuLength)
             if (converted != null) {
                 wroteRpu = true
                 rpusConverted++
                 if (rpuSource == "none") rpuSource = "blockAdditional"
                 filteredLength = writeUnit(converted, 0, converted.size, filteredLength)
-            } else {
-                rpusFailed++
-                convertBroken = true
             }
         }
         pendingRpuLength = 0
@@ -595,36 +666,184 @@ private class DoviCompatTrackOutput(
             report(reason = "progress")
         }
 
-        var forwardedLength = filteredLength
+        val trailing = end - dataEnd
+        val holding = folder
+        if (holding != null && applied == DoviCompatMode.CONVERT) {
+            val held = FelGopFolder.Held(
+                timeUs = timeUs,
+                flags = flags,
+                base = filtered.copyOf(filteredLength),
+                rpu = heldRpu,
+                info = heldRpuInfo,
+                enhancement = if (heldEnhancement.size() > 0) heldEnhancement.toByteArray() else null,
+                wrapped = wrapped,
+                supplemental = if (trailing > 0) pending.copyOfRange(dataEnd, end) else null,
+            )
+            clearHeldUnit()
+            compactPending(end)
+            holding.add(held)
+            if (!reportedFoldStart && holding.scenesFitted > 0) {
+                reportedFoldStart = true
+                report(reason = "foldStarted")
+            }
+            holding.stopReason?.let { stopFolding(holding) }
+            return
+        }
+
+        forward(timeUs, flags, filtered, filteredLength, wrapped, pending, dataEnd, trailing)
+        compactPending(end)
+    }
+
+    /**
+     * Writes one sample to the delegate. A wrapped Matroska sample gets its
+     * length restated to match the filtered data, otherwise the reader works
+     * out a negative supplemental size from it.
+     */
+    private fun forward(
+        timeUs: Long,
+        flags: Int,
+        data: ByteArray,
+        length: Int,
+        wrapped: Boolean,
+        supplemental: ByteArray?,
+        supplementalStart: Int,
+        supplementalLength: Int,
+    ) {
+        var forwardedLength = length
         if (wrapped) {
-            // Restate the length so it matches the filtered sample, otherwise
-            // the reader works out a negative supplemental size from it.
-            writeWrappedLength(lengthPrefix, filteredLength)
+            writeWrappedLength(lengthPrefix, length)
             forwardArray.reset(lengthPrefix, 4)
             super.sampleData(forwardArray, 4, TrackOutput.SAMPLE_DATA_PART_SUPPLEMENTAL)
             forwardedLength += 4
         }
-        forwardArray.reset(filtered, filteredLength)
-        super.sampleData(forwardArray, filteredLength, 0)
-        val trailing = end - dataEnd
-        if (trailing > 0) {
-            forwardArray.reset(pending, end)
-            forwardArray.setPosition(dataEnd)
-            super.sampleData(forwardArray, trailing, TrackOutput.SAMPLE_DATA_PART_SUPPLEMENTAL)
-            forwardedLength += trailing
+        forwardArray.reset(data, length)
+        super.sampleData(forwardArray, length, 0)
+        if (supplemental != null && supplementalLength > 0) {
+            forwardArray.reset(supplemental, supplementalStart + supplementalLength)
+            forwardArray.setPosition(supplementalStart)
+            super.sampleData(forwardArray, supplementalLength, TrackOutput.SAMPLE_DATA_PART_SUPPLEMENTAL)
+            forwardedLength += supplementalLength
         }
+        super.sampleMetadata(timeUs, flags, forwardedLength, 0, null)
+    }
 
-        // Offsets count back from the write head, so dropping everything up to
-        // the just-consumed slice keeps later slices addressable while the
-        // buffer stays bounded. This has to wait until the slice has been
-        // forwarded, since the copy slides later bytes down over it.
+    // Offsets count back from the write head, so dropping everything up to
+    // the just-consumed slice keeps later slices addressable while the buffer
+    // stays bounded. This has to wait until the slice has been forwarded or
+    // copied out, since the copy slides later bytes down over it.
+    private fun compactPending(end: Int) {
         val remaining = pendingLength - end
         if (remaining > 0) {
             System.arraycopy(pending, end, pending, 0, remaining)
         }
         pendingLength = remaining
+    }
 
-        super.sampleMetadata(timeUs, flags, forwardedLength, 0, null)
+    /** A sample the folder lets go, with the luma curve its RPU should carry. */
+    private fun releaseHeld(held: FelGopFolder.Held, luma: FelCurve?) {
+        if (filtered.size < held.base.size) filtered = ByteArray(held.base.size)
+        held.base.copyInto(filtered)
+        var length = held.base.size
+        val rpu = held.rpu
+        if (rpu != null) {
+            val converted = convertRpu(rpu, 0, rpu.size, luma, checked = true)
+            if (converted != null) {
+                rpusConverted++
+                length = writeUnit(converted, 0, converted.size, length)
+            }
+        }
+        bytesOut += (length - held.base.size).toLong()
+        val supplemental = held.supplemental
+        forward(held.timeUs, held.flags, filtered, length, held.wrapped, supplemental, 0, supplemental?.size ?: 0)
+    }
+
+    private fun stopFolding(stopping: FelGopFolder) {
+        retireFolder(stopping)
+        report(reason = "foldStopped", detail = stopping.stopReason)
+    }
+
+    /** Lets the folder's held samples go and keeps it only for the report. */
+    private fun retireFolder(retiring: FelGopFolder) {
+        retiring.drain()
+        retiring.release()
+        stoppedFolder = retiring
+        folder = null
+    }
+
+    private fun clearHeldUnit() {
+        heldRpu = null
+        heldRpuInfo = null
+        heldEnhancement.reset()
+    }
+
+    /**
+     * Settles from the stream's first RPU what its enhancement layer is, and
+     * starts the curve fold for a full one whose layers ride in band.
+     */
+    private fun settleFel(data: ByteArray, position: Int, length: Int, inBand: Boolean) {
+        var refusal = "the guard refused the RPU"
+        val info = DoviRpuGuard.safeUnescaped(data, position, length)?.let { u -> FelRpuInfo.read(u) { refusal = it } }
+        enhancementLayer = info?.enhancementLayer ?: "unreadable ($refusal)"
+        val isFel = info?.isFel == true
+        fel = isFel
+        if (!isFel) return
+        val deviceProblem = FelFoldPolicy.deviceProblem
+        foldOffReason = when {
+            !inBand -> "the enhancement layer isn't in band"
+            !converter.canSetCurves -> "this libdovi can't set curves"
+            deviceProblem != null -> "an earlier playback found $deviceProblem"
+            !FelLayerDecoder.givesTenBit() -> "the HEVC decoder can't give 10-bit pictures"
+            else -> null
+        }
+        val format = sourceFormat
+        if (foldOffReason == null && format != null) {
+            folder = FelGopFolder(format, videoDecoderReady, ::releaseHeld)
+        }
+    }
+
+    /** Settles [fel] ahead of the walk, since NAL 63 units come before the RPU in an access unit. */
+    private fun settleFelFromSample(data: ByteArray, start: Int, end: Int) {
+        var unitStart = nextStartCode(data, start, end)
+        while (unitStart != -1 && unitStart < end) {
+            val payloadStart = unitStart + startCodeLength(data, unitStart, end)
+            if (payloadStart >= end) return
+            val nextUnit = nextStartCode(data, payloadStart, end)
+            if (((data[payloadStart].toInt() shr 1) and 0x3F) == NAL_UNSPEC62) {
+                settleFel(data, payloadStart, (if (nextUnit == -1) end else nextUnit) - payloadStart, inBand = true)
+                return
+            }
+            unitStart = nextUnit
+        }
+    }
+
+    /** Keeps an RPU for the fold instead of converting it now. */
+    private fun captureRpu(data: ByteArray, position: Int, length: Int) {
+        val unescaped = DoviRpuGuard.safeUnescaped(data, position, length)
+        if (unescaped == null) {
+            rpusDropped++
+            return
+        }
+        heldRpu = data.copyOfRange(position, position + length)
+        heldRpuInfo = FelRpuInfo.read(unescaped)
+        wroteRpu = true
+        rpuSource = "inBand"
+    }
+
+    /** Keeps an enhancement layer NAL unit, minus its two byte unspec63 header, for the fold. */
+    private fun captureEnhancement(data: ByteArray, payloadStart: Int, unitEnd: Int) {
+        val from = payloadStart + 2
+        if (from >= unitEnd) return
+        heldEnhancement.write(FelGopFolder.START_CODE)
+        heldEnhancement.write(data, from, unitEnd - from)
+    }
+
+    fun endOfInput() {
+        folder?.flush()
+        if (active && formatDecided) report(reason = "ended")
+    }
+
+    fun release() {
+        folder?.release()
     }
 
     private fun readWrappedLength(data: ByteArray, position: Int): Int =
@@ -644,6 +863,8 @@ private class DoviCompatTrackOutput(
         pendingLength = 0
         pendingRpuLength = 0
         bytesAwaitingFirstSample = 0
+        folder?.reset()
+        clearHeldUnit()
     }
 
     // Escape hatch for states this filter must not touch. It releases the
@@ -656,6 +877,8 @@ private class DoviCompatTrackOutput(
             applied = null
             emitDecidedFormat()
         }
+        // Held samples were read before anything still pending, so they go first.
+        folder?.let(::retireFolder)
         flushPendingVerbatim()
         pendingRpuLength = 0
         active = false
@@ -705,6 +928,7 @@ private class DoviCompatTrackOutput(
      */
     private fun filterSample(data: ByteArray, start: Int, end: Int): Int {
         wroteRpu = false
+        if (fel == null && effectiveMode == DoviCompatMode.CONVERT) settleFelFromSample(data, start, end)
         if (filtered.size < end - start) {
             filtered = ByteArray(end - start)
         }
@@ -728,22 +952,20 @@ private class DoviCompatTrackOutput(
             if (nalType == NAL_UNSPEC62) rpusSeen++
             val mode = effectiveMode
             when {
-                nalType == NAL_UNSPEC63 -> enhancementUnitsDropped++
+                nalType == NAL_UNSPEC63 -> {
+                    enhancementUnitsDropped++
+                    if (folder != null) captureEnhancement(data, payloadStart, unitEnd)
+                }
                 nalType == NAL_UNSPEC62 && mode == DoviCompatMode.STRIP -> rpusDropped++
+                nalType == NAL_UNSPEC62 && mode == DoviCompatMode.CONVERT && folder != null ->
+                    captureRpu(data, payloadStart, unitEnd - payloadStart)
                 nalType == NAL_UNSPEC62 && mode == DoviCompatMode.CONVERT -> {
-                    val converted = if (convertBroken) {
-                        null
-                    } else {
-                        convertNal62(data, payloadStart, unitEnd - payloadStart)
-                    }
+                    val converted = convertRpu(data, payloadStart, unitEnd - payloadStart)
                     if (converted != null) {
                         wroteRpu = true
                         rpusConverted++
                         rpuSource = "inBand"
                         outLength = writeUnit(converted, 0, converted.size, outLength)
-                    } else {
-                        rpusFailed++
-                        convertBroken = true
                     }
                 }
                 else -> {
@@ -755,6 +977,39 @@ private class DoviCompatTrackOutput(
             unitStart = nextUnit
         }
         return outLength
+    }
+
+    /**
+     * The converted RPU, or null when it is dropped. An RPU the guard refuses
+     * would abort the process inside libdovi, so only that frame loses its
+     * RPU. A converter that refuses a safe one is treated as broken for the
+     * rest of the stream.
+     */
+    private fun convertRpu(
+        data: ByteArray,
+        position: Int,
+        length: Int,
+        luma: FelCurve? = null,
+        checked: Boolean = false,
+    ): ByteArray? {
+        if (convertBroken) {
+            rpusFailed++
+            return null
+        }
+        if (!checked && !DoviRpuGuard.isSafe(data, position, length)) {
+            rpusDropped++
+            return null
+        }
+        val converted = if (fel == true) {
+            converter.convertKeepingMapping(data, position, length, luma)
+        } else {
+            converter.convertP7NalToP8(data, position, length)
+        }
+        if (converted == null) {
+            rpusFailed++
+            convertBroken = true
+        }
+        return converted
     }
 
     private fun writeUnit(source: ByteArray, position: Int, length: Int, outLength: Int): Int {

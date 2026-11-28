@@ -274,6 +274,35 @@ void main() {
     ]);
   });
 
+  test('a reload keeps showing the old list until its first page lands', () async {
+    final api = _HeldItemsApi()..totalRecordCount = 100;
+    final vm = await _viewModel(api);
+    addTearDown(vm.dispose);
+
+    final initial = vm.load();
+    await _requests(api, 1);
+    api.pending[0].complete([1, 2, 3, 4]);
+    await initial;
+
+    // A sort change: the old cards stay up, but nothing pages from them.
+    final reload = vm.load();
+    await _requests(api, 2);
+    expect(vm.state, LibraryBrowseState.loading);
+    expect(_ids(vm), ['item-1', 'item-2', 'item-3', 'item-4']);
+    expect(vm.hasMore, isFalse);
+
+    // A search typed meanwhile narrows the old list too.
+    vm.setSearchQuery('item 2');
+    expect(_ids(vm), ['item-2']);
+    vm.setSearchQuery('');
+
+    api.pending[1].complete([7, 8]);
+    await reload;
+
+    expect(vm.state, LibraryBrowseState.ready);
+    expect(_ids(vm), ['item-7', 'item-8']);
+  });
+
   test('a superseded page leaves the playlist categories alone', () async {
     final api = _HeldItemsApi();
     final vm = await _viewModel(api, includeItemTypes: const ['Playlist']);

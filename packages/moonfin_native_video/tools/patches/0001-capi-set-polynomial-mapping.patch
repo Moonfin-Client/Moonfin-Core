@@ -1,0 +1,141 @@
+From LibDovi 2.2.0 (MIT, github.com/superuser404notfound/LibDovi, tag 2.2.0, commit caff7009),
+patches/0001-capi-set-polynomial-mapping.patch, unchanged. Adds dovi_rpu_set_polynomial_mapping
+to libdovi-3.4.0's C API for the Dolby Vision FEL curve fold.
+
+diff --git a/dolby_vision/src/capi.rs b/dolby_vision/src/capi.rs
+index 619492a..852c355 100644
+--- a/dolby_vision/src/capi.rs
++++ b/dolby_vision/src/capi.rs
+@@ -8,7 +8,13 @@ use std::{
+     slice,
+ };
+ 
+-use crate::rpu::{ConversionMode, dovi_rpu::DoviRpu, utils::parse_rpu_file};
++use crate::rpu::{
++    ConversionMode,
++    dovi_rpu::DoviRpu,
++    rpu_data_mapping::{DoviMappingMethod, DoviPolynomialCurve},
++    utils::parse_rpu_file,
++};
++use tinyvec::ArrayVec;
+ 
+ #[cfg(feature = "serde")]
+ use crate::rpu::generate::GenerateConfig;
+@@ -446,6 +452,117 @@ pub unsafe extern "C" fn dovi_rpu_remove_mapping(ptr: *mut RpuOpaque) -> i32 {
+     }
+ }
+ 
++/// # Safety
++/// The struct pointer must be valid. `pivots` must point to `num_pivots` values and
++/// `coefs` to `3 * (num_pivots - 1)` values.
++///
++/// Replaces one component's reshaping curve with a piecewise second-order polynomial.
++/// Only for profile 8 RPUs with fixed-point coefficients (`coefficient_data_type` 0).
++///
++/// `pivots` are absolute base-layer codes, strictly increasing, 2 to 9 of them.
++/// `coefs` holds `c0, c1, c2` per piece, in the RPU's normalised domain:
++/// `out = c0 + c1 * x + c2 * x^2` with input and output scaled to [0, 1].
++///
++/// Returns 0 on success, -1 on error.
++/// If an error occurs, it is logged to RpuOpaque.error.
++#[unsafe(no_mangle)]
++pub unsafe extern "C" fn dovi_rpu_set_polynomial_mapping(
++    ptr: *mut RpuOpaque,
++    component: u8,
++    pivots: *const u16,
++    num_pivots: size_t,
++    coefs: *const f64,
++) -> i32 {
++    if ptr.is_null() || pivots.is_null() || coefs.is_null() {
++        return -1;
++    }
++
++    let opaque = unsafe { &mut *ptr };
++    let fail = |opaque: &mut RpuOpaque, msg: &str| {
++        opaque.error = CString::new(format!("Failed setting polynomial mapping: {msg}")).ok();
++        -1
++    };
++
++    if component > 2 {
++        return fail(opaque, "component out of range");
++    }
++    if !(2..=9).contains(&num_pivots) {
++        return fail(opaque, "pivot count must be 2 to 9");
++    }
++
++    let pivots = unsafe { slice::from_raw_parts(pivots, num_pivots) };
++    let pieces = num_pivots - 1;
++    let coefs = unsafe { slice::from_raw_parts(coefs, 3 * pieces) };
++
++    if pivots.windows(2).any(|w| w[1] <= w[0]) {
++        return fail(opaque, "pivots must be strictly increasing");
++    }
++    if coefs.iter().any(|c| !c.is_finite()) {
++        return fail(opaque, "coefficients must be finite");
++    }
++
++    let Some(rpu) = opaque.rpu.as_mut() else {
++        return -1;
++    };
++    if rpu.dovi_profile != 8 {
++        return fail(opaque, "only profile 8 RPUs are supported");
++    }
++    if rpu.header.coefficient_data_type != 0 {
++        return fail(opaque, "only fixed-point coefficients are supported");
++    }
++
++    let denom = rpu.header.coefficient_log2_denom as u32;
++    if denom == 0 || denom > 32 {
++        return fail(opaque, "unsupported coefficient_log2_denom");
++    }
++    let scale = (1u64 << denom) as f64;
++
++    let Some(mapping) = rpu.rpu_data_mapping.as_mut() else {
++        return fail(opaque, "RPU has no mapping");
++    };
++
++    let mut deltas = Vec::with_capacity(num_pivots);
++    deltas.push(pivots[0]);
++    deltas.extend(pivots.windows(2).map(|w| w[1] - w[0]));
++
++    let mut poly = DoviPolynomialCurve {
++        poly_order_minus1: vec![1; pieces],
++        linear_interp_flag: vec![false; pieces],
++        poly_coef_int: Vec::with_capacity(pieces),
++        poly_coef: Vec::with_capacity(pieces),
++    };
++    for piece in coefs.chunks_exact(3) {
++        let mut ints = ArrayVec::<[i64; 3]>::new();
++        let mut fracs = ArrayVec::<[u64; 3]>::new();
++        for &c in piece {
++            let mut int = c.floor();
++            let mut frac = ((c - int) * scale).round();
++            if frac >= scale {
++                int += 1.0;
++                frac = 0.0;
++            }
++            if int.abs() > (1u64 << 40) as f64 {
++                return fail(opaque, "coefficient out of range");
++            }
++            ints.push(int as i64);
++            fracs.push(frac as u64);
++        }
++        poly.poly_coef_int.push(ints);
++        poly.poly_coef.push(fracs);
++    }
++
++    let curve = &mut mapping.curves[component as usize];
++    curve.num_pivots_minus2 = (num_pivots - 2) as u64;
++    curve.pivots = deltas;
++    curve.mapping_idc = DoviMappingMethod::Polynomial;
++    curve.mmr = None;
++    curve.polynomial = Some(poly);
++
++    rpu.modified = true;
++
++    0
++}
++
+ /// # Safety
+ /// The struct pointer must be valid.
+ ///

@@ -343,6 +343,12 @@ double aspectRatioForRowItem(
   if (isSeerrFilterRow(row)) {
     return 16 / 9;
   }
+  final programRatio = item.type == 'TvProgram'
+      ? item.primaryImageAspectRatio
+      : null;
+  if (programRatio != null && imageType != ImageType.banner) {
+    return programRatio > 1 ? 16 / 9 : 2 / 3;
+  }
   double thumbAspectRatio() {
     return switch (item.type) {
       'MusicAlbum' || 'MusicArtist' || 'Audio' || 'Playlist' || 'Person' => 1,
@@ -360,6 +366,11 @@ double aspectRatioForRowItem(
     },
   };
 }
+
+/// Whether a program's guide image is wide. Guides give films a poster and
+/// shows a wide image, both as the program's Primary.
+bool hasWideProgramImage(AggregatedItem item) =>
+    item.type == 'TvProgram' && (item.primaryImageAspectRatio ?? 0) > 1;
 
 /// The artwork url a card in a Home row asks for, or null when there is
 /// nothing to show. A My Media poster card gets null when the library's

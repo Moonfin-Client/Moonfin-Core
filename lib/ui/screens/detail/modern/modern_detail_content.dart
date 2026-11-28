@@ -4981,8 +4981,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final seasonAllWatched = _vm.episodes.every((e) => e.isPlayed);
       final seasonAllUnwatched = _vm.episodes.every((e) => !e.isPlayed && (e.playedPercentage == null || e.playedPercentage == 0));
       if (seasonAllWatched) {
-        episode = _vm.episodes[0];
-        customLabel = l10n.rewatchSeasonEpisode(item.indexNumber ?? 0, 1);
+        // The episode being rewatched, as Play resumes it, else the first.
+        episode =
+            latestRewatch(_vm.episodes.where(isEligibleNextEpisodeCandidate)) ??
+            _vm.episodes[0];
+        customLabel = l10n.rewatchSeasonEpisode(
+          episode.parentIndexNumber ?? item.indexNumber ?? 0,
+          episode.indexNumber ?? 1,
+        );
       } else if (!seasonAllUnwatched) {
         try {
           episode = _vm.episodes.firstWhere((e) => !e.isPlayed);
@@ -5002,7 +5008,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         try {
           episode = _vm.seriesEpisodes.firstWhere((e) => !e.isPlayed);
         } catch (_) {
-          episode = _vm.seriesEpisodes.first;
+          episode =
+              latestRewatch(
+                _vm.seriesEpisodes.where(isEligibleNextEpisodeCandidate),
+              ) ??
+              _vm.seriesEpisodes.first;
           final s = episode.parentIndexNumber ?? 1;
           final e = episode.indexNumber ?? 1;
           customLabel = l10n.rewatchSeasonEpisode(s, e);

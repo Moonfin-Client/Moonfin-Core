@@ -32,6 +32,43 @@ const siloDeliveryHls = 'hls';
 /// burned in).
 const siloBaseClientFeatures = ['playback_plan_v3', 'embedded_subtitles_v1'];
 
+/// Client feature that lets `original_http` list what the player does to the
+/// video itself ([SiloDolbyVision7Transform]).
+const siloFeatureClientVideoTransforms = 'client_video_transformations_v1';
+
+/// What a player does on its own with a Dolby Vision profile 7 file it plays
+/// whole, as Silo's client transformation. Without one, Silo never sends a
+/// profile 7 original: it converts the file itself over HLS, which can't
+/// copy TrueHD or DTS, so their audio is re-encoded.
+enum SiloDolbyVision7Transform {
+  /// Rewrites the RPU to profile 8.1 and drops the enhancement layer.
+  toProfile81('client_dv7_to_dv81', [
+    'profile7_rpu_converted_to_profile81',
+    'hdr10_base_layer_preserved',
+    'enhancement_layer_discarded',
+  ]),
+
+  /// Drops Dolby Vision and the enhancement layer: the HDR10 base layer plays.
+  toHdr10('client_dv7_to_hdr10', [
+    'dolby_vision_metadata_removed',
+    'hdr10_base_layer_preserved',
+    'enhancement_layer_discarded',
+  ]);
+
+  const SiloDolbyVision7Transform(this.transformation, this.claims);
+
+  final String transformation;
+  final List<String> claims;
+
+  /// `TransformationV3` for a delivery's `transformations`.
+  Map<String, dynamic> toJson() => {
+    'name': transformation,
+    'executor': 'client',
+    'recipe_version': '1',
+    'validated_claims': claims,
+  };
+}
+
 /// `original_http` claim: the player picks any audio track of the whole
 /// file itself, so a non-default track doesn't force a remux.
 const siloClaimSelectedAudioTrack = 'client_selected_audio_track_v1';
@@ -56,7 +93,24 @@ class SiloPlayerTraits {
     this.loadsFontAttachments = true,
     this.sendsRequestHeaders = true,
     this.authorizesByStreamReference = false,
+    this.dolbyVision7Transform,
   });
+
+  /// These traits with [transform] as the player's profile 7 handling.
+  SiloPlayerTraits withDolbyVision7Transform(
+    SiloDolbyVision7Transform? transform,
+  ) => SiloPlayerTraits(
+    managesDynamicRange: managesDynamicRange,
+    selectsAnyAudioTrack: selectsAnyAudioTrack,
+    playsProgressive: playsProgressive,
+    playsHls: playsHls,
+    rendersEmbeddedSubtitles: rendersEmbeddedSubtitles,
+    drawsAssStyling: drawsAssStyling,
+    loadsFontAttachments: loadsFontAttachments,
+    sendsRequestHeaders: sendsRequestHeaders,
+    authorizesByStreamReference: authorizesByStreamReference,
+    dolbyVision7Transform: transform,
+  );
 
   /// The libmpv backend's traits (Windows, Linux): it decodes in software,
   /// picks any audio track, tone-maps HDR and Dolby Vision itself, draws
@@ -84,7 +138,9 @@ class SiloPlayerTraits {
   /// the embedded text and bitmap subtitles it extracts (SubRip, SSA, WebVTT,
   /// PGS, VobSub), but draws ASS without its styling and loads no attached
   /// fonts. It sends HDR and Dolby Vision to the display as they are and
-  /// maps nothing to an SDR screen itself.
+  /// maps nothing to an SDR screen itself. Its Dolby Vision profile 7
+  /// conversion depends on the device and settings, so the app adds it
+  /// ([withDolbyVision7Transform]).
   static const media3 = SiloPlayerTraits(
     selectsAnyAudioTrack: true,
     rendersEmbeddedSubtitles: true,
@@ -158,6 +214,10 @@ class SiloPlayerTraits {
   /// the account's token: a DLNA renderer, which may cut a long URL (an LG
   /// TV at about 1024 characters) and drop a token at the end of it.
   final bool authorizesByStreamReference;
+
+  /// What the player does with a Dolby Vision profile 7 file it plays whole
+  /// (Media3's compat chain), or null when it doesn't convert one itself.
+  final SiloDolbyVision7Transform? dolbyVision7Transform;
 }
 
 /// The capability half of a Silo playback start: `client_capabilities`, the
@@ -200,10 +260,14 @@ class SiloClientCapabilities {
 ///   transcoding profiles' video codecs, and those profiles' audio codecs.
 ///   A profile without HLS transcoding has no `hls`. A channel limit below 6
 ///   on the audio codec profiles becomes `max_channels`, and a player that
-///   downmixes on its own has none.
+///   downmixes on its own has none. With [channelCeilingsByCodec] (Silo's
+///   `codec_channel_ceilings_v1`) a limit on named codecs goes to
+///   `max_channels_by_codec` instead, so a passthrough codec the profile
+///   leaves out of its channel limit is copied as it is.
 SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
   Map<String, dynamic> deviceProfile, {
   SiloPlayerTraits traits = const SiloPlayerTraits(),
+  bool channelCeilingsByCodec = false,
 }) {
   final directPlay = _profiles(deviceProfile['DirectPlayProfiles']);
   final codecProfiles = _profiles(deviceProfile['CodecProfiles']);
@@ -243,7 +307,18 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
       hdr['hdr10_plus'] == true ||
       (hdr['dolby_vision_profiles'] as List).isNotEmpty;
   final maxResolution = _maxResolution(codecProfiles);
-  final maxChannels = _maxChannels(codecProfiles);
+  final ceilings = _channelCeilings(codecProfiles);
+  // A server without per-codec ceilings, or a map past Silo's 32 entries,
+  // gets the lowest limit for every codec.
+  final byCodec =
+      channelCeilingsByCodec &&
+      ceilings.byCodec.isNotEmpty &&
+      ceilings.byCodec.length <= 32;
+  final maxChannels = byCodec ? ceilings.all : ceilings.lowest;
+  final maxChannelsByCodec = byCodec
+      ? Map<String, int>.unmodifiable(ceilings.byCodec)
+      : null;
+  final dolbyVision7 = traits.dolbyVision7Transform;
 
   Map<String, dynamic> delivery({
     required bool supported,
@@ -252,6 +327,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
     required List<String> audio,
     required Map<String, dynamic> subtitles,
     List<String> claims = const [],
+    List<Map<String, dynamic>> transformations = const [],
     String? failureReason,
   }) => {
     'enabled': true,
@@ -263,12 +339,13 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
     // Silo honors passthrough only under `exact` evidence.
     'audio_passthrough_codecs': const <String>[],
     'max_channels': ?maxChannels,
+    'max_channels_by_codec': ?maxChannelsByCodec,
     'subtitles': subtitles,
     'features': const <String>[],
     // A stream's URL and headers are fixed once the player opens it.
     'auth_header_refresh': false,
     'validated_claims': claims,
-    'transformations': const <Map<String, dynamic>>[],
+    'transformations': transformations,
   };
 
   // A remux or HLS stream carries its subtitles as sidecars Moonfin loads
@@ -309,6 +386,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
           if (traits.managesDynamicRange && anyHdr)
             siloClaimManagedDynamicRange,
         ],
+        transformations: [?dolbyVision7?.toJson()],
       ),
       siloDeliveryProgressive: delivery(
         supported: traits.playsProgressive,
@@ -332,6 +410,7 @@ SiloClientCapabilities siloCapabilitiesFromDeviceProfile(
         if (feature != 'embedded_subtitles_v1' ||
             traits.rendersEmbeddedSubtitles)
           feature,
+      if (dolbyVision7 != null) siloFeatureClientVideoTransforms,
     ],
   );
 }
@@ -521,12 +600,34 @@ String? _maxResolution(List<Map<String, dynamic>> codecProfiles) {
   return '4320p';
 }
 
-/// A channel limit below six on the audio codec profiles, as Silo's
-/// per-delivery `max_channels`. Null means none, which is what a player that
-/// downmixes on its own advertises (eight channels).
-int? _maxChannels(List<Map<String, dynamic>> codecProfiles) {
-  final limits = _limits(codecProfiles, 'VideoAudio', 'AudioChannels');
-  if (limits.isEmpty) return null;
-  final lowest = limits.reduce(min);
-  return lowest < 6 ? lowest : null;
+/// The channel limits below six on the audio codec profiles: [all] from the
+/// profiles that name no codec, and [byCodec] the lowest per codec from those
+/// that do. A profile caps only the codecs it names, so a passthrough codec
+/// left out of it keeps its channels. No limit is what a player that
+/// downmixes on its own advertises (eight channels). [lowest] is the lowest
+/// of them all.
+({int? all, Map<String, int> byCodec, int? lowest}) _channelCeilings(
+  List<Map<String, dynamic>> codecProfiles,
+) {
+  int? all;
+  int? lowest;
+  final byCodec = <String, int>{};
+  for (final p in codecProfiles) {
+    final limits = _limits(
+      [p],
+      'VideoAudio',
+      'AudioChannels',
+    ).where((limit) => limit < 6).toList();
+    if (limits.isEmpty) continue;
+    final limit = limits.reduce(min);
+    lowest = min(lowest ?? limit, limit);
+    final codecs = _csv(p['Codec']);
+    if (codecs.isEmpty) {
+      all = min(all ?? limit, limit);
+    }
+    for (final codec in codecs) {
+      byCodec.update(codec, (c) => min(c, limit), ifAbsent: () => limit);
+    }
+  }
+  return (all: all, byCodec: byCodec, lowest: lowest);
 }

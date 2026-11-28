@@ -170,6 +170,20 @@ class _FakeItemsApi implements ItemsApi {
   }
 }
 
+/// Search finds albums, but loading an album's tracks fails.
+class _AlbumFetchFailsItemsApi extends _FakeItemsApi {
+  _AlbumFetchFailsItemsApi() : super(totalItems: 3);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName == #getItems &&
+        invocation.namedArguments[#parentId] != null) {
+      return Future<Map<String, dynamic>>.error(StateError('album fetch failed'));
+    }
+    return super.noSuchMethod(invocation);
+  }
+}
+
 class _FakeImageApi implements ImageApi {
   @override
   String getPrimaryImageUrl(
@@ -1069,5 +1083,12 @@ void main() {
     final nodes = await service.getChildren('tab|music');
 
     expect(nodes.first.id, 'sec|albums|signedin');
+  });
+
+  test('a search whose match fails to load plays nothing instead of throwing',
+      () async {
+    final service = _service(_AlbumFetchFailsItemsApi());
+
+    expect(await service.resolveSearchPlay('album'), isNull);
   });
 }
