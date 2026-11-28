@@ -102,6 +102,15 @@ class TmdbRepository {
   /// Jellyfin and Emby plugins take. Silo's plugin routes need its headers.
   bool get _hasPlugin => serverHasMoonfinPlugin(_client);
 
+  /// Maps a Jellyfin item type to the TMDB endpoint media type (`movie` or
+  /// `tv`), or `null` for types without their own TMDB movie/series endpoint
+  /// (such as `Season`, `Episode`, or `Person`).
+  static String? tmdbMediaTypeForItemType(String? itemType) => switch (itemType) {
+    'Movie' => 'movie',
+    'Series' => 'tv',
+    _ => null,
+  };
+
   /// Fetches the item's studios (TMDB production companies) from the Moonfin
   /// plugin, which caches the logos server-side. Returns null when the plugin
   /// call fails; the details screen then shows name-only placeholders.

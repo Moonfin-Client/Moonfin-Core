@@ -293,8 +293,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     _tmdbStudiosItemId = item.id;
 
     final tmdbId = item.tmdbId;
+    final tmdbType = TmdbRepository.tmdbMediaTypeForItemType(item.type);
     final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
-    if (tmdbId == null || !pluginAvailable) {
+    if (tmdbType == null || tmdbId == null || !pluginAvailable) {
       if (_tmdbStudios.isNotEmpty && mounted) {
         setState(() => _tmdbStudios = const []);
       }
@@ -304,7 +305,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final companies = await GetIt.instance<TmdbRepository>()
         .getProductionCompanies(
           tmdbId: tmdbId,
-          type: item.type == 'Series' ? 'tv' : 'movie',
+          type: tmdbType,
         );
     if (!mounted || companies == null) return;
     // The item can swap while this is in flight, and a slower response for
