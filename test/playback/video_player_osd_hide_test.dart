@@ -1419,6 +1419,47 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('quick skips each move a full step', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    manager.state.setDuration(const Duration(hours: 2));
+    manager.state.setPosition(const Duration(minutes: 30));
+    manager.state.setPlaying(true);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 10));
+
+    // The fake player never reports where a seek landed, like a real one in
+    // the moment after it.
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    expect(manager.seeks, const [
+      Duration(minutes: 30, seconds: 30),
+      Duration(minutes: 31),
+      Duration(minutes: 31, seconds: 30),
+    ]);
+
+    manager.state.setPosition(const Duration(minutes: 31, seconds: 30));
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.pump();
+    expect(manager.seeks.last, const Duration(minutes: 31, seconds: 20));
+
+    // A seek that never lands stops counting after a moment.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(manager.seeks.last, const Duration(minutes: 32));
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('a sideways swipe seeks only with the controls hidden', (
     tester,
   ) async {

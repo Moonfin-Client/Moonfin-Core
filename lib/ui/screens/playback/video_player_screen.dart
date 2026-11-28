@@ -352,6 +352,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _seekValue = 0;
   Duration? _pendingScrubSeekTarget;
   Duration? _lastScrubCommitTarget;
+  Duration? _directSeekTarget;
+  Timer? _directSeekSettle;
   int _scrubSeekCommitId = 0;
   bool _wasPlayingBeforeScrubPause = false;
   // True for a paused scrub session's whole lifetime; unlike
@@ -1213,6 +1215,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _removeZoomModeToastOverlay();
     _skipForwardTimer?.cancel();
     _skipBackwardTimer?.cancel();
+    _directSeekSettle?.cancel();
     _surfaceTaps.cancel();
     _persistVolumeTimer?.cancel();
     if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
@@ -3326,7 +3329,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   // the seek goes straight through.
   Future<void> _seekDirect(Duration target) {
     _dropScrubSession(resume: true);
+    _directSeekTarget = target;
+    _directSeekSettle?.cancel();
+    _directSeekSettle = Timer(
+      _scrubSeekConvergeTimeout,
+      () => _directSeekTarget = null,
+    );
     return _manager.seekTo(target);
+  }
+
+  // The player reports its new position a moment after a seek, so a quick
+  // follow-up seek has to start from where the last one was going.
+  Duration get _seekBasePosition {
+    final target = _directSeekTarget;
+    final live = _transportPosition;
+    if (target == null ||
+        (live - target).abs() <= _scrubSeekConvergeTolerance) {
+      return live;
+    }
+    return target;
   }
 
   void _dropScrubSession({required bool resume}) {
@@ -3347,7 +3368,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _seekRelative(int ms, {bool showControls = true}) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    final target = _transportPosition + Duration(milliseconds: ms);
+    final from = _seekBasePosition;
+    final target = from + Duration(milliseconds: ms);
     final clamped = Duration(
       milliseconds: target.inMilliseconds.clamp(
         0,
@@ -3355,7 +3377,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ),
     );
     _prefetchTrickplayDirectional(clamped, forward: ms > 0);
-    _noteSeekForSubtitles(_transportPosition, clamped);
+    _noteSeekForSubtitles(from, clamped);
     _seekDirect(clamped);
     _lastSeekTime = DateTime.now();
     if (showControls) {
@@ -3369,7 +3391,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Duration get _scrubBasePosition =>
       _pendingScrubSeekTarget ??
       (_isSeeking ? _lastScrubCommitTarget : null) ??
-      _transportPosition;
+      _seekBasePosition;
 
   void _seekRelativeAccumulate(int ms) {
     _noteViewerActivity();
