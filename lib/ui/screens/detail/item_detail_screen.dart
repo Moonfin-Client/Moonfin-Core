@@ -9849,16 +9849,32 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             const episodeQueueFields = 'Overview,RunTimeTicks,UserData';
 
             final client = _clientForItem(item);
-            final data = await client.itemsApi.getEpisodes(
-              item.id,
-              fields: episodeQueueFields,
-            );
-            final allEpisodes = _mapRawItemsForServer(
-              data['Items'],
-              item.serverId,
-            ).where(isEligibleNextEpisodeCandidate).toList();
+            final ws = watchStateOf(item);
+            final isFullyWatched = ws.isFullyWatched;
+            final isFullyUnwatched = ws.isFullyUnwatched;
 
-            if (allEpisodes.isEmpty) {
+            // An unwatched Next Up is the episode to play. The whole series
+            // list is only needed to find a special's season, so skip it.
+            final shownNextUp = viewModel.nextUp;
+            final knownNextUp =
+                !isFullyWatched &&
+                    !isFullyUnwatched &&
+                    shownNextUp != null &&
+                    !shownNextUp.isPlayed &&
+                    !isSpecialEpisode(shownNextUp)
+                ? shownNextUp
+                : null;
+            final allEpisodes = knownNextUp != null
+                ? <AggregatedItem>[]
+                : _mapRawItemsForServer(
+                    (await client.itemsApi.getEpisodes(
+                      item.id,
+                      fields: episodeQueueFields,
+                    ))['Items'],
+                    item.serverId,
+                  ).where(isEligibleNextEpisodeCandidate).toList();
+
+            if (knownNextUp == null && allEpisodes.isEmpty) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -9871,17 +9887,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               throw PlaybackStartupRecoveryAbortedException();
             }
 
-            final ws = watchStateOf(item);
-            final isFullyWatched = ws.isFullyWatched;
-            final isFullyUnwatched = ws.isFullyUnwatched;
-
             // Resuming a watched run carries on with an episode being
             // rewatched instead of starting over.
             final rewatch = isFullyWatched && resume
                 ? latestRewatch(allEpisodes)
                 : null;
             AggregatedItem targetEpisode;
-            if (rewatch != null) {
+            if (knownNextUp != null) {
+              targetEpisode = knownNextUp;
+            } else if (rewatch != null) {
               targetEpisode = rewatch;
             } else if (isFullyWatched || isFullyUnwatched) {
               targetEpisode = allEpisodes.firstWhere(
