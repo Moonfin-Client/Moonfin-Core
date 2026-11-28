@@ -774,8 +774,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _tmdbStudiosItemId = item.id;
 
     final tmdbId = item.tmdbId;
+    final tmdbType = TmdbRepository.tmdbMediaTypeForItemType(item.type);
     final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
-    if (tmdbId == null || !pluginAvailable) {
+    if (tmdbType == null || tmdbId == null || !pluginAvailable) {
       if (_tmdbStudios.isNotEmpty && mounted) {
         setState(() => _tmdbStudios = const []);
       }
@@ -784,7 +785,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final companies = await GetIt.instance<TmdbRepository>().getProductionCompanies(
       tmdbId: tmdbId,
-      type: item.type == 'Series' ? 'tv' : 'movie',
+      type: tmdbType,
     );
     if (!mounted || companies == null) return;
     setState(() => _tmdbStudios = companies);

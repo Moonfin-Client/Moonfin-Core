@@ -44,4 +44,15 @@ void main() {
       expect(indie.rawData.containsKey(studioLogoUrlKey), isFalse);
     });
   });
+
+  group('TmdbRepository.tmdbMediaTypeForItemType', () {
+    test('maps Movie and Series only, skipping Season/Episode/Person', () {
+      expect(TmdbRepository.tmdbMediaTypeForItemType('Movie'), 'movie');
+      expect(TmdbRepository.tmdbMediaTypeForItemType('Series'), 'tv');
+      expect(TmdbRepository.tmdbMediaTypeForItemType('Season'), isNull);
+      expect(TmdbRepository.tmdbMediaTypeForItemType('Episode'), isNull);
+      expect(TmdbRepository.tmdbMediaTypeForItemType('Person'), isNull);
+      expect(TmdbRepository.tmdbMediaTypeForItemType(null), isNull);
+    });
+  });
 }
