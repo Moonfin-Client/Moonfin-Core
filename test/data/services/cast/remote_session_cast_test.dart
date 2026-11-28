@@ -8,6 +8,7 @@ import 'package:moonfin/data/services/cast/cast_target.dart';
 import 'package:moonfin/data/services/cast/cast_transport_controls.dart';
 import 'package:moonfin/data/services/cast/remote_session_cast_provider.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
+import 'package:playback_core/playback_core.dart' show TransportAction;
 import 'package:server_core/server_core.dart';
 
 class _FakeSessionApi extends Fake implements SessionApi {
@@ -293,6 +294,49 @@ void main() {
     expect(service.remotePositionNotifier.value, 420000000);
   });
 
+  test('a player transport action reaches the receiver, but stop stays local',
+      () async {
+    final provider = _FakeRemoteProvider();
+    final service = CastService([provider]);
+    addTearDown(service.dispose);
+    await service.playToTarget(target, item: track1);
+    Future<void> run(Future<void> Function(CastTargetKind kind) action) =>
+        action(CastTargetKind.jellyfinSession);
+
+    for (final action in [
+      TransportAction.pause,
+      TransportAction.resume,
+      TransportAction.next,
+      TransportAction.nextAsFinished,
+      TransportAction.previous,
+    ]) {
+      expect(await runCastTransport(service, action, run), isTrue);
+    }
+    expect(
+      await runCastTransport(
+        service,
+        TransportAction.seek,
+        run,
+        position: const Duration(seconds: 42),
+      ),
+      isTrue,
+    );
+    expect(
+      await runCastTransport(service, TransportAction.stop, run),
+      isFalse,
+    );
+
+    expect(provider.commands, [
+      'playToTarget:track-1',
+      'pause',
+      'play',
+      'nextTrack',
+      'nextTrack',
+      'previousTrack',
+      'seek:420000000',
+    ]);
+  });
+
   test('RemoteSessionCastProvider sends NextTrack/PreviousTrack and parses NowPlayingItem',
       () async {
     final sessionApi = _FakeSessionApi()
@@ -407,7 +451,7 @@ void main() {
     await service.playToTarget(targetB, item: track2);
     await Future<void>.delayed(Duration.zero);
 
-    // Now resolve the stale poll from target A; it must not overwrite target B.
+    // The stale poll from target A resolves now and mustn't overwrite target B.
     completerA.complete(
       RemotePlaybackSnapshot(
         state: 'paused',
@@ -450,7 +494,7 @@ void main() {
     expect(service.castItemNotifier.value?.id, 'track-2');
     expect(service.remotePositionNotifier.value, 50000000);
 
-    // Older poll resolves late with track1; it must be discarded.
+    // The older poll resolves late with track1, so it's discarded.
     firstPoll.complete(
       RemotePlaybackSnapshot(
         state: 'paused',
@@ -482,7 +526,7 @@ void main() {
     // Start a second poll while the first is still pending.
     await service.nextTrack(CastTargetKind.jellyfinSession);
 
-    // First poll finishes before second poll; it must still apply (no starvation).
+    // The first poll finishes before the second and still applies.
     firstPoll.complete(
       RemotePlaybackSnapshot(
         state: 'playing',

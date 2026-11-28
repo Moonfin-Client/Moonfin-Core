@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:playback_core/playback_core.dart' show TransportAction;
 
 import '../../models/aggregated_item.dart';
 import '../log_service.dart';
@@ -440,4 +441,39 @@ class CastService {
     remoteVolumeNotifier.dispose();
     remoteErrorNotifier.dispose();
   }
+}
+
+/// Whether [cast]'s receiver reports playing, buffering included.
+bool castReportsPlaying(CastService cast) =>
+    switch (cast.remoteStateNotifier.value) {
+      'playing' || 'buffering' => true,
+      _ => false,
+    };
+
+/// Sends a player's transport [action] to [cast]'s receiver through [run],
+/// which reports a failed command. Stop isn't handled here, so the player
+/// stops and ends the cast itself.
+Future<bool> runCastTransport(
+  CastService cast,
+  TransportAction action,
+  Future<void> Function(Future<void> Function(CastTargetKind kind)) run, {
+  Duration? position,
+}) async {
+  switch (action) {
+    case TransportAction.resume:
+      await run(cast.play);
+    case TransportAction.pause:
+      await run(cast.pause);
+    case TransportAction.seek:
+      await run(
+        (k) => cast.seek(k, positionTicks: position!.inMicroseconds * 10),
+      );
+    case TransportAction.next || TransportAction.nextAsFinished:
+      await run(cast.nextTrack);
+    case TransportAction.previous:
+      await run(cast.previousTrack);
+    case TransportAction.stop:
+      return false;
+  }
+  return true;
 }
