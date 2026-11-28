@@ -306,6 +306,10 @@ class ItemDetailScreen extends StatefulWidget {
   /// own backdrop and theme music.
   final bool quickLook;
 
+  /// The item as the card that opened this page held it, drawn while the full
+  /// item loads. A link or a reload has none and loads by id alone.
+  final AggregatedItem? cardItem;
+
   const ItemDetailScreen({
     super.key,
     required this.itemId,
@@ -315,6 +319,7 @@ class ItemDetailScreen extends StatefulWidget {
     this.contextSeasonId,
     this.quickLook = false,
     this.libraryId,
+    this.cardItem,
   });
 
   @override
@@ -341,6 +346,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropKey;
   String? _lastDetailItemId;
+  bool _showedCardCopy = false;
   final GlobalKey<NouveauDetailContentState> _nouveauContentKey =
       GlobalKey<NouveauDetailContentState>();
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -372,6 +378,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       tmdbRepository: GetIt.instance<TmdbRepository>(),
       libraryId: widget.libraryId,
+      cardItem: widget.cardItem,
     );
     _viewModel.seerrOnlyTitle = widget.seerrTitle;
     _viewModel.addListener(_onChanged);
@@ -555,7 +562,23 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _onBackdropItemFocused(_viewModel.tracks.first);
         }
       }
-      if (_lastDetailItemId != item.id) {
+      if (_viewModel.isCardCopy) {
+        _showedCardCopy = true;
+      } else if (_showedCardCopy) {
+        _showedCardCopy = false;
+        // The card copy's content clears the play-button target on its way
+        // out, after the full item's content has claimed it.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted &&
+              _viewModel.state == ItemDetailState.ready &&
+              !PlatformDetection.useMobileUi &&
+              _initialContentFocusNode != null) {
+            NavigationLayout.focusDetailsPlayButtonNotifier.value =
+                _initialContentFocusNode;
+          }
+        });
+      }
+      if (!_viewModel.isCardCopy && _lastDetailItemId != item.id) {
         _lastDetailItemId = item.id;
         if (item.mediaSources.isNotEmpty) {
           _selectedMediaSourceId = item.mediaSources.first['Id']?.toString();
@@ -563,7 +586,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           _selectedMediaSourceId = null;
         }
       }
-      if (!_themeMusicStarted && !widget.quickLook) {
+      // The card's copy hasn't been through the parental gate yet.
+      if (!_themeMusicStarted && !widget.quickLook && !_viewModel.isCardCopy) {
         _themeMusicStarted = true;
         _themeMusicService.playForItem(item);
       }
@@ -680,7 +704,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   void _resumeThemeMusicIfEligible() {
     final item = _viewModel.item;
-    if (item == null || widget.quickLook) return;
+    if (item == null || widget.quickLook || _viewModel.isCardCopy) return;
     // There is no theme song on a server that has never heard of this title.
     if (_viewModel.isSeerrOnly) return;
 
@@ -909,7 +933,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           ],
         ),
       ),
-      ItemDetailState.ready => switch (_style) {
+      ItemDetailState.ready => _guardCardCopy(switch (_style) {
         DetailScreenStyle.classic => _DetailContent(
           viewModel: _viewModel,
           prefs: _prefs,
@@ -935,7 +959,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           detailFallsBackToModern(_viewModel.item?.type)
             ? _buildModernContent()
             : NouveauDetailContent(
-                key: _nouveauContentKey,
+                key: _viewModel.isCardCopy ? null : _nouveauContentKey,
                 viewModel: _viewModel,
                 prefs: _prefs,
                 backdropUrl: _backdropUrl,
@@ -1053,8 +1077,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                     setState(() => _actionsExpanded = val),
               )
             : _buildModernContent(),
-      },
+      }),
     };
+  }
+
+  // The card's copy is only drawn. Nothing on it can be pressed or focused,
+  // and the full item builds the content afresh, so each style sets itself up
+  // and takes the first focus from the whole item.
+  Widget _guardCardCopy(Widget content) {
+    final cardCopy = _viewModel.isCardCopy;
+    return IgnorePointer(
+      ignoring: cardCopy,
+      child: ExcludeFocus(
+        excluding: cardCopy,
+        child: KeyedSubtree(key: ValueKey(cardCopy), child: content),
+      ),
+    );
   }
 }
 

@@ -686,6 +686,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 type: item.type,
                 channelId: item.channelId,
               ),
+        extra: item,
       ),
     );
   }
@@ -832,6 +833,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                         type: item.type,
                         channelId: item.channelId,
                       ),
+                      extra: item,
                     ),
                   );
                   return card;

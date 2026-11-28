@@ -1652,6 +1652,7 @@ class _SearchScreenState extends State<SearchScreen>
             type: copy.type,
             channelId: copy.channelId,
           ),
+          extra: copy,
         ),
       ),
       onLongPress: () => showContextMenu(
