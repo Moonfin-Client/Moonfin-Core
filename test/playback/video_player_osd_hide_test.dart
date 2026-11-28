@@ -1419,6 +1419,64 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  group('an iOS player left in the background', () {
+    Future<void> background(WidgetTester tester) async {
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      await tester.pump();
+    }
+
+    Future<void> foreground(WidgetTester tester) async {
+      for (final state in [
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      // Coming back through hidden asks for picture in picture again, which
+      // waits a moment before giving up.
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    Future<void> playing(WidgetTester tester, {required bool paused}) async {
+      await mountRoutedPlayer(tester);
+      manager.state.setDuration(const Duration(minutes: 40));
+      manager.state.setPosition(const Duration(minutes: 12));
+      manager.state.setPlaying(!paused);
+      await tester.pump();
+    }
+
+    testWidgets('closes once it has sat paused for a while', (tester) async {
+      await playing(tester, paused: true);
+      await background(tester);
+
+      await tester.pump(const Duration(seconds: 14));
+      expect(manager.stopCalls, 0, reason: 'a quick app switch keeps it');
+      await tester.pump(const Duration(seconds: 2));
+      expect(manager.stopCalls, 1);
+
+      await foreground(tester);
+      await tester.pumpAndSettle();
+      expect(find.byType(VideoPlayerScreen), findsNothing);
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+
+    testWidgets('leaves playing video alone', (tester) async {
+      await playing(tester, paused: false);
+      await background(tester);
+
+      await tester.pump(const Duration(seconds: 20));
+      expect(manager.stopCalls, 0);
+      await foreground(tester);
+      await tester.pumpWidget(const SizedBox());
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+  });
+
   testWidgets('quick skips each move a full step', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

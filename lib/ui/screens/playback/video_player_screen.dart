@@ -103,6 +103,7 @@ import '../../widgets/playback/still_watching_dialog.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import '../../../playback/player_key_bindings.dart';
+import '../../../playback/paused_background_exit.dart';
 import '../../../playback/rewind_subtitles.dart';
 import '../../widgets/syncplay/syncplay_player_button.dart';
 import '../../widgets/syncplay/watch_party_player_button.dart';
@@ -417,6 +418,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   DateTime? _userLeftAppAt;
   bool _videoNeedsReattachAfterScreenOff = false;
   Timer? _tvBackgroundExitTimer;
+  late final _pausedBackgroundExit = PausedBackgroundExit(
+    // A cast, a party or picture in picture still needs the player.
+    mayClose: () =>
+        _state.isPaused &&
+        !_isInPiP &&
+        _castService.activeKind == null &&
+        _syncPlayManager?.state.enabled != true &&
+        _watchParty?.controlsPlayback != true,
+    close: () => unawaited(_exitPlayback()),
+  );
   Timer? _tvTemporarySpeedHoldTimer;
   DateTime? _suppressBackNavigationUntil;
   bool _isPlayerMutationInFlight = false;
@@ -1265,6 +1276,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _completedSub?.cancel();
     _endedByServerSub?.cancel();
     _tvBackgroundExitTimer?.cancel();
+    _pausedBackgroundExit.dispose();
     FocusManager.instance.removeListener(_restoreOverlayFocus);
     _overlayFocus.removeListener(_onOverlayFocusChanged);
     _overlayFocus.dispose();
@@ -1595,6 +1607,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    if (PlatformDetection.isIOS) {
+      _pausedBackgroundExit.onLifecycleChanged(lifecycleState);
+    }
     if (lifecycleState != AppLifecycleState.resumed) {
       _cancelTemporarySpeed();
       _endHeldSeek();

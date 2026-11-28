@@ -28,6 +28,7 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
+import '../../../playback/paused_background_exit.dart';
 import '../../../playback/appletv_subtitles.dart';
 import '../../../playback/rewind_subtitles.dart';
 import '../../../playback/subtitle_cue_loader.dart';
@@ -47,6 +48,7 @@ import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/overview_text.dart';
+import '../../../platform/pip_service.dart';
 import '../../../util/platform_detection.dart';
 import 'appletv_playback_prompt_controller.dart';
 import 'episode_browser.dart';
@@ -61,7 +63,8 @@ class AppleTvPlayerHostScreen extends StatefulWidget {
       _AppleTvPlayerHostScreenState();
 }
 
-class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
+class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
+    with WidgetsBindingObserver {
   StreamSubscription<void>? _exitSub;
   StreamSubscription<void>? _queueSub;
   StreamSubscription<void>? _sessionEndedSub;
@@ -108,6 +111,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   EpisodeBrowserController? _episodeBrowser;
   bool _episodeBrowserShown = false;
   late final CinemaSkipController _cinemaSkip;
+  late final _pausedBackgroundExit = PausedBackgroundExit(
+    // Picture in picture or a group still needs the player.
+    mayClose: () =>
+        !_exiting &&
+        (_manager?.state.isPaused ?? false) &&
+        !(GetIt.instance.isRegistered<PipService>() &&
+            GetIt.instance<PipService>().isInPiP) &&
+        _syncPlay?.state.enabled != true &&
+        !_followingParty,
+    close: () => unawaited(_closeInBackground()),
+  );
 
   bool get _isCinemaPreroll =>
       _rawDataForQueueItem(_manager?.queueService.currentItem)?['__moonfinIsPreroll'] ==
@@ -175,6 +189,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   @override
   void initState() {
     super.initState();
+    if (PlatformDetection.isIOS) WidgetsBinding.instance.addObserver(this);
     unawaited(playbackDeviceLabel().then((label) => _deviceLabel = label));
     _cinemaSkip = CinemaSkipController(
       onSkip: () => _manager?.nextInQueue() ?? Future<void>.value(),
@@ -1981,6 +1996,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     Future<void>.delayed(const Duration(milliseconds: 300), _pushMetadata);
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) =>
+      _pausedBackgroundExit.onLifecycleChanged(state);
+
+  // The route can't finish leaving until the app is back, so the stop goes
+  // out first while the app is still running.
+  Future<void> _closeInBackground() async {
+    await _manager?.stop(userInitiated: false);
+    _handleExit();
+  }
+
   void _handleExit({bool finished = false}) {
     if (_exiting || !mounted) return;
     _exiting = true;
@@ -1993,6 +2019,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pausedBackgroundExit.dispose();
     _cinemaSkip.removeListener(_syncCinemaSkipButton);
     _cinemaSkip.dispose();
     _trickplayLoadGeneration++;
