@@ -101,6 +101,10 @@ class _Servers extends Fake implements ServerRepository {
   Future<void> deleteServer(String serverId) async {
     deleted.add((serverId, store?.getSiloTokens(serverId, '9') != null));
   }
+
+  @override
+  Future<void> whileTrusted(Server server, Future<void> Function() work) =>
+      work();
 }
 
 class _Users extends Fake implements UserRepository {

@@ -474,7 +474,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   }
 
   Future<void> _deleteServer(Server server) async {
-    // Signing out of the removed server can take a moment; a second
+    // Signing out of the removed server can take a moment, and a second
     // long-press meanwhile would start another removal.
     if (_removingServer) return;
     final l10n = AppLocalizations.of(context);

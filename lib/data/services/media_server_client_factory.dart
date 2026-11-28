@@ -130,7 +130,7 @@ class MediaServerClientFactory {
 
   /// A client of its own for requests outside the app's session, such as
   /// ending a saved login of a server being removed. It isn't cached and has
-  /// no 403 hook; the caller disposes it.
+  /// no 403 hook, and the caller disposes it.
   MediaServerClient createStandaloneClient({
     required String serverId,
     required ServerType serverType,

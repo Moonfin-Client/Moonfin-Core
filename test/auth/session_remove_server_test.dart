@@ -120,6 +120,8 @@ Map<String, dynamic> _pair(String access, String refresh) => {
 void main() {
   late HttpServer http;
   late List<(String, String)> requests;
+  // Whether the request's host passed self-signed trust as it arrived.
+  late List<bool> trustedAtRequest;
   late _AuthStore store;
   late ServerRepository servers;
   late SessionRepository repo;
@@ -135,6 +137,7 @@ void main() {
 
   setUp(() async {
     requests = [];
+    trustedAtRequest = [];
     store = _AuthStore();
     servers = ServerRepository(store, factory);
     repo = SessionRepository(
@@ -155,6 +158,7 @@ void main() {
         request.headers.value('x-emby-token'),
       ].whereType<String>().join(' ');
       requests.add(('${request.method} ${request.uri.path}', auth));
+      trustedAtRequest.add(acceptsUntrustedCertificate('127.0.0.1'));
       request.response.statusCode = HttpStatus.noContent;
       await request.response.close();
     });
@@ -224,6 +228,21 @@ void main() {
       }
     });
   }
+
+  test('a removed server stays trusted until its logins end', () async {
+    gAllowSelfSignedCertificates = true;
+    addTearDown(() => gAllowSelfSignedCertificates = false);
+    store.servers.add(_server('j1', ServerType.jellyfin, address));
+    store.users['j1'] = [_user('j1', 'u1', 'token-1')];
+    await servers.loadStoredServers();
+
+    await repo.removeServer('j1');
+    await waitForRequests(1);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(trustedAtRequest, [true], reason: 'a self-signed logout passes');
+    expect(acceptsUntrustedCertificate('127.0.0.1'), isFalse);
+  });
 
   test('a token another saved server holds is not ended', () async {
     store.servers

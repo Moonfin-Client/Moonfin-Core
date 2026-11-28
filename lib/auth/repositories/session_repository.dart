@@ -845,11 +845,11 @@ class SessionRepository {
     } catch (_) {}
   }
 
+  String? _removingServerId;
+
   /// Removes [serverId] with its saved users, and ends their logins on the
   /// server in the background. The signed-in server is signed out of first,
   /// as with Sign Out.
-  String? _removingServerId;
-
   Future<void> removeServer(String serverId) async {
     _removingServerId = serverId;
     try {
@@ -866,7 +866,12 @@ class SessionRepository {
           : _savedLogins(removed);
       await _serverRepository.deleteServer(serverId);
       if (removed != null && logins.isNotEmpty) {
-        unawaited(_endLogins(removed, logins));
+        unawaited(
+          _serverRepository.whileTrusted(
+            removed,
+            () => _endLogins(removed, logins),
+          ),
+        );
       }
     }
   }
@@ -1026,8 +1031,8 @@ class SessionRepository {
         _loginHeldElsewhere(serverId, userId);
     if (!tokenKnownInvalid && !keepsSiloLogin && !heldElsewhere()) {
       try {
-        // An unreachable server doesn't hold the sign-out; past the wait the
-        // login may stay valid there.
+        // An unreachable server doesn't hold up the sign-out. Past the wait,
+        // the login may stay valid there.
         await signedOut?.authApi.logout().timeout(logoutTimeout);
       } catch (_) {}
     }
