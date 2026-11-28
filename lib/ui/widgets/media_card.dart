@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import 'seerr/seerr_media_type_badge.dart';
 import '../../preference/preference_constants.dart';
+import '../../util/artwork_request_size.dart';
 import '../../util/platform_detection.dart';
 import '../../util/tv_ui_scale.dart';
 import '../../util/focus/dpad_keys.dart';
@@ -61,8 +62,11 @@ class MediaCard extends StatefulWidget {
   /// Public so a prefetch of a card's image uses the same cap the card does.
   /// A prefetch capped differently lands under a different cache key and the
   /// card decodes the image a second time.
+  ///
+  /// 960 and 640 at the 2x phone cap, scaled with the density cap so a 4K TV
+  /// can hold the wide banners and thumbs it requests.
   static int decodeMaxWidthFor(double aspectRatio) =>
-      aspectRatio > 1.2 ? 960 : 640;
+      ((aspectRatio > 1.2 ? 480 : 320) * artworkDevicePixelRatioCap()).round();
 
   static const double _labelGap = 6;
 
