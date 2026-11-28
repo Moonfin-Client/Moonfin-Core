@@ -3406,12 +3406,21 @@ class _ContentRowsState extends State<_ContentRows>
     }
     _rowMoveAnchor ??= position.pixels;
     _rowsViewport = _findRowsViewport(position);
+    // An animation started after a frame gets no elapsed time on its first
+    // tick, so this scroll would spend the frame after the focus frame standing
+    // still. Start it one frame in, so that frame already moves.
+    final duration = _focusHandoffDuration;
+    final refreshRate = View.of(context).display.refreshRate;
+    final skipped = refreshRate > 0
+        ? Duration.microsecondsPerSecond / refreshRate / duration.inMicroseconds
+        : 0.0;
+    final from = position.pixels;
     final activity = _PointerFriendlyScrollActivity(
       position,
-      from: position.pixels,
+      from: from + (to - from) * _focusHandoffCurve.transform(skipped),
       to: to,
-      duration: _focusHandoffDuration,
-      curve: _focusHandoffCurve,
+      duration: duration * (1 - skipped),
+      curve: _CurveFrom(_focusHandoffCurve, skipped),
       vsync: position.context.vsync,
     );
     position.beginActivity(activity);
@@ -7580,6 +7589,20 @@ typedef _PreviewSource = ({
   String? audioLanguage,
   String label,
 });
+
+/// The rest of [curve] after [start], scaled to run from 0 to 1.
+class _CurveFrom extends Curve {
+  const _CurveFrom(this.curve, this.start);
+
+  final Curve curve;
+  final double start;
+
+  @override
+  double transformInternal(double t) {
+    final begin = curve.transform(start);
+    return (curve.transform(start + (1 - start) * t) - begin) / (1 - begin);
+  }
+}
 
 /// An animated scroll that leaves pointers enabled. See
 /// [_ContentRowsState._animateRowScroll].
