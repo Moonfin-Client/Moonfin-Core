@@ -21,6 +21,7 @@ import '../../../widgets/seerr/seerr_item_status.dart';
 import '../detail_layout_metrics.dart';
 import '../detail_page.dart';
 import '../item_detail_screen.dart';
+import '../../../../util/original_title.dart';
 
 /// The title centered over its backdrop, filling the first screen, with the
 /// buttons and ratings under it. Every other part of the page is a section
@@ -479,7 +480,16 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
     ];
 
     final showName = partOfShow ? (item.seriesName ?? item.name) : item.name;
-    final Widget mark = logoTag != null && logoId != null && logoId.isNotEmpty
+    final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
+    final origTitle = eligibleOriginalTitle(item);
+    final hasLogo = logoTag != null && logoId != null && logoId.isNotEmpty;
+    final origSubtitle = detailOriginalTitleSubtitle(
+      showName,
+      origTitle,
+      origMode,
+      hasLogo: hasLogo,
+    );
+    final Widget mark = hasLogo
         ? LogoView(
             imageUrl: _vm.imageApi.getLogoImageUrl(
               logoId,
@@ -490,7 +500,7 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
             maxHeight: landscape ? math.min(150.0, size.height * 0.22) : 110,
           )
         : Text(
-            showName.toUpperCase(),
+            formatInlineTitle(showName, origTitle, origMode).toUpperCase(),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -504,7 +514,23 @@ class _PremiereDetailContentState extends State<PremiereDetailContent>
             ),
           );
 
-    if (!partOfShow) return mark;
+    if (!partOfShow) {
+      if (origSubtitle == null) return mark;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          mark,
+          const SizedBox(height: 8),
+          OriginalTitleSubtitle(
+            text: origSubtitle,
+            color: AppColorScheme.onBackground.withValues(alpha: 0.78),
+            fontSize: landscape ? 18 : 14,
+            textAlign: TextAlign.center,
+            shadows: shadows,
+          ),
+        ],
+      );
+    }
 
     final number = item.type == 'Episode' ? episodeNumber(item) : null;
     return Column(

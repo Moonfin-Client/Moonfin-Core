@@ -7,7 +7,7 @@
 const kDetailItemFields =
     'Chapters,MediaSources,MediaStreams,People,Overview,Genres,UserData,'
     'RecursiveItemCount,ChildCount,ParentLogoItemId,ParentLogoImageTag,'
-    'DateCreated';
+    'DateCreated,OriginalTitle';
 
 /// The same, plus the trickplay index, for a copy being stored to watch
 /// offline. Nothing can go and fetch it once the item is off the network.

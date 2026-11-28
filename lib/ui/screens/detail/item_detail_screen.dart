@@ -150,6 +150,7 @@ import '../../../util/subtitle_track_logic.dart';
 import '../../../util/audio_track_logic.dart';
 import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/original_title.dart';
 import '../../../util/signed_in_server_features.dart';
 import 'detail_layout_metrics.dart';
 import 'play_item_on_screen.dart';
@@ -4191,48 +4192,71 @@ class _HeaderSection extends StatelessWidget {
               ],
             ),
           ),
-        if (!isEpisode &&
-            item.logoImageTag != null &&
-            visibility.shows(DetailSection.logo))
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: isMobile
-                ? Center(
-                    child: LogoView(
-                      imageUrl: imageApi.getLogoImageUrl(
-                        item.id,
-                        maxWidth: 240,
-                        tag: item.logoImageTag,
-                      ),
-                      maxHeight: 56,
-                      maxWidth: 240,
-                    ),
-                  )
-                : LogoView(
-                    imageUrl: imageApi.getLogoImageUrl(
-                      item.id,
-                      maxWidth: 350,
-                      tag: item.logoImageTag,
-                    ),
-                    maxHeight: 80,
-                    maxWidth: 350,
-                  ),
-          )
-        else
-          Text(
+        ...() {
+          final origMode = prefs.get(UserPreferences.detailOriginalTitleMode);
+          final origTitle = eligibleOriginalTitle(item);
+          final hasLogo = !isEpisode &&
+              item.logoImageTag != null &&
+              visibility.shows(DetailSection.logo);
+          final origSubtitle = detailOriginalTitleSubtitle(
             item.name,
-            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              color: isNeon
-                  ? AppColorScheme.accent
-                  : AppColorScheme.onBackground,
-              fontWeight: FontWeight.bold,
-              shadows: _textShadows,
-              fontSize: isMobile ? 24 : null,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: isMobile ? TextAlign.center : null,
-          ),
+            origTitle,
+            origMode,
+            hasLogo: hasLogo,
+          );
+          return <Widget>[
+            if (hasLogo)
+              Padding(
+                padding: EdgeInsets.only(bottom: origSubtitle != null ? 6 : 12),
+                child: isMobile
+                    ? Center(
+                        child: LogoView(
+                          imageUrl: imageApi.getLogoImageUrl(
+                            item.id,
+                            maxWidth: 240,
+                            tag: item.logoImageTag,
+                          ),
+                          maxHeight: 56,
+                          maxWidth: 240,
+                        ),
+                      )
+                    : LogoView(
+                        imageUrl: imageApi.getLogoImageUrl(
+                          item.id,
+                          maxWidth: 350,
+                          tag: item.logoImageTag,
+                        ),
+                        maxHeight: 80,
+                        maxWidth: 350,
+                      ),
+              )
+            else
+              Text(
+                formatInlineTitle(item.name, origTitle, origMode),
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  color: isNeon
+                      ? AppColorScheme.accent
+                      : AppColorScheme.onBackground,
+                  fontWeight: FontWeight.bold,
+                  shadows: _textShadows,
+                  fontSize: isMobile ? 24 : null,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: isMobile ? TextAlign.center : null,
+              ),
+            if (origSubtitle != null) ...[
+              const SizedBox(height: 4),
+              OriginalTitleSubtitle(
+                text: origSubtitle,
+                color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+                fontSize: isMobile ? 14 : 16,
+                textAlign: isMobile ? TextAlign.center : null,
+                shadows: _textShadows,
+              ),
+            ],
+          ];
+        }(),
         const SizedBox(height: 8),
         DetailMetadataRow(
           item: item,

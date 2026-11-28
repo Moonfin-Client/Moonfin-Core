@@ -35,6 +35,7 @@ import '../../../../util/media_source_summary.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../../util/platform_detection.dart';
+import '../../../../util/original_title.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/focus/focus_scroll.dart';
 import '../../../navigation/destinations.dart';
@@ -4616,6 +4617,21 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 ),
               ),
             ),
+            if (detailOriginalTitleSubtitle(
+                  item.name,
+                  eligibleOriginalTitle(item),
+                  widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                  hasLogo: true,
+                )
+                case final origSubtitle?)
+              Padding(
+                padding: const EdgeInsets.only(top: 2, bottom: 2),
+                child: OriginalTitleSubtitle(
+                  text: origSubtitle,
+                  color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+                  fontSize: _landscape ? 16 : 14,
+                ),
+              ),
           ] else ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -4623,7 +4639,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               children: [
                 Flexible(
                   child: Text(
-                    item.name,
+                    formatInlineTitle(
+                      item.name,
+                      eligibleOriginalTitle(item),
+                      widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                    ),
                     style: (_landscape
                             ? textTheme.displaySmall
                             : textTheme.headlineMedium)
@@ -4633,6 +4653,21 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 ..._versionBadge(item, selectedSource, textTheme),
               ],
             ),
+            if (detailOriginalTitleSubtitle(
+                  item.name,
+                  eligibleOriginalTitle(item),
+                  widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                  hasLogo: false,
+                )
+                case final origSubtitle?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: OriginalTitleSubtitle(
+                  text: origSubtitle,
+                  color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+                  fontSize: _landscape ? 16 : 14,
+                ),
+              ),
           ],
           const SizedBox(height: 6),
           _metadataRow(context, item, selectedSource),

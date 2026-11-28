@@ -40,6 +40,7 @@ import '../detail_layout_metrics.dart';
 import '../detail_page.dart';
 import '../item_detail_screen.dart';
 import '../play_item_on_screen.dart';
+import '../../../../util/original_title.dart';
 
 enum _Tab {
   overview,
@@ -748,7 +749,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    item.name,
+                    formatInlineTitle(
+                      item.name,
+                      eligibleOriginalTitle(item),
+                      widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                    ),
                     style: TextStyle(
                       color: _ink(),
                       fontSize: 30,
@@ -966,7 +971,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item.name.toUpperCase(),
+                        formatInlineTitle(
+                          item.name,
+                          eligibleOriginalTitle(item),
+                          widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                        ).toUpperCase(),
                         style: TextStyle(
                           color: _muted,
                           fontSize: 14,
@@ -1480,7 +1489,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            item.name,
+            formatInlineTitle(
+              item.name,
+              eligibleOriginalTitle(item),
+              widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+            ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -1491,6 +1504,20 @@ class _FrostDetailContentState extends State<FrostDetailContent>
               letterSpacing: -1.6,
             ),
           ),
+          if (detailOriginalTitleSubtitle(
+                item.name,
+                eligibleOriginalTitle(item),
+                widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                hasLogo: false,
+              )
+              case final origSubtitle?) ...[
+            const SizedBox(height: 4),
+            OriginalTitleSubtitle(
+              text: origSubtitle,
+              color: _muted,
+              fontSize: 20,
+            ),
+          ],
           const SizedBox(height: 12),
           DetailMetadataRow(
             item: item,
@@ -2632,7 +2659,11 @@ class _FrostDetailContentState extends State<FrostDetailContent>
             ),
             const SizedBox(height: 4),
             Text(
-              item.name,
+              formatInlineTitle(
+                item.name,
+                eligibleOriginalTitle(item),
+                widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+              ),
               style: TextStyle(
                 color: _ink(),
                 fontSize: 30,
@@ -2641,6 +2672,20 @@ class _FrostDetailContentState extends State<FrostDetailContent>
                 letterSpacing: -0.6,
               ),
             ),
+            if (detailOriginalTitleSubtitle(
+                  item.name,
+                  eligibleOriginalTitle(item),
+                  widget.prefs.get(UserPreferences.detailOriginalTitleMode),
+                  hasLogo: false,
+                )
+                case final origSubtitle?) ...[
+              const SizedBox(height: 2),
+              OriginalTitleSubtitle(
+                text: origSubtitle,
+                color: _muted,
+                fontSize: 15,
+              ),
+            ],
             const SizedBox(height: 4),
             DetailMetadataRow(
               item: item,

@@ -30,6 +30,7 @@ import '../spotlight/widgets/spotlight_section_modal.dart';
 import 'minimalist_landscape_layout.dart';
 import 'minimalist_portrait_layout.dart';
 import 'widgets/minimalist_episodes_section.dart';
+import '../../../../util/original_title.dart';
 
 /// The item types Minimalist draws. A playlist goes to Modern, and everything
 /// else falls through to Spotlight, which already knows how to render a person
@@ -241,8 +242,18 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
         ? math.min(160.0, MediaQuery.sizeOf(context).height * 0.21)
         : 110.0;
 
+    final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
+    final origTitle = eligibleOriginalTitle(item);
+    final hasLogo = logoTag != null && logoId != null && logoId.isNotEmpty;
+    final origSubtitle = detailOriginalTitleSubtitle(
+      item.name,
+      origTitle,
+      origMode,
+      hasLogo: hasLogo,
+    );
+
     final Widget showMark;
-    if (logoTag != null && logoId != null && logoId.isNotEmpty) {
+    if (hasLogo) {
       showMark = LogoView(
         imageUrl: _vm.imageApi.getLogoImageUrl(
           logoId,
@@ -254,7 +265,9 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       );
     } else {
       showMark = Text(
-        isEpisodeOrSeason ? (item.seriesName ?? item.name) : item.name,
+        isEpisodeOrSeason
+            ? (item.seriesName ?? item.name)
+            : formatInlineTitle(item.name, origTitle, origMode),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: _titleStyle(landscape),
@@ -266,7 +279,19 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
         key: const ValueKey('minimalist-branding'),
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: [showMark, IncompleteRecordingDetailLine(itemId: item.id)],
+        children: [
+          showMark,
+          if (origSubtitle != null) ...[
+            const SizedBox(height: 6),
+            OriginalTitleSubtitle(
+              text: origSubtitle,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.78),
+              fontSize: landscape ? 18 : 14,
+              shadows: const [Shadow(blurRadius: 10, color: Color(0x99000000))],
+            ),
+          ],
+          IncompleteRecordingDetailLine(itemId: item.id),
+        ],
       );
     }
 

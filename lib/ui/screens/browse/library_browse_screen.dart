@@ -23,6 +23,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/accent_folding.dart';
+import '../../../util/original_title.dart';
 import '../../../util/artwork_request_size.dart';
 import '../home/home_row_prefetch.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -1863,7 +1864,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         posterBadgeItemId: item.id,
         recordingItemId: item.id,
         imageOverlays: mergedServerCountOverlays(context, item),
-        title: item.name,
+        title: formatInlineTitle(
+          item.name,
+          item.originalTitle,
+          _prefs.get(UserPreferences.libraryOriginalTitleMode),
+        ),
         subtitle: _cardSubtitle(item),
         showLabel: _showCardTitles,
         imageUrl: _imageUrl(item, cellWidth: cellWidth),
@@ -2136,7 +2141,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         posterBadgeItemId: item.id,
                         recordingItemId: item.id,
                         imageOverlays: mergedServerCountOverlays(context, item),
-                        title: item.name,
+                        title: formatInlineTitle(
+                          item.name,
+                          item.originalTitle,
+                          _prefs.get(UserPreferences.libraryOriginalTitleMode),
+                        ),
                         subtitle: _cardSubtitle(item),
                         showLabel: _showCardTitles,
                         imageUrl: _imageUrl(item, cellWidth: actualCellWidth),
@@ -2595,7 +2604,13 @@ class _FocusedItemHud extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    item!.name,
+                    formatInlineTitle(
+                      item!.name,
+                      item!.originalTitle,
+                      GetIt.instance<UserPreferences>().get(
+                        UserPreferences.libraryOriginalTitleMode,
+                      ),
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

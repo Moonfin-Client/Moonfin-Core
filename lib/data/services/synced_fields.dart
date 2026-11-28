@@ -113,6 +113,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('modernCardsOnMyMediaRow', UserPreferences.modernCardsOnMyMediaRow, SyncCodec.boolean),
   SyncedField('recommendationSystemSource', UserPreferences.recommendationSystemSource, SyncCodec.enumName, enumValues: prefs.RecommendationSystemSource.values),
   SyncedField('detailScreenStyle', UserPreferences.detailScreenStyle, SyncCodec.enumName, enumValues: prefs.DetailScreenStyle.values),
+  SyncedField('detailOriginalTitleMode', UserPreferences.detailOriginalTitleMode, SyncCodec.enumName, enumValues: prefs.OriginalTitleDisplay.values),
+  SyncedField('libraryOriginalTitleMode', UserPreferences.libraryOriginalTitleMode, SyncCodec.enumName, enumValues: const [prefs.OriginalTitleDisplay.off, prefs.OriginalTitleDisplay.replace, prefs.OriginalTitleDisplay.parentheses]),
   SyncedField('personalRatingStyle', UserPreferences.personalRatingStyle, SyncCodec.enumName, enumValues: prefs.PersonalRatingStyle.values),
   SyncedField('personalRatingIntervals', UserPreferences.personalRatingIntervals, SyncCodec.integer),
   SyncedField('detailExpandedTabs', UserPreferences.detailExpandedTabs, SyncCodec.boolean),

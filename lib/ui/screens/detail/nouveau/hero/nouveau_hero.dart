@@ -22,6 +22,7 @@ import '../../../../widgets/seerr/seerr_status_dot.dart';
 import '../../../../widgets/seerr/seerr_status_pill.dart';
 import '../../detail_layout_metrics.dart';
 import '../../item_detail_screen.dart';
+import '../../../../../util/original_title.dart';
 
 class NouveauHero extends StatefulWidget {
   final AggregatedItem item;
@@ -379,9 +380,24 @@ class NouveauHeroState extends State<NouveauHero> {
         : null;
 
     final itemName = series?.name ?? item.name;
+    final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
+    final origTitle = eligibleOriginalTitle(item);
 
     final branding = _NouveauBranding(
-      title: itemName,
+      title: formatInlineTitle(itemName, origTitle, origMode),
+      logoSubtitle: detailOriginalTitleSubtitle(
+        itemName,
+        origTitle,
+        origMode,
+        hasLogo: true,
+      ),
+      fallbackSubtitle: detailOriginalTitleSubtitle(
+        itemName,
+        origTitle,
+        origMode,
+        hasLogo: false,
+      ),
+      subtitleFontSize: isPhonePortrait ? 14 : 16,
       logoUrl: logoUrl,
       companionTitle: isSeason ? item.name : null,
       titleStyle: titleStyle,
@@ -1442,6 +1458,9 @@ class _NouveauOverviewState extends State<_NouveauOverview> {
 
 class _NouveauBranding extends StatefulWidget {
   final String title;
+  final String? logoSubtitle;
+  final String? fallbackSubtitle;
+  final double subtitleFontSize;
   final String? logoUrl;
   final String? companionTitle;
   final TextStyle? titleStyle;
@@ -1451,6 +1470,9 @@ class _NouveauBranding extends StatefulWidget {
 
   const _NouveauBranding({
     required this.title,
+    this.logoSubtitle,
+    this.fallbackSubtitle,
+    this.subtitleFontSize = 16,
     required this.logoUrl,
     required this.companionTitle,
     required this.titleStyle,
@@ -1632,7 +1654,12 @@ class _NouveauBrandingState extends State<_NouveauBranding> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    final subtitle = switch (_mode) {
+      _NouveauBrandingMode.logo => widget.logoSubtitle,
+      _NouveauBrandingMode.fallback => widget.fallbackSubtitle,
+      _NouveauBrandingMode.pending => null,
+    };
+    final mark = SizedBox(
       height: widget.maxHeight,
       width: widget.maxWidth,
       child: AnimatedSwitcher(
@@ -1664,6 +1691,20 @@ class _NouveauBrandingState extends State<_NouveauBranding> {
           ),
         },
       ),
+    );
+    if (subtitle == null) return mark;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        mark,
+        const SizedBox(height: 4),
+        OriginalTitleSubtitle(
+          text: subtitle,
+          color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+          fontSize: widget.subtitleFontSize,
+        ),
+      ],
     );
   }
 }

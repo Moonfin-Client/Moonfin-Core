@@ -426,6 +426,16 @@ enum DetailScreenStyle {
   frost;
 }
 
+/// How an item's original title is shown when it differs from its localized
+/// title. Details screens support all four modes; libraries offer [off],
+/// [replace], and [parentheses]. Stored per server and user.
+enum OriginalTitleDisplay {
+  off,
+  replace,
+  subtitle,
+  parentheses;
+}
+
 /// Selectable header layout for the library browse screen.
 ///
 /// [classic] is the original centered title with a row of icon buttons and is

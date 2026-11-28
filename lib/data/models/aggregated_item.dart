@@ -25,6 +25,7 @@ class AggregatedItem {
   }
 
   String get name => rawData['Name'] as String? ?? '';
+  String? get originalTitle => rawData['OriginalTitle'] as String?;
   String? get sortName => rawData['SortName'] as String?;
   String? get type => rawData['Type'] as String?;
 
