@@ -21,7 +21,10 @@ import 'subtitle_fonts.dart';
 
 class Media3PlayerBackend extends PlayerBackend
     with SubtitleDelayState
-    implements SubtitleLoadingBackend, SecondarySubtitleBackend {
+    implements
+        SubtitleLoadingBackend,
+        SecondarySubtitleBackend,
+        PlaybackNetworkStatsSource {
   @override
   bool get supportsSecondarySubtitleDelay => true;
   @override
@@ -221,7 +224,7 @@ class Media3PlayerBackend extends PlayerBackend
   /// What the native player decided and is putting out for this source.
   final Media3PlaybackStatus playbackStatus = Media3PlaybackStatus();
 
-  /// The latest network and buffer reading, for the playback stats overlay.
+  @override
   PlaybackNetworkStats? get networkStats => _networkStats;
   PlaybackNetworkStats? _networkStats;
 

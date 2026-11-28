@@ -24,6 +24,7 @@ import 'engine_trust.dart';
 import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
+import 'playback_network_stats.dart';
 import 'server_transcode_capabilities.dart';
 import 'subtitle_fonts.dart';
 
@@ -33,7 +34,11 @@ import 'subtitle_fonts.dart';
 /// no native player UI: Flutter owns the OSD and the video arrives through
 /// the `moonfin/aether_video` platform view.
 class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
-    implements PlayerBackend, SubtitleLoadingBackend, SecondarySubtitleBackend {
+    implements
+        PlayerBackend,
+        SubtitleLoadingBackend,
+        SecondarySubtitleBackend,
+        PlaybackNetworkStatsSource {
   AetherBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
@@ -56,6 +61,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   Duration _buffer = Duration.zero;
+  PlaybackNetworkStats? _networkStats;
   LiveSeekWindow? _liveSeekWindow;
   bool _isPlaying = false;
   bool _isBuffering = false;
@@ -167,6 +173,21 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
     _subtitleLoadingStream.add(loading);
   }
 
+  // The engine has no single read-ahead limit in seconds and no memory
+  // budget for the buffer, so the ceiling and memory rows stay out.
+  // `bufferedMs` is zero on live, which has no duration, so this reads the
+  // engine's buffer frontier instead.
+  PlaybackNetworkStats _networkStatsFrom(Map<String, dynamic> map) {
+    final ahead = _toInt(map['bufferedPositionMs']) - _toInt(map['positionMs']);
+    return PlaybackNetworkStats(
+      bufferAhead: Duration(milliseconds: ahead < 0 ? 0 : ahead),
+      activityBitsPerSecond: map['networkActivityBps'] == null
+          ? null
+          : _toInt(map['networkActivityBps']),
+      rebuffers: _toInt(map['rebuffers']),
+    );
+  }
+
   void _handleEvent(dynamic event) {
     if (_disposed || event is! Map) return;
     final map = event.map((k, v) => MapEntry(k.toString(), v));
@@ -191,6 +212,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
             _book?.length ?? Duration(milliseconds: _toInt(map['durationMs']));
         _buffer =
             _partStart + Duration(milliseconds: _toInt(map['bufferedMs']));
+        _networkStats = _networkStatsFrom(map);
         _liveSeekWindow = map['liveEdgeMs'] == null
             ? null
             : LiveSeekWindow(
@@ -415,6 +437,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
     });
 
     _liveSeekWindow = null;
+    _networkStats = null;
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -491,6 +514,9 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
 
   @override
   LiveSeekWindow? get liveSeekWindow => _liveSeekWindow;
+
+  @override
+  PlaybackNetworkStats? get networkStats => _networkStats;
 
   @override
   Future<void> stop() async {
