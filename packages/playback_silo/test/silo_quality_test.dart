@@ -124,4 +124,101 @@ void main() {
     expect(body['operation'], 'quality_change');
     expect(body, isNot(contains('bandwidth_cap_kbps')));
   });
+
+  test('a quality change drops Media3\'s profile 7 conversion, a seek '
+      'keeps it', () async {
+    resolver = SiloPlugin(
+      siloTestClient(server),
+      environment: () => SiloPlaybackEnvironment(
+        platform: 'android',
+        traits: SiloPlayerTraits.media3.withDolbyVision7Transform(
+          SiloDolbyVision7Transform.toProfile81,
+        ),
+      ),
+    ).createStreamResolver();
+    List<dynamic> transformations(Map<String, dynamic> body) =>
+        ((body['client_playback_context'] as Map)['deliveries']
+                as Map)['original_http']['transformations']
+            as List;
+
+    var stream = await resolver.resolve(item, deviceProfile: _profile);
+    expect(
+      transformations(server.bodies(startPath).single).single['name'],
+      'client_dv7_to_dv81',
+    );
+
+    stream = await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.seek,
+        position: Duration(minutes: 5),
+      ),
+    );
+    final seek = server.bodies(_replanPath).single;
+    expect(seek['client_features'], contains('client_video_transformations_v1'));
+    expect(transformations(seek).single['name'], 'client_dv7_to_dv81');
+
+    await resolver.replan(item, stream, quality(4000000));
+    final lower = server.bodies(_replanPath).last;
+    expect(siloSchemaErrors('PlaybackReplanBody', lower), isEmpty);
+    expect(
+      lower['client_features'],
+      isNot(contains('client_video_transformations_v1')),
+    );
+    expect(transformations(lower), isEmpty);
+    // The session keeps the start's offer for later replans.
+    expect(
+      transformations(server.bodies(startPath).single).single['name'],
+      'client_dv7_to_dv81',
+    );
+
+    // A track change asks for direct play again, but the picked quality
+    // still holds, so the offer stays off.
+    stream = await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.trackChange,
+        position: Duration(minutes: 10),
+        audioStreamIndex: 1,
+      ),
+    );
+    final track = server.bodies(_replanPath).last;
+    expect(
+      track['client_features'],
+      isNot(contains('client_video_transformations_v1')),
+    );
+    expect(transformations(track), isEmpty);
+
+    // Back to automatic: the offer returns, and stays for the next track
+    // change.
+    stream = await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.qualityChange,
+        position: Duration(minutes: 10),
+      ),
+    );
+    final auto = server.bodies(_replanPath).last;
+    expect(
+      auto['client_features'],
+      contains('client_video_transformations_v1'),
+    );
+    expect(transformations(auto).single['name'], 'client_dv7_to_dv81');
+    await resolver.replan(
+      item,
+      stream,
+      const ReplanRequest(
+        reason: ReplanReason.trackChange,
+        position: Duration(minutes: 10),
+        audioStreamIndex: 1,
+      ),
+    );
+    expect(
+      transformations(server.bodies(_replanPath).last).single['name'],
+      'client_dv7_to_dv81',
+    );
+  });
 }

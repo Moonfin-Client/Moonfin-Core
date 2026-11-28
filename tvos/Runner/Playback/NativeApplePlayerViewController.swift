@@ -87,10 +87,11 @@ final class NativeApplePlayerViewController: UIViewController {
     var onSkipSegmentSelect: (() -> Void)?
     /// Sends remote Skip actions back to Dart.
     var onCinemaSkipAction: ((String, Int) -> Void)?
-    /// Fires with the target after a scrub or a direct jump the user made.
-    /// Carrying the position lets the host hand it to SyncPlay, which is the
-    /// only way a seek made on this player reaches the rest of the group.
-    var onUserSeek: ((Int) -> Void)?
+    /// Fires with the target and the starting point after a scrub or a direct
+    /// jump the user made. Carrying the target lets the host hand it to
+    /// SyncPlay, which is the only way a seek made on this player reaches the
+    /// rest of the group.
+    var onUserSeek: ((_ toMs: Int, _ fromMs: Int) -> Void)?
     var onSearchSubtitles: (() -> Void)?
     var onSubtitleDelayChanged: ((Int) -> Void)?
     var onDownloadSubtitle: ((String) -> Void)?
@@ -323,6 +324,8 @@ final class NativeApplePlayerViewController: UIViewController {
     /// their indicators sit on the side opposite the swipe.
     private var swipeGesturesEnabled = false
     private var gestureIndicatorsInverted = false
+    private var swipeSeekEnabled = true
+    private var touchPanSeeks = true
     private var panDirectionDecided = false
     private var panStartInWindow = CGPoint.zero
     private var verticalSwipe: (isVolume: Bool, startValue: Float)?
@@ -1591,6 +1594,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         swipeGesturesEnabled = (args["swipeGestures"] as? Bool) ?? false
         gestureIndicatorsInverted = (args["gestureIndicatorsInverted"] as? Bool) ?? false
+        swipeSeekEnabled = (args["swipeSeek"] as? Bool) ?? true
         #endif
         if let sync = args["syncPlay"] as? [String: Any] {
             syncPlayEnabled = true
@@ -2917,9 +2921,10 @@ final class NativeApplePlayerViewController: UIViewController {
         scrubFrozenMs = target
         scrubCommitId += 1
         let commitId = scrubCommitId
+        let fromMs = Int(player.currentTime * 1000)
         // A party moves the room, and the room moves this player.
         if party == nil { player.seek(to: Double(target) / 1000.0) }
-        onUserSeek?(target)
+        onUserSeek?(target, fromMs)
         renderProgress()
         updateTrickplay()
         scrubConvergeDeadline = ProcessInfo.processInfo.systemUptime + 2.0
@@ -2993,16 +2998,18 @@ final class NativeApplePlayerViewController: UIViewController {
         let target = min(
             range.upperBound,
             max(range.lowerBound, player.currentTime + Double(deltaMs) / 1000.0))
+        let fromMs = Int(player.currentTime * 1000)
         player.seek(to: target)
-        onUserSeek?(Int((target * 1000).rounded()))
+        onUserSeek?(Int((target * 1000).rounded()), fromMs)
     }
 
     private func seekDirect(toMs ms: Int) {
         abandonScrubSession()
         let durationMs = Int(player.duration * 1000)
         let clamped = durationMs > 0 ? min(durationMs, max(0, ms)) : max(0, ms)
+        let fromMs = Int(player.currentTime * 1000)
         if party == nil { player.seek(to: Double(clamped) / 1000.0) }
-        onUserSeek?(clamped)
+        onUserSeek?(clamped, fromMs)
     }
 
     func seekFromHost(toSeconds seconds: TimeInterval) {
@@ -4157,15 +4164,18 @@ extension NativeApplePlayerViewController {
         ])
     }
 
-    /// A drag sideways scrubs the way the remote's touch surface does. Up or
-    /// down changes brightness on the left half and volume on the right, the
-    /// same as the Flutter player, while that setting is on.
+    /// A drag sideways scrubs the way the remote's touch surface does. With
+    /// Swipe to Seek off it only scrubs while the controls show, since a drag
+    /// is the only way to scrub here. Up or down changes brightness on the
+    /// left half and volume on the right, the same as the Flutter player,
+    /// while that setting is on.
     @objc private func handleTouchPan(_ recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             panDirectionDecided = false
             verticalSwipe = nil
             panStartInWindow = recognizer.location(in: nil)
+            touchPanSeeks = swipeSeekEnabled || isOsdOnScreen
         case .changed:
             if !panDirectionDecided {
                 let t = recognizer.translation(in: nil)
@@ -4188,7 +4198,7 @@ extension NativeApplePlayerViewController {
         default:
             break
         }
-        handleScrubPan(recognizer)
+        if touchPanSeeks { handleScrubPan(recognizer) }
     }
 
     private func beginVerticalSwipe() {

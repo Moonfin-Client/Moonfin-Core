@@ -90,6 +90,23 @@ void main() {
       expect(payload['downmixToStereo'], isTrue);
     });
 
+    test('night mode turns passthrough off', () async {
+      final prefs = await _prefs();
+      await prefs.set(
+        UserPreferences.audioPassthroughMode,
+        AudioPassthroughMode.manual,
+      );
+      await prefs.set(UserPreferences.ac3PassthroughEnabled, true);
+      await prefs.set(UserPreferences.trueHdPassthroughEnabled, true);
+      await prefs.set(UserPreferences.audioNightMode, true);
+
+      final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(prefs);
+
+      expect(payload['nightMode'], isTrue);
+      expect(payload['passthroughMode'], 'disabled');
+      expect(payload['passthroughCodecs'], isEmpty);
+    });
+
     test('the payload carries exactly the keys the bridge parses', () async {
       final prefs = await _prefs();
 
@@ -102,6 +119,7 @@ void main() {
           'passthroughCodecs',
           'passthroughOutput',
           'downmixToStereo',
+          'nightMode',
         }),
       );
     });

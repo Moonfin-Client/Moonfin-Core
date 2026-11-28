@@ -25,9 +25,10 @@ void main() {
     expect(ServerType.jellyfin.tokenQueryParam, 'ApiKey');
     expect(ServerType.emby.tokenQueryParam, 'api_key');
     expect(ServerType.silo.tokenQueryParam, 'token');
+    expect(ServerType.audiobookshelf.tokenQueryParam, 'token');
   });
 
   test('productName per server type', () {
-    expect(ServerType.values.map((t) => t.productName), ['Jellyfin', 'Emby', 'Plex', 'Silo']);
+    expect(ServerType.values.map((t) => t.productName), ['Jellyfin', 'Emby', 'Plex', 'Silo', 'Audiobookshelf']);
   });
 }

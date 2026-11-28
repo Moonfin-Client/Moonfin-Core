@@ -81,6 +81,15 @@ class HtmlVideoBackend extends PlayerBackend
   final List<({String url, web.HTMLTrackElement element})> _externalTracks = [];
   JSAny? _hlsController;
 
+  web.AudioContext? _audioContext;
+  web.MediaElementAudioSourceNode? _audioSource;
+  web.AudioNode? _nightModeInput;
+
+  // DynamicsCompressorNode adds 4.145x of its own makeup gain on this curve,
+  // so this brings the total to +10 dB. Its 6 ms lookahead keeps peaks well
+  // under full scale, so it needs no limiter.
+  static const _nightModeMakeup = 0.7628;
+
   WebSubtitleOverlay? _subtitleOverlay;
   bool _primaryUsesOverlay = false;
   WebSubtitleOverlay get _overlay => _subtitleOverlay ??=
@@ -560,6 +569,47 @@ class HtmlVideoBackend extends PlayerBackend
     _videoElement.volume = (_volume / 100).clamp(0.0, 1.0);
   }
 
+  /// The element stays off Web Audio until Night Mode is first turned on.
+  /// Once connected it can't be detached, so turning it off routes it
+  /// straight to the output instead.
+  Future<void> _applyNightMode() async {
+    final on = _prefs.get(UserPreferences.audioNightMode);
+    if (_audioSource == null && !on) return;
+    final context = _audioContext ??= web.AudioContext();
+    if (_audioSource == null) {
+      // A new context reports suspended until it starts rendering, and an
+      // element routed into one that never starts plays silence. Before the
+      // first click on the page the title stays uncompressed instead.
+      if (context.state != 'running') {
+        try {
+          await context.resume().toDart.timeout(
+            const Duration(milliseconds: 500),
+          );
+        } catch (_) {}
+        if (context.state != 'running') return;
+      }
+      _audioSource = context.createMediaElementSource(_videoElement);
+    }
+    final source = _audioSource!;
+    source.disconnect();
+    source.connect(
+      on ? (_nightModeInput ??= _buildNightMode(context)) : context.destination,
+    );
+  }
+
+  static web.AudioNode _buildNightMode(web.AudioContext context) {
+    final compressor = context.createDynamicsCompressor()
+      ..threshold.value = -30
+      ..knee.value = 6
+      ..ratio.value = 4
+      ..attack.value = 0.005
+      ..release.value = 0.25;
+    final makeup = context.createGain()..gain.value = _nightModeMakeup;
+    compressor.connect(makeup);
+    makeup.connect(context.destination);
+    return compressor;
+  }
+
   void _clearExternalTracks() {
     _clearSecondarySubtitle();
     _primaryReferenceCues = const [];
@@ -596,6 +646,8 @@ class HtmlVideoBackend extends PlayerBackend
     _completedStream.add(false);
 
     await _applySource(url, container: container, startPosition: startPosition);
+    if (!_isCurrentSource(source)) return;
+    await _applyNightMode();
     if (!_isCurrentSource(source)) return;
     // Style the first cue even if it arrives before the initial viewport poll.
     _applySubtitleAppearance();
@@ -1811,6 +1863,7 @@ class HtmlVideoBackend extends PlayerBackend
     _videoElement.pause();
     _videoElement.removeAttribute('src');
     _videoElement.load();
+    _audioContext?.close();
 
     _positionStream.close();
     _durationStream.close();

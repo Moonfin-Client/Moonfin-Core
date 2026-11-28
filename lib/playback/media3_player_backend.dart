@@ -65,12 +65,19 @@ class Media3PlayerBackend extends PlayerBackend
   static Map<String, dynamic> audioDecoderPreferencesPayload(
     UserPreferences prefs,
   ) {
+    // A bitstream skips the processor chain, so Night Mode turns passthrough
+    // off to get decoded audio it can compress.
+    final nightMode = prefs.get(UserPreferences.audioNightMode);
     return <String, dynamic>{
-      'passthroughMode': prefs.get(UserPreferences.audioPassthroughMode).name,
-      'passthroughCodecs': prefs
-          .resolvedPassthroughCodecs()
-          .map((codec) => codec.wireName)
-          .toList(growable: false),
+      'passthroughMode': nightMode
+          ? AudioPassthroughMode.disabled.name
+          : prefs.get(UserPreferences.audioPassthroughMode).name,
+      'passthroughCodecs': nightMode
+          ? const <String>[]
+          : prefs
+                .resolvedPassthroughCodecs()
+                .map((codec) => codec.wireName)
+                .toList(growable: false),
       // 'platform' has the HAL pack raw encodings, 'iec' packs IEC 61937 in
       // the app. Only sent as 'iec' when the choke-point getter says the
       // mode is actually live here.
@@ -78,11 +85,13 @@ class Media3PlayerBackend extends PlayerBackend
           ? AudioPassthroughOutput.iecPacker.wireName
           : AudioPassthroughOutput.platform.wireName,
       'downmixToStereo': prefs.get(UserPreferences.downmixToStereo),
+      'nightMode': nightMode,
     };
   }
 
-  /// How the native side should treat a Dolby Vision profile 7 stream.
-  @visibleForTesting
+  /// How the native side should treat a Dolby Vision profile 7 stream. A
+  /// Silo start tells Silo the same (`siloMedia3DoviMode`), except a strip
+  /// the viewer turned down for a transcode.
   static Media3DoviCompatMode doviCompatMode(
     UserPreferences prefs, {
     bool? supportsP7,
@@ -788,6 +797,8 @@ class Media3PlayerBackend extends PlayerBackend
     final applied = map['mode']?.toString() ?? 'none';
     final requested = map['requestedMode']?.toString() ?? 'none';
     final detail = map['detail']?.toString();
+    final fold = map['fold']?.toString();
+    final enhancementLayer = map['enhancementLayer']?.toString();
     final codecs = map['codecs']?.toString() ?? '';
     final profile = codecs.startsWith('dvhe.08') || codecs.startsWith('dvh1.08')
         ? 'P8'
@@ -798,6 +809,9 @@ class Media3PlayerBackend extends PlayerBackend
       'progress' => 'DoVi $profile still handled as $applied',
       'converterFailed' => 'DoVi $profile conversion stopped working',
       'disarmed' => 'DoVi $profile rewriting stood down',
+      'foldStarted' => 'DoVi $profile FEL curve fold fitted its first scene',
+      'foldStopped' => 'DoVi $profile FEL curve fold stopped',
+      'ended' => 'DoVi $profile reached the end as $applied',
       _ =>
         applied == requested
             ? 'DoVi $profile handled as $applied'
@@ -818,9 +832,14 @@ class Media3PlayerBackend extends PlayerBackend
       'Media3: $headline${detail == null ? '' : ' ($detail)'}. '
       'Codecs ${map['codecs']}, RPU source ${map['rpuSource']}, '
       'converter ${map['converterStatus']}. $counts. '
-      'NAL types ${map['nalCensus']}, layout ${map['sampleLayout']}. '
-      'Format ${map['formatSummary']}',
-      level: reason == 'converterFailed' || reason == 'disarmed'
+      'NAL types ${map['nalCensus']}, layout ${map['sampleLayout']}'
+      '${enhancementLayer == null ? '' : ', EL $enhancementLayer'}. '
+      'Format ${map['formatSummary']}'
+      '${fold == null ? '' : '. FEL fold $fold'}',
+      level:
+          reason == 'converterFailed' ||
+              reason == 'disarmed' ||
+              reason == 'foldStopped'
           ? LogLevel.warning
           : LogLevel.info,
     );
@@ -1602,16 +1621,21 @@ class Media3PlayerBackend extends PlayerBackend
     final maxBitrate = int.tryParse(_prefs.get(UserPreferences.maxBitrate));
     final maxResolution = _prefs.get(UserPreferences.maxVideoResolution);
     final audioCapabilityProfile = _prefs.detectedAudioCapabilities;
+    // Night Mode turns passthrough off, so the server profile has to match.
+    final bitstream = !_prefs.get(UserPreferences.audioNightMode);
 
     return DeviceProfileBuilder.build(
       maxBitrateMbps: maxBitrate,
       audioCapabilityProfile: audioCapabilityProfile,
       audioFallbackCodec: _prefs.resolveAudioFallbackCodec(),
       transcodeAudioCodecs: _prefs.resolveTranscodeAudioCodecs(),
-      ac3PassthroughEnabled: _prefs.resolveAc3PassthroughEnabled(),
-      eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
-      dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
-      trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
+      ac3PassthroughEnabled: bitstream && _prefs.resolveAc3PassthroughEnabled(),
+      eac3PassthroughEnabled:
+          bitstream && _prefs.resolveEac3PassthroughEnabled(),
+      dtsCorePassthroughEnabled:
+          bitstream && _prefs.resolveDtsCorePassthroughEnabled(),
+      trueHdPassthroughEnabled:
+          bitstream && _prefs.resolveTrueHdPassthroughEnabled(),
       // The bundled FFmpeg decoder leaves the channel layout unset for stereo
       // TrueHD, so every packet is rejected and playback sits at 0ms with a
       // black screen. Surround decodes fine. See androidx/media#1843.

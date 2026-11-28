@@ -67,3 +67,29 @@ bool showsWatchedIndicator({
     WatchedIndicatorBehavior.never => false,
   };
 }
+
+/// Whether [item] was left part way through, watched before or not. A rewatch
+/// keeps the watched flag and has a position again. A position at or past the
+/// runtime leaves nothing to resume.
+bool hasResumePosition(AggregatedItem item) {
+  final position = item.playbackPositionTicks ?? 0;
+  if (position <= 0) return false;
+  final runtime = item.runTimeTicks ?? 0;
+  return runtime <= 0 || position < runtime;
+}
+
+/// The item of [items] being rewatched that was played last, for a run whose
+/// items are all watched. When either has no date (Silo's episode lists carry
+/// none) the earlier one in list order wins.
+AggregatedItem? latestRewatch(Iterable<AggregatedItem> items) {
+  AggregatedItem? best;
+  for (final item in items) {
+    if (!hasResumePosition(item)) continue;
+    final at = item.lastPlayedDate;
+    final bestAt = best?.lastPlayedDate;
+    if (best == null || (at != null && bestAt != null && at.isAfter(bestAt))) {
+      best = item;
+    }
+  }
+  return best;
+}

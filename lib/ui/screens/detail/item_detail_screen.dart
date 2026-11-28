@@ -34,6 +34,7 @@ import '../../../data/database/offline_database.dart';
 import '../../../data/models/lyrics.dart';
 import '../../../data/repositories/offline_repository.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/book_parts.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
@@ -3388,6 +3389,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final canDownloadAll =
         userCanDownload() &&
+        serverAllowsDownload(item.rawData) &&
         (item.type == 'MusicAlbum' ||
             item.type == 'AudioBook' ||
             (item.type == 'Playlist' &&
@@ -7260,7 +7262,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         boxSetAllWatched = item.isPlayed;
         boxSetAllUnwatched = !item.isPlayed;
       } else {
-        boxSetAllWatched = items.every((e) => e.isPlayed);
+        // A watched set with an item being rewatched resumes like a set in
+        // progress.
+        boxSetAllWatched =
+            items.every((e) => e.isPlayed) && latestRewatch(items) == null;
         boxSetAllUnwatched = items.every(
           (e) =>
               !e.isPlayed &&
@@ -7276,8 +7281,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     bool seasonAllWatched = false;
     bool seasonAllUnwatched = false;
     AggregatedItem? seasonNextUpEp;
+    AggregatedItem? seasonRewatchEp;
     if (isSeason && viewModel.episodes.isNotEmpty) {
       seasonAllWatched = viewModel.episodes.every((e) => e.isPlayed);
+      if (seasonAllWatched) {
+        seasonRewatchEp = latestRewatch(
+          viewModel.episodes.where(isEligibleNextEpisodeCandidate),
+        );
+      }
       seasonAllUnwatched = viewModel.episodes.every(
         (e) =>
             !e.isPlayed &&
@@ -7303,7 +7314,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     ).where((s) => s['Type'] == 'Audio').toList();
 
     final canShowDownloadActions =
-        _isDownloadable(item.type) && userCanDownload();
+        _isDownloadable(item.type) &&
+        serverAllowsDownload(item.rawData) &&
+        userCanDownload();
 
     final String playButtonLabel;
     if (isPhoto) {
@@ -7311,7 +7324,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     } else if (isBook) {
       playButtonLabel = hasProgress ? l10n.resumeReading : l10n.read;
     } else if (isSeason) {
-      if (seasonAllWatched) {
+      if (seasonRewatchEp != null) {
+        playButtonLabel = l10n.resume;
+      } else if (seasonAllWatched) {
         playButtonLabel = l10n.replay;
       } else if (seasonAllUnwatched) {
         playButtonLabel = l10n.play;
@@ -7367,15 +7382,22 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       autofocus: autofocusPlay,
       onPressed: () {
         if (isSeason && viewModel.episodes.isNotEmpty) {
-          final targetEp = seasonNextUpEp ?? viewModel.episodes[0];
-          _play(context, targetEp, resume: seasonNextUpEp != null);
+          final targetEp =
+              seasonRewatchEp ?? seasonNextUpEp ?? viewModel.episodes[0];
+          _play(
+            context,
+            targetEp,
+            resume: seasonRewatchEp != null || seasonNextUpEp != null,
+          );
         } else {
+          // A watched series or box set may have an episode being rewatched,
+          // which only the queue fetched on play can tell.
           _play(
             context,
             item,
             resume: isBoxSet
-                ? (!boxSetAllWatched && !boxSetAllUnwatched)
-                : (!isPhoto && hasProgress),
+                ? !boxSetAllUnwatched
+                : (!isPhoto && (hasProgress || (isSeries && isFullyWatched))),
           );
         }
       },
@@ -9712,14 +9734,22 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   /// Resolves where a mixed video queue should start playing. Resumes an item
   /// left partway through, otherwise the first unwatched one, and the top when
-  /// everything is watched or nothing has been started.
-  static (int, Duration) _resolveQueueResumeStart(List<AggregatedItem> items) {
+  /// everything is watched or nothing has been started. With [resumeRewatch], a
+  /// watched queue with an item being rewatched resumes that item.
+  static (int, Duration) _resolveQueueResumeStart(
+    List<AggregatedItem> items, {
+    bool resumeRewatch = false,
+  }) {
     final allWatched = items.every((e) => e.isPlayed);
     final allUnwatched = items.every(
       (e) =>
           !e.isPlayed &&
           (e.playbackPosition == null || e.playbackPosition == Duration.zero),
     );
+    final rewatch = allWatched && resumeRewatch ? latestRewatch(items) : null;
+    if (rewatch != null) {
+      return (items.indexOf(rewatch), rewatch.playbackPosition!);
+    }
     if (allWatched || allUnwatched) return (0, Duration.zero);
 
     final resumeIndex = items.indexWhere(
@@ -9845,8 +9875,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final isFullyWatched = ws.isFullyWatched;
             final isFullyUnwatched = ws.isFullyUnwatched;
 
+            // Resuming a watched run carries on with an episode being
+            // rewatched instead of starting over.
+            final rewatch = isFullyWatched && resume
+                ? latestRewatch(allEpisodes)
+                : null;
             AggregatedItem targetEpisode;
-            if (isFullyWatched || isFullyUnwatched) {
+            if (rewatch != null) {
+              targetEpisode = rewatch;
+            } else if (isFullyWatched || isFullyUnwatched) {
               targetEpisode = allEpisodes.firstWhere(
                 (e) => e.parentIndexNumber == 1 && e.indexNumber == 1,
                 orElse: () => allEpisodes.first,
@@ -9905,7 +9942,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               queueEpisodes,
               startIndex: idx,
             );
-            final startPosition = resume
+            final startPosition =
+                resume && (rewatch != null || !isFullyWatched)
                 ? (selectedEpisode.playbackPosition ?? Duration.zero)
                 : Duration.zero;
 
@@ -10214,6 +10252,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
             final (startIndex, startPosition) = _resolveQueueResumeStart(
               playableQueue,
+              resumeRewatch: resume,
             );
 
             ensureLaunchStillWanted(launchSession);

@@ -2,7 +2,8 @@ enum ServerType {
   jellyfin,
   emby,
   plex,
-  silo;
+  silo,
+  audiobookshelf;
 
   /// The query parameter that carries the access token on media URLs.
   ///
@@ -16,6 +17,7 @@ enum ServerType {
     ServerType.emby => 'api_key',
     ServerType.plex => 'X-Plex-Token',
     ServerType.silo => 'token',
+    ServerType.audiobookshelf => 'token',
   };
 
   /// Emby has no Drop subtitle method and rejects a stream request naming it.
@@ -24,13 +26,15 @@ enum ServerType {
   /// Whether a user's avatar is at Jellyfin's `/Users/{id}/Images/Primary`
   /// on this server. Silo's avatars come with the profile, so they are asked
   /// for through the client's `ImageApi` instead.
-  bool get hasJellyfinUserImagePath => this != ServerType.silo;
+  bool get hasJellyfinUserImagePath =>
+      this != ServerType.silo && this != ServerType.audiobookshelf;
 
   String get productName => switch (this) {
     ServerType.jellyfin => 'Jellyfin',
     ServerType.emby => 'Emby',
     ServerType.plex => 'Plex',
     ServerType.silo => 'Silo',
+    ServerType.audiobookshelf => 'Audiobookshelf',
   };
 
   /// Classifies a server from its product name, then its version.
@@ -43,6 +47,7 @@ enum ServerType {
     if (productName != null) {
       final lower = productName.toLowerCase();
       if (lower.contains('silo')) return ServerType.silo;
+      if (lower.contains('audiobookshelf')) return ServerType.audiobookshelf;
       if (lower.contains('jellyfin')) return ServerType.jellyfin;
       if (lower.contains('emby')) return ServerType.emby;
     }

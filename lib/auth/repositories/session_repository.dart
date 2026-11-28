@@ -129,6 +129,8 @@ class SessionRepository {
   String? _activeServerId;
   String? _activeUserId;
   SessionState _state = SessionState.ready;
+  int _accountSelectionGeneration = 0;
+  int _accountChangesInProgress = 0;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
 
   /// Silo's per-session control lane, for a Silo session playing from any
@@ -172,6 +174,11 @@ class SessionRepository {
 
   String? get activeServerId => _activeServerId;
   String? get activeUserId => _activeUserId;
+
+  /// Changes when the current account starts changing. No selection is stable
+  /// while a switch or sign-out is in progress.
+  int? get accountSelectionGeneration =>
+      _accountChangesInProgress == 0 ? _accountSelectionGeneration : null;
 
   // save or clear the auto login target based on the chosen behavior.
   Future<void> applyAutoLoginForBehavior(UserSelectBehavior behavior) async {
@@ -253,6 +260,22 @@ class SessionRepository {
     String? username,
     String? password,
     bool validateToken = false,
+  }) => _whileChangingAccount(
+    () => _switchCurrentSession(
+      serverId: serverId,
+      userId: userId,
+      username: username,
+      password: password,
+      validateToken: validateToken,
+    ),
+  );
+
+  Future<bool> _switchCurrentSession({
+    required String serverId,
+    required String userId,
+    required String? username,
+    required String? password,
+    required bool validateToken,
   }) async {
     if (serverId != _activeServerId || userId != _activeUserId) {
       await _stopPlaybackForSessionChange();
@@ -941,7 +964,12 @@ class SessionRepository {
   /// How long a sign-out waits on the server's logout.
   static const logoutTimeout = Duration(seconds: 5);
 
-  Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+  Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) =>
+      _whileChangingAccount(
+        () => _destroyCurrentSession(tokenKnownInvalid: tokenKnownInvalid),
+      );
+
+  Future<void> _destroyCurrentSession({required bool tokenKnownInvalid}) async {
     _forgetUnrememberedPinOfActive();
     await _stopPlaybackForSessionChange();
     _remoteVolumeGeneration++;
@@ -1069,6 +1097,16 @@ class SessionRepository {
         GetIt.instance<CarPlayService>().notifySignInChanged(signedIn: signedIn);
       }
     } catch (_) {}
+  }
+
+  Future<T> _whileChangingAccount<T>(Future<T> Function() change) async {
+    _accountSelectionGeneration++;
+    _accountChangesInProgress++;
+    try {
+      return await change();
+    } finally {
+      _accountChangesInProgress--;
+    }
   }
 
   void _setState(SessionState state) {

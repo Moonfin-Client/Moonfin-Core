@@ -170,6 +170,7 @@ private class MoonfinRenderersFactory(
     context: Context,
     private val audioDelayProcessor: AdjustableAudioDelayProcessor,
     private val channelMixingProcessor: ChannelMixingAudioProcessor,
+    private val nightModeProcessor: NightModeCompressor,
     private val preferSoftwareAv1Renderer: Boolean,
     private val passthroughPolicy: AudioPassthroughPolicy,
     private val stereoDownmixRequested: () -> Boolean,
@@ -289,8 +290,10 @@ private class MoonfinRenderersFactory(
                     // paths that own their own channel handling: bitstreamed
                     // audio skips the processor chain outright, and a requested
                     // downmix steers surround to the platform decoder rather
-                    // than to FFmpeg.
+                    // than to FFmpeg. Night Mode compresses what the
+                    // downmix hands it, so it sits between the two.
                     channelMixingProcessor,
+                    nightModeProcessor,
                     audioDelayProcessor,
                 ),
             )
@@ -968,6 +971,10 @@ class Media3VideoView(
     private var doviCompatMode = DoviCompatMode.fromWire(Media3Bridge.doviCompatMode())
     @Volatile
     private var stripDolbyVision = false
+    // The FEL fold reads this on the loading thread and waits for the
+    // player's own video decoder before it opens one of its own.
+    @Volatile
+    private var videoDecoderLive = false
     private var allowExternalAudioEffects = Media3Bridge.allowExternalAudioEffectsEnabled()
     private var frameRateSwitchingBehavior = Media3Bridge.frameRateSwitchingBehavior()
     private var passthroughMode = Media3Bridge.passthroughMode()
@@ -981,6 +988,7 @@ class Media3VideoView(
     private var downmixToStereoPreference = Media3Bridge.downmixToStereoEnabled()
     private var decoderPreferenceDirty = false
     private val audioDelayProcessor = AdjustableAudioDelayProcessor()
+    private val nightModeProcessor = NightModeCompressor(Media3Bridge::nightModeEnabled)
     // Downmixes multichannel PCM (e.g. AAC 7.1) to stereo. Inactive (identity)
     // by default; enabled per-session after an AudioTrack init failure so a
     // device that cannot open a >2-channel PCM AudioTrack can still play.
@@ -1762,6 +1770,7 @@ class Media3VideoView(
             initializedTimestampMs: Long,
             initializationDurationMs: Long,
         ) {
+            videoDecoderLive = true
             Media3Bridge.emitEvent(
                 mapOf(
                     "event" to "videoDecoderInit",
@@ -1770,6 +1779,9 @@ class Media3VideoView(
             )
         }
 
+        override fun onVideoDecoderReleased(eventTime: AnalyticsListener.EventTime, decoderName: String) {
+            videoDecoderLive = false
+        }
 
         override fun onVideoFrameProcessingOffset(
             eventTime: AnalyticsListener.EventTime,
@@ -2838,6 +2850,8 @@ class Media3VideoView(
                 "formatSummary" to report.formatSummary,
                 "converterStatus" to DoviRpu.statusText(),
                 "detail" to report.detail,
+                "enhancementLayer" to report.enhancementLayer,
+                "fold" to report.fold,
             ),
         )
     }
@@ -2920,6 +2934,7 @@ class Media3VideoView(
             context = context,
             audioDelayProcessor = audioDelayProcessor,
             channelMixingProcessor = channelMixingProcessor,
+            nightModeProcessor = nightModeProcessor,
             preferSoftwareAv1Renderer = !hasHardwareAv1Decoder,
             passthroughPolicy = passthroughPolicy,
             stereoDownmixRequested = ::effectiveStereoDownmix,
@@ -2985,7 +3000,8 @@ class Media3VideoView(
             ),
             mode = { doviCompatMode },
             stripDolbyVision = { stripDolbyVision },
-            convertNal62 = DoviRpu::convertP7NalToP8,
+            converter = DoviRpu,
+            videoDecoderReady = { videoDecoderLive },
             onReport = ::onDoviCompatReport,
         )
         bootVideoExtractorsFactory = doviExtractorsFactory

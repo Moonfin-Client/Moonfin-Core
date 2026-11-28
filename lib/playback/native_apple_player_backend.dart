@@ -64,6 +64,7 @@ class NativeApplePlayerBackend
   final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
+  int _loadGeneration = 0;
   bool? _engineLogForwarding;
   EngineTrust? _trust;
   bool _playerPresented = false;
@@ -377,6 +378,10 @@ class NativeApplePlayerBackend
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
+    final generation = ++_loadGeneration;
+    final videoProcessing = await aetherVideoProcessingArgs(_prefs);
+    // A stop or a newer load that came in during the wait wins.
+    if (_disposed || generation != _loadGeneration) return;
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
     final autoPlay = payload['autoPlay'] != false;
@@ -466,7 +471,12 @@ class NativeApplePlayerBackend
       'forceSubtitlesDisabledOnStart':
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       ...appleTvCadenceArgs(_prefs),
-      ...aetherVideoProcessingArgs(_prefs),
+      ...videoProcessing,
+      'nightMode': _prefs.get(UserPreferences.audioNightMode),
+      'binaural': _prefs.get(UserPreferences.binauralHeadphones),
+      'loudnessTargetLufs': int.tryParse(
+        _prefs.get(UserPreferences.loudnessTargetLufs),
+      ),
     });
   }
 
@@ -511,6 +521,7 @@ class NativeApplePlayerBackend
 
   @override
   Future<void> stop() async {
+    _loadGeneration++;
     _pendingEmbeddedSubtitle = null;
     await _invoke<void>('stop');
     if (_isPlaying) {
@@ -736,8 +747,9 @@ class NativeApplePlayerBackend
       'canBrowseEpisodes': canBrowseEpisodes,
       // Only iOS reads it. The television always docks the transport.
       'transportDocked': ?transportDocked,
-      // Only iOS reads these, the touch screen's volume and brightness swipes.
+      // Only iOS reads these, the touch screen's swipes.
       'swipeGestures': _prefs.get(UserPreferences.playerSwipeGestures),
+      'swipeSeek': _prefs.get(UserPreferences.playerSwipeSeek),
       'gestureIndicatorsInverted':
           _prefs.get(UserPreferences.gestureIndicatorPlacement) ==
           GestureIndicatorPlacement.inverted,

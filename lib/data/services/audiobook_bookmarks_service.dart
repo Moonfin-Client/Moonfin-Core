@@ -3,10 +3,12 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:server_audiobookshelf/server_audiobookshelf.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../util/signed_in_server_features.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
 import 'media_server_client_factory.dart';
 
 /// A single user-saved position inside an audiobook.
@@ -42,7 +44,8 @@ class AudiobookBookmark {
   }
 }
 
-/// Persists bookmarks per server+item using [SharedPreferences] and syncs with Moonbase server.
+/// Persists bookmarks per server+item using [SharedPreferences] and syncs them
+/// with Moonbase, or with Audiobookshelf's own bookmarks.
 class AudiobookBookmarksService {
   static String _key(String serverId, String itemId) =>
       'audiobook_bookmarks_${serverId}_$itemId';
@@ -146,24 +149,44 @@ class AudiobookBookmarksService {
     final client = _resolveClient(serverId);
     // No server copy without the Moonfin plugin (Silo): the bookmarks stay
     // on this device, still marked unsynced.
-    if (client == null || !serverHasMoonfinPlugin(client)) return;
-    if (await _syncToMoonbase(client, itemId, list)) {
+    if (client == null || !_keepsBookmarks(client)) return;
+    if (await _syncToServer(client, itemId, list)) {
       await prefs.remove(_dirtyKey(serverId, itemId));
     }
   }
 
-  /// Reconciles this device with the server for one item.
-  ///
-  /// The server holds a whole list per item, so what it returns is the state
-  /// every device agreed on. Taking it as it stands is what lets a bookmark
-  /// deleted elsewhere stay deleted, which merging the two lists could never
-  /// express.
-  /// Local wins only while it holds an edit the server hasn't taken.
-  Future<void> syncFromServer(String serverId, String itemId) async {
-    final client = _resolveClient(serverId);
-    if (client == null || !serverHasMoonfinPlugin(client)) return;
+  static bool _keepsBookmarks(MediaServerClient client) =>
+      onlineClientOf(client) is AbsMediaServerClient ||
+      serverHasMoonfinPlugin(client);
+
+  Future<bool> _syncToServer(
+    MediaServerClient client,
+    String itemId,
+    List<AudiobookBookmark> list,
+  ) async {
+    final abs = onlineClientOf(client);
+    if (abs is! AbsMediaServerClient) {
+      return _syncToMoonbase(client, itemId, list);
+    }
+    try {
+      return await abs.bookmarks.replace(
+        itemId,
+        list.map((b) => b.toServerJson()).toList(),
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// The server's list for the item, or null when it has none to give.
+  Future<List<dynamic>?> _fetchFromServer(
+    MediaServerClient client,
+    String itemId,
+  ) async {
+    final abs = onlineClientOf(client);
+    if (abs is AbsMediaServerClient) return abs.bookmarks.list(itemId);
     final token = client.accessToken;
-    if (token == null || token.isEmpty) return;
+    if (token == null || token.isEmpty) return null;
 
     final dio = Dio(
       BaseOptions(
@@ -180,17 +203,33 @@ class AudiobookBookmarksService {
       ),
     );
     configureServerDio(dio);
+    try {
+      final response = await dio.get<dynamic>(
+        '${client.baseUrl}/Moonfin/Bookmarks/$itemId',
+      );
+      return switch (response.data) {
+        final Map data => data['bookmarks'] as List<dynamic>?,
+        final List data => data,
+        _ => null,
+      };
+    } finally {
+      dio.close();
+    }
+  }
+
+  /// Reconciles this device with the server for one item.
+  ///
+  /// The server holds a whole list per item, so what it returns is the state
+  /// every device agreed on. Taking it as it stands is what lets a bookmark
+  /// deleted elsewhere stay deleted, which merging the two lists could never
+  /// express.
+  /// Local wins only while it holds an edit the server hasn't taken.
+  Future<void> syncFromServer(String serverId, String itemId) async {
+    final client = _resolveClient(serverId);
+    if (client == null || !_keepsBookmarks(client)) return;
 
     try {
-      final response = await dio.get<dynamic>('${client.baseUrl}/Moonfin/Bookmarks/$itemId');
-      if (response.data == null) return;
-
-      List<dynamic>? serverRaw;
-      if (response.data is Map) {
-        serverRaw = (response.data as Map)['bookmarks'] as List<dynamic>?;
-      } else if (response.data is List) {
-        serverRaw = response.data as List<dynamic>?;
-      }
+      final serverRaw = await _fetchFromServer(client, itemId);
       if (serverRaw == null) return;
 
       final serverBookmarks = <AudiobookBookmark>[];
@@ -203,7 +242,7 @@ class AudiobookBookmarksService {
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getBool(_dirtyKey(serverId, itemId)) ?? false) {
         final localList = await load(serverId, itemId);
-        if (await _syncToMoonbase(client, itemId, localList)) {
+        if (await _syncToServer(client, itemId, localList)) {
           await prefs.remove(_dirtyKey(serverId, itemId));
         }
         return;
@@ -217,8 +256,6 @@ class AudiobookBookmarksService {
       _notify(serverId, itemId, serverBookmarks);
     } catch (_) {
       // Gracefully ignore offline/unreachable network errors
-    } finally {
-      dio.close();
     }
   }
 

@@ -81,6 +81,44 @@
       }
     }
   },
+  "absApiKey": "API Key",
+  "@absApiKey": {
+    "description": "Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password"
+  },
+  "absApiKeyHint": "Make one in Audiobookshelf under Settings > API Keys, then paste it here.",
+  "@absApiKeyHint": {
+    "description": "Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app"
+  },
+  "absOpenId": "OpenID",
+  "@absOpenId": {
+    "description": "Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name"
+  },
+  "absOpenIdIntro": "Sign in on your server's sign-in page in the browser. Moonfin finishes signing in once the page sends you back.",
+  "@absOpenIdIntro": {
+    "description": "Audiobookshelf sign-in: what happens when signing in with OpenID"
+  },
+  "absOpenIdWaiting": "Finish signing in on the page that opened in your browser.",
+  "@absOpenIdWaiting": {
+    "description": "Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page"
+  },
+  "absOpenIdOpen": "Open Sign-in Page",
+  "@absOpenIdOpen": {
+    "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser"
+  },
+  "absOpenIdOpenAgain": "Open It Again",
+  "@absOpenIdOpenAgain": {
+    "description": "Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once"
+  },
+  "absOpenIdRedirectRefused": "Audiobookshelf didn't accept Moonfin's sign-in address. An admin has to add {address} to Allowed Mobile Redirect URIs in Audiobookshelf's authentication settings.",
+  "@absOpenIdRedirectRefused": {
+    "description": "Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf",
+    "placeholders": {
+      "address": {
+        "type": "String",
+        "example": "moonfin://oauth"
+      }
+    }
+  },
   "quickConnect": "Quick Connect",
   "@quickConnect": {
     "description": "Quick Connect toggle button label"
@@ -4971,6 +5009,14 @@
   "playerSwipeGesturesDescription": "Slide up or down on the player to change brightness on the left and volume on the right",
   "@playerSwipeGesturesDescription": {
     "description": "Description for player swipe gestures"
+  },
+  "playerSwipeSeek": "Swipe to Seek",
+  "@playerSwipeSeek": {
+    "description": "Setting that lets a sideways swipe on the video move playback back or ahead"
+  },
+  "playerSwipeSeekDescription": "Slide left or right on the player to go back or ahead while the controls are hidden",
+  "@playerSwipeSeekDescription": {
+    "description": "Description for the swipe to seek setting"
   },
   "invertGestureIndicators": "Invert Gesture Indicators",
   "@invertGestureIndicators": {
@@ -11933,6 +11979,46 @@
   "@upscaleFullHdVideoSubtitle": {
     "description": "Subtitle for the setting that upscales 1080p video on Apple devices. Dolby Atmos and Dolby Digital Plus are product names"
   },
+  "upscaleAnimationLineArt": "Upscale anime with line art",
+  "@upscaleAnimationLineArt": {
+    "description": "Apple player setting that upscales anime and other drawn animation with a scaler made for line art"
+  },
+  "upscaleAnimationLineArtSubtitle": "Uses a scaler made for drawn animation on animated shows and anything in the Anime genre, up to 1080p. Needs iOS, tvOS or macOS 26 and uses more power.",
+  "@upscaleAnimationLineArtSubtitle": {
+    "description": "Subtitle for the line art upscaling setting. Anime and Animation are genre names from the media library"
+  },
+  "hdrToneMapping": "HDR tone mapping",
+  "@hdrToneMapping": {
+    "description": "Apple TV and Mac player setting that picks the screen's peak brightness so Moonfin tone maps brighter HDR10 video to it"
+  },
+  "hdrToneMappingDescription": "Set this to your screen's peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.",
+  "@hdrToneMappingDescription": {
+    "description": "Description for the HDR tone mapping setting. HDR10, HDR10+, Dolby Vision, Dolby Atmos and Dolby Digital Plus are product names"
+  },
+  "binauralHeadphones": "Binaural audio for headphones",
+  "@binauralHeadphones": {
+    "description": "iPhone, iPad and Apple TV audio setting that renders surround sound as 3D stereo for headphones"
+  },
+  "binauralHeadphonesSubtitle": "Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.",
+  "@binauralHeadphonesSubtitle": {
+    "description": "Subtitle for the binaural headphones setting"
+  },
+  "loudnessTarget": "Loudness target",
+  "@loudnessTarget": {
+    "description": "Apple player setting that raises quietly mixed movies and shows to a chosen loudness"
+  },
+  "loudnessTargetDescription": "Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it's on, Atmos plays as plain surround and passthrough is off.",
+  "@loudnessTargetDescription": {
+    "description": "Description for the loudness target setting. Atmos is a product name"
+  },
+  "loudnessTargetStandard": "Standard (-24 LUFS)",
+  "@loudnessTargetStandard": {
+    "description": "Loudness target option at broadcast loudness. LUFS is a unit and stays as is"
+  },
+  "loudnessTargetLoud": "Loud (-16 LUFS)",
+  "@loudnessTargetLoud": {
+    "description": "Louder loudness target option. LUFS is a unit and stays as is"
+  },
   "cadenceTipTitle": "Turn On Match Frame Rate",
   "cadenceTipMessage": "This video can't play smoothly at your TV's current refresh rate. On your Apple TV, open Settings > Video and Audio > Match Content and turn on Match Frame Rate.",
   "cadenceTipSlowdownHint": "Or turn on Smooth 24 fps on a 60 Hz TV in Moonfin under Playback > Quality & Decoding.",
@@ -11953,6 +12039,14 @@
   "preferTextSubtitlesSubtitle": "Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).",
   "preferExternalSubtitles": "Prefer External Subtitles",
   "preferExternalSubtitlesSubtitle": "Prioritize external subtitle files over embedded tracks.",
+  "rewindSubtitles": "Subtitles on Short Rewind",
+  "@rewindSubtitles": {
+    "description": "Setting that turns subtitles on for a moment after the viewer goes back a few seconds"
+  },
+  "rewindSubtitlesDescription": "With subtitles off, going back 30 seconds or less shows them until playback catches up.",
+  "@rewindSubtitlesDescription": {
+    "description": "Description for the subtitles on short rewind setting"
+  },
   "webDiagnostics": "Web diagnostics",
   "webDiagnosticsTitle": "Moonfin Web Diagnostics",
   "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",

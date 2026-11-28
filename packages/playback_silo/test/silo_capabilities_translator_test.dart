@@ -253,6 +253,57 @@ void main() {
     _expectFitsContract(caps);
   });
 
+  test('Media3 converting Dolby Vision 7 itself says so for the original', () {
+    for (final transform in SiloDolbyVision7Transform.values) {
+      final caps = siloCapabilitiesFromDeviceProfile(
+        _mpvProfile(),
+        traits: SiloPlayerTraits.media3.withDolbyVision7Transform(transform),
+      );
+      expect(caps.clientFeatures, contains('client_video_transformations_v1'));
+      final original = caps.deliveries['original_http']!;
+      expect(original['transformations'], [
+        {
+          'name': transform.transformation,
+          'executor': 'client',
+          'recipe_version': '1',
+          'validated_claims': [
+            switch (transform) {
+              SiloDolbyVision7Transform.toProfile81 =>
+                'profile7_rpu_converted_to_profile81',
+              SiloDolbyVision7Transform.toHdr10 =>
+                'dolby_vision_metadata_removed',
+            },
+            'hdr10_base_layer_preserved',
+            'enhancement_layer_discarded',
+          ],
+        },
+      ]);
+      // A remux or HLS stream is Silo's to convert, never the player's.
+      for (final name in ['progressive', 'hls']) {
+        expect(caps.deliveries[name]!['transformations'], isEmpty);
+      }
+      _expectFitsContract(caps);
+    }
+    expect(
+      SiloDolbyVision7Transform.toProfile81.transformation,
+      'client_dv7_to_dv81',
+    );
+    expect(
+      SiloDolbyVision7Transform.toHdr10.transformation,
+      'client_dv7_to_hdr10',
+    );
+
+    final plain = siloCapabilitiesFromDeviceProfile(
+      _mpvProfile(),
+      traits: SiloPlayerTraits.media3,
+    );
+    expect(
+      plain.clientFeatures,
+      isNot(contains('client_video_transformations_v1')),
+    );
+    expect(plain.deliveries['original_http']!['transformations'], isEmpty);
+  });
+
   test('libmpv and AetherEngine send the stream\'s headers', () {
     expect(SiloPlayerTraits.mpv.sendsRequestHeaders, isTrue);
     expect(SiloPlayerTraits.mpvAndroid.sendsRequestHeaders, isTrue);

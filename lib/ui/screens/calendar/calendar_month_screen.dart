@@ -488,8 +488,8 @@ enum _WideLayout {
   foldSplit,
 }
 
-/// How many of a day's titles a month cell of [height] shows, two at most. A
-/// cell too short for all of them gives a line to the count of the rest.
+/// How many of a day's titles a month cell of [height] shows. A cell too short
+/// for all of them gives a line to the count of the rest.
 @visibleForTesting
 int calendarCellTitleCount({
   required int entries,
@@ -498,8 +498,15 @@ int calendarCellTitleCount({
 }) {
   final lines = (height / lineHeight).floor();
   final fit = entries <= lines ? lines : lines - 1;
-  return fit.clamp(0, 2).clamp(0, entries);
+  return fit.clamp(0, entries);
 }
+
+/// A title's row with its gap in a month cell, which the count line fits in
+/// too. A row's 14 px bar and 3 px gap don't shrink with the text, so this
+/// never drops below their 17 px.
+@visibleForTesting
+double calendarCellLineHeight(TextScaler scaler) =>
+    scaler.scale(20).clamp(17, double.infinity);
 
 bool _hasPremiere(List<CalendarEntry> entries) =>
     calendarShowsBadges &&
@@ -620,9 +627,6 @@ class _WideCell extends StatelessWidget {
   final VoidCallback onOpen;
   final FocusNode? focusNode;
 
-  /// A title's row with its gap, which the count line fits in too.
-  static const _lineHeight = 20.0;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -696,8 +700,9 @@ class _WideCell extends StatelessWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, box) {
-                    final lineHeight = MediaQuery.textScalerOf(context)
-                        .scale(_lineHeight);
+                    final lineHeight = calendarCellLineHeight(
+                      MediaQuery.textScalerOf(context),
+                    );
                     final shown = entries
                         .take(
                           calendarCellTitleCount(

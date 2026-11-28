@@ -446,6 +446,7 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
                   : (_controller != null
                         ? Video(
                             controller: _controller!,
+                            wakelock: false,
                             controls: AdaptiveVideoControls,
                             fit: BoxFit.contain,
                             pauseUponEnteringBackgroundMode: false,

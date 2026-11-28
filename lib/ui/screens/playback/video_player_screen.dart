@@ -31,6 +31,7 @@ import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
+import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/image_source.dart';
 import '../../widgets/marquee_text.dart';
 import '../../widgets/player_volume_control.dart';
@@ -102,6 +103,7 @@ import '../../widgets/playback/still_watching_dialog.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import '../../../playback/player_key_bindings.dart';
+import '../../../playback/rewind_subtitles.dart';
 import '../../widgets/syncplay/syncplay_player_button.dart';
 import '../../widgets/syncplay/watch_party_player_button.dart';
 import '../../../syncplay/syncplay_manager.dart';
@@ -204,6 +206,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ? GetIt.instance<MediaKitPlayerBackend>()
       : null;
   final _prefs = GetIt.instance<UserPreferences>();
+  late final _rewindSubtitles = RewindSubtitles(_manager, _prefs);
   // App lifetime and shared with the mini player, so minimizing does not
   // flip the display out of HDR while the video carries on in the bar.
   final _autoHdrSwitcher = VideoMiniPlayerController.instance.autoHdrSwitcher;
@@ -350,6 +353,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _seekValue = 0;
   Duration? _pendingScrubSeekTarget;
   Duration? _lastScrubCommitTarget;
+  Duration? _directSeekTarget;
+  Timer? _directSeekSettle;
   int _scrubSeekCommitId = 0;
   bool _wasPlayingBeforeScrubPause = false;
   // True for a paused scrub session's whole lifetime; unlike
@@ -544,6 +549,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _verticalDragStartValue = 0.0;
   bool _verticalDragIsVolume = false;
   bool _verticalDragIgnored = false;
+  // Where a sideways swipe started, set only while that swipe seeks.
+  Duration? _swipeSeekFrom;
+  double _swipeSeekStartX = 0.0;
   late final _surfaceTaps = PlayerSurfaceTaps(
     onSingleTap: () {
       if (mounted) _toggleControls();
@@ -1068,6 +1076,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         // Stream indexes belong to the file they came from, so the next item
         // must not have a track from the last one put back on it.
         _subtitleIndexBeforeQuickOff = null;
+        _rewindSubtitles.reset();
         if (isPreroll) {
           _controlsVisible = false;
           _isOsdLocked = false;
@@ -1207,6 +1216,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _removeZoomModeToastOverlay();
     _skipForwardTimer?.cancel();
     _skipBackwardTimer?.cancel();
+    _directSeekSettle?.cancel();
     _surfaceTaps.cancel();
     _persistVolumeTimer?.cancel();
     if (PlatformDetection.isDesktop || PlatformDetection.isWeb) {
@@ -2408,6 +2418,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _checkSegments(position);
     _checkNextUp(position);
+    _rewindSubtitles.onPosition(position);
   }
 
   void _syncAirPlayPlaybackState({Duration? position}) {
@@ -3319,7 +3330,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   // the seek goes straight through.
   Future<void> _seekDirect(Duration target) {
     _dropScrubSession(resume: true);
+    _directSeekTarget = target;
+    _directSeekSettle?.cancel();
+    _directSeekSettle = Timer(
+      _scrubSeekConvergeTimeout,
+      () => _directSeekTarget = null,
+    );
     return _manager.seekTo(target);
+  }
+
+  // The player reports its new position a moment after a seek, so a quick
+  // follow-up seek has to start from where the last one was going.
+  Duration get _seekBasePosition {
+    final target = _directSeekTarget;
+    final live = _transportPosition;
+    if (target == null ||
+        (live - target).abs() <= _scrubSeekConvergeTolerance) {
+      return live;
+    }
+    return target;
   }
 
   void _dropScrubSession({required bool resume}) {
@@ -3340,7 +3369,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _seekRelative(int ms, {bool showControls = true}) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    final target = _transportPosition + Duration(milliseconds: ms);
+    final from = _seekBasePosition;
+    final target = from + Duration(milliseconds: ms);
     final clamped = Duration(
       milliseconds: target.inMilliseconds.clamp(
         0,
@@ -3348,6 +3378,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ),
     );
     _prefetchTrickplayDirectional(clamped, forward: ms > 0);
+    _noteSeekForSubtitles(from, clamped);
     _seekDirect(clamped);
     _lastSeekTime = DateTime.now();
     if (showControls) {
@@ -3355,17 +3386,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  // While a released commit is still converging, the pending target is
+  // already null but _state.position still reads pre-seek. A quick follow-up
+  // press or swipe based on it would jump back to the old position.
+  Duration get _scrubBasePosition =>
+      _pendingScrubSeekTarget ??
+      (_isSeeking ? _lastScrubCommitTarget : null) ??
+      _seekBasePosition;
+
   void _seekRelativeAccumulate(int ms) {
     _noteViewerActivity();
     _suppressSeekPrompts();
-    // While a released commit is still converging, the pending target is
-    // already null but _state.position still reads pre-seek - basing a quick
-    // follow-up press on it would jump back to the old position.
-    final basePosition =
-        _pendingScrubSeekTarget ??
-        (_isSeeking ? _lastScrubCommitTarget : null) ??
-        _transportPosition;
-    final target = basePosition + Duration(milliseconds: ms);
+    final target = _scrubBasePosition + Duration(milliseconds: ms);
     _prefetchTrickplayDirectional(target, forward: ms > 0);
     _accumulateScrub(target);
   }
@@ -3449,7 +3481,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (pendingTarget == null) return;
     _pendingScrubSeekTarget = null;
     _lastScrubCommitTarget = pendingTarget;
+    _noteSeekForSubtitles(_transportPosition, pendingTarget);
     unawaited(_commitScrubSeek(pendingTarget));
+  }
+
+  void _noteSeekForSubtitles(Duration from, Duration to) {
+    if (_castOwnsTransport) return;
+    _rewindSubtitles.onSeek(
+      from,
+      to,
+      streams: _currentPlaybackMediaStreams(),
+      preferredIndex: _subtitleIndexBeforeQuickOff,
+    );
   }
 
   // _isSeeking gates the seekbar between the frozen scrub target and the
@@ -3523,7 +3566,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _togglePlayPause() {
     _noteViewerActivity();
-    if (_castOwnsTransport ? _castPlaying : _state.isPlaying) {
+    if (_castOwnsTransport
+        ? castReportsPlaying(_castService)
+        : _state.isPlaying) {
       _manager.pause();
       return;
     }
@@ -4289,6 +4334,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         (PlatformDetection.useMobileUi &&
             !_controlsVisible &&
             _canUseTemporarySpeed());
+    // Only with the controls down, since the seek bar is there otherwise. It
+    // stays on while a swipe seeks, or the release would never arrive.
+    final swipeSeek =
+        _swipeSeekFrom != null ||
+        (PlatformDetection.useMobileUi &&
+            !_controlsVisible &&
+            !_isOsdLocked &&
+            !hideOsdForPreroll &&
+            _prefs.get(UserPreferences.playerSwipeSeek));
     if (_isInPiP) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -4329,6 +4383,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             onVerticalDragUpdate: swipeGestures ? _onVerticalDragUpdate : null,
             onVerticalDragEnd: swipeGestures ? _onVerticalDragEnd : null,
             onVerticalDragCancel: swipeGestures ? _onVerticalDragCancel : null,
+            onHorizontalDragStart: swipeSeek ? _onSwipeSeekStart : null,
+            onHorizontalDragUpdate: swipeSeek ? _onSwipeSeekUpdate : null,
+            onHorizontalDragEnd: swipeSeek ? _onSwipeSeekEnd : null,
             onLongPressStart: holdForSpeed ? _onSurfaceLongPressStart : null,
             onLongPressEnd: holdForSpeed ? (_) => _onSurfaceLongPressEnd() : null,
             onLongPressCancel: holdForSpeed ? _onSurfaceLongPressEnd : null,
@@ -4494,6 +4551,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       _buildSkipIndicatorOverlay(),
                       if (_temporarySpeedActive && !PlatformDetection.isTV)
                         _buildTemporarySpeedOverlay(),
+                      _buildSwipeSeekOverlay(),
                       if (_isOsdLocked && !hideOsdForPreroll)
                         _buildLockedOverlay(),
                       if (_isSkipSegmentButtonVisible)
@@ -4772,6 +4830,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           return Video(
             key: _videoSurfaceKey,
             controller: controller,
+            wakelock: false,
             controls: NoVideoControls,
             width: constraints.maxWidth,
             height: constraints.maxHeight,
@@ -7152,6 +7211,44 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  void _onSwipeSeekStart(DragStartDetails details) {
+    if (_state.duration <= Duration.zero ||
+        startsInSystemEdgeStrip(
+          details.localPosition.dy,
+          MediaQuery.sizeOf(context).height,
+          MediaQuery.paddingOf(context),
+        )) {
+      return;
+    }
+    _suppressSeekPrompts(duration: _seekDragPromptSuppressionDuration);
+    final from = _scrubBasePosition;
+    _swipeSeekFrom = from;
+    _swipeSeekStartX = details.localPosition.dx;
+    _accumulateScrub(from, showControls: false);
+  }
+
+  void _onSwipeSeekUpdate(DragUpdateDetails details) {
+    final from = _swipeSeekFrom;
+    if (from == null) return;
+    // A full-width sweep covers the larger of 90 seconds or a twelfth of the
+    // runtime, the same as the native Apple player.
+    final sweepMs = math.max(90000, _state.duration.inMilliseconds ~/ 12);
+    final dx = details.localPosition.dx - _swipeSeekStartX;
+    final offsetMs = dx / MediaQuery.sizeOf(context).width * sweepMs;
+    _accumulateScrub(
+      from + Duration(milliseconds: offsetMs.round()),
+      showControls: false,
+    );
+    _prefetchVisibleTrickplayPreview(_pendingScrubSeekTarget!);
+  }
+
+  void _onSwipeSeekEnd(DragEndDetails _) {
+    if (_swipeSeekFrom == null) return;
+    setState(() => _swipeSeekFrom = null);
+    _suppressSeekPrompts();
+    _commitPendingScrub();
+  }
+
   Widget _buildVolumeOverlay() {
     final displayVolume = _useSystemVolume
         ? _systemVolume
@@ -7221,7 +7318,50 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  Widget _buildSwipeSeekOverlay() {
+    final from = _swipeSeekFrom;
+    if (from == null) return const SizedBox.shrink();
+    final target = _pendingScrubSeekTarget ?? from;
+    final offset = Duration(seconds: target.inSeconds - from.inSeconds);
+    final sign = offset.isNegative ? '-' : '+';
+    return _buildTopPill(
+      Text(
+        '${formatPlaybackDuration(target)} / '
+        '${formatPlaybackDuration(_state.duration)}   '
+        '$sign${formatPlaybackDuration(offset.abs())}',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontFeatures: [FontFeature.tabularFigures()],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTemporarySpeedOverlay() {
+    return _buildTopPill(
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${_temporarySpeed.toStringAsFixed(0)}x',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 6),
+          const AdaptiveIcon(
+            Icons.fast_forward_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopPill(Widget child) {
     return Positioned(
       top: MediaQuery.paddingOf(context).top + AppSpacing.spaceLg,
       left: 0,
@@ -7234,24 +7374,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               color: Colors.black.withValues(alpha: 0.6),
               borderRadius: AppRadius.circular(14),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${_temporarySpeed.toStringAsFixed(0)}x',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const AdaptiveIcon(
-                  Icons.fast_forward_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ],
-            ),
+            child: child,
           ),
         ),
       ),
@@ -8308,27 +8431,42 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     unawaited(() async {
-      await showStyledPlayerDialog<void>(
-        context,
-        title: AppLocalizations.of(context).castAndCrew,
-        maxWidth: 680,
-        builder: (dialogCtx) => SizedBox(
-          height: 210,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.spaceXl,
-              AppSpacing.spaceSm,
-              AppSpacing.space2xl,
-              AppSpacing.spaceSm,
+      final title = AppLocalizations.of(context).castAndCrew;
+      final scrollController = ScrollController();
+      try {
+        await showStyledPlayerDialog<void>(
+          context,
+          title: title,
+          titleBuilder: PlatformDetection.useDesktopUi
+              ? (_) => Row(
+                  children: [
+                    Expanded(child: Text(title, style: playerDialogTitleStyle)),
+                    HorizontalScrollControls(controller: scrollController),
+                  ],
+                )
+              : null,
+          maxWidth: 680,
+          builder: (dialogCtx) => SizedBox(
+            height: 210,
+            child: ListView.separated(
+              controller: scrollController,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spaceXl,
+                AppSpacing.spaceSm,
+                AppSpacing.space2xl,
+                AppSpacing.spaceSm,
+              ),
+              itemCount: people.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 16),
+              itemBuilder: (ctx, i) =>
+                  personCard(dialogCtx, people[i], autofocus: i == 0),
             ),
-            itemCount: people.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 16),
-            itemBuilder: (ctx, i) =>
-                personCard(dialogCtx, people[i], autofocus: i == 0),
           ),
-        ),
-      );
+        );
+      } finally {
+        scrollController.dispose();
+      }
     }());
     _showControls();
   }
@@ -8390,40 +8528,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     setState(() {});
   }
 
-  Future<bool> _castTransport(
-    TransportAction action, {
-    Duration? position,
-  }) async {
-    switch (action) {
-      case TransportAction.resume:
-        await _runCastAction(_castService.play);
-      case TransportAction.pause:
-        await _runCastAction(_castService.pause);
-      case TransportAction.seek:
-        await _runCastAction(
-          (k) => _castService.seek(
-            k,
-            positionTicks: position!.inMicroseconds * 10,
-          ),
-        );
-      // The local queue would start the next item on this device.
-      case TransportAction.next ||
-          TransportAction.nextAsFinished ||
-          TransportAction.previous:
-        break;
-      case TransportAction.stop:
-        return false;
-    }
-    return true;
-  }
+  Future<bool> _castTransport(TransportAction action, {Duration? position}) =>
+      runCastTransport(
+        _castService,
+        action,
+        _runCastAction,
+        position: position,
+      );
 
-  bool get _castPlaying => switch (_castService.remoteStateNotifier.value) {
-    'playing' || 'buffering' => true,
-    _ => false,
-  };
-
-  bool get _isPlayingShown =>
-      _castOwnsTransport ? _castPlaying : _displayPlaying;
+  bool get _isPlayingShown => _castOwnsTransport
+      ? castReportsPlaying(_castService)
+      : _displayPlaying;
 
   Duration get _transportPosition => _castOwnsTransport
       ? Duration(microseconds: _castService.remotePositionNotifier.value ~/ 10)

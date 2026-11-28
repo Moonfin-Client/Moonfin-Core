@@ -3597,7 +3597,7 @@ class RowDataSource {
             }
           }
         } catch (e) {
-          print('[RowDataSource] Failed to resolve TMDB ID for online recommendations: $e');
+          debugPrint('[RowDataSource] Failed to resolve TMDB ID for online recommendations: $e');
         }
       }
 
@@ -3709,7 +3709,7 @@ class RowDataSource {
                 }).take(limit).toList();
               }
             } catch (e) {
-              print('[RowDataSource] Direct TMDB recommendation query failed: $e');
+              debugPrint('[RowDataSource] Direct TMDB recommendation query failed: $e');
             }
           }
         }

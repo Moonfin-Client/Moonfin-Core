@@ -19,6 +19,7 @@ class FeatureDetector {
   bool get _isEmby => serverType == ServerType.emby;
   bool get _isSilo => serverType == ServerType.silo;
   bool get _isPlex => serverType == ServerType.plex;
+  bool get _isAbs => serverType == ServerType.audiobookshelf;
 
   bool get supportsSyncPlay => _isJellyfin;
   /// Sprite-sheet seek previews (Jellyfin's `Trickplay`). Silo's are read
@@ -50,7 +51,8 @@ class FeatureDetector {
   /// Seerr requests and discovery. Moonfin reaches Seerr through the Moonfin
   /// plugin's proxy (`/Moonfin/Seerr/*`) on Jellyfin and Emby. On Silo the
   /// same screens use Silo's own requests (`/api/v2/requests`).
-  bool get supportsJellyseerr => true;
+  /// Audiobookshelf has no route to Seerr.
+  bool get supportsJellyseerr => !_isAbs;
 
   /// A version that doesn't parse counts as recent enough, since the
   /// alternative is hiding a feature on every server that reports something
@@ -64,8 +66,8 @@ class FeatureDetector {
         (serverMajor == major && serverMinor >= minor);
   }
 
-  /// Live TV, DVR and the guide. Silo has none of these by design.
-  bool get supportsLiveTv => !_isSilo;
+  /// Live TV, DVR and the guide. Silo and Audiobookshelf have none.
+  bool get supportsLiveTv => !_isSilo && !_isAbs;
 
   /// Music libraries, artists, albums and lyrics. Silo has no music.
   bool get supportsMusic => !_isSilo;
@@ -73,8 +75,8 @@ class FeatureDetector {
   /// Playlists. Silo has none. Its personal collections are the nearest thing.
   bool get supportsPlaylists => !_isSilo;
 
-  /// Instant mix. Silo has no equivalent.
-  bool get supportsInstantMix => !_isSilo;
+  /// Instant mix. Silo and Audiobookshelf have no equivalent.
+  bool get supportsInstantMix => !_isSilo && !_isAbs;
 
   /// Moonfin's admin panel, which speaks the Jellyfin and Emby admin APIs.
   /// Silo is administered from its own web app.
@@ -98,7 +100,7 @@ class FeatureDetector {
   /// Remote control: listing the account's other sessions and sending them
   /// play, pause and navigation commands (the Jellyfin/Emby Sessions API).
   /// Silo has no equivalent, and its Watch Together is a separate protocol.
-  bool get supportsRemoteControl => !_isSilo;
+  bool get supportsRemoteControl => !_isSilo && !_isAbs;
 
   /// Hiding a library from the Latest rows (`UserConfiguration`'s
   /// `LatestItemsExcludes`, "Show in Latest Media" in the library settings).
@@ -107,8 +109,8 @@ class FeatureDetector {
   bool get supportsLatestItemsExcludes => !_isSilo;
 
   /// Personal likes and dislikes. Plex has none, and its own rating already
-  /// stands in for favorites.
-  bool get supportsPersonalRatings => !_isPlex;
+  /// stands in for favorites. Audiobookshelf has no ratings at all.
+  bool get supportsPersonalRatings => !_isPlex && !_isAbs;
 
   /// Personal ratings finer than one point out of ten. Silo saves whole
   /// ratings only.
@@ -124,15 +126,15 @@ class FeatureDetector {
 
   /// Downloading a transcoded copy. Plex's transcoder makes streams rather
   /// than files, so Plex only downloads originals.
-  bool get supportsTranscodedDownloads => !_isPlex;
+  bool get supportsTranscodedDownloads => !_isPlex && !_isAbs;
 
   /// The 4K filter in the library picker. Emby's items query takes no 4K
   /// flag. Silo filters 4K by resolution.
   bool get supportsUhdFilter => !_isEmby;
 
   /// The series status, likes, 3D, extras and disc source filters in the
-  /// library picker. Plex keeps none of these.
-  bool get supportsExtraLibraryFilters => !_isPlex;
+  /// library picker. Plex and Audiobookshelf keep none of these.
+  bool get supportsExtraLibraryFilters => !_isPlex && !_isAbs;
 
   /// The unreleased series filter in the library picker. Emby's series
   /// status holds only continuing and ended.
@@ -143,8 +145,9 @@ class FeatureDetector {
   bool get supportsGuideCategoryFilters => !_isPlex;
 
   /// Whether adding to or removing from a collection needs the user's
-  /// collection permission (or admin). Only Jellyfin gates it.
-  bool get collectionsNeedPermission => _isJellyfin;
+  /// collection permission (or admin). Jellyfin gates it, and Audiobookshelf
+  /// needs its update permission.
+  bool get collectionsNeedPermission => _isJellyfin || _isAbs;
 
   /// The achievements plugin, which is Jellyfin-only.
   bool get supportsAchievements => _isJellyfin;
@@ -166,10 +169,10 @@ class FeatureDetector {
   /// Measuring bandwidth against the server for auto bitrate. Silo has no
   /// bandwidth test route, and its playback start applies the server's own
   /// policy to the client's bandwidth.
-  bool get supportsBandwidthTest => !_isSilo;
+  bool get supportsBandwidthTest => !_isSilo && !_isAbs;
 
   /// Reporting reading progress inside an EPUB to the server.
-  bool get supportsBookProgressReports => _isJellyfin;
+  bool get supportsBookProgressReports => _isJellyfin || _isAbs;
 }
 
 extension ServerTypeFeatures on ServerType {

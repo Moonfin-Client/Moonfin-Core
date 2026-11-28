@@ -102,7 +102,28 @@ class _QualityDecodingScreen extends StatelessWidget {
                   subtitle: l10n.upscaleFullHdVideoSubtitle,
                   icon: Icons.hd,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.upscaleAnimationLineArt,
+                  title: l10n.upscaleAnimationLineArt,
+                  subtitle: l10n.upscaleAnimationLineArtSubtitle,
+                  icon: Icons.brush,
+                ),
               ],
+              if (PlatformDetection.isAppleTV || PlatformDetection.isMacOS)
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.hdrToneMapPeakNits,
+                  title: l10n.hdrToneMapping,
+                  description: l10n.hdrToneMappingDescription,
+                  icon: Icons.hdr_on,
+                  options: {
+                    'off': l10n.off,
+                    '400': '400 nits',
+                    '600': '600 nits',
+                    '800': '800 nits',
+                    '1000': '1000 nits',
+                    '1500': '1500 nits',
+                  },
+                ),
               if (DisplayHdrProbe.isSupported) const _RedetectDisplayTile(),
               if (PlatformDetection.isAppleTV)
                 SwitchPreferenceTile(

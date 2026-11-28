@@ -7,6 +7,7 @@ import 'package:server_emby/server_emby.dart';
 import 'package:server_jellyfin/server_jellyfin.dart';
 import 'package:server_plex/server_plex.dart';
 import 'package:server_silo/server_silo.dart';
+import 'package:server_audiobookshelf/server_audiobookshelf.dart';
 
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
@@ -180,6 +181,12 @@ class MediaServerClientFactory {
           deviceInfo: deviceInfo,
           platform: _siloDevicePlatform(),
         );
+      case ServerType.audiobookshelf:
+        return AbsMediaServerClient(
+          baseUrl: baseUrl,
+          deviceInfo: deviceInfo,
+          store: _plexConfigStore(serverId),
+        );
     }
   }
 
@@ -195,8 +202,8 @@ class MediaServerClientFactory {
   }
 }
 
-/// Keeps each Plex user's configuration in this device's preferences, under
-/// [serverId].
+/// Keeps each Plex or Audiobookshelf user's configuration in this device's
+/// preferences, under [serverId].
 PlexUserConfigurationStore _plexConfigStore(String serverId) {
   UserPreferences? prefs() => GetIt.instance.isRegistered<UserPreferences>()
       ? GetIt.instance<UserPreferences>()

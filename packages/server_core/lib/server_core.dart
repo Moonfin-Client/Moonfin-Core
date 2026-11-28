@@ -42,6 +42,7 @@ export 'src/api/system_api.dart';
 export 'src/api/user_library_api.dart';
 export 'src/api/user_views_api.dart';
 export 'src/api/live_tv_api.dart';
+export 'src/api/no_live_tv_api.dart';
 export 'src/api/instant_mix_api.dart';
 export 'src/api/display_preferences_api.dart';
 export 'src/api/users_api.dart';

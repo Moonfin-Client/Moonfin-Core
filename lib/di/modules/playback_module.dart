@@ -6,6 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_emby/playback_emby.dart';
 import 'package:playback_plex/playback_plex.dart';
+import 'package:playback_audiobookshelf/playback_audiobookshelf.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
@@ -18,6 +19,7 @@ import '../../data/services/connectivity_service.dart';
 import '../../data/services/download_service.dart';
 import '../../data/services/log_service.dart';
 import '../../data/services/blocked_content_gate.dart';
+import '../../data/services/book_parts.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
 import '../../data/services/remove_watched_planner.dart';
@@ -606,9 +608,12 @@ void registerPlaybackModule() {
     }
 
     if (PlatformDetection.isAndroid) {
+      // Media3 can't read the playlist a book downloaded in several files
+      // plays from.
       final preferMedia3 =
           prefs.get(UserPreferences.playbackEnginePreference) ==
-          PlaybackEnginePreference.media3;
+              PlaybackEnginePreference.media3 &&
+          !isBookPartsPlaylist(resolution.streamUrl);
       if (preferMedia3) {
         if (currentBackend is Media3PlayerBackend) return currentBackend;
         return _getIt<Media3PlayerBackend>();
@@ -640,7 +645,7 @@ void registerPlaybackModule() {
 
     final audioSpdifCodecs = context.backend is MediaKitPlayerBackend
         ? MediaKitPlayerBackend.passthroughCodecsFromSet(
-            prefs.resolvedPassthroughCodecs(),
+            MediaKitPlayerBackend.passthroughCodecsFor(prefs),
             downmixToStereo: prefs.get(UserPreferences.downmixToStereo),
           )
         : const <String>[];
@@ -805,6 +810,10 @@ void setActiveStreamResolver(MediaServerClient client) {
       final p = siloPluginFor(client, environment: siloPlaybackEnvironment);
       return (p.createStreamResolver(), p.createPlaySessionService());
     }(),
+    ServerType.audiobookshelf => (
+      AbsMediaStreamResolver(client),
+      AbsPlaySessionService(client),
+    ),
   };
 
   // Local-first: completed downloads play from disk instead of streaming,
