@@ -130,6 +130,23 @@ class UserPreferences extends ChangeNotifier {
     mediaBarSourceNewReleases,
   };
 
+  // Display order applied to the selected media bar slides after the source
+  // chooses them. 'default' leaves the source's own order untouched.
+  static const mediaBarSortDefault = 'default';
+  static const mediaBarSortRandom = 'random';
+  static const mediaBarSortDateAddedDesc = 'dateAddedDesc';
+  static const mediaBarSortDateAddedAsc = 'dateAddedAsc';
+  static const mediaBarSortReleaseDateDesc = 'releaseDateDesc';
+  static const mediaBarSortReleaseDateAsc = 'releaseDateAsc';
+  static const mediaBarSortOrderValues = <String>{
+    mediaBarSortDefault,
+    mediaBarSortRandom,
+    mediaBarSortDateAddedDesc,
+    mediaBarSortDateAddedAsc,
+    mediaBarSortReleaseDateDesc,
+    mediaBarSortReleaseDateAsc,
+  };
+
   // What a focused home card plays. episodePreviewEnabled says whether it
   // plays anything, which older apps also read, and mediaPreviewMode says
   // which kind.
@@ -781,6 +798,7 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarContentType',
     'mediaBarSourceType',
     'mediaBarItemCount',
+    'mediaBarSortOrder',
     'mediaBarNewReleaseBanner',
     'mediaBarNewReleaseDays',
     'mediaBarNewReleaseKinds',
@@ -1359,6 +1377,14 @@ class UserPreferences extends ChangeNotifier {
     return mediaBarSourceTypeValues.firstWhere(
       (value) => value.toLowerCase() == normalized,
       orElse: () => mediaBarSourceRandom,
+    );
+  }
+
+  static String normalizeMediaBarSortOrder(String? sortOrder) {
+    final normalized = (sortOrder ?? '').trim().toLowerCase();
+    return mediaBarSortOrderValues.firstWhere(
+      (value) => value.toLowerCase() == normalized,
+      orElse: () => mediaBarSortDefault,
     );
   }
 
@@ -3382,6 +3408,11 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarItemCount = Preference(
     key: 'mediaBarItemCount',
     defaultValue: '10',
+  );
+
+  static final mediaBarSortOrder = Preference(
+    key: 'mediaBarSortOrder',
+    defaultValue: mediaBarSortDefault,
   );
 
   /// Flags a series slide whose episodes aired lately as a new season or new

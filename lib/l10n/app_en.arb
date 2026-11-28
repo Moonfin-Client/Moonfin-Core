@@ -6812,6 +6812,38 @@
   "@mediaBarSourceRandom": {
     "description": "Media bar source: any eligible title"
   },
+  "mediaBarSortOrder": "Sort Order",
+  "@mediaBarSortOrder": {
+    "description": "Setting for how selected media bar slides are ordered"
+  },
+  "mediaBarSortOrderDescription": "Order in which selected media bar slides are displayed",
+  "@mediaBarSortOrderDescription": {
+    "description": "Description for the media bar sort order setting"
+  },
+  "mediaBarSortDefault": "Source Default",
+  "@mediaBarSortDefault": {
+    "description": "Media bar sort order option: keep the order chosen by the selected source"
+  },
+  "mediaBarSortRandom": "Random",
+  "@mediaBarSortRandom": {
+    "description": "Media bar sort order option: display selected slides in random order"
+  },
+  "mediaBarSortDateAddedNewest": "Date Added (Newest First)",
+  "@mediaBarSortDateAddedNewest": {
+    "description": "Media bar sort order option: newest added to library first"
+  },
+  "mediaBarSortDateAddedOldest": "Date Added (Oldest First)",
+  "@mediaBarSortDateAddedOldest": {
+    "description": "Media bar sort order option: oldest added to library first"
+  },
+  "mediaBarSortReleaseDateNewest": "Release Date (Newest First)",
+  "@mediaBarSortReleaseDateNewest": {
+    "description": "Media bar sort order option: newest release or air date first"
+  },
+  "mediaBarSortReleaseDateOldest": "Release Date (Oldest First)",
+  "@mediaBarSortReleaseDateOldest": {
+    "description": "Media bar sort order option: oldest release or air date first"
+  },
   "mediaBarNewReleaseBanner": "New Release Banner",
   "@mediaBarNewReleaseBanner": {
     "description": "Setting that flags new series, seasons, episodes and movies in the media bar"

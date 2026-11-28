@@ -386,6 +386,26 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                   },
                   onChanged: _pushSync,
                 ),
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarSortOrder,
+                  title: l10n.mediaBarSortOrder,
+                  description: l10n.mediaBarSortOrderDescription,
+                  icon: Icons.sort,
+                  options: {
+                    UserPreferences.mediaBarSortDefault:
+                        l10n.mediaBarSortDefault,
+                    UserPreferences.mediaBarSortRandom: l10n.mediaBarSortRandom,
+                    UserPreferences.mediaBarSortDateAddedDesc:
+                        l10n.mediaBarSortDateAddedNewest,
+                    UserPreferences.mediaBarSortDateAddedAsc:
+                        l10n.mediaBarSortDateAddedOldest,
+                    UserPreferences.mediaBarSortReleaseDateDesc:
+                        l10n.mediaBarSortReleaseDateNewest,
+                    UserPreferences.mediaBarSortReleaseDateAsc:
+                        l10n.mediaBarSortReleaseDateOldest,
+                  },
+                  onChanged: _pushSync,
+                ),
               ],
             ),
 

@@ -106,7 +106,18 @@ Map<String, dynamic>? siloItemToBaseItemDto(
       'CriticRating': critic,
     if (_runTimeTicks(item) case final ticks?) 'RunTimeTicks': ticks,
     'ProviderIds': _providerIds(item, id),
-    if (_dateAdded(item['versions']) case final added?) 'DateCreated': added,
+    // What Silo sorts Date Added on is the title's added_at, which catalog
+    // pages carry without the files.
+    if (_siloTimestamp(item['added_at']) ?? _dateAdded(item['versions'])
+        case final added?)
+      'DateCreated': added,
+    // And a show's Date Episode Added on latest_episode_added.
+    if (_siloTimestamp(item['latest_episode_added']) ??
+            _siloTimestamp(
+              asJsonMap(item['sort_metrics'])?['latest_episode_added'],
+            )
+        case final episodeAdded?)
+      'DateLastMediaAdded': episodeAdded,
     ..._imageFields(id, itemType.siloType, item, images),
     ..._seriesFields(id, itemType.siloType, item, images, series),
     'UserData': _userData(itemType, item),
@@ -196,6 +207,12 @@ String _jellyfinDate(DateTime utc) {
 /// When the item was added: the earliest `added_at` among its files, as
 /// Jellyfin's `DateCreated`. Silo puts the date on each file version rather
 /// than on the item.
+String? _siloTimestamp(Object? value) {
+  final text = jsonText(value);
+  if (text == null) return null;
+  return DateTime.tryParse(text)?.toUtc().toIso8601String();
+}
+
 String? _dateAdded(Object? versions) {
   if (versions is! List) return null;
   DateTime? earliest;

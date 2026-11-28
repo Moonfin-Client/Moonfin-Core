@@ -204,6 +204,7 @@ void main() {
     'mediaBarOpacity',
     'mediaBarOverlayColor',
     'mediaBarRowPeek',
+    'mediaBarSortOrder',
     'mediaBarSourceType',
     'mediaBarTrailerAudio',
     'mediaBarTrailerCaptions',
