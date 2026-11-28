@@ -3,6 +3,7 @@ import AetherEngine
 import Combine
 import Flutter
 import UIKit
+import VideoToolbox
 
 @MainActor
 final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
@@ -17,6 +18,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
     /// running, which is how the Live TV guide keeps the channel playing.
     private var suspendedFrames: EngineFrameTexture?
     private var isSuspended = false
+    private var parkedView: AetherPlayerView?
 
     /// The wrapper this channel is playing through, if any.
     var activePlayer: AetherPlayerWrapper? { player }
@@ -514,6 +516,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         player?.shutdown()
         suspendedFrames?.teardown()
         suspendedFrames = nil
+        unpark()
         let wasSuspended = isSuspended
         isSuspended = false
         #if os(iOS)
@@ -584,13 +587,37 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             return
         }
         presenter.dismiss(animated: false) { [weak self] in
-            Task { @MainActor in result(self?.suspendedFrames?.textureId) }
+            Task { @MainActor in
+                self?.parkBehindFlutter(in: presenter.view.window)
+                result(self?.suspendedFrames?.textureId)
+            }
         }
+    }
+
+    /// The software path's display layer only takes new frames while it's in
+    /// a window, so the engine draws under Flutter's view while the player is
+    /// away. Unbinding hands the picture back to the player's own view.
+    private func parkBehindFlutter(in window: UIWindow?) {
+        guard isSuspended, let window, let engine = AetherPlayerWrapper.sharedEngine(),
+            engine.softwarePiPSource != nil
+        else { return }
+        let view = AetherPlayerView(frame: window.bounds)
+        window.insertSubview(view, at: 0)
+        engine.bind(view: view)
+        parkedView = view
+    }
+
+    private func unpark() {
+        guard let view = parkedView else { return }
+        parkedView = nil
+        AetherPlayerWrapper.sharedEngine()?.unbind(view: view)
+        view.removeFromSuperview()
     }
 
     private func resumePresentation() {
         guard isSuspended, let vc = playerVC else { return }
         isSuspended = false
+        unpark()
         suspendedFrames?.teardown()
         suspendedFrames = nil
         vc.keepsPlayingWhileHidden = false
@@ -798,10 +825,32 @@ final class EngineFrameTexture: NSObject, FlutterTexture {
     private var itemSubscription: AnyCancellable?
     private var displayLink: CADisplayLink?
 
-    /// Nil when the engine has no AVPlayer item, which is the software path.
+    // The software path has no AVPlayer item, so its picture is read off the
+    // engine's display layer instead and copied down to the mini player's size.
+    private static let softwareFrameSize = (width: 640, height: 360)
+    private var softwareLayer: AVSampleBufferDisplayLayer?
+    private var softwareSubscription: AnyCancellable?
+    private var lastDisplayed: CVPixelBuffer?
+    private var transfer: VTPixelTransferSession?
+    private var framePool: CVPixelBufferPool?
+    nonisolated(unsafe) private var lockedSoftwareFrame: CVPixelBuffer?
+    nonisolated private var softwareFrame: CVPixelBuffer? {
+        get {
+            outputLock.lock()
+            defer { outputLock.unlock() }
+            return lockedSoftwareFrame
+        }
+        set {
+            outputLock.lock()
+            lockedSoftwareFrame = newValue
+            outputLock.unlock()
+        }
+    }
+
+    /// Nil when the engine has no picture to share yet.
     init?(textures: FlutterTextureRegistry) {
         guard let engine = AetherPlayerWrapper.sharedEngine(),
-            engine.currentAVPlayerItem != nil
+            engine.currentAVPlayerItem != nil || engine.softwarePiPSource != nil
         else { return nil }
         self.textures = textures
         super.init()
@@ -810,6 +859,12 @@ final class EngineFrameTexture: NSObject, FlutterTexture {
         itemSubscription = engine.$currentAVPlayerItem
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in self?.attach(to: item) }
+        softwareSubscription = engine.$softwarePiPSource
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] source in
+                self?.softwareLayer = source?.layer
+                self?.lastDisplayed = nil
+            }
         let link = CADisplayLink(target: self, selector: #selector(onFrame))
         link.add(to: .main, forMode: .common)
         displayLink = link
@@ -830,14 +885,50 @@ final class EngineFrameTexture: NSObject, FlutterTexture {
     }
 
     @objc private func onFrame() {
-        guard let output, let item else { return }
-        if output.hasNewPixelBuffer(forItemTime: item.currentTime()) {
-            textures.textureFrameAvailable(textureId)
+        if let output, let item {
+            if output.hasNewPixelBuffer(forItemTime: item.currentTime()) {
+                textures.textureFrameAvailable(textureId)
+            }
+            return
         }
+        guard let shown = softwareLayer?.sampleBufferRenderer.displayedPixelBuffer(),
+            shown !== lastDisplayed
+        else { return }
+        lastDisplayed = shown
+        guard let frame = scaledCopy(of: shown) else { return }
+        softwareFrame = frame
+        textures.textureFrameAvailable(textureId)
+    }
+
+    /// The software path hands over planar YUV, often 10-bit, which a Flutter
+    /// texture can't draw, so the frame goes to BGRA on the way down in size.
+    private func scaledCopy(of source: CVPixelBuffer) -> CVPixelBuffer? {
+        if transfer == nil {
+            VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &transfer)
+        }
+        if framePool == nil {
+            let size = Self.softwareFrameSize
+            let attributes: [String: Any] = [
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+                kCVPixelBufferWidthKey as String: size.width,
+                kCVPixelBufferHeightKey as String: size.height,
+                kCVPixelBufferIOSurfacePropertiesKey as String: [:] as [String: Any],
+            ]
+            CVPixelBufferPoolCreate(nil, nil, attributes as CFDictionary, &framePool)
+        }
+        var copy: CVPixelBuffer?
+        guard let transfer, let framePool,
+            CVPixelBufferPoolCreatePixelBuffer(nil, framePool, &copy) == kCVReturnSuccess,
+            let copy,
+            VTPixelTransferSessionTransferImage(transfer, from: source, to: copy) == noErr
+        else { return nil }
+        return copy
     }
 
     nonisolated func copyPixelBuffer() -> Unmanaged<CVPixelBuffer>? {
-        guard let output else { return nil }
+        guard let output else {
+            return softwareFrame.map { Unmanaged.passRetained($0) }
+        }
         let time = output.itemTime(forHostTime: CACurrentMediaTime())
         guard output.hasNewPixelBuffer(forItemTime: time),
             let buffer = output.copyPixelBuffer(forItemTime: time, itemTimeForDisplay: nil)
@@ -849,6 +940,13 @@ final class EngineFrameTexture: NSObject, FlutterTexture {
         displayLink?.invalidate()
         displayLink = nil
         itemSubscription = nil
+        softwareSubscription = nil
+        softwareLayer = nil
+        lastDisplayed = nil
+        softwareFrame = nil
+        if let transfer { VTPixelTransferSessionInvalidate(transfer) }
+        transfer = nil
+        framePool = nil
         if let item, let output { item.remove(output) }
         item = nil
         output = nil
