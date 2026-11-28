@@ -135,6 +135,10 @@ class MediaCard extends StatefulWidget {
   final Color? subtitleColor;
   final bool isGenreFallback;
 
+  /// Shows the whole image inside the card instead of filling the card and
+  /// cropping it.
+  final bool fitImage;
+
   /// Puts the title and subtitle on one line, which is what the very wide
   /// banner artwork has room for. The caller sets this rather than having the
   /// card guess from [aspectRatio].
@@ -216,6 +220,7 @@ class MediaCard extends StatefulWidget {
     this.imageSourceAspectRatio,
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.fitImage = false,
     this.isBanner = false,
     this.showLabel = true,
     this.classicHomeLabel = false,
@@ -499,6 +504,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       posterBadgeItemId: widget.posterBadgeItemId,
                       recordingItemId: widget.recordingItemId,
                       isGenreFallback: widget.isGenreFallback,
+                      fitImage: widget.fitImage,
                     ),
                   ),
                 ),
@@ -754,6 +760,7 @@ class _CardImage extends StatelessWidget {
   final double? imageSourceAspectRatio;
   final bool overlayOccupiesTopLeft;
   final bool isGenreFallback;
+  final bool fitImage;
   final String? animeMarkerItemId;
   final String? posterBadgeItemId;
   final String? recordingItemId;
@@ -781,6 +788,7 @@ class _CardImage extends StatelessWidget {
     this.imageSourceAspectRatio,
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.fitImage = false,
     this.animeMarkerItemId,
     this.posterBadgeItemId,
     this.recordingItemId,
@@ -862,8 +870,9 @@ class _CardImage extends StatelessWidget {
                             BoundedNetworkImage(
                               imageUrl: imageUrl!,
                               fit:
-                                  (itemType == 'Network' ||
-                                      itemType == 'Studio')
+                                  fitImage ||
+                                      itemType == 'Network' ||
+                                      itemType == 'Studio'
                                   ? BoxFit.contain
                                   : BoxFit.cover,
                               fadeInDuration: Duration.zero,

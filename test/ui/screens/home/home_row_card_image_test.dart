@@ -143,6 +143,20 @@ void main() {
       expect(card.aspectRatio, 1.0);
       expect(card.width, closeTo(150 * 0.8, 0.001));
     });
+
+    test('a program follows the shape of its guide image', () async {
+      final prefs = await createPreferences(HomeRowsStyle.v1);
+      AggregatedItem program(String id, double ratio) =>
+          _item(id, 'TvProgram', extra: {'PrimaryImageAspectRatio': ratio});
+
+      final show = image(row, program('show', 16 / 9), prefs);
+      expect(show.aspectRatio, 16 / 9);
+      expect(show.width, closeTo(110 * 0.8 * 16 / 9, 0.001));
+
+      final film = image(row, program('film', 2 / 3), prefs);
+      expect(film.aspectRatio, 2 / 3);
+      expect(film.width, closeTo(150 * 0.8 * 2 / 3, 0.001));
+    });
   });
 
   group('Modern rows', () {
