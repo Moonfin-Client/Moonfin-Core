@@ -1222,22 +1222,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     padding: EdgeInsets.symmetric(
                       horizontal: _horizontalPadding * scale,
                     ),
-                    // The panel leaves less width than the HUD's ratings need
-                    // on one line, and its height is fixed, so it shrinks
-                    // rather than wrapping out of its box.
-                    child: SizedBox(
-                      height: _FocusedItemHud.heightFor(
-                        _prefs.get(UserPreferences.showRatingLabels),
-                      ),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.topLeft,
-                          child: model.hud,
-                        ),
-                      ),
-                    ),
+                    // The HUD keeps the bounded width so MarqueeText can detect
+                    // overflow and scroll, while RatingsRow scales down inside
+                    // _FocusedItemHud when the docked panel narrows the row.
+                    child: model.hud,
                   ),
                 Expanded(child: _buildGridArea(context)),
               ],
@@ -2621,15 +2609,19 @@ class _FocusedItemHud extends StatelessWidget {
                   const SizedBox(height: 2),
                   _MetadataRow(item: item!),
                   const SizedBox(height: 4),
-                  RatingsRow(
-                    ratings: ratings,
-                    communityRating: item!.communityRating,
-                    criticRating: item!.criticRating,
-                    personalRating: item!.personalRating,
-                    enableAdditionalRatings: enableAdditionalRatings,
-                    enabledRatings: enabledRatings,
-                    showLabels: showLabels,
-                    showBadges: showBadges,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: RatingsRow(
+                      ratings: ratings,
+                      communityRating: item!.communityRating,
+                      criticRating: item!.criticRating,
+                      personalRating: item!.personalRating,
+                      enableAdditionalRatings: enableAdditionalRatings,
+                      enabledRatings: enabledRatings,
+                      showLabels: showLabels,
+                      showBadges: showBadges,
+                    ),
                   ),
                   const SizedBox(height: 2),
                 ],
