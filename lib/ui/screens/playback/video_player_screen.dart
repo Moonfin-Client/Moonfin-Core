@@ -4827,6 +4827,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           return Video(
             key: _videoSurfaceKey,
             controller: controller,
+            wakelock: false,
             controls: NoVideoControls,
             width: constraints.maxWidth,
             height: constraints.maxHeight,

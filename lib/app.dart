@@ -933,8 +933,8 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final paused = state != AppLifecycleState.resumed;
-    _screensaverController.activityPaused = paused;
+    _screensaverController.activityPaused =
+        ScreensaverController.pausesActivity(state);
     _maybePausePlaybackForBackground(state);
     if (_restoresWindowFocus) _carryFocusAcrossWindowSwitch(state);
   }
