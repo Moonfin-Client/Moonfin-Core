@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart' show AppLifecycleListener;
+import 'package:flutter/widgets.dart'
+    show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
@@ -61,6 +62,13 @@ class TvChannelsService {
     if (!_enabled) return;
     _pending = true;
     _lifecycle ??= AppLifecycleListener(onHide: _publishPending);
+    // A load that finishes after the app was hidden has no hide left to wait
+    // for.
+    final state = WidgetsBinding.instance.lifecycleState;
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
+      _publishPending();
+    }
   }
 
   void _publishPending() {
