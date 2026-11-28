@@ -716,4 +716,58 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   });
+
+  testWidgets('the fullscreen button follows the window and leaves on close', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(false);
+    const window = MethodChannel('window_manager');
+    var fullscreen = false;
+    final changes = <bool>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(window, (
+      call,
+    ) async {
+      switch (call.method) {
+        case 'isFullScreen':
+          return fullscreen;
+        case 'isMaximized':
+          return false;
+        case 'setFullScreen':
+          fullscreen = (call.arguments as Map)['isFullScreen'] as bool;
+          changes.add(fullscreen);
+      }
+      return null;
+    });
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        window,
+        null,
+      ),
+    );
+
+    await pumpPlayer(tester);
+    expect(find.byTooltip(l10n.playerTooltipEnterFullscreen), findsOneWidget);
+
+    // F11 is handled outside the player.
+    fullscreen = true;
+    await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+      window.name,
+      window.codec.encodeMethodCall(
+        const MethodCall('onEvent', {'eventName': 'enter-full-screen'}),
+      ),
+      (_) {},
+    );
+    await tester.pump();
+    await tester.tap(find.byTooltip(l10n.playerTooltipExitFullscreen));
+    await tester.pump();
+    expect(changes, [false]);
+
+    await tester.tap(find.byTooltip(l10n.playerTooltipEnterFullscreen));
+    await tester.pump();
+    expect(changes, [false, true]);
+    expect(find.byTooltip(l10n.playerTooltipExitFullscreen), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    expect(changes, [false, true, false]);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 }
