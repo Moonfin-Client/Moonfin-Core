@@ -214,6 +214,8 @@ class PlaybackManager implements AudioOwnable {
   // only read while that is set.
   Map<String, dynamic>? _lastExplicitSubtitleStream;
   bool? _lastExplicitSubtitleEnabled;
+  bool _briefSubtitle = false;
+  int? _subtitleIndexBeforeBrief;
   Duration _lastKnownPosition = Duration.zero;
   Duration _itemKnownDuration = Duration.zero;
   int? _maxBitrateOverrideMbps;
@@ -5062,6 +5064,10 @@ class PlaybackManager implements AudioOwnable {
       streamIndex,
       userInitiated: userInitiated,
       refreshStreams: refreshStreams,
+      brief:
+          !userInitiated &&
+          _briefSubtitle &&
+          streamIndex == _subtitleStreamIndex,
     ),
   );
 
@@ -5141,10 +5147,56 @@ class PlaybackManager implements AudioOwnable {
     );
   }
 
+  /// Whether [streamIndex] can come up in the running stream as it is, with no
+  /// restart and nothing burned into the picture.
+  bool canShowSubtitleWithoutRestart(int streamIndex) {
+    final backend = _backend;
+    if (backend == null) return false;
+    final isBitmap = _isSubtitleBitmap(streamIndex);
+    if (isBitmap && !backend.canRenderBitmapSubtitles) return false;
+    if (_isOfflinePlayback) return true;
+    if (!backend.supportsRuntimeTrackSelection) return false;
+    return switch (_currentResolution?.playMethod) {
+      StreamPlayMethod.directPlay => true,
+      StreamPlayMethod.transcode || StreamPlayMethod.directStream =>
+        !isBitmap &&
+            !_subtitleIsBurnedIntoVideo(_subtitleStreamIndex) &&
+            _mpvTrackIdForStream(streamIndex, 'Subtitle') != null,
+      _ => false,
+    };
+  }
+
+  bool get briefSubtitleShowing => _briefSubtitle;
+
+  /// Puts [streamIndex] up for a moment, after a short rewind say, without it
+  /// counting as the viewer's pick. Nothing is saved and the next episode
+  /// doesn't inherit it. Only for a track [canShowSubtitleWithoutRestart]
+  /// allows.
+  Future<void> showSubtitleBriefly(int streamIndex) {
+    _subtitleIndexBeforeBrief = _subtitleStreamIndex;
+    _briefSubtitle = true;
+    return _withProgressPaused(
+      () => _changeSubtitleTrackInner(streamIndex, brief: true),
+    );
+  }
+
+  /// Takes the track [showSubtitleBriefly] put up back down, unless the viewer
+  /// picked a track since.
+  Future<void> endBriefSubtitle() {
+    if (!_briefSubtitle) return Future<void>.value();
+    _briefSubtitle = false;
+    return _withProgressPaused(() async {
+      _subtitleStreamIndex = _subtitleIndexBeforeBrief;
+      await _resetSubtitleRendererMode();
+      await _backend?.disableSubtitleTrack();
+    });
+  }
+
   Future<void> _changeSubtitleTrackInner(
     int streamIndex, {
     bool userInitiated = true,
     bool refreshStreams = false,
+    bool brief = false,
   }) async {
     if (_secondarySubtitleStreamIndex == streamIndex) {
       await changeSecondarySubtitleTrack(null);
@@ -5153,29 +5205,35 @@ class PlaybackManager implements AudioOwnable {
     final isBitmap = _isSubtitleBitmap(streamIndex);
     _subtitleStreamIndex = streamIndex;
 
-    final currentItem = queueService.currentItem;
-    if (currentItem != null) {
-      final itemId = MediaStreamResolver.extractItemId(currentItem);
-      onSubtitleTrackChanged?.call(itemId, streamIndex >= 0 ? streamIndex : null);
-      if (userInitiated) onSubtitleTrackSelected?.call(itemId, streamIndex);
-    }
-
-    _subtitleSelectionExplicit = streamIndex >= 0;
-    _lastExplicitSubtitleEnabled = streamIndex >= 0;
-    if (streamIndex >= 0) {
-      final streams = _currentMediaStreams;
-      if (streams.isNotEmpty) {
-        final selectedStream = streams.firstWhere(
-          (s) => s['Type'] == 'Subtitle' && s['Index'] == streamIndex,
-          orElse: () => const <String, dynamic>{},
+    if (!brief) {
+      _briefSubtitle = false;
+      final currentItem = queueService.currentItem;
+      if (currentItem != null) {
+        final itemId = MediaStreamResolver.extractItemId(currentItem);
+        onSubtitleTrackChanged?.call(
+          itemId,
+          streamIndex >= 0 ? streamIndex : null,
         );
-        if (selectedStream.isNotEmpty) {
-          _lastExplicitSubtitleLanguage = _extractLanguage(selectedStream);
-          _lastExplicitSubtitleStream = selectedStream;
-        }
+        if (userInitiated) onSubtitleTrackSelected?.call(itemId, streamIndex);
       }
-    } else {
-      _lastExplicitSubtitleLanguage = null;
+
+      _subtitleSelectionExplicit = streamIndex >= 0;
+      _lastExplicitSubtitleEnabled = streamIndex >= 0;
+      if (streamIndex >= 0) {
+        final streams = _currentMediaStreams;
+        if (streams.isNotEmpty) {
+          final selectedStream = streams.firstWhere(
+            (s) => s['Type'] == 'Subtitle' && s['Index'] == streamIndex,
+            orElse: () => const <String, dynamic>{},
+          );
+          if (selectedStream.isNotEmpty) {
+            _lastExplicitSubtitleLanguage = _extractLanguage(selectedStream);
+            _lastExplicitSubtitleStream = selectedStream;
+          }
+        }
+      } else {
+        _lastExplicitSubtitleLanguage = null;
+      }
     }
 
     await _applySubtitleRendererModeForStream(streamIndex);
@@ -5265,6 +5323,7 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> disableSubtitles() => _withProgressPaused(() async {
     final previousWasBurned = _subtitleIsBurnedIntoVideo(_subtitleStreamIndex);
+    _briefSubtitle = false;
     _subtitleStreamIndex = -1;
     _lastExplicitSubtitleEnabled = false;
     _lastExplicitSubtitleLanguage = null;

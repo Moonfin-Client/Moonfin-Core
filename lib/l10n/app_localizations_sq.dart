@@ -13306,6 +13306,13 @@ class AppLocalizationsSq extends AppLocalizations {
       'Prioritize external subtitle files over embedded tracks.';
 
   @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
+
+  @override
   String get webDiagnostics => 'Diagnostikimi i uebit';
 
   @override

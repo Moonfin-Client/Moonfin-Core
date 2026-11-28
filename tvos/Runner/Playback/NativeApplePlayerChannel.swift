@@ -417,8 +417,8 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 "generation": generation,
             ])
         }
-        vc.onUserSeek = { [weak self] positionMs in
-            self?.send(["event": "userSeeked", "positionMs": positionMs])
+        vc.onUserSeek = { [weak self] positionMs, fromMs in
+            self?.send(["event": "userSeeked", "positionMs": positionMs, "fromMs": fromMs])
         }
         vc.onSearchSubtitles = { [weak self] in
             self?.send(["event": "searchSubtitles"])

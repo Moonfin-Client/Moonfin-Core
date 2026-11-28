@@ -102,6 +102,7 @@ import '../../widgets/playback/still_watching_dialog.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import '../../../playback/player_key_bindings.dart';
+import '../../../playback/rewind_subtitles.dart';
 import '../../widgets/syncplay/syncplay_player_button.dart';
 import '../../widgets/syncplay/watch_party_player_button.dart';
 import '../../../syncplay/syncplay_manager.dart';
@@ -204,6 +205,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ? GetIt.instance<MediaKitPlayerBackend>()
       : null;
   final _prefs = GetIt.instance<UserPreferences>();
+  late final _rewindSubtitles = RewindSubtitles(_manager, _prefs);
   // App lifetime and shared with the mini player, so minimizing does not
   // flip the display out of HDR while the video carries on in the bar.
   final _autoHdrSwitcher = VideoMiniPlayerController.instance.autoHdrSwitcher;
@@ -1071,6 +1073,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         // Stream indexes belong to the file they came from, so the next item
         // must not have a track from the last one put back on it.
         _subtitleIndexBeforeQuickOff = null;
+        _rewindSubtitles.reset();
         if (isPreroll) {
           _controlsVisible = false;
           _isOsdLocked = false;
@@ -2411,6 +2414,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _checkSegments(position);
     _checkNextUp(position);
+    _rewindSubtitles.onPosition(position);
   }
 
   void _syncAirPlayPlaybackState({Duration? position}) {
@@ -3351,6 +3355,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ),
     );
     _prefetchTrickplayDirectional(clamped, forward: ms > 0);
+    _noteSeekForSubtitles(_transportPosition, clamped);
     _seekDirect(clamped);
     _lastSeekTime = DateTime.now();
     if (showControls) {
@@ -3453,7 +3458,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (pendingTarget == null) return;
     _pendingScrubSeekTarget = null;
     _lastScrubCommitTarget = pendingTarget;
+    _noteSeekForSubtitles(_transportPosition, pendingTarget);
     unawaited(_commitScrubSeek(pendingTarget));
+  }
+
+  void _noteSeekForSubtitles(Duration from, Duration to) {
+    if (_castOwnsTransport) return;
+    _rewindSubtitles.onSeek(
+      from,
+      to,
+      streams: _currentPlaybackMediaStreams(),
+      preferredIndex: _subtitleIndexBeforeQuickOff,
+    );
   }
 
   // _isSeeking gates the seekbar between the frozen scrub target and the
