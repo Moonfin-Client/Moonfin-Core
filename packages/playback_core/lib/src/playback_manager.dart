@@ -4865,6 +4865,8 @@ class PlaybackManager implements AudioOwnable {
           !(_backend?.canRenderBitmapSubtitles ?? false)) ||
       _isSubtitleBurnedIn(streamIndex);
 
+  static final _urlSubtitleIndex = RegExp(r'[?&]subtitlestreamindex=(\d+)');
+
   /// Whether the server is painting [streamIndex] into the video itself.
   ///
   /// Not every server says so in the stream URL, so the delivery method the
@@ -4873,6 +4875,9 @@ class PlaybackManager implements AudioOwnable {
   /// transcode can burn anything in, so that second answer is not worth
   /// reading on any other play method, where a stream can carry a delivery
   /// method describing what a transcode would have done.
+  ///
+  /// Jellyfin leaves SubtitleMethod=Encode on transcode URLs even with
+  /// subtitles off, so the URL only counts for the track it names.
   bool _isSubtitleBurnedIn(int? streamIndex) {
     if (streamIndex != null &&
         streamIndex >= 0 &&
@@ -4885,10 +4890,12 @@ class PlaybackManager implements AudioOwnable {
         break;
       }
     }
-    return _currentResolution?.streamUrl.toLowerCase().contains(
-          'subtitlemethod=encode',
-        ) ??
-        false;
+    final url = _currentResolution?.streamUrl.toLowerCase() ?? '';
+    if (!url.contains('subtitlemethod=encode')) return false;
+    final named = int.tryParse(
+      _urlSubtitleIndex.firstMatch(url)?.group(1) ?? '',
+    );
+    return named != null && (streamIndex == null || streamIndex == named);
   }
 
   bool _isSubtitleExternal(int streamIndex) {

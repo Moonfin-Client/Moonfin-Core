@@ -120,7 +120,14 @@ class _TestBackend extends Fake implements PlayerBackend {
   void dispose() {}
 }
 
+/// Direct play, or a transcode at [transcodeUrl] that sends the text tracks
+/// as separate files the way Jellyfin does.
 class _TestResolver extends MediaStreamResolver {
+  _TestResolver({this.transcodeUrl});
+
+  final String? transcodeUrl;
+  int calls = 0;
+
   @override
   Future<StreamResolutionResult> resolve(
     dynamic mediaItem, {
@@ -134,26 +141,46 @@ class _TestResolver extends MediaStreamResolver {
     bool enableDirectStream = true,
     bool enableTranscoding = true,
   }) async {
-    return const StreamResolutionResult(
-      streamUrl: 'http://server.test/stream',
+    calls++;
+    final url = transcodeUrl;
+    if (url == null) {
+      return const StreamResolutionResult(
+        streamUrl: 'http://server.test/stream',
+        mediaSourceId: 'source-1',
+        playSessionId: 'session-1',
+        playMethod: StreamPlayMethod.directPlay,
+        mediaStreams: _streams,
+      );
+    }
+    return StreamResolutionResult(
+      streamUrl: url,
       mediaSourceId: 'source-1',
       playSessionId: 'session-1',
-      playMethod: StreamPlayMethod.directPlay,
+      playMethod: StreamPlayMethod.transcode,
       mediaStreams: _streams,
+      externalSubtitles: const <ExternalSubtitle>[
+        ExternalSubtitle(
+          deliveryUrl: 'http://server.test/3.srt',
+          codec: 'srt',
+          streamIndex: 3,
+        ),
+      ],
     );
   }
 }
 
-/// Playing with subtitles off, and recording anything that would save a
-/// subtitle choice.
+/// Playing with subtitles off unless [selected] says otherwise, and recording
+/// anything that would save a subtitle choice.
 Future<(PlaybackManager, _TestBackend, List<int?>)> _playing({
   bool runtimeTrackSelection = true,
+  _TestResolver? resolver,
+  int selected = -1,
 }) async {
   final backend = _TestBackend(runtimeTrackSelection: runtimeTrackSelection);
   final manager = PlaybackManager()
     ..setBackend(backend)
-    ..setResolver(_TestResolver())
-    ..subtitleTrackSelector = (_, _, _) => -1;
+    ..setResolver(resolver ?? _TestResolver())
+    ..subtitleTrackSelector = (_, _, _) => selected;
   await manager.playItems(<dynamic>[
     <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
   ]);
@@ -224,6 +251,35 @@ void main() {
 
       await manager.endBriefSubtitle();
       expect(manager.subtitleStreamIndex, -1);
+    });
+
+    test('comes up in a transcode that burns nothing in', () async {
+      final resolver = _TestResolver(
+        transcodeUrl: 'http://server.test/master.m3u8?SubtitleMethod=Encode',
+      );
+      final (manager, backend, _) = await _playing(resolver: resolver);
+      addTearDown(manager.dispose);
+      final resolvesAfterPlay = resolver.calls;
+
+      expect(manager.canShowSubtitleWithoutRestart(3), isTrue);
+      await manager.showSubtitleBriefly(3);
+
+      expect(backend.shownTracks, isNotEmpty);
+      expect(resolver.calls, resolvesAfterPlay, reason: 'no restart');
+    });
+
+    test("isn't offered while the transcode burns in another track", () async {
+      final (manager, _, _) = await _playing(
+        resolver: _TestResolver(
+          transcodeUrl:
+              'http://server.test/master.m3u8'
+              '?SubtitleStreamIndex=4&SubtitleMethod=Encode',
+        ),
+        selected: 4,
+      );
+      addTearDown(manager.dispose);
+
+      expect(manager.canShowSubtitleWithoutRestart(3), isFalse);
     });
 
     test('is never offered where switching restarts the stream', () async {
