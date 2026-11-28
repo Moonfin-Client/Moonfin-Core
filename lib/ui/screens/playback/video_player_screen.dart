@@ -3565,7 +3565,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _togglePlayPause() {
     _noteViewerActivity();
-    if (_castOwnsTransport ? _castPlaying : _state.isPlaying) {
+    if (_castOwnsTransport
+        ? castReportsPlaying(_castService)
+        : _state.isPlaying) {
       _manager.pause();
       return;
     }
@@ -8509,40 +8511,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     setState(() {});
   }
 
-  Future<bool> _castTransport(
-    TransportAction action, {
-    Duration? position,
-  }) async {
-    switch (action) {
-      case TransportAction.resume:
-        await _runCastAction(_castService.play);
-      case TransportAction.pause:
-        await _runCastAction(_castService.pause);
-      case TransportAction.seek:
-        await _runCastAction(
-          (k) => _castService.seek(
-            k,
-            positionTicks: position!.inMicroseconds * 10,
-          ),
-        );
-      // The local queue would start the next item on this device.
-      case TransportAction.next ||
-          TransportAction.nextAsFinished ||
-          TransportAction.previous:
-        break;
-      case TransportAction.stop:
-        return false;
-    }
-    return true;
-  }
+  Future<bool> _castTransport(TransportAction action, {Duration? position}) =>
+      runCastTransport(
+        _castService,
+        action,
+        _runCastAction,
+        position: position,
+      );
 
-  bool get _castPlaying => switch (_castService.remoteStateNotifier.value) {
-    'playing' || 'buffering' => true,
-    _ => false,
-  };
-
-  bool get _isPlayingShown =>
-      _castOwnsTransport ? _castPlaying : _displayPlaying;
+  bool get _isPlayingShown => _castOwnsTransport
+      ? castReportsPlaying(_castService)
+      : _displayPlaying;
 
   Duration get _transportPosition => _castOwnsTransport
       ? Duration(microseconds: _castService.remotePositionNotifier.value ~/ 10)
