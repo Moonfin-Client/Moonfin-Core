@@ -3746,7 +3746,9 @@ class _ContentRowsState extends State<_ContentRows>
             widget.prefs.get(UserPreferences.fullScreenRows);
         if (fullScreenRows && _scrollController.hasClients) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || !_scrollController.hasClients) {
+            if (!mounted ||
+                generation != _verticalNavGeneration ||
+                !_scrollController.hasClients) {
               if (!navComplete.isCompleted) navComplete.complete();
               return;
             }
@@ -3928,6 +3930,10 @@ class _ContentRowsState extends State<_ContentRows>
 
   void returnToTop() {
     _returnScrollRowId = null;
+    // A row step still queued would start its own scroll and cut this one
+    // short.
+    _verticalNavGeneration++;
+    _verticalNavInFlight = false;
     Future<void>? scroll;
     if (_scrollController.hasClients) {
       scroll = _scrollController.animateTo(
@@ -3942,7 +3948,10 @@ class _ContentRowsState extends State<_ContentRows>
     final hadRowFocus = _homeContentHasRealFocus() ||
         _returnHoldFocusNode.hasPrimaryFocus;
     _activeFocusedRowIndex = null;
-    if (hadRowFocus && !_focusTopOfRows() && scroll != null) {
+    final focusTop = hadRowFocus ? _topOfRowsFocuser() : null;
+    if (focusTop != null) {
+      focusTop();
+    } else if (hadRowFocus && scroll != null) {
       // The list only builds rows near the screen, so a top row scrolled far
       // out of view comes back during the scroll. Take focus off the row
       // being left now: once it's disposed its scope would hand focus back to
@@ -3986,14 +3995,8 @@ class _ContentRowsState extends State<_ContentRows>
     _updateIsScrolledToTop();
   }
 
-  /// Focuses the media bar, or else the first row with something to focus.
-  /// False when there's nothing built to focus.
-  bool _focusTopOfRows() {
-    final focusTop = _topOfRowsFocuser();
-    focusTop?.call();
-    return focusTop != null;
-  }
-
+  /// What focuses the media bar, or else the first row with something to
+  /// focus. Null when it isn't built yet.
   VoidCallback? _topOfRowsFocuser() {
     if (_isMediaBarIncluded()) {
       return _mediaBarFocusNode.context?.mounted == true
