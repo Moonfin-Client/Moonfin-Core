@@ -20,6 +20,7 @@ import '../../../widgets/seerr/seerr_item_status.dart';
 import '../detail_layout_metrics.dart';
 import '../detail_page.dart';
 import '../item_detail_screen.dart';
+import '../../../../util/original_title.dart';
 
 /// The poster-led detail screen. On a TV or desktop the poster stands on the
 /// left with play and the other buttons under it, and the title, ratings,
@@ -577,7 +578,16 @@ class _StageDetailContentState extends State<StageDetailContent>
     );
 
     final showName = partOfShow ? (item.seriesName ?? item.name) : item.name;
-    final Widget mark = logoTag != null && logoId != null && logoId.isNotEmpty
+    final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
+    final origTitle = eligibleOriginalTitle(item);
+    final hasLogo = logoTag != null && logoId != null && logoId.isNotEmpty;
+    final origSubtitle = detailOriginalTitleSubtitle(
+      showName,
+      origTitle,
+      origMode,
+      hasLogo: hasLogo,
+    );
+    final Widget mark = hasLogo
         ? LogoView(
             imageUrl: _vm.imageApi.getLogoImageUrl(
               logoId,
@@ -588,13 +598,28 @@ class _StageDetailContentState extends State<StageDetailContent>
             maxHeight: landscape ? math.min(110.0, size.height * 0.16) : 90,
           )
         : Text(
-            showName,
+            formatInlineTitle(showName, origTitle, origMode),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: titleStyle,
           );
 
-    if (!partOfShow) return mark;
+    if (!partOfShow) {
+      if (origSubtitle == null) return mark;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          mark,
+          const SizedBox(height: 4),
+          OriginalTitleSubtitle(
+            text: origSubtitle,
+            color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+            fontSize: landscape ? 16 : 14,
+          ),
+        ],
+      );
+    }
 
     final number = item.type == 'Episode' ? episodeNumber(item) : null;
     return Column(

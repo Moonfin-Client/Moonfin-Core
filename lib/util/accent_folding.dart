@@ -6,16 +6,29 @@
 /// results depending on which box ran it.
 library;
 
-/// [value] with every accented letter this knows replaced by its base letter.
+/// [value] with every accented letter this knows replaced by its base letter
+/// and combining diacritical marks (U+0300–U+036F) following Latin letters
+/// stripped.
 ///
 /// A letter it does not know is left exactly as it was, and the ones it does
 /// know come back upper case, so read the result through [foldForSearch] or
 /// case fold it yourself before comparing.
 String foldAccents(String value) {
   final result = StringBuffer();
+  var prevIsLatin = false;
   for (final rune in value.runes) {
+    if (rune >= 0x0300 && rune <= 0x036F) {
+      if (prevIsLatin) continue;
+      result.writeCharCode(rune);
+      continue;
+    }
     final character = String.fromCharCode(rune);
-    result.write(_accentFolds[character.toUpperCase()] ?? character);
+    final upper = character.toUpperCase();
+    final folded = _accentFolds[upper];
+    prevIsLatin = folded != null ||
+        (rune >= 0x41 && rune <= 0x5A) ||
+        (rune >= 0x61 && rune <= 0x7A);
+    result.write(folded ?? character);
   }
   return result.toString();
 }

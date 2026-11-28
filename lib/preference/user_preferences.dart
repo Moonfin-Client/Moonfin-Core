@@ -611,6 +611,8 @@ class UserPreferences extends ChangeNotifier {
     'hidden_next_up_series',
     'pref_recommendation_system_source',
     'pref_detail_screen_style',
+    'pref_detail_original_title_mode',
+    'pref_library_original_title_mode',
     'pref_library_style',
     'pref_book_library_style',
     'pref_music_library_style',
@@ -1964,6 +1966,26 @@ class UserPreferences extends ChangeNotifier {
         ? DetailScreenStyle.modern
         : DetailScreenStyle.frost,
     values: DetailScreenStyle.values,
+  );
+
+  /// How original titles are shown on item detail pages when they differ from
+  /// the localized title. Stored per server like [detailScreenStyle].
+  static final detailOriginalTitleMode = EnumPreference(
+    key: 'pref_detail_original_title_mode',
+    defaultValue: OriginalTitleDisplay.off,
+    values: OriginalTitleDisplay.values,
+  );
+
+  /// How original titles are shown on library cards and HUD when they differ
+  /// from the localized title. Stored per server like [detailScreenStyle].
+  static final libraryOriginalTitleMode = EnumPreference(
+    key: 'pref_library_original_title_mode',
+    defaultValue: OriginalTitleDisplay.off,
+    values: const [
+      OriginalTitleDisplay.off,
+      OriginalTitleDisplay.replace,
+      OriginalTitleDisplay.parentheses,
+    ],
   );
 
   /// When on, the modern detail tabs behave like the search tabs: the first

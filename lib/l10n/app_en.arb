@@ -18535,5 +18535,33 @@
   "siloSectionTrendingThisWeek": "Trending This Week",
   "@siloSectionTrendingThisWeek": {
     "description": "Title of a row a Silo server offers for Home"
+  },
+  "showOriginalTitle": "Show Original Title",
+  "@showOriginalTitle": {
+    "description": "Settings label for choosing how an item's original title is displayed"
+  },
+  "showOriginalTitleDetailsDescription": "Display the original title on detail pages when it differs from the localized title",
+  "@showOriginalTitleDetailsDescription": {
+    "description": "Subtitle for the Show Original Title setting on the Details Page settings screen"
+  },
+  "showOriginalTitleLibraryDescription": "Display the original title on library items when it differs from the localized title",
+  "@showOriginalTitleLibraryDescription": {
+    "description": "Subtitle for the Show Original Title setting on the Libraries settings screen"
+  },
+  "originalTitleModeOff": "Off",
+  "@originalTitleModeOff": {
+    "description": "Option label to show only the localized title"
+  },
+  "originalTitleModeReplace": "Show Original Title",
+  "@originalTitleModeReplace": {
+    "description": "Option label to replace the localized title with the original title"
+  },
+  "originalTitleModeSubtitle": "Show as Sub-Title",
+  "@originalTitleModeSubtitle": {
+    "description": "Option label to display the original title on a smaller line beneath the localized title"
+  },
+  "originalTitleModeParentheses": "Show in Parentheses",
+  "@originalTitleModeParentheses": {
+    "description": "Option label to append the original title in parentheses after the localized title"
   }
 }

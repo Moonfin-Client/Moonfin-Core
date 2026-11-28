@@ -764,6 +764,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['codec', 'bitrate info'],
     ),
     details.leaf(
+      'pref_detail_original_title_mode',
+      l10n.showOriginalTitle,
+      subtitle: l10n.showOriginalTitleDetailsDescription,
+      keywords: ['original title', 'localized', 'foreign', 'language'],
+    ),
+    details.leaf(
       'pref_detail_show_full_date',
       l10n.detailShowFullDate,
       subtitle: l10n.detailShowFullDateSubtitle,
@@ -1423,6 +1429,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.libraryCardTitles,
       subtitle: l10n.libraryCardTitlesDescription,
       keywords: ['card text', 'names'],
+    ),
+    libraries.leaf(
+      'pref_library_original_title_mode',
+      l10n.showOriginalTitle,
+      subtitle: l10n.showOriginalTitleLibraryDescription,
+      keywords: ['original title', 'localized', 'foreign', 'language'],
     ),
     libraries.leaf(
       'pref_hide_backdrops_in_libraries',

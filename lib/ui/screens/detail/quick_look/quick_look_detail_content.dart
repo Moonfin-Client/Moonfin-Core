@@ -24,6 +24,7 @@ import '../../../widgets/seerr/seerr_streaming_row.dart';
 import '../detail_layout_metrics.dart';
 import '../detail_page.dart';
 import '../item_detail_screen.dart';
+import '../../../../util/original_title.dart';
 
 /// How wide the drawer runs down the right of a TV or a wide screen, which is
 /// as much as Play, four circles and the ellipsis need.
@@ -459,12 +460,22 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
   Widget _title(AggregatedItem item, bool landscape) {
     final partOfShow = item.type == 'Episode' || item.type == 'Season';
     final number = item.type == 'Episode' ? episodeNumber(item) : null;
+    final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
+    final origTitle = eligibleOriginalTitle(item);
+    final origSubtitle = detailOriginalTitleSubtitle(
+      item.name,
+      origTitle,
+      origMode,
+      hasLogo: false,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          partOfShow ? (item.seriesName ?? item.name) : item.name,
+          partOfShow
+              ? (item.seriesName ?? item.name)
+              : formatInlineTitle(item.name, origTitle, origMode),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
@@ -474,6 +485,14 @@ class _QuickLookDetailContentState extends State<QuickLookDetailContent>
             height: 1.15,
           ),
         ),
+        if (origSubtitle != null) ...[
+          const SizedBox(height: 2),
+          OriginalTitleSubtitle(
+            text: origSubtitle,
+            color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+            fontSize: landscape ? 15 : 13,
+          ),
+        ],
         if (partOfShow) ...[
           const SizedBox(height: 4),
           Text(

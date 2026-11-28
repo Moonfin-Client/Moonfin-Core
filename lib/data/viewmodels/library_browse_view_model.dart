@@ -93,11 +93,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   // are only wanted for the focused one, and resolveTmdbId fetches that id on
   // its own behind a cache, so the grid doesn't carry ProviderIds.
   static const _browseFields =
-      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists,Genres,Studios';
+      'PrimaryImageAspectRatio,SortName,OriginalTitle,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists,Genres,Studios';
   // A merged browse folds copies on the provider ids, orders the servers' pages
   // by the dates the sort reads and searches the original titles.
   static const _mergedBrowseFields =
-      '$_browseFields,ProviderIds,DateCreated,DateLastMediaAdded,OriginalTitle';
+      '$_browseFields,ProviderIds,DateCreated,DateLastMediaAdded';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;

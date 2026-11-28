@@ -231,6 +231,23 @@ class _DetailsScreenSettingsScreenState
                     icon: Icons.info_outline,
                     onChanged: _pushPersonalizationSync,
                   ),
+                  EnumPreferenceTile<OriginalTitleDisplay>(
+                    key: const ValueKey('pref_detail_original_title_mode'),
+                    preference: UserPreferences.detailOriginalTitleMode,
+                    title: l10n.showOriginalTitle,
+                    description: l10n.showOriginalTitleDetailsDescription,
+                    icon: Icons.translate_outlined,
+                    labelOf: (v) => switch (v) {
+                      OriginalTitleDisplay.off => l10n.originalTitleModeOff,
+                      OriginalTitleDisplay.replace =>
+                        l10n.originalTitleModeReplace,
+                      OriginalTitleDisplay.subtitle =>
+                        l10n.originalTitleModeSubtitle,
+                      OriginalTitleDisplay.parentheses =>
+                        l10n.originalTitleModeParentheses,
+                    },
+                    onChanged: _pushPersonalizationSync,
+                  ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.detailShowFullDate,
                     title: l10n.detailShowFullDate,

@@ -25,6 +25,7 @@ import '../../../../util/date_format_util.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/platform_detection.dart';
+import '../../../../util/original_title.dart';
 import '../../../navigation/destinations.dart';
 import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/focus/can_claim_initial_focus.dart';
@@ -695,6 +696,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     required bool showLogo,
     required bool showVersionBadge,
     String? realName,
+    AggregatedItem? titleItem,
   }) {
     final textTheme = Theme.of(context).textTheme;
     final logoScaleFactor = _desktopScale > 1.1 ? 0.70 : 1.0;
@@ -706,9 +708,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         ? (item.logoImageTag != null ? item.id : item.seriesId)
         : null;
     final itemName = realName ?? item.name;
+    final origMode = widget.prefs.get(UserPreferences.detailOriginalTitleMode);
+    final origTitle = eligibleOriginalTitle(titleItem ?? item);
 
     final titleText = Text(
-      itemName,
+      formatInlineTitle(itemName, origTitle, origMode),
       style: (_landscape ? textTheme.displaySmall : textTheme.headlineMedium)
           ?.copyWith(fontWeight: FontWeight.w700, color: _titleColor),
     );
@@ -821,7 +825,13 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     if (logoTag != null && logoId != null) {
       final itemLogoHeight = (_landscape ? 90.0 : 64.0) * logoScaleFactor;
       final itemLogoWidth = (_landscape ? 360.0 : 260.0) * logoScaleFactor;
-      return SizedBox(
+      final origSubtitle = detailOriginalTitleSubtitle(
+        itemName,
+        origTitle,
+        origMode,
+        hasLogo: true,
+      );
+      final logoRow = SizedBox(
         height: itemLogoHeight,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -843,21 +853,53 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           ],
         ),
       );
-    }
-
-    if (hasMultipleVersions) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      if (origSubtitle == null) return logoRow;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(child: titleText),
-          const SizedBox(width: 16),
-          Flexible(child: versionBadge()),
+          logoRow,
+          const SizedBox(height: 4),
+          OriginalTitleSubtitle(
+            text: origSubtitle,
+            color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+            fontSize: _landscape ? 16 : 14,
+          ),
         ],
       );
     }
 
-    return titleText;
+    final origSubtitle = detailOriginalTitleSubtitle(
+      itemName,
+      origTitle,
+      origMode,
+      hasLogo: false,
+    );
+    final Widget heading = hasMultipleVersions
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(child: titleText),
+              const SizedBox(width: 16),
+              Flexible(child: versionBadge()),
+            ],
+          )
+        : titleText;
+    if (origSubtitle == null) return heading;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        heading,
+        const SizedBox(height: 4),
+        OriginalTitleSubtitle(
+          text: origSubtitle,
+          color: AppColorScheme.onBackground.withValues(alpha: 0.72),
+          fontSize: _landscape ? 16 : 14,
+        ),
+      ],
+    );
   }
 
   Widget _metadataRow(
@@ -1171,6 +1213,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             showLogo: visibility.shows(DetailSection.logo),
             showVersionBadge: visibility.shows(DetailSection.versionBadge),
             realName: itemName,
+            titleItem: realItem,
           ),
         const SizedBox(height: 8),
         if (!isPerson) ...[

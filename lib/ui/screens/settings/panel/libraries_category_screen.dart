@@ -171,6 +171,27 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 icon: Icons.title,
                 onChanged: _pushPersonalizationSync,
               ),
+              EnumPreferenceTile<OriginalTitleDisplay>(
+                key: const ValueKey('pref_library_original_title_mode'),
+                preference: UserPreferences.libraryOriginalTitleMode,
+                title: l10n.showOriginalTitle,
+                description: l10n.showOriginalTitleLibraryDescription,
+                icon: Icons.translate_outlined,
+                values: const [
+                  OriginalTitleDisplay.off,
+                  OriginalTitleDisplay.replace,
+                  OriginalTitleDisplay.parentheses,
+                ],
+                labelOf: (v) => switch (v) {
+                  OriginalTitleDisplay.off => l10n.originalTitleModeOff,
+                  OriginalTitleDisplay.replace => l10n.originalTitleModeReplace,
+                  OriginalTitleDisplay.subtitle =>
+                    l10n.originalTitleModeSubtitle,
+                  OriginalTitleDisplay.parentheses =>
+                    l10n.originalTitleModeParentheses,
+                },
+                onChanged: _pushPersonalizationSync,
+              ),
               SwitchPreferenceTile(
                 preference: UserPreferences.hideBackdropsInLibraries,
                 title: l10n.libraryBackdrops,
