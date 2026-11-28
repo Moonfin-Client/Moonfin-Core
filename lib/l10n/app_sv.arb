@@ -15906,5 +15906,663 @@
     "musicSortYear": "År",
     "@musicSortYear": {
         "description": "Albums screen sort: by release year, newest first"
+    },
+    "detailShowFullDate": "Visa hela datumet",
+    "@detailShowFullDate": {
+        "description": "Label for the detail screen setting to show full release or air dates instead of only the year"
+    },
+    "detailShowFullDateSubtitle": "Visa det fullständiga utgivnings- eller sändningsdatumet istället för bara året på informationssidorna",
+    "@detailShowFullDateSubtitle": {
+        "description": "Explanation under the show full date setting"
+    },
+    "showPlaybackStats": "Visa uppspelningsstatistik",
+    "@showPlaybackStats": {
+        "description": "Button in the playback information sheet that shows live network and buffer stats with small graphs over the video"
+    },
+    "hidePlaybackStats": "Dölj uppspelningsstatistik",
+    "@hidePlaybackStats": {
+        "description": "Button in the playback information sheet that hides the live network and buffer stats over the video"
+    },
+    "playbackStatsNetworkActivity": "Nätverksaktivitet",
+    "@playbackStatsNetworkActivity": {
+        "description": "Row in the playback stats over the video: how much data arrived in the last second, like 12.4 Mbps"
+    },
+    "playbackStatsBufferHealth": "Buffer Health",
+    "@playbackStatsBufferHealth": {
+        "description": "Row in the playback stats over the video: seconds of video loaded ahead of the play position, like 95.3 / 120 s"
+    },
+    "playbackStatsBufferMemory": "Buffertminne",
+    "@playbackStatsBufferMemory": {
+        "description": "Row in the playback stats over the video: memory the loaded video uses out of the most it may use, like 210 / 384 MB"
+    },
+    "playbackStatsRebuffers": "Återföringsenheter",
+    "@playbackStatsRebuffers": {
+        "description": "Row in the playback stats over the video: how many times playback stopped to load more, not counting seeks"
+    },
+    "removeRequest": "Begäran om borttagning",
+    "@removeRequest": {
+        "description": "Button and dialog title for deleting a failed Silo request"
+    },
+    "removeFailedRequestForTitle": "Din misslyckade begäran om ”{title}” kommer att raderas. Du kan begära den igen senare.",
+    "@removeFailedRequestForTitle": {
+        "description": "Confirmation message before deleting a failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestRefused": "Begäran togs inte bort. Den skickades på nytt, eller så kom åtminstone en del av den fram.",
+    "@removeFailedRequestRefused": {
+        "description": "Snackbar when Silo refuses to delete a failed request because it changed"
+    },
+    "removeOthersFailedRequestForTitle": "Den misslyckade begäran om ”{title}” från {name} kommer att raderas. Hen kan begära den igen senare.",
+    "@removeOthersFailedRequestForTitle": {
+        "description": "Confirmation message before an admin deletes another user's failed Silo request",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFailedRequestError": "Det gick inte att ta bort begäran. Försök igen.",
+    "@removeFailedRequestError": {
+        "description": "Snackbar when deleting a failed Silo request fails for a reason other than the request changing"
+    },
+    "personalRatingIntervals": "Betygsintervall",
+    "@personalRatingIntervals": {
+        "description": "Selects the step granularity for personal ratings and their display precision."
+    },
+    "personalRatingIntervalWhole": "Hela (1)",
+    "@personalRatingIntervalWhole": {
+        "description": "Short label for whole-number personal rating steps."
+    },
+    "personalRatingIntervalHalf": "Hälften (0,5)",
+    "@personalRatingIntervalHalf": {
+        "description": "Short label for half-step (0.5) personal rating intervals."
+    },
+    "personalRatingIntervalQuarter": "Kvartal (0,25)",
+    "@personalRatingIntervalQuarter": {
+        "description": "Short label for quarter-step (0.25) personal rating intervals."
+    },
+    "moonbaseFeatureRatings": "Ytterligare betyg och recensioner på TMDB",
+    "@moonbaseFeatureRatings": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureRows": "Anpassade rader från dina favoritlistor",
+    "@moonbaseFeatureRows": {
+        "description": "Moonbase dialog feature, rows built from Letterboxd, IMDb, TMDB and MDBList lists"
+    },
+    "moonbaseFeatureGames": "Retrospel med synkroniserade sparade spel",
+    "@moonbaseFeatureGames": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureCalendar": "En kalender över kommande evenemang",
+    "@moonbaseFeatureCalendar": {
+        "description": "Moonbase dialog feature, upcoming episodes and movies"
+    },
+    "moonbaseFeatureCollections": "Din egen beställning för varje kollektion",
+    "@moonbaseFeatureCollections": {
+        "description": "Moonbase dialog feature"
+    },
+    "moonbaseFeatureMessages": "Meddelanden från din serveradministratör",
+    "@moonbaseFeatureMessages": {
+        "description": "Moonbase dialog feature"
+    },
+    "setupMoonbaseInstallFailed": "Moonbase kunde inte installeras. {error}",
+    "@setupMoonbaseInstallFailed": {
+        "description": "Shown in the Moonbase dialog when installing or restarting failed",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "setupTvHint": "Upp och ner för att förhandsgranska · OK för att välja · Två gånger tillbaka för att hoppa över",
+    "@setupTvHint": {
+        "description": "Remote control hint at the bottom of the setup wizard on TVs"
+    },
+    "setupNavbarTopHint": "Flikar längst upp på skärmen.",
+    "@setupNavbarTopHint": {
+        "description": "What the Top Bar navigation position gives you"
+    },
+    "setupNavbarLeftHint": "En smal rad med ikoner längs vänster sida.",
+    "@setupNavbarLeftHint": {
+        "description": "What the Left Sidebar navigation position gives you"
+    },
+    "setupNavbarBottomHint": "Flikar längs nederkanten, inom bekvämt räckhåll för tummen.",
+    "@setupNavbarBottomHint": {
+        "description": "What the Bottom Bar navigation position gives you on phones"
+    },
+    "setupMediaBarMoonfinHint": "Ett stort konstverk med titel, detaljer och översikt placerade ovanpå det.",
+    "@setupMediaBarMoonfinHint": {
+        "description": "What the Moonfin media bar style looks like"
+    },
+    "setupMediaBarMakdHint": "Ett stort konstverk med en stor titellogotyp i centrum.",
+    "@setupMediaBarMakdHint": {
+        "description": "What the MakD media bar style looks like"
+    },
+    "setupMediaBarBookshelfHint": "Titlarna är placerade på hyllan med bokryggarna utåt, och den utvalda boken är vänd med framsidan utåt.",
+    "@setupMediaBarBookshelfHint": {
+        "description": "What the Bookshelf media bar style looks like"
+    },
+    "setupMediaBarGalleryHint": "Den utvalda titeln öppnades, och de följande stod uppradade bredvid den.",
+    "@setupMediaBarGalleryHint": {
+        "description": "What the Gallery media bar style looks like"
+    },
+    "setupMediaBarBannerHint": "En smalare banner ovanför raderna, så att fler av dem får plats på skärmen.",
+    "@setupMediaBarBannerHint": {
+        "description": "What the Banner media bar style looks like"
+    },
+    "setupMediaBarAyaHint": "Konstverket placeras först i en inramad panel, med dina rader direkt under.",
+    "@setupMediaBarAyaHint": {
+        "description": "What the Aya media bar style looks like"
+    },
+    "setupMediaBarOffHint": "Inget särskilt utrymme. Från hallen kommer man direkt ut till raderna.",
+    "@setupMediaBarOffHint": {
+        "description": "What turning the media bar off does to the Home screen"
+    },
+    "runSetupAgain": "Kör installationsprogrammet igen",
+    "@runSetupAgain": {
+        "description": "Starts the first-run setup wizard again from settings"
+    },
+    "serverMessagesEmpty": "Inga meddelanden från din server ännu",
+    "@serverMessagesEmpty": {
+        "description": "Shown in the messages window when the server has sent nothing"
+    },
+    "serverMessagesMarkAllRead": "Markera alla som lästa",
+    "@serverMessagesMarkAllRead": {
+        "description": "Button in the messages window that marks every message as read"
+    },
+    "serverMessagesShowButton": "Knappen ”Visa meddelanden”",
+    "@serverMessagesShowButton": {
+        "description": "Setting that shows or hides the messages button in the menu"
+    },
+    "serverMessagesShowButtonSubtitle": "Lägger till en knapp i menyn för meddelanden som skickats av din serveradministratör",
+    "@serverMessagesShowButtonSubtitle": {
+        "description": "Explains the setting that shows or hides the messages button"
+    },
+    "showBookDiscoverTab": "Visa bokbiblioteket Discovery",
+    "@showBookDiscoverTab": {
+        "description": "Setting that shows or hides the discovery tab in book and audiobook libraries"
+    },
+    "showBookDiscoverTabDescription": "Bläddra bland titlar från Open Library och LibriVox i dina bok- och ljudboksbibliotek",
+    "@showBookDiscoverTabDescription": {
+        "description": "Explains the setting that shows or hides the discovery tab in book libraries"
+    },
+    "bookFoldersAsSeries": "Behandla bokmappar som serier",
+    "@bookFoldersAsSeries": {
+        "description": "Setting to determine book series based on folders instead of item metadata"
+    },
+    "bookFoldersAsSeriesDescription": "Behandla mappar som innehåller böcker som serier istället för att förlita sig på de enskilda böckernas metadata",
+    "@bookFoldersAsSeriesDescription": {
+        "description": "Explains the setting to determine book series based on folders instead of item metadata"
+    },
+    "autoDownloadNewEpisodes": "Automatisk nedladdning av nya avsnitt",
+    "@autoDownloadNewEpisodes": {
+        "description": "Row in the download sheet of a series that subscribes it to automatic downloads"
+    },
+    "autoDownloadStop": "Avbryt automatisk nedladdning",
+    "@autoDownloadStop": {
+        "description": "Row in the download sheet of a series that is already subscribed; tapping removes the subscription"
+    },
+    "autoDownloadKeepUnwatchedSubtitle": "{count, plural, =0{Downloads every new episode} =1{Downloads new episodes, up to 1 unwatched at a time} other{Downloads new episodes, up to {count} unwatched at a time}}",
+    "@autoDownloadKeepUnwatchedSubtitle": {
+        "description": "Subtitle under the auto-download row explaining the keep-unwatched rule",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "autoDownloadStopSubtitle": "On • {quality}",
+    "@autoDownloadStopSubtitle": {
+        "description": "Subtitle under the stop auto-download row showing the subscription's quality",
+        "placeholders": {
+            "quality": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadTranscodedForegroundNote": "Omkodade versioner laddas endast ner medan Moonfin är öppet. Originalversionen laddas också ner i bakgrunden.",
+    "@autoDownloadTranscodedForegroundNote": {
+        "description": "Shown under transcoded options when choosing the quality of an auto-download subscription"
+    },
+    "autoDownloadTranscodedRunningNote": "Nedladdningar med omkodad kvalitet kan inte återupptas efter ett avbrott utan måste börja om från början. Nedladdningar i originalkvalitet kan återupptas.",
+    "@autoDownloadTranscodedRunningNote": {
+        "description": "Shown under a running transcoded download that a subscription queued"
+    },
+    "autoDownloadForegroundOnly": "Nedladdningar sker endast när Moonfin är öppet",
+    "@autoDownloadForegroundOnly": {
+        "description": "Short note next to a followed series in a transcoded quality"
+    },
+    "autoDownloadQualityTitle": "Kvalitet vid automatisk nedladdning",
+    "@autoDownloadQualityTitle": {
+        "description": "Title of the quality sheet when it is opened to create an auto-download subscription"
+    },
+    "autoDownloadEnabledFor": "Automatisk nedladdning aktiverad för {title}",
+    "@autoDownloadEnabledFor": {
+        "description": "Snackbar after subscribing a series",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadStoppedFor": "Den automatiska nedladdningen av {title} har avbrutits",
+    "@autoDownloadStoppedFor": {
+        "description": "Snackbar after unsubscribing a series",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "smartDownloadsSection": "Smarta nedladdningar",
+    "@smartDownloadsSection": {
+        "description": "Settings section header for downloading the next episodes of a series after one is watched"
+    },
+    "smartDownloadsEnable": "Ladda ner kommande avsnitt",
+    "@smartDownloadsEnable": {
+        "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
+    },
+    "smartDownloadsEnableDescription": "När du har sett klart ett avsnitt på vilken enhet som helst laddar Moonfin ner de följande avsnitten. De avsnitt som laddas ner raderas så snart du har sett dem.",
+    "@smartDownloadsEnableDescription": {
+        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+    },
+    "smartDownloadsKeepReady": "Avsnitt att spara",
+    "@smartDownloadsKeepReady": {
+        "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
+    },
+    "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Keeps the next episode downloaded} other{Keeps the next {count} episodes downloaded}}",
+    "@smartDownloadsKeepReadySubtitle": {
+        "description": "Subtitle under the episodes to keep ready setting",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "smartDownloadsKeepReadyLowered": "Avsnitt som redan har laddats ner sparas på din enhet. Den nya gränsen gäller för framtida nedladdningar.",
+    "@smartDownloadsKeepReadyLowered": {
+        "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
+    },
+    "autoDownloadSection": "Automatiska nedladdningar",
+    "@autoDownloadSection": {
+        "description": "Settings section header for auto-download subscriptions"
+    },
+    "autoDownloadEnable": "Aktivera automatiska nedladdningar",
+    "@autoDownloadEnable": {
+        "description": "Master switch for auto-download subscriptions"
+    },
+    "autoDownloadEnableSubtitle": "Laddar ner nya avsnitt av de serier du följer. Befintliga avsnitt kan fortfarande laddas ner manuellt.",
+    "@autoDownloadEnableSubtitle": {
+        "description": "Explains the master switch"
+    },
+    "autoDownloadKeepUnwatched": "Spara avsnitt som du inte har sett",
+    "@autoDownloadKeepUnwatched": {
+        "description": "Setting that caps how many unwatched episodes per series stay downloaded"
+    },
+    "autoDownloadDelete": "Ta bort nedladdade avsnitt",
+    "@autoDownloadDelete": {
+        "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
+    },
+    "autoDownloadDeleteFollowedSubtitle": "När ska man ta bort avsnitt som man har laddat ner från serier man följer, efter att man har sett dem?",
+    "@autoDownloadDeleteFollowedSubtitle": {
+        "description": "Explains the delete-after-watching setting"
+    },
+    "removeWatchedDownloads": "Ta bort nedladdningar som du har tittat på",
+    "@removeWatchedDownloads": {
+        "description": "Storage setting that picks how soon an episode or movie the user downloaded themselves is removed after it was watched"
+    },
+    "removeWatchedDownloadsSubtitle": "När ska avsnitt och filmer som du själv har laddat ner tas bort? Endast de som du tittar på efter att du har aktiverat den här funktionen tas bort",
+    "@removeWatchedDownloadsSubtitle": {
+        "description": "Explains the remove-watched-downloads setting"
+    },
+    "removeWatchedAsk": "Fråga mig",
+    "@removeWatchedAsk": {
+        "description": "Remove-watched-downloads option: ask whether to delete a download once it is played to the end"
+    },
+    "deleteFinishedDownloadTitle": "Vill du ta bort den här nedladdningen?",
+    "@deleteFinishedDownloadTitle": {
+        "description": "Title of the dialog shown after a downloaded episode or movie is played to the end"
+    },
+    "deleteFinishedDownloadMessage": "Du har spelat klart {title}. Ta bort nedladdningen för att frigöra utrymme, eller behåll den och sluta fråga.",
+    "@deleteFinishedDownloadMessage": {
+        "description": "Body of the dialog shown after a downloaded episode or movie is played to the end",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "notNow": "Inte nu",
+    "@notNow": {
+        "description": "Button that closes a question without answering it, so it can be asked again later"
+    },
+    "keepDownloaded": "Spara nedladdade filer",
+    "@keepDownloaded": {
+        "description": "Toggle on the download sheet that stops watched downloads of this title from being removed automatically"
+    },
+    "keepDownloadedSubtitle": "Ta aldrig bort detta automatiskt efter att du har tittat på det",
+    "@keepDownloadedSubtitle": {
+        "description": "Explains the keep-downloaded toggle"
+    },
+    "autoDownloadDeleteImmediately": "Direkt efter att jag hade sett",
+    "@autoDownloadDeleteImmediately": {
+        "description": "Delete-after-watching option: remove at the next check once played"
+    },
+    "autoDownloadDeleteAfterDay": "1 dag efter att jag sett",
+    "@autoDownloadDeleteAfterDay": {
+        "description": "Delete-after-watching option"
+    },
+    "autoDownloadDeleteAfterWeek": "1 vecka efter att jag sett",
+    "@autoDownloadDeleteAfterWeek": {
+        "description": "Delete-after-watching option"
+    },
+    "autoDownloadBackgroundRefresh": "Kontrollera i bakgrunden",
+    "@autoDownloadBackgroundRefresh": {
+        "description": "Setting that lets the system wake the app to check for new episodes"
+    },
+    "autoDownloadBackgroundRefreshSubtitle": "Låt systemet regelbundet söka efter nya avsnitt även när Moonfin är stängt",
+    "@autoDownloadBackgroundRefreshSubtitle": {
+        "description": "Explains the background refresh setting"
+    },
+    "autoDownloadBackgroundRefreshDenied": "Bakgrundsuppdatering av appar är inaktiverad för Moonfin. Aktivera den i iOS-inställningarna.",
+    "@autoDownloadBackgroundRefreshDenied": {
+        "description": "Shown when iOS forbids background refresh for the app"
+    },
+    "autoDownloadBackgroundRestrictedAndroid": "Bakgrundsanvändningen är begränsad för Moonfin i Android-inställningarna.",
+    "@autoDownloadBackgroundRestrictedAndroid": {
+        "description": "Shown when Android restricts the app from running in the background"
+    },
+    "autoDownloadCheckNow": "Kolla nu",
+    "@autoDownloadCheckNow": {
+        "description": "Button that runs a subscription check immediately"
+    },
+    "autoDownloadChecking": "Kontrollerar...",
+    "@autoDownloadChecking": {
+        "description": "Subtitle while a subscription check is running"
+    },
+    "autoDownloadNeverChecked": "Har inte kontrollerats ännu",
+    "@autoDownloadNeverChecked": {
+        "description": "Subtitle when no subscription check has run"
+    },
+    "autoDownloadLastCheck": "Senaste kontrollen {when}: {queued, plural, =0{nothing new} =1{1 episode queued} other{{queued} episodes queued}}",
+    "@autoDownloadLastCheck": {
+        "description": "Subtitle summarising the last subscription check",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            },
+            "queued": {
+                "type": "int"
+            }
+        }
+    },
+    "autoDownloadLastCheckFailed": "Senaste kontrollen {when} misslyckades: {error}",
+    "@autoDownloadLastCheckFailed": {
+        "description": "Subtitle when the last subscription check hit an error",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            },
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadFollowedSeries": "Serier jag följer",
+    "@autoDownloadFollowedSeries": {
+        "description": "Settings section header listing the series with auto-download on"
+    },
+    "autoDownloadNoSubscriptions": "Öppna en serie och välj ”Ladda ner nya avsnitt automatiskt” i nedladdningsmenyn",
+    "@autoDownloadNoSubscriptions": {
+        "description": "Shown in settings when no series is followed"
+    },
+    "autoDownloadRemove": "Sluta följa",
+    "@autoDownloadRemove": {
+        "description": "Tooltip on the button that removes a followed series"
+    },
+    "autoDownloadStorageFull": "Not enough storage",
+    "@autoDownloadStorageFull": {
+        "description": "Appended to the last-check summary when the storage limit stopped queueing"
+    },
+    "autoDownloadWaitingForWifi": "Väntar på WiFi",
+    "@autoDownloadWaitingForWifi": {
+        "description": "Last-check summary when Wi-Fi only is on and the device was on mobile data"
+    },
+    "downloadNotificationRunningBatch": "Hämtar ({done}/{total})",
+    "@downloadNotificationRunningBatch": {
+        "description": "System notification title while a batch transfers; done is the 1-based position of the current item",
+        "placeholders": {
+            "done": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationProgress": "{name} — {percent}%",
+    "@downloadNotificationProgress": {
+        "description": "System notification body with the item label (for example Series S1E1) and its percentage",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationTransfer": "{name} — {progress} · {timeRemaining}",
+    "@downloadNotificationTransfer": {
+        "description": "System notification body for a transfer the native engine reports on. The engine fills in progress (a percentage such as 42%) and timeRemaining (mm:ss) itself.",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "progress": {
+                "type": "String"
+            },
+            "timeRemaining": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadNotificationStarting": "{name}...",
+    "@downloadNotificationStarting": {
+        "description": "System notification body before the size of a download is known",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadNotificationCompleteTitle": "{count, plural, =1{Download complete} other{Downloads complete}}",
+    "@downloadNotificationCompleteTitle": {
+        "description": "System notification title once a download or a batch has finished",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationSaved": "{name} sparat för användning offline",
+    "@downloadNotificationSaved": {
+        "description": "System notification body for one finished download; name is the item label (for example Series S1E1)",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadNotificationSavedCount": "{count, plural, =1{1 item saved for offline} other{{count} items saved for offline}}",
+    "@downloadNotificationSavedCount": {
+        "description": "System notification body for a finished batch of mixed items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationSeriesEpisodes": "{series}: {count, plural, =1{1 episode} other{{count} episodes}}",
+    "@downloadNotificationSeriesEpisodes": {
+        "description": "System notification body for a finished batch that all belongs to one series",
+        "placeholders": {
+            "series": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationFailedBody": "{name}: {error}",
+    "@downloadNotificationFailedBody": {
+        "description": "System notification body for a failed download",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "serverMessagesNotificationTitle": "Fjärrmeddelande",
+    "@serverMessagesNotificationTitle": {
+        "description": "System notification title for a message sent by the server when it carries no header"
+    },
+    "serverMessagesNotificationReceived": "Meddelande mottaget",
+    "@serverMessagesNotificationReceived": {
+        "description": "System notification body for a server message with empty text"
+    },
+    "downloadStorageLimitReached": "Lagringsgränsen har nåtts. Frigör utrymme eller höj gränsen.",
+    "@downloadStorageLimitReached": {
+        "description": "Error shown when a download would exceed the storage limit set in the download settings"
+    },
+    "downloadNotEnoughStorage": "För lite lagringsutrymme: {needed} behövs, {free} gratis",
+    "@downloadNotEnoughStorage": {
+        "description": "Error shown when a download would not fit on the device; needed and free are formatted sizes",
+        "placeholders": {
+            "needed": {
+                "type": "String"
+            },
+            "free": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadStorageFullTitle": "Uusille jaksoille ei ole tarpeeksi tallennustilaa",
+    "@autoDownloadStorageFullTitle": {
+        "description": "System notification title when the automatic check has to hold new episodes back"
+    },
+    "autoDownloadStorageFullBody": "{count, plural, =1{{name} behov {size}.} other{{count} avsnitten väntar på att få plats.}} Frigör utrymme eller höj nedladdningsgränsen.",
+    "@autoDownloadStorageFullBody": {
+        "description": "System notification body when the automatic check has to hold new episodes back; name is the label of the first one (for example Series S1E1) and size its formatted size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "name": {
+                "type": "String"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "pageTransitions": "Sidhopp",
+    "@pageTransitions": {
+        "description": "Setting title for adjusting the speed of page navigation transitions"
+    },
+    "pageTransitionsSubtitle": "Justerar övergångstiden vid navigering mellan sidor",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeed": "Fart under navigering",
+    "@navigationSpeed": {
+        "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+    },
+    "navigationSpeedSubtitle": "Ställer in hur snabbt fokusindikatorn rör sig mellan objekt och rader",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "modernCardsTransitionSpeed": "Övergångshastighet för moderna kort",
+    "@modernCardsTransitionSpeed": {
+        "description": "Setting title for adjusting animation speed of modern card expansions"
+    },
+    "modernCardsTransitionSpeedSubtitle": "Justerar animationshastigheten när man expanderar moderna kort som är i fokus",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "delayCardExpansionOnRapidScroll": "Fördröj kortutvidgning vid snabb rullning",
+    "@delayCardExpansionOnRapidScroll": {
+        "description": "Setting title for debouncing modern card expansion during rapid D-pad scrolling"
+    },
+    "delayCardExpansionOnRapidScrollSubtitle": "Väntar på att fokusförflyttningen ska avbrytas innan moderna kort visas",
+    "@delayCardExpansionOnRapidScrollSubtitle": {
+        "description": "Description for debouncing modern card expansion setting"
+    },
+    "animationSpeedExtraSlow": "Extra långsamt",
+    "@animationSpeedExtraSlow": {
+        "description": "Option label for extra slow animation speed"
+    },
+    "pageTransitionFadeNone": "Ingen blekning",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "pageTransitionFadeShort": "Kort fade",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeMedium": "Medelstor uttoning",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Lång uttoning",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "siriRemoteSwipeSensitivity": "Känslighet vid svep på pekplattan",
+    "@siriRemoteSwipeSensitivity": {
+        "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+    },
+    "siriRemoteSwipeSensitivityDescription": "Hur långt fokus flyttas vid varje svep på Siri Remote-pekplattan",
+    "@siriRemoteSwipeSensitivityDescription": {
+        "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+    },
+    "appleTvHomeScreen": "Apple TV:s startskärm",
+    "@appleTvHomeScreen": {
+        "description": "Section header in Home Screen settings for options that affect the tvOS home screen outside the app"
+    },
+    "topShelf": "Översta hyllan",
+    "@topShelf": {
+        "description": "Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area"
+    },
+    "topShelfDescription": "Det som visas på Apple TV:s startskärm ovanför Moonfin-ikonen när den väljs. Denna inställning sparas på den här enheten.",
+    "@topShelfDescription": {
+        "description": "Apple TV settings subtitle for the Top Shelf option"
+    },
+    "topShelfLatestMedia": "Senaste nyheterna",
+    "@topShelfLatestMedia": {
+        "description": "Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows"
+    },
+    "topShelfAppBanner": "Moonfin-banner",
+    "@topShelfAppBanner": {
+        "description": "Top Shelf option that shows only the static Moonfin logo banner, nothing from the library"
+    },
+    "keepVideoClearOfDynamicIsland": "Se till att videon inte täcker Dynamic Island",
+    "@keepVideoClearOfDynamicIsland": {
+        "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+    },
+    "keepVideoClearOfDynamicIslandDescription": "I liggande läge täcker kamerahuset ena kanten av skärmen. Detta gör att bilden inte sträcker sig ända fram till kanten, vilket endast påverkar videoklipp som är tillräckligt breda för att nå så långt.",
+    "@keepVideoClearOfDynamicIslandDescription": {
+        "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
     }
 }
