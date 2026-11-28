@@ -2382,8 +2382,11 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// Loads membership only for a detail layout that draws the collections row.
   Future<void> loadParentCollections() async {
     final item = _item;
+    // Waits for the full item, so the card copy doesn't start a scan that
+    // competes with getItem.
     if (_isDisposed ||
         _state != ItemDetailState.ready ||
+        _isCardCopy ||
         _parentCollectionsRequested ||
         item == null ||
         isSeerrOnly ||

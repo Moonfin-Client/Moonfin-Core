@@ -25,6 +25,7 @@ class _PluginSyncService extends Mock implements PluginSyncService {}
 /// looked at while the full item is still on its way.
 class _ItemsApi extends Fake implements ItemsApi {
   final pending = <String, Completer<Map<String, dynamic>>>{};
+  final ancestorsAskedFor = <String>[];
 
   @override
   Future<Map<String, dynamic>> getItem(
@@ -32,6 +33,12 @@ class _ItemsApi extends Fake implements ItemsApi {
     String? fields,
     String? mediaSourceId,
   }) => (pending[itemId] = Completer<Map<String, dynamic>>()).future;
+
+  @override
+  Future<List<Map<String, dynamic>>> getAncestors(String itemId) async {
+    ancestorsAskedFor.add(itemId);
+    return const [];
+  }
 }
 
 AggregatedItem _card(Map<String, dynamic> raw) =>
@@ -196,6 +203,20 @@ void main() {
 
     expect(vm.state, ItemDetailState.loading);
     expect(vm.item, isNull);
+  });
+
+  test('the collection scan waits for the full item', () async {
+    final vm = vmFor('movie-1', _card({..._movie, 'OfficialRating': 'PG'}));
+    final loading = vm.load();
+    expect(vm.isCardCopy, isTrue);
+
+    await vm.loadParentCollections();
+    expect(itemsApi.ancestorsAskedFor, isEmpty);
+
+    itemsApi.pending['movie-1']!.complete({..._movie, 'OfficialRating': 'PG'});
+    await loading;
+    await vm.loadParentCollections();
+    expect(itemsApi.ancestorsAskedFor, ['movie-1']);
   });
 
   test('a card for another item is ignored', () {
