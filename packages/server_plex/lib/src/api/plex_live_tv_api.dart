@@ -502,6 +502,7 @@ class PlexLiveTvApi implements LiveTvApi {
     bool? isMovie,
     bool? isSports,
     bool? isKids,
+    bool? isInProgress,
   }) async => plexItemsResult([]);
 
   @override

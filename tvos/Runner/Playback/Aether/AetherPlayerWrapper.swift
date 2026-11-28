@@ -966,6 +966,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var nightMode = false
         var binaural = false
         var loudnessTargetLUFS: Double?
+        var declaredDuration: Double?
     }
 
     /// The Match Frame Rate hint, localized on the Dart side.
@@ -1211,6 +1212,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             liveJoinProfile: .fastZap,
             nativeRemoteHLS: isLiveSession && isRemotePlaylist,
             preserveASSMarkup: preserveASS,
+            declaredDurationSeconds: sourceConfiguration.declaredDuration,
             probesize: isLiveSession ? Self.liveProbeBytes : nil,
             maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
             externalSubtitles: sourceConfiguration.externalSubtitles,
@@ -1247,6 +1249,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             // A load that outlived its watchdog or was superseded finished
             // against an engine that has already been stopped or reloaded.
             guard loadGeneration == generation, !didEmitLoadError else { return }
+            // A growing recording's playlist opens at its newest part, and the
+            // start the load placed before the playlist arrived doesn't hold.
+            if sourceConfiguration.declaredDuration != nil {
+                await engine.seek(to: startPosition)
+            }
             #if os(iOS) || os(tvOS)
                 // The engine opens its music session during the load, so it
                 // can only be adopted once the load returns.
@@ -1426,8 +1433,21 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     func seek(to seconds: TimeInterval) {
-        Task { await Self.sharedEngine()?.seek(to: seconds) }
+        Task { await Self.sharedEngine()?.seek(to: clampedToRecorded(seconds)) }
     }
+
+    /// A recording still being written only reaches so far, and AVPlayer
+    /// refuses a seek past that instead of landing at the newest part.
+    private func clampedToRecorded(_ seconds: TimeInterval) -> TimeInterval {
+        guard sourceConfiguration.declaredDuration != nil,
+            let end = Self.sharedEngine()?.currentAVPlayerItem?.seekableTimeRanges.last?
+                .timeRangeValue.end.seconds,
+            end.isFinite
+        else { return seconds }
+        return min(seconds, max(0, end - Self.recordedEdgeMargin))
+    }
+
+    private static let recordedEdgeMargin: TimeInterval = 10
 
     func seekToLiveEdge() {
         Task { await Self.sharedEngine()?.seekToLiveEdge() }

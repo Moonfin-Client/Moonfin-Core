@@ -2825,6 +2825,13 @@ class AppLocalizationsSr extends AppLocalizations {
   String get watchChannelLive => 'Гледај канал уживо';
 
   @override
+  String get liveTvWatchFromStart => 'Watch from the start';
+
+  @override
+  String get liveTvRecordingFromStartPrompt =>
+      'This program is being recorded, so you can watch it from the beginning.';
+
+  @override
   String get close => 'Затвори';
 
   @override

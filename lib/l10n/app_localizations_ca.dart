@@ -2817,6 +2817,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get watchChannelLive => 'Mira el canal en directe';
 
   @override
+  String get liveTvWatchFromStart => 'Watch from the start';
+
+  @override
+  String get liveTvRecordingFromStartPrompt =>
+      'This program is being recorded, so you can watch it from the beginning.';
+
+  @override
   String get close => 'Tanca';
 
   @override

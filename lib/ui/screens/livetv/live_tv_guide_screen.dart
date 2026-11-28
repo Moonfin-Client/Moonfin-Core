@@ -44,6 +44,7 @@ import 'guide/guide_layout_profile.dart';
 import 'guide/guide_selection.dart';
 import 'guide/guide_window.dart';
 import 'live_tv_channel_player_loader.dart';
+import 'recording_from_start.dart';
 
 // Start fetching the next batch of channel programs this many rows before the
 // lazily-loaded edge, so rows are usually populated by the time they're visible.
@@ -2567,6 +2568,14 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     final channels = _vm.filteredChannels;
     final index = channels.indexWhere((channel) => channel.id == channelId);
     if (index < 0) return;
+    final timerId = _vm.nowNextForChannel(channelId).now?.rawData['TimerId'];
+    if (timerId != null) {
+      final handled = await offerRecordingFromStart(
+        context,
+        timerId: timerId.toString(),
+      );
+      if (handled != false || !mounted) return;
+    }
     _vm.resetWindowOnExit(windowStart: guideLeftEdge(DateTime.now()));
     // With the setting off nothing is awaited, so the built-in player still
     // opens on this frame.

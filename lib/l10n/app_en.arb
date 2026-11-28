@@ -3769,6 +3769,14 @@
   "@watchChannelLive": {
     "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
   },
+  "liveTvWatchFromStart": "Watch from the start",
+  "@liveTvWatchFromStart": {
+    "description": "Button label, shown when tuning to a channel whose current program is being recorded, that plays the recording from its beginning instead of the live channel"
+  },
+  "liveTvRecordingFromStartPrompt": "This program is being recorded, so you can watch it from the beginning.",
+  "@liveTvRecordingFromStartPrompt": {
+    "description": "Message in the prompt shown when tuning to a channel whose current program is being recorded, offering to play the recording from its beginning"
+  },
   "close": "Close",
   "@close": {
     "description": "Button label to close a dialog"

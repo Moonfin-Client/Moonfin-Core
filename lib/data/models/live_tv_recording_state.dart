@@ -7,6 +7,13 @@ final liveTvRecordingRevision = ValueNotifier<int>(0);
 
 void notifyLiveTvRecordingsChanged() => liveTvRecordingRevision.value++;
 
+/// Live TV ids can come back with or without dashes depending on the call.
+bool sameLiveTvId(Object? a, Object? b) {
+  final left = a?.toString().replaceAll('-', '') ?? '';
+  final right = b?.toString().replaceAll('-', '') ?? '';
+  return left.isNotEmpty && left == right;
+}
+
 class LiveTvRecordingState {
   final String? timerId;
   final String? seriesTimerId;
@@ -30,15 +37,10 @@ class LiveTvRecordingState {
       return text == null || text.isEmpty ? null : text;
     }
 
-    bool sameId(Object? a, Object? b) =>
-        id(a) != null &&
-        id(b) != null &&
-        id(a)!.replaceAll('-', '') == id(b)!.replaceAll('-', '');
-
     Map? timer;
     for (final candidate in timers.whereType<Map>()) {
-      if (sameId(candidate['Id'], program['TimerId']) ||
-          sameId(candidate['ProgramId'], program['Id'])) {
+      if (sameLiveTvId(candidate['Id'], program['TimerId']) ||
+          sameLiveTvId(candidate['ProgramId'], program['Id'])) {
         final status = candidate['Status']?.toString();
         if (status == 'InProgress') {
           timer = candidate;
@@ -55,7 +57,7 @@ class LiveTvRecordingState {
     if (seriesTimerId != null) {
       for (final candidate in timers.whereType<Map>()) {
         if (candidate['Status'] != 'New' ||
-            !sameId(candidate['SeriesTimerId'], seriesTimerId)) {
+            !sameLiveTvId(candidate['SeriesTimerId'], seriesTimerId)) {
           continue;
         }
         final start = parseServerDate(candidate['StartDate']);

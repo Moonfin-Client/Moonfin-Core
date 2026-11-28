@@ -687,7 +687,10 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 toneMapPeakNits: (args["toneMapPeakNits"] as? NSNumber)?.doubleValue,
                 nightMode: (args["nightMode"] as? Bool) ?? false,
                 binaural: (args["binaural"] as? Bool) ?? false,
-                loudnessTargetLUFS: (args["loudnessTargetLufs"] as? NSNumber)?.doubleValue))
+                loudnessTargetLUFS: (args["loudnessTargetLufs"] as? NSNumber)?.doubleValue,
+                declaredDuration: (args["declaredDurationMs"] as? NSNumber).map {
+                    $0.doubleValue / 1000
+                }))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

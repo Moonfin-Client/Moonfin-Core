@@ -2787,6 +2787,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get watchChannelLive => 'Kanalı canlı izle';
 
   @override
+  String get liveTvWatchFromStart => 'Watch from the start';
+
+  @override
+  String get liveTvRecordingFromStartPrompt =>
+      'This program is being recorded, so you can watch it from the beginning.';
+
+  @override
   String get close => 'Kapat';
 
   @override

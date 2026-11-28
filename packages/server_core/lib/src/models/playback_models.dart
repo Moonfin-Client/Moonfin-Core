@@ -1,3 +1,4 @@
+import '../util/server_date.dart';
 import 'enums.dart';
 
 class PlaybackInfoRequest {
@@ -112,6 +113,9 @@ class PlaybackMediaSource {
   final int? defaultSubtitleStreamIndex;
   final List<String> transcodingReasons;
 
+  /// When the stream began, for a recording that's still being written.
+  final DateTime? wallClockStart;
+
   const PlaybackMediaSource({
     required this.id,
     this.name,
@@ -132,6 +136,7 @@ class PlaybackMediaSource {
     this.defaultAudioStreamIndex,
     this.defaultSubtitleStreamIndex,
     this.transcodingReasons = const [],
+    this.wallClockStart,
   });
 
   factory PlaybackMediaSource.fromJson(Map<String, dynamic> json) =>
@@ -159,6 +164,7 @@ class PlaybackMediaSource {
             ? PlayMethod.fromServerString(json['PlayMethod'] as String?)
             : null,
         transcodingReasons: _parseTranscodingReasons(json),
+        wallClockStart: parseServerDate(json['WallClockStart']),
       );
 
   /// Nothing probed and nothing to offer but a transcode, which is how an Emby

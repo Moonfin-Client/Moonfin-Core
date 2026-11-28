@@ -134,6 +134,7 @@ import '../../../playback/known_defects.dart';
 import '../../../playback/server_shuffle_queue.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../watch_party/silo_watch_party_manager.dart';
+import '../livetv/recording_from_start.dart';
 import '../watch_party/silo_watch_party_screen.dart';
 import '../watch_party/watch_together_route.dart';
 import '../../../util/audio_labels.dart';
@@ -9850,6 +9851,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     if (Destinations.isLiveTvChannelType(item.type)) {
+      final timerId = (item.rawData['CurrentProgram'] as Map?)?['TimerId'];
+      if (timerId != null &&
+          await offerRecordingFromStart(context, timerId: timerId.toString()) !=
+              false) {
+        return;
+      }
+      if (!context.mounted) return;
       await context.push(Destinations.liveTvChannel(item.id));
       return;
     }

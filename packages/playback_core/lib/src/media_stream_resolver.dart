@@ -22,6 +22,36 @@ abstract class MediaStreamResolver {
     }
   }
 
+  /// Whether [mediaItem] is a recording the server is still writing.
+  static bool isRecordingInProgress(dynamic mediaItem) {
+    final raw = _rawItem(mediaItem);
+    return raw?['Type'] == 'Recording' && raw?['Status'] == 'InProgress';
+  }
+
+  /// How long a recording that's still being written will run, from [start]
+  /// or when the recording began, to the end of its program.
+  static Duration? recordingLength(dynamic mediaItem, {DateTime? start}) {
+    final raw = _rawItem(mediaItem);
+    DateTime? date(String key) {
+      final value = DateTime.tryParse('${raw?[key]}');
+      return value != null && value.year > 1 ? value : null;
+    }
+
+    final end = date('EndDate');
+    final from = start ?? date('DateCreated') ?? date('StartDate');
+    if (end == null || from == null || !end.isAfter(from)) return null;
+    return end.difference(from);
+  }
+
+  static Map? _rawItem(dynamic mediaItem) {
+    if (mediaItem is Map) return mediaItem;
+    try {
+      return mediaItem.rawData as Map?;
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Emby's live HLS only works with MPEG-TS segments. With fragmented MP4 the
   /// playlist lists every segment with a zero duration and no init section,
   /// and an AAC channel fails outright because ffmpeg copies the ADTS stream

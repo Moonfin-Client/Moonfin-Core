@@ -450,6 +450,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
         downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
       ),
       'isLive': payload['isLive'] == true,
+      'declaredDurationMs': payload['declaredDurationMs'],
       'mediaType': payload['mediaType']?.toString() ?? 'video',
       'normalizationGainDb':
           (payload['normalizationGainDb'] as num?)?.toDouble(),

@@ -237,6 +237,8 @@ class _TestResolver extends MediaStreamResolver {
   /// can model a slow re-resolve that eats into its own recovery gap.
   Duration delay = Duration.zero;
 
+  Duration? declaredDuration;
+
   /// The play method every successful resolve reports, so a test can model a
   /// channel that is already direct-played, direct-streamed or transcoded.
   StreamPlayMethod playMethod = StreamPlayMethod.transcode;
@@ -273,6 +275,7 @@ class _TestResolver extends MediaStreamResolver {
       playSessionId: 'session-$thisCall',
       playMethod: playMethod,
       mediaStreams: const [],
+      declaredDuration: declaredDuration,
     );
   }
 }
@@ -431,6 +434,29 @@ void main() {
         // It used to do nothing at all and leave the player on its last frame.
         expect(backend.resumeLiveEdgeCalls, 1);
         expect(service.stoppedResolutions, isEmpty);
+      } finally {
+        manager.dispose();
+      }
+    });
+
+    test('a growing recording that stops early is not reopened', () async {
+      final backend = _TestBackend();
+      final resolver = _TestResolver()
+        ..declaredDuration = const Duration(minutes: 90);
+      final service = _TestService();
+      final clock = _Clock();
+      final manager = _manager(backend, resolver, service, clock);
+      try {
+        await manager.playItems(<dynamic>[_movie]);
+        backend.reportedDuration = const Duration(minutes: 90);
+        backend.currentPosition = const Duration(minutes: 10);
+        clock.advance(const Duration(seconds: 30));
+
+        backend.emitCompleted();
+        await _settle();
+
+        expect(backend.resumeLiveEdgeCalls, isZero);
+        expect(resolver.calls, 1);
       } finally {
         manager.dispose();
       }

@@ -59,6 +59,7 @@ class NoLiveTvApi implements LiveTvApi {
     bool? isMovie,
     bool? isSports,
     bool? isKids,
+    bool? isInProgress,
   }) async => _empty;
 
   @override

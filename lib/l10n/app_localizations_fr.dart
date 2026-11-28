@@ -2818,6 +2818,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get watchChannelLive => 'Regarder la chaîne en direct';
 
   @override
+  String get liveTvWatchFromStart => 'Watch from the start';
+
+  @override
+  String get liveTvRecordingFromStartPrompt =>
+      'This program is being recorded, so you can watch it from the beginning.';
+
+  @override
   String get close => 'Fermer';
 
   @override

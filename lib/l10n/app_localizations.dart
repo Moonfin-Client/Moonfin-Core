@@ -4870,6 +4870,18 @@ abstract class AppLocalizations {
   /// **'Watch channel live'**
   String get watchChannelLive;
 
+  /// Button label, shown when tuning to a channel whose current program is being recorded, that plays the recording from its beginning instead of the live channel
+  ///
+  /// In en, this message translates to:
+  /// **'Watch from the start'**
+  String get liveTvWatchFromStart;
+
+  /// Message in the prompt shown when tuning to a channel whose current program is being recorded, offering to play the recording from its beginning
+  ///
+  /// In en, this message translates to:
+  /// **'This program is being recorded, so you can watch it from the beginning.'**
+  String get liveTvRecordingFromStartPrompt;
+
   /// Button label to close a dialog
   ///
   /// In en, this message translates to:

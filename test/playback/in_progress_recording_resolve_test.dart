@@ -87,4 +87,24 @@ void main() {
     },
   );
 
+  test('a recording still being written runs to the end of its program',
+      () async {
+    final resolver = JellyfinMediaStreamResolver(
+      _FakeClient(_RecordingPlaybackApi()),
+    );
+
+    final result = await resolver.resolve(<String, dynamic>{
+      'Id': 'rec1',
+      'Type': 'Recording',
+      'Status': 'InProgress',
+      'StartDate': '2026-11-28T12:00:00.0000000Z',
+      'EndDate': '2026-11-28T16:00:00.0000000Z',
+      'DateCreated': '2026-11-28T14:09:02.0000000Z',
+    });
+
+    expect(
+      result.declaredDuration,
+      const Duration(hours: 1, minutes: 50, seconds: 58),
+    );
+  });
 }

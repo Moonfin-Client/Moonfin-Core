@@ -52,6 +52,7 @@ abstract class LiveTvApi {
     bool? isMovie,
     bool? isSports,
     bool? isKids,
+    bool? isInProgress,
   });
 
   Future<Map<String, dynamic>> getTimers();

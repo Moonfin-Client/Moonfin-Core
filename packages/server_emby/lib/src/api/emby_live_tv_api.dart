@@ -123,6 +123,7 @@ class EmbyLiveTvApi implements LiveTvApi {
     bool? isMovie,
     bool? isSports,
     bool? isKids,
+    bool? isInProgress,
   }) async {
     final response = await _dio.get('/LiveTv/Recordings', queryParameters: {
       'Limit': ?limit,
@@ -132,6 +133,7 @@ class EmbyLiveTvApi implements LiveTvApi {
       'IsMovie': ?isMovie,
       'IsSports': ?isSports,
       'IsKids': ?isKids,
+      'IsInProgress': ?isInProgress,
     });
     return response.data as Map<String, dynamic>;
   }

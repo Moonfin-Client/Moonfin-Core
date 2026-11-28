@@ -24,21 +24,29 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
 
     final staticMediaSourceId =
         MediaStreamResolver.resolveStaticMediaSourceId(mediaItem, mediaSourceId);
+    // A recording still being written plays from a source named after its
+    // timer. Asking for the item's own source id fails outright.
+    final recordingInProgress =
+        MediaStreamResolver.isRecordingInProgress(mediaItem);
     // A channel item's lone placeholder source is left off so the server
     // answers with the source it probes.
-    final resolvedMediaSourceId = MediaStreamResolver.isStreamlessStaticSource(
-      mediaItem,
-      staticMediaSourceId,
-    )
+    final resolvedMediaSourceId = recordingInProgress ||
+            MediaStreamResolver.isStreamlessStaticSource(
+              mediaItem,
+              staticMediaSourceId,
+            )
         ? null
         : staticMediaSourceId;
-    final isLiveChannel = MediaStreamResolver.isLiveTvItem(mediaItem);
+    // Emby streams a recording in progress through the same live HLS as a
+    // channel.
+    final liveHls =
+        MediaStreamResolver.isLiveTvItem(mediaItem) || recordingInProgress;
     final requestProfile = MediaStreamResolver.shortenLiveHlsStartup(
       MediaStreamResolver.preferMpegTsHlsForLive(
         deviceProfile,
-        isLiveChannel: isLiveChannel,
+        isLiveChannel: liveHls,
       ),
-      isLiveChannel: isLiveChannel,
+      isLiveChannel: liveHls,
     );
 
     Future<PlaybackInfoResult> fetchPlaybackInfo(String? sourceId) async {
@@ -121,6 +129,19 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
           .replaceFirst(RegExp(r'[&?]StartTimeTicks=\d+', caseSensitive: false), '');
     }
 
+    // Emby serves a recording it's still writing without byte ranges, so the
+    // file can't seek. Its recording buffer as HLS starts at the beginning and
+    // grows as it records, but HLS players only take some codecs, so the rest
+    // keep the file.
+    final recordingHls = recordingInProgress &&
+        playMethod != StreamPlayMethod.transcode &&
+        _hlsCarriesStreams(source.mediaStreams);
+    if (recordingHls) {
+      url = '${_client.baseUrl}/LiveTv/LiveRecordings/'
+          '${Uri.encodeComponent(source.id)}/hls/master.m3u8';
+      playMethod = StreamPlayMethod.directStream;
+    }
+
     url = _appendAuth(url);
 
     final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl);
@@ -185,7 +206,23 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
       serverOfferedDirectPlay: source.supportsDirectPlay,
       directPlayRequested: enableDirectPlay,
       sourceBitrate: source.bitrate,
+      declaredDuration: recordingHls
+          ? MediaStreamResolver.recordingLength(
+              mediaItem,
+              start: source.wallClockStart,
+            )
+          : null,
     );
+  }
+
+  static bool _hlsCarriesStreams(List<Map<String, dynamic>> streams) {
+    String codec(Map stream) => '${stream['Codec']}'.toLowerCase();
+    final video = streams.where((s) => s['Type'] == 'Video');
+    return video.isNotEmpty &&
+        video.every((s) => codec(s) == 'h264') &&
+        streams.where((s) => s['Type'] == 'Audio').every(
+              (s) => const {'aac', 'ac3', 'eac3', 'mp3'}.contains(codec(s)),
+            );
   }
 
   String _appendAuth(String url) {

@@ -1029,6 +1029,7 @@ class PlaybackManager implements AudioOwnable {
     double? normalizationGainDb,
     String? hybridAudioUrl,
     bool isLive = false,
+    Duration? declaredDuration,
     bool autoPlay = true,
     List<ExternalSubtitle> externalSubtitles = const [],
     bool audioLike = false,
@@ -1172,6 +1173,8 @@ class PlaybackManager implements AudioOwnable {
       if (hybridAudioUrl != null && hybridAudioUrl.isNotEmpty)
         'hybridAudioUrl': hybridAudioUrl,
       'isLive': isLive,
+      if (declaredDuration != null)
+        'declaredDurationMs': declaredDuration.inMilliseconds,
       'mediaType':
           (resolvedMediaType == 'audio' || resolvedMediaType == 'video')
           ? resolvedMediaType
@@ -1701,6 +1704,13 @@ class PlaybackManager implements AudioOwnable {
 
     final remaining = effectiveDuration - pos;
     if (remaining > const Duration(seconds: 5)) {
+      // A growing recording only ends early when it stopped recording, and
+      // reopening it would play the same end again.
+      if ((_currentResolution ?? _lastPlaybackResolution)?.declaredDuration !=
+          null) {
+        _logCompletion('not-near-end', effectiveDuration: effectiveDuration);
+        return;
+      }
       // The player ran out of media early. That is starvation -- a server
       // transcode the client outran -- and it used to return here and do
       // nothing at all, parking the player on its last frame with no way back.
@@ -3879,6 +3889,7 @@ class PlaybackManager implements AudioOwnable {
         normalizationGainDb: resolution.normalizationGainDb,
         hybridAudioUrl: resolution.hybridAudioUrl,
         isLive: resolution.liveStreamId != null || _isLiveTvItem(item),
+        declaredDuration: resolution.declaredDuration,
         autoPlay: autoPlay,
         externalSubtitles: resolution.externalSubtitles,
         audioLike: _isAudioLikeItem(item),

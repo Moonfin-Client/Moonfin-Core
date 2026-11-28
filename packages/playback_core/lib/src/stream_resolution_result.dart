@@ -92,6 +92,11 @@ class StreamResolutionResult {
   /// server keeps it.
   final Duration? reopenAfterPause;
 
+  /// How long a stream that is still growing will run, so a player that
+  /// sees no end in it can still seek. Null when the stream knows its own
+  /// length.
+  final Duration? declaredDuration;
+
   const StreamResolutionResult({
     required this.streamUrl,
     required this.mediaSourceId,
@@ -117,6 +122,7 @@ class StreamResolutionResult {
     this.timelineOffset = Duration.zero,
     this.seeksThroughServer = false,
     this.reopenAfterPause,
+    this.declaredDuration,
   });
 
   /// What the server said it would send, read off the transcode URL.

@@ -253,6 +253,11 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       serverOfferedDirectPlay: source.supportsDirectPlay,
       directPlayRequested: enableDirectPlay,
       sourceBitrate: source.bitrate,
+      // Jellyfin streams a recording it's still writing as a growing HLS
+      // playlist with no length of its own.
+      declaredDuration: MediaStreamResolver.isRecordingInProgress(mediaItem)
+          ? MediaStreamResolver.recordingLength(mediaItem)
+          : null,
     );
   }
 
