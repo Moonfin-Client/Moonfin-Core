@@ -786,6 +786,7 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarNewReleaseKinds',
     'mediaBarNewMovieDays',
     'mediaBarNewMovieDetail',
+    'mediaBarFollowedFirst',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
     'navbarOpacity',
@@ -3430,6 +3431,13 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarNewMovieDetail = Preference(
     key: 'mediaBarNewMovieDetail',
     defaultValue: true,
+  );
+
+  /// Series the user has started or marked as favorite go to the front of
+  /// the bar.
+  static final mediaBarFollowedFirst = Preference(
+    key: 'mediaBarFollowedFirst',
+    defaultValue: false,
   );
 
   static final navbarOpacity = Preference(

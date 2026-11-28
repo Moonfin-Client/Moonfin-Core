@@ -6889,6 +6889,14 @@
   "@mediaBarNewMovieDetailDescription": {
     "description": "Description of the New Movie second line setting"
   },
+  "mediaBarFollowedFirst": "Followed Series First",
+  "@mediaBarFollowedFirst": {
+    "description": "Setting that puts series the user has started at the front of the media bar"
+  },
+  "mediaBarFollowedFirstDescription": "Series you've started or marked as favorite come first.",
+  "@mediaBarFollowedFirstDescription": {
+    "description": "Description of the followed series first setting"
+  },
   "moviesAndTvShows": "Movies & TV Shows",
   "@moviesAndTvShows": {
     "description": "Content type: movies and TV shows"

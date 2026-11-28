@@ -12,6 +12,7 @@ import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/tmdb_thumb.dart';
+import '../models/calendar_entry.dart';
 import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
 import '../services/custom_external_lists_service.dart';
@@ -28,10 +29,18 @@ class MediaBarRepository {
   final UserPreferences _prefs;
   final _random = math.Random();
 
-  static const _fields =
+  static const _baseFields =
       'Type,Genres,OfficialRating,CommunityRating,CriticRating,'
       'RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
       'Overview,ProviderIds,PremiereDate,Taglines,ChildCount';
+
+  /// The server only says how much of a series was watched when asked for
+  /// its episode count, which costs a count per series, so only when needed.
+  String get _fields => _followedFirst
+      ? '$_baseFields,RecursiveItemCount'
+      : _baseFields;
+
+  bool get _followedFirst => _prefs.get(UserPreferences.mediaBarFollowedFirst);
 
   MediaBarRepository(this._client, this._prefs);
 
@@ -263,6 +272,10 @@ class MediaBarRepository {
         externalPool,
         maxItems,
         excludedGenres,
+        followed: {
+          for (final item in selected)
+            if (mediaBarIsFollowedSeries(item)) '${item['Id']}',
+        },
       );
       if (items.isEmpty) {
         return const MediaBarError('No items with backdrop images found');
@@ -293,7 +306,12 @@ class MediaBarRepository {
   ) {
     final withBackdrops = source.where(_usableFor(excludedGenres)).toList();
     if (!_isDatedSource) withBackdrops.shuffle();
-    return withBackdrops.take(maxItems).toList();
+    return mediaBarOrder(
+      withBackdrops,
+      isFollowed: mediaBarIsFollowedSeries,
+      followedFirst: _followedFirst,
+      maxItems: maxItems,
+    );
   }
 
   /// Every source but Random keeps the server's newest first order.
@@ -963,19 +981,24 @@ class MediaBarRepository {
     return pool..shuffle(_random);
   }
 
-  /// [library] with titles from [external] shuffled in, [maxItems] in all.
-  /// Only the outside titles that make the cut are looked up on TMDB.
+  /// [library] with titles from [external] shuffled in, [maxItems] in all,
+  /// the [followed] library series first. Only the outside titles that make
+  /// the cut are looked up on TMDB.
   Future<List<MediaBarSlideItem>> _mixInExternal(
     List<MediaBarSlideItem> library,
     List<ImdbExternalListItem> external,
     int maxItems,
-    Set<String> excludedGenres,
-  ) async {
+    Set<String> excludedGenres, {
+    Set<String> followed = const {},
+  }) async {
     if (external.isEmpty) return library;
-    final chosen = (<Object>[...library, ...external.take(maxItems)]
-          ..shuffle(_random))
-        .take(maxItems)
-        .toList();
+    final chosen = mediaBarOrder(
+      <Object>[...library, ...external.take(maxItems)]..shuffle(_random),
+      isFollowed: (pick) =>
+          pick is MediaBarSlideItem && followed.contains(pick.itemId),
+      followedFirst: _followedFirst,
+      maxItems: maxItems,
+    );
     final slides = <String, MediaBarSlideItem>{};
     await mapBounded(
       chosen.whereType<ImdbExternalListItem>().toList(),
@@ -1318,6 +1341,29 @@ MediaBarNewReleaseInfo? mediaBarNewMovieOf(
     tagline: tagline,
   );
 }
+
+/// [items] in the bar's order, [maxItems] at most: the followed series first
+/// when [followedFirst]. The rest keeps its order.
+@visibleForTesting
+List<T> mediaBarOrder<T>(
+  List<T> items, {
+  required bool Function(T) isFollowed,
+  required bool followedFirst,
+  required int maxItems,
+}) => (followedFirst
+        ? [
+            ...items.where(isFollowed),
+            ...items.where((item) => !isFollowed(item)),
+          ]
+        : items)
+    .take(maxItems)
+    .toList();
+
+/// A series the user has started or marked as a favorite, as the calendar's
+/// My shows reads it.
+@visibleForTesting
+bool mediaBarIsFollowedSeries(Map<String, dynamic> item) =>
+    item['Type'] == 'Series' && CalendarSeriesProgress.fromItem(item).followed;
 
 // A mixed library names no collection type, so the bar takes it for either
 // kind. Folders and recordings name none either, but a query on one of those

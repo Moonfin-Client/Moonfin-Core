@@ -354,7 +354,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     'movies': l10n.moviesOnly,
                     'tvshows': l10n.tvShowsOnly,
                   },
-                  onChanged: _pushSync,
+                  onChanged: _pushSyncAndRebuild,
                 ),
                 StringPickerPreferenceTile(
                   preference: UserPreferences.mediaBarSourceType,
@@ -435,6 +435,16 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                   icon: Icons.format_quote_outlined,
                   onChanged: _pushSync,
                 ),
+                // A movies only bar has no series to put first.
+                if (_prefs.get(UserPreferences.mediaBarContentType) !=
+                    UserPreferences.mediaBarContentTypeMovies)
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.mediaBarFollowedFirst,
+                    title: l10n.mediaBarFollowedFirst,
+                    subtitle: l10n.mediaBarFollowedFirstDescription,
+                    icon: Icons.playlist_play,
+                    onChanged: _pushSync,
+                  ),
               ],
             ),
 

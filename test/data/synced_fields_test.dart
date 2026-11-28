@@ -201,6 +201,7 @@ void main() {
     'mediaBarNewReleaseKinds',
     'mediaBarNewMovieDays',
     'mediaBarNewMovieDetail',
+    'mediaBarFollowedFirst',
     'mediaBarOpacity',
     'mediaBarOverlayColor',
     'mediaBarRowPeek',
