@@ -30,6 +30,7 @@ import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
 import '../../../playback/paused_background_exit.dart';
 import '../../../playback/appletv_subtitles.dart';
+import '../../../playback/appletv_track_options.dart';
 import '../../../playback/rewind_subtitles.dart';
 import '../../../playback/subtitle_cue_loader.dart';
 import '../../../playback/playback_info_sections.dart';
@@ -1261,48 +1262,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
     return {'overview': overview};
   }
 
-  List<Map<String, dynamic>> _trackOptions(
-    List<Map<String, dynamic>> streams,
-    int? selectedIndex, {
-    required bool audio,
-  }) {
-    final options = <Map<String, dynamic>>[];
-    for (final s in streams) {
-      final index = (s['Index'] as int?) ?? -1;
-      final displayTitle = s['DisplayTitle'] as String?;
-      final title = s['Title'] as String?;
-      final language = s['Language'] as String?;
-      final codec = s['Codec'] as String?;
-      final label = displayTitle ?? title ?? language ?? 'Track';
-      final String subtitle;
-      if (audio) {
-        subtitle = [
-          if (language != null && displayTitle != null) language,
-          if (codec != null) codec.toUpperCase(),
-          if (s['Channels'] != null) '${s['Channels']}ch',
-        ].join(' · ');
-      } else {
-        final subtitleType =
-            ((codec == null || codec.isEmpty) ? 'Unknown' : codec)
-                .toUpperCase();
-        final deliveryMethod = (s['DeliveryMethod'] as String?)
-            ?.trim()
-            .toLowerCase();
-        final location = s['IsExternal'] == true
-            ? 'External'
-            : (deliveryMethod == 'embed' ? 'Embedded' : 'Internal');
-        subtitle = '$subtitleType · $location';
-      }
-      options.add({
-        'index': index,
-        'label': label,
-        'subtitle': subtitle,
-        'selected': index == selectedIndex,
-      });
-    }
-    return options;
-  }
-
   void _pushMetadata({String? skipCastResolutionForId}) {
     final manager = _manager;
     final backend = _backend;
@@ -1404,12 +1363,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
       clickpadSeekMode:
           _prefsListened?.get(UserPreferences.appleTvClickpadSeekMode) ??
           AppleTvClickpadSeekMode.always,
-      audioTracks: _trackOptions(
+      audioTracks: appleTvTrackOptions(
         audioStreams,
         manager.audioStreamIndex,
         audio: true,
       ),
-      subtitleTracks: _trackOptions(
+      subtitleTracks: appleTvTrackOptions(
         subtitleStreams,
         manager.subtitleStreamIndex,
         audio: false,
@@ -1418,7 +1377,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen>
         manager: manager,
         prefs: GetIt.instance<UserPreferences>(),
         l10n: AppLocalizations.of(context),
-        tracks: _trackOptions(
+        tracks: appleTvTrackOptions(
           subtitleStreams,
           manager.secondarySubtitleStreamIndex,
           audio: false,

@@ -1569,6 +1569,8 @@ final class NativeApplePlayerViewController: UIViewController {
             backward: Double(skipBackMs) / 1000.0)
         audioTracks = parseTracks(args["audioTracks"])
         subtitleTracks = parseTracks(args["subtitleTracks"])
+        let remoteSubtitles = NowPlayingSubtitleTrack.parse(args["subtitleTracks"])
+        player.nowPlaying.setSubtitleTracks(remoteSubtitles.tracks, selected: remoteSubtitles.selected)
         subtitleControls = (args["subtitleControls"] as? [String: Any]) ?? [:]
         streamInfoSections = (args["streamInfoSections"] as? [[String: Any]]) ?? []
         streamInfoTitle =
@@ -3365,6 +3367,17 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         sheet.addAction(makePlayerAction(title: subtitleText("cancel"), style: .cancel))
         presentSheet(sheet, from: .subtitles)
+    }
+
+    /// Applies a subtitle choice from a system remote, where -1 turns both
+    /// slots off. Returns false once the player is gone.
+    func selectSubtitleFromRemote(_ index: Int) -> Bool {
+        guard viewIfLoaded?.window != nil, !isBeingDismissed else { return false }
+        selectSubtitle(index, secondary: false)
+        if index < 0, parseTracks(subtitleControls["tracks"]).contains(where: { $0.selected }) {
+            selectSubtitle(-1, secondary: true)
+        }
+        return true
     }
 
     private func selectSubtitle(_ index: Int, secondary: Bool) {
