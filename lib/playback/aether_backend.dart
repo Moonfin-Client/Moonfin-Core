@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path/path.dart' as p;
 import 'package:playback_core/playback_core.dart';
 
+import '../data/services/book_parts.dart';
 import '../data/services/client_certificate_service.dart';
 import '../data/services/log_service.dart';
 import '../preference/preference_constants.dart';
@@ -70,6 +73,19 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
   Completer<void>? _tracksReadyCompleter;
   List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
   final _tracksChangedController = StreamController<void>.broadcast();
+
+  // A book downloaded in several files plays one part at a time on one book
+  // timeline. While a part opens, state from the part before can still
+  // arrive. The engine can report playing after a seek while paused, so the
+  // paused flag follows pause() and resume() instead.
+  BookPartsTimeline? _book;
+  int _bookPart = 0;
+  Duration? _bookPartOpening;
+  int _bookStaleStates = 0;
+  bool _bookPaused = false;
+  Map<dynamic, dynamic> _bookPayload = const {};
+
+  Duration get _partStart => _book?.starts[_bookPart] ?? Duration.zero;
 
   bool _disposed = false;
   int _loadGeneration = 0;
@@ -158,9 +174,23 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
 
     switch (eventType) {
       case 'state':
-        _position = Duration(milliseconds: _toInt(map['positionMs']));
-        _duration = Duration(milliseconds: _toInt(map['durationMs']));
-        _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
+        final local = Duration(milliseconds: _toInt(map['positionMs']));
+        final opening = _bookPartOpening;
+        if (opening != null) {
+          // State far from where the part opened still belongs to the part
+          // before, unless it keeps coming for seconds and the engine really
+          // started somewhere else.
+          if ((local - opening).abs() > const Duration(seconds: 2) &&
+              ++_bookStaleStates < 20) {
+            return;
+          }
+          _bookPartOpening = null;
+        }
+        _position = _partStart + local;
+        _duration =
+            _book?.length ?? Duration(milliseconds: _toInt(map['durationMs']));
+        _buffer =
+            _partStart + Duration(milliseconds: _toInt(map['bufferedMs']));
         _liveSeekWindow = map['liveEdgeMs'] == null
             ? null
             : LiveSeekWindow(
@@ -192,6 +222,16 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
           _tracksChangedController.add(null);
         }
       case 'completed':
+        final book = _book;
+        if (book != null && _toBool(map['completed'])) {
+          if (_bookPartOpening != null) return;
+          if (_bookPart < book.parts.length - 1) {
+            unawaited(
+              _openBookPart(_bookPart + 1, Duration.zero, !_bookPaused),
+            );
+            return;
+          }
+        }
         _completed = _toBool(map['completed']);
         _completedStream.add(_completed);
       case 'engineLog':
@@ -201,6 +241,11 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       case 'seek':
       case 'next':
       case 'previous':
+        // The engine plays one part, so the system controls see its time.
+        final ms = map['positionMs'];
+        if (ms is num) {
+          map['positionMs'] = _partStart.inMilliseconds + ms.toInt();
+        }
         _remoteCommandStream.add(map.cast<String, dynamic>());
       case 'systemVolume':
         final volume = map['value'];
@@ -211,6 +256,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
         _errorStream.add(map.cast<String, dynamic>());
       case 'playerError':
       case 'error':
+        _bookPartOpening = null;
         _logPlaybackError(map);
         _errorStream.add(map.cast<String, dynamic>());
         _setSubtitleLoading(false);
@@ -287,11 +333,57 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
     Duration startPosition = Duration.zero,
   }) async {
     final payload = mediaItem is Map ? mediaItem : const <String, dynamic>{};
-    final autoPlay = payload['autoPlay'] != false;
     final url = mediaItem is String
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
+    final book = _book = _readBookParts(url);
+    _bookPartOpening = null;
+    if (book == null) return _open(payload, url, startPosition);
+    _bookPayload = payload;
+    _bookPaused = payload['autoPlay'] == false;
+    final at = book.locate(startPosition);
+    return _openBookPart(at.index, at.offset, !_bookPaused);
+  }
+
+  /// The parts of a downloaded book in several files, which the engine can't
+  /// open as one, or null for anything else. An app update moves the app's
+  /// folder, so each part is found next to the playlist rather than where it
+  /// was saved.
+  BookPartsTimeline? _readBookParts(String path) {
+    if (!isBookPartsPlaylist(path)) return null;
+    try {
+      final parts = readBookPartsPlaylist(File(path).readAsBytesSync());
+      if (parts == null) return null;
+      final dir = '${p.withoutExtension(path)}.parts';
+      return BookPartsTimeline([
+        for (final part in parts)
+          (path: p.join(dir, p.basename(part.path)), length: part.length),
+      ]);
+    } on FileSystemException {
+      return null;
+    }
+  }
+
+  Future<void> _openBookPart(int index, Duration offset, bool autoPlay) {
+    _bookPart = index;
+    _bookPartOpening = offset;
+    _bookStaleStates = 0;
+    _isBuffering = true;
+    _bufferingStream.add(true);
+    return _open(
+      {..._bookPayload, 'autoPlay': autoPlay},
+      _book!.parts[index].path,
+      offset,
+    );
+  }
+
+  Future<void> _open(
+    Map<dynamic, dynamic> payload,
+    String url,
+    Duration startPosition,
+  ) async {
+    final autoPlay = payload['autoPlay'] != false;
     final generation = ++_loadGeneration;
     final videoProcessing = await aetherVideoProcessingArgs(_prefs);
     // A stop or a newer load that came in during the wait wins.
@@ -307,7 +399,7 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
     _completed = false;
     // Until the new session ticks, the previous item's end would stand in
     // for this one's position, and a stop then reports it as watched.
-    _position = startPosition;
+    _position = _partStart + startPosition;
     _positionStream.add(_position);
     _setSubtitleLoading(false);
     _tracksKnown = false;
@@ -356,16 +448,23 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
       'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
       ...appleTvCadenceArgs(_prefs),
       ...videoProcessing,
+      'nightMode': _prefs.get(UserPreferences.audioNightMode),
+      'binaural': _prefs.get(UserPreferences.binauralHeadphones),
+      'loudnessTargetLufs': int.tryParse(
+        _prefs.get(UserPreferences.loudnessTargetLufs),
+      ),
     });
   }
 
   @override
   Future<void> resume() async {
+    _bookPaused = false;
     await _invoke<void>('play');
   }
 
   @override
   Future<void> pause() async {
+    _bookPaused = true;
     await _invoke<void>('pause');
   }
 
@@ -457,6 +556,14 @@ class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
 
   @override
   Future<void> seekTo(Duration position) async {
+    final book = _book;
+    if (book != null) {
+      final at = book.locate(position);
+      if (at.index != _bookPart || _bookPartOpening != null) {
+        return _openBookPart(at.index, at.offset, !_bookPaused);
+      }
+      position = at.offset;
+    }
     await _invoke<void>('seek', {'positionMs': position.inMilliseconds});
   }
 

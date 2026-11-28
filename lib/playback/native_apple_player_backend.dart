@@ -472,6 +472,11 @@ class NativeApplePlayerBackend
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       ...appleTvCadenceArgs(_prefs),
       ...videoProcessing,
+      'nightMode': _prefs.get(UserPreferences.audioNightMode),
+      'binaural': _prefs.get(UserPreferences.binauralHeadphones),
+      'loudnessTargetLufs': int.tryParse(
+        _prefs.get(UserPreferences.loudnessTargetLufs),
+      ),
     });
   }
 
@@ -742,8 +747,9 @@ class NativeApplePlayerBackend
       'canBrowseEpisodes': canBrowseEpisodes,
       // Only iOS reads it. The television always docks the transport.
       'transportDocked': ?transportDocked,
-      // Only iOS reads these, the touch screen's volume and brightness swipes.
+      // Only iOS reads these, the touch screen's swipes.
       'swipeGestures': _prefs.get(UserPreferences.playerSwipeGestures),
+      'swipeSeek': _prefs.get(UserPreferences.playerSwipeSeek),
       'gestureIndicatorsInverted':
           _prefs.get(UserPreferences.gestureIndicatorPlacement) ==
           GestureIndicatorPlacement.inverted,

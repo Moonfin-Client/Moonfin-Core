@@ -4,7 +4,8 @@ import '../models/server_type.dart';
 import 'json_body.dart';
 import 'silo_public_info.dart';
 
-/// Result of probing a base URL for a Jellyfin, Emby or Silo server.
+/// Result of probing a base URL for a Jellyfin, Emby, Silo or Audiobookshelf
+/// server.
 class ServerProbeResult {
   /// The public server info in Jellyfin's `System/Info/Public` shape (`Id`,
   /// `ServerName`, `Version`, `ProductName`, ...). For Silo it is assembled
@@ -78,8 +79,38 @@ Future<ServerProbeResult?> probeServerPublicInfo(Dio dio, String baseUrl) async 
       lastError = e;
     }
   }
+  try {
+    final abs = await _probeAudiobookshelf(dio, base);
+    if (abs != null) return abs;
+  } on DioException catch (e) {
+    lastError = e;
+  }
   if (lastError != null) throw lastError;
   return null;
+}
+
+/// Audiobookshelf's `/status` answer in Jellyfin's `System/Info/Public` shape.
+Map<String, dynamic> audiobookshelfPublicInfo(Map<String, dynamic> status) => {
+  'ServerName': 'Audiobookshelf',
+  'Version': status['serverVersion'],
+  'ProductName': 'Audiobookshelf',
+  'StartupWizardCompleted': status['isInit'] ?? true,
+};
+
+/// Audiobookshelf answers `/status` without a login, naming itself in `app`.
+Future<ServerProbeResult?> _probeAudiobookshelf(Dio dio, String baseUrl) async {
+  final (response, requestUrl) = await _getFollowingRedirects(
+    dio,
+    '$baseUrl/status',
+  );
+  if (!_isSuccess(response)) return null;
+  final status = asJsonMap(response.data);
+  if (status == null || status['app'] != 'audiobookshelf') return null;
+  return ServerProbeResult(
+    info: audiobookshelfPublicInfo(status),
+    serverType: ServerType.audiobookshelf,
+    resolvedBaseUrl: _stripSuffix(requestUrl, '/status'),
+  );
 }
 
 /// Probes [baseUrl] for Silo's native API only (`/api/v2/system/info`, then

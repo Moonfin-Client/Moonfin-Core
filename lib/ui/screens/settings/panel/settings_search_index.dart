@@ -1764,6 +1764,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['swipe', 'gestures', 'volume', 'brightness'],
       ),
       video.leaf(
+        'pref_player_swipe_seek',
+        l10n.playerSwipeSeek,
+        subtitle: l10n.playerSwipeSeekDescription,
+        keywords: ['swipe', 'gestures', 'seek', 'scrub', 'rewind'],
+      ),
+      video.leaf(
         'pref_gesture_indicator_placement',
         l10n.invertGestureIndicators,
         subtitle: l10n.invertGestureIndicatorsDescription,
@@ -1926,6 +1932,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.compressDynamicRange,
       keywords: ['loudness', 'volume leveling'],
     ),
+    if (PlatformDetection.isApple || PlatformDetection.isAppleTV)
+      audio.leaf(
+        'loudness_target_lufs',
+        l10n.loudnessTarget,
+        subtitle: l10n.loudnessTargetDescription,
+        keywords: ['loudness', 'volume', 'quiet', 'lufs', 'normalize'],
+      ),
     audio.leaf(
       'pref_audio_language',
       l10n.defaultAudioLanguage,
@@ -1978,6 +1991,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.downmixToStereo,
         keywords: ['stereo', 'downmix', '2.0'],
       ),
+      if (PlatformDetection.isIOS || PlatformDetection.isAppleTV)
+        audio.leaf(
+          'binaural_headphones',
+          l10n.binauralHeadphones,
+          subtitle: l10n.binauralHeadphonesSubtitle,
+          keywords: ['spatial', 'surround', '3d', 'airpods'],
+        ),
       audio.leaf(
         'pref_max_audio_channels',
         l10n.settingsMaxAudioChannels,
@@ -2022,6 +2042,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'forced',
       'none',
     ]),
+    if (!PlatformDetection.isWeb)
+      subtitles.leaf(
+        'pref_rewind_subtitles',
+        l10n.rewindSubtitles,
+        subtitle: l10n.rewindSubtitlesDescription,
+        keywords: ['rewind', 'skip back', 'captions', 'dialogue'],
+      ),
     subtitles.leaf('pref_subtitle_language', l10n.defaultSubtitleLanguage),
     subtitles.leaf(
       'pref_subtitle_download_languages',

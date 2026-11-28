@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_audiobookshelf/server_audiobookshelf.dart';
 import 'package:server_core/server_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,6 +23,7 @@ import '../../../auth/repositories/server_user_repository.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../auth/store/authentication_store.dart';
 import '../../../auth/store/client_certificate_store.dart';
+import '../../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/pin_guard.dart';
 import '../../../data/services/server_pin_service.dart';
@@ -62,6 +65,12 @@ Future<bool> passesPinCheckAfterSignIn({
   await pinUtil.removePin();
   return true;
 }
+
+/// Where Audiobookshelf's OpenID sign-in sends the browser back to. The
+/// server's admin has to allow it.
+const absOpenIdRedirect = 'moonfin://oauth';
+
+enum _AbsSignIn { password, apiKey, openId }
 
 /// Whether the Quick Connect QR sits beside the code and the buttons, which
 /// takes a card with room to the side: a TV, or a wide landscape window. In a
@@ -137,6 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _pwBtnFocus = FocusNode();
   final _allowCertFocus = FocusNode();
   final _clientCertFocus = FocusNode();
+  final _openIdBtnFocus = FocusNode();
 
   Server? _server;
   MediaServerClient? _client;
@@ -174,6 +184,18 @@ class _LoginScreenState extends State<LoginScreen> {
   int _quickConnectGeneration = 0;
 
   bool get _isSilo => _server?.serverType == ServerType.silo;
+  bool get _isAbs => _server?.serverType == ServerType.audiobookshelf;
+
+  _AbsSignIn _absSignIn = _AbsSignIn.password;
+  bool get _usesApiKey => _isAbs && _absSignIn == _AbsSignIn.apiKey;
+
+  /// The server's OpenID button label, or null without OpenID here. TVs and
+  /// the web app have no way back from the browser.
+  String? _openIdLabel;
+  bool _openIdPageOpened = false;
+  StreamSubscription<Uri>? _openIdLinks;
+
+  bool get _hasMethodToggle => _supportsQuickConnect || _isAbs;
 
   bool get _hasUsername => widget.prefillUsername != null;
   bool get _hasPassword => widget.hasPassword;
@@ -228,6 +250,8 @@ class _LoginScreenState extends State<LoginScreen> {
     _pwBtnFocus.dispose();
     _allowCertFocus.dispose();
     _clientCertFocus.dispose();
+    _openIdBtnFocus.dispose();
+    _openIdLinks?.cancel();
     _quickConnectTimer?.cancel();
     super.dispose();
   }
@@ -239,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       return _verticalNav(
         event,
-        up: _supportsQuickConnect ? _pwBtnFocus : null,
+        up: _hasMethodToggle ? _pwBtnFocus : null,
         down: _hasPassword ? _passwordFocus : _signInFocus,
       );
     };
@@ -249,8 +273,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       return _verticalNav(
         event,
-        up: _hasUsername
-            ? (_supportsQuickConnect ? _pwBtnFocus : null)
+        up: _hasUsername || _usesApiKey
+            ? (_hasMethodToggle ? _pwBtnFocus : null)
             : _usernameFocus,
         down: _signInFocus,
       );
@@ -356,6 +380,12 @@ class _LoginScreenState extends State<LoginScreen> {
         _showQuickConnect = supportsQC;
         _quickConnectWebLink = features.supportsQuickConnectWebLink;
       });
+      final abs = onlineClientOf(client);
+      if (abs is AbsMediaServerClient &&
+          !PlatformDetection.isWeb &&
+          !PlatformDetection.isTV) {
+        unawaited(_loadOpenIdLabel(abs));
+      }
       if (supportsQC) {
         _startQuickConnect(isInitial: true);
       } else {
@@ -365,6 +395,94 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         });
       }
+    }
+  }
+
+  Future<void> _loadOpenIdLabel(AbsMediaServerClient client) async {
+    try {
+      final label = await client.authApi.openIdButtonText();
+      if (mounted) setState(() => _openIdLabel = label);
+    } catch (_) {
+      // Without an answer the password and API key stay the ways in.
+    }
+  }
+
+  void _selectAbsSignIn(_AbsSignIn method) {
+    if (_absSignIn == method) return;
+    setState(() {
+      _absSignIn = method;
+      _errorMessage = null;
+      _untrustedCertificate = false;
+      _clientCertificateRequired = false;
+      // The same field holds the password or the key, so switching clears it.
+      _passwordController.clear();
+    });
+    if (method == _AbsSignIn.openId) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (method == _AbsSignIn.apiKey) {
+        _passwordFocus.requestFocus();
+      } else {
+        _focusCredentialEntry();
+      }
+    });
+  }
+
+  /// Opens the server's OpenID page in the browser, which comes back to
+  /// [absOpenIdRedirect] and from there to [_onOpenIdLink].
+  Future<void> _openOpenIdPage() async {
+    final client = _client;
+    final abs = client == null ? null : onlineClientOf(client);
+    if (abs is! AbsMediaServerClient || _isLoading) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _errorMessage = null);
+    _openIdLinks ??= AppLinks().uriLinkStream.listen(
+      (link) => unawaited(_onOpenIdLink(link)),
+      onError: (_) {},
+    );
+    try {
+      final page = await abs.authApi.startOpenId(absOpenIdRedirect);
+      if (!await launchUrl(page, mode: LaunchMode.externalApplication)) {
+        throw StateError('No browser opened $page');
+      }
+      if (mounted) setState(() => _openIdPageOpened = true);
+    } on AbsOpenIdRefused catch (e) {
+      if (!mounted) return;
+      _finishLoginWithError(
+        e.redirectRefused
+            ? l10n.absOpenIdRedirectRefused(absOpenIdRedirect)
+            : l10n.loginFailed,
+      );
+    } on DioException {
+      if (mounted) _finishLoginWithError(l10n.serverUnavailable);
+    } catch (_) {
+      if (mounted) _finishLoginWithError(l10n.loginFailed);
+    }
+  }
+
+  Future<void> _onOpenIdLink(Uri link) async {
+    final client = _client;
+    final abs = client == null ? null : onlineClientOf(client);
+    if (client == null ||
+        abs is! AbsMediaServerClient ||
+        _isLoading ||
+        !abs.authApi.isOpenIdCallback(link)) {
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      final result = await _authRepo.authenticateWith(
+        client: client,
+        serverId: _server!.id,
+        request: () => abs.authApi.finishOpenId(link),
+      );
+      if (!mounted) return;
+      await _completeSignIn(result, username: '', password: '');
+    } catch (_) {
+      if (mounted) _finishLoginWithError(AppLocalizations.of(context).loginFailed);
     }
   }
 
@@ -656,6 +774,8 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     if (_showQuickConnect) {
       await _startQuickConnect();
+    } else if (_isAbs && _absSignIn == _AbsSignIn.openId) {
+      await _openOpenIdPage();
     } else {
       await _login();
     }
@@ -792,8 +912,11 @@ class _LoginScreenState extends State<LoginScreen> {
     // reaches it on the next build, and the password field submits straight
     // here, so one remote select can sign in twice.
     if (_isLoading) return;
-    final username = _usernameController.text.trim();
-    if (username.isEmpty || _client == null || _server == null) return;
+    final apiKey = _usesApiKey ? _passwordController.text.trim() : null;
+    final username = apiKey == null ? _usernameController.text.trim() : '';
+    if ((apiKey ?? username).isEmpty || _client == null || _server == null) {
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -803,12 +926,20 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      var result = await _authRepo.authenticate(
-        client: _client!,
-        serverId: _server!.id,
-        username: username,
-        password: _passwordController.text,
-      );
+      final client = _client!;
+      final abs = onlineClientOf(client);
+      var result = abs is AbsMediaServerClient && apiKey != null
+          ? await _authRepo.authenticateWith(
+              client: client,
+              serverId: _server!.id,
+              request: () => abs.authApi.authenticateWithApiKey(apiKey),
+            )
+          : await _authRepo.authenticate(
+              client: client,
+              serverId: _server!.id,
+              username: username,
+              password: _passwordController.text,
+            );
 
       if (!mounted) return;
 
@@ -836,72 +967,85 @@ class _LoginScreenState extends State<LoginScreen> {
         result = outcome.state;
       }
 
-      final l10n = AppLocalizations.of(context);
-      switch (result) {
-        case Authenticated():
-          final switched = await _sessionRepo.switchCurrentSession(
-            serverId: result.serverId,
-            userId: result.userId,
-            username: username,
-            password: _passwordController.text,
-          );
-          if (!mounted) return;
-          if (switched) {
-            final passed = await _passesPinCheck(
-              result.userId,
-              canResetPin: _passwordController.text.isNotEmpty,
-            );
-            if (!passed) {
-              if (mounted && _pinResetRefused) {
-                _finishLoginWithError(l10n.pinResetFailed);
-                return;
-              }
-              // Lands back on a screen that has to take another attempt.
-              if (mounted) {
-                setState(() => _isLoading = false);
-                context.go('${Destinations.login}?serverId=${_server!.id}');
-              }
-              return;
-            }
-
-            if (mounted) context.go(Destinations.home);
-            return;
-          }
-          _finishLoginWithError(l10n.loginFailed);
-        case ApiClientError(:final error, :final errorType, :final statusCode):
-          if (_maybeOpenWebDiagnosticsForFailure(
-            targetUrl: _server?.address,
-            errorType: errorType,
-            statusCode: statusCode,
-            message: error,
-          )) {
-            // Returns without reporting an error, so nothing else clears this.
-            setState(() => _isLoading = false);
-            return;
-          }
-          _finishLoginWithError(error);
-        case SignInForbidden():
-          _finishLoginWithError(l10n.loginForbidden);
-        case ServerUnavailable():
-          _finishLoginWithError(l10n.serverUnavailable);
-        case SiloRequestRefused(:final failure):
-          _finishLoginWithError(failure.message(l10n));
-        case SiloChooseProfile(:final serverId):
-          _openProfileChoice(serverId);
-        case UntrustedCertificate():
-          _showUntrustedCertificate();
-        case ClientCertificateRequired():
-          unawaited(_showClientCertificateRequired());
-        case SiloPasswordChangeUnavailable():
-          _finishLoginWithError(l10n.siloPasswordChangeUnavailable);
-        case SiloPasswordChangedSignInAgain():
-          _finishLoginWithError(l10n.siloPasswordChangedSignInAgain);
-        default:
-          _finishLoginWithError(l10n.loginFailed);
-      }
+      await _completeSignIn(
+        result,
+        username: username,
+        password: apiKey == null ? _passwordController.text : '',
+      );
     } catch (_) {
       if (!mounted) return;
       _finishLoginWithError(AppLocalizations.of(context).loginFailed);
+    }
+  }
+
+  /// Where every sign-in goes once the server has answered.
+  Future<void> _completeSignIn(
+    LoginState result, {
+    required String username,
+    required String password,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    switch (result) {
+      case Authenticated():
+        final switched = await _sessionRepo.switchCurrentSession(
+          serverId: result.serverId,
+          userId: result.userId,
+          username: username,
+          password: password,
+        );
+        if (!mounted) return;
+        if (switched) {
+          final passed = await _passesPinCheck(
+            result.userId,
+            canResetPin: password.isNotEmpty,
+          );
+          if (!passed) {
+            if (mounted && _pinResetRefused) {
+              _finishLoginWithError(l10n.pinResetFailed);
+              return;
+            }
+            // Lands back on a screen that has to take another attempt.
+            if (mounted) {
+              setState(() => _isLoading = false);
+              context.go('${Destinations.login}?serverId=${_server!.id}');
+            }
+            return;
+          }
+
+          if (mounted) context.go(Destinations.home);
+          return;
+        }
+        _finishLoginWithError(l10n.loginFailed);
+      case ApiClientError(:final error, :final errorType, :final statusCode):
+        if (_maybeOpenWebDiagnosticsForFailure(
+          targetUrl: _server?.address,
+          errorType: errorType,
+          statusCode: statusCode,
+          message: error,
+        )) {
+          // Returns without reporting an error, so nothing else clears this.
+          setState(() => _isLoading = false);
+          return;
+        }
+        _finishLoginWithError(error);
+      case SignInForbidden():
+        _finishLoginWithError(l10n.loginForbidden);
+      case ServerUnavailable():
+        _finishLoginWithError(l10n.serverUnavailable);
+      case SiloRequestRefused(:final failure):
+        _finishLoginWithError(failure.message(l10n));
+      case SiloChooseProfile(:final serverId):
+        _openProfileChoice(serverId);
+      case UntrustedCertificate():
+        _showUntrustedCertificate();
+      case ClientCertificateRequired():
+        unawaited(_showClientCertificateRequired());
+      case SiloPasswordChangeUnavailable():
+        _finishLoginWithError(l10n.siloPasswordChangeUnavailable);
+      case SiloPasswordChangedSignInAgain():
+        _finishLoginWithError(l10n.siloPasswordChangedSignInAgain);
+      default:
+        _finishLoginWithError(l10n.loginFailed);
     }
   }
 
@@ -953,6 +1097,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildQuickConnectContent()
                 else
                   _buildCredentialsContent(),
+              ] else if (_isAbs) ...[
+                _buildAbsToggleRow(),
+                const SizedBox(height: 24),
+                if (_absSignIn == _AbsSignIn.openId)
+                  _buildOpenIdContent()
+                else
+                  _buildCredentialsContent(),
               ] else
                 _buildCredentialsContent(),
             ],
@@ -993,6 +1144,77 @@ class _LoginScreenState extends State<LoginScreen> {
           isSelected: !_showQuickConnect,
           focusNode: _pwBtnFocus,
           onPressed: _selectPassword,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAbsToggleRow() {
+    final l10n = AppLocalizations.of(context);
+    final openIdLabel = _openIdLabel;
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 12,
+      runSpacing: 12,
+      children: [
+        _buildToggleButton(
+          label: l10n.password,
+          isSelected: _absSignIn == _AbsSignIn.password,
+          focusNode: _pwBtnFocus,
+          onPressed: () => _selectAbsSignIn(_AbsSignIn.password),
+        ),
+        _buildToggleButton(
+          label: l10n.absApiKey,
+          isSelected: _absSignIn == _AbsSignIn.apiKey,
+          focusNode: _qcBtnFocus,
+          onPressed: () => _selectAbsSignIn(_AbsSignIn.apiKey),
+        ),
+        if (openIdLabel != null)
+          _buildToggleButton(
+            label: openIdLabel.isEmpty ? l10n.absOpenId : openIdLabel,
+            isSelected: _absSignIn == _AbsSignIn.openId,
+            focusNode: _openIdBtnFocus,
+            onPressed: () => _selectAbsSignIn(_AbsSignIn.openId),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildOpenIdContent() {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          _openIdPageOpened ? l10n.absOpenIdWaiting : l10n.absOpenIdIntro,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: _loginForeground(0.8)),
+        ),
+        if (_errorMessage != null) ...[
+          const SizedBox(height: 12),
+          Text(_errorMessage!, style: TextStyle(color: _loginErrorColor)),
+        ],
+        const SizedBox(height: 24),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _buildActionButton(
+              label: l10n.back,
+              focusNode: _backFocus,
+              onPressed: _navigateBack,
+            ),
+            _buildActionButton(
+              label: _openIdPageOpened
+                  ? l10n.absOpenIdOpenAgain
+                  : l10n.absOpenIdOpen,
+              focusNode: _signInFocus,
+              onPressed: _isLoading ? null : _openOpenIdPage,
+              isLoading: _isLoading,
+            ),
+          ],
         ),
       ],
     );
@@ -1240,7 +1462,7 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (!_hasUsername) ...[
+        if (!_hasUsername && !_usesApiKey) ...[
           _buildTextField(
             controller: _usernameController,
             focusNode: _usernameFocus,
@@ -1255,15 +1477,24 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: 16),
         ],
-        if (_hasPassword)
+        if (_hasPassword || _usesApiKey)
           _buildTextField(
             controller: _passwordController,
             focusNode: _passwordFocus,
-            label: l10n.password,
+            label: _usesApiKey ? l10n.absApiKey : l10n.password,
             obscureText: true,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _login(),
           ),
+        if (_usesApiKey) ...[
+          const SizedBox(height: 8),
+          Text(
+            l10n.absApiKeyHint,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: _loginForeground(0.6)),
+          ),
+        ],
         if (_errorMessage != null) ...[
           const SizedBox(height: 12),
           Text(_errorMessage!, style: TextStyle(color: _loginErrorColor)),

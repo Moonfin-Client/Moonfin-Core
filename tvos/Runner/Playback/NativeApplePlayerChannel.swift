@@ -417,8 +417,8 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 "generation": generation,
             ])
         }
-        vc.onUserSeek = { [weak self] positionMs in
-            self?.send(["event": "userSeeked", "positionMs": positionMs])
+        vc.onUserSeek = { [weak self] positionMs, fromMs in
+            self?.send(["event": "userSeeked", "positionMs": positionMs, "fromMs": fromMs])
         }
         vc.onSearchSubtitles = { [weak self] in
             self?.send(["event": "searchSubtitles"])
@@ -657,7 +657,10 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 upscaleLowResolution: (args["upscaleLowResolution"] as? Bool) ?? false,
                 upscaleFullHD: (args["upscaleFullHD"] as? Bool) ?? false,
                 upscaleLineArt: (args["upscaleLineArt"] as? Bool) ?? false,
-                toneMapPeakNits: (args["toneMapPeakNits"] as? NSNumber)?.doubleValue))
+                toneMapPeakNits: (args["toneMapPeakNits"] as? NSNumber)?.doubleValue,
+                nightMode: (args["nightMode"] as? Bool) ?? false,
+                binaural: (args["binaural"] as? Bool) ?? false,
+                loudnessTargetLUFS: (args["loudnessTargetLufs"] as? NSNumber)?.doubleValue))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)

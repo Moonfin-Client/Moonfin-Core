@@ -718,6 +718,7 @@ class UserPreferences extends ChangeNotifier {
     'prefer_sdh_subtitles',
     'prefer_text_subtitles',
     'prefer_external_subtitles',
+    'pref_rewind_subtitles',
     'app_theme_id',
     'pref_custom_theme_id',
     'pref_glass_quality',
@@ -2876,6 +2877,16 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final binauralHeadphones = Preference(
+    key: 'binaural_headphones',
+    defaultValue: false,
+  );
+
+  static final loudnessTargetLufs = Preference(
+    key: 'loudness_target_lufs',
+    defaultValue: 'off',
+  );
+
   static final customMpvConfEnabled = Preference(
     key: 'custom_mpv_conf_enabled',
     defaultValue: false,
@@ -3141,6 +3152,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final rewindSubtitles = Preference(
+    key: 'pref_rewind_subtitles',
+    defaultValue: false,
+  );
+
   static final mediaSegmentActions = Preference(
     key: 'media_segment_actions',
     defaultValue: 'intro:askToSkip,outro:askToSkip',
@@ -3236,6 +3252,13 @@ class UserPreferences extends ChangeNotifier {
   );
   static final playerSwipeGestures = Preference(
     key: 'playerSwipeGestures',
+    defaultValue: true,
+  );
+
+  /// Kept on the device rather than synced, since it tunes the local touch
+  /// screen.
+  static final playerSwipeSeek = Preference(
+    key: 'pref_player_swipe_seek',
     defaultValue: true,
   );
 

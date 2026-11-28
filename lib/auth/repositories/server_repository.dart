@@ -313,7 +313,7 @@ class ServerRepository {
       final result = await probeServerPublicInfo(dio, baseUrl);
       if (result == null) {
         throw const FormatException(
-          'No Jellyfin, Emby or Silo server at this address',
+          'No Jellyfin, Emby, Silo or Audiobookshelf server at this address',
         );
       }
       return (

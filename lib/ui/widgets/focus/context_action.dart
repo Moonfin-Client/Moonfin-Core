@@ -87,7 +87,9 @@ bool canPlayFromServer(AggregatedItem item) =>
 /// server can do that (Emby), or clears the progress that keeps it there where
 /// it can't. Audio always resets, because an audiobook library's Continue row
 /// falls back to an IsResumable query that ignores Emby's flag. A failed
-/// server call resets nothing.
+/// server call resets nothing. A watched item (a rewatch stopped part way)
+/// keeps its watched state and play count: the only reset Jellyfin offers is
+/// marking it unwatched, so the caller's hide on this device is all it gets.
 Future<void> _hideFromResumeOrReset(
   ItemMutationRepository mutations,
   AggregatedItem item,
@@ -99,6 +101,7 @@ Future<void> _hideFromResumeOrReset(
       return;
     }
   }
+  if (item.isPlayed) return;
   try {
     await mutations.setPlayed(item.id, isPlayed: false);
   } catch (_) {}
@@ -288,9 +291,10 @@ List<ItemContextAction> contextActionsFor(
       },
     ));
 
+    // A watched item with a resume point (a rewatch stopped part way) sits in
+    // Continue Watching too, so it gets the hide as well.
     final hasProgress = item.playbackPositionTicks != null &&
-        item.playbackPositionTicks! > 0 &&
-        !item.isPlayed;
+        item.playbackPositionTicks! > 0;
     if (hasProgress) {
       actions.add(ItemContextAction(
         icon: Icons.visibility_off_outlined,

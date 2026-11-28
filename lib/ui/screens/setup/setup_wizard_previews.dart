@@ -233,13 +233,25 @@ class SetupPreview extends StatelessWidget {
 }
 
 /// The logical size the preview screen is laid out at before being scaled
-/// down, matching a typical device of the interface the wizard runs in. Every
-/// measurement inside a preview is the real widget's measurement at this size,
-/// so the scaled result keeps the true proportions. A TV gets the canvas
-/// TvUiScale lays every panel out on.
+/// down. Every measurement inside a preview is the real widget's measurement
+/// at this size, so the scaled result keeps the true proportions. A phone or
+/// tablet uses its own screen, so an iPad previews at iPad size. A phone on
+/// its side keeps its upright screen, since the previews' landscape layouts
+/// don't fit a phone's height. A TV gets the canvas TvUiScale lays every panel
+/// out on, and desktop and web a typical screen of their interface.
 Size _designSize() {
   if (PlatformDetection.useLeanbackUi) {
     return tvUiLogicalSize(const Size(1920, 1080));
+  }
+  final screen = PlatformDetection.isMobile
+      ? PlatformDetection.screenLogicalSize
+      : null;
+  if (screen != null && !screen.isEmpty) {
+    if (PlatformDetection.useMobileUi &&
+        !PlatformDetection.hasTabletSizedScreen(screen)) {
+      return Size(screen.shortestSide, screen.longestSide);
+    }
+    return screen;
   }
   if (PlatformDetection.useMobileUi) return const Size(390, 844);
   return const Size(1280, 800);
@@ -247,6 +259,14 @@ Size _designSize() {
 
 bool get _tv => PlatformDetection.useLeanbackUi;
 bool get _phone => PlatformDetection.useMobileUi;
+
+/// Whether a detail style draws its landscape layout on the previewed screen,
+/// as detailUsesLandscapeLayout decides for the real page: always on a TV or
+/// desktop, and on a tablet on its side. A phone's canvas is always upright.
+bool get _detailLandscape {
+  final size = _designSize();
+  return !_phone || size.width > size.height;
+}
 
 /// The UI scale, which Home sizes its rows and info area by.
 double _desktopScale(BuildContext context) =>
@@ -3826,7 +3846,7 @@ Widget _castPlaceholderRow({required double avatarRadius}) {
 Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final item = items.first;
   final l10n = AppLocalizations.of(context);
-  final desktopLayout = !_phone;
+  final desktopLayout = _detailLandscape;
 
   final poster = Container(
     width: desktopLayout ? 165.0 : 120.0,
@@ -4094,7 +4114,7 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
 
 Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
   // Collapsed tabs open with none picked and nothing under them.
   final expandedTabs = previewValue(
     context,
@@ -4214,7 +4234,7 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
 /// The preview leaves out everything the real screen does, which is the point
 /// of it.
 Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
   final cardWidth = landscape ? 96.0 : 74.0;
 
   return Stack(
@@ -4301,7 +4321,7 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
 /// poster on a phone.
 Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
   final posterWidth = landscape ? 258.0 : 160.0;
   final buttons = _detailButtons(context, auto: 3);
 
@@ -4457,7 +4477,7 @@ Widget _stageDetail(BuildContext context, MediaBarSlideItem item) {
 /// the circles under it, then the ratings where the page's sections start
 /// and on a TV a hint that the page runs on.
 Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
   final base = AppColorScheme.background;
   final meta = [for (final (_, text) in _detailMeta(context, item)) text].join(' • ');
   final buttons = _detailButtons(context, auto: 4);
@@ -4589,6 +4609,7 @@ Widget _premiereDetail(BuildContext context, MediaBarSlideItem item) {
 /// as the real page. A phone gets the glass sheet over the art with the
 /// buttons in a capsule.
 Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
+  final phone = !_detailLandscape;
   final l10n = AppLocalizations.of(context);
   final buttons = _detailButtons(context, auto: 4);
   final meta = _modernDetailMeta(context, item);
@@ -4623,8 +4644,8 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
   final circles = [
     for (final (icon, _) in buttons)
       SizedBox.square(
-        dimension: _phone ? 46 : 60,
-        child: Icon(icon, size: _phone ? 22 : 25, color: Colors.white),
+        dimension: phone ? 46 : 60,
+        child: Icon(icon, size: phone ? 22 : 25, color: Colors.white),
       ),
   ];
   final ratings = _sampleRatings(
@@ -4633,7 +4654,7 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
     UserPreferences.detailsRatings,
     personal: true,
     columns: true,
-    columnTextScale: _phone ? 1 : 1.3,
+    columnTextScale: phone ? 1 : 1.3,
   );
   final showArt = previewValue(context, UserPreferences.detailsBackdropEnabled);
   final environment = [
@@ -4645,7 +4666,7 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
     ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
   ];
 
-  if (_phone) {
+  if (phone) {
     final height = _designSize().height;
     return Stack(
       fit: StackFit.expand,
@@ -4976,7 +4997,7 @@ Widget _frostDetail(BuildContext context, MediaBarSlideItem item) {
 /// and the circles, and Open full page at its foot.
 Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
   final item = items.first;
   final meta = [for (final (_, text) in _detailMeta(context, item)) text].join(' · ');
   final buttons = _detailButtons(context, auto: 4);
@@ -5154,7 +5175,7 @@ Widget _quickLookDetail(BuildContext context, List<MediaBarSlideItem> items) {
 Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final item = items.first;
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
 
   final metaStyle = TextStyle(
     fontSize: 14,
@@ -5301,7 +5322,7 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
 
 Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
-  final landscape = !_phone;
+  final landscape = _detailLandscape;
 
   Widget summaryCard(IconData icon, String label) => Expanded(
     child: Container(

@@ -936,6 +936,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var upscaleFullHD = false
         var upscaleLineArt = false
         var toneMapPeakNits: Double?
+        var nightMode = false
+        var binaural = false
+        var loudnessTargetLUFS: Double?
     }
 
     /// The Match Frame Rate hint, localized on the Dart side.
@@ -1184,7 +1187,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             probesize: isLiveSession ? Self.liveProbeBytes : nil,
             maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
             externalSubtitles: sourceConfiguration.externalSubtitles,
-            autoplay: sourceConfiguration.autoPlay
+            autoplay: sourceConfiguration.autoPlay,
+            audioShaping: AudioShaping(
+                compressor: sourceConfiguration.nightMode ? .night : nil,
+                loudnessTargetLUFS: audioOnly ? nil : sourceConfiguration.loudnessTargetLUFS,
+                binaural: sourceConfiguration.binaural && outputIsHeadphones)
         )
 
         // Nothing else bounds the open. A load wedged on the network keeps
@@ -2393,6 +2400,17 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             } catch {
                 // Non-fatal: the engine's AVPlayer host can still activate.
             }
+        #endif
+    }
+
+    /// Binaural is for headphones. On a TV or a receiver it would fold surround down to stereo.
+    private var outputIsHeadphones: Bool {
+        #if os(iOS) || os(tvOS)
+            let ports: [AVAudioSession.Port] = [.headphones, .bluetoothA2DP, .bluetoothLE]
+            return AVAudioSession.sharedInstance().currentRoute.outputs
+                .contains { ports.contains($0.portType) }
+        #else
+            return false
         #endif
     }
 

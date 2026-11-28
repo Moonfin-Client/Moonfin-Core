@@ -27,7 +27,7 @@ Future<int> _redAt(WidgetTester tester, int x) async {
   final bytes = await tester.runAsync(
     () => baked.toByteData(format: ui.ImageByteFormat.rawRgba),
   );
-  return bytes!.getUint8((10 * baked.width + x) * 4);
+  return bytes!.getUint8((baked.height ~/ 2 * baked.width + x) * 4);
 }
 
 Future<void> _pumpBaked(
@@ -51,7 +51,7 @@ Future<void> _pumpBaked(
 }
 
 void main() {
-  testWidgets('bakes at the source size with the sigma scaled to the box', (
+  testWidgets('bakes with the sigma scaled to the box, shrunk to 2px blur', (
     tester,
   ) async {
     final image = (await tester.runAsync(_splitImage))!;
@@ -63,8 +63,11 @@ void main() {
     expect(await _redAt(tester, 19), inExclusiveRange(0, 255));
     expect(await _redAt(tester, 14), lessThan(10));
 
-    // Painted at the source size, so the full sigma reaches further.
+    // Painted at the source size, sigma 10 is 10 pixels of the source, so
+    // the bake shrinks to a fifth and the blur still reaches further.
     await _pumpBaked(tester, image, 40);
-    expect(await _redAt(tester, 14), greaterThan(30));
+    final shrunk = tester.widget<RawImage>(find.byType(RawImage)).image!;
+    expect((shrunk.width, shrunk.height), (8, 4));
+    expect(await _redAt(tester, 2), greaterThan(30));
   });
 }

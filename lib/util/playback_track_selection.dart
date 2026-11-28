@@ -122,6 +122,42 @@ int? selectPlaybackSubtitleIndex({
   preferredLanguage ??=
       (prefs.get(UserPreferences.defaultSubtitleLanguage) as String? ?? '');
 
+  return _rankSubtitles(
+    subtitleStreams: subtitleStreams,
+    prefs: prefs,
+    subtitleMode: subtitleMode,
+    preferredLanguage: preferredLanguage,
+    activeAudioLanguage: activeAudioLanguage,
+  );
+}
+
+/// The track a short rewind brings up while subtitles are off: the best full
+/// track for the viewer's subtitle languages, whatever the subtitle mode says.
+int? selectRewindSubtitleIndex({
+  required List<Map<String, dynamic>> subtitleStreams,
+  required UserPreferences prefs,
+}) {
+  final full = subtitleStreams
+      .where((s) => !isForcedSubtitleStream(s))
+      .toList();
+  if (full.isEmpty) return null;
+  return _rankSubtitles(
+    subtitleStreams: full,
+    prefs: prefs,
+    subtitleMode: SubtitleMode.always,
+    preferredLanguage:
+        prefs.get(UserPreferences.defaultSubtitleLanguage) as String? ?? '',
+    activeAudioLanguage: null,
+  );
+}
+
+int? _rankSubtitles({
+  required List<Map<String, dynamic>> subtitleStreams,
+  required UserPreferences prefs,
+  required SubtitleMode subtitleMode,
+  required String preferredLanguage,
+  required String? activeAudioLanguage,
+}) {
   return computeEffectiveSubtitleIndex(
     subtitleStreams: subtitleStreams,
     selectedSubtitleIndex: null,

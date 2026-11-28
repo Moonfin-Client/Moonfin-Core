@@ -1,0 +1,16 @@
+name: server_audiobookshelf
+description: Audiobookshelf server API implementation.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  server_core:
+    path: ../server_core
+  crypto: ^3.0.6
+  dio: ^5.9.2
+
+dev_dependencies:
+  test: ^1.25.0

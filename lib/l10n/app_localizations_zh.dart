@@ -69,6 +69,35 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get absApiKey => 'API Key';
+
+  @override
+  String get absApiKeyHint =>
+      'Make one in Audiobookshelf under Settings > API Keys, then paste it here.';
+
+  @override
+  String get absOpenId => 'OpenID';
+
+  @override
+  String get absOpenIdIntro =>
+      'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.';
+
+  @override
+  String get absOpenIdWaiting =>
+      'Finish signing in on the page that opened in your browser.';
+
+  @override
+  String get absOpenIdOpen => 'Open Sign-in Page';
+
+  @override
+  String get absOpenIdOpenAgain => 'Open It Again';
+
+  @override
+  String absOpenIdRedirectRefused(String address) {
+    return 'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add $address to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.';
+  }
+
+  @override
   String get quickConnect => '快速连接';
 
   @override
@@ -3587,6 +3616,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get playerSwipeGesturesDescription => '在播放器上上下滑动，左侧改变亮度，右侧改变音量';
+
+  @override
+  String get playerSwipeSeek => 'Swipe to Seek';
+
+  @override
+  String get playerSwipeSeekDescription =>
+      'Slide left or right on the player to go back or ahead while the controls are hidden';
 
   @override
   String get invertGestureIndicators => '反转手势指示器';
@@ -12555,6 +12591,26 @@ class AppLocalizationsZh extends AppLocalizations {
       'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.';
 
   @override
+  String get binauralHeadphones => 'Binaural audio for headphones';
+
+  @override
+  String get binauralHeadphonesSubtitle =>
+      'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.';
+
+  @override
+  String get loudnessTarget => 'Loudness target';
+
+  @override
+  String get loudnessTargetDescription =>
+      'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.';
+
+  @override
+  String get loudnessTargetStandard => 'Standard (-24 LUFS)';
+
+  @override
+  String get loudnessTargetLoud => 'Loud (-16 LUFS)';
+
+  @override
   String get cadenceTipTitle => '开启“匹配帧率”';
 
   @override
@@ -12598,6 +12654,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get preferExternalSubtitlesSubtitle => '优先使用外部字幕文件，而非内嵌字幕轨道。';
+
+  @override
+  String get rewindSubtitles => 'Subtitles on Short Rewind';
+
+  @override
+  String get rewindSubtitlesDescription =>
+      'With subtitles off, going back 30 seconds or less shows them until playback catches up.';
 
   @override
   String get webDiagnostics => 'Web 诊断';

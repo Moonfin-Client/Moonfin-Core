@@ -53,6 +53,23 @@ AggregatedItem _episode({String serverId = 'https://silo.example/'}) =>
       },
     );
 
+/// A watched film with a resume point, as a rewatch stopped part way leaves
+/// it, on a Jellyfin server.
+AggregatedItem _rewatchedMovie() => AggregatedItem(
+      id: 'movie-1',
+      serverId: 'server-1',
+      rawData: {
+        'Id': 'movie-1',
+        'Type': 'Movie',
+        'Name': 'Rewatched',
+        'UserData': {
+          'PlaybackPositionTicks': 6000000000,
+          'Played': true,
+          'PlayCount': 3,
+        },
+      },
+    );
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -198,5 +215,68 @@ void main() {
     expect(prefs.getHiddenContinueWatchingItems().keys, ['series-1']);
     verify(() => mutations.hideFromResume('ep-1')).called(1);
     verify(() => mutations.setPlayed('ep-1', isPlayed: false)).called(1);
+  });
+
+  testWidgets('a watched item with a resume point can be hidden, stays watched',
+      (tester) async {
+    when(() => client.itemsApi).thenReturn(_ItemsApi());
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
+    when(() => mutations.hideFromResume(any())).thenAnswer((_) async => false);
+
+    await select(
+      tester,
+      (l) => l.contextMenuHideFromContinueWatching,
+      item: _rewatchedMovie(),
+    );
+
+    expect(prefs.getHiddenContinueWatchingItems().keys, ['movie-1']);
+    verifyNever(
+      () => mutations.setPlayed(any(), isPlayed: any(named: 'isPlayed')),
+    );
+  });
+
+  testWidgets('a watched item: the server\'s own hide is still used', (
+    tester,
+  ) async {
+    when(() => client.itemsApi).thenReturn(_ItemsApi());
+    when(() => client.serverType).thenReturn(ServerType.emby);
+    when(() => mutations.hideFromResume(any())).thenAnswer((_) async => true);
+
+    await select(
+      tester,
+      (l) => l.contextMenuHideFromContinueWatching,
+      item: _rewatchedMovie(),
+    );
+
+    verify(() => mutations.hideFromResume('movie-1')).called(1);
+    verifyNever(
+      () => mutations.setPlayed(any(), isPlayed: any(named: 'isPlayed')),
+    );
+  });
+
+  testWidgets('a watched episode hidden from Next Up stays watched', (
+    tester,
+  ) async {
+    when(() => client.itemsApi).thenReturn(_ItemsApi());
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
+    when(() => mutations.hideFromResume(any())).thenAnswer((_) async => false);
+    final watched = AggregatedItem(
+      id: 'ep-1',
+      serverId: 'server-1',
+      rawData: {
+        'Id': 'ep-1',
+        'Type': 'Episode',
+        'Name': 'Pilot',
+        'SeriesId': 'series-1',
+        'UserData': {'PlaybackPositionTicks': 0, 'Played': true},
+      },
+    );
+
+    await select(tester, (l) => l.contextMenuHideFromNextUp, item: watched);
+
+    expect(prefs.getHiddenNextUpSeries().keys, ['series-1']);
+    verifyNever(
+      () => mutations.setPlayed(any(), isPlayed: any(named: 'isPlayed')),
+    );
   });
 }

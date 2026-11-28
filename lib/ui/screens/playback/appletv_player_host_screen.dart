@@ -29,6 +29,7 @@ import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/apple_player_ui.dart';
 import '../../../playback/native_apple_player_backend.dart';
 import '../../../playback/appletv_subtitles.dart';
+import '../../../playback/rewind_subtitles.dart';
 import '../../../playback/subtitle_cue_loader.dart';
 import '../../../playback/playback_info_sections.dart';
 import '../../../syncplay/syncplay_manager.dart';
@@ -82,6 +83,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   String? _deviceLabel;
   final _chaptersFetchedItemIds = <String>{};
   StreamSubscription<Duration>? _positionSub;
+  RewindSubtitles? _rewindSubtitles;
   UserPreferences? _prefsListened;
   (SubtitleStyle, double, double, int)? _lastSubtitleStyle;
   String _lastTrickplayPrefs = '';
@@ -243,6 +245,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           _prompts?.onPositionTick(position, manager.state.duration);
         }
         _syncCinemaSkip();
+        _rewindSubtitles?.onPosition(position);
       });
     }
     try {
@@ -256,6 +259,15 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         queueSnapshot: _queueSnapshot,
         segmentService: () => _segmentService,
       );
+      if (manager != null) {
+        _rewindSubtitles = RewindSubtitles(
+          manager,
+          prefs,
+          onChanged: () {
+            if (mounted) _pushMetadata();
+          },
+        );
+      }
       _prefsListened = prefs;
       _lastTrickplayPrefs = _trickplayPrefsSnapshot(prefs);
       _lastTimeSlots = _timeSlotsSnapshot(prefs);
@@ -1776,11 +1788,22 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   void _onQueueChanged() {
     _lastMarkedPlayedItemId = null;
+    _rewindSubtitles?.reset();
     _closeEpisodeBrowser(hideNative: true);
     _prompts?.onQueueChanged();
     _syncCinemaSkip();
     _loadSegmentsForCurrentItem();
     _pushMetadata();
+  }
+
+  void _noteSeekForSubtitles(Duration from, Duration to) {
+    _rewindSubtitles?.onSeek(
+      from,
+      to,
+      streams:
+          _manager?.currentResolution?.mediaStreams ??
+          const <Map<String, dynamic>>[],
+    );
   }
 
   void _handleUiAction(Map<String, dynamic> action) {
@@ -1813,7 +1836,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         }
         final positionMs = (action['positionMs'] as num?)?.toInt();
         if (positionMs != null) {
-          unawaited(manager.seekTo(Duration(milliseconds: positionMs)));
+          final to = Duration(milliseconds: positionMs);
+          _noteSeekForSubtitles(manager.state.position, to);
+          unawaited(manager.seekTo(to));
           _prompts?.onUserSeeked();
         }
       case 'userSeeked':
@@ -1822,9 +1847,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         // about it without the player being moved a second time.
         final seekedToMs = (action['positionMs'] as num?)?.toInt();
         if (seekedToMs != null) {
-          unawaited(
-            manager.notifyExternalSeek(Duration(milliseconds: seekedToMs)),
-          );
+          final to = Duration(milliseconds: seekedToMs);
+          final fromMs = (action['fromMs'] as num?)?.toInt();
+          if (fromMs != null) {
+            _noteSeekForSubtitles(Duration(milliseconds: fromMs), to);
+          }
+          unawaited(manager.notifyExternalSeek(to));
         }
         _prompts?.onUserSeeked();
       case 'nextUpPlay':

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show AppLifecycleState;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -61,6 +62,14 @@ class ScreensaverController {
   bool _homePreviewActive = false;
   bool _nativePlayerPresented = false;
   bool _wakeLockEnabled = false;
+  bool _wakeLockHeld = false;
+  bool _wakeLockSyncing = false;
+
+  /// A desktop window that only lost focus is still on screen, so whatever
+  /// plays in it keeps the screen on until the window is minimized.
+  static bool pausesActivity(AppLifecycleState state) =>
+      state != AppLifecycleState.resumed &&
+      !(PlatformDetection.isDesktop && state == AppLifecycleState.inactive);
 
   bool get activityPaused => _activityPaused;
 
@@ -251,10 +260,22 @@ class ScreensaverController {
     await exitApp();
   }
 
-  Future<void> _setWakeLockEnabled(bool enabled) async {
+  // Only one request goes out at a time. The Linux plugin only remembers its
+  // newest lock, so overlapping calls can leave one that never gets released.
+  Future<void> _syncWakeLock() async {
+    if (_wakeLockSyncing) return;
+    _wakeLockSyncing = true;
     try {
-      await WakelockPlus.toggle(enable: enabled);
-    } catch (_) {}
+      while (_wakeLockHeld != _wakeLockEnabled) {
+        final enable = _wakeLockEnabled;
+        await WakelockPlus.toggle(enable: enable);
+        _wakeLockHeld = enable;
+      }
+    } catch (_) {
+      // The next refresh tries again.
+    } finally {
+      _wakeLockSyncing = false;
+    }
   }
 
   @visibleForTesting
@@ -286,8 +307,8 @@ class ScreensaverController {
         !const {'localhost', '127.0.0.1', '::1'}.contains(page.host);
   }
 
-  void _refreshWakeLock({bool force = false}) {
-    final shouldEnable =
+  void _refreshWakeLock() {
+    _wakeLockEnabled =
         !_wakeLockWouldPauseMedia &&
         !_screenHandedBack &&
         wakeLockNeeded(
@@ -300,16 +321,10 @@ class ScreensaverController {
           screensaverEnabled: _enabledCache,
           nativePlayerPresented: _nativePlayerPresented,
         );
-    if (_wakeLockEnabled == shouldEnable && !force) {
-      return;
-    }
-    _wakeLockEnabled = shouldEnable;
-    unawaited(_setWakeLockEnabled(shouldEnable));
+    unawaited(_syncWakeLock());
   }
 
-  void refreshWakeLock() {
-    _refreshWakeLock(force: true);
-  }
+  void refreshWakeLock() => _refreshWakeLock();
 
   void dispose() {
     visible.removeListener(refreshWakeLock);
@@ -318,6 +333,6 @@ class ScreensaverController {
     _sleepTimer?.cancel();
     _prefs.removeListener(_onPrefsChanged);
     _wakeLockEnabled = false;
-    unawaited(_setWakeLockEnabled(false));
+    unawaited(_syncWakeLock());
   }
 }

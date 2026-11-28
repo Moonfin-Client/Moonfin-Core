@@ -19,6 +19,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:playback_emby/playback_emby.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:playback_plex/playback_plex.dart';
+import 'package:playback_audiobookshelf/playback_audiobookshelf.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/media_bar_slide_item.dart';
@@ -1847,6 +1848,7 @@ class _MediaBarState extends State<MediaBar>
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
       ServerType.plex => PlexMediaStreamResolver(client),
       ServerType.silo => siloPluginFor(client).createStreamResolver(),
+      ServerType.audiobookshelf => AbsMediaStreamResolver(client),
     };
   }
 
@@ -3037,6 +3039,7 @@ class _MediaBarState extends State<MediaBar>
                     )
                   : Video(
                       controller: _trailerController!,
+                      wakelock: false,
                       controls: NoVideoControls,
                       fit: BoxFit.cover,
                       pauseUponEnteringBackgroundMode: false,

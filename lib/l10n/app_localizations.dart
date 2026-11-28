@@ -334,6 +334,54 @@ abstract class AppLocalizations {
   /// **'Connecting to {serverName}'**
   String connectingToServer(String serverName);
 
+  /// Audiobookshelf sign-in: the button and field for signing in with an API key instead of a password
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get absApiKey;
+
+  /// Audiobookshelf sign-in: where the API key comes from. Settings and API Keys are the names of pages in Audiobookshelf's web app
+  ///
+  /// In en, this message translates to:
+  /// **'Make one in Audiobookshelf under Settings > API Keys, then paste it here.'**
+  String get absApiKeyHint;
+
+  /// Audiobookshelf sign-in: the OpenID button, when the server gives it no label of its own. OpenID is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'OpenID'**
+  String get absOpenId;
+
+  /// Audiobookshelf sign-in: what happens when signing in with OpenID
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in on your server\'s sign-in page in the browser. Moonfin finishes signing in once the page sends you back.'**
+  String get absOpenIdIntro;
+
+  /// Audiobookshelf sign-in: shown while Moonfin waits for the browser to come back from the OpenID sign-in page
+  ///
+  /// In en, this message translates to:
+  /// **'Finish signing in on the page that opened in your browser.'**
+  String get absOpenIdWaiting;
+
+  /// Audiobookshelf sign-in: button that opens the OpenID sign-in page in the browser
+  ///
+  /// In en, this message translates to:
+  /// **'Open Sign-in Page'**
+  String get absOpenIdOpen;
+
+  /// Audiobookshelf sign-in: button that opens the OpenID sign-in page again, after it was opened once
+  ///
+  /// In en, this message translates to:
+  /// **'Open It Again'**
+  String get absOpenIdOpenAgain;
+
+  /// Audiobookshelf sign-in: the server refused the address OpenID sign-in returns to. Allowed Mobile Redirect URIs is the name of a setting in Audiobookshelf
+  ///
+  /// In en, this message translates to:
+  /// **'Audiobookshelf didn\'t accept Moonfin\'s sign-in address. An admin has to add {address} to Allowed Mobile Redirect URIs in Audiobookshelf\'s authentication settings.'**
+  String absOpenIdRedirectRefused(String address);
+
   /// Quick Connect toggle button label
   ///
   /// In en, this message translates to:
@@ -6453,6 +6501,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Slide up or down on the player to change brightness on the left and volume on the right'**
   String get playerSwipeGesturesDescription;
+
+  /// Setting that lets a sideways swipe on the video move playback back or ahead
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to Seek'**
+  String get playerSwipeSeek;
+
+  /// Description for the swipe to seek setting
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left or right on the player to go back or ahead while the controls are hidden'**
+  String get playerSwipeSeekDescription;
 
   /// Setting title for inverting placement of brightness and volume gesture indicators
   ///
@@ -23050,6 +23110,42 @@ abstract class AppLocalizations {
   /// **'Set this to your screen\'s peak brightness, and HDR10 titles mastered brighter get tone mapped to it in Moonfin instead of by the screen. Needs tvOS or macOS 26. Dolby Vision and HDR10+ play as usual. On Apple TV, Dolby Atmos in Dolby Digital Plus plays as plain surround.'**
   String get hdrToneMappingDescription;
 
+  /// iPhone, iPad and Apple TV audio setting that renders surround sound as 3D stereo for headphones
+  ///
+  /// In en, this message translates to:
+  /// **'Binaural audio for headphones'**
+  String get binauralHeadphones;
+
+  /// Subtitle for the binaural headphones setting
+  ///
+  /// In en, this message translates to:
+  /// **'Plays 5.1 and 7.1 audio as 3D stereo, so surround sound comes from around you. Only used while headphones are connected.'**
+  String get binauralHeadphonesSubtitle;
+
+  /// Apple player setting that raises quietly mixed movies and shows to a chosen loudness
+  ///
+  /// In en, this message translates to:
+  /// **'Loudness target'**
+  String get loudnessTarget;
+
+  /// Description for the loudness target setting. Atmos is a product name
+  ///
+  /// In en, this message translates to:
+  /// **'Raises quietly mixed movies and shows to an even loudness. It never turns anything down. While it\'s on, Atmos plays as plain surround and passthrough is off.'**
+  String get loudnessTargetDescription;
+
+  /// Loudness target option at broadcast loudness. LUFS is a unit and stays as is
+  ///
+  /// In en, this message translates to:
+  /// **'Standard (-24 LUFS)'**
+  String get loudnessTargetStandard;
+
+  /// Louder loudness target option. LUFS is a unit and stays as is
+  ///
+  /// In en, this message translates to:
+  /// **'Loud (-16 LUFS)'**
+  String get loudnessTargetLoud;
+
   /// No description provided for @cadenceTipTitle.
   ///
   /// In en, this message translates to:
@@ -23133,6 +23229,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prioritize external subtitle files over embedded tracks.'**
   String get preferExternalSubtitlesSubtitle;
+
+  /// Setting that turns subtitles on for a moment after the viewer goes back a few seconds
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles on Short Rewind'**
+  String get rewindSubtitles;
+
+  /// Description for the subtitles on short rewind setting
+  ///
+  /// In en, this message translates to:
+  /// **'With subtitles off, going back 30 seconds or less shows them until playback catches up.'**
+  String get rewindSubtitlesDescription;
 
   /// No description provided for @webDiagnostics.
   ///
